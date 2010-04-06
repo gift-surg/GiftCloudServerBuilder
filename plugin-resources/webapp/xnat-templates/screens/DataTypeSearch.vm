@@ -1,0 +1,5 @@
+<form id="${dataType}_search" method="POST" action="$link.setAction("DisplaySearchAction")">
+<input type="hidden" name="ELEMENT_0" value="$dataType"/>
+#parse("/screens/${schemaElement.getSQLName()}_search.vm")
+<div align="center">		<input type="submit" name="eventSubmit_doPerform" value="Submit" /></div>
+</form>

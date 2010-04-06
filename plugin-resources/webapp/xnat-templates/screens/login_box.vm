@@ -1,0 +1,25 @@
+<form name="form1" method="post" action="$link.setAction("XDATLoginUser")">
+  <table>
+    <tr>
+      #formLabel("User")
+  	  <TD><input type="text" id="username" name="username"></TD>
+    </tr>
+    <tr>
+    	#formLabel("Password")
+  	  <TD><input type="password" name="password"></TD>
+    </tr>
+    <tr>
+					      <td></td>
+      <td align ="left">
+        <font face="$ui.sansSerifFonts">
+        #foreach($key in $data.getParameters().getKeys())
+        	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception" &&$key!="username" &&$key!="exception")
+        		<input type="hidden" name="$key" value="$turbineUtils.escapeHTML($data.getParameters().getString($key))">	
+        	#end
+        #end
+          <input type="submit" value="Login">
+        </font>
+      </td>
+    </tr>
+   </table>
+</form>

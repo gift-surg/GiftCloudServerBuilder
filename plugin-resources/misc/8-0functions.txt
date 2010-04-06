@@ -1,0 +1,46 @@
+
+--DEFINED FUNCTION
+CREATE TYPE sortedstrings AS    (strings "varchar",     sort_order int4);
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getscanids(VARCHAR)   RETURNS varchar AS $BODY$ DECLARE  rowPointer RECORD;  concatScan VARCHAR; BEGIN  FOR rowPointer IN SELECT ID FROM xnat_mrScanData WHERE mr_session_id = $1  LOOP   IF (concatScan IS NULL) THEN    concatScan := rowPointer.ID;   ELSE    concatScan := COALESCE(concatScan,'') || ' / ' || COALESCE(rowPointer.ID,'');   END IF;  END LOOP;  RETURN concatScan; END; $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE TYPE fivediagnosisnumbers AS    (num1 int4,     num2 int4,     num3 int4,     num4 int4,     num5 int4,     expt_id "varchar");
+
+--DEFINED FUNCTION
+CREATE TYPE fivediagnosiss AS    (diag1 "varchar",     diag2 "varchar",     diag3 "varchar",     diag4 "varchar",     diag5 "varchar",     expt_id "varchar");
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getnextview()   RETURNS name AS $BODY$ DECLARE   my_record RECORD;  viewName name; BEGIN  FOR my_record IN SELECT c.relname FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE     c.relkind IN ('v') AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) LIMIT 1  LOOP   viewName := my_record.relname;  END LOOP;  RETURN (viewName); END; $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION viewcount()   RETURNS int8 AS $BODY$ DECLARE   my_record RECORD;  counter int8; BEGIN  FOR my_record IN SELECT * FROM (SELECT COUNT (c.relname) AS view_count FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE     c.relkind IN ('v') AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) LIMIT 1) AS COUNT_TABLE  LOOP   counter := my_record.view_count;  END LOOP;  RETURN (counter); END; $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE TYPE twelvemedications AS    (heart1 "varchar",     heart2 "varchar",     heart3 "varchar",     heart4 "varchar",     other1 "varchar",     other2 "varchar",     other3 "varchar",     other4 "varchar",     other5 "varchar",     other6 "varchar",     cardio1 "varchar",     cardio2 "varchar",     expt_id "varchar");
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getsortedstring("varchar", int4)   RETURNS sortedstrings AS $BODY$DECLARE  sorted_strings sortedStrings%ROWTYPE; BEGIN  sorted_strings.strings:=$1;  sorted_strings.sort_order:=$2;  return sorted_strings; END;$BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getdiagnosiscols()   RETURNS SETOF fivediagnosiss AS $BODY$    DECLARE       r fiveDiagnosiss%rowtype;       ca cnda_clinicalassessmentdata%ROWTYPE;       diagnosis cnda_clinicalassessmentdata_diagnosis%ROWTYPE;       counter INT4;    BEGIN       FOR ca IN SELECT * FROM cnda_clinicalassessmentdata        LOOP  counter  := 0;        FOR diagnosis IN SELECT * FROM cnda_clinicalassessmentdata_diagnosis WHERE cnda_clinicalassessmentdata_id=ca.id         LOOP    counter := counter + 1;    IF counter = 1 THEN       r.diag1 := diagnosis.diagnosis;    END IF;    IF counter = 2 THEN       r.diag2 := diagnosis.diagnosis;    END IF;    IF counter = 3 THEN       r.diag3 := diagnosis.diagnosis;    END IF;    IF counter = 4 THEN       r.diag4 := diagnosis.diagnosis;    END IF;    IF counter = 5 THEN       r.diag5 := diagnosis.diagnosis;    END IF;        END LOOP;   r.expt_id=ca.id;        RETURN NEXT r;  r.diag1:=NULL;  r.diag2:=NULL;  r.diag3:=NULL;  r.diag4:=NULL;  r.diag5:=NULL;       END LOOP;  RETURN;    END    $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getdiagnosisnumbers()   RETURNS SETOF fivediagnosisnumbers AS $BODY$    DECLARE       r fiveDiagnosisNumbers%rowtype;       ca cnda_clinicalassessmentdata%ROWTYPE;       diagnosis cnda_clinicalassessmentdata_diagnosis%ROWTYPE;       counter INT4;    BEGIN       FOR ca IN SELECT * FROM cnda_clinicalassessmentdata        LOOP  counter  := 0;        FOR diagnosis IN SELECT * FROM cnda_clinicalassessmentdata_diagnosis WHERE cnda_clinicalassessmentdata_id=ca.id        LOOP    counter := counter + 1;    IF counter = 1 THEN       r.num1 := diagnosis.number;    END IF;    IF counter = 2 THEN       r.num2 := diagnosis.number;    END IF;    IF counter = 3 THEN       r.num3 := diagnosis.number;    END IF;    IF counter = 4 THEN       r.num4 := diagnosis.number;    END IF;    IF counter = 5 THEN       r.num5 := diagnosis.number;    END IF;        END LOOP;  r.expt_id := ca.id;  RETURN NEXT r;  r.num1:=NULL;  r.num2:=NULL;  r.num3:=NULL;  r.num4:=NULL;  r.num5:=NULL;       END LOOP;  RETURN;    END    $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION removeviews()   RETURNS varchar AS $BODY$ DECLARE  viewName name;  viewCounter int8; BEGIN  SELECT INTO viewName getnextview();  SELECT INTO viewCounter viewCount();  WHILE (viewCounter > 0)   LOOP   EXECUTE 'DROP VIEW '|| viewName || ' CASCADE';   RAISE NOTICE 'DROPPED %. % more.',viewName,viewCounter;   SELECT INTO viewName getnextview();   SELECT INTO viewCounter viewCount();  END LOOP;   RETURN ('DONE'); END; $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getdiagnosiss(VARCHAR)   RETURNS varchar AS $BODY$ DECLARE  rowPointer RECORD;  concatDiag VARCHAR; BEGIN  FOR rowPointer IN SELECT Diagnosis FROM cnda_clinicalassessmentdata_diagnosis WHERE cnda_clinicalassessmentdata_id = $1  LOOP   IF (concatDiag IS NULL) THEN    concatDiag := rowPointer.Diagnosis;   ELSE    concatDiag := COALESCE(concatDiag,'') || ' / ' || COALESCE(rowPointer.Diagnosis,'');   END IF;  END LOOP;  RETURN concatDiag; END; $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION stringstosortedtable(_varchar)   RETURNS SETOF sortedstrings AS $BODY$DECLARE  i int:=1;  sorted_strings sortedStrings%ROWTYPE; BEGIN  while ($1[i] IS NOT NULL) loop   sorted_strings:=getSortedString($1[i],i);   return next sorted_strings;   i:=i+1;  end loop; return; END;$BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getmedicationcols()   RETURNS SETOF twelvemedications AS $BODY$    DECLARE       r twelveMedications%ROWTYPE;       ca cnda_clinicalassessmentdata%ROWTYPE;       medication cnda_clinicalassessmentdata_medication%ROWTYPE;       heartcounter INT4;       othercounter INT4;       cardiocounter INT4;    BEGIN       FOR ca IN SELECT * FROM cnda_clinicalassessmentdata        LOOP  heartcounter  := 0;  othercounter  := 0;  cardiocounter  := 0;        FOR medication IN SELECT * FROM cnda_clinicalassessmentdata_medication WHERE cnda_clinicalassessmentdata_id=ca.id        LOOP    IF (medication.type = 'bp-heart') THEN    heartcounter :=heartcounter + 1;    IF heartcounter = 1 THEN        r.heart1 := medication.name;    END IF;    IF heartcounter = 2 THEN        r.heart2 := medication.name;    END IF;    IF heartcounter = 3 THEN        r.heart3 := medication.name;    END IF;    IF heartcounter = 4 THEN        r.heart4 := medication.name;    END IF;    END IF;    IF (medication.type = 'cardio') THEN    cardiocounter :=cardiocounter + 1;    IF cardiocounter = 1 THEN        r.cardio1 := medication.name;    END IF;    IF cardiocounter = 2 THEN        r.cardio2 := medication.name;    END IF;    END IF;    IF (medication.type = 'other') THEN    othercounter := othercounter + 1;    IF othercounter = 1 THEN        r.other1 := medication.name;    END IF;    IF othercounter = 2 THEN        r.other2 := medication.name;    END IF;    IF othercounter = 3 THEN        r.other3 := medication.name;    END IF;    IF othercounter = 4 THEN        r.other4 := medication.name;    END IF;    IF othercounter = 5 THEN        r.other5 := medication.name;    END IF;    IF othercounter = 6 THEN        r.other6 := medication.name;    END IF;    END IF;        END LOOP;  r.expt_id := ca.id;  RETURN NEXT r;  r.heart1:=NULL;  r.heart2:=NULL;  r.heart3:=NULL;  r.heart4:=NULL;  r.cardio1:=NULL;  r.cardio2:=NULL;  r.other1:=NULL;  r.other2:=NULL;  r.other3:=NULL;  r.other4:=NULL;  r.other5:=NULL;  r.other6:=NULL;       END LOOP;  RETURN;    END    $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+
+--DEFINED FUNCTION
+CREATE OR REPLACE FUNCTION getmedications(VARCHAR)   RETURNS varchar AS $BODY$ DECLARE  rowPointer RECORD;  concatMeds VARCHAR; BEGIN  FOR rowPointer IN SELECT name FROM cnda_clinicalassessmentdata_medication WHERE cnda_clinicalassessmentdata_id = $1  LOOP   IF (concatMeds IS NULL) THEN    concatMeds := rowPointer.name;   ELSE    concatMeds := COALESCE(concatMeds,'') || ' / ' || rowPointer.name;   END IF;  END LOOP;  RETURN concatMeds; END; $BODY$   LANGUAGE 'plpgsql' VOLATILE;
+

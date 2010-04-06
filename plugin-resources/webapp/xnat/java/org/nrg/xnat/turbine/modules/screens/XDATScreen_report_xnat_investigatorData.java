@@ -1,0 +1,25 @@
+//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+/*
+ * Created on Jul 1, 2005
+ *
+ */
+package org.nrg.xnat.turbine.modules.screens;
+
+import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
+import org.nrg.xdat.turbine.modules.screens.SecureReport;
+
+/**
+ * @author Tim
+ *
+ */
+public class XDATScreen_report_xnat_investigatorData extends SecureReport {
+
+    /* (non-Javadoc)
+     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
+     */
+    public void finalProcessing(RunData data, Context context) {
+        
+    }
+
+}

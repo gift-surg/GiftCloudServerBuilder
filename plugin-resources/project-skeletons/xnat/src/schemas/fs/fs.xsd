@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) -->
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Dan Marcus (Washington University) -->
+<xs:schema targetNamespace="http://nrg.wustl.edu/fs" xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdat="http://nrg.wustl.edu/xdat" xmlns:fs="http://nrg.wustl.edu/fs" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://nrg.wustl.edu/xnat" schemaLocation="../xnat/xnat.xsd"/>
+	<xs:element name="ASEGRegionAnalysis" type="fs:asegRegionAnalysis"/>
+	<xs:element name="APARCRegionAnalysis" type="fs:aparcRegionAnalysis"/>
+	<xs:element name="AutomaticSegmentation" type="fs:automaticSegmentationData"/>
+	<xs:complexType name="aparcRegionAnalysis">
+		<xs:complexContent>
+			<xs:extension base="xnat:mrAssessorData">
+				<xs:sequence minOccurs="0">
+					<xs:element name="NumVert" type="xs:float" minOccurs="0"/>
+					<xs:element name="SurfArea" type="xs:float" minOccurs="0"/>
+					<xs:element name="regions" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence minOccurs="0">
+								<xs:element name="region" minOccurs="0" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:appinfo>
+											<xdat:field>
+												<xdat:relation uniqueComposite="name" relationType="single"/>
+											</xdat:field>
+										</xs:appinfo>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence minOccurs="0">
+											<xs:element name="NumVert" type="xs:float" minOccurs="0"/>
+											<xs:element name="SurfArea" type="xs:float" minOccurs="0"/>
+											<xs:element name="GrayVol" type="xs:float" minOccurs="0"/>
+											<xs:element name="ThickAvg" type="xs:float" minOccurs="0"/>
+											<xs:element name="ThickStd" type="xs:float" minOccurs="0"/>
+											<xs:element name="MeanCurv" type="xs:float" minOccurs="0"/>
+											<xs:element name="GausCurv" type="xs:float" minOccurs="0"/>
+											<xs:element name="FoldInd" type="xs:float" minOccurs="0"/>
+											<xs:element name="CurvInd" type="xs:float" minOccurs="0"/>
+										</xs:sequence>
+										<xs:attribute name="name" type="xs:string" use="required">
+											<xs:annotation>
+												<xs:appinfo>
+													<xdat:field uniqueComposite="name"/>
+												</xs:appinfo>
+											</xs:annotation>
+										</xs:attribute>
+										<xs:attribute name="hemisphere">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="left"/>
+													<xs:enumeration value="right"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="hemisphere" use="optional">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="left"/>
+							<xs:enumeration value="right"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="asegRegionAnalysis">
+		<xs:complexContent>
+			<xs:extension base="xnat:mrAssessorData">
+				<xs:sequence minOccurs="0">
+					<xs:element name="BrainMaskNVox" type="xs:float" minOccurs="0"/>
+					<xs:element name="BrainMaskVol" type="xs:float" minOccurs="0"/>
+					<xs:element name="BrainSegNVox" type="xs:float" minOccurs="0"/>
+					<xs:element name="BrainSegVol" type="xs:float" minOccurs="0"/>
+					<xs:element name="ICV" type="xs:float" minOccurs="0"/>
+					<xs:element name="regions" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence minOccurs="0">
+								<xs:element name="region" minOccurs="0" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:appinfo>
+											<xdat:field>
+												<xdat:relation uniqueComposite="name" relationType="single"/>
+											</xdat:field>
+										</xs:appinfo>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence minOccurs="0">
+											<xs:element name="NVoxels" type="xs:float" minOccurs="0"/>
+											<xs:element name="Volume" type="xs:float" minOccurs="0"/>
+											<xs:element name="normMean" type="xs:float" minOccurs="0"/>
+											<xs:element name="normStdDev" type="xs:float" minOccurs="0"/>
+											<xs:element name="normMin" type="xs:float" minOccurs="0"/>
+											<xs:element name="normMax" type="xs:float" minOccurs="0"/>
+											<xs:element name="normRange" type="xs:float" minOccurs="0"/>
+										</xs:sequence>
+										<xs:attribute name="SegId" type="xs:string" use="optional"/>
+										<xs:attribute name="name" type="xs:string" use="required">
+											<xs:annotation>
+												<xs:appinfo>
+													<xdat:field uniqueComposite="name"/>
+												</xs:appinfo>
+											</xs:annotation>
+										</xs:attribute>
+										<xs:attribute name="hemisphere">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="left"/>
+													<xs:enumeration value="right"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="automaticSegmentationData">
+		<xs:complexContent>
+			<xs:extension base="xnat:mrAssessorData">
+				<xs:sequence>
+					<xs:element name="ICV" type="xs:integer" minOccurs="0"/>
+					<xs:element name="regions">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="region" type="xnat:volumetricRegion" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

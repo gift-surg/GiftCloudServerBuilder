@@ -1,0 +1,96 @@
+#set ($user = $data.getSession().getAttribute("user"))
+	<FORM name="searchWizard1s" method="post" action="$link.setAction("DisplaySearchAction")">
+<table border="0">
+ <tr>
+  <td><h3>Advanced Search - Criteria</h3></td>
+ </tr>
+ <tr>
+  <td valign="middle" align="left">
+	    <h3 valign="middle"><img src="$content.getURI("images/number_1.gif")" border=0> Pivot Data-type: <b>$user.getElementSecurity($ELEMENT_0).getPluralDescription()</b></h3>
+	    <input type="hidden" name="ELEMENT_0" value="$ELEMENT_0"/>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="left">
+	    &nbsp;
+  </td>
+ </tr>
+ <tr>
+  <td valign="middle" align="left">
+	    <h3 valign="middle"><img src="$content.getURI("images/number_2.gif")" border=0> Additional Data-types:</h3>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  #if($additional_types.size()>0)
+   <table>
+   #foreach ($key in $additional_types.keySet())
+				  	<TR><TD><B>$user.getElementSecurity($key).getPluralDescription()</B></TD>
+				  		<TD NOWRAP><input type="hidden" name="super_$key" value="$additional_types.get($key)"/>$additional_types.get($key)</TD>
+				  		
+				  	</TR>
+				  #end
+   </table>
+				  #else
+				   None.
+				  #end
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="left">
+	    &nbsp;
+  </td>
+ </tr>
+ <tr>
+  <td valign="middle" align="left">
+	    <h3 valign="middle"><img src="$content.getURI("images/number_3.gif")" border=0> Define Search Criteria</h3>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="left">
+	    <div style="width:500px">Define the constraints which will determine which rows show up in your search results.</div>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <STYLE>
+span.spacer{
+height:12px;
+width:1px;
+}
+</STYLE>
+<div id="super_search" class="yui-navset">
+  <ul class="yui-nav" style="">
+      <li class="selected"><a href="#$ELEMENT_0"><em>$user.getElementSecurity($ELEMENT_0).getPluralDescription()<span class="spacer"></span></em></a></li>
+      #foreach ($key in $additional_types.keySet())
+       #if(!$key.equals($ELEMENT_0))
+        <li><a href="#$key"><em>$user.getElementSecurity($key).getPluralDescription()<span class="spacer"></span></em></a></li>
+       #end
+      #end
+  </ul>
+ <div class="yui-content">   
+  <div id="$ELEMENT_0"><p>
+#xdatSearchElement($user.getElementSecurity($ELEMENT_0).getSchemaElement() 3)
+</p></div>
+  #foreach ($key in $additional_types.keySet())
+    #if(!$key.equals($ELEMENT_0))
+  <div id="$key"><p>
+#xdatSearchElement($user.getElementSecurity($key).getSchemaElement() 3)
+</p></div>
+    #end
+  #end
+ </div>
+				</div>
+				<script type="text/javascript">
+				  var frontTabs=new YAHOO.widget.TabView('super_search');
+				  
+				</script>
+  </td>
+ </tr>
+ <tr>
+		  <td valign="top" align="right">
+    <input type="submit" name="eventSubmit_doPerform" value="Submit" />
+  		</td>
+ </tr>
+</table>
+</form>

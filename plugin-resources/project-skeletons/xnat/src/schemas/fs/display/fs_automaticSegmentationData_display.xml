@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Displays xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xdat/display.xsd" schema-element="fs:automaticSegmentationData" brief-description="Auto. SubCort. Vol." full-description="Automatic Subcortical Volume Segmentation">
+	<Arc name="ASSESSOR">
+		<CommonField id="EXPT_ID" local-field="ASSESSOR_EXPT_ID"/>
+		<CommonField id="ASSESSED_EXPT_ID" local-field="SESSION_ID"/>
+	</Arc>
+	<Arc name="PARTICIPANT_EXPERIMENT">
+		<CommonField id="PART_ID" local-field="SUBJECT_ID"/>
+		<CommonField id="DATE" local-field="MR_DATE"/>
+		<CommonField id="EXPT_ID" local-field="ASSESSOR_EXPT_ID"/>
+	</Arc>
+	<DisplayField id="SESSION_ID" header="Session" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.imageSession_ID"/>
+	</DisplayField>
+	<DisplayField id="SESSION_TYPE" header="Type" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="xnat:mrSessionData.session_type"/>
+	</DisplayField>
+	<DisplayField id="SUBJECT_ID" header="Session" visible="false" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="xnat:mrSessionData.subject_ID"/>
+	</DisplayField>
+	<DisplayField id="MR_DATE" header="MR Date" visible="false" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="xnat:mrSessionData.date"/>
+	</DisplayField>
+	<DisplayField id="ASSESSOR_EXPT_ID" header="Assessor ID" visible="false" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.ID"/>
+	</DisplayField>
+	<DisplayField id="ASEG_ID" header="ASEG ID" visible="false">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.ID"/>
+		<HTML-Link>
+			<Property name="HREF" value="none"/>
+			<Property name="ONCLICK" value="return rpt('@Field1','fs:automaticSegmentationData','fs:automaticSegmentationData.ID');">
+				<InsertValue id="Field1" field="ASEG_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="RPT" header="" visible="true" image="true">
+		<Content type="sql">'/@WEBAPP/images/r.gif'::text</Content>
+		<HTML-Link>
+			<Property name="HREF" value="none"/>
+			<Property name="ONCLICK" value="return rpt('@Field1','fs:automaticSegmentationData','fs:automaticSegmentationData.ID');">
+				<InsertValue id="Field1" field="ASEG_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="DATE" header="Date" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.date"/>
+	</DisplayField>
+	<DisplayField id="INVEST" header="PI" visible="true">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.investigator.lastname"/>
+		<Content type="sql">substring(@Field1 FROM 0 FOR 6)</Content>
+	</DisplayField>
+	<DisplayField id="INVEST_CSV" header="PI" visible="true">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.investigator.lastname"/>
+	</DisplayField>
+	<DisplayField id="INVEST_SEARCH" header="PI" visible="true" searchable="true" data-type="string">
+		<DisplayFieldElement name="Field1" schema-element="fs:automaticSegmentationData.investigator.firstname"/>
+		<DisplayFieldElement name="Field2" schema-element="fs:automaticSegmentationData.investigator.lastname"/>
+		<Content type="sql">@Field1 || ' ' || @Field2</Content>
+	</DisplayField>
+	<DisplayField id="ASEG_ICV" header="ICV" visible="true" sort-order="DESC" searchable="true" data-type="integer">
+		<DisplayFieldElement name="COL1" schema-element="fs:automaticSegmentationData.ICV"/>
+	</DisplayField>
+	<DisplayField id="L_CW" header="L. CW" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="L_CW"/>
+	</DisplayField>
+	<DisplayField id="L_COR" header="L. COR" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="L_COR"/>
+	</DisplayField>
+	<DisplayField id="L_HC" header="L. HC" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="L_HC"/>
+	</DisplayField>
+	<DisplayField id="R_CW" header="R. CW" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="R_CW"/>
+	</DisplayField>
+	<DisplayField id="R_COR" header="R. COR" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="R_COR"/>
+	</DisplayField>
+	<DisplayField id="R_HC" header="R. HC" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="R_HC"/>
+	</DisplayField>
+	<DisplayField id="HC_TOTAL" header="HC" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="R_HC"/>
+		<DisplayFieldElement name="COL2" viewName="ASEG_VALUES" viewColumn="L_HC"/>
+		<Content type="sql">@COL1 + @COL2</Content>
+	</DisplayField>
+	<DisplayField id="COR_TOTAL" header="COR" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="R_COR"/>
+		<DisplayFieldElement name="COL2" viewName="ASEG_VALUES" viewColumn="L_COR"/>
+		<Content type="sql">@COL1 + @COL2</Content>
+	</DisplayField>
+	<DisplayField id="CW_TOTAL" header="CW" visible="true" sort-order="DESC" data-type="integer">
+		<DisplayFieldElement name="COL1" viewName="ASEG_VALUES" viewColumn="R_CW"/>
+		<DisplayFieldElement name="COL2" viewName="ASEG_VALUES" viewColumn="L_CW"/>
+		<Content type="sql">@COL1 + @COL2</Content>
+	</DisplayField>
+	<DisplayField id="AGE" header="Age" visible="true" searchable="true" data-type="integer">
+		<DisplayFieldElement name="Field1" schema-element="xnat:mrSessionData.date"/>
+		<DisplayFieldElement name="Field2" schema-element="xnat:demographicData.dob"/>
+		<DisplayFieldElement name="Field3" schema-element="xnat:demographicData.yob"/>
+		<Content type="sql">CAST(COALESCE(EXTRACT(YEAR FROM AGE(@Field1, @Field2)),FLOOR((EXTRACT(YEAR FROM @Field1)) - (@Field3))) AS numeric)</Content>
+	</DisplayField>
+	<DisplayField id="MAP_LAB" visible="true" header="Map/Lab ID">
+		<DisplayFieldElement name="Field1" schema-element="cnda:cndaSubjectMetadata.map"/>
+		<DisplayFieldElement name="Field2" schema-element="cnda:cndaSubjectMetadata.lab_id"/>
+		<Content type="sql">COALESCE(@Field1,@Field2)</Content>
+		<HTML-Link>
+			<Property name="HREF" value="none"/>
+			<Property name="ONCLICK" value="return rpt('@Field1','xnat:subjectData','xnat:subjectData.ID');">
+				<InsertValue id="Field1" field="SUBJECT_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="MAP" header="Map" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="cnda:cndaSubjectMetadata.map"/>
+		<HTML-Link>
+			<Property name="HREF" value="none"/>
+			<Property name="ONCLICK" value="return rpt('@Field1','xnat:subjectData','xnat:subjectData.ID');">
+				<InsertValue id="Field1" field="SUBJECT_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="LAB_ID" header="Lab Id" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="cnda:cndaSubjectMetadata.lab_id"/>
+		<HTML-Link>
+			<Property name="HREF" value="none"/>
+			<Property name="ONCLICK" value="return rpt('@Field1','xnat:subjectData','xnat:subjectData.ID');">
+				<InsertValue id="Field1" field="SUBJECT_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="GENDER_TEXT" header="M/F" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="xnat:demographicData.gender"/>
+		<Content type="sql">CASE @Field1 WHEN 'male' THEN 'M' WHEN 'female' THEN 'F' ELSE 'U' END</Content>
+	</DisplayField>
+	<DisplayField id="VIEW" header="" visible="true" image="true">
+		<Content type="sql">'/@WEBAPP/images/v.gif'::text</Content>
+		<HTML-Link>
+			<Property name="HREF" value="none"/>
+			<Property name="ONCLICK" value="return viewer('@Field1');">
+				<InsertValue id="Field1" field="SESSION_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayVersion versionName="listing" default-order-by="DATE" default-sort-order="DESC" dark-color="3366FF" light-color="6699FF" brief-description="Automatic Segmentation">
+		<DisplayFieldRef id="RPT"/>
+		<DisplayFieldRef id="VIEW"/>
+		<DisplayFieldRef id="SESSION_ID" element_name="xnat:mrSessionData"/>
+		<DisplayFieldRef id="DATE"/>
+		<DisplayFieldRef id="INVEST"/>
+		<DisplayFieldRef id="MAP_LAB" element_name="xnat:subjectData"/>
+		<DisplayFieldRef id="GENDER_TEXT" element_name="xnat:subjectData"/>
+		<DisplayFieldRef id="AGE" element_name="xnat:mrSessionData"/>
+		<DisplayFieldRef id="ASEG_ICV"/>
+		<DisplayFieldRef id="L_CW"/>
+		<DisplayFieldRef id="L_COR"/>
+		<DisplayFieldRef id="L_HC"/>
+		<DisplayFieldRef id="R_CW"/>
+		<DisplayFieldRef id="R_COR"/>
+		<DisplayFieldRef id="R_HC"/>
+	</DisplayVersion>
+	<DisplayVersion versionName="listing_csv" default-order-by="DATE" default-sort-order="DESC" dark-color="3366FF" light-color="6699FF" brief-description="Automatic Segmentation">
+		<DisplayFieldRef id="SESSION_ID" element_name="xnat:mrSessionData"/>
+		<DisplayFieldRef id="DATE"/>
+		<DisplayFieldRef id="INVEST"/>
+		<DisplayFieldRef id="MAP_LAB" element_name="xnat:subjectData"/>
+		<DisplayFieldRef id="GENDER_TEXT" element_name="xnat:subjectData"/>
+		<DisplayFieldRef id="AGE" element_name="xnat:mrSessionData"/>
+		<DisplayFieldRef id="ASEG_ICV"/>
+		<DisplayFieldRef id="L_CW"/>
+		<DisplayFieldRef id="L_COR"/>
+		<DisplayFieldRef id="L_HC"/>
+		<DisplayFieldRef id="R_CW"/>
+		<DisplayFieldRef id="R_COR"/>
+		<DisplayFieldRef id="R_HC"/>
+	</DisplayVersion>
+	<DisplayVersion versionName="brief" default-order-by="ASEG_ICV" brief-description="Automatic Segmentation" dark-color="3366FF" light-color="6699FF">
+		<DisplayFieldRef id="ASEG_ICV"/>
+		<DisplayFieldRef id="L_CW"/>
+		<DisplayFieldRef id="L_COR"/>
+		<DisplayFieldRef id="L_HC"/>
+		<DisplayFieldRef id="R_CW"/>
+		<DisplayFieldRef id="R_COR"/>
+		<DisplayFieldRef id="R_HC"/>
+	</DisplayVersion>
+	<ViewLink alias="ASEG_VALUES">
+		<Mapping TableName="ASEG_VALUES">
+			<MappingColumn rootElement="fs:automaticSegmentationData" fieldElement="fs:automaticSegmentationData.ID" mapsTo="ID"/>
+		</Mapping>
+	</ViewLink>
+	<SQLView name="ASEG_VALUES" sql="SELECT aseg.ID, R_CW.voxels AS R_CW, R_HC.voxels AS R_HC, R_COR.voxels AS R_COR, L_CW.voxels AS L_CW, L_HC.voxels AS L_HC, L_COR.voxels AS L_COR
+FROM fs_automaticsegmentationdata aseg
+ LEFT JOIN (SELECT regions_region_fs_automaticsegm_id,MAX(voxels) AS voxels FROM xnat_volumetricregion WHERE name='Cerebral-White-Matter' AND hemisphere='right' GROUP BY regions_region_fs_automaticsegm_id) R_CW ON aseg.id=R_CW.regions_region_fs_automaticsegm_id
+ LEFT JOIN (SELECT regions_region_fs_automaticsegm_id,MAX(voxels) AS voxels FROM xnat_volumetricregion WHERE name='Hippocampus' AND hemisphere='right' GROUP BY regions_region_fs_automaticsegm_id) R_HC ON aseg.id=R_HC.regions_region_fs_automaticsegm_id
+ LEFT JOIN (SELECT regions_region_fs_automaticsegm_id,MAX(voxels) AS voxels FROM xnat_volumetricregion WHERE name='Cerebral-Cortex' AND hemisphere='right' GROUP BY regions_region_fs_automaticsegm_id) R_COR ON aseg.id=R_COR.regions_region_fs_automaticsegm_id
+ LEFT JOIN (SELECT regions_region_fs_automaticsegm_id,MAX(voxels) AS voxels FROM xnat_volumetricregion WHERE name='Cerebral-White-Matter' AND hemisphere='left' GROUP BY regions_region_fs_automaticsegm_id) L_CW ON aseg.id=L_CW.regions_region_fs_automaticsegm_id
+ LEFT JOIN (SELECT regions_region_fs_automaticsegm_id,MAX(voxels) AS voxels FROM xnat_volumetricregion WHERE name='Hippocampus' AND hemisphere='left' GROUP BY regions_region_fs_automaticsegm_id) L_HC ON aseg.id=L_HC.regions_region_fs_automaticsegm_id
+ LEFT JOIN (SELECT regions_region_fs_automaticsegm_id,MAX(voxels) AS voxels FROM xnat_volumetricregion WHERE name='Cerebral-Cortex' AND hemisphere='left' GROUP BY regions_region_fs_automaticsegm_id) L_COR ON aseg.id=L_COR.regions_region_fs_automaticsegm_id"/>
+</Displays>

@@ -1,0 +1,26 @@
+																			<tr>
+			  #formLabel("Accession #")
+						  <TD>$!om.getId()</TD>
+							</tr>
+													<tr>
+			  #formLabel("Date Added")
+									  <TD>$!om.InsertDate ($!om.InsertUser.Login)</TD>
+							</tr>
+						#if($!item.getProperty("date"))
+							<tr>
+								<th align="left">Date: </th>
+								<td>$!item.getProperty("date")</td>
+							</tr>
+							#end
+												#if($!item.getProperty("time"))
+							<tr>
+								<th align="left">Time: </th>
+								<td>$!item.getProperty("time")</td>
+							</tr>
+							#end
+						#if($!item.getProperty("investigator.firstname"))
+							<tr>
+								<th align="left">Investigator: </th>
+								<td>$!item.getProperty("investigator.firstname") $!item.getProperty("investigator.lastname")</td>
+							</tr>
+							#end

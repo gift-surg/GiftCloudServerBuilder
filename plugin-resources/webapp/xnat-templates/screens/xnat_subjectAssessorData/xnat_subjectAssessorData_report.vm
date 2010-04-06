@@ -1,0 +1,108 @@
+<!-- BEGIN subjectAssessor/xnat_subjectAssessorData_report.vm -->
+#if($project)
+
+#else
+  #set($project=$om.getProject())
+#end
+		<script type="text/javascript">
+document.title = "EXPT: $!item.getProperty('label')";
+</script>
+#set($subject = $om.getSubjectData())
+			#if($item.needsActivation())
+			<div id="quarantine_div" class="error" style="background-color:#FFCC33;">This experiment is in quarantine.&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="toggleQuarantine();">Activate</a></div><br>
+			#end
+			#parse($turbineUtils.getTemplateName("_title",$om.getXSIType(),$project))
+					<STYLE>
+					TH.underscore{
+					border-bottom-width:2px;
+					border-bottom-color:rgb(255,153,51);
+					border-bottom-style:solid;
+					}
+					</STYLE>
+					#if($project)
+					
+					#else
+					#set($project=$om.getProject())
+					#end
+<BR>
+<table width="100%" align="left" border="0">
+				<tr>
+		  <td align=left>
+			#parse($turbineUtils.getTemplateName("_details",$om.getXSIType(),$project))
+	    </td>
+  				</tr>
+  				<tr>
+  					 <td colspan=2>
+			#parse("/screens/ReportProjectSpecificFields.vm")
+	  </td>
+	 </tr> 
+			</table>
+				<script type="text/javascript">
+var image_session_id="$om.getId()";
+</script>
+
+	<script type="text/javascript">
+
+function  toggleQuarantine(){
+  #if($item.needsActivation())
+    window.qStatus="true"
+  #else
+    window.qStatus="false"
+  #end
+  if(window.qStatus=="true"){
+    var initCallback={
+						      success:function(o){
+						        closeModalPanel("quarantine_");
+						        if(document.getElementById("quarantine_div")!=undefined){
+						          document.getElementById("quarantine_div").style.display='none';
+						        }
+						        if(document.getElementById("quarantine_a")!=undefined){
+						    	      document.getElementById("quarantine_a").innerHTML="Places this data in quarantine.";
+						    	      document.getElementById("quarantine_a").innerHTML="<img id='quarantine_img' border='0' src='$content.getURI("images/checkmarkOrange.gif")'/> Quarantine";
+						    	    }
+						    	    window.qStatus="false";
+      },
+			      failure:function(o){
+						        closeModalPanel("quarantine_");
+				      },
+			      scope:this
+		    }
+		    openModalPanel("quarantine_","Removing item from quarantine.");
+		    #if($item.instanceOf("xnat:subjectData"))
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()?activate=true",initCallback);
+    #elseif($item.instanceOf("xnat:derivedData"))
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()?activate=true",initCallback);
+    #else
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()?activate=true",initCallback);
+    #end
+  }else{
+    var initCallback={
+						      success:function(o){
+						        closeModalPanel("activate_");
+						        if(document.getElementById("quarantine_div")!=undefined){
+						          document.getElementById("quarantine_div").style.display='none';
+						        }
+						        if(document.getElementById("quarantine_a")!=undefined){
+						    	      document.getElementById("quarantine_a").innerHTML="Removes this data and its descendents from quarantine.";
+						    	      document.getElementById("quarantine_a").innerHTML="<img id='quarantine_img' border='0' src='$content.getURI("images/checkmarkGreen.gif")'/> Activate";
+						    	    }
+						    	    window.qStatus="true";
+      },
+			      failure:function(o){
+						        closeModalPanel("activate_");
+				      },
+			      scope:this
+		    }
+		    openModalPanel("activate_","Placing item in quarantine.");
+		    #if($item.instanceOf("xnat:subjectData"))
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()?quarantine=true",initCallback);
+    #elseif($item.instanceOf("xnat:derivedData"))
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()?quarantine=true",initCallback);
+    #else
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()?quarantine=true",initCallback);
+    #end
+  }
+}
+  
+</script>
+<!-- END subjectAssessor/xnat_subjectAssessorData_report.vm -->

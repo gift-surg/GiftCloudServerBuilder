@@ -1,0 +1,45 @@
+<!-- BEGIN imageSessionData/xnat_imageSessionData_reconstructions.vm -->
+#if($om.getReconstructions_reconstructedimage().size()>0)
+<tr><td colspan="2">
+<div class="edit_header1" style="margin-bottom:16px">Reconstructions</div>
+					<TABLE bgColor=white cellPadding=0 cellSpacing=0 width=80% >
+	  <TR style="border-style:none;">
+	  	  <TH style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Scan</TH>
+	  	  <TH style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Type</TH>
+	  	  <TH style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Base Type</TH>
+	   </TR>
+#set ($scanCounter = 300)
+#foreach($scan in $om.getReconstructions_reconstructedimage())
+	  #set ($scanID =$!scan.getProperty("ID"))
+	  <TR valign=top border=0>
+		  	  <TD border=0 align=left NOWRAP>
+			  	  	  <A name="LINK${scanCounter}" HREF="#LINK${scanCounter}" onClick=" return blocking($scanCounter);">
+				  	  	  <img ID="IMG$scanCounter" src="$content.getURI("images/plus.jpg")" border=0>
+				  	  	  $!scan.getProperty("ID")</a>
+	</TD>
+		  	  <TD border=0 align=left NOWRAP>$!scan.getProperty("type")</TD>
+		  	  <TD border=0 align=left NOWRAP>$!scan.getProperty("baseScanType")</TD>
+</TR>
+<tr>
+		  	  <td colspan="5" NOWRAP>
+	<span ID="span$!scanCounter" style="position:relative; display:none;">
+			  	  	  #parse($turbineUtils.getTemplateName("_details",$scan.getXSIType(),$project))
+				  	  	  	  <table>
+		 <tr> 
+						  	  	  	  	  	  <td>    </td>
+						  	  	  	  	  	  <th valign="top">Files</th>
+						  	  	  	  	  	  <td align="left" style="border:1px solid grey"><table><tbody id="FILES_scan$scanID"></tbody></table></td>
+		 </tr> 
+	  </table>
+
+	</span>	
+	</td>
+</tr>
+ 	#set ($scanCounter= $scanCounter + 1)
+#end
+  
+</TABLE>
+
+</td></tr>
+#end
+<!-- END imageSessionData/xnat_imageSessionData_reconstructions.vm -->

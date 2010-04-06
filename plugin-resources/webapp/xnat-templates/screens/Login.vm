@@ -1,0 +1,99 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("XDAT -- Please Login")
+$page.setBgColor($ui.bgcolor)
+$page.addAttribute("onLoad", "document.getElementById('username').focus();")
+<DIV VALIGN="top">
+<br><br>
+#if($data.getParameters().get("par"))
+  <table valign="top" align="center">
+  
+  <tr>
+    <td valign="top" colspan="2">
+#if ( $data.getMessage() )
+ <DIV class="error">$data.message</DIV><br><br>
+#end
+#if($msg)
+  <DIV class="warning">$msg</DIV><br><br>
+#end
+#parse("/screens/site_description.vm")
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+    <br><br>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+    <div class="withColor withThinBorder" style="">
+    <h3>Existing Users Login</h3>
+#parse("/screens/login_box.vm")
+			      <div style="padding-bottom:5px;">
+        <a href="$link.setPage("ForgotLogin.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Forgot login or password?<a>
+      </div>
+		    </div>
+    </td>
+    <td valign="top">
+      <div id="col2" style="top:10px;right:10px;width:90%;text-align:left;">
+         <div id="registerbox" class="withColor withThinBorder" style=";padding:3px;padding-left:5px;">
+            <div>
+              #parse("/screens/register_box.vm")
+			           </div>      
+         </div>
+      </div>
+    </td>
+   </tr>
+  </table>
+#else
+  <table valign="top" align="center">
+  <tr>
+    <td valign="top" colspan="52" align="center">
+#if ( $data.getMessage() )
+ <DIV class="error">$data.message</DIV><br><br>
+#end
+#if($msg)
+  <DIV class="warning">$msg</DIV><br><br>
+#end
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" colspan="2" align="center">
+    <div class="" style="">
+#parse("/screens/login_box.vm")
+		    </div>
+    </td>
+  </tr>
+    <tr>
+			      <td align="left" colspan="2">&nbsp;</td>
+    </tr>
+    
+  <tr>
+    <td valign="top" colspan="2" align="center">
+      <div class="" style="">
+         <table>
+    <tr>
+      <td >
+        <a href="$link.setPage("Register.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Register<a>
+      </td>
+			      <td align="left">&nbsp;&nbsp;&nbsp;</td>
+			      <td >
+        <a href="$link.setPage("ForgotLogin.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Forgot login or password?<a>
+      </td>
+    </tr>
+         </table>
+		      </div>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" colspan="2" align="center">
+    <br><br>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" colspan="2">
+#parse("/screens/site_description.vm")
+    </td>
+  </tr>
+  </table>
+#end
+</DIV>

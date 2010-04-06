@@ -1,0 +1,11 @@
+build.properties
+.classpath
+.project
+.cvsignore
+.classpath
+.cvsignore
+.project
+deployments
+eclipse_classes
+pipeline
+lib

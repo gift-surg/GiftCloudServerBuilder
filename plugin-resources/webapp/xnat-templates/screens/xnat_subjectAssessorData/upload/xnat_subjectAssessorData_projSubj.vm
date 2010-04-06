@@ -1,0 +1,70 @@
+ <tr>
+  <th align="left">Project</th>
+  <td><select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select></td>
+ </tr>
+ <tr>
+  <th align="left">Subject</th>
+  <td><select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select></td>
+  #if(!$preventSubject)
+    <td><a onclick="createSubjectForm();">Add New Subject</a></td>
+  #end
+ </tr>
+ <tr>
+  <td align="left" colspan="3"><div style="color:red" id="subj_msg"></div></td>
+ </tr>
+ <tr>
+  <th align="left">Session</th>
+  <td><input type="text" id="$!item.getXSIType()/label" name="$!item.getXSIType()/label" value="$!item.getProperty("label")"  onkeyup="this.value=fixSessionID(this.value);verifyExptId(this);if(this.validated==false)confirmValues(false);" onblur="confirmValues(false);"/></td>
+  <td id="label_msg"></td>
+ </tr>
+		<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
+<script type="text/javascript">
+var elementName="$!item.getXSIType()";
+
+		window.create_subject_link ="$link.setPage('XDATScreen_edit_xnat_subjectData.vm').addPathInfo('popup','true')";
+window.create_subject_link+="/project/$project/destination/JS_Parent_Return.vm";
+
+#if($item.getProperty('subject_id'))
+#set($part_id=$item.getProperty('subject_id'))
+#end
+
+function createSubjectForm(){
+	  	   	if (this.subjectForm!=undefined){
+					  	     	   this.subjectForm.close();
+					  	     	   this.subjectForm=null;
+   	  	}
+   	 	
+   	 	 this.subjectForm=window.open(window.create_subject_link, '','width=500,height=550,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+   	  	if (this.subjectForm.opener == null) this.subjectForm.opener = self;
+			  	   return this.subjectForm;
+	}
+	
+	window.success=function(subject_id){
+  //window.psm("The subject you entered was stored.");
+  if(this.subjectForm!=undefined){
+    this.subjectForm.close();
+		    this.subjectForm=null;
+		  }
+		  window.psm.defaultSubject=subject_id;
+  window.psm.loadSubjects();
+}
+window.failure=function(msg){
+  //window.psm.message(msg);
+  if(this.subjectForm!=undefined){
+    this.subjectForm.close();
+		    this.subjectForm=null;
+		  }
+}
+	
+window.psm = new ProjectSubjectSelector("$!item.getXSIType()/project","$!item.getXSIType()/subject_id",null,"$!project","$!part_id");
+window.psm.init();
+
+
+function stringTrim(str)
+{
+   return str.replace(/^\s*|\s*$/g,"");
+}
+var w=window;
+
+</script>
+	<INPUT type="hidden" name="ELEMENT_0" value="$!item.getXSIType()"/>

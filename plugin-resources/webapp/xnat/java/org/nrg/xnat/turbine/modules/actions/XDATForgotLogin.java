@@ -1,0 +1,22 @@
+// Copyright 2010 Washington University School of Medicine All Rights Reserved
+package org.nrg.xnat.turbine.modules.actions;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
+import org.nrg.xdat.security.XDATUser;
+
+public class XDATForgotLogin extends org.nrg.xdat.turbine.modules.actions.XDATForgotLogin {
+
+
+    public void additionalProcessing(RunData data, Context context,XDATUser user) throws Exception{
+		String par = data.getParameters().getString("par","");
+
+        if(!StringUtils.isEmpty(par)){
+         	AcceptProjectAccess action = new AcceptProjectAccess();
+         	context.put("user", user);
+         	action.doPerform(data, context);
+        }
+	    
+    }
+}

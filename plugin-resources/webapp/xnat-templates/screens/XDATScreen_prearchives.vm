@@ -1,0 +1,293 @@
+##Copyright 2007,2008 Washington University
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#set ($pageCSS = "style/prearchives.css")
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("DefaultExptList.vm")
+#set ($currentPage = $currentPage + 1)
+#if ($data.message)
+<DIV id="error-message" class="error">$data.message</DIV><br>
+#end
+
+<BR>
+
+<div class='instructions'>
+	<p>
+	The sessions listed below have been uploaded but not yet placed in the archive.
+	Click on a session name to examine that session and, optionally,
+	move it to the archive.  Click the <kbd>remove</kbd> icon
+	to delete the session.
+	</p>
+	<p>
+	If you have uploaded any files to the FTP server, they will appear above the
+	sessions, in the FTP inbox.  <kbd>Import</kbd> those files to organize them into sessions
+	in the session list.
+	</p>
+	<p>
+	<div class="colorkey">
+		Status key: 
+		<span class="RECEIVING">Receiving</span>
+		<span class="BUILDING">Building</span>
+		<span class="READY">Ready</span>
+		<span class="ARCHIVING">Archiving</span>
+		<span class="ERROR">Error</span>
+	</div>
+		
+</div>
+
+<br>
+<div id="prearcs" class="prearcs"></div>
+</br>
+
+<div id="match-op" class="match-op"></div>
+
+<script type="text/javascript">
+ifloatX=floatX;
+ifloatY=floatY;
+define();
+window.onresize=define;
+lastX=-1;
+lastY=-1;
+
+</script>
+
+<script type="text/javascript" src="$content.getURI('scripts/xstypes.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/HtmlAlert.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/inbox.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/prearc.js')"></script>
+
+<script type="text/javascript">
+var servletURL = "$content.getURI('servlet/AjaxServlet')";
+Prearc.icons['remove'] = "$content.getURI('images/delete.gif')";
+var prearcDiv = document.getElementById('prearcs');
+var matchOpDiv = document.getElementById('match-op');
+var activePrearc;
+var prearcs;
+
+
+// Returns a function that issues a session move request appropriate
+// for the selected option of a move-op select box.
+createMoveOp = function(selector, from) {
+	return function() {
+		var option = selector.options[selector.selectedIndex];
+		if (undefined == option.value) {
+			return;	// this is the label; ignore the selection.
+		}
+		from.moveSessionTo(selector.name, option.value,
+			function() {
+				prearcListReq = Prearc.listPrearcs(servletURL, getPrearcsCallback);
+			});
+	}
+}
+
+
+// Sets up the move operations, one per session.
+// Requires the move-op selectors to be in place, so this should be
+// invoked after the session list generation.
+buildMoveOps = function() {
+  // Set up the move operations, one per session.
+  var moveOpTDs = activePrearc.prearc.getMoveOpTDs();
+  for (var i = 0; i < moveOpTDs.length; i++) {
+  	var selector = moveOpTDs[i].firstChild;
+  	if (null == selector || 'SELECT' != selector.tagName) {
+  		alert('Invalid session table: expected selector element, found ' + selector);
+  		return;
+  	}
+
+  	for (var prearci in prearcs) {
+  		var prearc = prearcs[prearci];
+  		if (prearc.name != activePrearc.name) {
+  			var option = new Option(prearc.name);
+  			if (navigator.appName.indexOf("Microsoft") != -1) {	// Stupid broken IE.
+					option.appendChild(document.createTextNode(prearc.name));
+					option.value = prearc.name;
+				}
+				selector.appendChild(option);
+			}
+			selector.onchange = createMoveOp(selector, activePrearc.prearc);
+  	}
+  }
+}
+
+
+// Draw the view for the active prearchive.
+drawPage = function() {
+  if (null == activePrearc) {
+  	console.error('drawPage() called with no active prearchive');
+    return;
+  }
+  
+#if ($project)
+	var page = prearcDiv;
+#else
+  var page = sessionListDiv;
+#end
+  
+   activePrearc.inboxDiv = document.createElement('div');
+   activePrearc.inboxDiv.className = 'inbox';
+   activePrearc.inbox = new Inbox(activePrearc.inboxDiv, servletURL, activePrearc.name);
+    
+   activePrearc.prearcDiv = document.createElement('div');
+   activePrearc.prearc = new Prearc(servletURL, activePrearc.name, activePrearc.path);
+   activePrearc.prearc.setRemoveHandler(function () {
+     prearcListReq = Prearc.listPrearcs(servletURL, getPrearcsCallback);
+   });
+   activePrearc.prearc.errorBox = document.getElementById("error-message");
+    
+   activePrearc.inbox.addRefreshAction(function() {
+     activePrearc.prearc.draw(activePrearc.prearcDiv, buildMoveOps);
+   });
+  
+  // Clear out the prearc area to write the listing
+  while (page.hasChildNodes()) {
+    page.removeChild(page.firstChild);
+  }
+  
+  page.appendChild(activePrearc.inboxDiv);
+  page.appendChild(activePrearc.prearcDiv);
+  
+  activePrearc.inbox.refresh();
+    
+  // Clear the old match operation, if any, and add a new one, if appropriate.
+  while (matchOpDiv.hasChildNodes()) {
+  	matchOpDiv.removeChild(matchOpDiv.firstChild);
+  }
+  if (activePrearc.allowMatch) {
+  	var matchOp = document.createElement('a');
+  	matchOp.appendChild(document.createTextNode('Match all'));
+  	matchOp.href = "$link.setPage('PrearchiveMatch.vm')" + "/project/" + activePrearc.name;
+  	matchOpDiv.appendChild(matchOp);
+  }
+}
+
+
+#if ($project)
+
+activePrearc = new Object();
+activePrearc.name = '$project';
+activePrearc.allowMatch = true;
+drawPage();
+
+#else
+activePrearc = null;
+
+var prearcSelectDiv = document.createElement('div');
+prearcSelectDiv.className = 'prearc-select';
+prearcSelectDiv.appendChild(document.createTextNode('Select a prearchive: '));
+prearcDiv.appendChild(prearcSelectDiv);
+
+buildProjectSelector = function() {
+	while (prearcSelectDiv.hasChildNodes()) {		// Clear any existing selector.
+		prearcSelectDiv.removeChild(prearcSelectDiv.firstChild);
+	}
+	
+	var selector = document.createElement('select');
+	selector.setAttribute('id','selectPrearchive');
+	for (var prearc_name in prearcs) {
+		var prearc = prearcs[prearc_name];
+		var label = prearc_name;
+		switch (prearc.sessionCount) {
+			case '1':
+				label += " (1 session)";
+				break;
+						
+			default:
+				label += " (" + prearc.sessionCount + " sessions)";
+				break;
+		}
+		var option = new Option(label, prearc_name);
+		if (navigator.appName.indexOf("Microsoft") != -1) {	// Stupid broken IE.
+			option.appendChild(document.createTextNode(label));
+		}
+		if (activePrearc && activePrearc.name == prearc_name) {
+			option.selected = true;
+		}
+		selector.appendChild(option);
+	}
+	selector.onchange = createPrearcSelector(selector, prearcs);
+	prearcSelectDiv.appendChild(selector);
+}
+
+
+var sessionListDiv = document.createElement('div');
+sessionListDiv.className = 'prearc';
+prearcDiv.appendChild(sessionListDiv);
+
+buildSessionListView = function() {
+	while (sessionListDiv.hasChildNodes()) {
+		sessionListDiv.removeChild(sessionListDiv.firstChild);
+	}
+	
+	// Select a prearchive to view and display it.
+  if (null == activePrearc) {		// Select a prearchive to view.
+  // pick the first prearchive, whatever that is
+		for (var prearc in prearcs) {
+ 		 	activePrearc = prearcs[prearc];
+  		break;
+		}
+	}
+	drawPage();	// display the active prearchive.
+}
+
+
+createPrearcSelector = function(selector, prearcs) {
+	return function() {
+		var option = selector.options[selector.selectedIndex];
+		var prearc = prearcs[option.value];
+		if (activePrearc != prearc) {
+			activePrearc = prearc;
+			drawPage();
+		}
+	}
+}
+
+#end
+
+
+var prearcListReq;
+var prearcsUpdateCallbacks = new Array(0);
+
+getPrearcsCallback = function() {
+  if (null != prearcListReq && 4 == prearcListReq.readyState) {
+    if (200 == prearcListReq.status) {
+      var response = prearcListReq.responseXML;
+      var entries = response.getElementsByTagName('prearc');
+
+			prearcs = new Object();
+      for (var i = 0; i < entries.length; i++) {
+ 				entries[i].normalize();
+ 				var name = entries[i].firstChild.nodeValue;
+ 				if (name) {
+ 					var prearc = new Object();
+ 					prearc.name = name;
+ 					prearc.sessionCount = entries[i].getAttribute('size');
+ 					prearc.allowMatch = entries[i].getAttribute('allowMatch');
+ 					prearcs[name] = prearc;
+ 				}
+      }
+
+			for (var cb in prearcsUpdateCallbacks) {
+				prearcsUpdateCallbacks[cb]();
+			}
+		} else {
+    	var errorBox = document.getElementById("error-message");
+    	errorBox.appendChild(document.createTextElement('Error ' + prearcListReq.status + ' retrieving prearchive list:'));
+    	var errormsg = document.createElement("div");
+     	errormsg.className = 'error-html';
+    	errormsg.innerHTML = prearcListReq.responseText;
+    }
+	}
+}
+
+  
+#if (!$project)
+	prearcsUpdateCallbacks.push(buildProjectSelector);
+	prearcsUpdateCallbacks.push(buildSessionListView);
+#else
+	prearcsUpdateCallbacks.push(drawPage);
+#end
+
+prearcListReq = Prearc.listPrearcs(servletURL, getPrearcsCallback);
+
+</script>

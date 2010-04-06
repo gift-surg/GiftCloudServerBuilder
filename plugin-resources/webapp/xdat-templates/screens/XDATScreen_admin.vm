@@ -1,0 +1,46 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+<script type="text/javascript">
+var server= "$content.getURI("images")/";
+</script>
+<style>
+IMG{
+ border:0;
+}
+</style>
+<script type="text/javascript" src="$content.getURI("scripts/sortable_us.js")"></script>
+#set ($pageName = "SearchResults.vm")
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("DefaultExptList.vm")
+#set ($currentPage = $currentPage + 1)
+#if ($data.message)
+<DIV class="error">$data.message</DIV><br>
+#end
+#parse("/screens/admin_bar.vm")
+		<BR><BR>
+<p>
+<table border="0" width="95%">
+	<tr>
+		<td align=left colspan=2>
+			<font face="$ui.sansSerifFonts" size="2">
+				<font face="$ui.sansSerifFonts"><B>User Accounts</B></font>
+			</font>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<font face="$ui.sansSerifFonts" size="2">
+				#set ( $url = $link.setPage("XDATScreen_edit_xdat_user.vm").addPathInfo("popup","true")  ) 
+				<a href="#" ONCLICK="return popup('$url','b');">
+				Add User
+				</a>
+			</font>
+		</td>
+	</tr>
+<tr><td colspan=2 ID="user_CONTENT">$!userTable
+</td></tr></table>
+<script type="text/javascript">
+var newTable = document.getElementById("user_CONTENT").firstChild;
+newTable.ID="user_TABLE";
+newTable.className="sortable";
+ts_makeSortable(newTable);
+</script>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) -->
+<Instance_Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%XDAT_PROJECT%/schemas/xdat/instance.xsd" site_url="%SITE_URL%" admin_email="%ADMIN_EMAIL%" archive_root_path="%ARCHIVE_LOCATION%" prearchive_path="%PREARC_LOCATION%" cache_path="%CACHE_LOCATION%" smtp_server="%SMTP_SERVER%" thumbnail_path="%THUMBNAIL_LOCATION%" lores_path="%LORES_LOCATION%" pipeline_path="%PIPELINE_HOME%" require_login="%REQUIRE_LOGIN%" user_registration="%USER_REGISTRATION%">
+	<Databases>
+		<Database Type="POSTGRESQL" Id="%DB_NAME%" Driver="%DB_DRIVER%" Url="%DB_URL%" User="%USER%" Pass="%PASSWORD%" MaxConnections="10"/>
+	</Databases>
+	<Models>
+		<Data_Model File_Name="security.xsd" File_Location="%XDAT_PROJECT%/schemas/security" DB="%DB_NAME%"/>
+		<Data_Model File_Name="birnprov.xsd" File_Location="%XDAT_PROJECT%/schemas/birn" DB="%DB_NAME%"/>
+		<Data_Model File_Name="xnat.xsd" File_Location="%XDAT_PROJECT%/schemas/xnat" DB="%DB_NAME%"/>
+		<Data_Model File_Name="workflow.xsd" File_Location="%XDAT_PROJECT%/schemas/pipeline" DB="%DB_NAME%"/>
+		<Data_Model File_Name="repository.xsd" File_Location="%XDAT_PROJECT%/schemas/pipeline" DB="%DB_NAME%"/>
+		<Data_Model File_Name="project.xsd" File_Location="%XDAT_PROJECT%/schemas/project" DB="%DB_NAME%"/>
+		<Data_Model File_Name="assessments.xsd" File_Location="%XDAT_PROJECT%/schemas/assessments" DB="%DB_NAME%"/>
+		<Data_Model File_Name="catalog.xsd" File_Location="%XDAT_PROJECT%/schemas/catalog" DB="%DB_NAME%"/>
+		<!--<Data_Model File_Name="ext.xsd" File_Location="%XDAT_PROJECT%/schemas/ext" DB="%DB_NAME%"/>-->
+	</Models>
+</Instance_Settings>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Displays xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xdat/display.xsd" schema-element="wrk:workflowData" full-description="Workflow" brief-description="Workflow">
+	<DisplayField id="DATA_TYPE" header="data_type" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/data_type"/>
+	</DisplayField>
+	<DisplayField id="ID" header="ID" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/ID"/>
+		<HTML-Link>
+			<Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/@Field2/search_field/@Field2.ID">
+				<InsertValue id="Field1" field="ID"/>
+				<InsertValue id="Field2" field="DATA_TYPE"/>
+			</Property>
+			<Property name="ONCLICK" value="return rpt('@Field1','@Field2','@Field2.ID');">
+				<InsertValue id="Field1" field="ID"/>
+				<InsertValue id="Field2" field="DATA_TYPE"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="EXTERNALID" header="ExternalID" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/ExternalID"/>
+	</DisplayField>
+	<DisplayField id="CURRENT_STEP_LAUNCH_TIME" header="current_step_launch_time" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/current_step_launch_time"/>
+	</DisplayField>
+	<DisplayField id="CURRENT_STEP_ID" header="current_step_id" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/current_step_id"/>
+	</DisplayField>
+	<DisplayField id="STATUS" header="status" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/status"/>
+		<Content type="sql">'&lt;B&gt;' || CASE @Field1 WHEN 'Complete' THEN '&lt;FONT COLOR=green&gt;Complete&lt;/FONT&gt;' WHEN 'In Progress' THEN '&lt;FONT COLOR=yellow&gt;In Progress&lt;/FONT&gt;' WHEN 'Running' THEN '&lt;FONT COLOR=yellow&gt;Running&lt;/FONT&gt;' WHEN 'Queued' THEN '&lt;FONT COLOR=orange&gt;Queued&lt;/FONT&gt;' WHEN 'Failed' THEN '&lt;FONT COLOR=red&gt;Failed&lt;/FONT&gt;' ELSE '&lt;FONT COLOR=orange&gt;' || @Field1 || '&lt;/FONT&gt;' END || '&lt;/B&gt;' </Content>
+		<HTML-Link>
+			<Property name="TITLE" value="@Field1">
+				<InsertValue id="Field1" field="CURRENT_STEP_ID"/>
+			</Property>
+		</HTML-Link>
+	</DisplayField>
+	<DisplayField id="PIPELINE_NAME" header="pipeline_name" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/pipeline_name"/>
+	</DisplayField>
+	<DisplayField id="NEXT_STEP_ID" header="next_step_id" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/next_step_id"/>
+	</DisplayField>
+	<DisplayField id="STEP_DESCRIPTION" header="step_description" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/step_description"/>
+	</DisplayField>
+	<DisplayField id="LAUNCH_TIME" header="launch_time" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/launch_time"/>
+	</DisplayField>
+	<DisplayField id="PERCENTAGECOMPLETE" header="percentageComplete" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/percentageComplete"/>
+	</DisplayField>
+	<DisplayField id="LAST_MODIFIED" header="Modified" visible="false" searchable="true" data-type="date">
+		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/meta/insert_date"/>
+		<DisplayFieldElement name="Field2" schema-element="wrk:workflowData/meta/last_modified"/>
+		<Content type="sql">COALESCE(@Field2, @Field1)</Content>
+	</DisplayField>
+	<DisplayVersion versionName="listing" default-order-by="LAST_MODIFIED" default-sort-order="DESC" brief-description="Workflow" dark-color="9999CC" light-color="CCCCFF">
+		<DisplayFieldRef id="ID"/>
+		<DisplayFieldRef id="LAUNCH_TIME"/>
+		<DisplayFieldRef id="STATUS"/>
+		<DisplayFieldRef id="LAST_MODIFIED"/>
+	</DisplayVersion>
+</Displays>

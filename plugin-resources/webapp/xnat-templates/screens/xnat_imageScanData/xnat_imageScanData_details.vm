@@ -1,0 +1,49 @@
+<table>
+	  	  	  	  	  <tr>
+	  	  	  	  	  	  <td> </td>
+			  	  	  	  	  	  <td>Image </td>
+					  	  	  	  	  	  <td align="left">
+					  	  	  	  	  	  #set($snapshot=$scan.getSnapshot())
+					  	  	  	  	  	  #if($snapshot)
+					  	  	  	  	  	  <A target="_blank" HREF="$content.getURI("$!snapshot.getFull()")" > <IMG SRC="$content.getURI("$!snapshot.getThumbnail()")"> </A> 
+					  	  	  	  	  	  #else
+					  	  	  	  	  	  N/A
+					  	  	  	  	  	  #end
+					  	  	  	  	  	  </td>
+		          </tr>
+			#if($scan.getProperty("quality"))
+					  	  	  	  	  <tr>
+						  	  	  	  	  	  <td></td>
+						  	  	  	  	  	  <td>Quality</td>
+						  	  	  	  	  	  <td align="left">$!scan.getProperty("quality")</td>
+					  	  	  	  	  </tr>
+				#end
+							#if($scan.getProperty("condition"))
+					  	  	  	  	  <tr>
+						  	  	  	  	  	  <td></td>
+						  	  	  	  	  	  <td>Condition</td>
+						  	  	  	  	  	  <td align="left">$!scan.getProperty("condition")</td>
+					  	  	  	  	  </tr>
+				#end
+			#if($scan.getProperty("series_description"))
+					  	  	  	  	  <tr>
+						  	  	  	  	  	  <td></td>
+						  	  	  	  	  	  <td>Series Desc</td>
+						  	  	  	  	  	  <td align="left">$!scan.getProperty("series_description")</td>
+					  	  	  	  	  </tr>
+				#end
+			#if($scan.getProperty("modality"))
+					  	  	  	  	  <tr>
+						  	  	  	  	  	  <td></td>
+						  	  	  	  	  	  <td>Modality</td>
+						  	  	  	  	  	  <td align="left">$!scan.getProperty("modality")</td>
+					  	  	  	  	  </tr>
+				#end
+			#if($scan.getProperty("frames"))
+					  	  	  	  	  <tr>
+						  	  	  	  	  	  <td></td>
+						  	  	  	  	  	  <td>Frames</td>
+						  	  	  	  	  	  <td align="left">$!scan.getProperty("frames")</td>
+					  	  	  	  	  </tr>
+				#end
+				</table>

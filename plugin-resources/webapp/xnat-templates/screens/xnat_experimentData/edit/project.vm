@@ -1,0 +1,30 @@
+<table>
+ <tr>
+  <td>
+   <div id="project_placeholder">$!om.getProjectDisplayID()</div><input type="hidden" id="$om.getXSIType()/project" name="$om.getXSIType()/project" value="$!om.getProject()"/>
+  </td>
+  <td>
+   <a onclick="modifyProject();">
+    		<img border="0" src="$content.getURI("images/e.gif")"/>
+   </a>
+  </td>
+ </tr>
+</table>
+<script type="text/javascript">  
+  function modifyProject(){
+    if(window.projectEditor==undefined){
+      var config =new Object();
+      if(window.currentID!=""){
+        config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentLabel;
+      }
+      window.projectEditor=new ProjectEditor(config);
+      window.projectEditor.onModification.subscribe(function (obj){
+         document.getElementById("project_placeholder").innerHTML=this.new_project_name;
+         document.getElementById("$om.getXSIType()/project").value=this.new_project;
+         confirmValues();
+      });
+      window.projectEditor.render();
+    }
+    window.projectEditor.panel.show();
+  }
+	</script>

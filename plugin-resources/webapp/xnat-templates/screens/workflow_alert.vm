@@ -1,0 +1,53 @@
+<!-- ACTIVE PROCESSES -->
+<span ID="workflow_active"  style="width:100%;position:relative;display:none;">
+#set($hasActiveProcess = false)
+<table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
+<tr><th>Active Processes</th></tr>
+<tr><td align="center"><table>
+#foreach( $workflow in $workflows ) 
+#if($workflow.isActive())
+#set($hasActiveProcess = true)
+<tr>
+  <td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
+  </td><td valign="middle">$!workflow.getStatus()</td><td valign="middle">$!workflow.getPercentagecomplete()</td>
+  <td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
+</tr>
+#end
+#end 
+</table>
+</td>
+</tr>
+</table>
+</span>
+#if($hasActiveProcess)
+<script type="text/javascript">
+document.getElementById("workflow_active").style.display = 'block';
+</script>
+#end
+
+<!-- PROCESSING ERRORS -->
+<span ID="workflow_error"  style="width:100%;position:relative; display:none;">
+#set($hasErrorProcess = false)
+<table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
+<tr><th><font color="red">Processing Exception</font></th></tr>
+<tr><td align="center"><table>
+#foreach( $workflow in $workflows ) 
+#if($workflow.getStatus()=="Error" || $workflow.getStatus()=="Failed")
+#set($hasErrorProcess = true)
+<tr>
+  <td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
+  </td><td valign="middle">$!workflow.getStatus()</td><td valign="middle">$!workflow.getPercentagecomplete()</td>
+  <td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
+</tr>
+#end
+#end 
+</table>
+</td>
+</tr>
+</table>
+</span>
+#if($hasErrorProcess)
+<script type="text/javascript">
+document.getElementById("workflow_error").style.display = 'block';
+</script>
+#end

@@ -1,0 +1,78 @@
+<FORM name="searchWizard1s" method="post" action="$link.setPage("XDATScreen_search_wizard2.vm")">
+<table border="0">
+ <tr>
+  <td><h3>Advanced Search</h3></td>
+ </tr>
+ <tr>
+  <td valign="middle" align="left">
+	    <h3 valign="middle"><img src="$content.getURI("images/number_1.gif")" border=0> Select Pivot Data-type to search</h3>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="left">
+	    <div style="width:500px">The Pivot Data-type is the root type which you are searching.  There will be one row per instance of this data-type.  All other included data-types will be joined to this data-type.</div>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="center" style="padding-top:5px;">
+	  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+	  <select id="exptType" name="ELEMENT_0" ONCHANGE="">
+					  	#foreach ($typeObject in $typeObjects)
+						    #if(!$typeObject.getElementName().equals("xnat:projectData"))
+						    	<option value="$typeObject.getElementName()" #if($typeObject.getElementName()=="xnat:mrSessionData") SELECTED #end>$typeObject.getElementSecurity().getPluralDescription()</option>
+						    #end
+						  #end
+					  </select>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="left">
+	    &nbsp;
+  </td>
+ </tr>
+ <tr>
+  <td valign="middle" align="left">
+	    <h3 valign="middle"><img src="$content.getURI("images/number_2.gif")" border=0> Select Additional Data-types</h3>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top" align="left">
+	    <div style="width:500px">What other types of data would you like to see?  Select the other types from the list below (as well as the level of fields you would like to see). The additional types will be joined to your selected pivot data-type.</div>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <table>
+   #foreach ($typeObject in $typeObjects)
+						    #if(!$typeObject.getElementName().equals("xnat:projectData"))
+				  	   <TR><TD><B>$typeObject.getElementSecurity().getPluralDescription()</B></TD>
+				      		<TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="" CHECKED/> None</TD>
+				  		    #if($typeObject.getVersions().get("brief") || $typeObject.getVersions().get("detailed"))
+				       		#if($typeObject.getVersions().get("brief"))
+				  		      <TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="brief"/> Brief</TD>
+				       		#else
+				  		      <TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="brief" DISABLED/> Brief</TD>
+				       		#end
+				  		     #if($typeObject.getVersions().get("detailed"))
+				  		      <TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="detailed"/> Detailed</TD>
+				       		#else
+				        		<TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="detailed" DISABLED/> Detailed</TD>
+				  		     #end
+				      		#else
+				  		     <TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="brief" DISABLED/> Brief</TD>
+				  		     <TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="detailed"/> Detailed</TD>		
+				    		  #end
+				  		   <!--<TD NOWRAP><INPUT type="radio" name="super_$typeObject.getElementName()" value="all"/> All</TD>-->
+				   	 </TR>
+				  	 #end
+				  #end
+   </table>
+  </td>
+ </tr>
+ <tr>
+		  <td valign="top" align="right">
+    <input type="submit" name="eventSubmit_doPerform" value="Next" />
+  		</td>
+ </tr>
+</table>
+</form>

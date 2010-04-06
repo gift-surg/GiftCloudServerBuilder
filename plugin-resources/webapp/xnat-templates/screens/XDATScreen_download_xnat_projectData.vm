@@ -1,0 +1,42 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("Download: $om.Id")
+
+<h2>Download $om.getName() Images</h2>
+<table border="0" >
+    <tr  bgcolor="white">
+        <td style="border-style:none;"  valign="top" align="left" colspan="2">
+				<APPLET CODE="org.nrg.xnat.fileManager.DownloaderApplet"
+					CODEBASE="$appletPath" ARCHIVE="log4j-1.2.15.jar,xdat-beans-1.0.jdk1.3.jar,xdat-downloader-1.1.jar"
+					width="500" height="500">
+					#set($exptCount=0)
+					#foreach($pp in $om.getParticipants_participant())
+					#foreach($expt in $pp.getSubjectinfo().getExperiments_experiment())
+					#if($expt.getXSIType().equals("xnat:mrSessionData") || $expt.getXSIType().equals("xnat:petSessionData"))
+										<PARAM NAME="session$exptCount" VALUE="$serverRoot/app/template/GetFileCatalog.vm/search_element/xnat%3AexperimentData/search_field/xnat%3AexperimentData.ID/search_value/$expt.Id">
+																				<PARAM NAME="project$exptCount" VALUE="$om.Id">
+															#set($exptCount=$exptCount + 1)
+															#end
+					#end
+					#end
+				</APPLET>
+       </td>
+    </tr>
+    <tr style="border-style:none;">
+        <td style="border-style:none;" colspan="2" >
+        </td>
+    </tr>
+</table>
+
+
+
+<script>
+  var breadcrumbs=document.getElementById('breadcrumbs');
+  if (breadcrumbs!=null){
+    var bread = "<a href='$link.setPage('Index.vm')'>Home</a>";
+    bread = bread + "&nbsp;>&nbsp;<a href='$link.setPage('BrowseProjects.vm')'>Studies</a>";
+    bread = bread + "&nbsp;>&nbsp;<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$om.getId()")'>$om.getSecondaryId()</a>";
+    bread = bread + "&nbsp;>&nbsp;Download";
+    
+    breadcrumbs.innerHTML=bread;
+  }
+</script>

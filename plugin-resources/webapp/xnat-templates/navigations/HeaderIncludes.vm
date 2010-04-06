@@ -1,0 +1,97 @@
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<script LANGUAGE="JavaScript">
+	    
+	    if (typeof XNAT == "undefined" || !XNAT) {
+		    /* 
+		     * XNAT global namespace object, which will not be overwriten if 
+		     * already defined. Also define some other top level namespaces. 
+		     */
+		    var XNAT = {
+		                 /* 
+		                  * Parent namespace that templates can use to put their 
+		                  * own namespace 
+		                  */
+		                 app: {}
+		               };
+		    
+		}
+	    
+		var serverRoot = "$content.getURI('')";
+window.available_elements=new Array();
+#set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
+			#foreach ($typeObject in $typeObjects)
+			window.available_elements.push({singular:"$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",plural:"$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",			element_name:"$typeObject.getElementName()",actions:$typeObject.getElementSecurity().getListingActionsJSON(),"lbg":"$!typeObject.getLightColor()","dbg":"$!typeObject.getDarkColor()"});
+				#end
+				window.available_elements.getByName=function(name){
+				  for(var aeC=0;aeC<this.length;aeC++){
+				    if(this[aeC].element_name==name){
+				      return this[aeC];
+				    }
+				  }
+				}
+				
+				if (typeof XNAT == "undefined" || !XNAT) {
+    /* 
+     * XNAT global namespace object, which will not be overwriten if 
+     * already defined. Also define some other top level namespaces. 
+     */
+    var XNAT = {
+         /* 
+          * Parent namespace that templates can use to put their 
+          * own namespace 
+          */
+          app: {}
+          
+    };
+}
+				
+				#if($project)
+				 #if($project.getId())
+				  window.projectScope="$!project.getId()";
+				 #else
+				  window.projectScope="$!project";
+				 #end
+				#end
+				
+				
+	</script>
+	<script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></SCRIPT>
+	<script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></SCRIPT>
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/xdat.css")">
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/xnat.css")">
+<!-- YAHOO USER INTERFACE files below here -->
+<!-- css -->
+<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
+<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/xnat_skin.css")">
+<!-- js -->
+
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/yahoo-dom-event/yahoo-dom-event.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event.js")"></script>
+
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/container/container-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/menu/menu-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/element/element-beta-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/button/button-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/connection/connection-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/treeview/treeview-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/cookie/cookie-min.js")"></script>
+
+##<script type="text/javascript" src="$content.getURI("scripts/yui/build/logger/logger.js")"></script>
+##<script type="text/javascript">
+##YAHOO.util.Event.onDOMReady(function(){
+##  var myContainer = document.body.appendChild(document.createElement("div"));   
+##  var myLogReader = new YAHOO.widget.LogReader(myContainer); 
+##});
+##</script>  
+
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/tabview/tabview-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/datasource/datasource-min.js")"></script> 
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/resize/resize-min.js")"></script>   
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/dragdrop/dragdrop-min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/datatable/datatable-min.js")"></script>  
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/paginator/paginator-min.js")"></script>  
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/json/json-min.js")"></script>  
+
+<script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/LeftBarTreeView.js")"></script>
+

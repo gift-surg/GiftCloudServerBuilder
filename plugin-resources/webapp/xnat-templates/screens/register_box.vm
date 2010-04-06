@@ -1,0 +1,68 @@
+#parse("/screens/userValidationJS.vm")
+<form action="$link.setAction("ConfirmRegister")" method="post" name="form2" id="form2"  onsubmit="if(validateUsername(document.getElementById('xdat:user.login')) && validatePassword(document.getElementById('xdat:user.primary_password')))return true;else return false;">
+                 <table>
+                  <tr>
+                   <td colspan="2" align="center">
+                    <H3>Register Now</H3>
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">User Name</th>
+                   <td><input type="text" id="xdat:user.login" name="xdat:user.login"  ONCHANGE="validateUsername(this,'Register');"/>
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">Password</th>
+                   <td><input type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" />
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">First Name</th>
+                   <td><input type="text" id="xdat:user.firstname" name="xdat:user.firstname" />
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">Last Name</th>
+                   <td><input type="text" id="xdat:user.lastname" name="xdat:user.lastname" />
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">Email</th>
+                   <td><input type="text" id="xdat:user.email" name="xdat:user.email"  />
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">Phone</th>
+                   <td><input type="text" id="phone" name="phone"  />
+                   </td>
+                  </tr>
+                  <tr>
+                   <th align="left">Lab</th>
+                   <td><input type="text" id="lab" name="lab"  />
+                   </td>
+                  </tr>
+                  <tr>
+                   <td colspan="2">
+    			                <hr/>
+    			                <div style="font-size:11px;font-weight:bold;">Comments</div>
+    			                <div style="font-size:9px;">Please include a brief description of how you plan to use this site.</div>
+	    			               </td>
+    			              </tr>
+                  <tr>
+                   <td colspan="2"><textarea name="comments" rows="4" cols="30" style="text-align:left;"></textarea>
+		                   </td>
+		                  </tr>
+	    
+                  <tr>
+                   <td></td>
+                   <td><input type="submit" id="Register" name="Register" value="Register" /></td>
+                  </tr>               
+                 
+                 </table>
+        <input type="hidden" name="xdat:user.primary_password.encrypt" value="true">
+        #foreach($key in $data.getParameters().getKeys())
+        	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
+        		<input type="hidden" name="$key" value="$turbineUtils.escapeHTML($data.getParameters().getString($key))">	
+        	#end
+        #end
+              </form>

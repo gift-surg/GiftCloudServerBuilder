@@ -1,0 +1,66 @@
+<TABLE>
+	<TR>
+		<TD VALIGN="top">
+			<b>Enter Search Criteria<b><br>
+<TABLE VALIGN="top">
+	<TR>
+		<TD>Subject</TD>
+		<TD>
+			#xdatSearchField($schemaElement $schemaElement.getDisplayField("SUBJECT_ID"))
+		</TD>
+		
+		<TD>ID</TD>
+		<TD>
+			#xdatSearchField($schemaElement $schemaElement.getDisplayField("EXPT_ID"))
+		</TD>
+		
+		<TD>Date</TD>
+		<TD>
+			#xdatSearchField($schemaElement $schemaElement.getDisplayField("DATE"))
+		</TD>
+		
+	</TR>
+	<TR>
+		
+		<TD>Inserted</TD>
+		<TD>
+			#xdatSearchField($schemaElement $schemaElement.getDisplayField("INSERT_DATE"))
+		</TD>
+		
+		<TD>Age</TD>
+		<TD>
+			#xdatSearchField($schemaElement $schemaElement.getDisplayField("GEN_AGE"))
+		</TD>
+		
+  #set($ct_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
+					<TD>Project</TD>
+  		<TD ROWSPAN="2">
+  				#set($TYPE_value=$!search.getWebFormValue("${schemaElement.getFullXMLName()}.PROJECTS_equals"))
+  			<select name="${schemaElement.getFullXMLName()}.PROJECTS_equals" MULTIPLE SIZE="6">
+				  #foreach($ct_project in $ct_projects)
+	    		<option value="/<$ct_project>" #if($TYPE_value.indexOf("<$ct_project>")!=-1) SELECTED #end>$ct_project</option>
+				  #end
+</select>
+		</TD>
+		
+	</TR>
+</TABLE>
+
+		</TD>
+		
+		<TD VALIGN="top" height="100%" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
+			<b>... or enter exact IDs.</b><br>
+					<TABLE VALIGN="top">
+  				<TR>
+  					<TD VALIGN="top">
+						<SELECT name="xnat:ctSessionData.COMBO0_FIELDS">
+			  				<option value="xnat:ctSessionData/ID_in,xnat:ctSessionData/label_in,xnat:ctSessionData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:ctSessionData.COMBO0_FIELDS")=="xnat:ctSessionData/ID_in,xnat:ctSessionData/label_in,xnat:ctSessionData/sharing/share/label_in")SELECTED#end>SESSION ID</option>
+			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:ctSessionData.COMBO0_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>SUBJECT</option>
+			  			</SELECT><BR>
+						<TEXTAREA NAME="xnat:ctSessionData.COMBO0" COLS=18 ROWS=14>$!search.getWebFormValue("xnat:ctSessionData.COMBO0")</TEXTAREA>
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>

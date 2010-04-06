@@ -1,0 +1,167 @@
+// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * GENERATED FILE
+ * Created on Tue Sep 26 09:10:46 CDT 2006
+ *
+ */
+package org.nrg.xdat.om.base;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import org.nrg.xdat.om.XnatDicomseriesImage;
+import org.nrg.xdat.om.base.auto.AutoXnatDicomseries;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.StringUtils;
+
+/**
+ * @author XDAT
+ *
+ */
+@SuppressWarnings("serial")
+public class BaseXnatDicomseries extends AutoXnatDicomseries {
+
+	public BaseXnatDicomseries(ItemI item)
+	{
+		super(item);
+	}
+
+	public BaseXnatDicomseries(UserI user)
+	{
+		super(user);
+	}
+
+	/*
+	 * @deprecated Use BaseXnatDicomseries(UserI user)
+	 **/
+	public BaseXnatDicomseries()
+	{}
+
+	public BaseXnatDicomseries(Hashtable properties, UserI user)
+	{
+		super(properties,user);
+	}
+
+    protected ArrayList files=null;
+    protected ArrayList fileNames=null;
+    /**
+     * Returns ArrayList of java.io.File objects
+     * @return
+     */
+    public ArrayList getCorrespondingFiles(String rootPath)
+    {
+        if (files==null)
+        {
+            files = new ArrayList();
+
+            for (int i=0;i<this.getImageset_image().size();i++){
+                org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+                File f = image.getFile(rootPath);
+                files.add(f);
+            }
+        }
+        return files;
+    }
+
+    /**
+     * Returns ArrayList of java.lang.String objects
+     * @return
+     */
+    public ArrayList getCorrespondingFileNames(String rootPath)
+    {
+        if (fileNames==null)
+        {
+            fileNames = new ArrayList();
+            for (int i=0;i<this.getImageset_image().size();i++){
+                org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+                File f = image.getFile(rootPath);
+                fileNames.add(f.getName());
+            }
+        }
+        return fileNames;
+    }
+
+
+    /**
+     * Appends this path to the enclosed URI or path variables.
+     * @param root
+     */
+    public void appendToPaths(String root){
+        for (int i=0;i<this.getImageset_image().size();i++){
+            org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+            image.appendToPaths(root);
+        }
+    }
+
+
+    /**
+     * Relatives this path from the first occurence of the indexOf string.
+     * @param indexOf
+     */
+    public void relativizePaths(String indexOf, boolean caseSensitive){
+        for (int i=0;i<this.getImageset_image().size();i++){
+            org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+            image.relativizePaths(indexOf,caseSensitive);
+        }
+    }
+
+    /**
+     * Appends this path to the enclosed URI or path variables.
+     * @param root
+     */
+    public ArrayList<String> getUnresolvedPaths(){
+        ArrayList<String> al = new ArrayList<String>();
+        for (int i=0;i<this.getImageset_image().size();i++){
+            org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+            String p = image.getUri();
+            p.replace('\\', '/');
+            al.add(p);
+        }
+        return al;
+    }
+
+    public String getFullPath(String rootPath){
+        String path = "";
+
+        fileNames = new ArrayList();
+        for (int i=0;i<this.getImageset_image().size();i++){
+            org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+            path = image.getUri();
+            break;
+        }
+
+        String fullPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(rootPath,path),"\\","/");
+        while (fullPath.indexOf("//")!=-1)
+        {
+            fullPath =StringUtils.ReplaceStr(fullPath,"//","/");
+        }
+
+        if(!fullPath.endsWith("/"))
+        {
+            fullPath+="/";
+        }
+        return fullPath;
+    }
+
+
+
+
+    public String getLabel(){
+        if (this.getDescription().length()>15)
+        {
+           return this.getDescription().substring(0,14);
+        }else
+            return this.getDescription();
+    }
+    
+    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception{
+    	for(XnatDicomseriesImage img : this.getImageset_image()){
+    		img.moveTo(newSessionDir, existingSessionDir, rootPath, user);
+    	}
+    	this.save(user, true, false);
+    }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+$page.setTitle("Image Session Details")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#if ($data.getParameters().getString("popup"))
+	#set ($popup = $data.getParameters().getString("popup") )
+	#set ($popup = "false")
+#end
+<TABLE width="100%">
+	<TR>
+		<TD>
+			<!--<table width="100%">
+				<TR>
+					<TD align="left" valign="middle">
+<DIV class="error">Image Session Details</DIV>
+					</TD>
+				</TR>
+				<TR>
+					<TD align="left" valign="middle">&nbsp;
+					</TD>
+				</TR>
+			</TABLE>-->
+			<table  class="withColor">
+							       <tr>
+								        <th align="left">ID: </th>
+																        <td>$!item.getProperty("ID")</td>
+								        <th align="left">Type: </th>
+																        <td>$!item.getProperty("session_type")</td>
+																        <th align="left">Date: </th>
+																        <td>$!om.getFormatedDate()</td>
+															        </tr>
+															        <tr>
+																        <th align="left">Scanner: </tH>
+																        <td>$!item.getProperty("scanner")</td>
+																        <th align="left">Operator: </th>
+																        <td>$!item.getProperty("operator")</td>
+																        <th align="left">Investigator: </th>
+																        <td>$!item.getProperty("investigator.firstname") $!item.getProperty("investigator.lastname")</td>
+															        </tr>
+														      </table>
+		</TD>
+	</TR>
+				<TR>
+					<TD align="left" valign="middle">&nbsp;
+					</TD>
+				</TR>
+	<TR>
+		<TD>
+			<table width="100%">
+				<TR>
+					<TD align="left" valign="middle">
+						<font face="$ui.sansSerifFonts" size="3"><b>Uploaded Image Scan Details</b></font>
+					</TD>
+				</TR>
+				<TR>
+					<TD align="left" valign="middle">&nbsp;
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE width="100%">
+				<TR>
+					<TD valign="top">
+						<TABLE>
+							<TR><TD align="left">ID</TD><TD>$!xml.getStringProperty("ID")</TD></TR>
+							<TR><TD>date</TD><TD>$!xml.getProperty("date")</TD></TR>
+							<TR><TD>time</TD><TD>$!xml.getProperty("time")</TD></TR>
+							<TR><TD>operator</TD><TD>$!xml.getStringProperty("operator")</TD></TR>
+							<TR><TD>scanner</TD><TD>$!xml.getStringProperty("scanner")</TD></TR>
+							<TR><TD>patient ID</TD><TD>$!xml.getStringProperty("dcmPatientId")</TD></TR>
+							<TR><TD>patient name</TD><TD>$!xml.getStringProperty("dcmPatientName")</TD></TR>
+						</TABLE>
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR><TH align="left"><BR><font face="$ui.sansSerifFonts" size="2">Scans<br><br></font></TH></TR>
+				<TR>
+					<TD align="left" valign="top">
+					<DIV STYLE="width:96%;background-color:#ffffff;overflow:auto;">
+						<TABLE CELLSPACING="0" STYLE="border-collapse: collapse;" BORDER=1>
+																						<TR>
+<TH>ID</TH>
+<TH>type</TH>
+												</TR>
+							#set($xnat_mrScanData_3_NUM_ROWS=$xml.getChildItems("scans/scan").size())
+							#if($xnat_mrScanData_3_NUM_ROWS>0)
+#set ($scanCounter = 1)
+#set ($rowCounter = 1)
+	#set($color = "FFFFFF")
+	#set ($TOP_SCAN = $xnat_mrScanData_3_NUM_ROWS - 1)
+								#foreach($SCAN_COUNT in [0..$TOP_SCAN])
+													<TR BGCOLOR="#$color">
+<TD>
+		<A name="LINK${SCAN_COUNT}" HREF="#LINK${SCAN_COUNT}" onClick=" return blocking($SCAN_COUNT);">
+			<img ID="IMG$SCAN_COUNT" src="$content.getURI("images/plus.jpg")" border=0>
+			$!xml.getProperty("scans/scan[$SCAN_COUNT]/ID")
+			</A></TD>
+<TD>$!xml.getProperty("scans/scan[$SCAN_COUNT]/type")</TD>
+</TR>
+#set($scan = $!xml.getProperty("scans/scan[$SCAN_COUNT]"))
+													<TR BGCOLOR="#$color">
+													 <TD COLSPAN="2">
+													<TABLE>
+													<TR BGCOLOR="#$color">
+																										#set($fieldMap=$xml.getCustomScanFields(""))
+													#foreach($hdr in $fieldMap){
+													<TH>$hdr</TH>
+<TD>$!scan.getProperty($fieldMap.get($hdr))</TD>
+#end
+</TR>
+#if($!xml.getStringProperty("scans/scan[$SCAN_COUNT]/note"))
+															<TR BGCOLOR="#$color">																					<TD colspan=26 align=left>$!xml.getStringProperty("scans/scan[$SCAN_COUNT]/note")</TD></TR>
+#end
+#set ($rowCounter = $rowCounter + 1)
+#set ($SCAN_COUNT = $SCAN_COUNT + 1)
+	#if($color == "DEDEDE")
+		#set($color = "FFFFFF")
+	#else
+		#set($color = "DEDEDE")
+	#end
+								#end
+							#end
+							</TABLE>
+							  </TD>
+							 </TR>
+							</TABLE>
+							</DIV>						
+						</TD></TR>
+</TABLE>
+
+<form enctype="multipart/form-data" method="POST" action="$link.setAction("ImageScanUpload")">
+<INPUT TYPE="hidden" name="popup" value="$!popup"/>
+<INPUT TYPE="hidden" name="project" value="$!project"/>
+<INPUT TYPE="hidden" name="uploadID" value="$uploadID"/>
+#xdatPassItemFormFields($search_element $search_field $search_value $project)
+<table WIDTH="50%" align="center"><tr><td ALIGN="center">
+Please review the details above and confirm that the proper scan has been uploaded.
+</td></tr><tr><td ALIGN="center">
+<input type="button" name="cancel" ONCLICK="window.location='$link.setPage("XDATScreen_upload_scans_xnat_imageSessionData.vm").addPathInfo("search_field","$search_field").addPathInfo("search_element","$search_element").addPathInfo("search_value","$search_value").addPathInfo("popup","$!popup")';" value="Cancel"/>
+<input type="submit" name="eventSubmit_doFinalize" value="Confirm"/>
+</td></tr></table>
+</form>

@@ -1,0 +1,158 @@
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
+#set($days = [ 1..31 ])
+#set($years = [ 2010..1900])
+#if ($data.message)
+<font color="red" size="3">$data.message</font>
+#end
+<form name="form1" method="post" action="$link.setAction("AddProject")" ONSUBMIT="return validateProjectForm();">
+#if($vr)
+	<font color="red">Invalid parameters:<BR>$vr.toHTML()</font>
+<HR>
+#end
+
+<TABLE width="100%">
+	<TR>
+		<TD>
+			<table width="100%">
+				<TR>
+					<TD align="left" valign="middle">
+<DIV class="edit_title">$page_title</DIV>
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	
+	<TR><TD>
+							      <DIV class="container" style="width:750px;float:left;margin:5px;">
+						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 1: Enter project details</DIV>
+						       <DIV class="containerBody">
+						        <DIV class="containerItem">Define the details of this project.  The 'Abbreviation' should be a single word or acronym which will identify your project.  It will be used on the file system to name directories and files, so it shouldn't contain any wild characters or spaces.  The 'Running Title' will be used throughout the website to identify your project.<br><hr></DIV>
+						        <DIV class="containerItem">
+						        	 #parse("/screens/xnat_projectData/edit/details.vm")
+						        </DIV>  
+						       </DIV>
+						      </DIV>
+
+							</TD></TR><TR><TD> 
+
+						      							<DIV class="container" style="width:750px;float:left;margin:5px;">
+
+						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 2: Define Project Accessibility</DIV>
+
+						       <DIV class="containerBody">
+
+						        <DIV class="containerItem">Select the accessibility of your project.<br><hr></DIV> 
+
+						        <DIV class="containerItem">
+
+						      <TABLE width="420">
+
+  	  <TR>
+
+  	   <TD class="highlighted"><TABLE><TR><TD valign="top">
+
+              <TABLE cellpadding="5" cellspacing="0">
+
+                <TR><TD NOWRAP><DIV title="Only you and study members will be able to access study data." style="cursor:pointer" ONCLICK="document.getElementById('private_access').checked=true;document.getElementById('balloon').innerHTML=this.title;"><input type="radio" ID="private_access" name="accessibility" value="private" CHECKED/> Private</DIV></TD><TD></TD></TR>
+
+                <TR><TD NOWRAP><DIV title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="cursor:pointer" ONCLICK="document.getElementById('protected_access').checked=true;document.getElementById('balloon').innerHTML=this.title;"><input id="protected_access" type="radio" name="accessibility" value="protected"/> Protected</DIV></TD><TD></TD></TR>
+
+                <TR><TD NOWRAP><DIV title="All users will be able to access study data for analysis and download." style="cursor:pointer" ONCLICK="document.getElementById('public_access').checked=true;document.getElementById('balloon').innerHTML=this.title;"><input id="public_access" type="radio" name="accessibility" value="public"/> Public</DIV></TD><TD></TD></TR>
+
+              </TABLE>
+
+              </TD><TD valign="top" >
+
+              <table width="100%" valign="top" BORDER=1 STYLE="	border-collapse: collapse;"><TR><TD valign="top">
+
+              <DIV ID="balloon" border="1">Only you and study members will be able to access study data.</DIV>
+
+              </TD></TR>
+
+              </TABLE>
+
+          </TD></TR>
+
+          </TABLE>
+
+  	   </TD>
+
+  	  </TR>
+
+  	 </TABLE>
+
+						        </DIV> 
+
+						       </DIV>
+
+						      </DIV>
+
+	</TD></TR>
+
+		#xdatEditProps($item $edit_screen)
+
+				<TR><TH align="left">&nbsp;</TH></TR>
+
+						<TR>
+
+		<TR><TD COLSPAN=2 ALIGN=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/></TD></TR>
+
+		</TD>
+
+	</TR>
+
+</TABLE>
+
+</form>
+
+<SCRIPT type="text/javascript">
+
+function validateProjectForm(){
+
+  if(document.getElementById("xnat:projectData/ID").value==""){
+
+    alert("Please specify a project abbreviation.");
+
+    document.getElementById("xnat:projectData/ID").focus();
+
+    return false;
+
+  }
+
+  
+
+  if(document.getElementById("xnat:projectData/name").value==""){
+
+    alert("Please specify a project title.");
+
+    document.getElementById("xnat:projectData/name").focus();
+
+    return false;
+
+  }
+
+  
+
+  if(document.getElementById("xnat:projectData/secondary_ID").value==""){
+
+    alert("Please specify a running title.");
+
+    document.getElementById("xnat:projectData/secondary_ID").focus();
+
+    return false;
+
+  }
+
+  
+  concealContent("Submitting... Please wait.");
+  return true;
+
+}
+
+
+
+</SCRIPT>

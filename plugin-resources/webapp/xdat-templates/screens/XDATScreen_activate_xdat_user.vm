@@ -1,0 +1,101 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+
+#if ($data.message)
+<DIV class="error">$data.message</DIV><br>
+#end
+<p align=left>
+<TABLE border="0" width="95%">
+	<TR>
+		<TD align=left align="left">
+			<form name="form1" method="post" action="$link.setAction("ActivateAction")">
+			<table border="0" align="left">
+				<tr>
+					<TH align=left>Authorization will give $!item.getProperty("firstname") $!item.getProperty("lastname") the following permissions.</TH>
+				</tr>
+				<TR>
+					<TD align=left valign=top>&nbsp;
+					</td>
+				</tr>
+				<TR>
+					<TD ALIGN=left>&nbsp;<BR><input type="submit" name="eventSubmit_doPerform" value="Authorize"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+					</TD>
+				</TR>
+				<TR>
+					<TD align=left valign=top>&nbsp;
+					</td>
+				</tr>
+<style type="text/css">
+<!--
+	TD.special {
+	border-width:1px;
+	border-color:black; 
+	border-style:solid
+	}
+-->
+</style>
+	#set ($unauthorizedColor = "CC99CC")
+	#set ($unDefinedColor = "FFCCCC")
+	<TR>
+		<TD align=left valign=top colspan="2">
+			<Table border="0">
+				<TR><TH align="left">Permissions
+				<BR><BR></TH></TR>
+				#set($permissionCount = 0)
+				#foreach ($elementManager in $allElements)
+					#set($elementName = $elementManager.get(0))
+					#set($permissionCount = $permissionCount + 1)
+					#if (! $elementManager.get(3).booleanValue())
+						<TR>
+							<TD align="left">
+								<TABLE>
+									<TR>
+										<TD>
+											
+										</TD>
+										<TD align="left">
+											$elementName
+										</TD>
+									</TR>
+								</TABLE>
+							</TD>
+						</TR>
+						<TR>
+							<TD>
+								<TABLE>
+										<TR><TH colspan=2>&nbsp;</TH><TH>Create</TH><TH>Read</TH><TH>Edit</TH><TH>Delete</TH><TH>Activate</TH></TR>
+										#foreach ($perimissionItem in $elementManager.get(1))
+											<TR>
+												<TD colspan=2 width="200">$perimissionItem.getDisplayName()</TD>
+												<TD>#if($perimissionItem.canCreate())<IMG SRC="$content.getURI('images/cg.gif')"/>#else<IMG SRC="$content.getURI('images/cr.gif')"/> #end</TD>
+											<TD>#if($perimissionItem.canRead())<IMG SRC="$content.getURI('images/cg.gif')"/>#else<IMG SRC="$content.getURI('images/cr.gif')"/> #end</TD>
+											<TD>#if($perimissionItem.canEdit())<IMG SRC="$content.getURI('images/cg.gif')"/>#else<IMG SRC="$content.getURI('images/cr.gif')"/> #end</TD>
+											<TD>#if($perimissionItem.canDelete())<IMG SRC="$content.getURI('images/cg.gif')"/>#else<IMG SRC="$content.getURI('images/cr.gif')"/> #end</TD>
+											<TD>#if($perimissionItem.canActivate())<IMG SRC="$content.getURI('images/cg.gif')"/>#else<IMG SRC="$content.getURI('images/cr.gif')"/> #end</TD>
+											</TR>
+										#end
+									</TABLE><BR>
+							</TD>
+						</TR>
+					#end
+				#end
+			</TABLE>
+		</TD>
+	</TR>
+				<INPUT type="hidden" name="search_element" value="xdat:user"/>
+				<INPUT type="hidden" name="search_field" value="xdat:user.login"/>
+				<INPUT type="hidden" name="search_value" value="$!item.getProperty("login")"/>
+				<INPUT type="hidden" name="xdat:user.login" value="$!item.getProperty("login")"/>
+				#xdatEditProps($item $edit_screen)
+				<TR>
+					<TD ALIGN=left>&nbsp;<BR><input type="submit" name="eventSubmit_doPerform" value="Authorize"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+					</TD>
+				</TR>
+			</table>
+			</form>
+		</TD>
+	</TR>	
+</table>
+</p>

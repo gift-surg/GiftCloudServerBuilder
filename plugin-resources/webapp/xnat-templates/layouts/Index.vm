@@ -1,0 +1,36 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<HTML>
+<HEAD>
+<TITLE>$!systemName</TITLE>
+$navigation.setTemplate("/HeaderIncludes.vm")
+</HEAD>
+<BODY id="page_body" class="yui-skin-sam">
+<!-- DEFAULT -->
+<table height="100%" border=0 >
+  <tr ID="DefaultTopTR">
+    <td height="60" colspan="2">
+      $navigation.setTemplate("/DefaultTop.vm")
+    </td>
+  </tr>
+  <tr>
+    <td class="leftBar" align="left" valign="top">
+      $navigation.setTemplate("/DefaultLeft.vm")
+    </td>
+    <td width="*" align="left" valign="top">
+      <div id="tp_fm"></div>
+      <div id="layout_content2" style="display:none;">Loading...</DIV>
+      <div id="layout_content">
+<!--BEGIN SCREEN CONTENT -->
+      $screen_placeholder
+<!--END SCREEN CONTENT -->
+      </DIV>
+    </td>
+  </tr>
+  <tr ID="DefaultBottomTR" height="*">
+    <td height="*" valign="bottom" colspan="2">
+      $navigation.setTemplate("/DefaultBottom.vm")
+    </td>
+  </tr>
+</table>
+</BODY>
+</HTML>

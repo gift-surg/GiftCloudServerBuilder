@@ -1,0 +1,379 @@
+// Copyright 2010 Washington University School of Medicine All Rights Reserved
+package org.nrg.xnat.restlet.resources.files;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.fileupload.FileItem;
+import org.nrg.xdat.bean.CatCatalogBean;
+import org.nrg.xdat.bean.CatEntryBean;
+import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatImagescandata;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatReconstructedimagedata;
+import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.XFTTable;
+import org.nrg.xft.db.DBAction;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.search.CriteriaCollection;
+import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.restlet.representations.CatalogRepresentation;
+import org.nrg.xnat.restlet.resources.ItemResource;
+import org.nrg.xnat.restlet.resources.ScanResource;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
+
+public class FileResource extends ItemResource {
+	final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanResource.class);
+
+	XnatProjectdata proj=null;
+	XnatSubjectdata sub=null;
+	XnatExperimentdata expt=null;
+	XnatImagescandata scan=null;
+	XnatReconstructedimagedata recon=null;
+	XnatExperimentdata assessed=null;
+	String type=null;
+
+	XnatAbstractresource resource=null;
+	ItemI parent=null;
+	ItemI security=null;
+	
+	String index=null;
+	String filename=null;
+	
+	
+	
+	public FileResource(Context context, Request request, Response response) {
+		super(context, request, response);
+		
+			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			if(pID!=null){
+				proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
+			}
+			
+			String subID= (String)request.getAttributes().get("SUBJECT_ID");
+			if(subID!=null){
+				if(this.proj!=null)
+				sub=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);
+				
+				if(sub==null){
+					sub=XnatSubjectdata.getXnatSubjectdatasById(subID, user, false);
+				}
+			}
+					
+			String assessid= (String)request.getAttributes().get("ASSESSED_ID");
+			if(assessid!=null){
+				assessed=XnatImagesessiondata.getXnatImagesessiondatasById(assessid, user, false);
+				
+				if(assessed==null){
+				assessed=(XnatImagesessiondata)XnatImagesessiondata.GetExptByProjectIdentifier(proj.getId(), assessid,user, false);
+				}
+			}
+					
+			String exptID= (String)request.getAttributes().get("EXPT_ID");
+			if(exptID!=null){
+				expt=XnatImagesessiondata.getXnatImagesessiondatasById(exptID, user, false);
+				
+				if(expt==null){
+				expt=(XnatImagesessiondata)XnatImagesessiondata.GetExptByProjectIdentifier(proj.getId(), exptID,user, false);
+				}
+			}
+
+			String scanID= (String)request.getAttributes().get("SCAN_ID");
+			if(scanID!=null && this.assessed!=null){
+					CriteriaCollection cc= new CriteriaCollection("AND");
+					cc.addClause("xnat:imageScanData/ID", scanID);
+					cc.addClause("xnat:imageScanData/image_session_ID", assessed.getId());
+					ArrayList<XnatImagescandata> scans=XnatImagescandata.getXnatImagescandatasByField(cc, user, completeDocument);
+					if(scans.size()>0){
+						scan=scans.get(0);
+					}
+				}
+
+			type= (String)request.getAttributes().get("TYPE");
+
+			String reconID= (String)request.getAttributes().get("RECON_ID");
+			if(reconID!=null){
+				CriteriaCollection cc= new CriteriaCollection("AND");
+				cc.addClause("xnat:reconstructedImageData/ID", reconID);
+				cc.addClause("xnat:reconstructedImageData/image_session_ID", assessed.getId());
+				ArrayList<XnatReconstructedimagedata> scans=XnatReconstructedimagedata.getXnatReconstructedimagedatasByField(cc, user, completeDocument);
+				if(scans.size()>0){
+					recon=scans.get(0);
+				}
+			}
+			
+			String resourceID= (String)request.getAttributes().get("RESOURCE_ID");
+			
+			index= (String)request.getAttributes().get("INDEX");
+			filename= (String)request.getAttributes().get("FILENAME");
+			
+			String query="SELECT res.xnat_abstractresource_id,format,description,content,label,uri ";
+			if(recon!=null){
+				security=this.assessed;
+				parent=recon;
+				if(type!=null){
+					if(type.equals("in")){
+						query+=" FROM recon_in_resource map " +
+								" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+								" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+						query+=" WHERE xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=" + recon.getXnatReconstructedimagedataId();
+						query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+					}else{
+						query+=" FROM recon_out_resource map " +
+						" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+						" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+						query+=" WHERE xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=" + recon.getXnatReconstructedimagedataId() + "";
+						query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+						}
+				}else{
+					//resources
+					query+=" FROM recon_out_resource map " +
+					" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+					" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+					query+=" WHERE xnat_imageassessordata_id='" + expt.getId() + "'";
+					query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+				}
+			}else if(scan!=null){
+				security=this.assessed;
+				parent=scan;
+				query+=" FROM xnat_abstractresource abst" +
+				" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+				query+= " WHERE xnat_imagescandata_xnat_imagescandata_id="+scan.getXnatImagescandataId() + "";
+				query+=" AND abst.xnat_abstractresource_id="+resourceID;
+			}else if(expt!=null){
+				security=this.expt;
+				parent=this.expt;
+				try {
+					if(expt.getItem().instanceOf("xnat:imageAssessorData")){
+						security=this.expt;
+						parent=this.expt;
+						if(type!=null){
+							if(type.equals("in")){
+								query+=" FROM img_assessor_in_resource map " +
+								" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+								" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+								query+=" WHERE xnat_imageassessordata_id='" + expt.getId() + "'";
+								query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+							}else{
+								query+=" FROM img_assessor_out_resource map " +
+								" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+								" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+								query+=" WHERE xnat_imageassessordata_id='" + expt.getId() + "'";
+								query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+							}
+						}else{
+							//resources
+							query+=" FROM xnat_experimentdata_resource map " +
+							" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+							" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+							query+= " WHERE xnat_experimentdata_id='"+expt.getId() + "'";
+							query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+						}
+					}else{
+						//resources
+						query+=" FROM xnat_experimentdata_resource map " +
+						" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+						" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+						query+= " WHERE xnat_experimentdata_id='"+expt.getId() + "'";
+						query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+					}
+				} catch (ElementNotFoundException e) {
+					e.printStackTrace();
+				}
+			}else if(sub!=null){
+				security=this.sub;
+				parent=this.sub;
+				//resources
+				query+=" FROM xnat_subjectdata_resource map " +
+				" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+				" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+				query+=" WHERE xnat_subjectdata_id='" + sub.getId() + "'";
+				query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+			}else if(proj!=null){
+				security=this.proj;
+				parent=this.proj;
+				//resources
+				query+=" FROM xnat_projectdata_resource map " +
+				" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
+				" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+				query+=" WHERE xnat_projectdata_id='" + proj.getId() + "'";
+				query+=" AND map.xnat_abstractresource_xnat_abstractresource_id="+resourceID;
+			}else{
+				query+=" FROM xnat_abstractresource abst" +
+				" LEFT JOIN xnat_resource res ON abst.xnat_abstractresource_id=res.xnat_abstractresource_id";
+				query += " WHERE res.xnat_abstractresource_id IS NULL";
+			}
+			
+			try {
+				XFTTable table=XFTTable.Execute(query, user.getDBName(), userName);
+				if(table.size()>0){
+					resource=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(resourceID, user, false);
+					this.getVariants().add(new Variant(MediaType.ALL));
+				}else{
+					response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid read permissions");
+				}
+			} catch (Exception e) {
+	            logger.error("",e);
+			}
+	}
+
+
+	@Override
+	public boolean allowDelete() {
+		return true;
+	}
+
+	@Override
+	public void handleDelete(){
+			if(resource!=null && this.parent!=null && this.security!=null){
+				try {
+					if(user.canEdit(this.security)){
+						
+						if(proj==null){
+							if(parent.getItem().instanceOf("xnat:experimentData")){
+								proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+							}else if(security.getItem().instanceOf("xnat:experimentData")){
+								proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+						}else if(security.getItem().instanceOf("xnat:subjectData")){
+							proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+						}else if(security.getItem().instanceOf("xnat:projectData")){
+							proj = (XnatProjectdata)security;
+							}
+						}
+						
+						XnatResourcecatalog catResource=(XnatResourcecatalog)resource;
+						
+						File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
+						
+						String parentPath=catFile.getParent();
+						
+						CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
+						
+						CatEntryBean entry = retrieveEntry(cat, index + "/" + filename);
+						
+						if(entry==null){
+						this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify specified file.");
+							return;
+						}
+						
+						File f = new File(parentPath,entry.getUri());
+						
+						if(f.exists()){
+							FileUtils.DeleteFile(f);
+							this.removeEntry(cat, entry);
+							try
+							{
+							    FileWriter fw = new FileWriter(catFile);
+								cat.toXML(fw, true);
+								fw.close();
+							 }catch(Exception e){
+							 logger.error("",e);
+							 }
+						}else{
+						this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
+							return;
+						}
+					}else{
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
+						return;
+					}
+				} catch (Exception e) {
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+					return;
+				}
+			}
+		}
+	
+	private boolean removeEntry(CatCatalogBean cat,CatEntryBean entry)
+	{
+		for(int i=0;i<cat.getEntries_entry().size();i++){
+			CatEntryBean e= cat.getEntries_entry().get(i);
+			if(e.getId().equals(entry.getId())){
+				cat.getEntries_entry().remove(i);
+				return true;
+			}
+		}
+		
+		for(CatCatalogBean subset: cat.getSets_entryset()){
+			if(removeEntry(subset,entry)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	private CatEntryBean retrieveEntry(CatCatalogBean cat,String id){
+		for(CatEntryBean entry: cat.getEntries_entry()){
+			if(entry.getId().equals(id)){
+				return entry;
+			}
+		}
+		
+		for(CatCatalogBean subset: cat.getSets_entryset()){
+			CatEntryBean e = retrieveEntry(subset,id);
+			if(e!=null)
+			{
+				return e;
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Representation getRepresentation(Variant variant) {	
+		MediaType mt = overrideVariant(variant);
+
+		if(resource!=null){
+			try {
+				if(proj==null){
+					if(parent.getItem().instanceOf("xnat:experimentData")){
+						proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+					}else if(security.getItem().instanceOf("xnat:experimentData")){
+						proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+					}
+				}
+				
+				XnatResourcecatalog catResource=(XnatResourcecatalog)resource;
+				
+				File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
+				
+				String parentPath=catFile.getParent();
+				
+				CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
+				
+				CatEntryBean entry = retrieveEntry(cat, index + "/" + filename);
+				
+				if(entry==null){
+					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify specified file.");
+				}else{
+					File f = new File(parentPath,entry.getUri());
+					return representFile(f,mt);
+				}
+				
+			} catch (ElementNotFoundException e) {
+	            logger.error("",e);
+			}
+		}else{
+			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified catalog.");
+		}
+
+		return null;
+
+	}
+}

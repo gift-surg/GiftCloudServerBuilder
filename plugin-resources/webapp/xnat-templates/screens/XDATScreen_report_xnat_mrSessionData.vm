@@ -1,0 +1,10 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#if ($data.message)
+<DIV class="error">$data.message</DIV><br>
+#end
+<script type="text/javascript">
+document.title = "MR Session: $!item.getProperty('xnat:mrSessionData.label')";
+</script>
+			#parse($turbineUtils.getTemplateName("_report",$om.getXSIType(),$project))

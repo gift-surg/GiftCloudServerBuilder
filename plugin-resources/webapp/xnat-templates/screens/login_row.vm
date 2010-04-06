@@ -1,0 +1,26 @@
+<form name="form1" method="post" action="$link.setAction("XDATLoginUser")">
+  <table>
+    <tr>
+			      <td align="left">&nbsp;</td>
+      #formLabel("User")
+  	  <TD><input type="text" name="username" size="15"></TD>
+    	#formLabel("Password")
+  	  <TD><input type="password" name="password" size="15"></TD>
+					      <td></td>
+      <td align ="left">
+        <font face="$ui.sansSerifFonts">
+        #foreach($key in $data.getParameters().getKeys())
+        	#if ($key!="action" && $key!="template" &&$key!="password" &&$key!="username" &&$key!="exception")
+        	<input type="hidden" name="$key" value="$turbineUtils.escapeHTML($data.getParameters().getString($key))">	
+        	#end
+        #end
+          <input type="submit" value="Login">
+        </font>
+      </td>
+			      <td align="left">&nbsp;</td>
+      <td>
+        <a href="$link.setPage("ForgotLogin.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Forgot login or password?<a>
+      </td>
+    </tr>
+   </table>
+</form>

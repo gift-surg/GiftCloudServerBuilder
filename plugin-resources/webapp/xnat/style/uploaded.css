@@ -1,0 +1,11 @@
+/* $Id: uploaded.css,v 1.1 2007/09/24 17:11:43 timo Exp $
+ * Copyright (c) 2007 Washington University in St. Louis
+ */
+
+div.submit div.actions {
+  text-align: center;
+}
+
+hr {
+ margin: 2em 0;
+}

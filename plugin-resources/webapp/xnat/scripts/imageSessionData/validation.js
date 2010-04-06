@@ -1,0 +1,122 @@
+
+function confirmValues(_focus){  
+	if(_focus==undefined)_focus=true;
+  var valid =true;
+  
+  try{
+	  var projBox=getValueById(elementName+"/project");
+	  if(projBox.value!=""){
+	     removeAppendImage(elementName+"/project");
+	  }else{
+	   	  appendImage(elementName+"/project","/images/checkmarkRed.gif");
+	   	  valid=false;
+	  }
+	  
+	  var subBox=getValueById(elementName+"/subject_id");
+	  if(subBox.value!=""){
+	  	 if(subBox.obj.selectedIndex!=undefined){
+	  	 	if(subBox.obj.options[subBox.obj.selectedIndex].style.color=="red"){
+	  	 		document.getElementById("subj_msg").innerHTML="* This subject does not exist, and will be automatically created.  To populate demographic details for this subject please use the 'Add New Subject' link.";
+	  	 	}else{
+	  	 		document.getElementById("subj_msg").innerHTML="";
+	  	 	}
+	  	 }
+	     removeAppendImage(elementName+"/subject_id");
+	  }else{
+	   	  appendImage(elementName+"/subject_id","/images/checkmarkRed.gif");
+	   	  valid=false;
+	  }
+	  
+	  var labelBox=getValueById(elementName+"/label");
+	  
+	  if(labelBox.obj.validated==undefined)labelBox.obj.value=fixSessionID(labelBox.obj.value);;
+	  if(labelBox.obj.value.toLowerCase()=="null"){
+	  	labelBox.obj.value="";
+		labelBox.value="";
+	  }
+	  if(labelBox.value!=""){
+	  	 labelBox.obj.validated=false;
+	     removeAppendImage(elementName+"/label");
+			try{
+				if(eval("window.verifyExptId")!=undefined){
+					verifyExptId();
+				}
+			}catch(e){
+				if(!e.message.startsWith("verifyExptId is not defined")){
+					throw e;
+				}
+			}
+	  }else{
+	  	  labelBox.obj.validated=true;
+	   	  appendImage(elementName+"/label","/images/checkmarkRed.gif");
+	   	  valid=false;
+	  }
+		
+	  if(window.scanSet!=undefined){
+		  if(!window.scanSet.validate(_focus)){
+		  	  valid=false;
+		  }
+	  }
+  
+	  return valid;
+  }catch(e){
+  	  alert("An exception has occured.  Please contact technical support for assistance.");
+  	  return false;
+  }
+}
+
+function getValueById(id){
+	var box=document.getElementById(id);
+	if(box.value==undefined){
+		if(box.selectedIndex!=undefined){
+			return {"value":box.options[box.selectedIndex].value,obj:box};
+		}
+	}else{
+		return {"value":box.value,obj:box};
+	}
+}
+
+function fixSessionID(val)
+{
+        var temp = val.trim();
+        var newVal = '';
+        temp = temp.split(' ');
+        for(var c=0; c < temp.length; c++) {
+                newVal += '' + temp[c];
+        }
+        
+        newVal = newVal.replace(/[&]/,"_");
+        newVal = newVal.replace(/[?]/,"_");
+        newVal = newVal.replace(/[<]/,"_");
+        newVal = newVal.replace(/[>]/,"_");
+        newVal = newVal.replace(/[(]/,"_");
+        newVal = newVal.replace(/[)]/,"_");
+        newVal = newVal.replace(/[.]/,"_");
+        newVal = newVal.replace(/[,]/,"_");
+        newVal = newVal.replace(/[\^]/,"_");
+        newVal = newVal.replace(/[@]/,"_");
+        newVal = newVal.replace(/[!]/,"_");
+        newVal = newVal.replace(/[%]/,"_");
+        newVal = newVal.replace(/[*]/,"_");
+        newVal = newVal.replace(/[#]/,"_");
+        newVal = newVal.replace(/[$]/,"_");
+        newVal = newVal.replace(/[\\]/,"_");
+        newVal = newVal.replace(/[|]/,"_");
+        newVal = newVal.replace(/[=]/,"_");
+        newVal = newVal.replace(/[+]/,"_");
+        newVal = newVal.replace(/[']/,"_");
+        newVal = newVal.replace(/["]/,"_");
+        newVal = newVal.replace(/[~]/,"_");
+        newVal = newVal.replace(/[`]/,"_");
+        newVal = newVal.replace(/[:]/,"_");
+        newVal = newVal.replace(/[;]/,"_");
+        newVal = newVal.replace(/[\/]/,"_");
+        newVal = newVal.replace(/[\[]/,"_");
+        newVal = newVal.replace(/[\]]/,"_");
+        newVal = newVal.replace(/[{]/,"_");
+        newVal = newVal.replace(/[}]/,"_");
+        if(newVal!=temp){
+      	  alert("Removing invalid characters in session.");
+        }
+        return newVal;
+}

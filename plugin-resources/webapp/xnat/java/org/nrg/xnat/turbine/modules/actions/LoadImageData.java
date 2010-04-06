@@ -1,0 +1,206 @@
+//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+/*
+ * Created on Sep 13, 2006
+ *
+ */
+package org.nrg.xnat.turbine.modules.actions;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
+import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.om.XnatImagescandata;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.xml.sax.SAXException;
+/**
+ * @author timo
+ * @author Kevin A. Archie <karchie@npg.wustl.edu>
+ */
+public class LoadImageData extends SecureAction {
+    private final static String PREARC_PAGE = "XDATScreen_prearchives.vm";
+    
+//    private final static class SessionTypeParams {
+//	int loads = 0;
+//	final String tag;
+//	final String viewTemplate;
+//	
+//	SessionTypeParams(final String tag, final String viewTemplate) {
+//	    this.tag = tag;
+//	    this.viewTemplate = viewTemplate;
+//	}
+//	
+//	String makeTag() {
+//	    return tag + loads;
+//	}
+//    }
+//    
+//    private final static Map<String,SessionTypeParams> SESSION_TYPES = new HashMap<String,SessionTypeParams>();
+//    static {
+//	SESSION_TYPES.put("xnat:mrsessiondata", new SessionTypeParams("MR",
+//								"XDATScreen_dcm_xnat_mrSessionData.vm"));
+//	SESSION_TYPES.put("xnat:ctsessiondata", new SessionTypeParams("CT",
+//								"XDATScreen_dcm_xnat_ctSessionData.vm"));
+//	SESSION_TYPES.put("xnat:petsessiondata", new SessionTypeParams("PET",
+//								"XDATScreen_ecat_xnat_petSessionData.vm"));
+//    }
+    
+    private final org.apache.log4j.Logger logger = Logger.getLogger(LoadImageData.class);
+
+    public XnatImagesessiondata getSession(XDATUser user, File xml, String project,boolean nullifySubject) throws IOException,SAXException{
+    	final SAXReader reader = new SAXReader(user);
+        final XFTItem item = reader.parse(xml.getAbsolutePath());
+
+        XnatImagesessiondata imageSessionData =(XnatImagesessiondata) BaseElement.GetGeneratedItem(item);
+        imageSessionData.fixScanTypes();
+
+        for(XnatImagescandata scan: imageSessionData.getScans_scan()){
+        	if(!hasValue(scan.getQuality())){
+        		scan.setQuality("usable");
+        	}
+        }
+        
+        //if no primary project set, insert from context
+        if (null != project){
+            imageSessionData.setProject(project);
+        }
+        
+        if(hasValue(imageSessionData.getId())){
+        	if(!hasValue(imageSessionData.getLabel())){
+        		imageSessionData.setLabel(imageSessionData.getId());
+        	}
+        	imageSessionData.setId("");
+        }
+
+        if (imageSessionData.getSubjectId()!=null && imageSessionData.getSubjectId().startsWith("INVALID:")) {
+            imageSessionData.setSubjectId(imageSessionData.getSubjectId().substring(8).trim());
+        }
+
+
+        if(hasValue(imageSessionData.getSubjectId())){
+        	imageSessionData.setSubjectId(XnatSubjectdata.cleanValue(imageSessionData.getSubjectId()));
+        	
+        	if (!hasValue(imageSessionData.getSubjectId()))
+            {
+                imageSessionData.setSubjectId("NULL");
+            }
+        }else{
+            imageSessionData.setSubjectId("NULL");
+        }
+        
+        if(!hasValue(imageSessionData.getSubjectId())){
+        	if(hasValue(imageSessionData.getDcmpatientname())){
+        		imageSessionData.setSubjectId(XnatSubjectdata.cleanValue(imageSessionData.getDcmpatientname()));
+
+            	if (!hasValue(imageSessionData.getSubjectId()))
+                {
+                    imageSessionData.setSubjectId("NULL");
+                }
+        	}
+        }
+        
+    	if((!imageSessionData.validateSubjectId()) && nullifySubject){
+            imageSessionData.setSubjectId("NULL");
+    	}
+        
+        return imageSessionData;
+    }
+    
+    public static boolean isNull(String s){
+    	if(s==null){
+    		return true;
+    	}else if(s.equals("NULL")){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+    
+    public static boolean hasValue(String s){
+    	if(isNull(s)){
+    		return false;
+    	}else{
+    		if(StringUtils.isEmpty(s)){
+    			return false;
+    		}
+    	}
+    	
+    	return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.turbine.modules.actions.VelocityAction#doPerform(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
+     */
+    public void doPerform(final RunData data, final Context context) throws Exception {
+        final String folder = (String)TurbineUtils.GetPassedParameter("folder",data);
+        final String root = (String)TurbineUtils.GetPassedParameter("root",data);
+        final XDATUser user = TurbineUtils.getUser(data);
+        
+        if (null == folder || null == root) {
+            data.setMessage("Unknown folder: " + folder);
+            data.setScreenTemplate(PREARC_PAGE);
+            return;
+        }
+
+        String project = (String)TurbineUtils.GetPassedParameter("project",data);	// can we final this?
+        final String prearchive_path;
+        if (null == project) {
+            prearchive_path=ArcSpecManager.GetInstance().getGlobalPrearchivePath();
+        } else {
+            prearchive_path=ArcSpecManager.GetInstance().getPrearchivePathForProject(project);
+        }
+            
+            
+        //LOAD FOLDER
+        final File dir = new File("NONE".equals(root) ? prearchive_path : (prearchive_path + root));
+            
+        final Collection<String> folders;
+        if (dir.exists()) {
+            folders = new HashSet<String>(Arrays.asList(dir.list()));
+        } else {
+            folders = new ArrayList<String>(0);
+        }
+        
+        final File xml;
+        if (folders.contains(folder)) {
+            final File sessdir = new File(dir, folder);
+            assert(sessdir.exists());
+            xml = new File(sessdir.getAbsolutePath() + ".xml");
+        } else {
+            data.setMessage("Unknown folder: " + folder);
+            data.setScreenTemplate(PREARC_PAGE);
+            return;
+        }
+        
+        if (!xml.canRead()) {
+            logger.error("Unable to load xml document.");
+            data.setMessage("Unable to load xml document.");
+            data.setScreenTemplate(PREARC_PAGE);
+            return;
+        }
+        
+        XnatImagesessiondata imageSessionData = this.getSession(TurbineUtils.getUser(data), xml,project,false);                     
+
+            final String tag = root+"_"+folder;
+            data.getSession().setAttribute(tag, imageSessionData);
+            data.getParameters().add("tag", tag);
+            data.setScreenTemplate("XDATScreen_uploaded_xnat_imageSessionData.vm");
+    }
+
+}

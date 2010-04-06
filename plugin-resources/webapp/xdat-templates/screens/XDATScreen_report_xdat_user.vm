@@ -1,0 +1,535 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+		    #set ($dataPopup = $data.getParameters().getString("popup"))
+#if ($data.message)
+<DIV class="error">$data.message</DIV><br>
+#end
+#parse("/screens/LoadProjectsJS.vm")
+									<form name="form1" method="post" action="$link.setAction("ModifyUserGroups")">
+<TABLE width=100% align="left" border="0">
+	<TR>
+		<TD align="left">
+			<table border="0" align="left">
+				<tr>
+					<TH align=left colspan=2>User Details
+					#if ($item.canEdit($user))
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >Edit</a>
+					#end
+					</TH>
+				</tr>
+				<tr>
+					<td> 
+						<table>
+							<tr>
+								<TD width="90" align=left>Username:</TD><TD>$!item.getProperty("login")</TD>
+							</tr>
+							<tr>
+								<TD align=left>First Name:</TD><TD>$!item.getProperty("firstname")</TD>
+							</tr>
+							<tr>
+								<TD align=left>Last Name:</TD><TD>$!item.getProperty("lastname")</TD>
+							</tr>
+							<tr>
+								<TD align=left>Email:</TD><TD>$!item.getProperty("email")</TD>
+							</tr>
+							<tr>
+								<TD align=left>Enabled:</TD><TD>#if($item.getBooleanProperty("enabled"))YES #else NO #end</TD>
+							</tr>
+							<tr>
+								<TD align=left>Encrypted Password:</TD><TD>#if($item.getBooleanProperty("primary_password.encrypt"))YES #else NO #end</TD>
+							</tr>
+							<!--<tr>
+								<TD align=left>Authenticated:</TD><TD>#if($item.isActive())YES #else NO #end</TD>
+							</tr>-->
+						</table>
+					</td>
+				</tr>
+			</table>
+		</TD>
+	    <td valign="top">
+			#if($dataPopup)
+			#else
+				#set ($dataPopup = "false")
+			#end
+			#set ($elementSecurity = $element.getElementSecurity())
+			#if ($elementSecurity)
+				#set ($actions = $elementSecurity.getElementActions())
+				#if ($actions.size() > 0)
+					<TABLE>
+					
+						#set($bgcolor="#DCDCDC")
+					<TR><TD align="center">
+					<table bgcolor="$bgcolor" STYLE="border-width:1px;border-color:black;border-style:solid;">
+						<tr>
+							<th STYLE="border-bottom-width:1px;border-bottom-color:black;border-bottom-style:solid;">Actions</th>
+						</tr>
+						#foreach ($actionObject in $actions)
+							#if ($actionObject.getName().equalsIgnoreCase("activate"))
+								#if ($user.checkRole("Bossman"))
+									#if($item.needsActivation())
+								<tr>
+									<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end$actionObject.getDisplayName()</a>
+									</td>
+								</tr>
+									#end
+								#end
+							#elseif ($actionObject.getName().equalsIgnoreCase("edit"))
+								#if ($item.canEdit($user))
+								<tr>
+									<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end$actionObject.getDisplayName()</a>
+									</td>
+								</tr>
+								#end
+							#elseif ($actionObject.getName().equalsIgnoreCase("enable"))
+								#if ($item.canEdit($user))
+									#if ($item.getBooleanProperty("enabled"))
+										<tr>
+											<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end Disable Login</a>
+											</td>
+										</tr>
+									#else
+										<tr>
+											<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end Enable Login</a>
+											</td>
+										</tr>
+									#end
+								#end
+							#elseif ($actionObject.getName().equalsIgnoreCase("print_activate"))
+								#if($item.needsActivation())
+								<tr>
+									<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end$actionObject.getDisplayName()</a>
+									</td>
+								</tr>
+								#end
+							#elseif ($actionObject.getName().equalsIgnoreCase("email_activate"))
+								#if($item.needsActivation())
+								<tr>
+									<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end$actionObject.getDisplayName()</a>
+									</td>
+								</tr>
+								#end
+							#else
+							<tr>
+								<td><A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>&nbsp;#end$actionObject.getDisplayName()</a>
+								</td>
+							</tr>
+							#end
+						#end
+					</table>
+					</TD></TR></TABLE>
+				#end
+			#end
+	   		
+	    </td>
+	</TR>
+		<TR>
+			<TD align=left colspan=2 valign=top>&nbsp;
+			</td>
+		</tr>
+                <TR>
+                        <TD align=left colspan=2>
+                                <TABLE border="1" width="80%">
+                                      <TR>
+                                            <TD VALIGN="top">
+					 	<Table border="0" width="100%">
+                                                       <TR><TH align=left colspan="3">STEP 1: Enable or Disable Account</TH></TR>
+                    					<TR><TD align=left><INPUT TYPE="radio" name="xdat:user.enabled" value="true" #if($item.getBooleanProperty("enabled"))CHECKED #end/>Enabled</TD>
+                                                            <TD align=left><INPUT TYPE="radio" name="xdat:user.enabled" value="false" #if(!$item.getBooleanProperty("enabled"))CHECKED #end/>Disabled</TD>
+                                                             <TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        #if ($data.getParameters().getString("popup")=="true")
+                                                <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
+                    #else
+                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+                                        #end
+                                                              </TD>
+                                                        </TR>
+                                                </Table>
+                                            </TD>
+                                      </TR>
+                                </TABLE>
+                        </TD>
+                </TR>
+		<TR>
+			<TD align=left colspan=2 valign=top>&nbsp;
+			</td>
+		</tr>
+	        <TR><TD align=left colspan=2 valign=top>
+                         <TABLE border="1" width="80%">
+                                 <TR><TD valign="top">
+                                         <Table border="0" width="100%">	
+								<TR><TH align=left colspan="2">STEP2: Assign project membership and roles
+								</TH></TR>
+			<TR>
+			<TD align=left colspan=2 valign=top><DIV ID="groupDIV"></DIV>
+			</td>
+		</tr>
+			<TR>
+			<TD align=left colspan=2 valign=top><DIV ID="addGroupDIV"></DIV>
+			</td>
+		</tr>
+		
+	<SCRIPT language="javascript">
+	var selectedgroups = new Array();
+	var selectedtags = new Array();
+		
+	var allgroups = new Array();
+	var alltags = new Array();
+	
+	function addTag(t){
+	  var matched = false;	  
+	  for (var atx=0;atx<alltags.length;atx++){
+	     if (alltags[atx]==t)
+	     {
+	       matched=true;
+	       break;
+	     }
+	  }
+	  
+	  if (!matched)
+	     alltags.push(t);
+	}
+	
+	function xdat_userGroup(id,name,tag){
+	 this.id=id;
+	 this.name=name;
+	 this.tag=tag;
+	 addTag(tag);
+	}
+	#foreach($group in $allGroups)
+	#if($group.getTag()!="")
+	allgroups.push(new xdat_userGroup("$group.getId()","$!group.getDisplayname()","$!group.getTag()"));
+	#end
+		#end
+		
+		
+	function addGroupToSelectedArray(g,t){
+	   var matched = false;	 
+	   var x =0; 
+	   for (var agsax=0;agsax<selectedtags.length;agsax++){
+	     if (selectedtags[agsax]==t)
+	     {
+	       matched=true;
+	       break;
+	     }
+	   }
+	   
+	   if (matched){
+	     selectedgroups[agsax]=g;
+	   }else{
+	     selectedgroups.push(g);
+	     selectedtags.push(t);
+	   }
+	}
+	
+	function getTagForGroup(g){
+	  var t = null;
+	  for(var tgx=0;tgx<allgroups.length;tgx++){
+	    if (allgroups[tgx].id==g){
+	      t= allgroups[tgx].tag;
+	    }
+	  }
+	  
+	  return t;
+	}
+	
+	function hasTag(tag){
+	  var t = false;
+	  for(var hTx=0;hTx<selectedtags.length;hTx++){
+	    if (selectedtags[hTx]==tag){
+	      t= true;
+	    }
+	  }
+	  
+	  return t;
+	}
+	
+	function getTagIndex(tag){
+	  var t = -1;
+	  for(var gTIx=0;gTIx<selectedtags.length;gTIx++){
+	    if (selectedtags[gTIx]==tag){
+	      t=gTIx;
+	      break;
+	    }
+	  }
+	  
+	  return t;
+	}
+	
+	function hasGroup(g){
+	  var t = false;
+	  for(var hGx=0;hGx<selectedgroups.length;hGx++){
+	    if (selectedgroups[hGx]==g){
+	      t= true;
+	    }
+	  }
+	  
+	  return t;
+	}
+	
+	function getGroupsForTag(t){
+	  var groupArray= new Array();
+	  
+	  for(var gGFTi=0;gGFTi<allgroups.length;gGFTi++){
+	    if (allgroups[gGFTi].tag==t){
+	      groupArray.push(allgroups[gGFTi]);
+	    }
+	  }
+	  
+	  return groupArray;
+	}
+	
+	function addGroup(g){
+	  var t = getTagForGroup(g);
+	  if (t!=null){
+	    addGroupToSelectedArray(g,t);
+	  }
+	}
+	
+	#foreach($groupid in $userObject.getGroups_groupid())
+addGroup("$!groupid.getGroupid()");
+	#end
+	
+	function renderGroups(){
+	  var groupCounter =1;
+	  var groupDIV=document.getElementById("groupDIV");
+	  if ( groupDIV.hasChildNodes() )
+				  {
+					     while ( groupDIV.childNodes.length >= 1 )
+					     {
+					        groupDIV.removeChild( groupDIV.firstChild );       
+					     } 
+				  }
+	  
+	  var t = document.createElement("TABLE");
+	  var tBody = document.createElement("TBODY");
+	  t.appendChild(tBody);
+	     
+	  for(var stX=0;stX<selectedtags.length;stX++){
+	     var tr= document.createElement("TR");
+	     
+	     var td= document.createElement("TD");
+	     td.innerHTML=groupCounter;
+	     tr.appendChild(td);
+	     
+	     td= document.createElement("TH");
+	     td.align="left";
+	     td.innerHTML=window.projectTracker.getProjectById(selectedtags[stX]).getDisplayName();
+	     tr.appendChild(td);
+	     
+	     var name=selectedgroups[stX];
+	     
+	     var input = document.createElement("SELECT");
+	     input.id="xdat:user.groups.groupID[" + (groupCounter) + "].groupID";
+	     input.name="xdat:user.groups.groupID[" + (groupCounter) + "].groupID";
+	     input.style.display="none";
+	     var groupsFTag=getGroupsForTag(selectedtags[stX]);
+	     input.options[0]=new Option("NONE","NONE");
+	     for(var h=0;h<groupsFTag.length;h++){
+	        input.options[h+1]=new Option(groupsFTag[h].name,groupsFTag[h].id);
+	        if(groupsFTag[h].id==selectedgroups[stX]){
+	          input.selectedIndex=h+1;
+	          name = groupsFTag[h].name;
+	        }
+	     }	     
+	     input.tag=selectedtags[stX];
+	     input.onchange=function(){editPerformed(this);};
+	     
+	     td= document.createElement("TD");
+	     td.innerHTML=name;
+	     tr.appendChild(td);
+	     
+	     td= document.createElement("TD");
+	     td.appendChild(input);
+	     tr.appendChild(td);
+	     
+	     var newInputV = document.createElement('input');
+	     newInputV.type='button';
+	     newInputV.value='Edit';
+	     newInputV.onclick=function(){editRequested(this.previousSibling);};
+	     td.style.whiteSpace="nowrap";
+	     td.appendChild(newInputV);
+	     
+	     tr.appendChild(td);
+	     
+	     tBody.appendChild(tr);
+	     
+	     groupCounter++;
+	  }
+	  
+	  groupDIV.appendChild(t);
+
+	  var addGroupDIV=document.getElementById("addGroupDIV");
+	  
+	  if ( addGroupDIV.hasChildNodes() )
+				  {
+					     while ( addGroupDIV.childNodes.length >= 1 )
+					     {
+					        addGroupDIV.removeChild( addGroupDIV.firstChild );       
+					     } 
+				  }
+				  
+	  var t = document.createElement("TABLE");
+	  var tbody = document.createElement("TBODY");
+	  var tr = document.createElement("TR");
+	  
+	  t.appendChild(tbody);
+	  tbody.appendChild(tr);
+	  addGroupDIV.appendChild(t);
+	  
+	  var td = document.createElement("TD");
+	  td.innerHTML="Add to project:";
+	  tr.appendChild(td);
+	  
+	  var select =document.createElement("SELECT");
+	  select.id="all_projects";
+	  select.options[select.options.length]=new Option("(SELECT)","");
+	  for(var atl=0;atl<alltags.length;atl++){
+	    if(!hasTag(alltags[atl])){
+	      select.options[select.options.length]=new Option(window.projectTracker.getProjectById(alltags[atl]).getDisplayName(),alltags[atl]);
+	    }
+	  }
+	     select.onchange=function(){populateLevels(this);};
+	  
+	  td = document.createElement("TD");
+	  td.appendChild(select);
+	  tr.appendChild(td);
+	  
+	  
+	  
+	  td = document.createElement("TD");
+	  td.innerHTML=" as ";
+	  tr.appendChild(td);
+	  
+	  
+	  
+	  var select =document.createElement("SELECT");
+	  select.id="projects_levels";
+	  select.options[select.options.length]=new Option("(SELECT)","");
+	  td = document.createElement("TD");
+	  td.appendChild(select);
+	  tr.appendChild(td);
+	  
+	  
+	  td = document.createElement("TD");
+	     var newInputV = document.createElement('input');
+	     newInputV.type='button';
+	     newInputV.value='Add';
+	     newInputV.onclick=function(){addRequested();};
+	     td.style.whiteSpace="nowrap";
+	     td.appendChild(newInputV);
+	  tr.appendChild(td);
+	     
+	  
+	  tbody.appendChild(tr);
+	}
+	
+	function editRequested(select){
+	  select.style.display="block";
+	}
+	
+	function addRequested(){
+	  if (document.getElementById("projects_levels").selectedIndex>0 && document.getElementById("all_projects").selectedIndex>0){
+	    addGroupToSelectedArray(document.getElementById("projects_levels").options[document.getElementById("projects_levels").selectedIndex].value,document.getElementById("all_projects").options[document.getElementById("all_projects").selectedIndex].value);
+	    renderGroups();
+	  }
+	}
+	
+	function populateLevels(select){
+	  if(document.getElementById("all_projects").selectedIndex>0){
+	    var input =document.getElementById("projects_levels");
+	    var t = document.getElementById("all_projects").options[document.getElementById("all_projects").selectedIndex].value;
+	    var groupsFTag=getGroupsForTag(t);
+	     input.options[0]=new Option("(SELECT)","");
+	     for(var gFTh=0;gFTh<groupsFTag.length;gFTh++){
+	        input.options[gFTh+1]=new Option(groupsFTag[gFTh].name,groupsFTag[gFTh].id);
+	     }	     
+	  }
+	}
+	
+	function editPerformed(select){
+	  var _option=select.options[select.selectedIndex];
+	  var _value =_option.value;
+	  if (_value=="NONE"){
+	    var index=getTagIndex(select.tag);
+	    if (index>-1){
+	      selectedgroups.splice(index,1);
+	      selectedtags.splice(index,1);
+	    }
+	  }else{
+	    addGroupToSelectedArray(_value,select.tag);
+	  }
+	  select.style.display="none";
+	  renderGroups();
+	}
+	
+	renderGroups();
+	</SCRIPT>
+				<INPUT type="hidden" name="xdat:user.login" value="$!item.getProperty("login")"/>
+				#xdatEditProps($item $edit_screen)
+				
+		<TR>
+					<TD ALIGN="right">&nbsp;<BR><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					#if ($data.getParameters().getString("popup")=="true")
+						<input type="button" ONCLICK="javascript:window.close()" value="Close"/>
+                    #else
+                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+					#end
+					</TD>
+				</TR>
+</Table>
+</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+		<TR>
+			<TD align=left colspan=2 valign=top>&nbsp;
+			</td>
+		</tr>
+				<TR>
+			<TD align=left colspan=2 valign=top>
+				<TABLE border="1" width="80%">
+					<TR>
+						<TD VALIGN="top">
+							<Table border="0" width="100%">
+								<TR><TH align=left colspan="4">STEP3: Assign administrative privileges for this account</TH>
+                                                                </TR>
+                                                                <TR>
+                                                                    <TD align=center><img src="$content.getURI("images/rc.gif")" border=0></td>
+                                                                    <TH align=left colspan="3">WARNING: Granting administrative privileges allows<br>this user great power over the entire site</TH>
+								</TR>
+																<TR><TD align=left colspan="4">
+<INPUT TYPE="checkbox" id="site_admin" name="xdat:user.assigned_roles.assigned_role[0].role_name" value="Administrator" #if($userObject.checkRole("Administrator"))CHECKED#end/> <label for="site_admin">Site Manager</label>
+								: This allows users to access the Administrative pages of the web interface.
+								</TD></TR>
+							  #set($groupCounter=0)
+																<TR>
+																<TD align=left colspan="4">Allow All Data Access: </TD>
+																</tr>
+																<TR>
+																<TD align=left nowrap>
+<INPUT TYPE="radio" id="data_none" name="xdat:user.groups.groupID[$groupCounter].groupID" value="" CHECKED/> <label for="data_none">No</label>
+								</TD>
+																<TD align=left nowrap>
+<INPUT TYPE="radio" id="data_access" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ACCESS" #if($userObject.getGroup("ALL_DATA_ACCESS"))CHECKED#end/> <label for="data_access">Read Only</label>
+								</TD>
+								<TD align=left nowrap>
+<INPUT TYPE="radio" id="data_admin" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ADMIN" #if($userObject.getGroup("ALL_DATA_ADMIN"))CHECKED#end/> <label for="data_admin">Read, Edit & Delete</label>
+								</TD><TD align=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        #if ($data.getParameters().getString("popup")=="true")
+                                                <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
+                    #else
+                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+                                        #end</TD>
+                                                             </TR>
+							  #set($groupCounter=$groupCounter+1)
+							</TABLE>
+						</TD>
+					</TR>
+				</TABLE>
+					</TD>
+				</TR>
+</TABLE>
+</FORM>

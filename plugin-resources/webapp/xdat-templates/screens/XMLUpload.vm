@@ -1,0 +1,25 @@
+
+<form enctype="multipart/form-data" method="POST" action="$link.setAction("XMLUpload")">
+<TABLE>
+	<TR>
+		<TD colspan="3" align="left"><font face="$ui.sansSerifFonts" size="4" style="line-height:18px;"><b>Online StoreXML</b></font></TD>
+	</TR>
+	<TR>
+		<TD colspan="3" align="right">&nbsp;</TD>
+	</TR>
+	<TR>
+		<TD>Allow Data Deletion</TD>
+		<TD>YES <input type="radio" name="allowdeletion" value="true" CHECKED/></TD>
+		<TD>NO <input type="radio" name="allowdeletion" value="false"/></TD>
+	</TR>
+	<TR>
+		<TD>File</TD><TD colspan="2"><input type="file" name="xml_to_store"/></TD>
+	</TR>
+	<TR>
+		<TD colspan="3" align="right">&nbsp;</TD>
+	</TR>
+	<TR>
+		<TD colspan="3" align="right"><input type="submit" name="eventSubmit_doSetup" value="Upload"/></TD>
+	</TR>
+</TABLE>
+</form>

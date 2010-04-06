@@ -1,0 +1,41 @@
+<script type="text/javascript">
+<!--
+function DefaultEnterKey(e,button){
+var keynum
+var keychar
+var numcheck
+
+if(window.event) // IE
+	{
+	  keynum = e.keyCode
+	  if (keynum==13){
+	    submitQuickSearch();
+	    return true;
+	  }
+	}
+else if(e) // Netscape/Firefox/Opera
+	{
+	  keynum = e.which
+	  if (keynum==13){
+	    submitQuickSearch();
+	    return false;
+	  }
+	}
+	  return true;
+}
+
+function submitQuickSearch(){
+	    concealContent("Submitting... Please wait.");
+	    if(document.getElementById('quickSearchForm').value!="")
+    		   document.getElementById('quickSearchForm').submit();
+}
+
+function advancedSearch(){
+		       window.location="$link.setPage("XDATScreen_search_wizard1.vm")";
+}
+//-->
+</script>
+<FORM id="quickSearchForm" method="post" action="$link.setAction("QuickSearchAction")">
+<input style="font-family:'arial'; font-style:normal; font-weight:normal; font-size:10px;" maxlength="40" size="20" type="text" name="searchValue" value="$!field">&nbsp;<INPUT type="button" style="line-height:10px;font-size:9px;" VALUE="Search" ONCLICK="submitQuickSearch();"/>
+&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" onclick="advancedSearch();">Advanced</A>
+				</FORM>

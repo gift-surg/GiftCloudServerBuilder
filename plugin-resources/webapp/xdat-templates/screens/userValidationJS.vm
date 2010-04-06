@@ -1,0 +1,64 @@
+<script type="text/javascript" src="$content.getURI("scripts/user/validateUsername.js")"></script>
+<script type="text/javascript">
+    XNAT.app.register = {
+        validateForm: function(e){
+            // create a few shortcuts
+            var validateInput = XNAT.app.register.validateInput;
+            var validators = XNAT.app.register.validators;
+	   
+            // execute the validators on the fields, creating a list of boolean results for each field.
+            var validations = [validateInput('xdat:user.login', [validators.nonEmpty]),
+                               validateInput('xdat:user.primary_password', [validators.nonEmpty]),
+                               validateInput('xdat:user.password_check', [validators.nonEmpty, 
+                                                                          validators.valuesMatch('xdat:user.primary_password')]),
+                               validateInput('xdat:user.firstname', [validators.nonEmpty]),
+                               validateInput('xdat:user.lastname', [validators.nonEmpty]),
+                               validateInput('xdat:user.email', [validators.nonEmpty])]
+	   
+            // if any of the validations failed, stop form submission
+            for (var i=0; i < validations.length; i++){
+            	if (!validations[i]){
+            		return false;
+            	}
+            }
+            return true;
+        },
+        validateInput: function(inputId, validators){
+            var input = document.getElementById(inputId);
+            for (var i=0; i < validators.length; i++){
+                var validator = validators[i];
+                if (!validator(input)){
+                    XNAT.app.register.validationError(input);
+                    return false;
+                }
+            }
+
+            XNAT.app.register.validationSuccessful(input);
+            return true;
+        },
+        validationError: function(input){
+            appendImage(input, "/images/checkmarkRed.gif");
+        },
+        validationSuccessful: function(input){
+            appendImage(input, "/images/checkmarkGreen.gif");
+        },
+        /* Collection of validation functions */
+        validators: {
+            nonEmpty: function(input){
+               return input.value.trim().length > 0;
+	        },
+	        valuesMatch: function(inputIdToCompare){
+                var inputToCompare = document.getElementById(inputIdToCompare);
+            	return function(input) {
+	        		return inputToCompare.value == input.value;
+	        	}
+	        },
+            regex: function(regex){
+                return function(input){
+                	return input.value.match(regex)
+                }
+            }
+}
+    };
+
+</script>

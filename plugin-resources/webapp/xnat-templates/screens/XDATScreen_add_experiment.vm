@@ -1,0 +1,80 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.addAttribute("onLoad", "document.form1.destination.focus();")
+<font face="$ui.sansSerifFonts" size="2">
+#if ($data.getParameters().getString("popup"))
+	#set ($popup = $data.getParameters().getString("popup") )
+#else
+	#set ($popup = "false")
+#end
+<form name="form1" ONSUBMIT="return validate();" method="post" action="$link.setAction("CreateExperiment")">
+	<INPUT TYPE="hidden" NAME="popup" VALUE="$popup">
+    <table width="450">
+    #if($part_id && $project)
+    <input type="hidden" name="part_id" value="$part_id"/>
+    <input type="hidden" name="project" value="$project"/>
+    #else
+<tr>
+  <th align="left">Project</th>
+  <td><select id="project" name="project" disabled=true></select></td>
+ </tr>
+ 	<tr>
+		  <td colspan="2">Please selet a subject for this new experiment.</td>
+		 </tr>
+ <tr>
+  <th align="left">Subject</th>
+  <td><select id="part_id" name="part_id" disabled=true></select></td>
+ </tr>
+		<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
+<script type="text/javascript">
+
+function verifyExptId(obj){        };
+window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+window.ProjectSubjectManager.init();
+</script>
+    #end
+	<tr>
+		<td colspan="2">
+		<br>What type of experiment are you entering?</a>
+		<br><br></td>
+		</tr>
+#if ( $data.Message )
+      <tr>  
+		<td colspan="2">
+  <DIV class="error">$data.message</DIV><br>
+		</td>
+      </tr>
+#end
+#set($dC=0)
+#foreach($ed in $data.getSession().getAttribute("user").getBrowseableCreateableElementDisplays())
+ #set($gwe=$ed.getSchemaElement().getGenericXFTElement())
+ #if($gwe.instanceOf("xnat:subjectAssessorData"))
+ <tr #if($dC%2==0)class="even"#else class="odd"#end>
+   <td><input type="radio" name="data_type" id="dt_$ed.getElementName()" value="$ed.getElementName()"/></td>
+   <td><h4>$ed.getSchemaElement().getSingularDescription()</h4>$gwe.getWrapped().getXsDescription()</td>
+ </tr>
+  #set($dC=$dC+1)
+ #end
+#end
+	<tr>
+		<td></td>
+		<td>
+    			<input type="submit" name="eventSubmit_doSetup" value="Submit"/>
+		</td>
+	</tr>
+    </table>
+  
+</form>
+
+<script type="text/javascript">
+function validate(){
+   if (document.getElementById("data_type").selectedIndex==0)
+   {
+     alert("Please select a Data Type.");
+     return false;
+   }
+   
+   return true;
+}
+</script>
+</font>
+			

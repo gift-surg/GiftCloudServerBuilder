@@ -1,0 +1,70 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<HTML>
+<HEAD>
+<TITLE>$!systemName</TITLE>
+$navigation.setTemplate("/HeaderIncludes.vm")
+<!-- POPUP -->
+</HEAD>
+<BODY>
+
+<table WIDTH="100%" HEIGHT="100%" VALIGN="top">
+	<TR>
+		<TD VALIGN="top">
+<font face="$ui.sansSerifFonts" size="2">
+<table border="0">
+  <tr>
+    <td>
+      $navigation.setTemplate("/DefaultTop.vm")<BR><BR><BR>
+    </td>
+  </tr>
+</table>
+
+
+<table align="center" border="0" >
+  <tr>
+    <td align="left" colspan="2">
+      <div id="layout_content2" style="display:none;">Loading...</DIV>
+      <div id="layout_content">$screen_placeholder</DIV></td>
+  </tr>
+  <tr>
+    <td align="left" colspan="2">
+    	<TABLE>
+    		<TR>
+    			<TD>$navigation.setTemplate("QuickSearch.vm")</td>
+    			<td align="left" valign="top"><BR>
+				 <font size="1">
+				  • <a href="$link.setPage("Help.vm")">Help</a><br>
+				  • <a href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","search")">More Search Options</a>
+				</font>
+			    </td>
+    		</TR>
+    	</TABLE>
+    </td>
+  </tr>
+</table>
+<br>
+<br>
+<br>
+<table border="0" align="center" valign="top" class="withColor">
+   <tr>
+      	<td align="left" valign="top">$navigation.setTemplate("SubMenu1.vm")</td>
+		<td align="left" valign="top">$navigation.setTemplate("SubMenu2.vm")</td>
+		<td align="left" valign="top">$navigation.setTemplate("SubMenu3.vm")</td>
+   </tr>
+</table>
+		</TD>
+	</TR>
+	<TR>
+		<TD ALIGN="right">
+			<table valign="bottom">
+				<tr>
+				    <td valign="bottom" align="right">
+						<DIV VALIGN="bottom" align="right"><a href="http://www.xnat.org"><img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a></DIV>
+					</td>
+				</tr>
+			</table>
+		</TD>
+	</TR>
+</TABLE>
+</BODY>
+</HTML>

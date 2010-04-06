@@ -1,0 +1,10 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<HTML>
+<HEAD>
+$navigation.setTemplate("/HeaderIncludes.vm")
+</HEAD>
+<BODY id="page_body" class="yui-skin-sam">
+      <div id="layout_content2" style="display:none;">Loading...</DIV>
+      <div id="layout_content">$screen_placeholder</DIV>
+</BODY>
+</HTML>

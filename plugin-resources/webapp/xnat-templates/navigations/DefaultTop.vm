@@ -1,0 +1,184 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+#if($popup)
+
+#else
+#if ($data.getParameters().getString("popup"))
+	#set ($popup = $data.getParameters().getString("popup") )
+#else
+	#set ($popup = "")
+#end
+#end
+
+#if($project)
+  #set($projectString="/project/$project")
+#end
+<DIV>
+<DIV class="yui-skin-sam">
+ <table cellspacing="0" border="0" width="800px">
+  <tr valign="bottom">
+   <td align="left" width="252" rowspan="3"><a href="$link.setPage("Index.vm")" onmouseover="return true;"><img src="$content.getURI("images/logo.jpg")" border=0></a>&nbsp;&nbsp;</td>
+   <td align="left" valign="top" NOWRAP>
+#if($data.getSession().getAttribute("user").getUsername()=="guest")
+     <font color="red">Guest</font>&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Login.vm")">(Login)</A>
+     &nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Register.vm")">(Register)</A>
+	#elseif($data.getSession().getAttribute("user").getUsername())
+	     User: $!data.getSession().getAttribute("user").getUsername()
+     <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setAction("LogoutUser")">(Logout)</A>
+      <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("XDATScreen_MyXNAT.vm")">(Edit)</A>
+      <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("ReportIssue.vm")">(Report a problem)</A>
+	#end
+   </td>
+   <td align="right" valign="top" NOWRAP>
+   <style>
+   #quickSearchForm{
+     margin-bottom:0px;
+   }
+   </style>
+$navigation.setTemplate("XNATQuickSearch.vm")
+   </td>
+  </tr>
+  <tr>
+   <td valign="bottom" width="532" colspan="2">
+    <DIV id="topMenuBar" class="yuimenubar yuimenubarnav" style="display:none">
+     <DIV class="bd">
+      <ul class="first-of-type">
+       <li class="yuimenubaritem first-of-type"><A class="yuimenubaritemlabel" href="$link.setPage("Index.vm")">Home</A></li>
+#if($data.getSession().getAttribute("user").getUsername()=="guest")
+
+	#elseif($data.getSession().getAttribute("user").getUsername())
+       <li class="yuimenuitem first-of-type"> 
+        <a class="yuimenuitemlabel" href="#new">New</a>
+        <DIV ID="new" class="yuimenu">
+         <DIV class="bd">
+          <ul class="first-of-type">
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_xnat_projectData.vm")">Project</a>
+           </li>
+            #if ($data.getSession().getAttribute("user").canCreateElement("xnat:subjectData", "xnat:subjectData/project"))
+				#if($project)
+					#if($project.getId())
+						#if($data.getSession().getAttribute("user").canCreate("xnat:subjectData/project",$project.getId()))
+							<li class="yuimenuitem">
+							    <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","xnat:subjectData")/project/$!project.getId()">Subject</a>
+							</li>
+						#end
+					#else
+						#if($data.getSession().getAttribute("user").canCreate("xnat:subjectData/project",$project))
+							<li class="yuimenuitem">
+							    <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","xnat:subjectData")$!projectString">Subject</a>
+							</li>
+						#end
+					#end
+				#else
+					<li class="yuimenuitem">
+					    <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","xnat:subjectData")">Subject</a>
+					</li>
+				#end
+            #end
+                        
+  #renderTopListType("xnat:mrSessionData")
+  #renderTopListType("xnat:petSessionData")
+  #renderTopListType("xnat:ctSessionData")
+  #if($project)
+			    #if($project.getId())
+              <li class="yuimenuitem">
+                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm").addPathInfo('project',$project.getId())">More</A>
+               </li>
+    #else
+              <li class="yuimenuitem">
+                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm").addPathInfo('project',$project)">More</A>
+               </li>
+    #end
+  #else
+              <li class="yuimenuitem">
+                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm")">More</A>
+               </li>
+  #end
+          </ul>
+         </DIV>
+        </DIV>
+       </li>
+       <li class="yuimenuitem first-of-type"> 
+        <a class="yuimenuitemlabel" href="#upload">Upload</a>
+        <DIV ID="upload" class="yuimenu">
+         <DIV class="bd">
+          <ul class="first-of-type">
+				           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("ImageUpload.vm")">Images</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XMLUpload.vm")">XML</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_uploadCSV.vm")">Spreadsheet</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_prearchives.vm")">Go to prearchive</a>
+           </li>
+          </ul>
+         </DIV>
+        </DIV>
+       </li>
+       #if($data.getSession().getAttribute("user").checkRole("Administrator"))
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="#adminbox">Administer</a>
+            <DIV ID="adminbox" class="yuimenu">
+             <DIV class="bd">
+              <ul class="first-of-type">
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin.vm")" >Users</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_dataTypes.vm")" >Data types</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_email.vm")" >Email</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("EditArcSpecs.vm")">Default Settings</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_manage_pipeline.vm")">Pipelines</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin_options.vm")" >More options...</a>
+           </li>
+              </ul>
+             </DIV>
+            </DIV>
+           </li>
+		        #end
+#end
+       <li class="yuimenuitem first-of-type"> 
+        <a class="yuimenuitemlabel" href="#tools">Tools</a>
+        <DIV ID="tools" class="yuimenu">
+         <DIV class="bd">
+          <ul class="first-of-type">
+				           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="http://nrg.wikispaces.com/XNAT+Desktop">XNAT Desktop (XND)</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="http://nrg.wustl.edu/projects/DICOM/DicomBrowser.jsp">DICOM Browser</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="http://www.xnat.org/tools.html#client">Command Prompt Tools</a>
+           </li>
+          </ul>
+         </DIV>
+        </DIV>
+       </li>
+      </ul>
+     </DIV>
+    </DIV>
+   </td>
+  </tr>
+ </table>
+</DIV>
+</DIV>
+<SCRIPT language="javascript">
+YAHOO.util.Event.onContentReady("topMenuBar", function () {
+    var oMenuBar = new YAHOO.widget.MenuBar("topMenuBar", { autosubmenudisplay: true,scrollincrement:5,showdelay:1500});
+    // Render the MenuBar instance
+    oMenuBar.render();
+});
+</SCRIPT>

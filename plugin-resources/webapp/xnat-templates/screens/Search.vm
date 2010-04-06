@@ -1,0 +1,90 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<style>
+.ygtvlabel{
+  font-size:9px;
+}
+</style>
+<script type="text/javascript" src="$content.getURI("scripts/generated/xdat_stored_search.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/generated/xdat_search_field.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/generated/xdat_criteria.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/generated/xdat_criteria_set.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/search/tabManager.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/search/saveSearch.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/search/searchManager.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/search/dataTableSearch.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/search/dataTableStoredSearch.js")"></script>
+<div class="yui-skin-sam">
+<table width="100%">
+ <tr>
+  <td valign="top" class="leftBar" width="191px" style="border:solid 1px #AAAAAA">
+   <div id="l.tv"></div>
+   <div style="width:190px">&nbsp;</div>
+  </td>
+  <td valign="top">
+#if ($data.message)
+<DIV class="error">$data.message</DIV><br/>
+#end
+<div id="layout_content2" style="display:none;">Loading...</DIV>
+      <div id="layout_content">
+      
+   <div ID="search_tab_module">
+    <div class="bd">
+     <DIV id="search_tabs"></DIV>
+    </div>
+   </div>
+      </DIV>
+  </td>
+ </tr>
+</table>
+</div>
+ #if($xss)
+ <textarea id="xss" style="display:none">$xss</textarea>
+ #end
+
+<script type="text/javascript">
+var server= "$content.getURI("images")/";
+var user_email= "$data.getSession().getAttribute("user").getEmail()";
+//build element_array
+
+ window.lTV = new LeftBarTreeView({treeview:"l.tv",module:"search_tab_module",tabs:"search_tabs"});
+  window.lTV.init();
+ 
+ #if($node)
+   var defaultNode="$node";
+   if(defaultNode.indexOf("ss.")>-1){
+     window.lTV.ssNode.expand();
+   }
+   window.lTV.expand(defaultNode);
+ #end
+ 
+ function displayTab(tabReqObject){
+   window.lTV.displayTab(tabReqObject);
+ }
+ 
+ var customSearchCount=1;
+ window.newSearch=function (){
+   var sm=new SearchXMLManager();
+   sm.onsubmit.subscribe(function(obj1,obj2,obj3){
+				     var xml=this.searchDOM.toXML("");
+			     this.dialogPopup.destroy();
+			     displayTab({label:"Search "+ customSearchCount,
+	                         		ID:"c."+ (customSearchCount++),
+	                         		XML:xml
+	     });
+		   },this);
+   sm.init();
+   sm.render();
+ }
+ 
+ #if($xss)
+
+     displayTab({label:"Search "+ customSearchCount,
+	                         		ID:"c."+ (customSearchCount++),
+	                         		XML:document.getElementById("xss").value
+	     });
+ #end
+ 
+ #if($newSearch)
+ window.newSearch();
+ #end
+</script>

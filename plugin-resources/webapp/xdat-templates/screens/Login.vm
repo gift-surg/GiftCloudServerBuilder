@@ -1,0 +1,49 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("XDAT -- Please Login")
+$page.setBgColor($ui.bgcolor)
+$page.addAttribute("onLoad", "document.getElementById('username').focus();")
+<DIV VALIGN="top">
+<br>
+<br>
+<form name="form1" method="post" action="$link.setAction("XDATLoginUser")">
+  <table valign="top" align="center">
+#if ( $data.getMessage() )
+  <tr><td colspan="2"><DIV class="error">$data.message</DIV><br><br>
+   </tr></td>
+#end
+#if($msg)
+<tr><td colspan="2">
+  $msg<br>
+   </tr></td>
+#end
+    <tr>
+      #formLabel("User")
+  	  <TD><input type="text" id="username" name="username"></TD>
+    </tr>
+    <tr>
+    	#formLabel("Password")
+  	  <TD><input type="password" name="password"></TD>
+    </tr>
+    <tr>
+	<td></td>
+      <td align ="left">
+        <font face="$ui.sansSerifFonts">
+        #foreach($key in $data.getParameters().getKeys())
+        	#if ($key!="action" && $key!="template" &&$key!="password" &&$key!="username" &&$key!="exception")
+        	<input type="hidden" name="$key" value="$turbineUtils.escapeHTML($data.getParameters().getString($key))">	
+        	#end
+        #end
+          <input type="submit" value="Login">
+        </font>
+      </td>
+    </tr>
+    <tr>
+			      <td align="left" colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+			      <td align ="left"><a href="$link.setPage("Register.vm")">Register</a></td>
+      <td align ="left"><a href="$link.setPage("ForgotLogin.vm")">Forgot login or password?<a></td>
+    </tr>
+  </table>
+</form>
+</DIV>

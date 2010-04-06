@@ -1,0 +1,209 @@
+//Copyright 2007 Washington University School of Medicine All Rights Reserved
+/*
+ * Created on Jun 1, 2007
+ *
+ */
+package org.nrg.xnat.turbine.modules.screens;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Hashtable;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.apache.turbine.modules.screens.RawScreen;
+import org.apache.turbine.util.RunData;
+import org.nrg.xdat.bean.CatCatalogBean;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.security.XDATUser.FailedLoginException;
+import org.nrg.xdat.turbine.utils.AccessLogger;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.turbine.utils.CatalogSet;
+import org.nrg.xnat.turbine.utils.XNATUtils;
+
+import edu.sdsc.grid.io.srb.SRBFile;
+import edu.sdsc.grid.io.srb.SRBFileInputStream;
+
+public class GetFile extends RawScreen {
+    static org.apache.log4j.Logger logger = Logger.getLogger(GetFile.class);
+    
+    /**
+    * Set the content type to Xml. (see RawScreen)
+    *
+    * @param data Turbine information.
+    * @return content type.
+    */
+    public String getContentType(RunData data)
+    {
+        return "application/octet-stream";
+    };
+    
+    public void logAccess(RunData data)
+    {
+        AccessLogger.LogScreenAccess(data);
+    }
+    
+    public void logAccess(RunData data,String message)
+    {
+        AccessLogger.LogScreenAccess(data,message);
+    }
+    
+
+    /**
+    * Overrides & finalizes doOutput in RawScreen to serve the output stream
+ created in buildPDF.
+    *
+    * @param data RunData
+    * @exception Exception, any old generic exception.
+    */
+    protected final void doOutput(RunData data) 
+    {
+        long startTime = Calendar.getInstance().getTimeInMillis();
+             String search_element = data.getParameters().getString("search_element");
+             String search_field = data.getParameters().getString("search_field");
+             String search_value = data.getParameters().getString("search_value");
+             String key = data.getParameters().getString("key");
+             Integer fileId = data.getParameters().getInteger("file");
+             XDATUser user = null;
+             String log = "";
+             HttpSession httpSession = data.getRequest().getSession();
+             AccessLogger.LogScreenAccess(data);
+             
+             HttpServletResponse response = data.getResponse();
+             byte[] buf = new byte[FileUtils.LARGE_DOWNLOAD];
+             try {
+                 if (TurbineUtils.getUser(data)!=null){
+                     user = TurbineUtils.getUser(data);
+                 }
+
+                 if (user==null){
+                     try {
+                         response.sendError(401);
+                     } catch (IOException e1) {
+                         logger.error("",e1);
+                     }
+                 }
+                                  
+                 log +="," + (Calendar.getInstance().getTimeInMillis()-startTime);
+                 startTime = Calendar.getInstance().getTimeInMillis();
+                 
+                 if (search_element!=null && search_field!=null && search_value!=null && fileId!=null)
+                 {
+                     Object o = null;
+                     
+                     String innerKey= "";
+                     if (key!=null){
+                         innerKey="/key/" + key;
+                     }
+                     innerKey+="/file/" + fileId;
+                     final String identifier = search_element + ":"+ search_field + ":"+ search_value;
+                     if (httpSession.getAttribute(identifier)!=null){
+                         Hashtable<String,Object> hash = (Hashtable<String,Object>)httpSession.getAttribute(identifier);
+                         
+                         o = hash.get(innerKey);
+                     }else{
+                         CatalogSet catalogSet= XNATUtils.getCatalogBean(data, TurbineUtils.GetItemBySearch(data));
+                         
+                         CatCatalogBean catalog = catalogSet.catalog;
+                         data.getSession().setAttribute(identifier, catalogSet.hash);
+                         
+                         
+                         o = catalogSet.hash.get(innerKey);
+                     }
+                     
+                     if (o instanceof File){
+                         File f = (File)o;
+                         if (f.exists()){
+                             data.getResponse().setHeader("Content-Disposition","inline;filename=" + f.getName());
+                             java.io.FileInputStream in = new java.io.FileInputStream(f);
+                             logger.debug(f.getName() + log + "," + (Calendar.getInstance().getTimeInMillis()-startTime));
+                             int len;
+                             while ((len = in.read(buf)) > 0) {
+                                 data.getResponse().getOutputStream().write(buf, 0, len);
+                             }
+                             
+                         }
+                     }else if (o instanceof SRBFile){
+                         SRBFile f = (SRBFile)o;
+                         if (f.exists()){
+                             data.getResponse().setHeader("Content-Disposition","inline;filename=" + f.getName());
+
+                             byte[] tempBUF = new byte[FileUtils.LARGE_DOWNLOAD];
+                             SRBFileInputStream is = new SRBFileInputStream(f);
+                             // Transfer bytes from the file to the ZIP file
+                             int len;
+                             
+                             startTime = Calendar.getInstance().getTimeInMillis();
+                             
+                             while ((len = is.read(tempBUF)) > 0) {
+                                 data.getResponse().getOutputStream().write(tempBUF, 0, len);
+                                 data.getResponse().getOutputStream().flush();
+                             }
+                             
+                             
+                         }
+                     }
+                 }
+             } catch (XFTInitException e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(500);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             } catch (ElementNotFoundException e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(500);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             } catch (DBPoolException e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(500);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             } catch (SQLException e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(500);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             } catch (FieldNotFoundException e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(500);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             } catch (FailedLoginException e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(401);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             } catch (Exception e) {
+                 logger.error("",e);
+                 try {
+                     response.sendError(500);
+                 } catch (IOException e1) {
+                     logger.error("",e1);
+                 }
+             }
+            
+      
+    }
+ }

@@ -1,0 +1,143 @@
+<table bgcolor="#DCDCDC" STYLE="border-width:1px;border-color:black;border-style:solid;">
+
+			<tr>
+
+			<th style="border-style:none;"><font face="$ui.sansSerifFonts">View</font></th>
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_admin.vm"))
+
+								<font face="$ui.sansSerifFonts">Users</font>
+
+				#else
+
+				<a class=b href="$link.setPage("XDATScreen_admin.vm")" onmouseover="return true;">Users</a>
+
+				#end
+
+</td>
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_groups.vm"))
+
+								<font face="$ui.sansSerifFonts">Groups</font>
+
+				#else
+
+				<a class=b href="$link.setPage("XDATScreen_groups.vm")" onmouseover="return true;">Groups</a>
+
+				#end
+
+</td>
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_dataTypes.vm"))
+
+								<font face="$ui.sansSerifFonts">Data Types</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_dataTypes.vm")" onmouseover="return true;">Data Types</a>
+
+				#end
+
+				</td>
+
+				<!--
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_roles.vm"))
+
+								<font face="$ui.sansSerifFonts">Roles</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_roles.vm")" onmouseover="return true;">Roles</a>
+
+				#end
+
+				</td>-->
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_email.vm"))
+
+								<font face="$ui.sansSerifFonts">Mail</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_email.vm")" onmouseover="return true;">Mail</a>
+
+				#end
+
+				</td>
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_bundles.vm"))
+
+								<font face="$ui.sansSerifFonts">Bundles</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_bundles.vm")" onmouseover="return true;">Bundles</a>
+
+				#end
+
+				</td>
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_manage_news.vm"))
+
+								<font face="$ui.sansSerifFonts">News</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_manage_news.vm")" onmouseover="return true;">News</a>
+
+				#end
+
+				</td>
+
+				<td align="left">
+
+				#if($data.getScreenTemplate().equals("XDATScreen_manage_info.vm"))
+
+								<font face="$ui.sansSerifFonts">Info</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_manage_info.vm")" onmouseover="return true;">Info</a>
+
+				#end
+
+				</td>
+
+				<td align="left">
+				#if($data.getScreenTemplate().equals("XDATScreen_manage_pipeline.vm"))
+								<font face="$ui.sansSerifFonts">Pipelines</font>
+				#else
+					<a class=b href="$link.setPage("XDATScreen_manage_pipeline.vm")" onmouseover="return true;">Pipelines</a>
+				#end
+				</td>
+				<td align="left">
+				#if($data.getScreenTemplate().equals("XDATScreen_admin_options.vm"))
+
+								<font face="$ui.sansSerifFonts">More</font>
+
+				#else
+
+					<a class=b href="$link.setPage("XDATScreen_admin_options.vm")" onmouseover="return true;">More...</a>
+
+				#end
+
+				</td>
+
+			</tr>
+
+		</table>

@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+$data.setLayoutTemplate("Popup.vm")
+$page.setTitle("Laucnh Pipeline")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#if ($data.message)
+<font color="red" size="3">$data.message</font>
+#end
+<p>
+<form ID="form1" name="form1" method="post" action="$link.setAction("ManagePipeline")">
+#if($vr)
+	<font color="red">Invalid parameters:<BR>$vr.toHTML()</font>
+<HR>
+#end
+
+
+#set ($dblQts='"')
+
+<TABLE>
+<TR>
+<TD><b>$!pipeline.getDescription() for  $item.getProperty("label") </b></TD>
+</TR>
+</table>
+
+<br/>
+
+<TABLE>
+	<TR>
+	  <TH>Name</TH> <TH> Value</TH> 
+	</TR>
+	#set ($c = 0)
+	#foreach ($param in $parameters.getParameterArray())
+	<TR>
+	  <TD><input type="hidden"  id=${dblQts}param[$c].name$dblQts name=${dblQts}param[$c].name$dblQts value="$param.getName()"/><font size="-1">$param.getName()</font></TD> 
+	   #if ($param.getValues().isSetUnique())	
+	   <TD><input type="text" id=${dblQts}param[$c].value$dblQts  name=${dblQts}param[$c].value$dblQts value="$param.getValues().getUnique()"/></TD>
+	  #else
+	   <td> 
+	     #foreach ($val in $param.getValues().getListArray())	
+	  	<input type="checkbox" id=${dblQts}param[$c].value$dblQts name=${dblQts}param[$c].value$dblQts value="$val"/>$val
+	     #end
+	  </TD>
+	  #end
+	</tr>
+	#set ($c = $c + 1)
+	#end
+</TABLE>
+
+
+
+<br/>
+<table>
+<TR>
+<TD align="center"><input type="button" ONCLICK="javascript:window.close()" value="Close"/>&nbsp;&nbsp;&nbsp;<input type="submit"  name="eventSubmit_doLaunchpipeline" value="Submit"/></TD>
+</TR>
+</TABLE>
+
+<input type="hidden" name="schema_type" value="$item.getXSIType()">
+<input type="hidden" name="param_cnt" value="$c">
+<input type="hidden" name="pipeline_path" value="$pipeline.getLocation()">
+
+#xdatPassItemFormFields($search_element $search_field $search_value $project) 
+
+</form>
+

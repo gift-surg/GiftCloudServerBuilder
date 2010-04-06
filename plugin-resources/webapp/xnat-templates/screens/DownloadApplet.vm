@@ -1,0 +1,22 @@
+<h2>Download Images</h2>
+<table border="0" >
+    <tr  bgcolor="white">
+        <td style="border-style:none;"  valign="top" align="left" colspan="2">
+				<APPLET CODE="org.nrg.xnat.fileManager.DownloaderApplet"
+					CODEBASE="$appletPath" ARCHIVE="log4j-1.2.15.jar,file-downloader-1.4h.jar"
+					width="500" height="500">
+###set($c=0)
+###foreach($u in $sessions)
+##
+##										<PARAM NAME="session$c" VALUE="$u">
+##										#set($c=$c+1)
+###end
+										<PARAM NAME="session0" VALUE="$catalogXML">
+										</APPLET>
+       </td>
+    </tr>
+    <tr style="border-style:none;">
+        <td style="border-style:none;" colspan="2" >
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<security xmlns="http://cnl.wustl.edu/xnat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://cnl.wustl.edu/xnat C:/xdat/schemas/security.xsd" system="SAMPLE" require_login="true">
+	<users>
+		<user enabled="true">
+			<login>manager</login>
+			<firstname>John</firstname>
+			<lastname>Doe</lastname>
+			<email>j.doe@somecompany.com</email>
+			<primary_password encrypt="true">manager</primary_password>
+			<assigned_roles>
+				<assigned_role role_name="Administrator" description="can change user permissions"/>
+				<assigned_role role_name="SiteUser" description="views webpages"/>
+			</assigned_roles>
+		</user>
+	</users>
+	<roles>
+		<role role_name="Administrator" description="can change user permissions">
+			<allowed_actions>
+				<allowed_action action_name="admin" display_name="Administration"/>
+			</allowed_actions>
+		</role>
+		<role role_name="SiteUser" description="views webpages">
+			<allowed_actions>
+				<allowed_action action_name="search" display_name="Search"/>
+				<allowed_action action_name="browse" display_name="Browse"/>
+			</allowed_actions>
+		</role>
+	</roles>
+	<actions>
+		<action action_name="admin" display_name="Administration" sequence="0"/>
+		<action action_name="search" display_name="Search" sequence="1"/>
+		<action action_name="browse" display_name="Browse" sequence="4"/>
+	</actions>
+	<element_security_set>
+		<element_security element_name="sample:orderType" secondary_password="false" secure_ip="false" secure="false" browse="true" sequence="0">
+			<element_actions>
+				<element_action element_action_name="xml" display_name="View XML"/>
+				<element_action element_action_name="edit" display_name="Edit"/>
+			</element_actions>
+		</element_security>
+		<element_security element_name="sample:customerType" secondary_password="false" secure_ip="false" secure="false" browse="true" sequence="1">
+			<element_actions>
+				<element_action element_action_name="xml" display_name="View XML"/>
+				<element_action element_action_name="edit" display_name="Edit"/>
+			</element_actions>
+		</element_security>
+		<element_security element_name="xdat:user" secondary_password="false" secure_ip="false" secure="false" browse="false" pre_load="true">
+			<element_actions>
+				<element_action element_action_name="xml" display_name="View XML"/>
+				<element_action element_action_name="edit" display_name="Edit Details"/>
+				<element_action element_action_name="user_admin" display_name="Change Permissions"/>
+				<element_action element_action_name="enable" display_name="Enable/Disable"/>
+				<element_action element_action_name="activate" display_name="Authorize"/>
+			</element_actions>
+		</element_security>
+		<element_security element_name="xdat:element_security" secondary_password="false" secure_ip="false" secure="false" browse="false" quarantine="false" pre_load="true">
+			<element_actions>
+				<element_action element_action_name="xml" display_name="View XML"/>
+				<element_action element_action_name="edit" display_name="Edit Details"/>
+				<element_action element_action_name="activate" display_name="Activate"/>
+			</element_actions>
+		</element_security>
+		<element_security element_name="xdat:role_type" secondary_password="false" secure_ip="false" secure="false" browse="false" quarantine="false" pre_load="true">
+			<element_actions>
+				<element_action element_action_name="xml" display_name="View XML"/>
+				<element_action element_action_name="edit" display_name="Edit Details"/>
+			</element_actions>
+		</element_security>
+	</element_security_set>
+</security>

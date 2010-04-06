@@ -1,0 +1,1044 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xdat:security require_login="1" system="XNAT" xmlns:xdat="http://nrg.wustl.edu/security" xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nrg.wustl.edu/security ../src/schemas/security/security.xsd">
+	<xdat:groups>
+		<xdat:group ID="ALL_DATA_ACCESS" displayName="All Data Access">
+			<xdat:element_access element_name="xnat:projectData">
+				<xdat:permissions>
+					<xdat:allow_set method="AND">
+						<xdat:allow field="xnat:projectData/ID" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:petSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:petSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:petSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:ctSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:ctSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:ctSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:usSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:usSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:usSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:crSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:crSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:crSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:epsSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:epsSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:epsSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:hdSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:hdSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:hdSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:ecgSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:ecgSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:ecgSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:ioSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:ioSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:ioSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:mgSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:mgSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:mgSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:dxSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:dxSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:dxSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:gmvSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:gmvSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:gmvSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:gmSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:gmSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:gmSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:esvSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:esvSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:esvSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:esSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:esSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:esSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:dx3DCraniofacialSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:dx3DCraniofacialSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:dx3DCraniofacialSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xa3DSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xa3DSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:xa3DSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:rfSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:rfSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:rfSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xaSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xaSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:xaSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:smSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:smSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:smSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xcSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xcSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:xcSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xcvSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xcvSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:xcvSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:opSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:opSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:opSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:optSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:optSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:optSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:rtSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:rtSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:rtSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:megSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:megSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:megSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:otherDicomSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:otherDicomSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:otherDicomSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:mrSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:mrSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:mrSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:subjectData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:subjectData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:subjectData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+		</xdat:group>
+		<xdat:group ID="ALL_DATA_ADMIN" displayName="All Data Administration">
+			<xdat:element_access element_name="xnat:projectData">
+				<xdat:permissions>
+					<xdat:allow_set method="AND">
+						<xdat:allow field="xnat:projectData/ID" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:petSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:petSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:petSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:ctSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:ctSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:ctSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:usSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:usSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:usSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:crSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:crSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:crSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:epsSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:epsSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:epsSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:hdSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:hdSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:hdSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:ecgSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:ecgSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:ecgSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:ioSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:ioSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:ioSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:mgSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:mgSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:mgSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:dxSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:dxSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:dxSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:gmvSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:gmvSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:gmvSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:gmSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:gmSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:gmSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:esvSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:esvSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:esvSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:esSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:esSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:esSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:dx3DCraniofacialSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:dx3DCraniofacialSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:dx3DCraniofacialSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xa3DSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xa3DSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:xa3DSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:rfSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:rfSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:rfSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xaSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xaSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:xaSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:smSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:smSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:smSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xcSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xcSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:xcSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:xcvSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:xcvSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:xcvSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:opSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:opSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:opSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:optSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:optSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:optSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:rtSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:rtSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:rtSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:megSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:megSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:megSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:otherDicomSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:otherDicomSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:otherDicomSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:mrSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:mrSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:mrSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:subjectData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:subjectData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:subjectData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+		</xdat:group>
+	</xdat:groups>
+	<xdat:users>
+		<xdat:user enabled="1">
+			<xdat:login>boss</xdat:login>
+			<xdat:firstname>boss</xdat:firstname>
+			<xdat:lastname>boss</xdat:lastname>
+			<xdat:email>test@test.com</xdat:email>
+			<xdat:primary_password encrypt="0">boss</xdat:primary_password>
+			<xdat:assigned_roles>
+				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
+					<xdat:allowed_actions>
+						<xdat:allowed_action action_name="admin" display_name="Administration" sequence="1"/>
+					</xdat:allowed_actions>
+				</xdat:assigned_role>
+				<xdat:assigned_role description="can authenticate user permissions" role_name="Bossman" sequence="1"/>
+				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
+					<xdat:allowed_actions>
+						<xdat:allowed_action action_name="browse" display_name="Browse" sequence="4"/>
+						<xdat:allowed_action action_name="super_search" display_name="Super Search" sequence="2"/>
+						<xdat:allowed_action action_name="search" display_name="Search" sequence="1"/>
+						<xdat:allowed_action action_name="MyXNAT" display_name="My XNAT" sequence="5"/>
+					</xdat:allowed_actions>
+				</xdat:assigned_role>
+			</xdat:assigned_roles>
+		</xdat:user>
+		<xdat:user enabled="1">
+			<xdat:login>admin</xdat:login>
+			<xdat:firstname>Admin</xdat:firstname>
+			<xdat:lastname>Admin</xdat:lastname>
+			<xdat:email>test@test.com</xdat:email>
+			<xdat:primary_password encrypt="1">cfokl</xdat:primary_password>
+			<xdat:assigned_roles>
+				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
+					<xdat:allowed_actions>
+						<xdat:allowed_action action_name="admin" display_name="Administration" sequence="1"/>
+					</xdat:allowed_actions>
+				</xdat:assigned_role>
+				<xdat:assigned_role description="can insert experiments and subjects" role_name="DataManager" sequence="1">
+					<xdat:allowed_actions>
+						<xdat:allowed_action action_name="XMLUpload" display_name="Upload XML" sequence="7"/>
+						<xdat:allowed_action action_name="ImageUpload" display_name="Upload Images" sequence="10"/>
+						<xdat:allowed_action action_name="prearchives" display_name="View Prearchive" sequence="11"/>
+						<xdat:allowed_action action_name="add_xnat_projectData" display_name="Add Project" sequence="7"/>
+					</xdat:allowed_actions>
+				</xdat:assigned_role>
+				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
+					<xdat:allowed_actions>
+						<xdat:allowed_action action_name="browse" display_name="Browse" sequence="4"/>
+						<xdat:allowed_action action_name="super_search" display_name="Super Search" sequence="2"/>
+						<xdat:allowed_action action_name="search" display_name="Search" sequence="1"/>
+						<xdat:allowed_action action_name="MyXNAT" display_name="My XNAT" sequence="5"/>
+					</xdat:allowed_actions>
+				</xdat:assigned_role>
+			</xdat:assigned_roles>
+			<xdat:groups>
+				<xdat:groupID>ALL_DATA_ADMIN</xdat:groupID>
+			</xdat:groups>
+		</xdat:user>
+		<xdat:user enabled="1">
+			<xdat:login>guest</xdat:login>
+			<xdat:firstname>XNAT</xdat:firstname>
+			<xdat:lastname>Guest</xdat:lastname>
+			<xdat:email>test@test.com</xdat:email>
+			<xdat:primary_password encrypt="0">guest</xdat:primary_password>
+			<xdat:assigned_roles>
+				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
+					<xdat:allowed_actions>
+						<xdat:allowed_action action_name="browse" display_name="Browse" sequence="4"/>
+						<xdat:allowed_action action_name="super_search" display_name="Super Search" sequence="2"/>
+						<xdat:allowed_action action_name="search" display_name="Search" sequence="1"/>
+						<xdat:allowed_action action_name="MyXNAT" display_name="My XNAT" sequence="5"/>
+					</xdat:allowed_actions>
+				</xdat:assigned_role>
+			</xdat:assigned_roles>
+		</xdat:user>
+	</xdat:users>
+	<xdat:element_security_set>
+		<xdat:element_security element_name="xdat:element_security" secondary_password="0" secure_ip="0" secure="0" browse="0" searchable="0" sequence="1" quarantine="0" pre_load="1" singular="" plural="" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="4" image="delete.gif" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xdat:role_type" secondary_password="0" secure_ip="0" secure="0" browse="0" searchable="0" sequence="1" quarantine="0" pre_load="1" singular="" plural="" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="4" image="delete.gif" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xdat:stored_search" secondary_password="0" secure_ip="0" secure="0" browse="0" searchable="0" sequence="0" quarantine="0" pre_load="1" singular="" plural="" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="2" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="3" image="right2.gif" popup="always"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="4" image="delete.gif" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xdat:user" secondary_password="0" secure_ip="0" secure="0" browse="0" sequence="1" searchable="0" quarantine="0" pre_load="0" singular="" plural="" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="activate" display_name="Authorize" sequence="0"/>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="4" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="2" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="user_admin" display_name="Change Permissions" sequence="3"/>
+				<xdat:element_action element_action_name="enable" display_name="Enable/Disable" sequence="1"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xdat:userGroup" searchable="0" secondary_password="0" secure_ip="0" secure="0" browse="0" sequence="0" quarantine="0" pre_load="1" singular="" plural="" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="2" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="3" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="4" image="delete.gif" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xdat:newsEntry" searchable="0" secondary_password="0" secure_ip="0" secure="0" browse="0" sequence="0" quarantine="0" pre_load="1" singular="News" plural="News" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="2" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="3" image="right2.gif" popup="always"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="4" image="delete.gif" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xdat:infoEntry" searchable="0" secondary_password="0" secure_ip="0" secure="0" browse="0" sequence="0" quarantine="0" pre_load="1" singular="Info" plural="Info" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="2" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="3" image="right2.gif" popup="always"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="4" image="delete.gif" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:investigatorData" secondary_password="0" secure_ip="0" secure="0" browse="0" searchable="0" sequence="1" quarantine="0" pre_load="0" singular="" plural="" accessible="0">
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:mrSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="1" quarantine="0" pre_load="0" singular="MR Session" plural="MR Sessions" accessible="1" code="MR">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:mrSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:mrSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_xnat_imageSessionData" display_name="Tagged Upload" sequence="5" grouping="Upload" image="Up.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:subjectData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="0" quarantine="0" pre_load="0" singular="Subject" plural="Subjects" accessible="1">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:subjectData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:subjectData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="add_experiment" display_name="Add Experiment" sequence="2" image="update.gif"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="3" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="4" image="right2.gif" popup="never"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:ctSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="CT Session" plural="CT Sessions" accessible="1" code="CT">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:ctSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:ctSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:usSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="Ultrasound" plural="Ultrasounds" accessible="1" code="ULT">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:usSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:usSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:crSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="CR Session" plural="CR Sessions" accessible="1" code="CR">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:crSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:crSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:epsSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="EPS Session" plural="EPS Sessions" accessible="1" code="EP">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:epsSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:epsSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:hdSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="HD Session" plural="HD Sessions" accessible="1" code="HD">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:hdSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:hdSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:ecgSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="ECG Session" plural="ECG Sessions" accessible="1" code="ECG">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:ecgSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:ecgSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:ioSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="IO Session" plural="IO Sessions" accessible="1" code="IO">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:ioSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:ioSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:mgSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="MG Session" plural="MG Sessions" accessible="1" code="MG">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:mgSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:mgSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:dxSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="DX Session" plural="DX Sessions" accessible="1" code="DX">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:dxSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:dxSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:gmvSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="GMV Session" plural="GMV Sessions" accessible="1" code="GMV">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:gmvSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:gmvSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:gmSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="GM Session" plural="GM Sessions" accessible="1" code="GM">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:gmSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:gmSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:esvSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="ESV Session" plural="ESV Sessions" accessible="1" code="ESV">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:esvSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:esvSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:esSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="ES Session" plural="ES Sessions" accessible="1" code="ES">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:esSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:esSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:dx3DCraniofacialSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="DX3DCRANIOFACIAL Session" plural="DX3DCRANIOFACIAL Sessions" accessible="1" code="DX3DCRANIOFACIAL">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:dx3DCraniofacialSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:dx3DCraniofacialSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:xa3DSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XA3D Session" plural="XA3D Sessions" accessible="1" code="XA3D">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:xa3DSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:xa3DSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:rfSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="RF Session" plural="RF Sessions" accessible="1" code="RF">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:rfSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:rfSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:xaSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XA Session" plural="XA Sessions" accessible="1" code="XA">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:xaSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:xaSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:smSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="SM Session" plural="SM Sessions" accessible="1" code="SM">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:smSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:smSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:xcSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XC Session" plural="XC Sessions" accessible="1" code="XC">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:xcSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:xcSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:xcvSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XCV Session" plural="XCV Sessions" accessible="1" code="XCV">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:xcvSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:xcvSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:opSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="OP Session" plural="OP Sessions" accessible="1" code="OP">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:opSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:opSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:optSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="OPT Session" plural="OPT Sessions" accessible="1" code="OPT">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:optSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:optSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:rtSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="RT Session" plural="RT Sessions" accessible="1" code="RT">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:rtSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:rtSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:megSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="MEG Session" plural="MEG Sessions" accessible="1" code="MEG">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:megSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:megSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:otherDicomSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="Other DICOM Session" plural="Other DICOM Sessions" accessible="1" code="OT">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:otherDicomSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:otherDicomSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:petSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="PET Session" plural="PET Sessions" accessible="1" code="PET">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:petSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:petSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:projectData" secondary_password="0" secure_ip="0" secure="1" browse="0" searchable="1" sequence="0" quarantine="0" pre_load="0" singular="Project" plural="Projects" accessible="0">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:projectData/ID</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="3" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="4" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+	</xdat:element_security_set>
+</xdat:security>

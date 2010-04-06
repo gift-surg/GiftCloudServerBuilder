@@ -1,0 +1,24 @@
+<div id="logo" align="center"><img src="$server/images/logo.jpg"/></div>
+<hr>
+<TABLE>
+ <TR>
+  <TD><h3>$projectOM.getName() access invitation.</h3></TD>
+ </TR>
+ <TR><TD>
+$user.getFirstname() $user.getLastname() has invited you to join the $projectOM.getName() Project.  
+#if($projectOM.getDescription())
+Project Description: $projectOM.getDescription()
+#end
+</TD></TR>
+ <TR>
+  <TD><a href="$server/app/action/AcceptProjectAccess/par/$par.getPar_id()">Proceed to the site to get started reviewing/using the data.</A></TD>
+ </TR>
+<TR><TD>
+<br><br>
+The $system Team<BR>
+
+<a href="$server/app/action/AcceptProjectAccess/par/$par.getPar_id()">$server</a><BR>
+
+<a href="mailto:$admin_email">$admin_email</a>
+
+</TD></TR></TABLE>

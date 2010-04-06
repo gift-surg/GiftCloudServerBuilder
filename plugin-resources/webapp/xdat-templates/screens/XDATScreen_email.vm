@@ -1,0 +1,106 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#set ($pageName = "SearchResults.vm")
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("DefaultExptList.vm")
+#set ($currentPage = $currentPage + 1)
+<script type="text/javascript">
+<!--
+String.prototype.format = function() {
+	var name = "to";
+	return (name == this.substring(0,2)) 
+}
+
+function CheckAll() {
+	var inputs = document.getElementsByTagName("input");
+	for (var i =0; i<inputs.length; i++) {
+  	    if (inputs[i].type=="checkbox") {
+	  	    	var boxName = inputs[i].name;
+	  	    	if (boxName.format(i)) {
+  	       		  inputs[i].checked = true;
+	  	 		}
+	  	}	
+  	}
+  	return false;  	
+}
+//-->
+
+</script>
+#if ($data.message)
+<DIV class="error">$data.message</DIV><br>
+#end
+#parse("/screens/admin_bar.vm")
+<BR><BR>
+<p>
+<table border="0" width="95%">
+	<tr>
+		<td colspan=2>
+			<form name="Mail" method="post" action="$link.setAction("EmailAction").setPage("XDATScreen_admin.vm")">
+			<DIV VALIGN="top" align="left">
+			#if ($users.size()!=0)
+				<table >
+					<tr>
+						<td valign=top>
+							<table >
+								<tr>
+									#set ($checkAll = "<a href ='' onmouseover='return true;' ONCLICK = 'return CheckAll($users.size())'><font size=1>Check All</font></a>" )
+									<td colspan=3> $checkAll </td>
+								</tr>	
+								<tr>
+									<TH> TO </TH>
+									<TH> CC </TH>
+									<TH> BCC </TH>
+									<TH> Name </TH>			
+								</tr>
+								#set ($backColor = 0)
+								#set ($rowCount = 1)
+								#foreach ($usr in $users)
+									#set($usrEmail = $usr.getStringProperty("email"))
+					 				#if ($usrEmail!="")	
+										#if ($backColor == 0)
+											<TR bgcolor="FFFFFF">
+											#set ($backColor = 1)
+										#else
+											<TR bgcolor="DEDEDE">
+											#set ($backColor = 0)
+										#end
+										#if ($emailTo.equalsIgnoreCase($usrEmail))
+											<td> <input type="checkbox" name="to$velocityCount" CHECKED> </td>
+										#else
+											<td> <input type="checkbox" name="to$velocityCount"> </td>
+										#end
+										<td> <input type="checkbox" name="cc$velocityCount"> </td>
+										<td> <input type="checkbox" name="bcc$velocityCount"> </td>
+										<td> $usr.getStringProperty("firstname") $usr.getStringProperty("lastname")<input type="hidden" name="EMAILID_$velocityCount" value="$usrEmail"></td>
+										
+										</tr>
+										#set ($rowCount = $rowCount + 1)
+			 						#end	
+								#end	
+							</table>
+							<input type="hidden" name="RowCount" value="$rowCount">
+						</td>
+						<td valign=top>
+ 							Subject <input type=text name=subject size=47><BR>
+							<TEXTAREA COLS="40" NAME="message" ROWS="15" >
+							</TEXTAREA> 
+							<TABLE WIDTH=100%>
+								<tr>
+									<td colspan=2 align=center>
+										<input type="submit" name="eventSubmit_doPerform" value="Send">
+										&nbsp;
+										<input type="button" name="cancel" value="Cancel" onclick="javascript:history.go(-1);">
+									</td>
+								</tr>
+							</TABLE>
+						</td>
+					</tr>
+				</table>
+			#end
+			</div>
+			</form>
+		</td>
+	</tr>
+</table>

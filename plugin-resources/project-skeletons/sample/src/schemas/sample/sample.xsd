@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) -->
+<xs:schema targetNamespace="http://cnl.wustl.edu/Sample" xmlns:sample="http://cnl.wustl.edu/Sample" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdat="../xdat/xdat.xsd" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="customerType">
+		<xs:sequence>
+			<xs:element name="firstname" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lastname" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="email" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="addresses" type="sample:addressType" maxOccurs="unbounded"/>
+			<xs:element name="orders">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="order" type="sample:orderType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:integer" use="optional">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field>
+						<xdat:sqlField primaryKey="true" autoIncrement="true"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="orderLineType">
+		<xs:sequence>
+			<xs:element name="order" type="sample:orderType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="price_per" type="xs:float"/>
+			<xs:element name="quantity" type="xs:integer"/>
+			<xs:element name="product" type="sample:productType">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="orderType">
+		<xs:sequence>
+			<xs:element name="customer" type="sample:customerType" minOccurs="0"/>
+			<xs:element name="orderItems">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="orderItem" type="sample:orderLineType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="billing_address" type="sample:addressType"/>
+			<xs:element name="shipping_address" type="sample:addressType"/>
+		</xs:sequence>
+		<xs:attribute name="order_date" type="xs:dateTime" use="required"/>
+		<xs:attribute name="ID" type="xs:integer" use="optional">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field>
+						<xdat:sqlField primaryKey="true" autoIncrement="true"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="productType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="manufacturer" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="ID">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field>
+						<xdat:sqlField primaryKey="true"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="addressType">
+		<xs:sequence>
+			<xs:element name="attn" type="xs:string" minOccurs="0"/>
+			<xs:element name="street1" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="street2" type="xs:string" minOccurs="0"/>
+			<xs:element name="city" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="state" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zip" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="phone" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field uniqueComposite="UNIQUE"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="active" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<xs:element name="Customer" type="sample:customerType"/>
+	<xs:element name="Order" type="sample:orderType"/>
+</xs:schema>

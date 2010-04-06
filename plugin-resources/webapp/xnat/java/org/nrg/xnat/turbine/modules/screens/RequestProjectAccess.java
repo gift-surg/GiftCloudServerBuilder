@@ -1,0 +1,27 @@
+//Copyright 2007 Washington University School of Medicine All Rights Reserved
+/*
+ * Created on May 21, 2007
+ *
+ */
+package org.nrg.xnat.turbine.modules.screens;
+
+import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatProjectdataI;
+import org.nrg.xdat.turbine.modules.screens.SecureScreen;
+
+public class RequestProjectAccess extends SecureScreen {
+
+    @Override
+    protected void doBuildTemplate(RunData data, Context context) throws Exception {
+        String p = data.getParameters().getString("project");
+        XnatProjectdataI project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
+        
+        context.put("project", project);
+    }
+    
+    public boolean allowGuestAccess(){
+        return false;
+    }
+}

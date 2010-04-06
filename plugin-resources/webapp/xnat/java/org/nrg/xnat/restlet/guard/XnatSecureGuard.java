@@ -1,0 +1,140 @@
+// Copyright 2010 Washington University School of Medicine All Rights Reserved
+package org.nrg.xnat.restlet.guard;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.security.Authenticator;
+import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xnat.restlet.representations.RESTLoginRepresentation;
+import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.util.BrowserDetector;
+import org.nrg.xnat.restlet.util.BrowserDetectorI;
+import org.nrg.xnat.restlet.util.RequestUtil;
+import org.restlet.Filter;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+
+public class XnatSecureGuard extends Filter {
+	static org.apache.log4j.Logger logger = Logger.getLogger(XnatSecureGuard.class);
+	private static final String HTTP_REALM = "XNAT Protected Area";
+
+	/**
+	 * Attempts to log the user in, first by checking the for an existing
+	 * session (breaks traditional REST), then by trying HTTP basic
+	 * authentication. Stores the authenticated XDATUser in the HttpSession.
+	 */
+	@Override
+	protected int beforeHandle(Request request, Response response) {
+		if (authenticate(request, response)) {
+			return CONTINUE;
+		} else {
+			unauthorized(request, response);
+			return STOP;
+		}
+	}
+
+	protected Representation loginRepresentation(Request request) {
+		return new RESTLoginRepresentation(MediaType.TEXT_HTML, request, null);
+	}
+
+	protected HttpServletRequest getHttpServletRequest(Request request) {
+		return getRequestUtil().getHttpServletRequest(request);
+	}
+
+	protected RequestUtil getRequestUtil() {
+		return new RequestUtil();
+	}
+
+	protected ChallengeRequest createChallengeRequest() {
+		return new ChallengeRequest(ChallengeScheme.HTTP_BASIC, HTTP_REALM);
+	}
+
+	protected BrowserDetectorI getBrowserDetector() {
+		return new BrowserDetector();
+	}
+
+	protected XDATUser getUser(String login) throws Exception {
+		return new XDATUser(login);
+	}
+
+	private boolean authenticate(Request request, Response response) {
+		// THIS BREAKS THE TRADITIONAL REST MODEL
+		// But, if the user is already logged into the website and navigates
+		// to a REST GET, they shouldn't have to re-login , TO
+		final HttpServletRequest httpRequest = getHttpServletRequest(request);
+		final XDATUser sessionUser = getSessionUser(httpRequest);
+		if (sessionUser != null) {
+			attachUser(request, sessionUser);
+			return true;
+		} else {
+			try {
+				final ChallengeResponse challengeResponse = request
+						.getChallengeResponse();
+				if (challengeResponse != null) {
+					final XDATUser user = authenticateBasic(challengeResponse);
+					if (user != null) {
+						attachUser(request, user);
+						return true;
+					}
+				}
+			} catch (RuntimeException e) {
+				// We let this return an error to cause a 500 to return to the user.  The only other
+				// option is to throw a 401.  But this wouldn't inform the user that there was an error.
+				throw e;
+			}
+		}
+		return false;
+	}
+
+	private XDATUser getSessionUser(HttpServletRequest httpRequest) {
+		return (XDATUser) httpRequest.getSession().getAttribute(
+				SecureResource.USER_ATTRIBUTE);
+	}
+
+	private void attachUser(Request request, XDATUser user) {
+		request.getAttributes().put(SecureResource.USER_ATTRIBUTE, user);
+	}
+
+	private XDATUser authenticateBasic(ChallengeResponse challengeResponse) {
+		XDATUser user = null;
+		try {
+			final String username = challengeResponse.getIdentifier();
+			final String password = new String(challengeResponse.getSecret());
+
+			user = getUser(username);
+			Authenticator.Authenticate(user, new Authenticator.Credentials(username, password));
+		} catch (Exception e) {
+			user = null;
+		}
+		return user;
+	}
+
+	private void unauthorized(Request request, Response response) {
+		final HttpServletRequest httpRequest = getHttpServletRequest(request);
+		// the session wasn't good, so let's just clear it out
+		httpRequest.getSession().invalidate();
+
+		response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+
+		// HACK - browser sniff to detect script vs browser (human) access.
+		// Browser access should always get the Login.vm page, while scripts
+		// should use the standard challenge request/response mechanism. Will
+		// break if script spoofs user-agent as major browser.
+		// http://nrg.wustl.edu/fogbugz/default.php?424
+		if (getBrowserDetector().isBrowser(httpRequest)) {
+			response.setEntity(loginRepresentation(request));
+		} else {
+			// standard 401 with a www-authenticate
+			response.setChallengeRequest(createChallengeRequest());
+		}
+	}
+
+}

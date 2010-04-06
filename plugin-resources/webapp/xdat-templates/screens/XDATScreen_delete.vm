@@ -1,0 +1,25 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<TABLE width="100%" border=0>
+	<TR>
+		<TD align="left"><font face="$ui.sansSerifFonts" size="4" style="line-height:18px;"><b>Confirm Deletion</b></font></TD>
+	</TR>
+</TABLE>
+<BR>
+<TABLE>
+	<TR>
+		<TD>Are you sure you want to delete this data?</TD>
+	</TR>
+	<TR>
+		<TD>
+			<form name="form1" method="post" action="$link.setAction("DeleteAction").setPage("ClosePage.vm")">
+				#xdatPassItemFormFields($search_element $search_field $search_value $project)
+				<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" name="eventSubmit_doPerform" value="Delete"/>
+			</form>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			$item.toXML_HTML();
+		</TD>
+	</TR>
+</TABLE>

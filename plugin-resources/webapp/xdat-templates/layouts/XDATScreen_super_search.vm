@@ -1,0 +1,27 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<HTML>
+<HEAD>
+<TITLE>$!systemName</TITLE>
+$navigation.setTemplate("/HeaderIncludes.vm")
+</HEAD>
+<BODY onload="selectDefault('xnat:mrSessionData');">
+
+<!-- XDATScreen_super_search -->
+<table width="100%" border=0 >
+  <tr>
+    <td colspan="2">
+      $navigation.setTemplate("/DefaultTop.vm")
+    </td>
+  </tr>
+</table>
+<table width="100%" border=0>
+  <tr>
+    <td align="left" valign="top">
+      $navigation.setTemplate("/Breadcrumb.vm")
+      <div id="layout_content2" style="display:none;">Loading...</DIV>
+      <div id="layout_content">$screen_placeholder</DIV>
+    </td>
+  </tr>
+</table>
+</BODY>
+</HTML>

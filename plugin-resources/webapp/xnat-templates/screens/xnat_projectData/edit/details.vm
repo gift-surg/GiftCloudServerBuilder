@@ -1,0 +1,174 @@
+<TABLE>
+				<TR><TH align="left">Title</TH><TD>		<input id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95"/></TD></TR>
+														<TR><TH align="left">Running Title</TH><TD>		<input id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24"/> (24 characters maximum.)</TD></TR>
+<TR><TH align="left" NOWRAP>Project Abbreviation</TH><TD>
+									#if(		$item.getProperty("xnat:projectData/ID") && $item.getProperty("xnat:projectData/ID")!="")
+		<input id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")"/>
+		$item.getProperty("xnat:projectData/ID")
+		#else
+		<input id="xnat:projectData/ID" type="text" name="xnat:projectData/ID" value="" size="14" maxlength="14" ONCHANGE="this.value=stringCamelCaps(this.value);"/>&nbsp;(One word only, no special characters,'_' is ok.)
+		#end</TD></TR>
+							<TR><TH align="left">Description</TH><TD>		<textarea id="xnat:projectData/description"  name="xnat:projectData/description" rows="4" cols="70">$!item.getStringProperty("xnat:projectData/description")</textarea></TD></TR>
+											<TR><TH align="left">Keywords</TH><TD>		<input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95"/></TD></TR>
+														#set($pathInfo = $arcP.getPaths())
+ <INPUT TYPE="hidden" NAME="arc:project/current_arc" VALUE="arc001"/>
+ 
+ <TR><TH align="left">Alias</TH>
+ <TD>
+ #foreach($aliasCounter in [0..3])
+ <input id="xnat:projectData/aliases/alias[$aliasCounter]/alias" type="text" name="xnat:projectData/aliases/alias[$aliasCounter]/alias" value="$!item.getStringProperty("xnat:projectData/aliases/alias[$aliasCounter]/alias")"/>
+ &nbsp;
+ #end
+ </TD>
+ </TR> 
+ <TR><TH align="left" valign="top">Investigators</TH>
+ <TD><div id="investigatorBox">Loading...</div>
+ </TD>
+ </TR>
+</TABLE>
+<script type="text/javascript" src="$content.getURI("scripts/generated/xnat_investigatorData.js")"></script> 
+<script type="text/javascript" src="$content.getURI("scripts/xnat_investigatorData/investigatorManager.js")"></script> 
+<script>
+window.invest_manager = new InvestigatorManager();
+#if($om.getProperty('pi_xnat_investigatordata_id'))
+window.primary_investigator="$!om.getProperty('pi_xnat_investigatordata_id')";
+#end
+window.other_investigators=new Array();
+#foreach($inv in $project.getInvestigators_investigator())
+window.other_investigators.push("$!inv.getProperty('xnat_investigatordata_id')");
+#end
+
+window.refreshInvestigators=function (){
+  var div=document.getElementById("investigatorBox");
+  div.innerHTML="";
+  
+  var table=document.createElement("table");
+  var tbody=document.createElement("tbody");
+  var tr=document.createElement("tr");
+  
+  tbody.appendChild(tr);
+  table.appendChild(tbody);
+  div.appendChild(table);
+  
+  var th= document.createElement("th");
+  th.innerHTML="PI";
+  tr.appendChild(th);
+  
+  var td= document.createElement("td");
+  var piSelect=document.createElement("select");
+  piSelect.name="xnat:projectData/pi_xnat_investigatordata_id";
+  window.invest_manager.populateSelect(piSelect,window.primary_investigator);
+  td.appendChild(piSelect);
+  tr.appendChild(td);
+  
+  //MORE INVESTIGATORS
+  var td= document.createElement("td");
+  td.valign="bottom";
+  var button = document.createElement("input");
+  button.type="button";
+  button.value="More Investigators";
+  button.tbody=tbody;
+  button.onclick=function(){
+    tr=document.createElement("tr");
+    var th= document.createElement("th");
+    th.innerHTML="Investigator "+(tbody.rows.length);
+    tr.appendChild(th);
+  
+    var td= document.createElement("td");
+    var piSelect=document.createElement("select");
+    piSelect.name="xnat:projectData/investigators/investigator["+ (tbody.rows.length) + "]/xnat_investigatordata_id";
+    window.invest_manager.populateSelect(piSelect,window.other_investigators[otherCounter]);
+    td.appendChild(piSelect);
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return false;
+  }
+  td.appendChild(button);
+  tr.appendChild(td);
+  
+  //CREATE INVESTIGATOR
+  var td= document.createElement("td");
+  td.valign="bottom";
+  var button = document.createElement("input");
+  button.type="button";
+  button.value="Create Investigator";
+  button.tbody=tbody;
+  button.onclick=function(){
+     if (window.investigatorForm!=undefined){
+		       window.investigatorForm.close();
+		       window.investigatorForm=null;
+   	  }
+   	  
+   	  		window.create_investigator_link ="$link.setPage('XDATScreen_edit_xnat_investigatorData.vm').addPathInfo('popup','true')";
+				     window.create_investigator_link+="/project/$project/destination/JS_Parent_Return.vm";
+
+   	  window.investigatorForm=window.open(window.create_investigator_link, '','width=500,height=550,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+   	  if (window.investigatorForm.opener == null) window.investigatorForm.opener = self;
+  }
+  td.appendChild(button);
+  tr.appendChild(td);
+  
+  for(var otherCounter=0;otherCounter<window.other_investigators;otherCounter++){
+    tr=document.createElement("tr");
+    var th= document.createElement("th");
+    th.innerHTML="Investigator " + (otherCounter+1);
+    th.noWrap="true";
+    tr.appendChild(th);
+  
+    var td= document.createElement("td");
+    var piSelect=document.createElement("select");
+    piSelect.name="xnat:projectData/investigators/investigator["+ (otherCounter+1) + "]/xnat_investigatordata_id";
+    window.invest_manager.populateSelect(piSelect,window.other_investigators[otherCounter]);
+    td.appendChild(piSelect);
+    tr.appendChild(td);
+  }
+    
+  
+}
+
+window.success=function(subject_id){
+  alert("The investigator you entered was stored.");
+  if(window.investigatorForm!=undefined){
+    window.investigatorForm.close();
+		    window.investigatorForm=null;
+		  }
+		  document.getElementById("investigatorBox").innerHTML="Loading...";
+		  window.invest_manager.init();
+}
+window.failure=function(msg){
+  alert(msg);
+  if(window.investigatorForm!=undefined){
+    window.investigatorForm.close();
+		    window.investigatorForm=null;
+		  }
+}
+
+window.invest_manager.investigatorsLoaded.subscribe(window.refreshInvestigators,this);
+window.invest_manager.init();
+
+
+
+function stringCamelCaps(val)
+{
+        var temp = val.replace(/^\s*|\s*$/g,"");
+        //temp = temp.replace(/[-]/," ");
+        temp = temp.replace(/[&]/," ");
+        temp = temp.replace(/[?]/," ");
+        temp = temp.replace(/[<]/," ");
+        temp = temp.replace(/[>]/," ");
+        temp = temp.replace(/[(]/," ");
+        temp = temp.replace(/[)]/," ");
+        var newVal = '';
+        temp = temp.split(' ');
+        for(var c=0; c < temp.length; c++) {
+              if (c==0)
+                newVal += temp[c].substring(0,1) +
+temp[c].substring(1,temp[c].length);
+              else
+                newVal += temp[c].substring(0,1).toUpperCase() +
+temp[c].substring(1,temp[c].length);
+        }
+        
+        return newVal;
+}
+</script>

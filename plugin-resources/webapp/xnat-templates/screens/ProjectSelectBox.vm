@@ -1,0 +1,32 @@
+#parse("/screens/LoadProjectsJS.vm")
+	#set($user=$data.getSession().getAttribute("user"))
+#set($projectMap = $user.getCachedItemValuesHash("xnat:projectData",null,false,"xnat:projectData/ID","xnat:projectData/secondary_ID"))
+	#if($project)
+<INPUT type="hidden" name="project" value="$project">
+#if($projectMap.get($project))
+$projectMap.get($project)
+#else
+$project
+#end
+#else
+#set($create_projects= $data.getSession().getAttribute("user").getAllowedValues("xnat:subjectData","xnat:subjectData/project","create"))
+
+#if($create_projects.size()>0)
+<SELECT name="project">
+<option value="">(SELECT)</option>
+#foreach($proj in $create_projects)
+#if($projectMap.get($proj))
+<option value="$proj">
+$projectMap.get($proj)
+</option>
+#elseif($proj!="*")
+<option value="$proj">
+$proj
+</option>
+#end
+#end
+</SELECT>
+#else
+ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+#end
+#end

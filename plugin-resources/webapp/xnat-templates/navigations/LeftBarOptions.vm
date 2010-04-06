@@ -1,0 +1,7 @@
+#if($arc && $arc.getDcm_httpUrl() && $arc.getDcm_appletLink())
+<tr>
+   <td align="center">
+     <INPUT type="button" style="line-height:10px;font-size:9px;font-weight:700;" VALUE="Launch Uploader" ONCLICK="popupWithProperties('$link.setPage("DICOMUploadApplet.vm")/popup/true', '', 'width=840,height=580,status=yes,resizable=yes,scrollbars=no,toolbar=no')"/>	
+   </td>
+ </tr>
+#end

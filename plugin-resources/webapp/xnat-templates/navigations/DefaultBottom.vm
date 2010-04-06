@@ -1,0 +1,25 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+
+ <DIV ID="mylogger"></DIV>
+<TABLE width="100%" >
+<TR>
+	<TD><hr></TD>
+</TR>
+<TR>
+	<TD valign="bottom" align="right">
+		<a target="_blank" href="http://www.xnat.org/">
+		<img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>
+	</TD>
+</TR>
+</TABLE>
+
+<script language="javascript">
+
+var forms =document.getElementsByTagName("form");
+    for (ti=0;ti<forms.length;ti++) {
+	       var thisForm = forms[ti];
+	       if(thisForm.onsubmit == undefined && ('' + thisForm.className + '').indexOf('noHide')==-1){
+	         thisForm.onsubmit=function(){concealContent("Submitting... Please wait.")};
+	       }
+    }
+</script>

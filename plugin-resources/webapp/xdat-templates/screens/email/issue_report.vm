@@ -1,0 +1,40 @@
+Instructions To XNAT Administrator
+=============================================================
+A user, $user.getFirstname() $user.getLastname() ($user.getEmail()), has 
+reported an issue in the instance of XNAT that you administer.  Please take 
+the approriate action on your site to resolve the user's issue.  
+
+If the issue represents a bug in XNAT, please forward this email to the XNAT 
+developers at bugs@xnat.org. When sending, please add any additional materials, 
+such as server logs, that may aid the developers in resolving the issue.
+
+Summary
+=============================================================
+$summary
+
+Description
+=============================================================
+$description
+
+
+Client Information
+=============================================================
+Login:                  $user.getLogin()
+Email:                  $user.getEmail()
+Browser User-Agent:     $user_agent
+Remote Address:         $remote_addr
+
+Server Information
+=============================================================
+Server Time:            $time
+XNAT Host:              $xnat_host
+XNAT Version:           $xnat_version
+Servlet Container:      $server_info
+PostgreSQL Version:     $postgres_version
+Java Vendor:            $java_vendor
+Java Version:           $java_version
+OS Name:                $os_name
+OS Architecture:        $os_arch
+OS Version:             $os_version
+        
+        

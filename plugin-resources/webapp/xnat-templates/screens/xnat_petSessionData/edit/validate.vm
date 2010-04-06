@@ -1,0 +1,14 @@
+<script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/omUtils.js')"></SCRIPT>
+<script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/petSessionData/validation.js')"></SCRIPT>
+<script type="text/javascript">
+function validateForm(){
+  if(confirmValues())
+  {
+     concealContent("Submitting session.");
+     return true;
+  }else{
+     return false;
+  }
+} 
+
+</script>

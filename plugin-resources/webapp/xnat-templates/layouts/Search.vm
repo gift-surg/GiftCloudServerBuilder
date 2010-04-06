@@ -1,0 +1,43 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<HTML>
+<HEAD>
+<TITLE>$!systemName</TITLE>
+$navigation.setTemplate("/HeaderIncludes.vm")
+
+</HEAD>
+<BODY style="margin-top:0px" id="page_body" class="yui-skin-sam">
+<table WIDTH="100%" HEIGHT="100%" VALIGN="top" style="">
+	<TR>
+		<TD VALIGN="top" align="left" style="">
+<table border="0" width="100%" ID="DefaultTopTR" style="">
+  <tr>
+    <td>
+      $navigation.setTemplate("/DefaultTop.vm")
+    </td>
+  </tr>
+</table>
+  <div id="tp_fm"></div>
+<table border="0" width="100%">
+  <tr>
+   <td valign="top" align="center">
+    <div id="layout_content">$screen_placeholder</DIV>
+   </td>
+  </tr>
+</table>
+		</TD>
+	</TR>
+	<TR>
+		<TD ALIGN="right">
+			<table valign="bottom">
+				<tr>
+				    <td valign="bottom" align="right">
+						<DIV valign="bottom" align="right"><a href="http://www.xnat.org"><img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a></DIV>
+						
+					</td>
+				</tr>
+			</table>
+		</TD>
+	</TR>
+</TABLE>
+</BODY>
+</HTML>

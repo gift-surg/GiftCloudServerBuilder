@@ -1,0 +1,77 @@
+<SCRIPT language="javascript">
+var all_elements = new Array();
+
+#foreach($gwe in $all_elements)
+all_elements.push("$gwe.getFullXMLName()");
+#end
+
+function removeAllOptions(selectbox)
+{
+var j;
+for(j=selectbox.options.length-1;j>=0;j--)
+{
+selectbox.remove(j);
+}
+}
+
+function populateFullList(){
+  var selectBox = document.getElementById("root_data_type");
+  
+  removeAllOptions(selectBox);
+  
+  selectBox.options[0]= new Option("(SELECT)","");
+  
+  for(var i=0;i<all_elements.length;i++){
+    selectBox.options[i + 1]= new Option(all_elements[i],all_elements[i]);
+  }
+}
+</SCRIPT>
+	#if ($data.message)
+<DIV class="error">$data.message</DIV><br>
+#end
+<form name="form1" method="post" action="$link.setAction("CSVUpload1")"> 
+ <table border="0" >
+   <tr>
+    <td colspan="2"><DIV class="edit_header1">Step 1: Select the root data type to be inserted.</DIV></td>
+  </tr>
+   <tr>
+    <td colspan="2">&nbsp;</td>
+  </tr>
+   <tr>
+    <td>Title</td>
+    <td><input type="text" name="title"/></td>
+    <td> (This will be used to reload this spreadsheet template at a later date.)</td>
+  </tr>
+  <tr>
+    <td>Root Data Type: 
+    </td><td> 
+        <select ID="root_data_type" name="root_data_type">
+           <option value="BAD">SELECT</option>
+#foreach($elementName in $elements)
+								           <option value="$elementName">$elementName</option>
+							#end
+									        </select>
+									    </td>
+    <td><A ONCLICK="populateFullList();">Show All</A>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right">
+        <input type="submit" name="eventSubmit_doPrep" value="Submit" />
+    </td>
+  </tr>
+  #if($fms.size()>0)
+   <tr>
+    <td colspan="2">&nbsp;</td>
+  </tr>
+   <tr>
+    <td colspan="2"><DIV class="edit_header1">Or, load a saved template.</DIV></td>
+  </tr>
+  #foreach($fm in $fms)
+   <tr>
+    <td>$fm.getCreateDate()</td><td><A HREF="$link.setPage("XDATScreen_uploadCSV2.vm").addPathInfo("fm_id","$fm.getID()")">$fm.getTitle()</A></td>
+  </tr>
+  #end
+  #end
+</table>
+</form>

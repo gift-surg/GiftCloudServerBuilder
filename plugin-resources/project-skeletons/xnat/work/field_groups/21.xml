@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xnat:FieldDefinitionSet ID="Infant Demographics" data-type="xnat:subjectData" description="Infant Demographics" project-specific="0" xmlns:cnda="http://nrg.wustl.edu/cnda" xmlns:arc="http://nrg.wustl.edu/arc" xmlns:ls2="http://nrg.wustl.edu/ls2" xmlns:behavioral="http://nrg.wustl.edu/behavioral" xmlns:fs="http://nrg.wustl.edu/fs" xmlns:wrk="http://nrg.wustl.edu/workflow" xmlns:xdat="http://nrg.wustl.edu/security" xmlns:prov="http://www.nbirn.net/prov" xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+	<xnat:fields>
+		<xnat:field name="Gestational age" type="standard" datatype="float" required="0" xmlPath="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gestational_age"/>
+		<xnat:field name="Post menstrual age" type="standard" datatype="float" required="0" xmlPath="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/post_menstrual_age"/>
+		<xnat:field name="Birth weight" type="standard" datatype="float" required="0" xmlPath="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/birth_weight"/>
+	</xnat:fields>
+</xnat:FieldDefinitionSet>

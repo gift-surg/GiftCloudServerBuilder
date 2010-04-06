@@ -1,0 +1,16 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+$page.setBgColor($ui.bgcolor)
+<table cellspacing="0" width="100%">
+   <tr valign="bottom" height="80">
+	<td>
+		<a href="$link.setPage("Index.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end"><img src="$content.getURI("images/logo.jpg")" border=0></a>
+	</td>
+	<td align="right">
+		#if($data.getSession().getAttribute("user").getUsername()=="guest")
+	#elseif($data.getSession().getAttribute("user").getUsername())
+	User: $!data.getSession().getAttribute("user").getUsername()
+<A CLASS="text" style="font-weight:550" HREF="$link.setAction("LogoutUser")">(Logout)</A>
+	#end
+	</td>
+   </tr>
+</table>

@@ -1,0 +1,88 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+<TABLE>
+	<TR>
+		<TD VALIGN="top">
+			<b>Enter Search Criteria<b><br>
+<TABLE VALIGN="top">
+	<TR>
+		<TD COLSPAN=6><b><u>Participant Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
+	</TR>
+	<TR>
+  		<TD>Subject ID</TD>
+  		<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData/ID_equals,xnat:subjectData/label_equals,xnat:subjectData/sharing/share/label_equals"/>
+  		<TD>
+  			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")"/>
+  		</TD>
+		<TD>Gender</TD>
+  		<TD>
+  			<select name="xnat:subjectData.GENDER_TEXT_equals">
+  				#set($GENDER_TEXT_value=$!search.getWebFormValue("xnat:subjectData.GENDER_TEXT_equals"))
+				<option value="" #if($GENDER_TEXT_value=="") SELECTED #end>(SELECT)</option>
+	    		<option value="F" #if($GENDER_TEXT_value=="F") SELECTED #end>female</option>
+	    		<option value="M" #if($GENDER_TEXT_value=="M") SELECTED #end>male</option>
+	    		<option value="O" #if($GENDER_TEXT_value=="O") SELECTED #end>other</option>
+	    		<option value="U" #if($GENDER_TEXT_value=="U") SELECTED #end>unknown</option>
+			</select>
+  		</TD>
+
+		<TD>Hand</TD>
+  		<TD>
+  			<select name="xnat:subjectData.HANDEDNESS_TEXT_equals">
+  				#set($HANDEDNESS_TEXT_value=$!search.getWebFormValue("xnat:subjectData.HANDEDNESS_TEXT_equals"))
+				<option value="" #if($HANDEDNESS_TEXT_value=="") SELECTED #end>(SELECT)</option>
+	    		<option value="A" #if($HANDEDNESS_TEXT_value=="A") SELECTED #end>ambidextrous</option>
+	    		<option value="R" #if($HANDEDNESS_TEXT_value=="R") SELECTED #end>right</option>
+	    		<option value="U" #if($HANDEDNESS_TEXT_value=="U") SELECTED #end>unknown</option>
+	    		<option value="L" #if($HANDEDNESS_TEXT_value=="L") SELECTED #end>left</option>
+			</select>
+  		</TD>
+	</TR>
+	<TR>
+		<TD>YOB</TD>
+  		<TD>
+  			<INPUT size="6" type="text" name="xnat:subjectData.DOB_equals" value="$!search.getWebFormValue("xnat:subjectData.DOB_equals")"/>
+  		</TD> 
+  		
+  		
+  #set($sub_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
+					<TD>Project</TD>
+  		<TD ROWSPAN="2">
+  				#set($TYPE_value=$!search.getWebFormValue("${schemaElement.getFullXMLName()}.PROJECTS_equals"))
+  			<select name="${schemaElement.getFullXMLName()}.PROJECTS_equals" MULTIPLE SIZE="6">
+				  #foreach($sub_project in $sub_projects)
+	    		<option value="/<$sub_project>" #if($TYPE_value.indexOf("<$sub_project>")!=-1) SELECTED #end>$sub_project</option>
+				  #end
+</select>
+  </TD>
+	</TR>
+	<TR>
+  		
+		<TD>Education</TD>
+  		<TD align="left">
+  			<INPUT size="4" type="text" name="xnat:subjectData.EDUC_equals" value="$!search.getWebFormValue("xnat:subjectData.EDUC_equals")"/>
+  		</TD>
+  		
+		<TD>SES</TD>
+  		<TD COLSPAN="3" ALIGN="left">
+  			<INPUT size="4" type="text" name="xnat:subjectData.SES_equals" value="$!search.getWebFormValue("xnat:subjectData.SES_equals")"/>
+  		</TD>
+  
+	</TR>
+</TABLE>
+		</TD>
+		
+		<TD VALIGN="top" height="100%" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
+			<b>... or enter exact IDs.</b><br>
+					<TABLE VALIGN="top">
+  				<TR>
+  					<TD VALIGN="top">
+						<SELECT name="xnat:subjectData.COMBO1_FIELDS">
+			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:subjectData.COMBO1_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>SUBJECT</option>
+			  			</SELECT><BR>
+						<TEXTAREA NAME="xnat:subjectData.COMBO1" COLS=18 ROWS=14>$!search.getWebFormValue("xnat:subjectData.COMBO1")</TEXTAREA>
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>

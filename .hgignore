@@ -10,6 +10,7 @@ plugin-resources/misc/template2.*
 syntax: regexp
 ^classes/org
 ^deployments
+^ide-bin
 ^lib
 ^pipeline
 ^plugin-resources/cache

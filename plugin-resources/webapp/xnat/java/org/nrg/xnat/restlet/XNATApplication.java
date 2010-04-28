@@ -21,6 +21,7 @@ import org.nrg.xnat.restlet.resources.ProjtExptPipelineResource;
 import org.nrg.xnat.restlet.resources.ProtocolResource;
 import org.nrg.xnat.restlet.resources.ReconList;
 import org.nrg.xnat.restlet.resources.ReconResource;
+import org.nrg.xnat.restlet.resources.ScanDIRResource;
 import org.nrg.xnat.restlet.resources.ScanList;
 import org.nrg.xnat.restlet.resources.ScanResource;
 import org.nrg.xnat.restlet.resources.ScanTypeListing;
@@ -67,6 +68,7 @@ public class XNATApplication extends Application {
         router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}",ExptAssessmentResource.class);
         router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans",ScanList.class);
         router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",ScanResource.class);
+        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
         router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
         router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
         router.attach("/projects/{PROJECT_ID}/accessibility",ProjectAccessibilityResource.class);
@@ -83,6 +85,7 @@ public class XNATApplication extends Application {
         router.attach("/experiments/{EXPT_ID}",ExperimentResource.class);
         router.attach("/experiments/{ASSESSED_ID}/scans",ScanList.class);
         router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",ScanResource.class);
+        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
         router.attach("/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
         router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
 		router.attach("/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);

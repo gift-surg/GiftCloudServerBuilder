@@ -370,7 +370,7 @@ public class ScanList extends QueryOrganizerResource {
 				e.printStackTrace();
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
-				}
+			}
 
 			MediaType mt = overrideVariant(variant);
 			Hashtable<String, Object> params = new Hashtable<String, Object>();

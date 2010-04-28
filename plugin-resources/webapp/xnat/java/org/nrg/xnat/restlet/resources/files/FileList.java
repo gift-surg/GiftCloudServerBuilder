@@ -14,15 +14,12 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -30,6 +27,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -424,97 +422,8 @@ public class FileList extends XNATCatalogTemplate {
 		}
 	}
 	
-	private String getRelativePath(String p,Map<String,String> _tokens){
-		int i=-1;
-		String _token=null;
-		
-		for(Map.Entry<String,String> token:_tokens.entrySet()){
-			_token=token.getKey();
-			i=p.indexOf('/'+ _token + '/');
-			if(i==-1){
-				i=p.indexOf('/'+ _token);
-				
-				if(i==-1){
-					i=p.indexOf(_token+'/');
-					if(i>-1){
-						i=(p.substring(0, i)).lastIndexOf('/') +1;
-						break;
-					}
-				}else{
-					i++;
-					break;
-				}
-			}else{
-				i++;
-				break;
-			}
-		}
-		
-		if(i==-1){
-			if(p.indexOf(":")>-1){
-				p=p.substring(p.indexOf(":"));
-				p=p.substring(p.indexOf("/"));
-				p=_token+p;
-			}else{
-				p=_token+p;
-			}
-		}else{
-			p=p.substring(i);
-		}
-		
-		for(Map.Entry<String,String> entry:_tokens.entrySet()){
-			p=StringUtils.replace(p, entry.getKey(), entry.getValue());
-		}
-		
-		return p;
-	}
-	
-	private String replaceResourceLabel(String path,Object id,String label){
-		if(StringUtils.isEmpty(label) || id==null){
-			return path;
-		}else{
-			int i=path.indexOf('/'+id.toString() +"/files/");
-			if(i>-1){
-				return StringUtils.replace(path, '/'+id.toString() +"/files/", '/'+label +"/files/");
-			}else{
-				return path;
-			}
-		}
-	}
-	
-	private String replaceInPath(String path,Object id,String newValue){
-		if(StringUtils.isEmpty(newValue) || id==null){
-			return path;
-		}else{
-			int i=path.indexOf('/'+id.toString() +'/');
-			if(i>-1){
-				return StringUtils.replace(path, '/'+id.toString() +'/', '/'+newValue +'/');
-			}else{
-				return path;
-			}
-		}
-	}
-	
 	private Map<String,String> getReMaps(){
-		final Map<String,String> valuesToReplaceInPath=new Hashtable<String,String>();
-		
-		if(scans!=null){
-			for(final XnatImagescandata scan:scans){
-				if(!StringUtils.isEmpty(scan.getType())){
-					valuesToReplaceInPath.put(scan.getId(), scan.getId()+'-' + scan.getType().replaceAll( "\\W", "_").replaceAll(" ", "_"));
-				}
-			}
-		}
-		
-		if(recons!=null){
-			for(final XnatReconstructedimagedata scan:recons){
-				if(!StringUtils.isEmpty(scan.getType())){
-					valuesToReplaceInPath.put(scan.getId(), scan.getId()+'-' + scan.getType().replaceAll( "\\W", "_").replaceAll(" ", "_"));
-				}
-			}
-		}
-		
-		return valuesToReplaceInPath;
+		return RestFileUtils.getReMaps(scans,recons);
 	}
 	
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params,Map<String,Map<String,String>> cp,Map<String,String> session_mapping){
@@ -540,16 +449,16 @@ public class FileList extends XNATCatalogTemplate {
 				CatEntryBean entry = new CatEntryBean();
                 
 				String uri=(String)row[uriIndex];
-                String relative = this.getRelativePath(uri, session_mapping);
+                String relative = RestFileUtils.getRelativePath(uri, session_mapping);
                 
                 entry.setUri(server+uri);
                 
                 relative = relative.replace('\\', '/');
                 
-                relative=this.replaceResourceLabel(relative, row[cat_IDIndex], (String)row[collectionIndex]);
+                relative=RestFileUtils.replaceResourceLabel(relative, row[cat_IDIndex], (String)row[collectionIndex]);
                 
                 for(Map.Entry<String, String> e:valuesToReplace.entrySet()){
-                    relative=this.replaceInPath(relative, e.getKey(), e.getValue());
+                    relative=RestFileUtils.replaceInPath(relative, e.getKey(), e.getValue());
                 }
                 
                 entry.setCachepath(relative);
@@ -585,15 +494,7 @@ public class FileList extends XNATCatalogTemplate {
 			
 			for(final Object[] row:table.rows()){	
 				final String uri=(String)row[uriIndex];
-                String relative = this.getRelativePath(uri, session_mapping);
-                
-                relative = relative.replace('\\', '/');
-                                
-                relative=this.replaceResourceLabel(relative, row[cat_IDIndex], (String)row[collectionIndex]);
-                
-                for(Map.Entry<String, String> e:valuesToReplace.entrySet()){
-                    relative=this.replaceInPath(relative, e.getKey(), e.getValue());
-                }
+                String relative = RestFileUtils.buildRelativePath(uri, session_mapping, valuesToReplace, row[cat_IDIndex], (String)row[collectionIndex]);
                 
 				final File child=(File)row[fileIndex];
 				if(child!=null && child.exists())

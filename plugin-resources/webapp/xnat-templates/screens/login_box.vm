@@ -13,9 +13,9 @@
       <td align ="left">
         <font face="$ui.sansSerifFonts">
         #foreach($key in $data.getParameters().getKeys())
-          	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception" &&$key!="username" &&$key!="exception")
-            		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!data.getParameters().getString($key))">	
-          	#end
+        	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception" &&$key!="username" &&$key!="exception")
+        		<input type="hidden" name="$key" value="$turbineUtils.escapeHTML($data.getParameters().getString($key))">	
+        	#end
         #end
           <input type="submit" value="Login">
         </font>

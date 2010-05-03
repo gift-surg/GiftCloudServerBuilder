@@ -596,7 +596,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         	cc.addClause("xnat:subjectData/sharing/share/project", this.getId());
         	_participants= XnatSubjectdata.getXnatSubjectdatasByField(cc, user, false);
     	}
-    	
+
     	return _participants;
     }
 
@@ -609,7 +609,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         	cc.addClause("xnat:experimentData/sharing/share/project", this.getId());
         	_experiments= XnatExperimentdata.getXnatExperimentdatasByField(cc, user, false);
     	}
-    	
+
     	return _experiments;
     }
 
@@ -623,7 +623,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	return typed;
     }
 
-    
+
     Hashtable<String,XnatProjectdataField> fieldsByName = null;
     public Hashtable getFieldsByName(){
         if (fieldsByName == null){
@@ -651,17 +651,17 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 
     public ArrayList<String> getOwners() throws Exception{
-        final XFTTable table2 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_user u ON ea.xdat_user_xdat_user_id=u.xdat_user_id WHERE read_element=1 AND delete_element=1 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
+        final XFTTable table2 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_userGroup ug ON ea.xdat_usergroup_xdat_usergroup_id=ug.xdat_usergroup_id LEFT JOIN xdat_user_groupid map ON ug.id=map.groupid LEFT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE read_element=1 AND delete_element=1 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
         return table2.convertColumnToArrayList("email");
     }
 
     public ArrayList<String> getMembers() throws Exception{
-    	final XFTTable table1 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_user u ON ea.xdat_user_xdat_user_id=u.xdat_user_id WHERE edit_element=1 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
+    	final XFTTable table1 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_userGroup ug ON ea.xdat_usergroup_xdat_usergroup_id=ug.xdat_usergroup_id LEFT JOIN xdat_user_groupid map ON ug.id=map.groupid LEFT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE edit_element=1 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
         return table1.convertColumnToArrayList("email");
     }
 
     public ArrayList<String> getCollaborators() throws Exception{
-    	final XFTTable table2 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_user u ON ea.xdat_user_xdat_user_id=u.xdat_user_id WHERE read_element=1 AND edit_element=0 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
+    	final XFTTable table2 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_userGroup ug ON ea.xdat_usergroup_xdat_usergroup_id=ug.xdat_usergroup_id LEFT JOIN xdat_user_groupid map ON ug.id=map.groupid LEFT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE read_element=1 AND edit_element=0 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
         return table2.convertColumnToArrayList("email");
     }
 //
@@ -811,7 +811,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         final ArcProject arcProj = this.getArcSpecification();
 
 		if (arcProj==null) return "arc001";
-		
+
         path = arcProj.getCurrentArc();
         if (path==null || path.equals("")){
             path="arc001";
@@ -914,7 +914,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         {
             try {
 				if (es.isSecure() && (es.getSchemaElement().getGenericXFTElement().instanceOf("xnat:subjectData") || es.getSchemaElement().getGenericXFTElement().instanceOf("xnat:experimentData"))){
-					
+
 				    es.initPSF(es.getElementName() + "/project");
 				    es.initPSF(es.getElementName() + "/sharing/share/project");
 				}else{
@@ -975,7 +975,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		} catch (Exception e1) {
             logger.error("",e1);
 		}
-		
+
         //init members
         ArrayList member = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", this.getId() + "_" + MEMBER_GROUP, this.getUser(), true);
 
@@ -1021,7 +1021,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		} catch (Exception e2) {
             logger.error("",e2);
 		}
-		
+
         if (XFT.VERBOSE)System.out.println("Group init() MEMBER: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
 
         //init collaborators
@@ -1069,7 +1069,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		} catch (Exception e2) {
             logger.error("",e2);
 		}
-		
+
         if (XFT.VERBOSE)System.out.println("Group init(): " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
     }
 
@@ -1084,13 +1084,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         return null;
     }
-    
+
 
     public ArrayList<XdatStoredSearch> getBundles(){
     	ArrayList<XdatStoredSearch> searches = XdatStoredSearch.GetSearches("xdat:stored_search/tag", this.getId(), true);
-    	
+
     	Hashtable<String,Long> counts=this.getExperimentCountByXSIType();
-    	
+
     	boolean matched=false;
     	for(XdatStoredSearch xss:searches){
     		if(xss.getRootElementName().equalsIgnoreCase("xnat:subjectData")){
@@ -1098,7 +1098,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     			break;
     		}
     	}
-    	
+
     	if(!matched){
     		XnatAbstractprotocol protocol = this.getProtocolByDataType("xnat:subjectData");
     		XdatStoredSearch xss=null;
@@ -1110,7 +1110,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     		xss.setId("@xnat:subjectData");
     		searches.add(xss);
     	}
-    	
+
     	for(String key:counts.keySet()){
     		matched=false;
         	for(XdatStoredSearch xss:searches){
@@ -1119,7 +1119,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         			break;
         		}
         	}
-        	
+
         	if(!matched){
         		XnatAbstractprotocol protocol = this.getProtocolByDataType(key);
         		XdatStoredSearch xss=null;
@@ -1132,10 +1132,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         		searches.add(xss);
         	}
     	}
-    	
+
         return searches;
     }
-    
+
 
 
     public XdatStoredSearch getDefaultSearch(String elementName){
@@ -1144,9 +1144,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             xss=this.getDefaultSearch(elementName,this.getId()+"_"+elementName);
 
 			xss.setId(this.getId()+"_"+elementName);
-			
+
 			ElementSecurity es=ElementSecurity.GetElementSecurity(elementName);
-			
+
 			if(es!=null)
 				xss.setBriefDescription(es.getPluralDescription());
 			else{
@@ -1154,10 +1154,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			}
 			xss.setSecure(false);
 			xss.setAllowDiffColumns(false);
-			xss.setTag(this.getId()); 
-            
+			xss.setTag(this.getId());
+
             UserI user = this.getUser();
-            
+
             XnatAbstractprotocol protocol = this.getProtocolByDataType(elementName);
     		if(protocol!=null){
     			if(protocol instanceof XnatDatatypeprotocol)
@@ -1170,11 +1170,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	                if (field.getType().equals("custom"))
     	                {
     	                    fieldID=((XnatDatatypeprotocol)protocol).getDatatypeSchemaElement().getSQLName().toUpperCase() + "_FIELD_MAP="+field.getName().toLowerCase();
-    	                    
+
     	                }else{
     	                    try {
     	                        SchemaElement se=SchemaElement.GetElement(((XnatDatatypeprotocol)protocol).getDataType());
-    	                        
+
     	                        try {
     	                            DisplayField df=se.getDisplayFieldForXMLPath(field.getXmlpath());
     	                            if (df!=null){
@@ -1189,7 +1189,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	                        logger.error("",e);
     	                    }
     	                }
-    	                    
+
     	                if (fieldID!=null){
     	                    xsf.setFieldId(fieldID);
 
@@ -1288,7 +1288,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             logger.error("",e);
         }
@@ -1312,13 +1312,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 //                    try {
 //                        XdatStoredSearch xss = protocol.getDefaultSearch((XnatProjectdata)this);
 //
-//                        
+//
 //                        xss.save(this.getUser(), true, true);
 //
 //
 //                        //XdatStoredSearch.GetPreLoadedSearches().add(xss);
 //                        modified=true;
-//                        
+//
 //                        final String[] groups = {getId() + "_" + OWNER_GROUP,getId() + "_" + MEMBER_GROUP,getId() + "_" + COLLABORATOR_GROUP};
 //
 //                        for(int i=0;i<groups.length;i++){
@@ -1360,7 +1360,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             if (projectAccess==1){
 
                 query = "SELECT read_element FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_user u ON ea.xdat_user_xdat_user_id=u.xdat_user_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id WHERE login='guest' AND element_name!='xnat:projectData' AND field_value='" + getId() +  "';";
-  
+
                 Integer subjectAccess = (Integer)PoolDBUtils.ReturnStatisticQuery(query, "read_element", getDBName(), null);
                 if (subjectAccess!=null)
                 {
@@ -1398,12 +1398,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                         guest = new XDATUser("guest");
                     }
                     ArrayList<ElementSecurity> securedElements = ElementSecurity.GetSecureElements();
-                    
+
                     if (accessibility.equals("public"))
                     {
                         //public
                         guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, true,true);
-                        
+
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
@@ -1466,7 +1466,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         group.setId(getId() + "_" + OWNER_GROUP);
         group.setDisplayname("Owners");
         group.setTag(getId());
-        
+
         UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
         if(ownerG==null){
         	group.save(this.getUser(), true, true);
@@ -1479,7 +1479,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 ((XDATUser)user).getGroups().put(group.getId(),ug);
 
                 this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user);
-            } 
+            }
         }
 
         return super.save(user, overrideSecurity, allowItemRemoval);
@@ -1538,16 +1538,16 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         }
     }
-    
+
     public void initNewProject(XDATUser user,boolean allowDataDeletion,boolean allowMatchingID) throws Exception{
     	if (this.getId()==null){
             String secondaryID = this.getSecondaryId();
             if (secondaryID==null){
-                
+
                 throw new Exception("Please define a project abbreviation.");
             }else{
                 setId(secondaryID);
-                
+
                 XFTItem db=getCurrentDBVersion();
                 if (db!=null){
                 	String msg="Project '" + getId() + "' already exists.";
@@ -1555,7 +1555,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 	throw new Exception(msg);
                 }
             }
-        }else{          
+        }else{
         	if(!allowMatchingID){
                 XFTItem db=getCurrentDBVersion();
                 if (db!=null){
@@ -1565,18 +1565,18 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 }
         	}
         }
-    	
+
     	if(this.getSecondaryId()==null){
     		this.setSecondaryId(this.getId());
     	}
-    	
+
     	if(this.getName()==null){
     		this.setName(this.getId());
     	}
 
     	if(this.getStudyprotocol().size()>0){
         	Hashtable<String,ElementSecurity> ess = ElementSecurity.GetElementSecurities();
-            
+
             int index = 0;
             for (XnatAbstractprotocol  protocol:this.getStudyprotocol()){
                 if(protocol.getProperty("data-type")==null){
@@ -1591,7 +1591,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                                 logger.error("",e);
                             }
                         }
-                        
+
                         getItem().removeChild("xnat:projectData/studyProtocol", getItem().getChildItems("xnat:projectData/studyProtocol").indexOf(protocol));
                 	}
                 }else{
@@ -1607,7 +1607,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     if (protocol.getProperty("name")==null){
                         protocol.setProperty("name",ess.get(e.getFullXMLName()).getPluralDescription());
                     }
-                    
+
                     if(protocol.getXSIType().equals("xnat:datatypeProtocol")){
                         protocol.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/data-type", protocol.getProperty("data-type"));
                         protocol.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
@@ -1616,7 +1616,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 index++;
             }
     	}
-        
+
         for(XnatInvestigatordata inv:this.getInvestigators_investigator()){
         	if(inv.getFirstname()==null){
         		XFTItem temp = inv.getCurrentDBVersion();
@@ -1624,7 +1624,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         		inv.setLastname(temp.getStringProperty("lastname"));
         	}
         }
-        
+
         for(XnatInvestigatordata inv:this.getInvestigators_investigator()){
         	if(inv.getFirstname()==null){
         		XFTItem temp = inv.getCurrentDBVersion();
@@ -1633,7 +1633,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         	}
         }
     }
-    
+
     public void initArcProject(ArcProject arcP, XDATUser user) throws Exception{
     	if(arcP==null){
     		 XFTItem item = XFTItem.NewItem("arc:project", user);
@@ -1642,16 +1642,16 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	}
     	arcP.setProperty("projects_project_arc_archivespe_arc_archivespecification_id", ArcSpecManager.GetInstance().getArcArchivespecificationId());
         arcP.setId(getId());
-        
+
         arcP.setProperty("arc:project/paths/archivePath", ArcSpecManager.GetInstance().getGlobalArchivePath() + getId()+"/");
         arcP.setProperty("arc:project/paths/prearchivePath", ArcSpecManager.GetInstance().getGlobalPrearchivePath() + getId()+"/");
         arcP.setProperty("arc:project/paths/cachePath", ArcSpecManager.GetInstance().getGlobalCachePath() + getId()+"/");
         arcP.setProperty("arc:project/paths/buildPath", ArcSpecManager.GetInstance().getGlobalBuildPath() + getId()+"/");
-                
+
         arcP.save(user, true, false);
         ArcSpecManager.Reset();
     }
-    
+
     public XdatStoredSearch getDefaultSearch(String dataType,String id){
     	XdatStoredSearch xss=null;
     	try {
@@ -1661,9 +1661,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			CriteriaCollection cc = new CriteriaCollection("OR");
 			cc.addClause(dataType+"/sharing/share/project", "=", getId());
 			cc.addClause(dataType+".PROJECT", "=", getId());
-			
+
 			search.addCriteria(cc);
-			
+
 			xss = search.convertToStoredSearch(id);
 
 			Iterator fields = xss.getSearchFields().iterator();
@@ -1685,7 +1685,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		}
 		return xss;
     }
-    
+
     public static String CleanID(String s){
     	s=s.replace('`', '_');
     	s=s.replace('~', '_');
@@ -1719,9 +1719,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	s=s.replace('/', '_');
     	return s;
     }
-    
 
-    
+
+
     public String canDelete(XDATUser user) {
     	try {
 			if(!user.canDelete(this.getItem())){
@@ -1731,42 +1731,42 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			e.printStackTrace();
 			return "Invalid delete permissions for this project.";
 		}
-			
+
 		for(XnatSubjectdata sub: this.getParticipants_participant()){
 			String msg=sub.canDelete(this,user);
 			if(msg!=null){
 				return msg;
 			}
 		}
-		
+
 		return null;
     }
-    
+
     public void deleteFiles() throws IOException{
     	String archive=this.getRootArchivePath();
     	File dir=new File(archive);
     	if(dir.exists()){
     		FileUtils.MoveToCache(dir);
     	}
-    	
+
     	for(XnatAbstractresource abstRes:this.getResources_resource()){
     		abstRes.deleteFromFileSystem(archive);
     	}
     }
-    
-    public String delete(XDATUser user, boolean removeFiles){    	
+
+    public String delete(XDATUser user, boolean removeFiles){
     	String msg=this.canDelete(user);
     	if(msg!=null){
     		logger.error(msg);
     		return msg;
     	}
-    	
+
 		try {
-		
+
 			if(!user.canDelete(this)){
 				return "User account doesn't have permission to delete this project.";
 			}
-						
+
 			if(removeFiles){
 				this.deleteFiles();
 			}
@@ -1776,12 +1776,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	            msg=sub.delete(this,user,removeFiles);
 	            if(msg!=null)return msg;
 	        }
-	        
+
 	        user.clearLocalCache();
 			MaterializedView.DeleteByUser(user);
-			
+
 	        DBAction.DeleteItem(getItem().getCurrentDBVersion(), user);
-	            
+
 	        //DELETE field mappings
 	        ItemSearch is = ItemSearch.GetItemSearch("xdat:field_mapping", user);
 	        is.addCriteria("xdat:field_mapping.field_value", getId());
@@ -1791,12 +1791,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	            XFTItem item = (XFTItem)items.next();
 	            DBAction.DeleteItem(item, user);
 	        }
-	        
+
 	        //DELETE user.groupId
 	        CriteriaCollection col = new CriteriaCollection("AND");
 	        col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," LIKE ", getId() + "_%");
 	        Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
-	        
+
 	        while(groups.hasNext()){
 	            XdatUserGroupid g = (XdatUserGroupid)groups.next();
 	            try {
@@ -1805,12 +1805,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	                logger.error("",e);
 	            }
 	        }
-	        
+
 	        //DELETE user groups
 	        col = new CriteriaCollection("AND");
 	        col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," LIKE ", getId() + "_%");
 	        groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
-	        
+
 	        while(groups.hasNext()){
 	            XdatUsergroup g = (XdatUsergroup)groups.next();
 	            try {
@@ -1819,7 +1819,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	                logger.error("",e);
 	            }
 	        }
-	        
+
 	        //DELETE storedSearches
 	        Iterator bundles=getBundles().iterator();
 	        while (bundles.hasNext())
@@ -1831,7 +1831,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	                logger.error("",e);
 	            }
 	        }
-	        
+
 	        ArcProject p =getArcSpecification();
 	        try {
 	            if (p!=null)DBAction.DeleteItem(p.getItem(), user);
@@ -1854,20 +1854,20 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		}
     	return null;
     }
-    
+
     public void delete(boolean removeFiles, XDATUser user)throws SQLException,Exception{
     	boolean preventProjectDelete=false;
         boolean preventProjectDeleteByP=false;
-    	for (XnatSubjectdata subject : getParticipants_participant()){            
+    	for (XnatSubjectdata subject : getParticipants_participant()){
             if (subject!=null){
             	boolean preventSubjectDelete=false;
             	boolean preventSubjectDeleteByP=false;
                final  ArrayList<XnatSubjectassessordata> expts = subject.getExperiments_experiment();
-               
+
                if(!(preventSubjectDelete || preventSubjectDeleteByP) && expts.size()!=subject.getSubjectAssessorCount()){
                	preventSubjectDelete=true;
                }
-               
+
                 for (XnatSubjectassessordata exptI : expts){
                     final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 
@@ -1875,7 +1875,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                         if(user.canDelete(expt)){
                             if (removeFiles){
                             	final List<XFTItem> hash = expt.getItem().getChildrenOfType("xnat:abstractResource");
-                                
+
                                 for (XFTItem resource : hash){
                                     ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
                                     if (om instanceof XnatAbstractresource){
@@ -1897,10 +1897,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     		}
                     	}
                     }
-                    
+
                 }
-                
-                
+
+
             	if(!subject.getProject().equals(getId())){
             		for(XnatProjectparticipant pp : subject.getSharing_share()){
                 		if(pp.getProject().equals(getId())){
@@ -1916,7 +1916,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 		if(user.canDelete(subject)){
                             if (removeFiles){
                             	final List<XFTItem> hash = subject.getItem().getChildrenOfType("xnat:abstractResource");
-                                
+
                                 for (XFTItem resource : hash){
                                     ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
                                     if (om instanceof XnatAbstractresource){
@@ -1932,14 +1932,14 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 	}
             	}
             }
-        } 
+        }
 
 	    user.clearLocalCache();
 		MaterializedView.DeleteByUser(user);
-		
+
 		if (!preventProjectDelete && !preventProjectDeleteByP){
 	        DBAction.DeleteItem(getItem().getCurrentDBVersion(), user);
-	            
+
 	        //DELETE field mappings
 	        ItemSearch is = ItemSearch.GetItemSearch("xdat:field_mapping", user);
 	        is.addCriteria("xdat:field_mapping.field_value", getId());
@@ -1949,12 +1949,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	            XFTItem item = (XFTItem)items.next();
 	            DBAction.DeleteItem(item, user);
 	        }
-	        
+
 	        //DELETE user.groupId
 	        CriteriaCollection col = new CriteriaCollection("AND");
 	        col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," LIKE ", getId() + "_%");
 	        Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
-	        
+
 	        while(groups.hasNext()){
 	            XdatUserGroupid g = (XdatUserGroupid)groups.next();
 	            try {
@@ -1963,12 +1963,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	                logger.error("",e);
 	            }
 	        }
-	        
+
 	        //DELETE user groups
 	        col = new CriteriaCollection("AND");
 	        col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," LIKE ", getId() + "_%");
 	        groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
-	        
+
 	        while(groups.hasNext()){
 	            XdatUsergroup g = (XdatUsergroup)groups.next();
 	            try {
@@ -1977,7 +1977,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	                logger.error("",e);
 	            }
 	        }
-	        
+
 	        //DELETE storedSearches
 	        Iterator bundles=getBundles().iterator();
 	        while (bundles.hasNext())
@@ -1989,7 +1989,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	                logger.error("",e);
 	            }
 	        }
-	        
+
 	        ArcProject p =getArcSpecification();
 	        try {
 	            if (p!=null)DBAction.DeleteItem(p.getItem(), user);
@@ -2009,10 +2009,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	@Override
 	public void preSave() throws Exception{
 		super.preSave();
-		
+
     	final String archive=this.getRootArchivePath();
 		final String expectedPath=new File(archive,"resources").getAbsolutePath().replace('\\', '/');
-		
+
 		for(final XnatAbstractresource res: this.getResources_resource()){
 			final String uri;
 			if(res instanceof XnatResource){
@@ -2022,13 +2022,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			}else{
 				continue;
 			}
-			
+
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
 	}
-	
 
-    
+
+
     public String getArchiveDirectoryName(){
     	return this.getId();
     }

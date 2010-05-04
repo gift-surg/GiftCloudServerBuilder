@@ -22,6 +22,7 @@ import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -40,6 +41,8 @@ import org.w3c.dom.Element;
  *
  */
 public final class PrearcSessionListResource extends Resource {
+	private static final String TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
+	private static final String XSDATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	private static final String PROJECT_SECURITY_TASK = "xnat:mrSessionData/project";
 	private static final String USER_ATTR = "user";
 	private static final String PROJECT_ATTR = "PROJECT_ID";
@@ -47,6 +50,7 @@ public final class PrearcSessionListResource extends Resource {
 
 	private final XDATUser user;
 	private final String requestedProject;
+	private final Reference prearcRef;
 
 	/**
 	 * @param context
@@ -63,6 +67,8 @@ public final class PrearcSessionListResource extends Resource {
 		// Project is explicit in the request
 		requestedProject = (String)request.getAttributes().get(PROJECT_ATTR);
 
+		prearcRef = request.getResourceRef();
+		
 		//		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		//		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -84,7 +90,7 @@ public final class PrearcSessionListResource extends Resource {
 				lastBuiltDate = new Date();
 			}
 			
-			final DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
+			final DateFormat format = new SimpleDateFormat(TIMESTAMP_FORMAT);
 			Date t_uploadDate;
 			try {
 				t_uploadDate = format.parse(sessdir.getParentFile().getName());
@@ -102,12 +108,18 @@ public final class PrearcSessionListResource extends Resource {
 		
 		public Date getUploadDate() { return uploadDate; }
 				
-		public Element createElement(final Document d) {
-			final DateFormat xsDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		public Element createElement(final Document d, final String urlBase) {
+			final DateFormat xsDateTime = new SimpleDateFormat(XSDATETIME_FORMAT);
 			final Element se = d.createElement("session");
+			se.setAttribute("name", getName());
 			se.setAttribute("upload", xsDateTime.format(getUploadDate()));
 			se.setAttribute("build", xsDateTime.format(getLastBuiltDate()));
-			se.appendChild(d.createTextNode(getName()));
+			final StringBuilder url = new StringBuilder(urlBase);
+			url.append("/sessions/");
+			final DateFormat ts = new SimpleDateFormat(TIMESTAMP_FORMAT);
+			url.append(ts.format(getUploadDate()));
+			url.append("/").append(getName());
+			se.appendChild(d.createTextNode(url.toString()));
 			return se;
 		}
 		
@@ -219,7 +231,7 @@ public final class PrearcSessionListResource extends Resource {
 				d.appendChild(root);
 				for (final Collection<Session> ss : getPrearcSessions(getPrearcDir()).values()) {
 					for (final Session s : ss) {
-						root.appendChild(s.createElement(d));
+						root.appendChild(s.createElement(d, prearcRef.getBaseRef().toString()));
 					}
 				}
 				return r;

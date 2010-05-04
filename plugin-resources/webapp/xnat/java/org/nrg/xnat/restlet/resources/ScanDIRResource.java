@@ -114,7 +114,6 @@ public class ScanDIRResource extends ScanResource {
 				// copy file to the directory structure in the working temp directory.
 				FileUtils.copyFileToDirectory(f,tmp_dicom_dir);
 				File tmp_dicom_file = new File(tmp_dicom_dir,f.getName());
-				logger.error("Adding file :" + tmp_dicom_file.getCanonicalFile());
 				dicomdir.addFile(tmp_dicom_dir);
 				// delete the file now to avoid buildup.
 				tmp_dicom_file.delete();
@@ -124,7 +123,6 @@ public class ScanDIRResource extends ScanResource {
 		}
 	    }
 	    
-	    //	    FileUtils.deleteDirectory(tmp_working_dir);
 	    dicomdir.close();
 	    rep.addEntry("DICOMDIR", dicomDIRFile);
 	    this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));

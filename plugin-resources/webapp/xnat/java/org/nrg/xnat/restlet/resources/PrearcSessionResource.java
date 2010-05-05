@@ -10,9 +10,12 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.nrg.xdat.security.XDATUser;
 import org.restlet.Context;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
@@ -30,6 +33,7 @@ public final class PrearcSessionResource extends Resource {
 
 	private final XDATUser user;
 	private final String project, timestamp, session;
+	private final Form queryForm;
 
 	/**
 	 * @param context
@@ -49,6 +53,12 @@ public final class PrearcSessionResource extends Resource {
 		project = (String)attrs.get(PROJECT_ATTR);
 		timestamp = (String)attrs.get(SESSION_TIMESTAMP);
 		session = (String)attrs.get(SESSION_LABEL);
+		
+		queryForm = request.getResourceRef().getQueryAsForm();
+		
+		getVariants().add(new Variant(MediaType.TEXT_XML));
+//		getVariants().add(new Variant(MediaType.APPLICATION_GNU_ZIP));
+//		getVariants().add(new Variant(MediaType.APPLICATION_ZIP));
 	}
 
 	private File getSessionDir() throws ResourceException {
@@ -69,9 +79,19 @@ public final class PrearcSessionResource extends Resource {
 	@Override
 	public void acceptRepresentation(final Representation representation)
 	throws ResourceException {
-		// TODO: handle POST. This probably only means archiving the session.
+		// TODO: handle POST. Operations handled via POST:
 		final File sessionDir = getSessionDir();
-		throw new UnsupportedOperationException();
+		final String action = queryForm.getFirstValue("action");
+		if ("archive".equals(action)) {
+			// TODO:   archive the session in the current project
+			throw new UnsupportedOperationException("archive operation not implemented");
+		} else if ("move".equals(action)) {
+			// TODO:   move the session to a different project
+			throw new UnsupportedOperationException("move operation not implemented");
+		} else {
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+					"unsupported action on prearchive session: " + action);
+		}
 	}
 
 	/*
@@ -103,7 +123,6 @@ public final class PrearcSessionResource extends Resource {
 				tsDir.delete();
 			}
 		} finally {
-
 			if (sessionXML.exists()) {
 				throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
 						"Unable to delete session XML " + sessionXML);
@@ -118,11 +137,18 @@ public final class PrearcSessionResource extends Resource {
 	 */
 	@Override
 	public Representation represent(final Variant variant) throws ResourceException {
-		// TODO: try to read session XML
-		// TODO: if it doesn't exist, maybe build it?
-		// TODO: return session XML
-		// TODO: what about an option for returning the entire session?
 		final File sessionDir = getSessionDir();
-		throw new UnsupportedOperationException();
+		if (MediaType.TEXT_XML.equals(variant.getMediaType())) {
+			// Return the session XML, if it exists
+			final File sessionXML = new File(sessionDir.getPath());
+			if (!sessionXML.isFile()) {
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+						"The named session exists, but its XNAT session document is not available." +
+						"The session is likely invalid or incomplete.");
+			}
+			return new FileRepresentation(sessionXML, variant.getMediaType(), 0);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

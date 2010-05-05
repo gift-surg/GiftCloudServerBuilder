@@ -38,7 +38,7 @@ public class SearchFieldListResource extends SecureResource{
 	private String elementName=null;
 	public SearchFieldListResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		
+
 			elementName= (String)request.getAttributes().get("ELEMENT_NAME");
 			if(elementName!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -46,8 +46,8 @@ public class SearchFieldListResource extends SecureResource{
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 	}
-	
-	
+
+
 
 	@Override
 	public boolean allowPut() {
@@ -74,7 +74,7 @@ public class SearchFieldListResource extends SecureResource{
 			logger.error("",e);
 		}
 	}
-	
+
 	private void setAction(XFTItem found,int count,String action_name,String display_name, String img, String secureAccess, String popup){
 		try {
 			found.setProperty("xdat:element_security.element_actions.element_action__"+count + ".element_action_name",action_name);
@@ -111,7 +111,7 @@ public class SearchFieldListResource extends SecureResource{
 						found.setProperty("primary_security_fields.primary_security_field__0",se.getFullXMLName() + "/project");
 					    found.setProperty("primary_security_fields.primary_security_field__1",se.getFullXMLName() + "/sharing/share/project");
 					}
-					
+
 					this.setBooleanProperty(found, "browseable", true);
 					this.setBooleanProperty(found, "searchable", true);
 					this.setBooleanProperty(found, "secure_read", true);
@@ -119,26 +119,26 @@ public class SearchFieldListResource extends SecureResource{
 					this.setBooleanProperty(found, "secure_create", true);
 					this.setBooleanProperty(found, "secure_delete", true);
 					this.setBooleanProperty(found, "accessible", true);
-					
+
 					this.setBooleanProperty(found, "secondary_password", false);
 					this.setBooleanProperty(found, "secure_ip", false);
 					this.setBooleanProperty(found, "quarantine", false);
 					this.setBooleanProperty(found, "pre_load", false);
-					
+
 					if(this.getQueryVariable("singular")!=null){
 						found.setProperty("singular", this.getQueryVariable("singular"));
 					}
-					
+
 					if(this.getQueryVariable("plural")!=null){
 						found.setProperty("plural", this.getQueryVariable("plural"));
 					}
-					
+
 					if(this.getQueryVariable("code")!=null){
 						found.setProperty("code", this.getQueryVariable("code"));
 			}
-			
+
 					int count=0;
-					
+
 					this.setAction(found, count++, "edit", "Edit", "e.gif", "edit",null);
 
 					this.setAction(found, count++, "xml", "View XML", "r.gif", null,null);
@@ -168,16 +168,16 @@ public class SearchFieldListResource extends SecureResource{
 
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
 		Hashtable<String,Object> params=new Hashtable<String,Object>();
 		params.put("title", "Search Fields");
 
 		params.put("element_name", elementName);
-        
+
 
 		XFTTable fields = new XFTTable();
 		fields.initTable(new String[]{"FIELD_ID","HEADER","SUMMARY","TYPE","REQUIRES_VALUE","DESC","ELEMENT_NAME","SRC"});
-        
+
 		ArrayList<String> elementNames=StringUtils.CommaDelimitedStringToArrayList(elementName);
 		for(String en : elementNames)
         {
@@ -185,9 +185,9 @@ public class SearchFieldListResource extends SecureResource{
 				SchemaElement se = SchemaElement.GetElement(en);
 				ElementDisplay ed = se.getDisplay();
 				params.put("versions", ed.getVersionsJSON());
-				
+
 				ArrayList displays = ed.getSortedFields();
-				
+
 				Iterator iter = displays.iterator();
 				while (iter.hasNext())
 				{
@@ -210,12 +210,12 @@ public class SearchFieldListResource extends SecureResource{
 					   fields.rows().add(sub);
 				   }
 				}
-				
+
 				try {
 					ArrayList<List> custom_fields=user.getQueryResultsAsArrayList("SELECT DISTINCT ON (name) dtp.xnat_projectdata_id AS project, fdgf.name, fdgf.datatype AS type FROM xnat_abstractprotocol dtp LEFT JOIN xnat_datatypeprotocol_fieldgroups dtp_fg ON dtp.xnat_abstractprotocol_id=dtp_fg.xnat_datatypeprotocol_xnat_abstractprotocol_id LEFT JOIN xnat_fielddefinitiongroup fdg  ON dtp_fg.xnat_fielddefinitiongroup_xnat_fielddefinitiongroup_id=fdg.xnat_fielddefinitiongroup_id LEFT JOIN xnat_fielddefinitiongroup_field fdgf ON fdg.xnat_fielddefinitiongroup_id=fdgf.fields_field_xnat_fielddefiniti_xnat_fielddefinitiongroup_id WHERE dtp.data_type='" + en + "' AND fdgf.type='custom'");
-					
+
 					DisplayField pi=ed.getProjectIdentifierField();
-					
+
 					ArrayList<Object[]> label_fields=new ArrayList<Object[]>();
 					try {
 						if(GenericWrapperElement.GetFieldForXMLPath(se.getFullXMLName() + "/project")!=null){
@@ -232,11 +232,11 @@ public class SearchFieldListResource extends SecureResource{
 								    sub[6]=se.getFullXMLName();
 								    sub[7]=2;
 								    label_fields.add(sub);
-								    
+
 								    for(List cf:custom_fields){
 								    	if(cf.get(0).equals(o)){
 								    		sub = new Object[8];
-										    sub[0]=se.getSQLName().toUpperCase() + "_FIELD_MAP=" + cf.get(1);
+										    sub[0]=se.getSQLName().toUpperCase() + "_FIELD_MAP=" + cf.get(1).toString().toLowerCase();
 										    sub[1]=cf.get(1);
 										    sub[2]="Custom Field: "  + cf.get(1);
 										    sub[3]=cf.get(2);
@@ -244,9 +244,9 @@ public class SearchFieldListResource extends SecureResource{
 										    sub[5]="Custom Field: "  + cf.get(1);
 										    sub[6]=se.getFullXMLName();
 										    sub[7]=1;
-					   fields.rows().add(sub);
-				   }
-				}
+											   fields.rows().add(sub);
+										   }
+										}
 								}
 							} catch (Exception e) {
 								logger.error("",e);
@@ -254,7 +254,7 @@ public class SearchFieldListResource extends SecureResource{
 						}
 					} catch (FieldNotFoundException e) {
 					}
-					
+
 					if(label_fields.size()>0){
 						fields.rows().addAll(label_fields);
 					}
@@ -272,7 +272,7 @@ public class SearchFieldListResource extends SecureResource{
 			}
         }
 		MediaType mt = overrideVariant(variant);
-		
+
 		return this.representTable(fields, mt, params);
 	}
 

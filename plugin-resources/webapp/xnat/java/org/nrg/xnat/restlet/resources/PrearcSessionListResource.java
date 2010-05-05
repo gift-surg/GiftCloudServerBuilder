@@ -132,24 +132,35 @@ public final class PrearcSessionListResource extends Resource {
 		}
 	}
 	
-	private File getPrearcDir() throws ResourceException {
+	/**
+	 * Retrieves the File reference to the prearchive root directory
+	 * for the named project.
+	 * @param user
+	 * @param project project abbreviation or alias
+	 * @return prearchive root directory
+	 * @throws ResourceException if the named project does not exist, or if
+	 * the user does not have create permission for it, or if the prearchive
+	 * directory does not exist.
+	 */
+	static File getPrearcDir(final XDATUser user, final String project)
+	throws ResourceException {
 		if (null == user) {
 			throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED);
 		}
 
-		XnatProjectdata projectData = XnatProjectdata.getXnatProjectdatasById(requestedProject,
+		XnatProjectdata projectData = XnatProjectdata.getXnatProjectdatasById(project,
 				user, false);
 		if (null == projectData) {
 			final List<XnatProjectdata> matches =
 				XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias",
-						requestedProject, user, false);
+						project, user, false);
 			if (!matches.isEmpty()) {
 				projectData = matches.get(0);
 			}
 		}
 		if (null == projectData) {
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-					"No project named " + requestedProject);
+					"No project named " + project);
 		}
 
 		String prearcPath;
@@ -163,7 +174,8 @@ public final class PrearcSessionListResource extends Resource {
 						+ projectData.getId());
 			}
 		} catch (Exception e) {
-			logger.error("Unable to check security for " + user.getUsername()
+			LoggerFactory.getLogger(PrearcSessionListResource.class)
+			.error("Unable to check security for " + user.getUsername()
 					+ " on " + projectData.getId(), e);
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
 					e.getMessage());
@@ -172,7 +184,7 @@ public final class PrearcSessionListResource extends Resource {
 		if (null == prearcPath) {
 			final String message = "Unable to retrieve prearchive path for project "
 				+ projectData.getId();
-			logger.error(message);
+			LoggerFactory.getLogger(PrearcSessionListResource.class).error(message);
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, message);
 		}
 		
@@ -180,12 +192,13 @@ public final class PrearcSessionListResource extends Resource {
 		if (!prearc.isDirectory()) {
 			final String message = "Prearchive directory is invalid for project "
 				+ projectData.getId();
-			logger.error(message);
+			LoggerFactory.getLogger(PrearcSessionListResource.class).error(message);
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, message);
 		}
 		
 		return prearc;
 	}
+	
 	
 	private static final Pattern timestampPattern = Pattern.compile("[0-9]{8}_[0-9]{6}");
 
@@ -229,7 +242,8 @@ public final class PrearcSessionListResource extends Resource {
 				final Element root = d.createElement("PrearcSessions");
 				root.setAttribute("project", requestedProject);
 				d.appendChild(root);
-				for (final Collection<Session> ss : getPrearcSessions(getPrearcDir()).values()) {
+				for (final Collection<Session> ss :
+					getPrearcSessions(getPrearcDir(user, requestedProject)).values()) {
 					for (final Session s : ss) {
 						root.appendChild(s.createElement(d, prearcRef.getBaseRef().toString()));
 					}

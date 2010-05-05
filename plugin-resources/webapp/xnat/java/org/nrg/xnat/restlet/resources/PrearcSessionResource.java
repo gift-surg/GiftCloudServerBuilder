@@ -127,6 +127,10 @@ public final class PrearcSessionResource extends Resource {
 				throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
 						"Unable to delete session XML " + sessionXML);
 			}
+			if (sessionDir.exists()) {
+				throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
+						"Unable to delete session " + session);
+			}
 		}
 	}
 

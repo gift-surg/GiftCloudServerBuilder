@@ -142,7 +142,8 @@ public final class PrearcSessionResource extends Resource {
 	@Override
 	public Representation represent(final Variant variant) throws ResourceException {
 		final File sessionDir = getSessionDir();
-		if (MediaType.TEXT_XML.equals(variant.getMediaType())) {
+		final MediaType mt = variant.getMediaType();
+		if (MediaType.TEXT_XML.equals(mt)) {
 			// Return the session XML, if it exists
 			final File sessionXML = new File(sessionDir.getPath());
 			if (!sessionXML.isFile()) {
@@ -151,8 +152,15 @@ public final class PrearcSessionResource extends Resource {
 						"The session is likely invalid or incomplete.");
 			}
 			return new FileRepresentation(sessionXML, variant.getMediaType(), 0);
+		} else if (MediaType.APPLICATION_GNU_ZIP.equals(mt)) {
+			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED,
+					".tgz request not yet implemented");
+		} else if (MediaType.APPLICATION_ZIP.equals(mt)) {
+			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED,
+					".zip request not yet implemented");
 		} else {
-			throw new UnsupportedOperationException();
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Requested type " + mt + " is not supported");
 		}
 	}
 }

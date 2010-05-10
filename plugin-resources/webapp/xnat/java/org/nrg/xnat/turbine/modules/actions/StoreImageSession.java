@@ -1,5 +1,5 @@
 /**
- * Copyright 2006,2008 Harvard University / Washington University School of Medicine All Rights Reserved
+ * Copyright 2006,2008,2010 Harvard University / Washington University School of Medicine All Rights Reserved
  */
 package org.nrg.xnat.turbine.modules.actions;
 
@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,24 +30,19 @@ import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
-import org.nrg.xdat.turbine.modules.actions.ModifyItem.CriticalException;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
-import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
@@ -328,6 +322,7 @@ public class StoreImageSession extends ModifyItem {
 	if (prearcSessionPath.endsWith("\\")) {
 	    prearcSessionPath = prearcSessionPath.substring(0,prearcSessionPath.length()-1);
 	}
+	//save the prearchive xml with the updated IDs set
 	final File xml = new File(prearcSessionPath + ".xml");
 	if (xml.exists()){
 	    final FileOutputStream fos;
@@ -355,6 +350,7 @@ public class StoreImageSession extends ModifyItem {
 	    data.setMessage("Error updating prearchive xml file.");
 	}
 
+	//spin off transfer process
 	final Transfer transfer = new Transfer(TurbineUtils.GetFullServerPath(),TurbineUtils.GetSystemName(),AdminUtils.getAdminEmailId());
 	if (null == session.getUser()) {
 	    session.getItem().setUser(TurbineUtils.getUser(data));
@@ -364,11 +360,13 @@ public class StoreImageSession extends ModifyItem {
 	transfer.setPrearc(prearcSessionPath);
 	transfer.execute();
 
+	//next chunk should probably be deleted.
 	final SchemaElementI se = SchemaElement.GetElement(item.getXSIType());
 	if (se.getGenericXFTElement().getType().getLocalPrefix().equalsIgnoreCase("xdat")) {
 	    ElementSecurity.refresh();
 	}
 
+	//this is maintained for project scoping in display
 	if (session.getProject()!=null){
 	    data.getParameters().setString("project", session.getProject());
 	}
@@ -403,8 +401,11 @@ public class StoreImageSession extends ModifyItem {
     @SuppressWarnings("unchecked")
     @Override
     public void preSave(XFTItem item,RunData data, Context context) throws Exception {
-	final XnatImagesessiondata session = (XnatImagesessiondata)BaseElement.GetGeneratedItem(item);
+    	
+    	final XnatImagesessiondata session = (XnatImagesessiondata)BaseElement.GetGeneratedItem(item);
 	final XDATUser user = (XDATUser) session.getUser();
+	
+	//check to see if a transfer is already running.
 	final CriteriaCollection cc= new CriteriaCollection("AND");
 	cc.addClause("wrk:workFlowData.ID",session.getId());
 	cc.addClause("wrk:workFlowData.pipeline_name","Transfer");
@@ -414,6 +415,7 @@ public class StoreImageSession extends ModifyItem {
 	    throw new org.nrg.xdat.turbine.modules.actions.ModifyItem.CriticalException("Transfer in progress.  Try again later.");
 	}
 	
+	//if a subject doesn't exist, create one
 		XnatSubjectdata subj=session.getSubjectData();
 		
 		if(subj==null  && LoadImageData.hasValue(session.getSubjectId())){
@@ -436,12 +438,14 @@ public class StoreImageSession extends ModifyItem {
 			session.setSubjectId(sub.getId());
 		}
 		
+		//fix the scan paths using the destination session path (they are probably relative paths before this)
         String arcSessionPath=this.getArcSessionPath(session);
         
         for (final XnatImagescandata scan : session.getScans_scan()) {
             for (final XnatAbstractresource file : (Collection<XnatAbstractresource>)scan.getFile()) {
         	file.appendToPaths(arcSessionPath);
-                                    
+                 
+        	
         	try {
 	        	    if (null != scan.getType() && !"".equals(scan.getType())){
 	        	    	if(((XnatResource)file).getContent()==null || ((XnatResource)file).getContent().equals("")){

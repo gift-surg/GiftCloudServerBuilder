@@ -87,61 +87,63 @@ public class ScanDIRResource extends ScanResource {
 			
 
 	    // create a directory in the temporary directory to hold our files
-	    File tmp_working_dir = new File(new File(System.getProperty("java.io.tmpdir")), "dicom_" + generateUniqueFilename(System.getProperty("java.io.tmpdir")));
-	    tmp_working_dir.mkdirs();
+	    File tmp_working_dir = File.createTempFile("dicom_","",new File(System.getProperty("java.io.tmpdir")));
+	    
+	    try {
+		tmp_working_dir.mkdirs();
 
-	    // make the DICOMDIR file inside the working temp directory
-	    File dicomDIRFile = new File(tmp_working_dir,"DICOMDIR");
-	    dicomDIRFile.createNewFile();
+		// make the DICOMDIR file inside the working temp directory
+		File dicomDIRFile = new File(tmp_working_dir,"DICOMDIR");
+		dicomDIRFile.createNewFile();
 
-	    DicomDir dicomdir = new DicomDir(dicomDIRFile);
-	    dicomdir.create();
-
-	    //iterate through scans and only include DICOM files.
-	    for(final XnatImagescandata scan: scans){
-		for(final XnatAbstractresource res: scan.getFile()){
-		    if(res.getLabel()!=null && res.getLabel().equals("DICOM")){
-			for(final File f:res.getCorrespondingFiles(rootPath)){
-			    final String uri=f.getAbsolutePath();
-			    final String relative = RestFileUtils.buildRelativePath(uri, session_mapping, valuesToReplace, res.getXnatAbstractresourceId(), res.getLabel());
-			    // create a matching directory structure in the working temp directory
-			    File tmp_dicom_dir = new File(tmp_working_dir, relative).getParentFile();
-			    if (tmp_dicom_dir != null) {
-				tmp_dicom_dir.mkdirs();
+		// populate the DICOMDIR
+		DicomDir dicomdir = new DicomDir(dicomDIRFile);
+		try {
+		    dicomdir.create();
+		    //iterate through scans and only include DICOM files.
+		    for(final XnatImagescandata scan: scans){
+			for(final XnatAbstractresource res: scan.getFile()){
+			    if(res.getLabel()!=null && res.getLabel().equals("DICOM")){
+				for(final File f:res.getCorrespondingFiles(rootPath)){
+				    final String uri=f.getAbsolutePath();
+				    final String relative = RestFileUtils.buildRelativePath(uri, session_mapping, valuesToReplace, res.getXnatAbstractresourceId(), res.getLabel());
+				    // create a matching directory structure in the working temp directory
+				    File tmp_dicom_dir = new File(tmp_working_dir, relative).getParentFile();
+				    if (tmp_dicom_dir != null) {
+					tmp_dicom_dir.mkdirs();
+				    }
+				    if(f!=null && f.exists()){
+					rep.addEntry(relative, f);
+					// copy file to the directory structure in the working temp directory.
+					FileUtils.copyFileToDirectory(f,tmp_dicom_dir);
+					File tmp_dicom_file = new File(tmp_dicom_dir,f.getName());
+					dicomdir.addFile(tmp_dicom_dir);
+					// delete the file now to avoid buildup.
+					tmp_dicom_file.delete();
+				    } 
+				}
 			    }
-			    if(f!=null && f.exists()){
-				rep.addEntry(relative, f);
-				// copy file to the directory structure in the working temp directory.
-				FileUtils.copyFileToDirectory(f,tmp_dicom_dir);
-				File tmp_dicom_file = new File(tmp_dicom_dir,f.getName());
-				dicomdir.addFile(tmp_dicom_dir);
-				// delete the file now to avoid buildup.
-				tmp_dicom_file.delete();
-			    } 
 			}
 		    }
+		
+		    rep.addEntry("DICOMDIR", dicomDIRFile);
+		    this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
+		    return rep;
+		}
+		finally {
+		    dicomdir.close();
 		}
 	    }
+	    finally {
+		tmp_working_dir.delete();
+	    }
 	    
-	    dicomdir.close();
-	    rep.addEntry("DICOMDIR", dicomDIRFile);
-	    this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
-	    
-	} catch (Throwable e) {
+	}
+	catch (Throwable e) {
 	    logger.error("", e);
 	    this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 	    return null;
 	}
-	return rep;
-    }
-
-    private static String generateUniqueFilename (String subdir) throws IOException {
-	Random r = new Random();
-	int unique = r.nextInt(Integer.MAX_VALUE);
-	while (new File(subdir + Integer.toString(unique)).exists()) {
-	    unique = r.nextInt(Integer.MAX_VALUE);
-	}
-	return Integer.toString(unique);
     }
 }
 

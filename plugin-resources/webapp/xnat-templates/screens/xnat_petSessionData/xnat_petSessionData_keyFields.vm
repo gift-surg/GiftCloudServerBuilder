@@ -35,6 +35,18 @@
 						#if($!item.getProperty("xnat:petSessionData/start_time_scan"))
 							<TR><TH align="left">Emission Scan Time</TH><TD>$!item.getProperty("xnat:petSessionData/start_time_scan")</TD></TR>
 							#end
+						
+						#if($!item.getProperty("xnat:petSessionData/blood_glucose"))
+							<TR><TH align="left">Blood Glucose Level</TH>
+								<TD>
+									$!item.getProperty("xnat:petSessionData/blood_glucose")&nbsp;
+									$!item.getProperty("xnat:petSessionData/blood_glucose_units")
+								</TD>
+							</TR>
+							#end
+						#if($!item.getProperty("xnat:petSessionData/blood_glucose_collection_time"))
+							<TR><TH align="left">Blood Glucose Collection Time</TH><TD>$!item.getProperty("xnat:petSessionData/blood_glucose_collection_time")</TD></TR>
+							#end
     </table>
    </span>
   </TD>

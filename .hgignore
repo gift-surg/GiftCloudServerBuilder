@@ -1,3 +1,22 @@
 syntax: glob
 .classpath
-.project
+.cvsignore
+.project 
+build.properties
+plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar
+plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar
+plugin-resources/misc/template2.*
+Thumbs.db
+
+syntax: regexp
+^classes/org
+^deployments
+^ide-bin
+^lib
+^pipeline
+^plugin-resources/cache
+^projects
+# ignore generated bean files, but not ones in the sub directories
+^src/org/nrg/xdat/bean/[^/]*\.java
+# all auto-generated launch scripts start with capital letters
+^bin/[A-Z].+

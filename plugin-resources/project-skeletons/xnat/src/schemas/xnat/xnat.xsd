@@ -595,6 +595,11 @@
 					</xs:element>
 					<xs:element name="educationDesc" type="xs:string" minOccurs="0"/>
 					<xs:element name="race" type="xs:string" minOccurs="0"/>
+					<xs:element name="race2" type="xs:string" minOccurs="0"/>
+					<xs:element name="race3" type="xs:string" minOccurs="0"/>
+					<xs:element name="race4" type="xs:string" minOccurs="0"/>
+					<xs:element name="race5" type="xs:string" minOccurs="0"/>
+					<xs:element name="race6" type="xs:string" minOccurs="0"/>
 					<xs:element name="ethnicity" type="xs:string" minOccurs="0"/>
 					<xs:element name="weight" minOccurs="0">
 						<xs:complexType>
@@ -1839,6 +1844,7 @@
 					<xs:element name="start_time_injection" type="xs:dateTime" minOccurs="0"/>
 					<xs:element name="blood_glucose" type="xs:float" minOccurs="0"/>
 					<xs:element name="blood_glucose_units" type="xs:string" minOccurs="0"/>
+					<xs:element name="blood_glucose_collection_time" type="xs:dateTime" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

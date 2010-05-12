@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -111,7 +114,14 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         return null;
     }
 
-
+	public String getFreeFormDate(String dateParam){
+		try{
+			Date now = Calendar.getInstance().getTime();
+			DateFormat dateFormat = new SimpleDateFormat(dateParam);
+			String dateStr = dateFormat.format(now); 
+			return dateStr;
+		} catch (Exception e1) {logger.error(e1);return null;}
+	}
 
     Hashtable fieldsByName = null;
     public Hashtable getFieldsByName(){

@@ -2,7 +2,7 @@
 <DIV class="edit_header1">Demographics</DIV><BR>
 <table>
 	#parse("/screens/xnat_subjectData/xnat_subjectData_edit_core_demographics.vm")
-	#parse("/screens/xnat_subjectData/xnat_subjectData_edit_addtl_demographics.vm")
+	#parse($turbineUtils.getTemplateName("_edit_addtl_demographics","xnat:subjectData",$project))
 </table>
 		<script type="text/javascript">
 		function validateKeyFields(){

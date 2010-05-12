@@ -33,17 +33,17 @@ public class ExptAssessmentResource extends ItemResource {
 	XnatExperimentdata assesed = null;
 	XnatImageassessordata assessor=null;
 	XnatImageassessordata existing=null;
-	
+
 	String exptID=null;
-	
+
 	public ExptAssessmentResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		
+
 			String pID= (String)request.getAttributes().get("PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
 			}
-			
+
 		if (proj == null) {
 			ArrayList<XnatProjectdata> matches = XnatProjectdata
 					.getXnatProjectdatasByField(
@@ -63,7 +63,7 @@ public class ExptAssessmentResource extends ItemResource {
 						&& (proj != null && !assesed.hasProject(proj.getId()))) {
 					assesed = null;
 				}
-					
+
 					if(assesed==null && this.proj!=null){
 					assesed = XnatExperimentdata.GetExptByProjectIdentifier(
 							this.proj.getId(), assessedID, user, false);
@@ -78,7 +78,7 @@ public class ExptAssessmentResource extends ItemResource {
 						&& (proj != null && !existing.hasProject(proj.getId()))) {
 					existing = null;
 				}
-				
+
 				if (existing == null) {
 					existing = (XnatImageassessordata) XnatExperimentdata
 							.GetExptByProjectIdentifier(proj.getId(), exptID,
@@ -114,38 +114,38 @@ public class ExptAssessmentResource extends ItemResource {
 
 	@Override
 	public void handlePut() {
-	        XFTItem item = null;			
+	        XFTItem item = null;
 
 			try {
 			XFTItem template=null;
 			if (existing!=null){
 				template=existing.getItem();
 			}
-			
+
 			item=this.loadItem(null,true,template);
-			
+
 				if(item==null){
 					String xsiType=this.getQueryVariable("xsiType");
 					if(xsiType!=null){
 						item=XFTItem.NewItem(xsiType, user);
 					}
 				}
-				
+
 				if(item==null){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
 					return;
 				}
-				
+
 				if(item.instanceOf("xnat:imageAssessorData")){
 					assessor = (XnatImageassessordata)BaseElement.GetGeneratedItem(item);
-					
+
 				if(filepath!=null && !filepath.equals("")){
 					if(filepath.startsWith("projects/")){
 						if(!user.canRead(assessor)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for experiments in this project.");
 							return;
 						}
-						
+
 						String newProjectS= filepath.substring(9);
 						XnatProjectdata newProject=XnatProjectdata.getXnatProjectdatasById(newProjectS, user, false);
 						String newLabel = this.getQueryVariable("label");
@@ -164,15 +164,15 @@ public class ExptAssessmentResource extends ItemResource {
 								index++;
 							}
 
-							
+
 							if(this.getQueryVariable("primary")!=null && this.getQueryVariable("primary").equals("true")){
 								if(!user.canDelete(assessor)){
 									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for experiments in this project.");
 									return;
 								}
-								
-								assessor.moveToProject(newProject,newLabel,user); 
-								
+
+								assessor.moveToProject(newProject,newLabel,user);
+
 								if(matched!=null){
 									DBAction.RemoveItemReference(assessor.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user);
 									assessor.removeSharing_share(index);
@@ -186,7 +186,7 @@ public class ExptAssessmentResource extends ItemResource {
 											return;
 										}
 									}
-										
+
 										if(user.canCreate(assessor.getXSIType()+"/project", newProject.getId())){
 											XnatExperimentdataShare pp= new XnatExperimentdataShare((UserI)user);
 											pp.setProject(newProject.getId());
@@ -202,8 +202,8 @@ public class ExptAssessmentResource extends ItemResource {
 									return;
 								}
 							}
-							
-							this.returnDefaultRepresentation();								
+
+							this.returnDefaultRepresentation();
 						}else{
 							this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify project: " + newProjectS);
 							return;
@@ -213,11 +213,15 @@ public class ExptAssessmentResource extends ItemResource {
 						return;
 					}
 				}else{
+					if(assessor.getLabel()==null){
+						assessor.setLabel(this.exptID);
+					}
+
 					//MATCH PROJECT
 					if(this.proj==null && assessor.getProject()!=null){
 						proj = XnatProjectdata.getXnatProjectdatasById(assessor.getProject(), user, false);
 					}
-					
+
 					if(this.proj!=null){
 						if(assessor.getProject()==null || assessor.getProject().equals("")){
 							assessor.setProject(this.proj.getId());
@@ -230,7 +234,7 @@ public class ExptAssessmentResource extends ItemResource {
 									break;
 								}
 							}
-							
+
 							if(!matched){
 								XnatExperimentdataShare pp= new XnatExperimentdataShare((UserI)user);
 								pp.setProject(this.proj.getId());
@@ -241,18 +245,18 @@ public class ExptAssessmentResource extends ItemResource {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Submitted subject record must include the project attribute.");
 						return;
 					}
-					
+
 					//MATCH SESSION
 					if(this.assesed!=null){
 						assessor.setImagesessionId(this.assesed.getId());
 					}else{
 						if(assessor.getImagesessionId()!=null && !assessor.getImagesessionId().equals("")){
 							this.assesed=XnatExperimentdata.getXnatExperimentdatasById(assessor.getImagesessionId(), user, false);
-							
+
 							if(this.assesed==null && assessor.getProject()!=null && assessor.getLabel()!=null){
 								this.assesed=XnatExperimentdata.GetExptByProjectIdentifier(assessor.getProject(), assessor.getImagesessionId(),user, false);
 							}
-							
+
 							if(this.assesed==null){
 								for(XnatExperimentdataShare pp : assessor.getSharing_share()){
 									this.assesed=XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), assessor.getImagesessionId(),user, false);
@@ -269,11 +273,11 @@ public class ExptAssessmentResource extends ItemResource {
 					if(assessor.getId()!=null){
 						existing=(XnatImageassessordata)XnatExperimentdata.getXnatExperimentdatasById(assessor.getId(), user, completeDocument);
 					}
-					
+
 					if(existing==null && assessor.getProject()!=null && assessor.getLabel()!=null){
 							existing=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(assessor.getProject(), assessor.getLabel(),user, completeDocument);
 					}
-					
+
 					if(existing==null){
 						for(XnatExperimentdataShare pp : assessor.getSharing_share()){
 								existing=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
@@ -283,7 +287,7 @@ public class ExptAssessmentResource extends ItemResource {
 						}
 					}
 					}
-					
+
 					if(existing==null){
 						if(!user.canCreate(assessor)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in this project.");
@@ -298,34 +302,34 @@ public class ExptAssessmentResource extends ItemResource {
 							this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through seperate URI.");
 							return;
 						}
-						
+
 						if(!user.canEdit(assessor)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for subjects in this project.");
 							return;
 						}
 						//MATCHED
 					}
-					
+
 					boolean allowDataDeletion=false;
 					if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equals("true")){
 						allowDataDeletion=true;
 					}
-					
+
 					if(!StringUtils.IsEmpty(assessor.getLabel()) && !StringUtils.IsAlphaNumericUnderscore(assessor.getId())){
 						this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Invalid character in experiment label.");
 						return;
 					}
-					
-					
-					
+
+
+
 					final ValidationResults vr = assessor.validate();
-		            
+
 		            if (vr != null && !vr.isValid())
 		            {
 		            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
 		            }
-											
+
 					if(assessor.save(user,false,allowDataDeletion)){
 						user.clearLocalCache();
 					MaterializedView.DeleteByUser(user);
@@ -352,7 +356,7 @@ public class ExptAssessmentResource extends ItemResource {
 			logger.error("",e);
 		}
 	}
-	
+
 
 	@Override
 	public boolean allowDelete() {
@@ -364,19 +368,19 @@ public class ExptAssessmentResource extends ItemResource {
 
 			if(assessor==null&& exptID!=null){
 				assessor=(XnatImageassessordata)XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
-				
+
 				if(assessor==null && this.proj!=null){
 				assessor=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(this.proj.getId(), exptID,user, false);
 				}
 			}
-			
+
 			if(assessor==null){
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified experiment.");
 				return;
 			}
-			
+
 		XnatProjectdata newProject=null;
-			
+
 		if(filepath!=null && !filepath.equals("")){
 			if(filepath.startsWith("projects/")){
 				String newProjectS= filepath.substring(9);
@@ -392,7 +396,7 @@ public class ExptAssessmentResource extends ItemResource {
 		}else if(!assessor.getProject().equals(proj.getId())){
 			newProject=proj;
 	            }
-	            
+
 
 		String msg=assessor.delete((newProject!=null)?newProject:proj, user, this.isQueryVariableTrue("removeFiles"));
 		if(msg!=null){
@@ -400,20 +404,20 @@ public class ExptAssessmentResource extends ItemResource {
 			return;
 		}
 	}
-	
+
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
 		MediaType mt = overrideVariant(variant);
 
 		if(assessor==null&& exptID!=null){
 			assessor=(XnatImageassessordata)XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
-			
+
 			if(assessor==null && this.proj!=null){
 				assessor=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(this.proj.getId(), exptID,user, false);
 			}
 		}
-		
+
 		if(assessor!=null){
 			String filepath = this.getRequest().getResourceRef().getRemainingPart();
 			if(filepath!=null && filepath.indexOf("?")>-1){
@@ -441,7 +445,7 @@ public class ExptAssessmentResource extends ItemResource {
 				al.add("Secondary_ID");
 				al.add("Name");
 				t.initTable(al);
-				
+
 				Object[] row=new Object[4];
 				row[0]=assessor.getLabel();
 				XnatProjectdata primary = assessor.getPrimaryProject(false);
@@ -449,7 +453,7 @@ public class ExptAssessmentResource extends ItemResource {
 				row[2]=primary.getSecondaryId();
 				row[3]=primary.getName();
 				t.rows().add(row);
-				
+
 				for(Map.Entry<XnatProjectdataI, String> entry: assessor.getProjectDatas().entrySet()){
 					row=new Object[4];
 					row[0]=entry.getValue();

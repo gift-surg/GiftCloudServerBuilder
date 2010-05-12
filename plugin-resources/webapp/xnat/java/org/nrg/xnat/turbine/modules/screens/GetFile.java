@@ -35,7 +35,7 @@ import edu.sdsc.grid.io.srb.SRBFileInputStream;
 
 public class GetFile extends RawScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(GetFile.class);
-    
+
     /**
     * Set the content type to Xml. (see RawScreen)
     *
@@ -46,17 +46,7 @@ public class GetFile extends RawScreen {
     {
         return "application/octet-stream";
     };
-    
-    public void logAccess(RunData data)
-    {
-        AccessLogger.LogScreenAccess(data);
-    }
-    
-    public void logAccess(RunData data,String message)
-    {
-        AccessLogger.LogScreenAccess(data,message);
-    }
-    
+
 
     /**
     * Overrides & finalizes doOutput in RawScreen to serve the output stream
@@ -65,7 +55,7 @@ public class GetFile extends RawScreen {
     * @param data RunData
     * @exception Exception, any old generic exception.
     */
-    protected final void doOutput(RunData data) 
+    protected final void doOutput(RunData data)
     {
         long startTime = Calendar.getInstance().getTimeInMillis();
              String search_element = data.getParameters().getString("search_element");
@@ -76,8 +66,7 @@ public class GetFile extends RawScreen {
              XDATUser user = null;
              String log = "";
              HttpSession httpSession = data.getRequest().getSession();
-             AccessLogger.LogScreenAccess(data);
-             
+
              HttpServletResponse response = data.getResponse();
              byte[] buf = new byte[FileUtils.LARGE_DOWNLOAD];
              try {
@@ -92,14 +81,16 @@ public class GetFile extends RawScreen {
                          logger.error("",e1);
                      }
                  }
-                                  
+
+                 AccessLogger.LogScreenAccess(data);
+
                  log +="," + (Calendar.getInstance().getTimeInMillis()-startTime);
                  startTime = Calendar.getInstance().getTimeInMillis();
-                 
+
                  if (search_element!=null && search_field!=null && search_value!=null && fileId!=null)
                  {
                      Object o = null;
-                     
+
                      String innerKey= "";
                      if (key!=null){
                          innerKey="/key/" + key;
@@ -108,18 +99,18 @@ public class GetFile extends RawScreen {
                      final String identifier = search_element + ":"+ search_field + ":"+ search_value;
                      if (httpSession.getAttribute(identifier)!=null){
                          Hashtable<String,Object> hash = (Hashtable<String,Object>)httpSession.getAttribute(identifier);
-                         
+
                          o = hash.get(innerKey);
                      }else{
                          CatalogSet catalogSet= XNATUtils.getCatalogBean(data, TurbineUtils.GetItemBySearch(data));
-                         
+
                          CatCatalogBean catalog = catalogSet.catalog;
                          data.getSession().setAttribute(identifier, catalogSet.hash);
-                         
-                         
+
+
                          o = catalogSet.hash.get(innerKey);
                      }
-                     
+
                      if (o instanceof File){
                          File f = (File)o;
                          if (f.exists()){
@@ -130,7 +121,7 @@ public class GetFile extends RawScreen {
                              while ((len = in.read(buf)) > 0) {
                                  data.getResponse().getOutputStream().write(buf, 0, len);
                              }
-                             
+
                          }
                      }else if (o instanceof SRBFile){
                          SRBFile f = (SRBFile)o;
@@ -141,15 +132,15 @@ public class GetFile extends RawScreen {
                              SRBFileInputStream is = new SRBFileInputStream(f);
                              // Transfer bytes from the file to the ZIP file
                              int len;
-                             
+
                              startTime = Calendar.getInstance().getTimeInMillis();
-                             
+
                              while ((len = is.read(tempBUF)) > 0) {
                                  data.getResponse().getOutputStream().write(tempBUF, 0, len);
                                  data.getResponse().getOutputStream().flush();
                              }
-                             
-                             
+
+
                          }
                      }
                  }
@@ -203,7 +194,7 @@ public class GetFile extends RawScreen {
                      logger.error("",e1);
                  }
              }
-            
-      
+
+
     }
  }

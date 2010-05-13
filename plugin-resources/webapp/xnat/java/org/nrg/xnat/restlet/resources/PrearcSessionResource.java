@@ -10,13 +10,11 @@ import java.util.Map;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.FileUtils;
-import org.nrg.xnat.turbine.modules.actions.LoadImageData;
-import org.nrg.xnat.turbine.modules.actions.StoreImageSession;
+import org.nrg.xnat.archive.AlreadyArchivingException;
+import org.nrg.xnat.archive.ArchivingException;
+import org.nrg.xnat.archive.DuplicateSessionLabelException;
+import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -42,7 +40,6 @@ public final class PrearcSessionResource extends Resource {
 	private static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
 	private static final String SESSION_LABEL = "SESSION_LABEL";
 	private static final String CRLF = "\r\n";
-	private static final String[] SCANS_DIR_NAMES = {"RAW", "SCANS"};
 	
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionResource.class);
 
@@ -87,6 +84,10 @@ public final class PrearcSessionResource extends Resource {
 		}
 	}
 
+	
+	@Override
+	public final boolean allowPost() { return true; }
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.restlet.resource.Resource#acceptRepresentation(org.restlet.resource.Representation)
@@ -98,7 +99,9 @@ public final class PrearcSessionResource extends Resource {
 		final File sessionDir = getSessionDir();
 		final String action = queryForm.getFirstValue("action");
 		if ("archive".equals(action)) {
-			doArchive(sessionDir);
+			final String entity = doArchive(sessionDir);
+			final Response response = getResponse();
+			response.setEntity(entity + CRLF, MediaType.TEXT_URI_LIST);
 		} else if ("build".equals(action)) {
 			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "session build operation not yet implemented");
 		} else if ("move".equals(action)) {
@@ -111,12 +114,9 @@ public final class PrearcSessionResource extends Resource {
 	}
 
 	private String doArchive(final File sessionDir) throws ResourceException {
-		final StringBuilder messages = new StringBuilder();
-		final LoadImageData loader = new LoadImageData();
-		final File sessionXML = new File(sessionDir.getPath() + ".xml");
-		final XnatImagesessiondata session;
+		final PrearcSessionArchiver archiver;
 		try {
-			session = loader.getSession(user, sessionXML, project, false);
+			archiver = new PrearcSessionArchiver(sessionDir, user, project);
 		} catch (FileNotFoundException e) {
 			logger.debug("user attempted to archive session with no XML", e);
 			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
@@ -130,96 +130,23 @@ public final class PrearcSessionResource extends Resource {
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
 					"Unable to parse session document", e);
 		}
-
-		/*
-		 * Ensure that the subject label and ID are set (by setting them, if necessary)
-		 */
-		logger.trace("looking for subject for session " + sessionDir.getName());
-		XnatSubjectdata subject = session.getSubjectData();
-		// TODO: check for REST-specified subject label
-		final String subjectID = session.getSubjectId();
-		if (null == subject && LoadImageData.hasValue(subjectID)) {
-			final String cleaned = XnatSubjectdata.cleanValue(subjectID);
-			if (!cleaned.equals(subjectID)) {
-				session.setSubjectId(cleaned);
-				subject = session.getSubjectData();
-			}
-		}
-
-		if (null == subject) {
-			subject = new XnatSubjectdata((UserI)user);
-			subject.setProject(project);
-			if (LoadImageData.hasValue(subjectID)) {
-				subject.setLabel(XnatSubjectdata.cleanValue(subjectID));
-			}
-			try {
-				subject.setId(XnatSubjectdata.CreateNewID());
-				subject.save(user, false, false);
-				
-				logger.trace("created new subject {}", subject);
-				messages.append("PROCESSING: Created new subject ").append(subjectID);
-				messages.append(" (").append(subject.getId()).append(")");
-				messages.append(CRLF);
-
-				session.setSubjectId(subject.getId());
-			} catch (Exception e) {
-				logger.error("unable to build new subject", e);
-				throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-						"Unable to build new subject", e);
-			}
-		} else {
-			messages.append("PROCESSING: Matches existing subject ").append(subjectID);
-			messages.append(" (").append(subject.getId()).append(")");
-			messages.append(CRLF);
-		}
-
-		/*
-		 * Determine a session label
-		 */
-		// TODO: check for REST-specified session label
-		if (!LoadImageData.hasValue(session.getLabel())) {
-			if (LoadImageData.hasValue(session.getDcmpatientid())) {
-				session.setLabel(session.getDcmpatientid());
-			}
-		}
-		if (!LoadImageData.hasValue(session.getLabel())) {
-			logger.debug("unable to deduce session label for {}", session);
-			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
-					"No session label could be deduced for this session. " +
-			"Resubmit the request, specifying a session label.");
-		}
-
-		/*
-		 * Don't overwrite an existing session.
-		 */
-		final StoreImageSession store = new StoreImageSession();	// TODO: remove StoreImageSession; see below
-		final String arcSessionPath;
-		try {
-			arcSessionPath = store.getArcSessionPath(session);
-		} catch (Exception e) {
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-					"Unable to determine archive path for session", e);
-		}
-		final File archivedSessionDir = new File(arcSessionPath);
-		if (archivedSessionDir.exists()) {
-			for (final String scansDirName : SCANS_DIR_NAMES) {
-				final File scansDir = new File(archivedSessionDir, scansDirName);
-				if (scansDir.exists() && FileUtils.HasFiles(scansDir)) {
-					throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
-							"Session " + session.getLabel() + " already exists in project " + project);
-				}
-			}
-		}
-
-		store.template = session;
-		logger.trace("archiving session {}", session);
 		
-		// TODO: StoreImageSession is really a Turbine thing. We need a common foundation
-		// to do the transfer without requiring RunData and Context. Once we have that,
-		// much of the above code can likely be removed. (See also
-		// org.nrg.xnat.turbine.modules.actions.ImageUpload)
-
-		throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "archive operation not implemented");
+		try {
+			// TODO: need a status listener?
+			return archiver.call().toString();
+		} catch (AlreadyArchivingException e) {
+			logger.debug("user attempted to archive session already in transfer", e);
+			throw new ResourceException(e.getStatus(), e);
+		} catch (DuplicateSessionLabelException e) {
+			logger.debug("user attempted to archive session already in archive", e);
+			throw new ResourceException(e.getStatus(), e);
+		} catch (ArchivingException e) {
+			// Other archiving exceptions may be noteworthy
+			logger.warn("archiving failed", e);
+			throw new ResourceException(e.getStatus(), e);
+		} finally {
+			archiver.dispose();
+		}
 	}
 
 	/*
@@ -273,7 +200,7 @@ public final class PrearcSessionResource extends Resource {
 		final MediaType mt = variant.getMediaType();
 		if (MediaType.TEXT_XML.equals(mt)) {
 			// Return the session XML, if it exists
-			final File sessionXML = new File(sessionDir.getPath());
+			final File sessionXML = new File(sessionDir.getPath() + ".xml");
 			if (!sessionXML.isFile()) {
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
 						"The named session exists, but its XNAT session document is not available." +

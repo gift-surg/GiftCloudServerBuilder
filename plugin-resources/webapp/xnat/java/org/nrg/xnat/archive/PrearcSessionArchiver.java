@@ -18,6 +18,7 @@ import org.nrg.StatusMessage;
 import org.nrg.StatusMessage.Status;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -131,7 +132,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		// TODO: check for REST-specified session label
 		if (!LoadImageData.hasValue(session.getLabel())) {
 			if (LoadImageData.hasValue(session.getDcmpatientid())) {
-				session.setLabel(session.getDcmpatientid());
+				session.setLabel(XnatImagesessiondata.cleanValue(session.getDcmpatientid()));
 			}
 		}
 		if (!LoadImageData.hasValue(session.getLabel())) {
@@ -195,24 +196,23 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 */
 	private File getArcSessionDir()
 	throws ArchivingException {
-		final String currentArcPath;
+		final File currentArcDir;
 		try {
-			currentArcPath = session.getCurrentArchiveFolder();
+			final String path = session.getCurrentArchiveFolder();
+			currentArcDir = null == path ? null : new File(path);
 		} catch (InvalidArchiveStructure e) {
 			throw new ArchivingException("couldn't get archive folder for " + session, e);
 		}
-		final StringBuilder path = new StringBuilder();
-		if (null != currentArcPath) {
-			path.append(currentArcPath.replace('\\', '/'));
-			assert '/' == path.charAt(path.length() - 1) : "session current archive path does not end with /";
+		final String sessDirName = session.getArchiveDirectoryName();
+		final File relativeSessionDir;
+		if (null == currentArcDir) {
+			relativeSessionDir = new File(sessDirName);
+		} else {
+			relativeSessionDir = new File(currentArcDir, sessDirName);
 		}
-		path.append(session.getArchiveDirectoryName());
-		assert '/' != path.charAt(path.length() - 1) : "session archive directory name ends with /";
-		path.append("/");
 		
-		final File arcSessionDir = new File(
-				FileUtils.AppendRootPath(session.getPrimaryProject(false).getRootArchivePath(),
-						path.toString()));
+		final File rootArchiveDir = new File(session.getPrimaryProject(false).getRootArchivePath());
+		final File arcSessionDir = new File(rootArchiveDir, relativeSessionDir.getPath());
 		
 		// Verify that the proposed archive session directory does not already contain data
 		if (arcSessionDir.exists()) {
@@ -251,7 +251,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 * @param arcSessionPath
 	 */
 	private void fixScans(final File arcSessionDir) {
-		final String root = arcSessionDir.getPath();
+		final String root = arcSessionDir.getPath() + "/";
 		for (final XnatImagescandata scan : session.getScans_scan()) {
 			for (final XnatAbstractresource file : scan.getFile()) {
 				// appendToPaths() is poorly named: should maybe be prependPathsWith()
@@ -275,6 +275,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		try {
 			final FileWriter prearcXML = new FileWriter(prearcSessionDir.getPath() + ".xml");
 			try {
+				logger.debug("Preparing to update prearchive XML for {}", session);
 				session.toXML(prearcXML, true);
 			} catch (RuntimeException e) {
 				logger.error("unable to update prearchive session XML", e);
@@ -312,6 +313,12 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public URL call() throws ArchivingException {
+		try {
+			session.setId(XnatExperimentdata.CreateNewID());
+		} catch (Exception e) {
+			throw new ArchivingException("unable to create new session ID", e);
+		}
+		
 		fixSessionLabel();
 		fixSubject();
 		
@@ -328,7 +335,10 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 				for (final ValidationHandler handler : validationHandlers) {
 					handler.handle(validation);
 				}
+				throw new ValidationException();
 			}
+		} catch (ArchivingException e) {
+			throw e;
 		} catch (Exception e) {
 			failed("unable to perform session validation: " + e.getMessage());
 			throw new ArchivingException("unable to perform session validation", e);
@@ -363,9 +373,8 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		// TODO: what about project scoping line?
 
 		if (successful) {
-			// TODO: construct full URL
-			final StringBuilder urlb = new StringBuilder("REST");
-			urlb.append("/projects/").append(project);
+			final StringBuilder urlb = new StringBuilder(TurbineUtils.GetFullServerPath());
+			urlb.append("/REST/projects/").append(project);
 			urlb.append("/subjects/").append(session.getSubjectId());
 			urlb.append("/experiments/").append(session.getLabel());
 			try {

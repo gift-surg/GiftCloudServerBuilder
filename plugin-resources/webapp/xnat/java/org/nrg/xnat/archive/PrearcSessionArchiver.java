@@ -31,7 +31,6 @@ import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
-import org.nrg.xft.utils.ValidationUtils.ValidationHandler;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.modules.actions.LoadImageData;
@@ -48,11 +47,13 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionArchiver.class);
 	private final Collection<StatusListener> listeners = new LinkedHashSet<StatusListener>();
-	private final Collection<ValidationHandler> validationHandlers = new LinkedHashSet<ValidationHandler>();
 	private final Object statusObj;
 	private final XnatImagesessiondata session;
 	private final XDATUser user;
 	private final String project;
+	
+	private boolean shouldForceQuarantine = false;
+	
 
 	public PrearcSessionArchiver(final XnatImagesessiondata session,
 			final XDATUser user, final String project) {
@@ -89,6 +90,13 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		listeners.clear();
 	}
 
+	
+	public boolean forceQuarantine(final boolean shouldForce) {
+		final boolean prev = this.shouldForceQuarantine;
+		this.shouldForceQuarantine = shouldForce;
+		return prev;
+	}
+	
 	private void report(final Status status, final String message) {
 		for (final StatusListener listener : listeners) {
 			listener.notify(new StatusMessage(statusObj, status, message));
@@ -110,19 +118,6 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	private void completed(final String message) {
 		report(Status.COMPLETED, message);
 	}
-	
-	public boolean addValidationHandler(final ValidationHandler vh) {
-		return validationHandlers.add(vh);
-	}
-	
-	public boolean removeValidationHandler(final ValidationHandler vh) {
-		return validationHandlers.remove(vh);
-	}
-	
-	public void clearValidationHandlers() {
-		validationHandlers.clear();
-	}
-	
 	
 	/**
 	 * Determine an appropriate session label.
@@ -251,7 +246,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 * @param arcSessionPath
 	 */
 	private void fixScans(final File arcSessionDir) {
-		final String root = arcSessionDir.getPath() + "/";
+		final String root = arcSessionDir.getPath().replace('\\','/') + "/";
 		for (final XnatImagescandata scan : session.getScans_scan()) {
 			for (final XnatAbstractresource file : scan.getFile()) {
 				// appendToPaths() is poorly named: should maybe be prependPathsWith()
@@ -332,10 +327,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		try {
 			final ValidationResults validation = session.validate();
 			if (null != validation && !validation.isValid()) {
-				for (final ValidationHandler handler : validationHandlers) {
-					handler.handle(validation);
-				}
-				throw new ValidationException();
+				throw new ValidationException(validation);
 			}
 		} catch (ArchivingException e) {
 			throw e;
@@ -352,13 +344,18 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		// save the session to the database
 		try {
 			if (session.save(user, false, true)) {
+				user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
 			    
-				final XnatProjectdata proj = session.getPrimaryProject(false);
-				if (null != proj.getArcSpecification().getQuarantineCode() &&
-						proj.getArcSpecification().getQuarantineCode().equals(1)) {
+				if (this.shouldForceQuarantine) {
 					session.quarantine(user);
-				}
+				} else {
+					final XnatProjectdata proj = session.getPrimaryProject(false);
+					if (null != proj.getArcSpecification().getQuarantineCode() &&
+							proj.getArcSpecification().getQuarantineCode().equals(1)) {
+						session.quarantine(user);
+					}
+				}				
 			}
 		} catch (Exception e) {
 			logger.error("unable to commit session to database", e);
@@ -393,6 +390,5 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 
 	public void dispose() {
 		listeners.clear();
-		validationHandlers.clear();
 	}
 }

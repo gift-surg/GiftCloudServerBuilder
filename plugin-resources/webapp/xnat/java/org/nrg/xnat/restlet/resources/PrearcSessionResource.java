@@ -15,6 +15,7 @@ import org.nrg.xnat.archive.AlreadyArchivingException;
 import org.nrg.xnat.archive.ArchivingException;
 import org.nrg.xnat.archive.DuplicateSessionLabelException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
+import org.nrg.xnat.archive.ValidationException;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -139,6 +140,9 @@ public final class PrearcSessionResource extends Resource {
 			throw new ResourceException(e.getStatus(), e);
 		} catch (DuplicateSessionLabelException e) {
 			logger.debug("user attempted to archive session already in archive", e);
+			throw new ResourceException(e.getStatus(), e);
+		} catch (ValidationException e) {
+			logger.error("session validation failed", e);
 			throw new ResourceException(e.getStatus(), e);
 		} catch (ArchivingException e) {
 			// Other archiving exceptions may be noteworthy

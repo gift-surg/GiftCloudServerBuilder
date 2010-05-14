@@ -14,20 +14,13 @@ import org.restlet.data.Status;
 public class DuplicateSessionLabelException extends ArchivingException {
 	private final static long serialVersionUID = 1L;
 	private final static Status status = Status.CLIENT_ERROR_FORBIDDEN;
+	private final static String format = "session label %s already used in project %s";
 	
 	public DuplicateSessionLabelException() {
 		super(status);
 	}
 
-	public DuplicateSessionLabelException(String message) {
-		super(status, message);
-	}
-
-	public DuplicateSessionLabelException(Throwable cause) {
-		super(status, cause);
-	}
-
-	public DuplicateSessionLabelException(String message, Throwable cause) {
-		super(status, message, cause);
+	public DuplicateSessionLabelException(String session, String project) {
+		super(status, String.format(format, session, project));
 	}
 }

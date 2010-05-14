@@ -10,9 +10,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
 import org.nrg.StatusListener;
 import org.nrg.StatusMessage;
 import org.nrg.StatusMessage.Status;
@@ -43,7 +46,10 @@ import org.xml.sax.SAXException;
  *
  */
 public final class PrearcSessionArchiver implements Callable<URL> {
-	private final static String[] SCANS_DIR_NAMES = {"SCANS", "RAW"};
+	private static final String[] SCANS_DIR_NAMES = {"SCANS", "RAW"};
+	
+	public static final String PARAM_SESSION = "session";
+	public static final String PARAM_SUBJECT = "subject";
 
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionArchiver.class);
 	private final Collection<StatusListener> listeners = new LinkedHashSet<StatusListener>();
@@ -51,22 +57,26 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	private final XnatImagesessiondata session;
 	private final XDATUser user;
 	private final String project;
+	private final MultiMap params;
 	
 	private boolean shouldForceQuarantine = false;
 	
 
 	public PrearcSessionArchiver(final XnatImagesessiondata session,
-			final XDATUser user, final String project) {
+			final XDATUser user, final String project,
+			final MultiMap params) {
 		this.session = session;
 		this.user = user;
 		this.project = project;
 		this.statusObj = session.getPrearchivePath();
+		this.params = new MultiHashMap(params);
 	}
 
 	public PrearcSessionArchiver(final File sessionDir,
-			final XDATUser user, final String project)
+			final XDATUser user, final String project,
+			final MultiMap params)
 	throws IOException,SAXException {
-		this(loadSession(sessionDir, user, project), user, project);
+		this(loadSession(sessionDir, user, project), user, project, params);
 	}
 
 	private static XnatImagesessiondata loadSession(final File sessionDir,
@@ -124,7 +134,12 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 * @throws ArchivingException
 	 */
 	private void fixSessionLabel() throws ArchivingException {
-		// TODO: check for REST-specified session label
+		if (params.containsKey(PARAM_SESSION)) {
+			final String label = (String)getFirstOf(params, PARAM_SESSION);
+			if (null != label) {
+				session.setLabel(XnatImagesessiondata.cleanValue(label));
+			}
+		}
 		if (!LoadImageData.hasValue(session.getLabel())) {
 			if (LoadImageData.hasValue(session.getDcmpatientid())) {
 				session.setLabel(XnatImagesessiondata.cleanValue(session.getDcmpatientid()));
@@ -136,16 +151,37 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		}		
 	}
 	
+	private static Object getFirstOf(final Iterator<?> i) {
+		while (i.hasNext()) {
+			final Object o = i.next();
+			if (null != o) {
+				return o;
+			}
+		}
+		return null;
+	}
+	
+	private static Object getFirstOf(final MultiMap m, final Object key) {
+		final Collection<?> vals = (Collection<?>)m.get(key);
+		return null == vals ? null : getFirstOf(vals.iterator());
+	}
+	
 	/**
 	 * Ensure that the subject label and ID are set in the session --
 	 * by deriving and setting them, if necessary.
 	 * @throws ArchivingException
 	 */
 	private void fixSubject() throws ArchivingException {
+		if (params.containsKey(PARAM_SUBJECT)) {
+			final String paramLabel = (String)getFirstOf(params, PARAM_SUBJECT);
+			if (null != paramLabel) {
+				session.setSubjectId(paramLabel);
+			}
+		}
 		final String subjectID = session.getSubjectId();
+
 		processing("looking for subject " + subjectID);
 		XnatSubjectdata subject = session.getSubjectData();
-		// TODO: check for REST-specified subject label
 		if (null == subject && LoadImageData.hasValue(subjectID)) {
 			final String cleaned = XnatSubjectdata.cleanValue(subjectID);
 			if (!cleaned.equals(subjectID)) {
@@ -215,7 +251,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 				final File scansDir = new File(arcSessionDir, scansDirName);
 				if (scansDir.exists() && FileUtils.HasFiles(scansDir)) {
 					failed("project " + project + " already contains a session named " + session.getLabel());
-					throw new DuplicateSessionLabelException(session.getLabel());
+					throw new DuplicateSessionLabelException(session.getLabel(), project);
 				}
 			}
 		}
@@ -308,22 +344,20 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public URL call() throws ArchivingException {
-		try {
-			session.setId(XnatExperimentdata.CreateNewID());
-		} catch (Exception e) {
-			throw new ArchivingException("unable to create new session ID", e);
-		}
-		
 		fixSessionLabel();
 		fixSubject();
 		
 		final File arcSessionDir = getArcSessionDir();
 		
+
 		processing("archiving session");
 		
-		// preprocess replaces StoreImageSession.preProcess
-		final String prearcSessionPath = session.getPrearchivepath();
-		
+		try {
+			session.setId(XnatExperimentdata.CreateNewID());
+		} catch (Exception e) {
+			throw new ArchivingException("unable to create new session ID", e);
+		}
+
 		try {
 			final ValidationResults validation = session.validate();
 			if (null != validation && !validation.isValid()) {
@@ -336,9 +370,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 			throw new ArchivingException("unable to perform session validation", e);
 		}
 		
-		// presave replaces StoreImageSession.preSave
 		preventConcurrentArchiving();
-		// subject already fixed
 		fixScans(arcSessionDir);
 				
 		// save the session to the database
@@ -363,7 +395,7 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 			throw new ArchivingException("unable to commit session to database", e);
 		}
 		
-		// post process replaces StoreImageSession.postProcessing
+		final String prearcSessionPath = session.getPrearchivepath();
 		updatePrearchiveSessionXML(prearcSessionPath);
 		final boolean successful = doTransfer(prearcSessionPath);
 		// TODO: what about schema element manipulation?
@@ -388,6 +420,9 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	}
 
 
+	/**
+	 * Releases any resources held by the archiver.
+	 */
 	public void dispose() {
 		listeners.clear();
 	}

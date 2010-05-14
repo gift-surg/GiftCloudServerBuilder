@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.nrg.xdat.security.XDATUser;
@@ -19,6 +21,7 @@ import org.nrg.xnat.archive.ValidationException;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -41,6 +44,10 @@ public final class PrearcSessionResource extends Resource {
 	private static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
 	private static final String SESSION_LABEL = "SESSION_LABEL";
 	private static final String CRLF = "\r\n";
+	
+	public static final String POST_ACTION_ARCHIVE = "archive";
+	public static final String POST_ACTION_BUILD = "build";
+	public static final String POST_ACTION_MOVE = "move";
 	
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionResource.class);
 
@@ -96,17 +103,17 @@ public final class PrearcSessionResource extends Resource {
 	@Override
 	public void acceptRepresentation(final Representation representation)
 	throws ResourceException {
-		// TODO: handle POST. Operations handled via POST:
 		final File sessionDir = getSessionDir();
 		final String action = queryForm.getFirstValue("action");
-		if ("archive".equals(action)) {
+		if (POST_ACTION_ARCHIVE.equals(action)) {
 			final String entity = doArchive(sessionDir);
 			final Response response = getResponse();
 			response.setEntity(entity + CRLF, MediaType.TEXT_URI_LIST);
-		} else if ("build".equals(action)) {
+		} else if (POST_ACTION_BUILD.equals(action)) {
+			// TODO: (re)build the session document
 			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "session build operation not yet implemented");
-		} else if ("move".equals(action)) {
-			// TODO:   move the session to a different project
+		} else if (POST_ACTION_MOVE.equals(action)) {
+			// TODO: move the session to a different project
 			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
 		} else {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -114,10 +121,18 @@ public final class PrearcSessionResource extends Resource {
 		}
 	}
 
+	private MultiMap makeMultiMap(final Form form) {
+		final MultiHashMap m = new MultiHashMap();
+		for (final Parameter param : form) {
+			m.put(param.getName(), param.getValue());
+		}
+		return m;
+	}
+	
 	private String doArchive(final File sessionDir) throws ResourceException {
 		final PrearcSessionArchiver archiver;
 		try {
-			archiver = new PrearcSessionArchiver(sessionDir, user, project);
+			archiver = new PrearcSessionArchiver(sessionDir, user, project, makeMultiMap(queryForm));
 		} catch (FileNotFoundException e) {
 			logger.debug("user attempted to archive session with no XML", e);
 			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
@@ -137,17 +152,17 @@ public final class PrearcSessionResource extends Resource {
 			return archiver.call().toString();
 		} catch (AlreadyArchivingException e) {
 			logger.debug("user attempted to archive session already in transfer", e);
-			throw new ResourceException(e.getStatus(), e);
+			throw new ResourceException(e.getStatus(), e.getMessage(), e);
 		} catch (DuplicateSessionLabelException e) {
 			logger.debug("user attempted to archive session already in archive", e);
-			throw new ResourceException(e.getStatus(), e);
+			throw new ResourceException(e.getStatus(), e.getMessage(), e);
 		} catch (ValidationException e) {
 			logger.error("session validation failed", e);
-			throw new ResourceException(e.getStatus(), e);
+			throw new ResourceException(e.getStatus(), e.getMessage(), e);
 		} catch (ArchivingException e) {
 			// Other archiving exceptions may be noteworthy
 			logger.warn("archiving failed", e);
-			throw new ResourceException(e.getStatus(), e);
+			throw new ResourceException(e.getStatus(), e.getMessage(), e);
 		} finally {
 			archiver.dispose();
 		}

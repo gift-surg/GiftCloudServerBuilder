@@ -11,6 +11,7 @@ package org.nrg.pipeline.utils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.xmlbeans.XmlException;
@@ -93,9 +94,9 @@ public class FileUtils {
 			buildPath = arcProject.getPaths().getBuildpath();
 		}
 		if (postfixTimestamp) {
-			Date date = new Date();
-		    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		    String s = formatter.format(date);
+			Calendar cal = Calendar.getInstance();
+		    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		    String s = formatter.format(cal.getTime());
 			buildPath += s + "/" ;
 		}
 		return buildPath;

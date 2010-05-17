@@ -61,21 +61,31 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 		protected void setHasDicomFiles(XnatMrsessiondata mr, String mprageScanType, Context context) {
 			boolean rtn = false;
 			String[] types = mprageScanType.split(",");
-			ArrayList<XnatImagescandata> scans = mr.getScansByType(types[0]);
-			if (scans.size() > 0 ) {
+			for (int j =0; j <types.length; j++) {
+			ArrayList<XnatImagescandata> scans = mr.getScansByType(types[j].trim());
+			if (scans != null && scans.size() > 0 ) {
 				ArrayList files = scans.get(0).getFile();
 				if (files.size() > 0) {
-					XnatAbstractresource absFile = (XnatAbstractresource) files.get(0);
-					if (absFile instanceof  XnatDicomseries ) {
-						rtn = true;
-					}else if (absFile instanceof  XnatResourcecatalog){
-						XnatResourcecatalog rsccat = (XnatResourcecatalog) absFile;
-						if (rsccat.getFormat().equals("DICOM"))
+					for (int i =0; i < files.size(); i++) {
+						XnatAbstractresource absFile = (XnatAbstractresource) files.get(i);
+						if (absFile instanceof  XnatDicomseries ) {
 							rtn = true;
+						}else if (absFile instanceof  XnatResourcecatalog){
+							XnatResourcecatalog rsccat = (XnatResourcecatalog) absFile;
+							if (rsccat.getContent().endsWith("RAW")) {
+								if (rsccat.getFormat().equals("DICOM"))
+								    rtn = true;
+								break;
+							}
+						}
+						
 					}
 				}
 			}
+		
+			}
 			context.put("isDicom", rtn?"1":"0");
+			
 		}
 		
 		protected void setHasFreesurfer(XnatMrsessiondata mr,  Context context) {

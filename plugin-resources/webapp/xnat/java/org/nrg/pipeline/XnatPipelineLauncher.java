@@ -31,7 +31,7 @@ public class XnatPipelineLauncher {
     static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);
 
     public static final String SCHEDULE = "schedule";
-    
+
     String pipelineName;
     String id, label = null;
     String externalId; //Workflows External Id
@@ -102,6 +102,8 @@ public class XnatPipelineLauncher {
 
             parameters.put("builddir",temp);
         }
+    	setNeedsBuildDir(false);
+
     }
 
     public XnatPipelineLauncher(RunData data, Context context) {
@@ -136,11 +138,11 @@ public class XnatPipelineLauncher {
     }
 
 
-    
+
     public boolean launch() {
     	return launch(XFT.GetPipelinePath() + "bin" + File.separator + SCHEDULE);
     }
-    
+
     public boolean launch (String cmdPrefix) {
         String command = " ";
         String pcommand = "";

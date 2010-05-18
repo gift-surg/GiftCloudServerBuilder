@@ -334,7 +334,7 @@ public class ManagePipeline extends SecureAction {
 			xnatPipelineLauncher.setBuildDir(buildDir);
 			String paramFilePath = saveParameters(buildDir+File.separator + exptLabel,paramFileName,parameters);
 		    xnatPipelineLauncher.setParameterFile(paramFilePath);
-		    xnatPipelineLauncher.launch("schedule");
+		    xnatPipelineLauncher.launch();
 
 		    data.setMessage("<p><b>The pipeline has been scheduled.  Status email will be sent upon its completion.</b></p>");
 	        data.setScreenTemplate("ClosePage.vm");

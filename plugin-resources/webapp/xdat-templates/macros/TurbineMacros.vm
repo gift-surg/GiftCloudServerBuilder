@@ -1210,3 +1210,11 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
  <!-- no object found -->
  #end
 #end
+
+#macro(escapeHTML $s)
+$!turbineUtils.escapeHTML($s)
+#end
+ 
+#macro(escapeJS $s)
+$!turbineUtils.escapeJS($s)
+#end

@@ -144,7 +144,6 @@
     #end
 #end
 
-
 #macro (xdatPKDisplay $name $item)
 	<input id="$name" type="hidden" name="$name" value="$item.getStringProperty($name)"/>
 	$item.getProperty($name)
@@ -164,6 +163,20 @@
 	#else
 	<input id="$name" type="hidden" name="$name" value="$defaultValue"/>
 	#end
+#end
+
+#macro (xdatBooleanCheckbox $name $item $vr)
+#if ($vr)
+	#if($vr.getField($name))
+		<font color="red">&#8658</font>
+	#end
+#end
+	#set($value = $!item.getBooleanProperty($name))
+
+	## The hidden box is necessary to submit a "false" value if the checkbox is unchecked
+	## If the checkbox is checked, its true value will override the hidden's "false" value
+	<input type="checkbox" name="$name" value="1" #if($value) CHECKED #end />
+	<input type="hidden" name="$name" value="0" />`
 #end
 
 #macro (xdatBooleanRadio $name $item $defaultValue $vr)
@@ -202,12 +215,12 @@
 		<font color="red">&#8658</font>
 	#end
 #end
-	#set($value = $!item.getBooleanProperty($name))
+	#set($value = "$!item.getBooleanProperty($name)")
 
-	#if ($value == true)
+	#if ($value == "true")
 	<input type="radio" name="$name" value="1" CHECKED/>&nbsp;yes
 	<input type="radio" name="$name" value="0"/>&nbsp;no
-	#elseif ($value == false)
+	#elseif ($value == "false")
 	<input type="radio" name="$name" value="1"/>&nbsp;yes
 	<input type="radio" name="$name" value="0" CHECKED/>&nbsp;no
 	#else
@@ -1196,12 +1209,4 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
  #else
  <!-- no object found -->
  #end
-#end
-
-#macro(escapeHTML $s)
-$!turbineUtils.escapeHTML($s)
-#end
- 
-#macro(escapeJS $s)
-$!turbineUtils.escapeJS($s)
 #end

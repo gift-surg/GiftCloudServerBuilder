@@ -3,8 +3,6 @@ package org.nrg.xnat.security;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,17 +33,17 @@ import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
 
 /**
  * The LDAPAuthenticator can be used to authenticate against an external LDAP HOST.
  * 
- * The LDAP_USER, LDAP_PASS & SEARCHBASE are used to verify user account existance and retrieve distinguishedName.
+ * The LDAP_USER, LDAP_PASS & SEARCHBASE are used to verify user account existence and retrieve distinguishedName.
  * 
  * Subsequent authentication attempts will use retrieved distinguishedName and user-supplied password to authenticate against the LDAP server.
  */
 public class LDAPAuthenticator extends Authenticator {
+
 	static org.apache.log4j.Logger logger = Logger
 			.getLogger(LDAPAuthenticator.class);
 
@@ -64,6 +62,8 @@ public class LDAPAuthenticator extends Authenticator {
 	//search used to query for the user's distinguishedName
 	private  static String SEARCH_TEMPLATE = "(&(objectClass=user)(CN=%USER%))";
 	private  static String LDAP_USER_PK = "distinguishedName";
+	
+	public static String LDAP_TO_XNAT_PK_CACHE = "xdat:user/quarantine_path";
 	
 	public static int AUTHENTICATION_EXPIRATION = 3600; //seconds
 
@@ -157,7 +157,7 @@ public class LDAPAuthenticator extends Authenticator {
 				params.put("givenName", "xdat:user/firstname");
 				params.put("sn", "xdat:user/lastname");
 				params.put("mail", "xdat:user/email");
-				params.put(LDAP_USER_PK, "xdat:user/quarantine_path");
+				params.put(LDAP_USER_PK, LDAP_TO_XNAT_PK_CACHE);
 			}
 
 		} catch (Exception e) {
@@ -197,6 +197,9 @@ public class LDAPAuthenticator extends Authenticator {
 	/**
 	 * Gets LDAP information for users based on search filter
 	 *
+	 * Step 1: query the server for a list of matching users (based on search filter and submitted cred)
+	 * Step 2: use the results to populate XDATUser objects
+	 * 
 	 * @param searchFilter
 	 *            The JNDI search filter you want to use
 	 * @return Array of LoginBean objects for users found.
@@ -246,6 +249,7 @@ public class LDAPAuthenticator extends Authenticator {
 
 					if (attrs != null) {
 						try {
+							// multiple attributes returned from server need to be mapped to a single xdat:user
 							for (NamingEnumeration ae = attrs.getAll(); ae
 									.hasMore();) {
 								Attribute attr = (Attribute) ae.next();
@@ -323,6 +327,13 @@ public class LDAPAuthenticator extends Authenticator {
 				.getUsername());
 	}
 
+	
+	/**
+	 * Query server for the DN for this cred
+	 * 
+	 * @param cred
+	 * @return String DN
+	 */
 	public String getDN(Credentials cred) {
 		logger.debug("\n\ngetDN:" + cred.getUsername());
 		String searchFilter = buildSearchFilter(cred);
@@ -390,23 +401,24 @@ public class LDAPAuthenticator extends Authenticator {
 		}
 	}
 
-	public boolean verifyLogin(Credentials cred) {
-		logger.debug("\n\nverifyLogin:" + cred.getUsername());
-		String searchFilter = buildSearchFilter(cred);
-		String dn = (String) cred.OTHER.get(LDAP_USER_PK);
-		if (dn == null) {
-			logger.info(cred.getUsername() + ":failed to populate DN for "
-					+ cred.getUsername() + " Account");
-			return false;
-		}
+	/**
+	 * Attempt to login using the specified DN and password in cred.
+	 * @param dn
+	 * @param cred
+	 * @return
+	 * @throws NamingException (means authentication failure)
+	 */
+	public boolean attemptLogin(final String dn, final Credentials cred){
+		final String searchFilter = buildSearchFilter(cred);
+		
 		// Create the search controls
-		SearchControls searchCtls = new SearchControls();
+		final SearchControls searchCtls = new SearchControls();
 		searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-		String returnedAtts[] = { LDAP_USER_PK };
+		final String returnedAtts[] = { LDAP_USER_PK };
 		searchCtls.setReturningAttributes(returnedAtts);
 		int count = 0;
 
-		try {
+		try{
 			this.openContext(dn, cred
 					.getPassword());
 			logger.debug(ctx.getEnvironment().toString());
@@ -416,12 +428,12 @@ public class LDAPAuthenticator extends Authenticator {
 			// Search for objects using the filter
 			NamingEnumeration answer = ctx.search(SEARCHBASE, searchFilter,
 					searchCtls);
-
+	
 			// Loop through the search results
 			while (answer.hasMoreElements()) {
 				SearchResult sr = (SearchResult) answer.next();
 				String cn = sr.getClassName();
-
+	
 				Attributes attrs = sr.getAttributes();
 				if (attrs != null) {
 					try {
@@ -444,19 +456,71 @@ public class LDAPAuthenticator extends Authenticator {
 					}
 				}
 			}
-
-		} catch (NamingException e) {
-			logger.error(cred.getUsername() + ":Error retrieving DN for "
-					+ cred.getUsername() + " from server", e);
+		}catch (NamingException e) {
+			logger.error(cred.getUsername()
+					+ ":Unable to authenticate "
+					+ cred.getUsername() + " with given password using DN: " + dn, e);
 		}finally{
 			this.closeContext();
 		}
-
+		
 		if (count > 0) {
 			return true;
 		} else {
-			logger.info(cred.getUsername() + ":Failed to retrieve his own DN.");
 			return false;
+		}
+	}
+	
+	/**
+	 * Step 1: Query server as user
+	 * Step 2: Confirm results returned
+	 * 
+	 * @param cred
+	 * @return
+	 */
+	public boolean verifyLogin(XDATUser u,Credentials cred) {
+		logger.debug("\n\nverifyLogin:" + cred.getUsername());
+		String dn = (String) cred.OTHER.get(LDAP_USER_PK);
+		if (dn == null) {
+			logger.info(cred.getUsername() + ":failed to populate DN for "
+					+ cred.getUsername() + " Account");
+			return false;
+		}
+
+		if(this.attemptLogin(dn, cred)){
+			return true;
+		}else{
+			//check for updated DN
+			final String newDN = this.getDN(cred);
+			if(!dn.equals(newDN)){
+				logger.info(cred.getUsername() + ":LDAP Server has a new DN for this user.  Attempting authentication with new DN " + newDN);
+				cred.OTHER.put(LDAP_USER_PK, dn);
+				if(this.attemptLogin(newDN, cred)){
+					logger.info(cred.getUsername() + ":LDAP authentication succeeded with updated DN " + newDN + ". Updating stored DN.");
+					updateStoredDN(newDN,u);
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				//don't update stored DN when authentication fails.
+				return false;
+			}
+		}
+	}
+
+	
+	public String retrieveStoredDN(XDATUser u){
+		//this version stores the DN in a dead field (quarantine_path).  This prevented having to modify the user schema, but really seems in-appropriate.
+		return u.getQuarantinePath();
+	}
+	
+	public void updateStoredDN(final String newDN,XDATUser u){
+		try {
+			u.setQuarantinePath(newDN);
+			u.save(null, true, false, true, false);
+		} catch (Exception e) {
+			logger.error(u.getUsername() + ":Failed to update stored DN for user. Proceeding...",e);
 		}
 	}
 
@@ -542,7 +606,8 @@ public class LDAPAuthenticator extends Authenticator {
 						.RetrieveCachedAttempt(cred);
 				if (attempt == null) {
 					if (!cred.OTHER.containsKey(LDAP_USER_PK)) {
-						String dn = u.getQuarantinePath();
+						//DN is cached here to prevent an additional query.
+						String dn = retrieveStoredDN(u);
 						logger.debug(u.getUsername()
 								+ ": CACHED quarantine path.");
 						if (StringUtils.isEmpty(dn)) {
@@ -577,7 +642,7 @@ public class LDAPAuthenticator extends Authenticator {
 				// authenticate
 				logger.info(u.getUsername()
 						+ ": attempting to authenticate account from server.");
-				if (this.verifyLogin(attempt.cred)) {
+				if (this.verifyLogin(u,attempt.cred)) {
 					logger
 							.info(u.getUsername()
 									+ ": validated against server.");

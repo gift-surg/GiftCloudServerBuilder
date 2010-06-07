@@ -3044,7 +3044,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     		if(newLabel==null)newLabel = this.getLabel();
     		if(newLabel==null)newLabel = this.getId();
     		
-    		File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
+    		final File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
     		
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
@@ -3077,12 +3077,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				existingSessionDir=uri.substring(0,lastIndex);
             			}else{
             				//outside session_dir
-            				newSessionDir = new File(new File(newSessionDir,"SCANS"),scan.getId());
-            				int lastSlash=uri.lastIndexOf("/");
-            				if(uri.lastIndexOf("\\")>lastSlash){
-            					lastSlash=uri.lastIndexOf("\\");
-            				}
-            				existingSessionDir=uri.substring(0,lastSlash);
+//            				newSessionDir = new File(new File(newSessionDir,"SCANS"),scan.getId());
+//            				int lastSlash=uri.lastIndexOf("/");
+//            				if(uri.lastIndexOf("\\")>lastSlash){
+//            					lastSlash=uri.lastIndexOf("\\");
+//            				}
+//            				existingSessionDir=uri.substring(0,lastSlash);
+            				//don't attempt to move sessions which are outside of the Session Directory.
+            				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
             			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
@@ -3119,12 +3121,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				existingSessionDir=uri.substring(0,lastIndex);
             			}else{
             				//outside session_dir
-            				newSessionDir = new File(new File(newSessionDir,"PROCESSED"),recon.getId());
-            				int lastSlash=uri.lastIndexOf("/");
-            				if(uri.lastIndexOf("\\")>lastSlash){
-            					lastSlash=uri.lastIndexOf("\\");
-            				}
-            				existingSessionDir=uri.substring(0,lastSlash);
+//            				newSessionDir = new File(new File(newSessionDir,"PROCESSED"),recon.getId());
+//            				int lastSlash=uri.lastIndexOf("/");
+//            				if(uri.lastIndexOf("\\")>lastSlash){
+//            					lastSlash=uri.lastIndexOf("\\");
+//            				}
+//            				existingSessionDir=uri.substring(0,lastSlash);
+            				//don't attempt to move sessions which are outside of the Session Directory.
+            				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
             			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
@@ -3161,12 +3165,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				existingSessionDir=uri.substring(0,lastIndex);
             			}else{
             				//outside session_dir
-            				newSessionDir = new File(new File(newSessionDir,"ASSESSORS"),assessor.getId());
-            				int lastSlash=uri.lastIndexOf("/");
-            				if(uri.lastIndexOf("\\")>lastSlash){
-            					lastSlash=uri.lastIndexOf("\\");
-            				}
-            				existingSessionDir=uri.substring(0,lastSlash);
+//            				newSessionDir = new File(new File(newSessionDir,"ASSESSORS"),assessor.getId());
+//            				int lastSlash=uri.lastIndexOf("/");
+//            				if(uri.lastIndexOf("\\")>lastSlash){
+//            					lastSlash=uri.lastIndexOf("\\");
+//            				}
+//            				existingSessionDir=uri.substring(0,lastSlash);
+            				//don't attempt to move sessions which are outside of the Session Directory.
+            				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
             			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
@@ -3190,7 +3196,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     		
     		if(newLabel==null)return;
     		
-    		File newSessionDir = new File(new File(proj.getRootArchivePath(),proj.getCurrentArc()),newLabel);
+    		final File newSessionDir = new File(new File(proj.getRootArchivePath(),proj.getCurrentArc()),newLabel);
     		
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
@@ -3217,18 +3223,21 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             					lastIndex+=1+this.getId().length();
             				}
         				}
+        				
         				String existingSessionDir=null;
         				if(lastIndex>-1){
             				//in session_dir
             				existingSessionDir=uri.substring(0,lastIndex);
             			}else{
             				//outside session_dir
-            				newSessionDir = new File(new File(newSessionDir,"SCANS"),scan.getId());
-            				int lastSlash=uri.lastIndexOf("/");
-            				if(uri.lastIndexOf("\\")>lastSlash){
-            					lastSlash=uri.lastIndexOf("\\");
-            				}
-            				existingSessionDir=uri.substring(0,lastSlash);
+//            				newSessionDir = new File(new File(newSessionDir,"SCANS"),scan.getId());
+//            				int lastSlash=uri.lastIndexOf("/");
+//            				if(uri.lastIndexOf("\\")>lastSlash){
+//            					lastSlash=uri.lastIndexOf("\\");
+//            				}
+//            				existingSessionDir=uri.substring(0,lastSlash);
+            				//don't attempt to move sessions which are outside of the Session Directory.
+            				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
             			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
@@ -3265,12 +3274,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				existingSessionDir=uri.substring(0,lastIndex);
             			}else{
             				//outside session_dir
-            				newSessionDir = new File(new File(newSessionDir,"PROCESSED"),recon.getId());
-            				int lastSlash=uri.lastIndexOf("/");
-            				if(uri.lastIndexOf("\\")>lastSlash){
-            					lastSlash=uri.lastIndexOf("\\");
-            				}
-            				existingSessionDir=uri.substring(0,lastSlash);
+//            				newSessionDir = new File(new File(newSessionDir,"PROCESSED"),recon.getId());
+//            				int lastSlash=uri.lastIndexOf("/");
+//            				if(uri.lastIndexOf("\\")>lastSlash){
+//            					lastSlash=uri.lastIndexOf("\\");
+//            				}
+//            				existingSessionDir=uri.substring(0,lastSlash);
+            				//don't attempt to move sessions which are outside of the Session Directory.
+            				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
             			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
@@ -3307,12 +3318,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				existingSessionDir=uri.substring(0,lastIndex);
             			}else{
             				//outside session_dir
-            				newSessionDir = new File(new File(newSessionDir,"ASSESSORS"),assessor.getId());
-            				int lastSlash=uri.lastIndexOf("/");
-            				if(uri.lastIndexOf("\\")>lastSlash){
-            					lastSlash=uri.lastIndexOf("\\");
-            				}
-            				existingSessionDir=uri.substring(0,lastSlash);
+//            				newSessionDir = new File(new File(newSessionDir,"ASSESSORS"),assessor.getId());
+//            				int lastSlash=uri.lastIndexOf("/");
+//            				if(uri.lastIndexOf("\\")>lastSlash){
+//            					lastSlash=uri.lastIndexOf("\\");
+//            				}
+//            				existingSessionDir=uri.substring(0,lastSlash);
+            				//don't attempt to move sessions which are outside of the Session Directory.
+            				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
             			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{

@@ -30,6 +30,14 @@
 	</DisplayField>
 	<DisplayField id="NAME_CSV" header="Title" visible="true" searchable="true">
 		<DisplayFieldElement name="Field1" schema-element="xnat:projectData/name"/>
+		<HTML-Link>
+			<Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/xnat:projectData/search_field/xnat:projectData.ID">
+				<InsertValue id="Field1" field="ID"/>
+			</Property>
+			<Property name="ONCLICK" value="return rpt('@Field1','xnat:projectData','xnat:projectData.ID');">
+				<InsertValue id="Field1" field="ID"/>
+			</Property>
+		</HTML-Link>
 	</DisplayField>
 	<DisplayField id="DESCRIPTION" header="Description" visible="true" searchable="true">
 		<DisplayFieldElement name="Field1" schema-element="xnat:projectData/description"/>

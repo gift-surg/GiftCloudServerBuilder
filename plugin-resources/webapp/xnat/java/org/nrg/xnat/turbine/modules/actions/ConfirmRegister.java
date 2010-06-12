@@ -44,6 +44,8 @@ public class ConfirmRegister extends SecureAction {
 		    }else if (!StringUtils.isEmpty(nextPage) && !nextPage.equals(org.apache.turbine.Turbine.getConfiguration().getString("template.home")) ) {
             	context.put("nextPage", nextPage);
 			}
+
+            context.put("turbineUtils",TurbineUtils.GetInstance());
             
             if (temp==null)
             {

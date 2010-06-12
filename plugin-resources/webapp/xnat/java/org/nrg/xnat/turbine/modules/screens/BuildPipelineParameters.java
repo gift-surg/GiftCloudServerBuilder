@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -22,26 +22,26 @@ public class BuildPipelineParameters extends SecureReport
     {
         TurbineUtils.InstanciatePassedItemForScreenUse(data,context);
     }
-    
-    
+
+
     /**
      * Place all the data object in the context
      * for use in the template.
      */
-    public void finalProcessing(RunData data, Context context) 
+    public void finalProcessing(RunData data, Context context)
     {
         if (context.get("om")==null) {
             data.setScreenTemplate("Error.vm");
-            return; 
+            return;
         }
         String pipelineName = data.getParameters().get("pipelineName");
         if (pipelineName == null) {
             data.setScreenTemplate("Error.vm");
             return;
         }
-        
+
         XnatMrsessiondata mr = (XnatMrsessiondata)context.get("om");
-        
+
         try {
             /*LinkedHashMap parametersHash = BuildSpecification.GetInstance().getResolvedParametersForPipeline(pipelineName,mr);
             context.put("parametersHash",parametersHash);
@@ -58,10 +58,10 @@ public class BuildPipelineParameters extends SecureReport
             data.setScreenTemplate("Error.vm");
         }
     }
-    
-    
-    
- 
-    
+
+
+
+
+
 
 }

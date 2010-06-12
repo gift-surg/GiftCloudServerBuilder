@@ -1,0 +1,5 @@
+ <tr>
+  <th align="left">Session</th>
+  <td><input type="text" id="$!item.getXSIType()/label" name="$!item.getXSIType()/label" value="$!item.getProperty("label")"  onkeyup="this.value=fixSessionID(this.value);verifyExptId(this);if(this.validated==false)confirmValues(false);" onblur="confirmValues(false);"/></td>
+  <td id="label_msg"></td>
+ </tr>

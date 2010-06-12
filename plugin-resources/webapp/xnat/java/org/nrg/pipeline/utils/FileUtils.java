@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -23,10 +23,10 @@ import org.nrg.xft.XFT;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class FileUtils {
-	
+
 	public static PipelineDocument GetDocument(String pathToPipelineXmlFile) throws Exception {
         if (!pathToPipelineXmlFile.endsWith(".xml")) pathToPipelineXmlFile += ".xml";
-        File xmlFile = new File(pathToPipelineXmlFile); 
+        File xmlFile = new File(pathToPipelineXmlFile);
         //Bind the instance to the generated XMLBeans types.
         ArrayList errors = new ArrayList();
         XmlOptions xopt = new XmlOptions();
@@ -42,7 +42,7 @@ public class FileUtils {
         if (!(xo instanceof PipelineDocument)) {
             throw new Exception("Invalid XML file supplied " + pathToPipelineXmlFile + " ==> Expecting a pipeline document");
         }
-        PipelineDocument pipelineDoc = (PipelineDocument)xo; 
+        PipelineDocument pipelineDoc = (PipelineDocument)xo;
         //String error = XMLBeansUtils.validateAndGetErrors(pipelineDoc);
         //if (error != null) {
           //  throw new XmlException("Invalid XML " + pathToPipelineXmlFile + "\n" + errors);
@@ -50,13 +50,13 @@ public class FileUtils {
         return pipelineDoc;
 }
 
-	
+
     public static  String getMaxMatching(String file1, String file2, String scanId1, String scanId2) {
         String rtn = null;
         if (file1 == null || file2 == null || scanId1 == null || scanId2 == null) return null;
-        int index = 0; 
+        int index = 0;
         while (true) {
-            if (file2.charAt(index) != file1.charAt(index)) 
+            if (file2.charAt(index) != file1.charAt(index))
                 break;
             index++;
         }
@@ -71,13 +71,13 @@ public class FileUtils {
         if (slash != -1) {
             rtn = rtn.substring(slash+1,rtn.length());
         }
-        
+
         if (rtn.endsWith(".")) rtn = rtn.substring(0,rtn.length()-1);
-        
+
         System.out.println("Returnning formatted " + rtn);
         return rtn;
     }
-    
+
     public static String getName(String path) {
         String rtn = path;
         int indexOfLastSlash = path.lastIndexOf(File.separator);
@@ -86,7 +86,7 @@ public class FileUtils {
         }
         return rtn;
     }
-    
+
 	public static String getBuildDir(String project,  boolean postfixTimestamp) {
 		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
 		String buildPath = XFT.GetPipelinePath()  ;
@@ -101,7 +101,7 @@ public class FileUtils {
 		}
 		return buildPath;
 	}
-	
 
-    
+
+
 }

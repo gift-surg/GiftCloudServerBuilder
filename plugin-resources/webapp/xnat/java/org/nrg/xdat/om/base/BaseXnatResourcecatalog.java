@@ -229,8 +229,12 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
 	    	if(entry.getId()==null || !entry.getId().equals("")){
 		        String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(catPath,entry.getUri()),"\\","/");
 		        File f =getFileOnLocalFileSystem(entryPath);
-		        entry.setId((entryCount++) + "/" + f.getName());
-		        modified=true;
+		        if(f!=null){
+			        entry.setId((entryCount++) + "/" + f.getName());
+			        modified=true;
+		        }else{
+		        	logger.error("Missing Resource:" + entryPath);
+		        }
 	    	}
 	    }
 	    
@@ -435,7 +439,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
         	if(!existingLocation.exists())
         		existingLocation=getFileOnLocalFileSystem(existingLocation.getAbsolutePath());
         	
-        	if(existingLocation.exists()){
+        	if(existingLocation!=null && existingLocation.exists()){
             	FileUtils.MoveFile(existingLocation, newFile, true, true);
         	}
     	}

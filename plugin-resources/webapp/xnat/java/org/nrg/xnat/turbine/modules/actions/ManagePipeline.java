@@ -10,6 +10,7 @@ package org.nrg.xnat.turbine.modules.actions;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
@@ -351,11 +352,31 @@ public class ManagePipeline extends SecureAction {
 		int totalParams = data.getParameters().getInt("param_cnt");
 		for (int i =0; i < totalParams; i++) {
 			String name = data.getParameters().get("param[" + i + "].name");
-			String value = data.getParameters().get("param[" + i + "].value");
-			ParameterData param = parameters.addNewParameter();
-			param.setName(name);
-			Values values = param.addNewValues();
-			values.setUnique(value);
+			int rowcount = new Integer(data.getParameters().get("param[" + i + "].name.rowcount")).intValue();
+			ArrayList<String> formvalues = new ArrayList<String>();
+			if (rowcount == 1) {
+				String value = data.getParameters().get("param[" + i + "][0].value");
+				formvalues.add(value);
+			}else if (rowcount>1) {
+				for (int j=0; j < rowcount; j++) {
+					String formfieldname = "param[" + i + "][" + j + "].value";
+					if (TurbineUtils.HasPassedParameter(formfieldname,data))
+					   formvalues.add(data.getParameters().get(formfieldname));
+				}
+			}
+			if (formvalues.size()>0) {
+				ParameterData param = parameters.addNewParameter();
+				param.setName(name);
+				if (formvalues.size()==1) {
+					Values values = param.addNewValues();
+					values.setUnique(formvalues.get(0));
+				}else {
+					Values values = param.addNewValues();
+					for (int k=0; k<rowcount; k++) {
+						values.addList(formvalues.get(k));
+					}
+				}
+			}
 		}
 		return parameters;
 	}

@@ -55,7 +55,7 @@ width:1px;
   <div id="tab1"><p>
  <table>
 #parse($turbineUtils.getTemplateName("_keyFields","xnat:subjectData",$!project))
-						</table>
+ </table>
 </p></div>  
  
   <div id="tab2"><p>
@@ -97,6 +97,7 @@ function summaryTabManagerInit(){
 													       <A href="" ONCLICK="restDelete();return false;"><div class="ic"><img border="0" src="$content.getURI("images/delete.gif")"/></div><div class="ic_spacer">&nbsp;</div>Delete</A>
 													      </li>
 													      #end
+														  #parse($turbineUtils.getTemplateName("actionsBoxAddons","xnat:subjectData",$!project))
 													     </ul>
      </DIV>
     </DIV>

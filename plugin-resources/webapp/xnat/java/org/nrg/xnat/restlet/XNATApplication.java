@@ -178,7 +178,7 @@ public class XNATApplication extends Application {
 
         router.attach("/JSESSION",org.nrg.xnat.restlet.resources.UserSession.class);
         
-        router.attach("/projects/{PROJECT_ID}/prearchive",org.nrg.xnat.restlet.resources.PrearcSessionListResource.class);
+        router.attach("/projects/{PROJECT_ID}/prearchive/",org.nrg.xnat.restlet.resources.PrearcSessionListResource.class);
         router.attach("/projects/{PROJECT_ID}/prearchive/sessions/{SESSION_TIMESTAMP}/{SESSION_LABEL}", org.nrg.xnat.restlet.resources.PrearcSessionResource.class);
 
         router.attach("/experiments/{EXPT_ID}/DIR",DIRResource.class);

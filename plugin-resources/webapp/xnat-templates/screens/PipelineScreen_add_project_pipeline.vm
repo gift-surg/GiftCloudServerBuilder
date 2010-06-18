@@ -167,12 +167,14 @@ $newpipeline.getDescription()
 			#foreach ($parameter in $parameters)
 			<TR>
 			  <TD><input type="hidden"  id=$dblQts${schemaType}.parameters.parameter[$c].name$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].name$dblQts value="$parameter.getName()"/><font size="-1">$parameter.getName()</font>
-			<a href="#" style="outline: none;" onclick="return !showPopup('desc$c', event);">(?)</a>
 			</TD> 
-			   <td>	
-			  <input type="text" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts value="$!parameter.getSchemalink()"/>
-			  </td>
+			  <input type="hidden" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts value="$!parameter.getSchemalink()"/>
+			  #if ($!parameter.getCsvvalues())
 			  <TD><input type="text" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[$c].csvValues$dblQts value="$!parameter.getCsvvalues()"/></TD>
+			  #else 
+			  <TD>$!parameter.getSchemalink() </TD>
+			 #end	
+			 <TD> <a href="#" style="outline: none;" onclick="return !showPopup('desc$c', event);">Help</a> </TD>
 			</tr>
 		<input type="hidden" id=$dblQts${schemaType}.parameters.parameter[$c].description$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].description$dblQts value="$!parameter.getDescription()"/>
 	#set ($c = $c + 1)

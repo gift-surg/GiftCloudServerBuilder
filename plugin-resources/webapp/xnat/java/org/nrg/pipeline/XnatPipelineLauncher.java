@@ -49,7 +49,21 @@ public class XnatPipelineLauncher {
     String parameterFile;
     String admin_email;
     boolean alwaysEmailAdmin=true;
+	boolean useAlias = false;
 
+    /**
+     * @return the useAlias
+     */
+    public boolean useAlias() {
+        return useAlias;
+    }
+
+    /**
+     * @set useAlias
+     */
+    public void useAlias(boolean u) {
+        useAlias = u;
+    }
 
     /**
      * @return the admin_email
@@ -160,6 +174,8 @@ public class XnatPipelineLauncher {
         if (label != null)
         	command += " -label " + label;
         command += " -host " + host;
+   		if (useAlias())
+            command += " -useAlias ";
 
         if (isSupressNotification())
             command += " -supressNotification ";

@@ -31,7 +31,7 @@ public class XnatPipelineLauncher {
     static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);
 
     public static final String SCHEDULE = "schedule";
-    
+
     String pipelineName;
     String id, label = null;
     String externalId; //Workflows External Id
@@ -49,7 +49,21 @@ public class XnatPipelineLauncher {
     String parameterFile;
     String admin_email;
     boolean alwaysEmailAdmin=true;
+	boolean useAlias = false;
 
+    /**
+     * @return the useAlias
+     */
+    public boolean useAlias() {
+        return useAlias;
+    }
+
+    /**
+     * @set useAlias
+     */
+    public void useAlias(boolean u) {
+        useAlias = u;
+    }
 
     /**
      * @return the admin_email
@@ -102,6 +116,8 @@ public class XnatPipelineLauncher {
 
             parameters.put("builddir",temp);
         }
+    	setNeedsBuildDir(false);
+
     }
 
     public XnatPipelineLauncher(RunData data, Context context) {
@@ -136,11 +152,11 @@ public class XnatPipelineLauncher {
     }
 
 
-    
+
     public boolean launch() {
     	return launch(XFT.GetPipelinePath() + "bin" + File.separator + SCHEDULE);
     }
-    
+
     public boolean launch (String cmdPrefix) {
         String command = " ";
         String pcommand = "";
@@ -158,6 +174,8 @@ public class XnatPipelineLauncher {
         if (label != null)
         	command += " -label " + label;
         command += " -host " + host;
+   		if (useAlias())
+            command += " -useAlias ";
 
         if (isSupressNotification())
             command += " -supressNotification ";

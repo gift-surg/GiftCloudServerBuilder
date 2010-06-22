@@ -87,10 +87,13 @@ public class ScanDIRResource extends ScanResource {
 			
 
 	    // create a directory in the temporary directory to hold our files
-	    File tmp_working_dir = File.createTempFile("dicom_","",new File(System.getProperty("java.io.tmpdir")));
-	    
+	    File _tmp_working_dir = File.createTempFile("dicom_","",new File(System.getProperty("java.io.tmpdir")));
+	    String name = _tmp_working_dir.getAbsolutePath();
+	    _tmp_working_dir.delete();
+	    File tmp_working_dir = new File(name);
+
 	    try {
-		tmp_working_dir.mkdirs();
+       		System.out.println("Made directory : " + tmp_working_dir.mkdirs());
 
 		// make the DICOMDIR file inside the working temp directory
 		File dicomDIRFile = new File(tmp_working_dir,"DICOMDIR");

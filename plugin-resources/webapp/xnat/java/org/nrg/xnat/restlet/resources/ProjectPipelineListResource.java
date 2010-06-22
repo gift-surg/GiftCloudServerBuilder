@@ -8,6 +8,8 @@
 
 package org.nrg.xnat.restlet.resources;
 
+import java.util.ArrayList;
+
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -38,6 +40,13 @@ public class ProjectPipelineListResource extends SecureResource  {
 		if(pID!=null){
 			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
 		}
+			
+		if(proj==null){ 
+			ArrayList<XnatProjectdata> matches=XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias", pID, user, false);
+			if(matches.size()>0){
+				proj=matches.get(0);
+			}
+		}
 	}
 	
 	
@@ -49,16 +58,6 @@ public class ProjectPipelineListResource extends SecureResource  {
 	@Override
 	public boolean allowDelete() {
 		return true;
-	}
-	
-	@Override
-	public boolean allowPost() {
-		return true;
-	}
-
-	@Override
-	public void handlePost() {
-		
 	}
 	
 	public void handleDelete() {

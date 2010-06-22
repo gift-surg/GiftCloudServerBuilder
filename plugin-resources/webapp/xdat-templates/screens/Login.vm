@@ -30,7 +30,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
         <font face="$ui.sansSerifFonts">
         #foreach($key in $data.getParameters().getKeys())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&$key!="username" &&$key!="exception")
-        	<input type="hidden" name="$key" value="$turbineUtils.escapeHTML($data.getParameters().getString($key))">	
+        	<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!data.getParameters().getString($key))">		
         	#end
         #end
           <input type="submit" value="Login">

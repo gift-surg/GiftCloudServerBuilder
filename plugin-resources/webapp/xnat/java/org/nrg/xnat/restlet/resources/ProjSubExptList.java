@@ -131,8 +131,8 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 		this.fieldMapping.put("patientID", "xnat:petSessionData/patientID");
 		this.fieldMapping.put("patientName", "xnat:petSessionData/patientName");
 		this.fieldMapping.put("stabilization", "xnat:petSessionData/stabilization");
-		this.fieldMapping.put("scan_start_time", "xnat:petSessionData/start_time/scan");
-		this.fieldMapping.put("injection_start_time", "xnat:petSessionData/start_time/injection");
+		this.fieldMapping.put("scan_start_time", "xnat:petSessionData/start_time_scan");
+		this.fieldMapping.put("injection_start_time", "xnat:petSessionData/start_time_injection");
 		this.fieldMapping.put("tracer_name", "xnat:petSessionData/tracer/name");
 		this.fieldMapping.put("tracer_startTime", "xnat:petSessionData/tracer/startTime");
 		this.fieldMapping.put("tracer_dose", "xnat:petSessionData/tracer/dose");

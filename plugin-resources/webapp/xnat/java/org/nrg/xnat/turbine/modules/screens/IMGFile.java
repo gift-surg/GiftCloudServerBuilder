@@ -24,7 +24,7 @@ public class IMGFile  extends FileScreen {
         String fileName= (String)TurbineUtils.GetPassedParameter("file_name",data);
         String project= (String)TurbineUtils.GetPassedParameter("project",data);
         System.out.println("FILE: " + fileName);
-        if (fileName.toLowerCase().endsWith(".jpg") || fileName.toLowerCase().endsWith(".jpeg") || fileName.toLowerCase().endsWith(".gif") )
+        if (fileName.toLowerCase().endsWith(".jpg") || fileName.toLowerCase().endsWith(".jpeg") || fileName.toLowerCase().endsWith(".gif") || fileName.toLowerCase().endsWith(".png") )
         {
             String path =null;
             if (project!=null){

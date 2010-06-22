@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -47,7 +47,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	String message = null;
 	ArrayList workflows;
 	String project = null;
-	
+
 	protected Hashtable<String, ArcPipelineparameterdata > projectParameters ;
 	String pipelinePath = null;
 
@@ -55,29 +55,39 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	        workflows = new ArrayList<WrkWorkflowdata>();
 	        projectParameters = new Hashtable<String, ArcPipelineparameterdata >();
 	    }
-	
+
 	  public abstract void finalProcessing(RunData data, Context context);
 
 		protected void setHasDicomFiles(XnatMrsessiondata mr, String mprageScanType, Context context) {
 			boolean rtn = false;
 			String[] types = mprageScanType.split(",");
-			ArrayList<XnatImagescandata> scans = mr.getScansByType(types[0]);
-			if (scans.size() > 0 ) {
+			for (int j =0; j <types.length; j++) {
+			ArrayList<XnatImagescandata> scans = mr.getScansByType(types[j].trim());
+			if (scans != null && scans.size() > 0 ) {
 				ArrayList files = scans.get(0).getFile();
 				if (files.size() > 0) {
-					XnatAbstractresource absFile = (XnatAbstractresource) files.get(0);
-					if (absFile instanceof  XnatDicomseries ) {
-						rtn = true;
-					}else if (absFile instanceof  XnatResourcecatalog){
-						XnatResourcecatalog rsccat = (XnatResourcecatalog) absFile;
-						if (rsccat.getFormat().equals("DICOM"))
+					for (int i =0; i < files.size(); i++) {
+						XnatAbstractresource absFile = (XnatAbstractresource) files.get(i);
+						if (absFile instanceof  XnatDicomseries ) {
 							rtn = true;
+						}else if (absFile instanceof  XnatResourcecatalog){
+							XnatResourcecatalog rsccat = (XnatResourcecatalog) absFile;
+							if (rsccat.getContent().endsWith("RAW")) {
+								if (rsccat.getFormat().equals("DICOM"))
+								    rtn = true;
+								break;
+							}
+						}
+
 					}
 				}
 			}
+
+			}
 			context.put("isDicom", rtn?"1":"0");
+
 		}
-		
+
 		protected void setHasFreesurfer(XnatMrsessiondata mr,  Context context) {
 			String project = mr.getProject();
 			int hasFreesurfer = 0;
@@ -91,10 +101,10 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 				}
 			}
 			context.put("freesurfer", hasFreesurfer);
-			
+
 		}
-	
-	 
+
+
 	  protected void setWorkflows(RunData data, Context context) {
 	        String projectId = (String)context.get("project");
 	        try {
@@ -115,11 +125,11 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	        	logger.debug(e);
 	        }
 	    }
-	  
+
 	   public void preProcessing(RunData data, Context context)   {
 	    }
-	    
-	  
+
+
 	  public void doBuildTemplate(RunData data, Context context)	{
 	       // preserveVariables(data,context);
 		    logger.debug("BEGIN SECURE REPORT :" + this.getClass().getName());
@@ -158,9 +168,9 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	            	context.put("search_value",data.getParameters().getString("search_value"));
 	            	project = data.getParameters().getString("project");
 	            	pipelinePath = (String)context.get("pipelinePath");
-	        
+
 	            	context.put("project",project);
-            	    
+
 	            	om = BaseElement.GetGeneratedItem(item);
 	            	context.put("om",om);
 	            	 setWorkflows(data,context);
@@ -176,7 +186,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 		}
 
 
-	
+
 	protected boolean isAnyQueuedOrRunning(ArrayList<WrkWorkflowdata> workflows) {
         boolean rtn = false;
         try {
@@ -190,7 +200,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
         }catch(IndexOutOfBoundsException aoe){logger.debug(aoe);}
         return rtn;
     }
-    
+
     protected boolean hasBeenCompletedInThePast(String pipelinePath,ArrayList<WrkWorkflowdata> workflows ) {
     	boolean rtn = false;
              for (int i = 0; i <workflows.size(); i++) {
@@ -205,13 +215,13 @@ public abstract class DefaultPipelineScreen extends SecureReport{
                  }
              }
          return rtn;
-    	
+
     }
 
     protected ArcPipelineparameterdata  getProjectPipelineSetting(String parameterName) throws Exception {
     	return projectParameters.get(parameterName);
     }
-    
+
     protected ArcPipelineparameterdata getParameter(ArcProject arcProject, String parameterName) throws PipelineNotFoundException {
     	ArcPipelineparameterdata rtn = null;
     	ArcPipelinedataI pipelineData = arcProject.getPipelineByPath(pipelinePath);
@@ -225,7 +235,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
         }
         return rtn;
     }
-    
+
     protected void setParameters(String pipeline) throws PipelineNotFoundException {
         ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
         ArcPipelinedataI pipelineData = null;
@@ -235,7 +245,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	        for (int i = 0; i < params.size(); i++) {
 	        	ArcPipelineparameterdata aParam = PipelineRepositoryManager.GetInstance().convertToArcPipelineParameter(params.get(i));
 	            projectParameters.put(aParam.getName(),aParam);
-	        } 
+	        }
         }else {
 	        if (om.getXSIType().equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
 	        	pipelineData = arcProject.getPipelineByPath(pipeline);
@@ -249,7 +259,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	        }
         }
     }
-    
 
-	
+
+
 }

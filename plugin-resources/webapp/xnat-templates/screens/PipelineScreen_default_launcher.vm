@@ -34,17 +34,22 @@ $page.setVlinkColor($ui.vlink)
 	<TR>
 	  <TD><input type="hidden"  id=${dblQts}param[$c].name$dblQts name=${dblQts}param[$c].name$dblQts value="$param.getName()"/><font size="-1">$param.getName()</font></TD> 
 	   #if ($param.getValues().isSetUnique())	
-	   <TD><input type="text" id=${dblQts}param[$c].value$dblQts  name=${dblQts}param[$c].value$dblQts value="$param.getValues().getUnique()"/></TD>
+	   <TD><input type="text" id=${dblQts}param[$c][0].value$dblQts  name=${dblQts}param[$c][0].value$dblQts value="$param.getValues().getUnique()"/></TD>
+	     <input type="hidden"  id=${dblQts}param[$c].name.rowcount$dblQts name=${dblQts}param[$c].name.rowcount$dblQts value="1"/>
 	  #else
-	   <td> 
+	   <td>
+	     #set ($x = 0)
 	     #foreach ($val in $param.getValues().getListArray())	
-	  	<input type="checkbox" id=${dblQts}param[$c].value$dblQts name=${dblQts}param[$c].value$dblQts value="$val"/>$val
+	  	<input type="checkbox" id=${dblQts}param[$c][$x].value$dblQts name=${dblQts}param[$c][$x].value$dblQts value="$val"/>$val
+	  	#set ($x = $x +1)
 	     #end
+	     <input type="hidden"  id=${dblQts}param[$c].name.rowcount$dblQts name=${dblQts}param[$c].name.rowcount$dblQts value="$x"/>
 	  </TD>
 	  #end
 	</tr>
 	#set ($c = $c + 1)
 	#end
+
 </TABLE>
 
 

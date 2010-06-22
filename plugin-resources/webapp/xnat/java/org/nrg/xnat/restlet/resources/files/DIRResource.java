@@ -39,6 +39,11 @@ public class DIRResource extends SecureResource {
 	public DIRResource(Context context, Request request, Response response) {
 		super(context, request, response);
 
+		if(user==null){
+			response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+			return;
+		}
+		
 		final String pID = (String) request.getAttributes().get("PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
@@ -78,6 +83,11 @@ public class DIRResource extends SecureResource {
 	@Override
 	public Representation getRepresentation(Variant variant) {
 		MediaType mt = overrideVariant(variant);
+		
+		if(user==null){
+			this.getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+					return null;
+		}
 		
 		if(expt instanceof XnatSubjectassessordata){
 			if(filepath==null){

@@ -1,18 +1,15 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
 
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.LinkedHashMap;
-
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.pipeline.BuildSpecification;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -25,26 +22,26 @@ public class BuildPipelineParameters extends SecureReport
     {
         TurbineUtils.InstanciatePassedItemForScreenUse(data,context);
     }
-    
-    
+
+
     /**
      * Place all the data object in the context
      * for use in the template.
      */
-    public void finalProcessing(RunData data, Context context) 
+    public void finalProcessing(RunData data, Context context)
     {
         if (context.get("om")==null) {
             data.setScreenTemplate("Error.vm");
-            return; 
+            return;
         }
         String pipelineName = data.getParameters().get("pipelineName");
         if (pipelineName == null) {
             data.setScreenTemplate("Error.vm");
             return;
         }
-        
+
         XnatMrsessiondata mr = (XnatMrsessiondata)context.get("om");
-        
+
         try {
             /*LinkedHashMap parametersHash = BuildSpecification.GetInstance().getResolvedParametersForPipeline(pipelineName,mr);
             context.put("parametersHash",parametersHash);
@@ -61,10 +58,10 @@ public class BuildPipelineParameters extends SecureReport
             data.setScreenTemplate("Error.vm");
         }
     }
-    
-    
-    
- 
-    
+
+
+
+
+
 
 }

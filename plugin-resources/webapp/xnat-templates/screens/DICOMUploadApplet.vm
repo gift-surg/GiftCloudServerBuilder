@@ -33,7 +33,7 @@
   <PARAM NAME="xnat-admin-email" VALUE="$!arc.getSiteAdminEmail()">
   <PARAM NAME="xnat-description" VALUE="$!arc.getSiteId()">
   <PARAM NAME="scp-url" VALUE="$!arc.getDcm_httpUrl()">
-The XNAT upload applet requires Java to be installed on your computer.
+The XNAT upload applet requires Java (1.5 or greater) to be installed on your computer.
 You can get Java <a href="http://java.com/en/download/index.jsp">here</a>.
 After installing Java, you will most likely need to restart your browser,
 and possibly your computer, before the XNAT upload applet will work.

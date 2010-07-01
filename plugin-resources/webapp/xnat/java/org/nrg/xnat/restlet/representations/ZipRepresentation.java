@@ -3,9 +3,11 @@ package org.nrg.xnat.restlet.representations;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.nrg.xft.utils.zip.TarUtils;
@@ -32,7 +34,11 @@ public class ZipRepresentation extends OutputRepresentation {
 	}
 	
 	public void addEntry(String p, File f){
-		_entries.add(new ZipEntry(p,f));
+		_entries.add(new ZipFileEntry(p,f));
+	}
+	
+	public void addEntry(String p, InputStream is){
+		_entries.add(new ZipStreamEntry(p,is));
 	}
 	
 	public void addEntry(File f){
@@ -71,10 +77,10 @@ public class ZipRepresentation extends OutputRepresentation {
 				p=_token+p;
 			}
 			
-			_entries.add(new ZipEntry(p,f));
+			_entries.add(new ZipFileEntry(p,f));
 		}else{
 			
-			_entries.add(new ZipEntry(p.substring(i),f));
+			_entries.add(new ZipFileEntry(p.substring(i),f));
 		}
 	}
 	
@@ -122,26 +128,39 @@ public class ZipRepresentation extends OutputRepresentation {
             this.setDownloadable(true);
         }
             
-        for(ZipEntry ze: this._entries)
+        for(final ZipEntry ze: this._entries)
         {
-              if (!ze.getF().isDirectory())
-              {
-                  zip.write(ze.getPath(),ze.getF());
-              }
+        	if(ze instanceof ZipFileEntry){
+                if (!((ZipFileEntry)ze).getF().isDirectory())
+                {
+                    zip.write(ze.getPath(),((ZipFileEntry)ze).getF());
+                }
+        	}else{
+                zip.write(ze.getPath(),((ZipStreamEntry)ze).getInputStream());
+        	}
         }
               
         // Complete the ZIP file
         zip.close();
 	}
 
+	public abstract class ZipEntry{
+		String path=null;
+		
+		public String getPath() {
+			return path;
+		}
+		public void setPath(String path) {
+			this.path = path;
+		}
+	}
     
-	public class ZipEntry {
-		public ZipEntry(String p,File f){
+	public class ZipFileEntry extends ZipEntry {
+		public ZipFileEntry(String p,File f){
 			path=p;
 			file=f;
 		}
 		
-		String path=null;
 		File file=null;
 		
 		public File getF() {
@@ -150,14 +169,23 @@ public class ZipRepresentation extends OutputRepresentation {
 		public void setF(File f) {
 			this.file = f;
 		}
-		public String getPath() {
-			return path;
-		}
-		public void setPath(String path) {
-			this.path = path;
+	}
+
+    
+	public class ZipStreamEntry extends ZipEntry {
+		public ZipStreamEntry(String p,InputStream _is){
+			path=p;
+			is=_is;
 		}
 		
+		private InputStream is=null;
 		
+		public InputStream getInputStream() {
+			return is;
+		}
+		public void setInputStream(InputStream _is) {
+			this.is = _is;
+		}
 	}
 }
 

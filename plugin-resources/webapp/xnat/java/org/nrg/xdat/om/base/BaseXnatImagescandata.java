@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -25,8 +26,10 @@ import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatImagescandata;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -442,5 +445,59 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 			
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
+	}
+	
+	
+	public static List<XnatImagescandata> getScansByIdORType(final String scanID,
+			final XnatImagesessiondata session,UserI user, boolean preLoad) {
+		final CriteriaCollection cc = new CriteriaCollection("OR");
+		CriteriaCollection subcc = new CriteriaCollection("AND");
+		subcc.addClause("xnat:imageScanData/image_session_ID", session.getId());
+		if (scanID.equals("*") || scanID.equals("ALL")) {
+
+		} else if (!scanID.contains(",")) {
+			subcc.addClause("xnat:imageScanData/ID", scanID);
+		} else {
+			final CriteriaCollection subsubcc = new CriteriaCollection("OR");
+			for (final String s : StringUtils.CommaDelimitedStringToArrayList(
+					scanID, true)) {
+				subsubcc.addClause("xnat:imageScanData/ID", s);
+			}
+			subcc.add(subsubcc);
+		}
+		cc.add(subcc);
+
+		subcc = new CriteriaCollection("AND");
+		subcc.addClause("xnat:imageScanData/image_session_ID", session.getId());
+		if (scanID.equals("*") || scanID.equals("ALL")) {
+
+		} else if (scanID.indexOf(",") == -1) {
+			if (scanID.equals("NULL")) {
+				CriteriaCollection subsubcc = new CriteriaCollection("OR");
+				subsubcc.addClause("xnat:imageScanData/type", "", " IS NULL ",
+						true);
+				subsubcc.addClause("xnat:imageScanData/type", "");
+				subcc.add(subsubcc);
+			} else {
+				subcc.addClause("xnat:imageScanData/type", scanID);
+			}
+		} else {
+			CriteriaCollection subsubcc = new CriteriaCollection("OR");
+			for (String s : StringUtils.CommaDelimitedStringToArrayList(scanID,
+					true)) {
+				if (s.equals("NULL")) {
+					subsubcc.addClause("xnat:imageScanData/type", "",
+							" IS NULL ", true);
+					subsubcc.addClause("xnat:imageScanData/type", "");
+				} else {
+					subsubcc.addClause("xnat:imageScanData/type", s);
+				}
+			}
+			subcc.add(subsubcc);
+		}
+		cc.add(subcc);
+
+		return XnatImagescandata.getXnatImagescandatasByField(cc, user,
+				preLoad);
 	}
 }

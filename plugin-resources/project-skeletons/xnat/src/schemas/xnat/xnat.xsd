@@ -3614,6 +3614,15 @@ rebinning, 6=FORE)</xs:documentation>
 				</xs:simpleType>
 			</xs:element>
 			<xs:element name="pass" type="xs:string"/>
+			<xs:element name="rating" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="scale" type="xs:string" />
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<!-- Base MR Scan QC data. Should be applicable to all types of MR scans -->

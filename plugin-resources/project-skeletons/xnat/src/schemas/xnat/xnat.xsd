@@ -1844,7 +1844,7 @@
 					<xs:element name="start_time_injection" type="xs:dateTime" minOccurs="0"/>
 					<xs:element name="blood_glucose" type="xs:float" minOccurs="0"/>
 					<xs:element name="blood_glucose_units" type="xs:string" minOccurs="0"/>
-					<xs:element name="blood_glucose_collection_time" type="xs:dateTime" minOccurs="0"/>
+					<xs:element name="blood_glucose_time" type="xs:dateTime" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

@@ -404,7 +404,13 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 		if (successful) {
 			final StringBuilder urlb = new StringBuilder(TurbineUtils.GetFullServerPath());
 			urlb.append("/REST/projects/").append(project);
-			urlb.append("/subjects/").append(session.getSubjectId());
+			urlb.append("/subjects/");
+			final XnatSubjectdata subjectData = session.getSubjectData();
+			if (LoadImageData.hasValue(subjectData.getLabel())) {
+				urlb.append(subjectData.getLabel());
+			} else {
+				urlb.append(subjectData.getId());
+			}
 			urlb.append("/experiments/").append(session.getLabel());
 			try {
 				final URL url = new URL(urlb.toString());

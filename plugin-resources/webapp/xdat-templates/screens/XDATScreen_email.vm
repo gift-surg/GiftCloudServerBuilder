@@ -84,8 +84,7 @@ function CheckAll() {
 						</td>
 						<td valign=top>
  							Subject <input type=text name=subject size=47><BR>
-							<TEXTAREA COLS="40" NAME="message" ROWS="15" >
-							</TEXTAREA> 
+							<TEXTAREA COLS="40" NAME="message" ROWS="15" ></TEXTAREA> 
 							<TABLE WIDTH=100%>
 								<tr>
 									<td colspan=2 align=center>

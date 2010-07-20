@@ -354,16 +354,12 @@ public class ManagePipeline extends SecureAction {
 			String name = data.getParameters().get("param[" + i + "].name");
 			int rowcount = new Integer(data.getParameters().get("param[" + i + "].name.rowcount")).intValue();
 			ArrayList<String> formvalues = new ArrayList<String>();
-			if (rowcount == 1) {
-				String value = data.getParameters().get("param[" + i + "][0].value");
-				formvalues.add(value);
-			}else if (rowcount>1) {
-				for (int j=0; j < rowcount; j++) {
-					String formfieldname = "param[" + i + "][" + j + "].value";
-					if (TurbineUtils.HasPassedParameter(formfieldname,data))
-					   formvalues.add(data.getParameters().get(formfieldname));
-				}
+			for (int j=0; j < rowcount; j++) {
+				String formfieldname = "param[" + i + "][" + j + "].value";
+				if (TurbineUtils.HasPassedParameter(formfieldname,data))
+				   formvalues.add(data.getParameters().get(formfieldname));
 			}
+
 			if (formvalues.size()>0) {
 				ParameterData param = parameters.addNewParameter();
 				param.setName(name);
@@ -372,7 +368,7 @@ public class ManagePipeline extends SecureAction {
 					values.setUnique(formvalues.get(0));
 				}else {
 					Values values = param.addNewValues();
-					for (int k=0; k<rowcount; k++) {
+					for (int k=0; k<formvalues.size(); k++) {
 						values.addList(formvalues.get(k));
 					}
 				}
@@ -380,6 +376,7 @@ public class ManagePipeline extends SecureAction {
 		}
 		return parameters;
 	}
+
 
 	private String saveParameters(String rootpath, String fileName, Parameters parameters) throws Exception{
         File dir = new File(rootpath);

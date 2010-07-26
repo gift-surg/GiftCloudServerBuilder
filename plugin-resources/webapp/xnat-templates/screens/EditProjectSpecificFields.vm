@@ -24,7 +24,7 @@
 		    </TR><TR>
 		   #end	
 		  	     <TD valign="top">
-		  	     	  <DIV class="container" style="width:180px;">
+		  	     	  <DIV class="container" style="min-width:180px;">
 		  	     	     <DIV class="withColor containerTitle">&nbsp;$group.getId()</DIV>
 		  	     	     <DIV class="containerBody">
 		  	     	     <table >

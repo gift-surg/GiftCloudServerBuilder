@@ -430,7 +430,7 @@ public class XnatPipelineLauncher {
     	}
     }
 
-    public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatMrsessiondata imageSession) throws Exception  {
+    public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatImagesessiondata imageSession) throws Exception  {
 	       XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(data,context);
 	       xnatPipelineLauncher.setSupressNotification(true);
 	       UserI user = TurbineUtils.getUser(data);

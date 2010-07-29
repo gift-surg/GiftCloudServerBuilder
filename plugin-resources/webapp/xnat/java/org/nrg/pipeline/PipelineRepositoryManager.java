@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -39,10 +39,10 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineRepositoryManager {
 
-	
+	public static final String ALL_DATA_TYPES="All Datatypes";
 	private  static PipePipelinerepository pipelineRepository = null;
 	private static Logger logger = Logger.getLogger(PipelineRepositoryManager.class);
-	
+
 	public synchronized static PipePipelinerepository GetInstance() {
 		if (pipelineRepository == null) {
             System.out.print("Initializing PipelineRepository...");
@@ -59,7 +59,7 @@ public class PipelineRepositoryManager {
 		}
 		return pipelineRepository;
 	}
-	
+
 	public synchronized static void SetInfo(PipePipelinedetails pipelineDetails) throws Exception{
 		String pipelineXml = pipelineDetails.getPath();
 		File xmlFile = new File(pipelineXml);
@@ -80,6 +80,8 @@ public class PipelineRepositoryManager {
 		         String appliesTo = pipeline.getXnatInfo().getAppliesTo();
 		         if (appliesTo != null) {
 		        	 pipelineDetails.setAppliesto(appliesTo);
+		         }else {
+		        	 pipelineDetails.setAppliesto(ALL_DATA_TYPES);
 		         }
 		         if (pipeline.getXnatInfo().isSetGeneratesElements()) {
 		        	 GeneratesElements elementsGenerated = pipeline.getXnatInfo().getGeneratesElements();
@@ -90,6 +92,8 @@ public class PipelineRepositoryManager {
 		        		 pipelineDetails.setGenerateselements_element(element);
 		        	 }
 		         }
+		         }else {
+		        	 pipelineDetails.setAppliesto(ALL_DATA_TYPES);
 		         }
 		         if (pipeline.isSetDocumentation()) { //Extract the input parameters for the pipeline
 		        	 Documentation  documentation = pipeline.getDocumentation();
@@ -116,11 +120,11 @@ public class PipelineRepositoryManager {
 				pipeline =null;
 				pipelineDoc = null;
 	}
-	
+
 	   public synchronized static  void Reset(){
 		   pipelineRepository=null;
 	    }
-	
+
 
 	 public synchronized static void RemoveReferenceToPipelineFromProject(PipePipelinedetails pipeline, UserI user, String pID) {
 		 //Check to see if the project has some study protocol data corresponding to the pipeline
@@ -153,7 +157,7 @@ public class PipelineRepositoryManager {
 			 }
 		 }
 	 }
-		 
+
 	 private static void removePipeline(String pipelinePath, ArcProject aProject, UserI user) {
 		 ArrayList<ArcProjectPipeline> projectPipelines = aProject.getPipelines_pipeline();
 		 for (int j = 0; j < projectPipelines.size(); j++) {
@@ -189,7 +193,7 @@ public class PipelineRepositoryManager {
 		 }
 		 ArcSpecManager.Reset();
 	 }
-	 
+
 	 public synchronized static void RemoveReferenceToPipelineFromProjects(String pipelinePath, UserI user) {
 		 ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
 		 ArrayList<ArcProject> arcProjects = arcSpec.getProjects_project();
@@ -198,7 +202,7 @@ public class PipelineRepositoryManager {
 			 removePipeline(pipelinePath,  aProject,  user);
 		 }
 	 }
-	
+
 	 public static String GetPathToPipeline(String partialPipelinePath, ArcProject aProject) {
 		 String rtn = null;
 		 ArrayList<ArcProjectPipeline> projectPipelines = aProject.getPipelines_pipeline();
@@ -225,10 +229,10 @@ public class PipelineRepositoryManager {
 						 break;
 					 }
 		        }
-				if (rtn != null) break;  
+				if (rtn != null) break;
 	       }
 		 }
 	 return rtn;
 	 }
-	
+
 }

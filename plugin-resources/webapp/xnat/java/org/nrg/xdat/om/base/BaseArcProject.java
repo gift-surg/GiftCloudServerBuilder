@@ -64,18 +64,21 @@ public abstract class BaseArcProject extends AutoArcProject {
 		}
 	}
 
-	public ArrayList<ArcProjectDescendantPipeline> getPipelinesForDescendant(String xsiType) {
-		ArrayList<ArcProjectDescendantPipeline>rtn = new ArrayList<ArcProjectDescendantPipeline>();
-		ArrayList<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
-		if (xsiType == null || descendants == null) return rtn;
-		for (int i = 0; i < descendants.size(); i++) {
-			if (descendants.get(i).getXsitype().equals(xsiType)) {
-				rtn = descendants.get(i).getPipeline();
-				break;
+		public ArrayList<ArcProjectDescendantPipeline> getPipelinesForDescendant(String xsiType) {
+			ArrayList<ArcProjectDescendantPipeline>rtn = new ArrayList<ArcProjectDescendantPipeline>();
+			ArrayList<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
+			if (xsiType == null || descendants == null) return rtn;
+			for (int i = 0; i < descendants.size(); i++) {
+				if (descendants.get(i).getXsitype().equals(xsiType) || descendants.get(i).getXsitype().equals(PipelineRepositoryManager.ALL_DATA_TYPES)) {
+					rtn = descendants.get(i).getPipeline();
+					break;
+				}
 			}
+			return rtn;
 		}
-		return rtn;
-	}
+
+
+
 
 	public ArcPipelinedataI getPipelineForDescendant(String xsiType, String pipelineStep) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
@@ -89,7 +92,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());
 		return rtn;
 	}
-	
+
 	public ArcPipelinedataI getPipelineForDescendantByPath(String xsiType, String pipelinePath) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
 		ArrayList<ArcProjectDescendantPipeline> descendantPipelines = getPipelinesForDescendant(xsiType);
@@ -102,7 +105,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for " + xsiType + " for project " + getId());
 		return rtn;
 	}
-	
+
 	public ArcProjectDescendantPipeline getPipelineForDescendantEltByPath(String xsiType, String pipelinePath) throws PipelineNotFoundException {
 		ArcProjectDescendantPipeline rtn = null;
 		ArrayList<ArcProjectDescendantPipeline> descendantPipelines = getPipelinesForDescendant(xsiType);
@@ -129,7 +132,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 		return rtn;
 	}
 
-	
+
 	public ArcPipelinedataI getPipeline(String pipelineStep) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
 		ArrayList<ArcProjectPipeline> pipelines =getPipelines_pipeline();
@@ -142,9 +145,9 @@ public abstract class BaseArcProject extends AutoArcProject {
 		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for  project " + getId());
 		return rtn;
 	}
-	
-	
-	
+
+
+
 	public ArcPipelinedataI getPipelineByPath(String pipelinePath) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
 		ArrayList<ArcProjectPipeline> pipelines =getPipelines_pipeline();
@@ -157,7 +160,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for  project " + getId());
 		return rtn;
 	}
-	
+
 	public ArcProjectPipeline getPipelineEltByPath(String pipelinePath) throws PipelineNotFoundException {
 		ArcProjectPipeline rtn = null;
 		ArrayList<ArcProjectPipeline> pipelines =getPipelines_pipeline();
@@ -170,7 +173,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for  project " + getId());
 		return rtn;
 	}
-	
+
 	public int getPipelineIndexByPath(String pipelinePath) throws PipelineNotFoundException {
 		int rtn = -1;
 		ArrayList<ArcProjectPipeline> pipelines =getPipelines_pipeline();
@@ -183,8 +186,8 @@ public abstract class BaseArcProject extends AutoArcProject {
 		if (rtn == -1) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for  project " + getId());
 		return rtn;
 	}
-	
-	
+
+
 	public ArcProjectDescendant getDescendant(String xsiType) {
 		ArcProjectDescendant rtn = null;
 		ArrayList<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
@@ -197,11 +200,11 @@ public abstract class BaseArcProject extends AutoArcProject {
 		}
 		return rtn;
 	}
-	
+
 	public void removeAllDescendantPipelines() {
 		ArrayList<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
 		if (descendants.size() > 0) {
-			int i = 0; 
+			int i = 0;
 			Iterator iter = descendants.iterator();
 			while (iter.hasNext()) {
 				removePipelines_descendants_descendant(i);
@@ -210,16 +213,16 @@ public abstract class BaseArcProject extends AutoArcProject {
 			}
 		}
 	}
-	
+
 	public void removeAllPipelines() {
 		removeAllDescendantPipelines();
 		removeAllProjectPipelines();
 	}
-	
+
 	public void removeAllProjectPipelines() {
 		ArrayList<ArcProjectPipeline> projPipeline = getPipelines_pipeline();
 		if (projPipeline.size() > 0) {
-			int i = 0; 
+			int i = 0;
 			Iterator iter = projPipeline.iterator();
 			while (iter.hasNext()) {
 				this.removePipelines_pipeline(i);
@@ -228,5 +231,5 @@ public abstract class BaseArcProject extends AutoArcProject {
 			}
 		}
 	}
-	
+
 }

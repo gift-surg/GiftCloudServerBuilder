@@ -16,10 +16,9 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.pipeline.utils.FileUtils;
 import org.nrg.viewer.QCImageCreator;
 import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XnatMrsessiondata;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -430,7 +429,7 @@ public class XnatPipelineLauncher {
     	}
     }
 
-    public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatMrsessiondata imageSession) throws Exception  {
+    public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatImagesessiondata imageSession) throws Exception  {
 	       XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(data,context);
 	       xnatPipelineLauncher.setSupressNotification(true);
 	       UserI user = TurbineUtils.getUser(data);

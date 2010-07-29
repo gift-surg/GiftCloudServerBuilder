@@ -5,6 +5,7 @@
  *
  */
 package org.nrg.xdat.om.base;
+import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.xdat.om.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcProjectDescendant;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
@@ -69,7 +70,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 		ArrayList<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
 		if (xsiType == null || descendants == null) return rtn;
 		for (int i = 0; i < descendants.size(); i++) {
-			if (descendants.get(i).getXsitype().equals(xsiType)) {
+			if (descendants.get(i).getXsitype().equals(xsiType) || descendants.get(i).getXsitype().equals(PipelineRepositoryManager.ALL_DATA_TYPES)) {
 				rtn = descendants.get(i).getPipeline();
 				break;
 			}

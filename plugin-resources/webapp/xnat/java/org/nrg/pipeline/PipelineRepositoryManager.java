@@ -39,7 +39,7 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineRepositoryManager {
 
-	
+	public static final String ALL_DATA_TYPES="All Datatypes";
 	private  static PipePipelinerepository pipelineRepository = null;
 	private static Logger logger = Logger.getLogger(PipelineRepositoryManager.class);
 	
@@ -80,6 +80,8 @@ public class PipelineRepositoryManager {
 		         String appliesTo = pipeline.getXnatInfo().getAppliesTo();
 		         if (appliesTo != null) {
 		        	 pipelineDetails.setAppliesto(appliesTo);
+		         }else {
+		        	 pipelineDetails.setAppliesto(ALL_DATA_TYPES);
 		         }
 		         if (pipeline.getXnatInfo().isSetGeneratesElements()) {
 		        	 GeneratesElements elementsGenerated = pipeline.getXnatInfo().getGeneratesElements();
@@ -90,6 +92,8 @@ public class PipelineRepositoryManager {
 		        		 pipelineDetails.setGenerateselements_element(element);
 		        	 }
 		         }
+		         }else {
+		        	 pipelineDetails.setAppliesto(ALL_DATA_TYPES);
 		         }
 		         if (pipeline.isSetDocumentation()) { //Extract the input parameters for the pipeline
 		        	 Documentation  documentation = pipeline.getDocumentation();

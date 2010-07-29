@@ -36,6 +36,15 @@ $page.setVlinkColor($ui.vlink)
 </TR>
 #end
 
+#foreach ($pipeline in $additional_pipelines)
+<TR>
+<TD><input type="radio" name="pipeline" value="$pipeline.getLocation()" $disabled> $pipeline.getName() </TD>
+</TR>
+<TR>
+<TD>Description: $pipeline.getDescription()</td>
+</TR>
+#end
+
 
 <TR>
 #if ($isQueuedOrRunning)

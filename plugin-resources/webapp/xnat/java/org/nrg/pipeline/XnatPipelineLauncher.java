@@ -26,6 +26,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xdat.om.XnatImagesessiondata;
 
 public class XnatPipelineLauncher {
     static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);

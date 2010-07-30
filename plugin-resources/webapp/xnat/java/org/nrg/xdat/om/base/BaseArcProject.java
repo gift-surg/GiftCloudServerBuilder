@@ -14,6 +14,7 @@ import org.nrg.xdat.om.base.auto.*;
 import org.nrg.xft.*;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
+import org.nrg.pipeline.PipelineRepositoryManager;
 
 import java.util.*;
 

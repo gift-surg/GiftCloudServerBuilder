@@ -1,7 +1,7 @@
 dynamicJSLoad("SAXDriver","xmlsax-min.js");
 dynamicJSLoad("SAXEventHandler","SAXEventHandler-min.js");
 dynamicJSLoad("SearchFieldManager","search/searchFieldManager.js");
-var Dom = YAHOO.util.Dom,   
+var Dom = YAHOO.util.Dom,
    Event = YAHOO.util.Event,
     _addColW=800,
     _addColH=550,
@@ -15,12 +15,12 @@ function SearchXMLManager(_xml){
 	this.fieldMap=new Object();
 	this.versionMap=new Object();
 	this.xml=_xml;
-	
+
 	this.sfm = new SearchFieldManager("search-field-manager");
 	this.sfm.sm=this;
-	
+
 	this.onsubmit=new YAHOO.util.CustomEvent("submit",this);
-	
+
 	this.init=function(){
 		if(this.xml!=undefined){
 			try{
@@ -29,34 +29,34 @@ function SearchXMLManager(_xml){
 				parser.setDocumentHandler(handler);
 			 	parser.setErrorHandler(handler);
 				parser.setLexicalHandler(handler);
-				parser.parse(this.xml);// start parsing                        
+				parser.parse(this.xml);// start parsing
 				this.searchDOM=handler.root;
-				
+
 			}catch(e){
 				alert("sxmlM:init:" +e.message);
 			}
 		}
 	}
-		
+
 	this.renderCriteria=function(all_criteria_table){
 	  if(all_criteria_table==undefined)all_criteria_table=document.getElementById("current_criteria");
 	  try{
-		
+
 		all_criteria_table.innerHTML="";
 	    all_criteria_table.style.border="solid thin #DEDEDE";
 		all_criteria_table.style.marginTop="5pt";
-			
+
 			var si_t=document.createElement("table");
 		si_t.style.width="95%";
 			var si_tb=document.createElement("tbody");
-		
+
 			var si_tr=document.createElement("tr");
 		var si_th1=document.createElement("th");
 		si_th1.colSpan="3";
 		si_th1.innerHTML="Current Filter(s) (Show me rows where...)";
 		si_tr.appendChild(si_th1);
 		si_tb.appendChild(si_tr);
-			
+
 		var si_tr=document.createElement("tr");
 			var si_td1=document.createElement("td");
 		si_td1.vAlign="top";
@@ -69,8 +69,8 @@ function SearchXMLManager(_xml){
 				si_td1.appendChild(this.searchDOM.SearchWhere[xswC].getInput(this,190));
 			}
 		}
-		
-			
+
+
 			si_tr.appendChild(si_td1);
 			si_tb.appendChild(si_tr);
 			si_t.appendChild(si_tb);
@@ -79,7 +79,7 @@ function SearchXMLManager(_xml){
 	  	alert("sxmlM:renderCriteria:" +o.message);
 	  }
 	}
-			
+
 	this.renderFilterForm=function(element_name, field_id, oColumn){
 		if(oColumn.currentValues==undefined){
 			var fieldCallback={
@@ -88,33 +88,33 @@ function SearchXMLManager(_xml){
 				scope:this,
 				argument:{"element_name":element_name,"field_id":field_id,"oColumn":oColumn}
 			}
-	    			
+
 			openModalPanel("load_cv","Loading column values.");
 			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/' + this.tableName+'/'+oColumn.key +'?format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
-		
+
 		}else{
 			this.renderFilterForm2(element_name, field_id, oColumn);
 		}
 		}
-		
+
 	this.valuesFailure=function(o){
 		closeModalPanel("load_cv");
 		this.renderFilterForm2(o.argument.element_name,o.argument.field_id,o.argument.oColumn);
 				}
-	
+
 	this.processValues=function(o){
 		closeModalPanel("load_cv");
 		var resultset= eval("(" + o.responseText +")");
 		o.argument.oColumn.currentValues=resultset.ResultSet.Result;
 		this.renderFilterForm2(o.argument.element_name,o.argument.field_id,o.argument.oColumn);
 			}
-	
+
 	this.destroy=function(){
 		try{if(this.dialogPopup!=undefined)this.dialogPopup.destroy();}catch(o){}
 		try{if(this.filterPopup!=undefined)this.filterPopup.destroy();}catch(o){}
 		try{if(this.joinPopup!=undefined)this.joinPopup.destroy();}catch(o){}
 		}
-		
+
 	this.renderFilterForm2=function(element_name, field_id, oColumn){
 		var popupDIV = document.createElement("DIV");
 		popupDIV.id="search-column-filter";
@@ -123,80 +123,80 @@ function SearchXMLManager(_xml){
 		popupDIV.appendChild(popupHD);
 		var popupBD = document.createElement("DIV");
 		popupBD.className="bd";
-		
+
 		popupBD.style.overflow="auto";
 		popupBD.style.padding="10px";
-		
+
 		popupDIV.appendChild(popupBD);
 		var filter= this.searchDOM.getColumnFilter(element_name,field_id);
 		filter.oColumn=oColumn;
 		filter.sm=this;
 		filter.xcsContainer=document.createElement("div");
-		
+
 		if(this.searchDOM.SearchWhere[0].ChildSet.length>1){
 			var title= document.createElement("div");
 			title.innerHTML="Other Filters";
 			title.style.fontWeight="700";
 			popupBD.appendChild(title);
-			
+
 			for(var fcsC=0;fcsC<this.searchDOM.SearchWhere[0].ChildSet.length;fcsC++){
 				var cs=this.searchDOM.SearchWhere[0].ChildSet[fcsC];
 				if(!(cs===filter)){
 					var of=document.createElement("div");
-					of.innerHTML= (fcsC +1) + "." + cs.toString(this.searchDOM.RootElementName)					
+					of.innerHTML= (fcsC +1) + "." + cs.toString(this.searchDOM.RootElementName)
 					popupBD.appendChild(of);
 				}
 			}
 		}
-		
+
 		popupBD.appendChild(document.createElement("br"));
-		
+
 		var filterDIV=document.createElement("div");
 		filterDIV.className="withColor withThinBorder";
 		filterDIV.style.padding="3px";
-		popupBD.appendChild(filterDIV);		
-		
+		popupBD.appendChild(filterDIV);
+
 		var title= document.createElement("div");
 			title.innerHTML=window.available_elements.getByName(element_name).singular + " " + oColumn.header;
 			title.style.fontWeight="700";
 			filterDIV.appendChild(title);
-		
+
 		filterDIV.appendChild(document.createElement("br"));
-		
+
 		filterDIV.appendChild(filter.xcsContainer);
-		
+
 		filter.renderFilters();
-			
-						
+
+
 		var popupFT = document.createElement("DIV");
 		popupFT.className="ft";
 		popupFT.style.height="20px";
 		popupDIV.appendChild(popupFT);
-		
+
 		popupHD.innerHTML="Results Filter";
-			
+
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
-						
+
 		this.filterPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:"700px",height:"500px",visible:false,draggable:true,modal:true});
 		this.filterPopup.sm=this;
-		
+
 	    var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
 						  { text:"Cancel", handler:handleCancel } ];
 		this.filterPopup.cfg.queueProperty("buttons", myButtons);
-			
+
 		this.filterPopup.render();
-						
-		
+
+
 		this.filterPopup.show();
-		
+
 		this.filterPopup.hideEvent.subscribe(function(obj1,obj2,obj3){
 			this.filterPopup.destroy();
 			this.searchDOM.cleanEmpty();
 			YAHOO.util.Event.preventDefault(obj1);
 		},this,this);
-		
-		
+
+
 		this.resizerFilter=new YAHOO.util.Resize("search-column-filter",{
 			handles: ['br'],
 			autoRatio:false,
@@ -208,9 +208,9 @@ function SearchXMLManager(_xml){
 			var panelHeight=args.height;
 			this.cfg.setProperty("height",panelHeight +"px");
 		},this.filterPopup,true);
-		
+
 		}
-		
+
 	this.renderJoinForm=function(){
 		var popupDIV = document.createElement("DIV");
 		popupDIV.id="search_edit_popup";
@@ -219,44 +219,44 @@ function SearchXMLManager(_xml){
 		popupDIV.appendChild(popupHD);
 		var popupBD = document.createElement("DIV");
 		popupBD.className="bd";
-		
+
 		popupBD.style.overflow="auto";
 		popupBD.style.padding="10px";
-				
+
 		popupDIV.appendChild(popupBD);
-					
-					
+
+
 		var popupFT = document.createElement("DIV");
 		popupFT.className="ft";
 		popupFT.style.height="20px";
 		popupDIV.appendChild(popupFT);
-		
+
 		popupHD.innerHTML="Join to other data";
-			
+
 	    var existingDIV=document.createElement("div");
 	    existingDIV.style.border="solid thin #DEDEDE";
 	    existingDIV.style.padding="3px";
 	    existingDIV.style.overflow="auto";
-	    
+
 		popupBD.appendChild(existingDIV);
 
 		if(!this.searchDOM){
 			this.searchDOM=new xdat_stored_search();
 		}
-				
+
 	//BEGIN current fields section
 		var all_fields_table = document.createElement("div");
 		all_fields_table.id="current_fields";
 		all_fields_table.style.marginTop="5pt";
 		//all_fields_table.style.overflow="auto";
-		
+
 		existingDIV.appendChild(all_fields_table);
-		
+
 		var si_t=document.createElement("table");
 		var si_tb=document.createElement("tbody");
-		
+
 		var joined=this.searchDOM.getJoinedDataTypes();
-		
+
 		if(joined.length>1){
 		var si_tr=document.createElement("tr");
 			var si_th1=document.createElement("td");
@@ -273,14 +273,14 @@ function SearchXMLManager(_xml){
 		si_tr.appendChild(si_th1);
 		si_tb.appendChild(si_tr);
 		}
-		
+
 		var si_tr=document.createElement("tr");
 		var si_th1=document.createElement("td");
 		si_th1.colSpan="4";
 		si_th1.innerHTML="Specify which data-type to join your <b>" + window.available_elements.getByName(this.searchDOM.RootElementName).plural +"</b> search results to.";
 		si_tr.appendChild(si_th1);
 		si_tb.appendChild(si_tr);
-		
+
 		var si_tr=document.createElement("tr");
 		var si_td1=document.createElement("td");
 		si_td1.vAlign="top";
@@ -290,7 +290,7 @@ function SearchXMLManager(_xml){
 		si_td3.vAlign="top";
 		var si_td4=document.createElement("td");
 		si_td4.vAlign="top";
-		
+
 		si_td1.innerHTML="New Data Type:";
 		this.newDataTypeSelector=si_td2.appendChild(document.createElement("select"));
 		this.newDataTypeSelector.options[0]=new Option("SELECT","",true,true);
@@ -308,7 +308,7 @@ function SearchXMLManager(_xml){
 							var resultset= eval("(" + o.responseText +")");
 							this.versionMap[o.argument]=resultset.ResultSet.versions.DisplayVersions.versions;
 							this.fieldMap[o.argument]= resultset.ResultSet.Result;
-							
+
 							this.fillVersionBox(o.argument);
 						},
 						failure:function(o){alert("Failed to load fields for " + o.argument.element_name);},
@@ -322,10 +322,10 @@ function SearchXMLManager(_xml){
 			}
 		}
 		},this);
-		
+
 		this.versionSelector=si_td3.appendChild(document.createElement("select"));
 		this.versionSelector.disabled=true;
-		
+
 		this.versionButton=document.createElement("input");
 		this.versionButton.type="button";
 		this.versionButton.disabled=true;
@@ -348,9 +348,9 @@ function SearchXMLManager(_xml){
 		}
 				this.onsubmit.fire(this.searchDOM);
 		}
-		},this,true);	
+		},this,true);
 		si_td4.appendChild(this.versionButton);
-		
+
 		si_tr.appendChild(si_td1);
 		si_tr.appendChild(si_td2);
 		si_tr.appendChild(si_td3);
@@ -358,31 +358,31 @@ function SearchXMLManager(_xml){
 		si_tb.appendChild(si_tr);
 		si_t.appendChild(si_tb);
 		all_fields_table.appendChild(si_t);
-		
-		
+
+
 		//add to page
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
-		
-		
+
+
 		this.joinPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:_joinW+"px",height:_joinH+"px",visible:false,draggable:true,modal:true});
 		this.joinPopup.sm=this;
 		//this.renderFields();
-		
+
 	    var myButtons = [ { text:"Cancel", handler:handleCancel } ];
 		this.joinPopup.cfg.queueProperty("buttons", myButtons);
-		
+
 		this.joinPopup.render();
-		
-		
+
+
 		this.joinPopup.show();
-		
+
 		this.joinPopup.hideEvent.subscribe(function(obj1,obj2,obj3){
 			this.joinPopup.destroy();
 			YAHOO.util.Event.preventDefault(obj1);
 		},this,this);
-		
-		
+
+
 		this.resizer=new YAHOO.util.Resize("search_edit_popup",{
 			handles: ['br'],
 			autoRatio:false,
@@ -395,7 +395,7 @@ function SearchXMLManager(_xml){
 			this.joinPopup.cfg.setProperty("height",panelHeight +"px");
 		},this,true);
 	}
-	
+
 	this.fillVersionBox=function(element_name){
 		var versions=this.versionMap[element_name];
 		var allVersion=null;
@@ -413,7 +413,7 @@ function SearchXMLManager(_xml){
 				allVersion=version;
 		}
 	}
-	
+
 		if(this.versionSelector.options.length==0 && allVersion!=null){
 			var opt=document.createElement("option");
 				opt.label="all";
@@ -425,8 +425,8 @@ function SearchXMLManager(_xml){
 		}
 		this.versionSelector.disabled=false;
 		this.versionButton.disabled=false;
-		}		
-		
+		}
+
 	this.renderAddFields=function(showCriteria){
 		this.showCriteria=showCriteria;
 		var popupDIV = document.createElement("DIV");
@@ -436,50 +436,50 @@ function SearchXMLManager(_xml){
 		popupDIV.appendChild(popupHD);
 		var popupBD = document.createElement("DIV");
 		popupBD.className="bd";
-		
+
 		popupBD.style.overflow="auto";
 		popupBD.style.padding="10px";
- 		
+
 		popupDIV.appendChild(popupBD);
-	
-		
+
+
 		var popupFT = document.createElement("DIV");
 		popupFT.className="ft";
 		popupFT.style.height="20px";
 		popupDIV.appendChild(popupFT);
-		
+
 		popupHD.innerHTML="Select columns";
-			
+
 	    var existingDIV=document.createElement("div");
 	    existingDIV.style.border="solid thin #DEDEDE";
 	    existingDIV.style.padding="3px";
 	    existingDIV.style.overflow="auto";
-	    
+
 		popupBD.appendChild(existingDIV);
 
 		if(!this.searchDOM){
 			this.searchDOM=new xdat_stored_search();
 		}
-		
+
 	//BEGIN current fields section
 		var all_fields_table = document.createElement("div");
 		all_fields_table.id="current_fields";
 		all_fields_table.style.marginTop="5pt";
 		//all_fields_table.style.overflow="auto";
-				
+
 		existingDIV.appendChild(all_fields_table);
-		
+
 		var si_t=document.createElement("table");
 		si_t.border=0;
 		var si_tb=document.createElement("tbody");
-		
+
 		var si_tr=document.createElement("tr");
 		var si_th1=document.createElement("td");
 		si_th1.colSpan="4";
 		si_th1.innerHTML="Use the up/down arrows to reorder columns.  Use the left/right arrows to add and remove columns.";
 		si_tr.appendChild(si_th1);
 		si_tb.appendChild(si_tr);
-		
+
 		var si_tr=document.createElement("tr");
 		var si_td1=document.createElement("td");
 		si_td1.vAlign="top";
@@ -489,17 +489,17 @@ function SearchXMLManager(_xml){
 		si_td3.vAlign="top";
 		var si_td4=document.createElement("td");
 		si_td4.vAlign="top";
-		
-				
+
+
 		var cfH=si_td2.appendChild(document.createElement("div"));
 		cfH.innerHTML="Current Fields";
 		cfH.align="center";
 		cfH.style.fontStyle="italic";
-		
+
 		var cfDiv=document.createElement("div");
 		cfDiv.id="current_fields_select";
 		si_td2.appendChild(cfDiv);
-		
+
 		this.cfS=document.createElement("select");
 		this.cfS.multiple=true;
 		this.cfS.style.width="200";
@@ -512,7 +512,7 @@ function SearchXMLManager(_xml){
 		}
 		}
 		cfDiv.appendChild(this.cfS);
-		
+
 		//si_tr.appendChild(si_td1);
 		si_tr.appendChild(si_td1);
 		si_tr.appendChild(si_td2);
@@ -522,11 +522,11 @@ function SearchXMLManager(_xml){
 		si_t.appendChild(si_tb);
 		all_fields_table.appendChild(si_t);
 	//END current fields section
-		
+
 		var pfDiv=document.createElement("div");
 		pfDiv.id="potential_fields_select";
 		si_td4.appendChild(pfDiv);
-		
+
 		this.afS=document.createElement("select");
 		this.afS.multiple=true;
 		this.afS.style.width=(_addColW-_addColBuff2W)+"px";
@@ -540,9 +540,9 @@ function SearchXMLManager(_xml){
 			}
 		}
 		pfDiv.appendChild(this.afS);
-		
+
 		this.cfS.opposite=this.afS;
-		
+
 		//set left images
 		si_td1.vAlign="middle";
 		var uImg=si_td1.appendChild(document.createElement("img"));
@@ -573,12 +573,12 @@ function SearchXMLManager(_xml){
 			this.manager.renderCurrentFieldsDT(selections);
 		}
 		uImg.style.cursor="pointer";
-		
+
 		si_td1.appendChild(document.createElement("br"));
 		si_td1.appendChild(document.createElement("br"));
 		si_td1.appendChild(document.createElement("br"));
 		si_td1.appendChild(document.createElement("br"));
-	
+
 		var dImg=si_td1.appendChild(document.createElement("img"));
 		dImg.src=serverRoot +"/images/down18.gif";
 		dImg.border="0";
@@ -606,7 +606,7 @@ function SearchXMLManager(_xml){
 			this.manager.renderCurrentFieldsDT(selections);
 		}
 		dImg.style.cursor="pointer";
-	
+
 		//left-right buttons
 		si_td3.vAlign="middle";
 		var lImg=si_td3.appendChild(document.createElement("img"));
@@ -629,12 +629,12 @@ function SearchXMLManager(_xml){
 			this.manager.renderPotentialFields();
 		}
 		lImg.style.cursor="pointer";
-		
+
 		si_td3.appendChild(document.createElement("br"));
 		si_td3.appendChild(document.createElement("br"));
 		si_td3.appendChild(document.createElement("br"));
 		si_td3.appendChild(document.createElement("br"));
-		
+
 		var rImg=si_td3.appendChild(document.createElement("img"));
 		rImg.src=serverRoot +"/images/right18.gif";
 		rImg.border="0";
@@ -656,30 +656,30 @@ function SearchXMLManager(_xml){
 			this.manager.renderPotentialFields();
 		}
 		rImg.style.cursor="pointer";
-		
-		
+
+
 		//add to page
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
-		
+
 		this.dialogPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:_addColW+"px",height:_addColH+"px",visible:false,draggable:true,modal:true});
 		this.dialogPopup.sm=this;
 		//this.renderFields();
-		
+
 	    var myButtons = [ { text:"Submit", handler:handleACSubmit, isDefault:true },
 						  { text:"Cancel", handler:handleCancel } ];
 		this.dialogPopup.cfg.queueProperty("buttons", myButtons);
-		
+
 		this.dialogPopup.render();
-		
-		
+
+
 		this.dialogPopup.show();
-		
+
 		this.dialogPopup.hideEvent.subscribe(function(obj1,obj2,obj3){
 			this.dialogPopup.destroy();
 			YAHOO.util.Event.preventDefault(obj1);
 		},this,this);
-		
+
 		this.currentFields=new Array();
 		for(var rAfC=0;rAfC<this.searchDOM.SearchField.length;rAfC++){
 	  		this.currentFields[rAfC]={"ElementName":this.searchDOM.getSortedFields()[rAfC].ElementName,
@@ -687,9 +687,9 @@ function SearchXMLManager(_xml){
 	  		"Header":this.searchDOM.SearchField[rAfC].Header,
 	  		"Type":this.searchDOM.SearchField[rAfC].Type};
 	  	}
-	  	
+
 		this.renderCurrentFieldsDT();
-		
+
 		this.resizer=new YAHOO.util.Resize("search_edit_popup",{
 			handles: ['br'],
 			autoRatio:false,
@@ -704,11 +704,11 @@ function SearchXMLManager(_xml){
 			this.cfS.style.height=(args.height-_addColBuff2H)+"px";
 			this.afS.style.height=(args.height-_addColBuff2H)+"px";
 		},this,true);
-		
-		
+
+
 //		this.tabView=new FieldTabView("potential_fields_select",_addColH,this);
 //	  	this.tabView.load(this.searchDOM.RootElementName);
-	  	
+
 	  	var ce=new Array();
 	  	ce.push(this.searchDOM.RootElementName);
 	  	for(var rAfC=0;rAfC<this.searchDOM.SearchField.length;rAfC++){
@@ -724,7 +724,7 @@ function SearchXMLManager(_xml){
 	  		}
 	  		return _r;
 	  	}
-	  	
+
 	  	var fcb={
 			success:function(o){
 				try{
@@ -740,9 +740,9 @@ function SearchXMLManager(_xml){
 		}
 		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+ ce.toCommaString() +'?format=json',fcb,null,this);
 	}
-	
+
 	this.shouldShowLabels=false;
-	
+
 	this.colors=new Array();
 	this.gbc=function(en){
 		var tEN=window.available_elements.getByName(en);
@@ -753,10 +753,10 @@ function SearchXMLManager(_xml){
 		}
 		return "#FFFFFF";
 	}
-	
+
 	this.renderPotentialFields=function(){
 		while(this.afS.options.length>0){this.afS.removeChild(this.afS.options[0])};
-		
+
 		for(var _efC=0;_efC<this.pFs.length;_efC++){
 			if(this.shouldShowLabels || this.pFs[_efC].SRC!=2){
 				if(this.pFs[_efC].d==undefined){
@@ -774,7 +774,7 @@ function SearchXMLManager(_xml){
 			}
 		}
 	}
-	
+
 	this.containsField=function(e,f){
 		for(var cfSC=0;cfSC<this.currentFields.length;cfSC++){
 			if(this.currentFields[cfSC].ElementName==e &&
@@ -784,10 +784,10 @@ function SearchXMLManager(_xml){
 		}
 		return false;
 	}
-	
-	this.renderCurrentFieldsDT=function(sel){			
+
+	this.renderCurrentFieldsDT=function(sel){
 		while(this.cfS.options.length>0){this.cfS.removeChild(this.cfS.options[0])};
-		 
+
 		for(var cfSC=0;cfSC<this.currentFields.length;cfSC++){
 			if(this.currentFields[cfSC].d==undefined){
 				this.currentFields[cfSC].d=this.currentFields[cfSC].Header + " (" + window.available_elements.getByName(this.currentFields[cfSC].ElementName).singular + ")";
@@ -801,7 +801,7 @@ function SearchXMLManager(_xml){
 		}
 	}
 }
-	
+
 var handleCancel = function() {
 	this.sm.init();
 	this.destroy();
@@ -831,7 +831,7 @@ var handleSubmit = function() {
 	this.sm.searchDOM.cleanEmpty();
 	this.sm.onsubmit.fire(this.sm.searchDOM);
 }
-	
+
 //modifications to stored-search
 xdat_stored_search.prototype.removeField=function(name,field){
 	for(var sfC=0;sfC<this.SearchField.length;sfC++){
@@ -892,7 +892,7 @@ xdat_stored_search.prototype.addField=function(element_name,field_id,header,type
     xsf.FieldId=field_id;
     xsf.Header=header;
     xsf.Type=type;
-    
+
 	this.appendField(xsf);
 }
 
@@ -915,7 +915,7 @@ xdat_stored_search.prototype.getFieldHeader=function(str){
 			return (sf.Header=='')?sf.FieldId:sf.Header;
 		}
 	}
-	
+
 	return removeElementName(str,this.RootElementName);
 }
 
@@ -951,18 +951,18 @@ xdat_stored_search.prototype.cleanEmpty=function(){
 xdat_criteria_set.prototype.cleanEmpty=function(sm,cC){
 	var rev=new Array();
 	var revCrit=new Array();
-	
+
 	for(var xcC=0;xcC<this.Criteria.length;xcC++){
 		if(this.Criteria[xcC].Value==null && this.Criteria[xcC].CustomSearch==null){
 			revCrit.push(xcC)
 		}
 	}
-	
+
 	for(var revCritC=0;revCritC<revCrit.length;revCritC++){
 		var ind=rev.reverse()[revCritC];
 		this.Criteria.splice(ind,1);
 	}
-	
+
 	for(this.xcsC=0;this.xcsC<this.ChildSet.length;this.xcsC++){
 		this.ChildSet[this.xcsC].cleanEmpty();
 		if(this.ChildSet[this.xcsC].Criteria.length==0 && this.ChildSet[this.xcsC].ChildSet.length==0){
@@ -977,28 +977,28 @@ xdat_criteria_set.prototype.cleanEmpty=function(sm,cC){
 
 xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	emptyChildNodes(this.xcsContainer);
-	
+
 	var t=document.createElement("table");
 	var tbody=document.createElement("tbody");
 	t.appendChild(tbody);
 	this.xcsContainer.appendChild(t);
-		
+
 	var tr=document.createElement("tr");
 	var td1=document.createElement("td");
 	var td2=document.createElement("td");
 	tr.appendChild(td1);
 	tr.appendChild(td2);
 	tbody.appendChild(tr);
-	
+
 	for(this.xcC=0;this.xcC<this.Criteria.length;this.xcC++){
 		if(this.xcsC>0 || this.xcC>0){
 			this.meth=document.createElement("div");
 			this.meth.innerHTML=this.Method;
 			td1.appendChild(this.meth);
 		}
-		
+
 		this.CritDiv=document.createElement("div");
-		
+
 		this.CritDiv.appendChild(document.createElement("a"));
 		this.CritDiv.childNodes[0].set=this;
 		this.CritDiv.childNodes[0].index=""+this.xcC;
@@ -1012,7 +1012,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 		this.CritDiv.childNodes[0].childNodes[0].style.height="12px";
 		this.CritDiv.appendChild(this.Criteria[this.xcC].getInput(this.sm));
 		td1.appendChild(this.CritDiv);
-		
+
 	}
 	if(this.xcsC>0 || this.xcC>0){
 		this.meth=document.createElement("div");
@@ -1022,8 +1022,8 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	//new criteria
 	this.CritDiv=document.createElement("div");
 	td1.appendChild(this.CritDiv);
-	
-				
+
+
 	this.newComparisonBox=document.createElement("select");
 	this.newComparisonBox.options[0]=new Option("SELECT","",true,true);
 	this.newComparisonBox.options[1]=new Option("=","=");
@@ -1044,7 +1044,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	}
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IS NULL","IS NULL");
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IS NOT NULL","IS NOT NULL");
-			
+
 /*				POPULATE after field select with proper options
  				this.newComparisonBox.options[1]=new Option(">",">");
 				this.newComparisonBox.options[2]=new Option(">=",">=");
@@ -1062,20 +1062,20 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 				this.set.newValueBox.style.display="none";
 				this.set.newValueBox.disabled=true;
 				this.set.newValueBox.value="";
-			
+
 				this.set.newValueSelectBox.style.display="none";
 				this.set.newValueSelectBox.disabled=true;
 			}else if(this.selected_value=="="){
 				this.set.newValueBox.style.display="none";
 				this.set.newValueBox.disabled=true;
 				this.set.newValueBox.value="";
-			
+
 				this.set.newValueSelectBox.style.display="inline";
 				this.set.newValueSelectBox.disabled=false;
 			}else{
 				this.set.newValueBox.style.display="inline";
 				this.set.newValueBox.disabled=false;
-			
+
 				this.set.newValueSelectBox.style.display="none";
 				this.set.newValueSelectBox.disabled=true;
 			}
@@ -1083,7 +1083,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 			this.set.newValueBox.style.display="none";
 			this.set.newValueBox.disabled=true;
 			this.set.newValueBox.value="";
-			
+
 			this.set.newValueSelectBox.style.display="none";
 			this.set.newValueSelectBox.disabled=true;
 		}
@@ -1101,14 +1101,14 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	}
 	this.CritDiv.appendChild(this.newComparisonBox);
 	this.CritDiv.appendChild(document.createTextNode(" "));
-	
+
 	this.newValueBox=document.createElement("input");
 	this.newValueBox.type="text";
 	this.newValueBox.disabled=true;
 	this.newValueBox.style.display="none";
 	this.CritDiv.appendChild(this.newValueBox);
-	
-	
+
+
 	this.newValueSelectBox=document.createElement("select");
 	this.newValueSelectBox.style.display="none";
 	this.newValueSelectBox.disabled=true;
@@ -1118,7 +1118,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	}
 	this.CritDiv.appendChild(this.newValueSelectBox);
 	this.CritDiv.appendChild(document.createTextNode(" "));
-	
+
 	this.newButton=document.createElement("input");
 	this.newButton.type="button";
 	this.newButton.value="More...";
@@ -1130,7 +1130,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 			this.set.newComparisonBox.focus();
 				return;
 		}
-		
+
 		var c=this.set.newComparisonBox.options[this.set.newComparisonBox.selectedIndex].value;
 		if(c=="IS NULL" || c=="IS NOT NULL"){
 		}else if(c=="="){
@@ -1153,7 +1153,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 		//alert(this.sm.searchDOM.toXML());
 	}
 	this.CritDiv.appendChild(this.newButton);
-	
+
 	return this.xcsContainer;
 }
 
@@ -1166,7 +1166,7 @@ xdat_criteria_set.prototype.save=function(){
 	if(this.newValueBox.disabled && !this.newValueSelectBox.disabled){
 		v=this.newValueSelectBox.options[this.newValueSelectBox.selectedIndex].value;
 	}
-	
+
 	var newC=new xdat_criteria();
 	newC.setSchemaField(e + "." + f);
 	if(c=="IS NULL"){
@@ -1200,18 +1200,18 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 	this.t.className="withThinBorder";
 	this.tb=document.createElement("tbody");
 	this.t.appendChild(this.tb);
-	
+
 	this.tr=document.createElement("tr");
 	this.td1=document.createElement("td");
 	this.td1.noWrap=true;
 	this.td1.appendChild(document.createTextNode("Filter-Set "));
-	
+
 	this.methodSEL=document.createElement("select");
 	this.td1.appendChild(this.methodSEL);
-	
+
 	if(this.Method==null || this.Method==undefined || this.Method==""){
 		this.Method="AND";
-	}				
+	}
 	if(this.Method=="AND"){
 		this.methodSEL.options[0]=new Option("AND","AND",true,true);
 		this.methodSEL.options[1]=new Option("OR","OR",false,false);
@@ -1219,7 +1219,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 		this.methodSEL.options[0]=new Option("AND","AND",false,false);
 		this.methodSEL.options[1]=new Option("OR","OR",true,true);
 	}
-	
+
 	this.methodSEL.ov=this.Method;
 	this.methodSEL.set=this;
 	this.methodSEL.sm=sm;
@@ -1229,24 +1229,24 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 			if(this.sm.showCriteria==undefined || this.sm.showCriteria==true)this.sm.renderCriteria();
 		}
 	}
-	
+
 	this.tr.appendChild(this.td1);
 	this.tb.appendChild(this.tr);
-	
+
 	for(this.xcsC=0;this.xcsC<this.ChildSet.length;this.xcsC++){
 		if(this.xcsC>0){
 			this.tempCSTR=document.createElement("tr");
 			this.tempCSTD1=document.createElement("td");
 			this.tempCSTD1.appendChild(document.createTextNode(" "));
 			this.tempCSTR.appendChild(this.tempCSTD1);
-			
+
 			this.tempCSTD1=document.createElement("td");
 			this.tempCSTD1.appendChild(document.createTextNode(this.Method ));
 			this.tempCSTD1.style.fontWeight="700";
 			this.tempCSTR.appendChild(this.tempCSTD1);
 			this.tb.appendChild(this.tempCSTR);
 		}
-		
+
 		this.tempCSTR=document.createElement("tr");
 			this.tempCSTD1=document.createElement("td");
 			this.tempCSTD1.appendChild(document.createTextNode(" "));
@@ -1262,21 +1262,21 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 			this.tempCSTD1=document.createElement("td");
 			this.tempCSTD1.appendChild(document.createTextNode(" "));
 			this.tempCSTR.appendChild(this.tempCSTD1);
-			
+
 			this.tempCSTD1=document.createElement("td");
 			this.tempCSTD1.appendChild(document.createTextNode(this.Method ));
 			this.tempCSTD1.style.fontWeight="700";
 			this.tempCSTR.appendChild(this.tempCSTD1);
 			this.tb.appendChild(this.tempCSTR);
 		}
-		
+
 		this.tempCSTR=document.createElement("tr");
 		this.tempCSTD1=document.createElement("td");
 		this.tempCSTD1.appendChild(document.createTextNode(" "));
 		this.tempCSTR.appendChild(this.tempCSTD1);
-		
+
 		this.tempCSTD1=document.createElement("td");
-		
+
 		this.tempCSTD1.appendChild(document.createElement("a"));
 		this.tempCSTD1.childNodes[0].sm=sm;
 		this.tempCSTD1.childNodes[0].set=this;
@@ -1292,14 +1292,14 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 		this.tempCSTD1.appendChild(this.Criteria[this.xcC].getInput(sm));
 		this.tempCSTR.appendChild(this.tempCSTD1);
 		this.tb.appendChild(this.tempCSTR);
-		
+
 	}
 	if(this.xcsC>0 || this.xcC>0){
 		this.tempCSTR=document.createElement("tr");
 		this.tempCSTD1=document.createElement("td");
 		this.tempCSTD1.appendChild(document.createTextNode(" "));
 		this.tempCSTR.appendChild(this.tempCSTD1);
-		
+
 		this.tempCSTD1=document.createElement("td");
 		this.tempCSTD1.appendChild(document.createTextNode(this.Method ));
 		this.tempCSTD1.style.fontWeight="700";
@@ -1337,7 +1337,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 					this.onLoad.unsubscribeAll();
 					args2.newFieldBox.render(args[0].list);
 				},{newFieldBox:this.set.newFieldBox});
-				
+
 				this.sm.sfm.load(e);
 				this.set.newFieldBox.disabled=true;
 			}
@@ -1345,7 +1345,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 	}
 	this.tempCSTD1.appendChild(this.newElementBox);
 			this.tempCSTD1.appendChild(document.createTextNode(" "));
-	
+
 	this.newFieldBox=document.createElement("select");
 	this.newFieldBox.sm=sm;
 	this.newFieldBox.set=this;
@@ -1374,7 +1374,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 			}
 			this.set.newComparisonBox.options[this.set.newComparisonBox.options.length]=new Option("IS NULL","IS NULL");
 			this.set.newComparisonBox.options[this.set.newComparisonBox.options.length]=new Option("IS NOT NULL","IS NOT NULL");
-			
+
 			this.set.newComparisonBox.disabled=false;
 		}else{
 			this.set.newComparisonBox.disabled=true;
@@ -1400,7 +1400,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 	this.newFieldBox.disabled=true;
 	this.tempCSTD1.appendChild(this.newFieldBox);
 			this.tempCSTD1.appendChild(document.createTextNode(" "));
-				
+
 	this.newComparisonBox=document.createElement("select");
 	this.newComparisonBox.options[0]=new Option("SELECT","");
 /*				POPULATE after field select with proper options
@@ -1439,13 +1439,13 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 	}
 	this.tempCSTD1.appendChild(this.newComparisonBox);
 			this.tempCSTD1.appendChild(document.createTextNode(" "));
-	
+
 	this.newValueBox=document.createElement("input");
 	this.newValueBox.type="text";
 	this.newValueBox.disabled=true;
 	this.tempCSTD1.appendChild(this.newValueBox);
-	
-	
+
+
 	this.newButton=document.createElement("input");
 	this.newButton.type="button";
 	this.newButton.value="Add";
@@ -1468,7 +1468,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 			this.set.newComparisonBox.focus();
 				return;
 		}
-		
+
 		var c=this.set.newComparisonBox.options[this.set.newComparisonBox.selectedIndex].value;
 		if(c!="IS NULL" && c!="IS NOT NULL"){
 			if(this.set.newValueBox.value==""){
@@ -1483,29 +1483,29 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 		//alert(this.sm.searchDOM.toXML());
 	}
 	this.tempCSTD1.appendChild(this.newButton);
-	
+
 	this.tempCSTR.appendChild(this.tempCSTD1);
 	this.tb.appendChild(this.tempCSTR);
-	
+
 	this.tempCSTR=document.createElement("tr");
 	this.tempCSTD1=document.createElement("td");
 	this.tempCSTD1.appendChild(document.createTextNode(" "));
 	this.tempCSTR.appendChild(this.tempCSTD1);
-	
+
 	this.tempCSTD1=document.createElement("td");
 	this.tempCSTD1.appendChild(document.createTextNode(this.Method ));
 	this.tempCSTD1.style.fontWeight="700";
 	this.tempCSTR.appendChild(this.tempCSTD1);
 	this.tb.appendChild(this.tempCSTR);
-	
+
 	//new set
 	this.tempCSTR=document.createElement("tr");
 	this.tempCSTD1=document.createElement("td");
 	this.tempCSTD1.appendChild(document.createTextNode(" "));
 	this.tempCSTR.appendChild(this.tempCSTD1);
-			
+
 	this.tempCSTD1=document.createElement("td");
-	
+
 	var but=document.createElement("input");
 	but.type="button";
 	but.value="Add Filter Set";
@@ -1516,7 +1516,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 		if(this.sm.showCriteria==undefined || this.sm.showCriteria==true)this.sm.renderCriteria();
 	}
 	this.tempCSTD1.appendChild(but);
-				
+
 	this.tempCSTR.appendChild(this.tempCSTD1);
 	this.tb.appendChild(this.tempCSTR);
 
@@ -1535,7 +1535,7 @@ function removeElementName(str,element_name){
 }
 
 xdat_criteria.prototype.toString=function(element_name,xss){
-	return (xss!=null)?xss.getFieldHeader(this.getSchemaField())+ " "+this.getComparisonType()+ " "+this.getValue():removeElementName(this.getSchemaField(),element_name)+ " "+this.getComparisonType()+ " "+this.getValue();		
+	return (xss!=null)?xss.getFieldHeader(this.getSchemaField())+ " "+this.getComparisonType()+ " "+this.getValue():removeElementName(this.getSchemaField(),element_name)+ " "+this.getComparisonType()+ " "+this.getValue();
 }
 
 xdat_criteria_set.prototype.needsSubmit=function(_autosubmit){
@@ -1564,7 +1564,7 @@ xdat_criteria_set.prototype.needsSubmit=function(_autosubmit){
 			}
 		}
 	}
-	
+
 	for(this.csdC=0;this.csdC<this.ChildSet.length;this.csdC++){
 		if(this.ChildSet[this.csdC].needsSubmit(_autosubmit))return true;
 	}
@@ -1601,11 +1601,11 @@ xdat_stored_search.prototype.organize=function(){
 		for(var swC=0;swC<this.SearchWhere.length;swC++){
 			dup.ChildSet.push(this.SearchWhere[swC].duplicate());
 		}
-		
+
 		this.SearchWhere=new Array();
 		this.SearchWhere[0]=new xdat_criteria_set();
 		this.SearchWhere[0].Method="AND";
-		this.SearchWhere[0].ChildSet.push(dup);		
+		this.SearchWhere[0].ChildSet.push(dup);
 	}else if(this.SearchWhere.length==0){
 		this.SearchWhere.push(new xdat_criteria_set());
 		this.SearchWhere[0].Method="AND";
@@ -1621,12 +1621,12 @@ xdat_stored_search.prototype.organize=function(){
 
 xdat_stored_search.prototype.getColumnFilter=function(element_name,field_id){
 	this.organize();
-	
-	for(var csC=0;csC<this.SearchWhere[0].ChildSet.length;csC++){	
-		var cs=this.SearchWhere[0].ChildSet[csC];		
+
+	for(var csC=0;csC<this.SearchWhere[0].ChildSet.length;csC++){
+		var cs=this.SearchWhere[0].ChildSet[csC];
 		if(cs.isColumnFilter(element_name,field_id))return cs;
 	}
-	
+
 	var cs = new xdat_criteria_set();
 	cs.Method="OR";
 	cs.element_name=element_name;
@@ -1639,11 +1639,11 @@ xdat_criteria_set.prototype.couldBeFilter=function(){
 	if(this.Method=="AND"){
 		return false;
 	}
-	
+
 	if(this.Criteria.length>0){
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -1651,26 +1651,26 @@ xdat_criteria_set.prototype.isColumnFilter=function(element_name,field_id){
 	if(this.Method=="AND"){
 		return false;
 	}
-	
+
 	if(this.ChildSet.length>0){
 		return false;
 	}
-	
+
 	if(this.element_name==element_name && this.field_id==field_id){
 		return true;
 	}
-	
+
 	if(this.Criteria.length==0){
 		return false;
 	}
-		
+
 	for(var csC=0;csC<this.Criteria.length;csC++){
 		var crit=this.Criteria[csC];
 		if(crit.getSchemaField().toLowerCase()!=element_name.toLowerCase() + "." + field_id.toLowerCase() && crit.getSchemaField().toLowerCase()!=element_name.toLowerCase() + "/" + field_id.toLowerCase()){
-			return false;	
+			return false;
 		}
-	} 
-	
+	}
+
 	this.element_name=element_name;
 	this.field_id=field_id;
 	return true;
@@ -1680,12 +1680,12 @@ xdat_criteria_set.prototype.isProjectCriteria=function(){
 	if(this.Method=="AND")return false;
 	if(this.ChildSet.length>0)return false;
 	if(this.Criteria.length!=2)return false;
-	
+
 	if(!this.Criteria[0].getSchemaField().toLowerCase().endsWith("project"))
 		return false;
 	if(!this.Criteria[1].getSchemaField().toLowerCase().endsWith("project"))
 		return false;
-		
+
 	return true;
 }
 
@@ -1693,26 +1693,26 @@ xdat_criteria_set.prototype.toString=function(element_name,xss){
 	if(this.isProjectCriteria()){
 		return "Project="+ this.Criteria[0].Value;
 	}
-	
+
 	if(this.Criteria.length==0 && this.ChildSet.length==1){
 		return this.ChildSet[0].toString(element_name,xss);
 	}
-	
+
 	if(this.Criteria.length==1 && this.ChildSet.length==0){
 		return this.Criteria[0].toString(element_name,xss);
 	}
-	
+
 	var _return="";
-	
+
 	var eC=0;
 	for(;eC<this.Criteria.length;eC++){
 		if(eC>0){
 			_return +=" " + this.Method;
 		}
-		
+
 		_return+=" (" + this.Criteria[eC].toString(element_name,xss) + ")";
 	}
-	
+
 	var tsxcsC=0;
 	for(;tsxcsC<this.ChildSet.length;tsxcsC++){
 		if(eC++>0){
@@ -1721,31 +1721,73 @@ xdat_criteria_set.prototype.toString=function(element_name,xss){
 		_return+=" (" + this.ChildSet[tsxcsC].toString(element_name,xss) + ")";
 	}
 	tsxcsC=null;
-	
+
 	return _return;
 }
 
 xdat_criteria_set.prototype.getFieldCount=function(){
 	var fields=new Array();
-	
+
 	for(var csC=0;csC<this.Criteria.length;csC++){
 		var crit=this.Criteria[csC];
 		var t=crit.getSchemaField().toLowerCase();
 		if(!fields.contains(t))fields.push(t);
 	}
-	
+
 	return fields.length;
 }
 
+/*
+ * 08/31/2010 (Aditya Siram) :  Some utility routines to be used
+ * in this file are put into the Local namespace so as not to pollute
+ * the global one.
+ */
+var Local = {
+  /*
+   * The given substring is removed the given string
+   * eg. "filter_string("h","helloworld") => "elloworld"
+   *     "filter_string("%<","%<Test1%>") => "Test1%>"
+   * chars : substring to remove
+   * string : string to operate on.
+   */
+  filter_string : function (chars, string) {
+    return Local._filter_string(chars,"",string);
+  },
+  /* A private function of this namespace used by filter_string.
+   * Do not call directly.
+   */
+  _filter_string : function (chars, accum, string) {
+    var pos = string.indexOf(chars);
+    if (pos === -1) {
+      return accum + string;
+    }
+    else {
+      var end_of_chars = pos + chars.length;
+      accum = accum + string.substring(0,pos);
+      return Local._filter_string(chars,accum,string.substring(end_of_chars));
+    }
+  }
+}
+
 xdat_stored_search.prototype.renderFilterDisplay=function(){
-   		if(this.SearchWhere.length==0 || 
+   		if(this.SearchWhere.length==0 ||
    		   (this.SearchWhere.length==1 && (
    		     (this.SearchWhere[0].ChildSet.length==1 && this.SearchWhere[0].ChildSet[0].isProjectCriteria())
    		     || this.SearchWhere[0].isProjectCriteria()))){
    			return "";
    		}else{
-   			if(this.SearchWhere.length==1){   			
-   				return "Filter(s):&nbsp;" + this.SearchWhere[0].toString(this.RootElementName,this);
+   			if(this.SearchWhere.length==1){
+			  /*
+			   * 08/31/2010 (Aditya Siram) : For some odd reason values returned by the XML parser look
+			   * like this %<some_value>% or %some_value%. On a web-page the former is rendered as ?? and
+			   * latter as %% so "%<", "%>" and "%" must be filtered out. A better question is why the XML parser
+			   * returns these values - but until that is answered the following seems to work. Hopefully
+			   * the tokens I am removing are never a valid part of the value.
+			   */
+			  var step_1 = Local.filter_string("%<", this.SearchWhere[0].toString(this.RootElementName,this));
+			  var step_2 = Local.filter_string(">%", step_1);
+			  var step_3 = Local.filter_string("%", step_2);
+   			  return "Filter(s):&nbsp;" + step_3;
    			}else{
    				var rfdswT="";
    				for(var rfdswC=0;rfdswC<this.SearchWhere.length;rfdswC++){

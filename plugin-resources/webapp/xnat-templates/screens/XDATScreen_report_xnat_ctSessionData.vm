@@ -7,3 +7,4 @@ $page.setVlinkColor($ui.vlink)
 document.title = "CT Session: $!item.getProperty('xnat:ctSessionData.label')";
 </script>
 			#parse($turbineUtils.getTemplateName("_report",$om.getXSIType(),$project))
+			#parse("screens/AutoGenWarning.vm")

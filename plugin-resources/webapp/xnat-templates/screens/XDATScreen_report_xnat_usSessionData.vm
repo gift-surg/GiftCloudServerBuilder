@@ -5,3 +5,4 @@ $page.setVlinkColor($ui.vlink)
 <DIV class="error">$data.message</DIV><br>
 #end
 			#parse($turbineUtils.getTemplateName("_report",$om.getXSIType(),$project))
+			#parse("screens/AutoGenWarning.vm")

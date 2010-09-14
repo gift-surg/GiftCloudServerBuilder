@@ -3520,7 +3520,56 @@ rebinning, 6=FORE)</xs:documentation>
 			<xs:documentation>Ophthalmic Tomography Scan</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="xnat:imageScanData"/>
+			<xs:extension base="xnat:imageScanData">
+				<xs:sequence>
+					<xs:element name="parameters" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="voxelRes" minOccurs="0">
+									<xs:complexType>
+										<xs:attribute name="units" type="xs:string"/>
+										<xs:attribute name="x" type="xs:float"/>
+										<xs:attribute name="y" type="xs:float"/>
+										<xs:attribute name="z" type="xs:float"/>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="fov" minOccurs="0">
+									<xs:complexType>
+										<xs:attribute name="x" type="xs:integer"/>
+										<xs:attribute name="y" type="xs:integer"/>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="laterality" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Laterality of (paired) body part examined: R (right) or L (left)</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="illumination_wavelength" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Wavelength of the illuminator, in nm</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="illumination_power" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Power of the illuminator in microwatts at corneal plane</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="scanTime" type="xs:time" minOccurs="0"/>
+								<xs:element name="imageType" type="xs:string" minOccurs="0"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="dcmValidation" minOccurs="0">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="status" type="xs:boolean" use="optional"/>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="rtSessionData">

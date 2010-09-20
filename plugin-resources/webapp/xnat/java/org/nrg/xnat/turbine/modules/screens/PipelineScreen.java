@@ -205,10 +205,8 @@ public abstract class PipelineScreen extends SecureReport {
 
 	}
 
-
-      
-    protected ArcProjectPipelineI getCurrentPipeline(ArrayList<ArcProjectPipelineI> pipelines, ArrayList<WrkWorkflowdata> workflows,  String pipeline_step) {
-        ArcProjectPipelineI rtn = null;
+    protected <A extends ArcProjectPipelineI> A getCurrentPipeline(ArrayList<A> pipelines, ArrayList<WrkWorkflowdata> workflows,  String pipeline_step) {
+        A rtn = null;
         if (pipelines == null || pipelines.size() == 0) {
         	message = "There are no pipelines defined at this time to launch ";
         	return rtn;
@@ -247,10 +245,10 @@ public abstract class PipelineScreen extends SecureReport {
         return rtn;
     }
     
-    protected ArcProjectPipelineI getRequestedPipeline(ArrayList<ArcProjectPipelineI> pipelines, String pipeline_step, ArrayList skipToList) {
-        ArcProjectPipelineI rtn = null;
+    protected <A extends ArcProjectPipelineI> A getRequestedPipeline(ArrayList<A> pipelines, String pipeline_step, ArrayList skipToList) {
+        A rtn = null;
         for (int i = 0; i <pipelines.size(); i++) {
-            ArcProjectPipelineI pipeline = pipelines.get(i);
+            A pipeline = pipelines.get(i);
             if (pipeline.getStepid().equals(pipeline_step)) {
                 rtn = pipeline;
                 break;
@@ -264,12 +262,12 @@ public abstract class PipelineScreen extends SecureReport {
         return rtn;
     }
     
-    protected ArcProjectPipelineI getNextPipelineFromWorkflow(ArrayList<ArcProjectPipelineI> pipelines, ArrayList<WrkWorkflowdata> workflows) {
-        ArcProjectPipelineI rtn = null;
+    protected <A extends ArcProjectPipelineI> A getNextPipelineFromWorkflow(ArrayList<A> pipelines, ArrayList<WrkWorkflowdata> workflows) {
+        A rtn = null;
         WrkWorkflowdata latestWrkFlow = workflows.get(0);
         boolean found = false;
         for (int i = 0; i <pipelines.size(); i++) {
-            ArcProjectPipelineI pipeline = pipelines.get(i);
+            A pipeline = pipelines.get(i);
             WrkAbstractexecutionenvironmentI absEnv = latestWrkFlow.getExecutionenvironment();
             String matchPipelineName = null;
             String pipelinePath = PipelineManager.getFullPath(pipeline);
@@ -300,85 +298,6 @@ public abstract class PipelineScreen extends SecureReport {
         return rtn;
     }
 
-    protected ArcProjectDescendantPipelineI getCurrentPipeline(ArrayList<ArcProjectDescendantPipelineI> pipelines, ArrayList<WrkWorkflowdata> workflows,  String pipeline_step) {
-        ArcProjectDescendantPipelineI rtn = null;
-        if (pipelines == null || pipelines.size() == 0) {
-        	message = "There are no pipelines defined at this time to launch ";
-        	return rtn;
-        }
-        if (pipeline_step != null) { //User wants to jump to a particular pipeline
-            return getRequestedPipeline(pipelines,pipeline_step,skipToList);
-        }
-        if (workflows == null || workflows.size() == 0) { //No workflows are available
-            rtn = pipelines.get(0);
-        }else if (isAnyQueuedOrRunning(workflows)) {
-            message = "An old pipeline is either queued or running. Please wait for the process to complete."; 
-            return rtn;
-        }else {
-            WrkWorkflowdata latestWrkFlow = workflows.get(0);
-            if (latestWrkFlow.getStatus().equalsIgnoreCase("QUEUED") || latestWrkFlow.getStatus().equalsIgnoreCase("RUNNING")) {
-                message = "A pipeline is currently " + latestWrkFlow.getStatus() + " please wait for the process to complete."; 
-                return rtn;
-            }else {
-                return getNextPipelineFromWorkflow(pipelines,workflows);
-            }
-        }
-        return rtn;
-    }
-
-    protected ArcProjectDescendantPipelineI getRequestedPipeline(ArrayList<ArcProjectDescendantPipelineI> pipelines, String pipeline_step, ArrayList skipToList) {
-        ArcProjectDescendantPipelineI rtn = null;
-        for (int i = 0; i <pipelines.size(); i++) {
-            ArcProjectDescendantPipelineI pipeline = pipelines.get(i);
-            if (pipeline.getStepid().equals(pipeline_step)) {
-                rtn = pipeline;
-                break;
-            }else {
-                skipToList.add(pipeline);
-            }
-        }        
-        if (rtn == null) {
-            message = "Pipeline with step id " + pipeline_step + " is not defined. Please contact your site administrator <a href=\"mailto:" +XFT.GetAdminEmail() +"?subject=Invalid Pipeline Step " + pipeline_step + " for " + item.getXSIType() + "\">Report problem</A>";
-        }
-        return rtn;
-    }
-
-
-    protected ArcProjectDescendantPipelineI getNextPipelineFromWorkflow(ArrayList<ArcProjectDescendantPipelineI> pipelines, ArrayList<WrkWorkflowdata> workflows) {
-        ArcProjectDescendantPipelineI rtn = null;
-        WrkWorkflowdata latestWrkFlow = workflows.get(0);
-        boolean found = false;
-        for (int i = 0; i <pipelines.size(); i++) {
-            ArcProjectDescendantPipelineI pipeline = pipelines.get(i);
-            WrkAbstractexecutionenvironmentI absEnv = latestWrkFlow.getExecutionenvironment();
-            String matchPipelineName = null;
-            if (absEnv instanceof WrkXnatexecutionenvironment) {
-                matchPipelineName = ((WrkXnatexecutionenvironment)absEnv).getPipeline();
-            }else {
-                matchPipelineName = latestWrkFlow.getPipelineName();
-            }
-            if (PipelineManager.getFullPath(pipeline).equals(matchPipelineName) && (latestWrkFlow.getStatus().equalsIgnoreCase("FAILED") || latestWrkFlow.getStatus().equalsIgnoreCase("AWAITING ACTION"))) {
-                rtn = pipeline;
-                found = true;
-                break;
-            }else if (PipelineManager.getFullPath(pipeline).equals(matchPipelineName) && latestWrkFlow.getStatus().equalsIgnoreCase("COMPLETE")) {
-                skipToList.add(pipeline);
-                if ( i != (pipelines.size() - 1)) { //Not all pipelines are complete
-                    rtn = pipelines.get(i+1); //Next pipeline to launch
-                }
-                found = true;
-                break;
-            }else {
-                 skipToList.add(pipeline);
-            }
-        }
-        if (!found) {
-        	rtn = pipelines.get(0);
-        }
-        return rtn;
-    }
-
-    
     protected String message = null;
     
     

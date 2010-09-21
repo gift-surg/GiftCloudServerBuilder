@@ -15,8 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
-
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatFielddefinitiongroup extends AutoXnatFielddefinitiongroup {
 
 	public BaseXnatFielddefinitiongroup(ItemI item)

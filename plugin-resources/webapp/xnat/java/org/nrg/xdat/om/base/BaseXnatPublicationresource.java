@@ -27,7 +27,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatPublicationresource extends AutoXnatPublicationresource {
 
 	public BaseXnatPublicationresource(ItemI item)

@@ -65,7 +65,7 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements ArchivableItem {
 
 	public BaseXnatExperimentdata(ItemI item)

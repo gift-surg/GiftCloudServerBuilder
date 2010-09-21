@@ -70,6 +70,7 @@ public class ArcGet extends CommandPromptTool {
 
     }
     
+    @SuppressWarnings("rawtypes")
     public void service(){
 	    int _return = 0;
         if (XFT.VERBOSE)System.out.println("Using Web Service");

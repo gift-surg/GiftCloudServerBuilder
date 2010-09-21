@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatQcassessmentdata extends AutoXnatQcassessmentdata {
 
 	public BaseXnatQcassessmentdata(ItemI item)

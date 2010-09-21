@@ -36,7 +36,7 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 	public BaseXnatImagescandata(ItemI item) {

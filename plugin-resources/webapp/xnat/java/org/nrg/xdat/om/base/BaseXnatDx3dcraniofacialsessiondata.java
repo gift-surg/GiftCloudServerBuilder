@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatDx3dcraniofacialsessiondata extends AutoXnatDx3dcraniofacialsessiondata {
 
 	public BaseXnatDx3dcraniofacialsessiondata(ItemI item)

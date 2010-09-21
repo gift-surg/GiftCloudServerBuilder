@@ -75,7 +75,7 @@ import org.nrg.xnat.turbine.utils.XNATUtils;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements ArchivableItem{
     protected ArrayList<ItemI> minLoadAssessors = null;
 

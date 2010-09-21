@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatEsscandata extends AutoXnatEsscandata {
 
 	public BaseXnatEsscandata(ItemI item)

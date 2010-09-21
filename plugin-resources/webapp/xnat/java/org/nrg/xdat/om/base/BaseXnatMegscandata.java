@@ -7,6 +7,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatMegscandata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatMegscandata extends AutoXnatMegscandata {
 
 	public BaseXnatMegscandata(ItemI item) {

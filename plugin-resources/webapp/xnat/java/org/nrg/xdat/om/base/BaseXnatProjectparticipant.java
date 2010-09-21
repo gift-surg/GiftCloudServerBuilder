@@ -20,7 +20,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatProjectparticipant extends AutoXnatProjectparticipant {
 
 	public BaseXnatProjectparticipant(ItemI item)

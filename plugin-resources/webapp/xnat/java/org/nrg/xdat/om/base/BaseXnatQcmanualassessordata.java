@@ -7,6 +7,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatQcmanualassessordata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatQcmanualassessordata extends AutoXnatQcmanualassessordata {
 	public BaseXnatQcmanualassessordata(ItemI item) {
 		super(item);

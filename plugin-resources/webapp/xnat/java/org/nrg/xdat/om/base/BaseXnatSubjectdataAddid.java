@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatSubjectdataAddid extends AutoXnatSubjectdataAddid {
 
 	public BaseXnatSubjectdataAddid(ItemI item)

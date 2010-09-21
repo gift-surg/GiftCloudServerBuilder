@@ -7,6 +7,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatQcscandata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatQcscandata extends AutoXnatQcscandata {
 	public BaseXnatQcscandata(ItemI item) {
 		super(item);

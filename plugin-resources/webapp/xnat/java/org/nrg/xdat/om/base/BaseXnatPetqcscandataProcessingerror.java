@@ -7,6 +7,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatPetqcscandataProcessingerror;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatPetqcscandataProcessingerror extends AutoXnatPetqcscandataProcessingerror {
 	public BaseXnatPetqcscandataProcessingerror(ItemI item) {
 		super(item);

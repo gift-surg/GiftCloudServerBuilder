@@ -26,7 +26,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatAbstractprotocol extends AutoXnatAbstractprotocol {
 
 	public BaseXnatAbstractprotocol(ItemI item)

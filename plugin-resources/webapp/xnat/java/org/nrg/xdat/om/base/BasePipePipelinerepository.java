@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BasePipePipelinerepository extends AutoPipePipelinerepository {
 
 	public BasePipePipelinerepository(ItemI item)

@@ -31,7 +31,7 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordata {
 
 	public BaseXnatImageassessordata(ItemI item)

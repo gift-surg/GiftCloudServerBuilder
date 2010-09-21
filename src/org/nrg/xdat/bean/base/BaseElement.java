@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 
 
+@SuppressWarnings({"rawtypes"})
 public abstract class BaseElement{
     //public enum FIELD_TYPE {data,single_reference,multi_reference,inline_repeater,LONG_DATA,NO_CHILD}
     public final static String field_data="DATA";

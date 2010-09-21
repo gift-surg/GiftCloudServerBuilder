@@ -22,7 +22,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseArcProject extends AutoArcProject {
 
 	public BaseArcProject(ItemI item)

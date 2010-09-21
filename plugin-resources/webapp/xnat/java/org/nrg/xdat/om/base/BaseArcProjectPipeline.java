@@ -16,7 +16,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseArcProjectPipeline extends AutoArcProjectPipeline {
 
 	public BaseArcProjectPipeline(ItemI item)

@@ -18,7 +18,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatPetassessordata extends AutoXnatPetassessordata {
 
 	public BaseXnatPetassessordata(ItemI item)

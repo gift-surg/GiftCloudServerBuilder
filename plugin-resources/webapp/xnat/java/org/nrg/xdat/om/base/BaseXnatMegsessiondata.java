@@ -7,6 +7,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatMegsessiondata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatMegsessiondata extends AutoXnatMegsessiondata {
 
 	public BaseXnatMegsessiondata(ItemI item) {

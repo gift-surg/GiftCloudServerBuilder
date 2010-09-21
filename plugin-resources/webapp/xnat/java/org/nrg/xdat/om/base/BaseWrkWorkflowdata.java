@@ -24,7 +24,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata {
 
     public static final String AWAITING_ACTION = "AWAITING ACTION";

@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatPetscandataFrame extends AutoXnatPetscandataFrame {
 
 	public BaseXnatPetscandataFrame(ItemI item)

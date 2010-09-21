@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatAupdrs3data extends AutoXnatAupdrs3data {
 
 	public BaseXnatAupdrs3data(ItemI item)

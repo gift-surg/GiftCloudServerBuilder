@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseArcPipelineparameterdata extends AutoArcPipelineparameterdata {
 
 	public BaseArcPipelineparameterdata(ItemI item)

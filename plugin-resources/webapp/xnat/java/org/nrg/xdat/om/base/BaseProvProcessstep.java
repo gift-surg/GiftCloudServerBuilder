@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseProvProcessstep extends AutoProvProcessstep {
 
 	public BaseProvProcessstep(ItemI item)

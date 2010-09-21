@@ -31,7 +31,7 @@ import org.nrg.xft.utils.StringUtils;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
 
     public BaseXnatMrsessiondata(ItemI item) {
@@ -91,7 +91,6 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
 	}
     }
 
-    @SuppressWarnings("unchecked")
     private static int Compare(final Comparable o1, final Comparable o2) {
 	if (o1 == null) {
 	    return null == o2 ? 0 : -1;

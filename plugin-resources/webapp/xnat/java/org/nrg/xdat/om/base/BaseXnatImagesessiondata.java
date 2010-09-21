@@ -68,7 +68,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata {
 	public static final String SCAN_ABBR="scan";
 	public static final String RECON_ABBR="recon";

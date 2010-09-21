@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
@@ -23,8 +24,8 @@ import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.pipeline.utils.FileUtils;
 import org.nrg.pipeline.utils.PipelineUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
-import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
+import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.om.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcProject;
@@ -238,12 +239,12 @@ public class ManagePipeline extends SecureAction {
 	    }
 
 	private void copy (RunData data, ArcProjectDescendantPipeline existingPipeline) throws XFTInitException, ElementNotFoundException,FieldNotFoundException, InvalidValueException {
-		  Hashtable hash = TurbineUtils.GetDataParameterHash(data);
+		Map<String,String> hash = TurbineUtils.GetDataParameterHash(data);
 		  existingPipeline.getItem().setProperties(hash, true);
 	}
 
 	private void copy (RunData data, ArcProjectPipeline existingPipeline) throws XFTInitException, ElementNotFoundException,FieldNotFoundException, InvalidValueException {
-		  Hashtable hash = TurbineUtils.GetDataParameterHash(data);
+		Map<String,String> hash = TurbineUtils.GetDataParameterHash(data);
 		  existingPipeline.getItem().setProperties(hash, true);
 	}
 

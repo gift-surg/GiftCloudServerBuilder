@@ -8,10 +8,8 @@ package org.nrg.xdat.om.base;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.om.ArcPathinfoI;
 import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.ArcProjectI;
 import org.nrg.xdat.om.base.auto.AutoArcArchivespecification;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
@@ -20,7 +18,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseArcArchivespecification extends AutoArcArchivespecification {
 
 	public BaseArcArchivespecification(ItemI item)
@@ -165,7 +163,6 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
     }
 
     public  Integer getPrearchiveCodeForProject(String id){
-        String path = null;
         ArrayList<ArcProject> projects=this.getProjects_project();
         for (ArcProject p : projects){
             if (p.getId().equals(id)){
@@ -176,7 +173,6 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
     }
 
     public  Integer getAutoQuarantineCodeForProject(String id){
-        String path = null;
         ArrayList<ArcProject> projects=this.getProjects_project();
         for (ArcProject p : projects){
             if (p.getId().equals(id)){

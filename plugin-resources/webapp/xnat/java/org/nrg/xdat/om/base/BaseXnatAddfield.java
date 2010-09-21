@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatAddfield extends AutoXnatAddfield {
 
 	public BaseXnatAddfield(ItemI item)

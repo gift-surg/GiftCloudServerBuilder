@@ -16,7 +16,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatVolumetricregion extends AutoXnatVolumetricregion {
 
 	public BaseXnatVolumetricregion(ItemI item)

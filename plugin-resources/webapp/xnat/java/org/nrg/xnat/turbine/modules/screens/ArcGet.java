@@ -67,7 +67,7 @@ created in buildPDF.
 	* @param data RunData
 	* @exception Exception, any old generic exception.
 	*/
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
 	protected final void doOutput(RunData data) 
 	{
             String username = data.getParameters().getString("username");

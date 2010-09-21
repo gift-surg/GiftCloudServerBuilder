@@ -78,7 +78,7 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatProjectdata extends AutoXnatProjectdata  implements ArchivableItem{
     public final static String MEMBER_GROUP = "member";
     public final static String COLLABORATOR_GROUP = "collaborator";

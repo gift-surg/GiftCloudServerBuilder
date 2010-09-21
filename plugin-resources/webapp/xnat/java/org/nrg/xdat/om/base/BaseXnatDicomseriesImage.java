@@ -19,7 +19,7 @@ import org.nrg.xft.utils.FileUtils;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatDicomseriesImage extends AutoXnatDicomseriesImage {
 
 	public BaseXnatDicomseriesImage(ItemI item)

@@ -17,7 +17,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatMrassessordata extends org.nrg.xdat.om.base.auto.AutoXnatMrassessordata {
 
 	public BaseXnatMrassessordata(ItemI item)

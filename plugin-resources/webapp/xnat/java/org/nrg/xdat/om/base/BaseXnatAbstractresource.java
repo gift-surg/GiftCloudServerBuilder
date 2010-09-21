@@ -27,7 +27,7 @@ import org.nrg.xft.utils.FileUtils;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource {
 
 	public BaseXnatAbstractresource(ItemI item)

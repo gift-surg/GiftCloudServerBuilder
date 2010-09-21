@@ -22,7 +22,7 @@ import org.nrg.xft.utils.StringUtils;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatDicomseries extends AutoXnatDicomseries {
 
 	public BaseXnatDicomseries(ItemI item)

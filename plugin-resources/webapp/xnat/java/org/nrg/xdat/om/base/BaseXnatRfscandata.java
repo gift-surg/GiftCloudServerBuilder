@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatRfscandata extends AutoXnatRfscandata {
 
 	public BaseXnatRfscandata(ItemI item)

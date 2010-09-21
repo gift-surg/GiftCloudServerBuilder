@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
 
 	public BaseXnatResourcecatalog(ItemI item)

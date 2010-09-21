@@ -24,7 +24,7 @@ import org.nrg.xft.utils.StringUtils;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatResourceseries extends AutoXnatResourceseries {
 
 	public BaseXnatResourceseries(ItemI item)

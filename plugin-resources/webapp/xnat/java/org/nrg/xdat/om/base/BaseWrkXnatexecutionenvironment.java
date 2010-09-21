@@ -21,7 +21,7 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseWrkXnatexecutionenvironment extends AutoWrkXnatexecutionenvironment {
 
 	public BaseWrkXnatexecutionenvironment(ItemI item)

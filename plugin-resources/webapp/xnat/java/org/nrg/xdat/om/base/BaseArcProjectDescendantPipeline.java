@@ -16,7 +16,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseArcProjectDescendantPipeline extends AutoArcProjectDescendantPipeline {
 
 	public BaseArcProjectDescendantPipeline(ItemI item)

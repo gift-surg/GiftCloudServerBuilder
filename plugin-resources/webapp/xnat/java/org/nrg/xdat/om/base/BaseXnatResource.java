@@ -28,7 +28,7 @@ import edu.sdsc.grid.io.srb.SRBFile;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatResource extends AutoXnatResource {
 
 	public BaseXnatResource(ItemI item)

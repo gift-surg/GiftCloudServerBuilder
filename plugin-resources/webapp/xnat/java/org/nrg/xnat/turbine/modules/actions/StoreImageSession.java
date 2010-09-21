@@ -398,7 +398,6 @@ public class StoreImageSession extends ModifyItem {
     /* (non-Javadoc)
      * @see org.nrg.xdat.turbine.modules.actions.ModifyItem#preSave(org.nrg.xft.XFTItem)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void preSave(XFTItem item,RunData data, Context context) throws Exception {
     	

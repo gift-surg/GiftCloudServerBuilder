@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatXa3dsessiondata extends AutoXnatXa3dsessiondata {
 
 	public BaseXnatXa3dsessiondata(ItemI item)

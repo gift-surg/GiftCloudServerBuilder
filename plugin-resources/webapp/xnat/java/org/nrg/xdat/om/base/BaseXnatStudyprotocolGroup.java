@@ -15,7 +15,7 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatStudyprotocolGroup extends AutoXnatStudyprotocolGroup {
 
 	public BaseXnatStudyprotocolGroup(ItemI item)

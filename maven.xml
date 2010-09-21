@@ -672,6 +672,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 	</goal>
@@ -709,6 +710,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 	</goal>
@@ -739,6 +741,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
@@ -773,6 +776,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
@@ -811,6 +815,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 	</goal>
@@ -848,6 +853,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
@@ -889,6 +895,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
@@ -934,6 +941,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 		<javac srcdir="${basedir}/src" destdir="${basedir}/classes" source="1.5" target="1.5" debug="true">
@@ -1286,6 +1294,7 @@
 				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
 				<pathelement location="./lib/xalan-2.5.1.jar"/>
 				<pathelement location="./lib/velocity-1.3.1.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 	</goal>
@@ -1352,6 +1361,7 @@
 				<pathelement location="./lib/javamail-1.3.2.jar"/>
 				<pathelement location="./lib/activation-1.0.2.jar"/>
 				<pathelement location="./plugin-resources/repository/commons-email/jars/commons-email-20030310.165926.jar"/>
+				<pathelement location="./lib/json-20090211.jar"/>
 			</classpath>
 		</java>
 	</goal>

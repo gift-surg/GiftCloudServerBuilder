@@ -326,6 +326,12 @@
 			<version>4.3</version>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<!-- This is only required if you have Java code -->

@@ -20,8 +20,10 @@ import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -37,7 +39,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -180,17 +181,17 @@ public class FileList extends XNATCatalogTemplate {
 						return;
 					}
 						
-					String parentPath=null;
-					CatCatalogBean cat=null;
-					File catFile=null;
-						
-
-					if(resource instanceof XnatResourcecatalog){
-			        	
-						XnatResourcecatalog catResource=(XnatResourcecatalog)resource;
-						catFile = catResource.getCatalogFile(proj.getRootArchivePath());						
-						parentPath=catFile.getParent();						
-					}
+//					String parentPath=null;
+//					CatCatalogBean cat=null;
+//					File catFile=null;
+//						
+//
+//					if(resource instanceof XnatResourcecatalog){
+//			        	
+//						XnatResourcecatalog catResource=(XnatResourcecatalog)resource;
+//						catFile = catResource.getCatalogFile(proj.getRootArchivePath());						
+//						parentPath=catFile.getParent();						
+//					}
 						
 						try
 						{
@@ -226,16 +227,14 @@ public class FileList extends XNATCatalogTemplate {
 						        }
 							}
 						}else{
+							@SuppressWarnings("deprecation")
 							org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
 							org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
 						
-						    List items = upload.parseRequest(this.getRequest());
-						    String xml_text="";
+						    List<FileItem> items = upload.parseRequest(this.getRequest());
 						
 						    int i = 0;
-						    for (final Iterator it = items.iterator(); it.hasNext(); ) {    
-						        FileItem fi = (FileItem)it.next();
-						         
+						    for (FileItem fi:items) {    						         
 						        String fileName=fi.getName();
 						        if(fileName.indexOf('\\')>-1){
 						        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
@@ -406,7 +405,7 @@ public class FileList extends XNATCatalogTemplate {
 			}else{
 				//all catalogs
 				catalogs.resetRowCursor();
-				for(Hashtable rowHash: catalogs.rowHashs()){
+				for(Hashtable<String,Object> rowHash: catalogs.rowHashs()){
 					Object o =rowHash.get("xnat_abstractresource_id");
 					XnatAbstractresource res=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(o, user, false);
 					if(rowHash.containsKey("resource_path"))res.setBaseURI((String)rowHash.get("resource_path"));
@@ -683,8 +682,22 @@ public class FileList extends XNATCatalogTemplate {
 	private Map<String,String> getSessionMaps(){
 		Map<String,String> session_ids=new Hashtable<String,String>();
 		if(assesseds.size()>0){
+//IOWA customization: to inlcude project and subject in path
+                        boolean projectIncludedInPath = "true".equalsIgnoreCase(this.getQueryVariable("projectIncludedInPath"));
+                        boolean subjectIncludedInPath = "true".equalsIgnoreCase(this.getQueryVariable("subjectIncludedInPath"));
 			for(XnatExperimentdata session:assesseds){
-				session_ids.put(session.getId(),session.getArchiveDirectoryName());
+                                String replacing = session.getArchiveDirectoryName();
+                                if(subjectIncludedInPath) {
+                                     if(session instanceof XnatImagesessiondata){
+                                         XnatSubjectdata subject = XnatSubjectdata.getXnatSubjectdatasById(((XnatImagesessiondata)session).getSubjectId(), user, false);
+                                         replacing = subject.getLabel() + "/" + replacing;
+                                     }
+                                }
+                                if(projectIncludedInPath) {
+                                     replacing = session.getProject() + "/" + replacing;
+                                }
+                                session_ids.put(session.getId(),replacing);
+                                //session_ids.put(session.getId(),session.getArchiveDirectoryName());
 			}
 		}else if(expts.size()>0){
 			for(XnatExperimentdata session:expts){

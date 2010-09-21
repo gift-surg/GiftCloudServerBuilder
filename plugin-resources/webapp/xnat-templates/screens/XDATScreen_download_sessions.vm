@@ -431,6 +431,18 @@ document.getElementById("dataTable").style.display="block";
    <TD style="font-size:9px;">Download an xml representation of the files.  This xml can then be used by specific applications to download the data at the user's command.</TD>
 
   </TR>
+  <TR>
+    <TD>&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD><input type="checkbox" name="projectIncludedInPath" checked value="true"/>
+    <TD>Include project in file paths</TD>
+  </TR>
+    <TD><input type="checkbox" name="subjectIncludedInPath" checked value="true"/>
+    <TD>Include subject in file paths</TD>
+  <TR>
+
+  </TR>
 
  </TABLE>
 

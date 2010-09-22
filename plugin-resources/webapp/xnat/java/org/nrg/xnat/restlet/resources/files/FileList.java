@@ -793,7 +793,7 @@ public class FileList extends XNATCatalogTemplate {
 		            row[5]=temp.getFormat();
 		            row[6]=temp.getContent();
 		            row[7]=temp.getXnatAbstractresourceId();
-		            row[8]=subFile;
+		            if(isZip)row[8]=subFile;
 		            
 		            table.rows().add(row);
 				}

@@ -47,7 +47,7 @@
 		<DisplayFieldElement name="Field1" schema-element="xnat:demographicData.handedness"/>
 		<Content type="sql">CASE @Field1 WHEN 'left' THEN 'L' WHEN 'right' THEN 'R' WHEN 'ambidextrous' THEN 'A' ELSE 'U' END</Content>
 	</DisplayField>
-	<DisplayField id="DOB" header="DOB" visible="true" searchable="true">
+	<DisplayField id="DOB" header="YOB" visible="true" searchable="true">
 		<DisplayFieldElement name="Field1" schema-element="xnat:demographicData.yob"/>
 		<DisplayFieldElement name="Field2" schema-element="xnat:demographicData.dob"/>
 		<Content type="sql">CAST(FLOOR(COALESCE(@Field1,EXTRACT(YEAR FROM @Field2))) AS VARCHAR)</Content>

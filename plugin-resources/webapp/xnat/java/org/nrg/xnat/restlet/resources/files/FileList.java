@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -39,6 +38,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -59,7 +59,6 @@ public class FileList extends XNATCatalogTemplate {
 		
 	public FileList(Context context, Request request, Response response) {
 		super(context, request, response,true);
-			
 			try {
 			if(catalogs!=null && catalogs.size()>0  && resource_ids!=null){
 
@@ -476,7 +475,7 @@ public class FileList extends XNATCatalogTemplate {
                 cat.addEntries_entry(entry);
 			}
 			
-			this.setReponseHeader("Content-Disposition","inline;filename=files.xcat");
+			this.setResponseHeader("Content-Disposition","inline;filename=files.xcat");
 			
 			
 			return new CatalogRepresentation(cat, mt,false);
@@ -619,7 +618,7 @@ public class FileList extends XNATCatalogTemplate {
 								return new StringRepresentation("");
 							}
 						}else{
-							return representFile(f,mt);
+							return this.setFileRepresentation(f,mt);
 						}
 						
 					}else{
@@ -657,7 +656,7 @@ public class FileList extends XNATCatalogTemplate {
 				}
 				
 				if(f!=null && f.exists()){
-					return representFile(f,mt);
+					return this.setFileRepresentation(f,mt);
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find file.");
 					return new StringRepresentation("");
@@ -808,9 +807,9 @@ public class FileList extends XNATCatalogTemplate {
 		}
 		
 		if(mt.equals(MediaType.APPLICATION_ZIP)){
-			this.setReponseHeader("Content-Disposition","filename=" + downloadName + ".zip");
+			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".zip");
 		}else if(mt.equals(MediaType.APPLICATION_GNU_TAR)){
-			this.setReponseHeader("Content-Disposition","filename=" + downloadName + ".gz");
+			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".gz");
 					}
 					
 					if(filepath==null|| filepath.equals("")){
@@ -882,7 +881,7 @@ public class FileList extends XNATCatalogTemplate {
 						this.setContentDisposition(String.format("filename=\"%s.zip\";",f.getName()));
 						return rep;
 						}else{
-						return representFile(f,mt);
+							return this.setFileRepresentation(f,mt);
 						}
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find file.");
@@ -894,4 +893,10 @@ public class FileList extends XNATCatalogTemplate {
 				}
 			}
 	}
+	
+	private FileRepresentation setFileRepresentation(File f, MediaType mt) {
+		this.setResponseHeader("Cache-Control", "must-revalidate");
+		return representFile(f,mt);
+	}
+	
 }

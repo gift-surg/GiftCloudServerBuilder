@@ -288,6 +288,7 @@ public abstract class SecureResource extends Resource {
 		
 		FileRepresentation fr= new FileRepresentation(f,mt);
 		fr.setModificationDate(new Date(f.lastModified()));
+		
 		return fr;
 	}
 
@@ -553,7 +554,7 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 
-	protected void setReponseHeader(String key, String value) {
+	protected void setResponseHeader(String key, String value) {
 		Form responseHeaders = (Form) getResponse().getAttributes().get(				"org.restlet.http.headers");
 
 		if (responseHeaders == null) {

@@ -952,15 +952,15 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-        <dependency>
-            <groupId>ehcache</groupId>
-            <artifactId>ehcache-core</artifactId>
-            <version>2.0.0</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-            <type>jar</type>
-        </dependency>
+		<dependency>
+			<groupId>ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>2.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<dependency>
 			<groupId>xnatfs</groupId>
 			<artifactId>xnatfs</artifactId>
@@ -969,6 +969,15 @@
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-math</groupId>
+			<artifactId>commons-math</artifactId>
+			<version>2.1</version>
+			<type>jar</type>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
 		</dependency>
 		<!-- END XNATFS additions -->
 		<!-- END XDAT Dependencies -->

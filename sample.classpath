@@ -116,6 +116,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/json/jars/json-20090211.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xdat_core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>

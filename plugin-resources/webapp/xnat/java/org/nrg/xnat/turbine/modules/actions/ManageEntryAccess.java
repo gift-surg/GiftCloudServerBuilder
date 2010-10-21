@@ -38,7 +38,7 @@ public class ManageEntryAccess extends ModifyItem {
     public void save(XFTItem first,RunData data, Context context) throws InvalidItemException,Exception{
         ArrayList<XFTItem>al = first.getChildItems("sharing/share");
         for (XFTItem i : al){
-            if (first.getGenericSchemaElement().getPrimaryElements().indexOf("xnat:subjectData")!=-1){
+            if (first.getGenericSchemaElement().instanceOf("xnat:subjectData")){
                 i.setProperty("subject_id", first.getProperty("ID"));
             }else{
                 i.setProperty("sharing_share_xnat_experimentda_id", first.getProperty("ID"));

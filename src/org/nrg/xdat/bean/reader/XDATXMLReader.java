@@ -235,7 +235,7 @@ public class XDATXMLReader extends DefaultHandler {
                             try {
                                 currentItem.setDataField(current_header + "/" + local,value);
                             } catch (BaseElement.UnknownFieldException e1) {
-                                logger.equals(e1);
+                                logger.error(e1);
                                 throw new SAXException("Unknown field '" + current_header + "/" + local +"'");
                             } catch (BaseElement.FormatException e1) {
                                 throw new SAXException("Invalid value for attribute '" + local +"'");

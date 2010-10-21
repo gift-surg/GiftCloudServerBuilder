@@ -74,9 +74,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                     if (es.getAccessible()){
                         GenericWrapperElement g= es.getSchemaElement().getGenericXFTElement();
 
-                        String parents = g.getPrimaryElements();
-
-                        if (parents.indexOf("xnat:subjectData")!=-1 || parents.indexOf("xnat:experimentData")!=-1){
+                        if (g.instanceOf("xnat:subjectData") || g.instanceOf("xnat:experimentData")){
                             usable.put(es.getElementName(),es);
                         }else{
                             System.out.println(es.getElementName()+" not an experiment");

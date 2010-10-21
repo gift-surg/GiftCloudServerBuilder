@@ -314,7 +314,7 @@ public class SearchResource extends SecureResource {
 	public static LinkedHashMap<String,Map<String,String>> setColumnProperties(DisplaySearch search,XDATUser user, SecureResource sr){
 		LinkedHashMap<String,Map<String,String>> cp=new LinkedHashMap<String,Map<String,String>>();
 		try {
-			ArrayList<DisplayFieldReferenceI> fields = search.getAllFields("");
+			List<DisplayFieldReferenceI> fields = search.getAllFields("");
 
 			//int fieldCount = visibleFields.size() + search.getInClauses().size();
 

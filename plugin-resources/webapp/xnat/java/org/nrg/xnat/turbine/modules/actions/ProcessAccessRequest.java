@@ -48,7 +48,7 @@ public class ProcessAccessRequest extends SecureAction {
             XDATUser otherU = new XDATUser(other);
             
             for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
-                if (entry.getValue().getTag().equals(project)){
+                if (entry.getValue().getTag().equals(project.getId())){
                     for(XdatUserGroupid map:otherU.getGroups_groupid()){
                         if (map.getGroupid().equals(entry.getValue().getId())){   
                             DBAction.DeleteItem(map.getItem(), user);
@@ -132,7 +132,7 @@ public class ProcessAccessRequest extends SecureAction {
             boolean deletedOldPermission = false;
             
             for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
-                if (entry.getValue().getTag().equals(project)){
+                if (entry.getValue().getTag().equals(project.getId())){
                     for(XdatUserGroupid map:otherU.getGroups_groupid()){
                         if (map.getGroupid().equals(entry.getValue().getId())){   
                             DBAction.DeleteItem(map.getItem(), user);

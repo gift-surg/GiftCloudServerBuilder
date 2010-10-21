@@ -53,15 +53,13 @@ public class XDATScreen_add_xnat_projectData extends EditScreenA {
                     if (es.getAccessible() || (item.getStringProperty("ID")!=null && es.matchesUsageEntry(item.getStringProperty("ID")))){
                         GenericWrapperElement g= es.getSchemaElement().getGenericXFTElement();
                         
-                        String parents = g.getPrimaryElements();
-                        
-                        if(parents.indexOf("xnat:mrAssessorData")!=-1){
+                        if(g.instanceOf("xnat:mrAssessorData")){
                             mrAssessors.add(es);
-                        }else if(parents.indexOf("xnat:petAssessorData")!=-1){
+                        }else if(g.instanceOf("xnat:petAssessorData")){
                             petAssessors.add(es);
-                        }else if(parents.indexOf("xnat:subjectAssessorData")!=-1){
+                        }else if(g.instanceOf("xnat:subjectAssessorData")){
                             subjectAssessors.add(es);
-                        }else if (parents.indexOf("xnat:subjectData")!=-1 || parents.indexOf("xnat:experimentData")!=-1){
+                        }else if (g.instanceOf("xnat:subjectData") || g.instanceOf("xnat:experimentData")){
                             root.add(es);
                         }
                     }

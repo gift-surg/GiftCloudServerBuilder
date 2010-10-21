@@ -101,7 +101,7 @@ public class BaseXnatAbstractprotocol extends AutoXnatAbstractprotocol {
                     XnatAbstractprotocol protocol2 = (XnatAbstractprotocol)protocols2.next();
                     try {
                         GenericWrapperElement e = GenericWrapperElement.GetElement(protocol2.getDataType());
-                        if (e.getPrimaryElements().indexOf("xnat:subjectAssessorData")!=-1)
+                        if (e.instanceOf("xnat:subjectAssessorData"))
                         {
                             XdatSearchField xsf = new XdatSearchField(user);
                             xsf.setElementName("xnat:subjectData");
@@ -129,7 +129,7 @@ public class BaseXnatAbstractprotocol extends AutoXnatAbstractprotocol {
                     XnatAbstractprotocol protocol2 = (XnatAbstractprotocol)protocols2.next();
                     try {
                         GenericWrapperElement e = GenericWrapperElement.GetElement(protocol2.getDataType());
-                        if (e.getPrimaryElements().indexOf("xnat:mrAssessorData")!=-1)
+                        if (e.instanceOf("xnat:mrAssessorData"))
                         {
                             XdatSearchField xsf = new XdatSearchField(user);
                             xsf.setElementName("xnat:mrSessionData");
@@ -157,7 +157,7 @@ public class BaseXnatAbstractprotocol extends AutoXnatAbstractprotocol {
                     XnatAbstractprotocol protocol2 = (XnatAbstractprotocol)protocols2.next();
                     try {
                         GenericWrapperElement e = GenericWrapperElement.GetElement(protocol2.getDataType());
-                        if (e.getPrimaryElements().indexOf("xnat:petAssessorData")!=-1)
+                        if (e.instanceOf("xnat:petAssessorData"))
                         {
                             XdatSearchField xsf = new XdatSearchField(user);
                             xsf.setElementName("xnat:petSessionData");

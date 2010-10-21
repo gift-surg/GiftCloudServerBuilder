@@ -1215,8 +1215,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             if (elementName.equals("xnat:subjectData")){
                 for(String xsiType:this.getExperimentCountByXSIType().keySet()){
                     try {
-                        GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
-                        if (e.getPrimaryElements().indexOf("xnat:subjectAssessorData")!=-1)
+                        final GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
+                        if (e.instanceOf("xnat:subjectAssessorData"))
                         {
                             XdatSearchField xsf = new XdatSearchField(user);
                             xsf.setElementName("xnat:subjectData");
@@ -1241,8 +1241,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             if (elementName.equals("xnat:mrSessionData")){
                 for(String xsiType:this.getExperimentCountByXSIType().keySet()){
                     try {
-                        GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
-                        if (e.getPrimaryElements().indexOf("xnat:mrAssessorData")!=-1)
+                        final GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
+                        if (e.instanceOf("xnat:mrAssessorData"))
                         {
                             XdatSearchField xsf = new XdatSearchField(user);
                             xsf.setElementName("xnat:mrSessionData");
@@ -1267,8 +1267,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             if (elementName.equals("xnat:petSessionData")){
                 for(String xsiType:this.getExperimentCountByXSIType().keySet()){
                     try {
-                        GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
-                        if (e.getPrimaryElements().indexOf("xnat:petAssessorData")!=-1)
+                        final GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
+                        if (e.instanceOf("xnat:petAssessorData"))
                         {
                             XdatSearchField xsf = new XdatSearchField(user);
                             xsf.setElementName("xnat:petSessionData");

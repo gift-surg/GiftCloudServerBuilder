@@ -100,7 +100,7 @@ public class GenerateJSFiles extends CommandPromptTool {
                 }
             }
             
-            JavaBeanGenerator.VERSION5=allow15;
+            JavaBeanGenerator.SetVersion5(allow15);
                         
             String elementName = (String)hash.get("element");
             if (elementName.equalsIgnoreCase("all"))

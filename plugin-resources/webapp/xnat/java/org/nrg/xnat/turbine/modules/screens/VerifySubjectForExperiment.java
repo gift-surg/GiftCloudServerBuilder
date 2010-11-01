@@ -7,9 +7,9 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.turbine.modules.screens.*;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.turbine.modules.screens.SecureReport;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 
 /**
  * @author Tim

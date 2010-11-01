@@ -5,10 +5,8 @@
  *
  */
 package org.nrg.xdat.om.base;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.om.base.auto.AutoXnatPetassessordata;
 import org.nrg.xft.ItemI;

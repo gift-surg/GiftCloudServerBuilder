@@ -10,7 +10,6 @@ import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFT;
 
 public class XDATScreen_download_xnat_petSessionData extends SecureReport {
 

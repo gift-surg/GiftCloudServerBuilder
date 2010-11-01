@@ -6,8 +6,6 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.turbine.modules.ActionLoader;
-import org.apache.turbine.modules.actions.VelocityAction;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XdatUser;

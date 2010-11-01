@@ -5,37 +5,22 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
-import org.nrg.xft.schema.design.SchemaElementI;
-import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.search.ItemSearch;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class ModifyProject extends SecureAction {
     static Logger logger = Logger.getLogger(ModifyItem.class);

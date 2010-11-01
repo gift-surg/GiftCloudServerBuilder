@@ -18,10 +18,11 @@ import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
@@ -440,9 +441,9 @@ public class StoreImageSession extends ModifyItem {
 		//fix the scan paths using the destination session path (they are probably relative paths before this)
         String arcSessionPath=this.getArcSessionPath(session);
         
-        for (final XnatImagescandata scan : session.getScans_scan()) {
-            for (final XnatAbstractresource file : (Collection<XnatAbstractresource>)scan.getFile()) {
-        	file.appendToPaths(arcSessionPath);
+        for (final XnatImagescandataI scan : session.getScans_scan()) {
+            for (final XnatAbstractresourceI file : scan.getFile()) {
+        	((XnatAbstractresource)file).appendToPaths(arcSessionPath);
                  
         	
         	try {

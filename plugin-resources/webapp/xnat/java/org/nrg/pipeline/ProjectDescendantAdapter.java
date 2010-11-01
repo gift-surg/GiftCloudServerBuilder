@@ -8,8 +8,8 @@
 
 package org.nrg.pipeline;
 
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.ItemI;
 

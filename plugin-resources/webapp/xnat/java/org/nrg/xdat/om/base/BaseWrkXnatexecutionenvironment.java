@@ -5,17 +5,16 @@
  *
  */
 package org.nrg.xdat.om.base;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.xdat.om.WrkXnatexecutionenvironmentParameterI;
+import org.nrg.xdat.model.WrkXnatexecutionenvironmentParameterI;
 import org.nrg.xdat.om.base.auto.AutoWrkXnatexecutionenvironment;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 /**
  * @author XDAT
@@ -49,12 +48,12 @@ public abstract class BaseWrkXnatexecutionenvironment extends AutoWrkXnatexecuti
         XnatPipelineLauncher xnatLauncher = new XnatPipelineLauncher((XDATUser)user);
         xnatLauncher.setPipelineName(getPipeline());
         xnatLauncher.setStartAt(getStartat());
-        ArrayList parameters = getParameters_parameter();
+        List parameters = getParameters_parameter();
         for (int i = 0; i < parameters.size(); i++) {
             WrkXnatexecutionenvironmentParameterI aParameter = (WrkXnatexecutionenvironmentParameterI)parameters.get(i);
             xnatLauncher.setParameter(aParameter.getName(), aParameter.getParameter());
         }
-        ArrayList notified = getNotify();
+        List notified = getNotify();
         for (int i = 0; i < notified.size(); i++) {
             String notifiedEmailId = (String)notified.get(i);
             if (!notifiedEmailId.equals(user.getEmail()) && !notifiedEmailId.equals(AdminUtils.getAdminEmailId())) {

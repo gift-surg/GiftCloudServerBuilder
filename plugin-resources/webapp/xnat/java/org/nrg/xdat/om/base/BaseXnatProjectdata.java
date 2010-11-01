@@ -7,7 +7,6 @@
 package org.nrg.xdat.om.base;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -19,7 +18,18 @@ import java.util.List;
 
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.display.DisplayField;
-import org.nrg.xdat.om.ArcPathinfoI;
+import org.nrg.xdat.model.ArcPathinfoI;
+import org.nrg.xdat.model.XnatAbstractprotocolI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatInvestigatordataI;
+import org.nrg.xdat.model.XnatProjectdataFieldI;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatPublicationresourceI;
+import org.nrg.xdat.model.XnatSubjectassessordataI;
+import org.nrg.xdat.om.ArcPathinfo;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XdatSearchField;
 import org.nrg.xdat.om.XdatUserGroupid;
@@ -29,14 +39,9 @@ import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
-import org.nrg.xdat.om.XnatFielddefinitiongroup;
-import org.nrg.xdat.om.XnatFielddefinitiongroupField;
 import org.nrg.xdat.om.XnatInvestigatordata;
-import org.nrg.xdat.om.XnatInvestigatordataI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatProjectdataField;
-import org.nrg.xdat.om.XnatProjectdataFieldI;
-import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.XnatSubjectassessordata;
@@ -49,8 +54,8 @@ import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.UserGroupManager;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
+import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
@@ -493,7 +498,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     {
         ArrayList<org.nrg.xdat.om.XnatPublicationresource> pubs = new ArrayList<org.nrg.xdat.om.XnatPublicationresource>();
 
-        ArrayList allPubs = getPublications_publication();
+        List<XnatPublicationresourceI> allPubs = getPublications_publication();
         for (int i =0;i<allPubs.size();i++)
         {
             org.nrg.xdat.om.XnatPublicationresource res = (org.nrg.xdat.om.XnatPublicationresource)allPubs.get(i);
@@ -629,8 +634,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     public Hashtable getFieldsByName(){
         if (fieldsByName == null){
             fieldsByName=new Hashtable<String,XnatProjectdataField>();
-            for(final XnatProjectdataField field: this.getFields_field()){
-                fieldsByName.put(field.getName(), field);
+            for(final XnatProjectdataFieldI field: this.getFields_field()){
+                fieldsByName.put(field.getName(), (XnatProjectdataField)field);
             }
         }
 
@@ -703,7 +708,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         final ArcProject arcProj = this.getArcSpecification();
         if (arcProj !=null){
-            ArcPathinfoI pathInfo=arcProj.getPaths();
+            ArcPathinfo pathInfo=arcProj.getPaths();
             if (pathInfo!=null){
                 path = pathInfo.getArchivepath();
             }
@@ -1162,8 +1167,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             XnatAbstractprotocol protocol = this.getProtocolByDataType(elementName);
     		if(protocol!=null){
     			if(protocol instanceof XnatDatatypeprotocol)
-    			for(XnatFielddefinitiongroup group : ((XnatDatatypeprotocol)protocol).getDefinitions_definition()){
-    	            for(XnatFielddefinitiongroupField field : group.getFields_field()){
+    			for(XnatFielddefinitiongroupI group : ((XnatDatatypeprotocol)protocol).getDefinitions_definition()){
+    	            for(XnatFielddefinitiongroupFieldI field : group.getFields_field()){
 
     	                XdatSearchField xsf = new XdatSearchField(this.getUser());
     	                xsf.setElementName(((XnatDatatypeprotocol)protocol).getDataType());
@@ -1579,7 +1584,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         	Hashtable<String,ElementSecurity> ess = ElementSecurity.GetElementSecurities();
 
             int index = 0;
-            for (XnatAbstractprotocol  protocol:this.getStudyprotocol()){
+            for (XnatAbstractprotocolI  protocolT:this.getStudyprotocol()){
+            	XnatAbstractprotocol protocol=(XnatAbstractprotocol)protocolT;
                 if(protocol.getProperty("data-type")==null){
                 	if(allowDataDeletion){
                         //NOT REQUESTED
@@ -1618,19 +1624,19 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             }
     	}
 
-        for(XnatInvestigatordata inv:this.getInvestigators_investigator()){
+        for(XnatInvestigatordataI inv:this.getInvestigators_investigator()){
         	if(inv.getFirstname()==null){
-        		XFTItem temp = inv.getCurrentDBVersion();
-        		inv.setFirstname(temp.getStringProperty("firstname"));
-        		inv.setLastname(temp.getStringProperty("lastname"));
+        		XFTItem temp = ((XnatInvestigatordata)inv).getCurrentDBVersion();
+        		((XnatInvestigatordata)inv).setFirstname(temp.getStringProperty("firstname"));
+        		((XnatInvestigatordata)inv).setLastname(temp.getStringProperty("lastname"));
         	}
         }
 
-        for(XnatInvestigatordata inv:this.getInvestigators_investigator()){
+        for(XnatInvestigatordataI inv:this.getInvestigators_investigator()){
         	if(inv.getFirstname()==null){
-        		XFTItem temp = inv.getCurrentDBVersion();
-        		inv.setFirstname(temp.getStringProperty("firstname"));
-        		inv.setLastname(temp.getStringProperty("lastname"));
+        		XFTItem temp = ((XnatInvestigatordata)inv).getCurrentDBVersion();
+        		((XnatInvestigatordata)inv).setFirstname(temp.getStringProperty("firstname"));
+        		((XnatInvestigatordata)inv).setLastname(temp.getStringProperty("lastname"));
         	}
         }
     }
@@ -1750,8 +1756,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     		FileUtils.MoveToCache(dir);
     	}
 
-    	for(XnatAbstractresource abstRes:this.getResources_resource()){
-    		abstRes.deleteFromFileSystem(archive);
+    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
+    		((XnatAbstractresource)abstRes).deleteFromFileSystem(archive);
     	}
     }
 
@@ -1863,13 +1869,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             if (subject!=null){
             	boolean preventSubjectDelete=false;
             	boolean preventSubjectDeleteByP=false;
-               final  ArrayList<XnatSubjectassessordata> expts = subject.getExperiments_experiment();
+               final  List<XnatSubjectassessordataI> expts = subject.getExperiments_experiment();
 
                if(!(preventSubjectDelete || preventSubjectDeleteByP) && expts.size()!=subject.getSubjectAssessorCount()){
                	preventSubjectDelete=true;
                }
 
-                for (XnatSubjectassessordata exptI : expts){
+                for (XnatSubjectassessordataI exptI : expts){
                     final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 
                     if(expt.getProject().equals(getId())){
@@ -1894,9 +1900,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                         }
                     }else{
                     	preventSubjectDelete=true;
-                    	for(XnatExperimentdataShare pp : expt.getSharing_share()){
+                    	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
                     		if(pp.getProject().equals(getId())){
-                    			DBAction.DeleteItem(pp.getItem(),user);
+                    			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
                     		}
                     	}
                     }
@@ -1905,9 +1911,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 
             	if(!subject.getProject().equals(getId())){
-            		for(XnatProjectparticipant pp : subject.getSharing_share()){
+            		for(XnatProjectparticipantI pp : subject.getSharing_share()){
                 		if(pp.getProject().equals(getId())){
-                			DBAction.DeleteItem(pp.getItem(),user);
+                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
                 		}
                 	}
             	}else{
@@ -2025,7 +2031,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 		final String expectedPath=getExpectedCurrentDirectory().getAbsolutePath().replace('\\', '/');
 
-		for(final XnatAbstractresource res: this.getResources_resource()){
+		for(final XnatAbstractresourceI res: this.getResources_resource()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();

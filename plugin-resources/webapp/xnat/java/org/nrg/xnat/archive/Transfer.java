@@ -16,7 +16,6 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.viewer.QCImageCreator;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;

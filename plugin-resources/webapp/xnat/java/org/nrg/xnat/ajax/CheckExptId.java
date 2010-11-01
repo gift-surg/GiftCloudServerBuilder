@@ -15,7 +15,6 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.references.XFTReferenceManager;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 public class CheckExptId {
     static org.apache.log4j.Logger logger = Logger.getLogger(StoreSubject.class);

@@ -73,9 +73,9 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 						newPipeline.setLocation(pipeline.getPath());
 						newPipeline.setName(pipelineName);
 						newPipeline.setDescription(pipeline.getDescription());
-						ArrayList<PipePipelinedetailsParameter> parameter = pipeline.getParameters_parameter();
+						List<PipePipelinedetailsParameterI> parameter = pipeline.getParameters_parameter();
 						for (int i = 0; i < parameter.size(); i++) {
-							ArcPipelineparameterdata arcParam = extractArcPipelineParameter(parameter.get(i));
+							ArcPipelineparameterdata arcParam = extractArcPipelineParameter((PipePipelinedetailsParameter)parameter.get(i));
 							newPipeline.setParameters_parameter(arcParam.getItem());
 						}
 						if (pipeline.getCustomwebpage() != null) {
@@ -93,9 +93,9 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 						newPipeline.setLocation(pipeline.getPath());
 						newPipeline.setName(pipelineName);
 						newPipeline.setDescription(pipeline.getDescription());
-						ArrayList<PipePipelinedetailsParameter> parameter = pipeline.getParameters_parameter();
+						List<PipePipelinedetailsParameterI> parameter = pipeline.getParameters_parameter();
 						for (int i = 0; i < parameter.size(); i++) {
-							ArcPipelineparameterdata arcParam = extractArcPipelineParameter(parameter.get(i));
+							ArcPipelineparameterdata arcParam =  extractArcPipelineParameter((PipePipelinedetailsParameter)parameter.get(i));
 							newPipeline.setParameters_parameter(arcParam.getItem());
 						}
 						if (pipeline.getCustomwebpage() != null) {

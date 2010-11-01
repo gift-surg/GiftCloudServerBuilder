@@ -15,19 +15,16 @@ import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectparticipant;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatSubjectdataAddidI;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.XnatSubjectdataAddid;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
@@ -146,7 +143,7 @@ public class EditSubjectAction extends SecureAction {
             
             if (subject.getAddid().size()>0)
             {
-                for (final XnatSubjectdataAddid addID:subject.getAddid())
+                for (final XnatSubjectdataAddidI addID:subject.getAddid())
                 {
                     final CriteriaCollection subCC = new CriteriaCollection("AND");
                     subCC.addClause("xnat:subjectData/addID/name",addID.getName());
@@ -157,7 +154,7 @@ public class EditSubjectAction extends SecureAction {
             
             if (!subject.getSharing_share().isEmpty())
             {
-                for (final XnatProjectparticipant addID: subject.getSharing_share())
+                for (final XnatProjectparticipantI addID: subject.getSharing_share())
                 {
                     final CriteriaCollection subCC = new CriteriaCollection("AND");
                     if (addID.getLabel()!=null){

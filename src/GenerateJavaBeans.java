@@ -130,6 +130,7 @@ public class GenerateJavaBeans extends CommandPromptTool{
                 GenericWrapperElement e=GenericWrapperElement.GetElement(elementName);
                 
                 jfg.generateJavaBeanFile(e,dir);
+                jfg.generateJavaInterface(e,dir);
                 if (XFT.VERBOSE)
                     System.out.println("Files generated in: " + dir);
             }

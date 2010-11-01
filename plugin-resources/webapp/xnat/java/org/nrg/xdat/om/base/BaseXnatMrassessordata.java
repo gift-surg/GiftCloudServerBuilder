@@ -5,13 +5,13 @@
  *
  */
 package org.nrg.xdat.om.base;
-import org.nrg.xdat.om.XnatAddfieldI;
-import org.nrg.xdat.om.XnatExperimentdataFieldI;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xft.*;
-import org.nrg.xft.security.UserI;
+import java.util.Hashtable;
+import java.util.Iterator;
 
-import java.util.*;
+import org.nrg.xdat.model.XnatAddfieldI;
+import org.nrg.xdat.om.XnatMrsessiondata;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.security.UserI;
 
 /**
  * @author XDAT

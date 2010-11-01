@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.turbine.modules.actions.DisplaySearchAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
 import org.xml.sax.SAXException;

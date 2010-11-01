@@ -10,10 +10,11 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nrg.xdat.model.XnatQcmanualassessordataI;
+import org.nrg.xdat.model.XnatQcscandataI;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrqcscandata;
 import org.nrg.xdat.om.XnatMrscandata;
-import org.nrg.xdat.om.XnatQcmanualassessordataI;
 import org.nrg.xdat.om.XnatQcscandata;
 
 public class TestXnatMrscandataGetManualQC {
@@ -23,7 +24,7 @@ public class TestXnatMrscandataGetManualQC {
 
 	private XnatQcmanualassessordataI assessor;
 
-	private ArrayList<XnatQcscandata> qcList;
+	private ArrayList<XnatQcscandataI> qcList;
 
 	@Before
 	public void setUp() throws Exception {
@@ -34,7 +35,7 @@ public class TestXnatMrscandataGetManualQC {
 		assessor = mock(XnatQcmanualassessordataI.class);
 		when(scan.session.getManualQC()).thenReturn(assessor);
 
-		qcList = new ArrayList<XnatQcscandata>();
+		qcList = new ArrayList<XnatQcscandataI>();
 		when(assessor.getScans_scan()).thenReturn(qcList);
 	}
 
@@ -54,7 +55,7 @@ public class TestXnatMrscandataGetManualQC {
 
 	@Test
 	public void shouldNotReturnWhenEmptyQCScans() {
-		when(assessor.getScans_scan()).thenReturn(new ArrayList<XnatQcscandata>());
+		when(assessor.getScans_scan()).thenReturn(new ArrayList<XnatQcscandataI>());
 
 		assertNull(scan.getManualQC());
 	}

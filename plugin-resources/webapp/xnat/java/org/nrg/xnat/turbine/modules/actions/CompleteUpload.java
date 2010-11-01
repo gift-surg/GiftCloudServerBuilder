@@ -15,13 +15,9 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.ArcPathinfoI;
-import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFT;
 import org.nrg.xnat.archive.UploadManager;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 

@@ -11,9 +11,9 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatInvestigatordata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -54,8 +54,8 @@ public class XDATScreen_report_xnat_mrSessionData extends SecureReport {
             	context.put("project", mr.getProject());
             }
             
-            for(XnatImagescandata scan:mr.getSortedScans()){
-            	scan.setImageSessionData(mr);
+            for(XnatImagescandataI scan:mr.getSortedScans()){
+            	((XnatImagescandata)scan).setImageSessionData(mr);
             }
         } catch (Exception e) {
             logger.error("",e);

@@ -5,17 +5,13 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.Hashtable;
-
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xnat.turbine.utils.XNATUtils;
 
 /**
  * @author Tim

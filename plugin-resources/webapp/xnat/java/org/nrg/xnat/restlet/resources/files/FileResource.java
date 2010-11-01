@@ -4,12 +4,12 @@ package org.nrg.xnat.restlet.resources.files;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatEntryBean;
+import org.nrg.xdat.model.CatCatalogBeanI;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatEntryBeanI;
+import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagescandata;
@@ -20,11 +20,9 @@ import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.FileUtils;
-import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.resources.ItemResource;
 import org.nrg.xnat.restlet.resources.ScanResource;
 import org.restlet.Context;
@@ -32,9 +30,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 public class FileResource extends ItemResource {
@@ -264,7 +260,7 @@ public class FileResource extends ItemResource {
 						
 						CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
 						
-						CatEntryBean entry = retrieveEntry(cat, index + "/" + filename);
+						CatEntryI entry = retrieveEntry(cat, index + "/" + filename);
 						
 						if(entry==null){
 						this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify specified file.");
@@ -299,17 +295,17 @@ public class FileResource extends ItemResource {
 			}
 		}
 	
-	private boolean removeEntry(CatCatalogBean cat,CatEntryBean entry)
+	private boolean removeEntry(CatCatalogI cat,CatEntryI entry)
 	{
 		for(int i=0;i<cat.getEntries_entry().size();i++){
-			CatEntryBean e= cat.getEntries_entry().get(i);
+			CatEntryI e= cat.getEntries_entry().get(i);
 			if(e.getId().equals(entry.getId())){
 				cat.getEntries_entry().remove(i);
 				return true;
 			}
 		}
 		
-		for(CatCatalogBean subset: cat.getSets_entryset()){
+		for(CatCatalogI subset: cat.getSets_entryset()){
 			if(removeEntry(subset,entry)){
 				return true;
 			}
@@ -317,15 +313,15 @@ public class FileResource extends ItemResource {
 		
 		return false;
 	}
-	private CatEntryBean retrieveEntry(CatCatalogBean cat,String id){
-		for(CatEntryBean entry: cat.getEntries_entry()){
+	private CatEntryI retrieveEntry(CatCatalogI cat,String id){
+		for(CatEntryI entry: cat.getEntries_entry()){
 			if(entry.getId().equals(id)){
 				return entry;
 			}
 		}
 		
-		for(CatCatalogBean subset: cat.getSets_entryset()){
-			CatEntryBean e = retrieveEntry(subset,id);
+		for(CatCatalogI subset: cat.getSets_entryset()){
+			CatEntryI e = retrieveEntry(subset,id);
 			if(e!=null)
 			{
 				return e;
@@ -355,9 +351,9 @@ public class FileResource extends ItemResource {
 				
 				String parentPath=catFile.getParent();
 				
-				CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
+				CatCatalogI cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
 				
-				CatEntryBean entry = retrieveEntry(cat, index + "/" + filename);
+				CatEntryI entry = retrieveEntry(cat, index + "/" + filename);
 				
 				if(entry==null){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify specified file.");

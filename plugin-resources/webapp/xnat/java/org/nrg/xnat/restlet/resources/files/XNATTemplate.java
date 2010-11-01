@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.nrg.xdat.bean.CatCatalogBean;
+import org.nrg.xdat.model.XnatImageassessordataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatImagescandata;
@@ -28,12 +29,9 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-
-import com.noelios.restlet.application.Decoder;
 
 public class XNATTemplate extends SecureResource {
 	final org.apache.log4j.Logger logger = org.apache.log4j.Logger
@@ -163,24 +161,24 @@ public class XNATTemplate extends SecureResource {
 					} catch (Exception e) {}
 				}else if(assesseds.size()>0){
 					for(XnatExperimentdata assessed:assesseds)
-						for(XnatImageassessordata iad:((XnatImagesessiondata)assessed).getMinimalLoadAssessors()){
+						for(XnatImageassessordataI iad:((XnatImagesessiondata)assessed).getMinimalLoadAssessors()){
 							if(iad.getId().equals(s)
 									|| (iad.getLabel()!=null && iad.getLabel().equals(s))){
 								try {
-									if(iad.canRead(user))expts.add(iad);
+									if(((XnatImageassessordata)iad).canRead(user))expts.add(((XnatImageassessordata)iad));
 								} catch (Exception e) {
 								}
 							}else if(s.equals("*") || s.equals("ALL")){
 								try {
-									if(iad.canRead(user))expts.add(iad);
+									if(((XnatImageassessordata)iad).canRead(user))expts.add(((XnatImageassessordata)iad));
 								} catch (Exception e) {
 								}
 							}else{
 								try {
 									GenericWrapperElement gwe = GenericWrapperElement.GetElement(s);
 
-									if(iad.getItem().instanceOf(gwe.getFullXMLName())){
-										if(iad.canRead(user))expts.add(iad);
+									if(((XnatImageassessordata)iad).getItem().instanceOf(gwe.getFullXMLName())){
+										if(((XnatImageassessordata)iad).canRead(user))expts.add(((XnatImageassessordata)iad));
 									}
 								} catch (Exception e) {
 								}

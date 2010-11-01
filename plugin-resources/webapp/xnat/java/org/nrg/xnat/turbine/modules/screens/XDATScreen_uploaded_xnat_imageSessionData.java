@@ -6,30 +6,21 @@ package org.nrg.xnat.turbine.modules.screens;
 
 
 import java.io.File;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 
 /**
@@ -81,9 +72,9 @@ public final class XDATScreen_uploaded_xnat_imageSessionData extends
         }         
 
         final Collection<Map<String,Object>> scanprops = new LinkedList<Map<String,Object>>();
-        for (final XnatImagescandata scan : session.getSortedScans()) {
+        for (final XnatImagescandataI scan : session.getSortedScans()) {
             long scanSize = 0;
-            final Collection<File> files = scan.getJavaFiles(session.getPrearchivepath());
+            final Collection<File> files = ((XnatImagescandata)scan).getJavaFiles(session.getPrearchivepath());
             for (final File file : files) {
         	scanSize += file.length();
             }

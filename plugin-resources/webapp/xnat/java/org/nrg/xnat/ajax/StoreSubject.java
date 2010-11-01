@@ -8,7 +8,6 @@ package org.nrg.xnat.ajax;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,27 +16,18 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
-import org.nrg.xdat.om.XnatProjectparticipant;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatSubjectdataAddidI;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.XnatSubjectdataAddid;
-import org.nrg.xdat.om.base.BaseXnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
-import org.nrg.xft.security.UserI;
 import org.xml.sax.InputSource;
 
 public class StoreSubject{
@@ -72,7 +62,7 @@ public class StoreSubject{
             }
     
             if (!subject.getSharing_share().isEmpty()){
-                for (XnatProjectparticipant pp : subject.getSharing_share()){
+                for (XnatProjectparticipantI pp : subject.getSharing_share()){
                     final CriteriaCollection subcc = new CriteriaCollection("AND");
                     subcc.addClause("xnat:subjectData/sharing/share/project",pp.getProject());
                     subcc.addClause("xnat:subjectData/sharing/share/label",pp.getLabel());
@@ -81,7 +71,7 @@ public class StoreSubject{
             }
     
             if (!subject.getAddid().isEmpty()){
-                for (XnatSubjectdataAddid pp : subject.getAddid()){
+                for (XnatSubjectdataAddidI pp : subject.getAddid()){
                     final CriteriaCollection subcc = new CriteriaCollection("AND");
                     subcc.addClause("xnat:subjectData/addID/name",pp.getName());
                     subcc.addClause("xnat:subjectData/addID/addID",pp.getAddid());

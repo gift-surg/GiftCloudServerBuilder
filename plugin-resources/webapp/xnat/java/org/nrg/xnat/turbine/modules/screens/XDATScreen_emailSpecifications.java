@@ -9,9 +9,6 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.modules.screens.AdminScreen;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFT;
-import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class XDATScreen_emailSpecifications extends AdminScreen {

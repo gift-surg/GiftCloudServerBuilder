@@ -1,33 +1,24 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Map;
 
-import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.security.ElementSecurity;
-import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.TypeConverter.JavaMapping;
 import org.nrg.xft.TypeConverter.TypeConverter;
-import org.nrg.xft.db.ViewManager;
-import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperField;
-import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;

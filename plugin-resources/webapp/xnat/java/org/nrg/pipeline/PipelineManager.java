@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Vector;
 
 import javax.xml.transform.sax.SAXSource;
@@ -30,13 +31,13 @@ import net.sf.saxon.sxpath.XPathExpression;
 import net.sf.saxon.trans.IndependentContext;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.om.ArcPipelineparameterdataI;
-import org.nrg.xdat.om.ArcProjectDescendant;
+import org.nrg.xdat.model.ArcPipelineparameterdataI;
+import org.nrg.xdat.model.ArcProjectDescendantI;
+import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
+import org.nrg.xdat.model.ArcProjectI;
+import org.nrg.xdat.model.ArcProjectPipelineI;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
-import org.nrg.xdat.om.ArcProjectDescendantPipelineI;
-import org.nrg.xdat.om.ArcProjectI;
 import org.nrg.xdat.om.ArcProjectPipeline;
-import org.nrg.xdat.om.ArcProjectPipelineI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.base.BaseWrkWorkflowdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -86,17 +87,17 @@ public class PipelineManager {
    }
    
    
-   public static ArrayList<ArcProjectDescendantPipelineI> getPipelinesForProjectDescendant(String projectId, String descendantXsiType, boolean sort) {
-       ArrayList rtn = new ArrayList();
+   public static List<ArcProjectDescendantPipelineI> getPipelinesForProjectDescendant(String projectId, String descendantXsiType, boolean sort) {
+       List rtn = new ArrayList();
        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
        if (arcProject != null) {
-         ArrayList<ArcProjectDescendant> descendants = arcProject.getPipelines_descendants_descendant();
-         for (ArcProjectDescendant desc: descendants) {
+         List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
+         for (ArcProjectDescendantI desc: descendants) {
              if (desc.getXsitype().equals(descendantXsiType)) {
-                 ArrayList<ArcProjectDescendantPipeline> pipelines = desc.getPipeline();
+                 List<ArcProjectDescendantPipelineI> pipelines = desc.getPipeline();
                  if (sort) {
 	                 Hashtable pipelineHash = new Hashtable();
-	                 for (ArcProjectDescendantPipeline pipe: pipelines) {
+	                 for (ArcProjectDescendantPipelineI pipe: pipelines) {
 	                	 pipelineHash.put(pipe.getStepid(), pipe);
 	                 }
 	                 Vector v = new Vector(pipelineHash.keySet());
@@ -118,13 +119,13 @@ public class PipelineManager {
        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
        ArcProjectDescendantPipeline rtn = null;
        if (arcProject != null) {
-         ArrayList<ArcProjectDescendant> descendants = arcProject.getPipelines_descendants_descendant();
-         for (ArcProjectDescendant desc: descendants) {
+         List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
+         for (ArcProjectDescendantI desc: descendants) {
              if (desc.getXsitype().equals(descendantXsiType)) {
-                 ArrayList<ArcProjectDescendantPipeline> pipelines = desc.getPipeline();
-	                 for (ArcProjectDescendantPipeline pipe: pipelines) {
+                 List<ArcProjectDescendantPipelineI> pipelines = desc.getPipeline();
+	                 for (ArcProjectDescendantPipelineI pipe: pipelines) {
 	                	 if (PipelineManager.getFullPath(pipe).equalsIgnoreCase(pipelineFullPath)) {
-	                		 rtn = pipe; break;
+	                		 rtn = (ArcProjectDescendantPipeline)pipe; break;
 	                	 }
 	                 }
                  break;
@@ -146,14 +147,14 @@ public class PipelineManager {
        ArrayList rtn = new ArrayList();
        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
        if (arcProject != null) {
-         ArrayList<ArcProjectDescendant> descendants = arcProject.getPipelines_descendants_descendant();
-         for (ArcProjectDescendant desc: descendants) {
+         List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
+         for (ArcProjectDescendantI desc: descendants) {
              if (desc.getXsitype().equals(descendantXsiType)) {
-                 ArrayList<ArcProjectDescendantPipeline> pipelines = desc.getPipeline();
+                 List<ArcProjectDescendantPipelineI> pipelines = desc.getPipeline();
                  ArrayList<ArcProjectDescendantPipeline> dependent = new ArrayList<ArcProjectDescendantPipeline>();
-                 for (ArcProjectDescendantPipeline pipe: pipelines) {
+                 for (ArcProjectDescendantPipelineI pipe: pipelines) {
                 	 if (pipe.getDependent()) 
-                		 dependent.add(pipe);
+                		 dependent.add((ArcProjectDescendantPipeline)pipe);
                  }
                  if (sort) {
 	                 Hashtable pipelineHash = new Hashtable();
@@ -181,14 +182,14 @@ public class PipelineManager {
        ArrayList rtn = new ArrayList();
        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
        if (arcProject != null) {
-         ArrayList<ArcProjectDescendant> descendants = arcProject.getPipelines_descendants_descendant();
-         for (ArcProjectDescendant desc: descendants) {
+         List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
+         for (ArcProjectDescendantI desc: descendants) {
              if (desc.getXsitype().equals(descendantXsiType)) {
-                 ArrayList<ArcProjectDescendantPipeline> pipelines = desc.getPipeline();
+                 List<ArcProjectDescendantPipelineI> pipelines = desc.getPipeline();
                  ArrayList<ArcProjectDescendantPipeline> independent = new ArrayList<ArcProjectDescendantPipeline>();
-                 for (ArcProjectDescendantPipeline pipe: pipelines) {
+                 for (ArcProjectDescendantPipelineI pipe: pipelines) {
                 	 if (!pipe.getDependent()) 
-                		 independent.add(pipe);
+                		 independent.add((ArcProjectDescendantPipeline)pipe);
                  }
                  if (sort) {
 	                 Hashtable pipelineHash = new Hashtable();
@@ -212,7 +213,7 @@ public class PipelineManager {
    
    
    public static ArcProjectDescendantPipelineI getPipelineForProjectDescendant(String projectId, String stepId, String descendantXsiType) {
-       ArrayList<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, false);
+       List<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, false);
        ArcProjectDescendantPipelineI rtn = null;
        if (pipelines != null) {
            for (ArcProjectDescendantPipelineI pipe:pipelines) {
@@ -225,7 +226,7 @@ public class PipelineManager {
    }
 
    public static ArcProjectDescendantPipelineI getPipelineForProjectDescendantBySequence(String projectId, int stepNo, String descendantXsiType) {
-       ArrayList<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, true);
+       List<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, true);
        ArcProjectDescendantPipelineI rtn = null;
        if (pipelines != null) {
            try {
@@ -294,7 +295,7 @@ public class PipelineManager {
    public static LinkedHashMap getBatchParametersForDescendantPipeline(String projectId, String stepId, String descendantXsiType) {
        LinkedHashMap rtn = new LinkedHashMap();
        try {
-           ArrayList params = getParametersForDescendantPipeline(projectId, stepId, descendantXsiType);
+           List params = getParametersForDescendantPipeline(projectId, stepId, descendantXsiType);
            if (params != null) {
                for (int i = 0; i < params.size(); i++) {
                    ArcPipelineparameterdataI aParam = ((ArcPipelineparameterdataI)params.get(i));
@@ -315,7 +316,7 @@ public class PipelineManager {
    }
    
    public static ArcPipelineparameterdataI getDescendantParameterByName(String projectId, String step, String descendantXsiType, String nameToMatch, boolean ignoreCase) throws Exception{
-       ArrayList  params = getParametersForDescendantPipeline(projectId,step, descendantXsiType);
+       List  params = getParametersForDescendantPipeline(projectId,step, descendantXsiType);
        ArcPipelineparameterdataI rtn = null;
        if (params == null) return null;
        for (int i = 0; i < params.size(); i++) {
@@ -335,7 +336,7 @@ public class PipelineManager {
        LinkedHashMap parametersHash = new LinkedHashMap();
        try {
            String descendantXsiType = item.getXSIType();
-           ArrayList parameters = getParametersForDescendantPipeline(projectId,stepId, descendantXsiType);
+           List parameters = getParametersForDescendantPipeline(projectId,stepId, descendantXsiType);
            SAXSource ss = new SAXSource(new  InputSource(new ByteArrayInputStream(item.toXML_BOS(TurbineUtils.GetFullServerPath() + "/schemas").toByteArray())));
            DocumentInfo docInfo = new StaticQueryContext(new Configuration()).buildDocument(ss);
     
@@ -367,8 +368,8 @@ public class PipelineManager {
        return parametersHash;
    }
    
-   public static ArrayList getParametersForDescendantPipeline(String projectId, String stepId, String descendantXsiType) throws Exception{
-       ArrayList rtn = null;
+   public static List getParametersForDescendantPipeline(String projectId, String stepId, String descendantXsiType) throws Exception{
+       List rtn = null;
        ArcProjectDescendantPipelineI arcProject = getPipelineForProjectDescendant(projectId, stepId, descendantXsiType);
        if (arcProject == null)  return rtn;
        rtn = arcProject.getParameters_parameter();
@@ -376,7 +377,7 @@ public class PipelineManager {
    } 
 
    public static boolean isDependentDescendantPipeline(String projectId, String stepId, String descendantXsiType) {
-       ArrayList<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, true);
+       List<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, true);
        return isDependentDescendantPipeline(pipelines, stepId);
    }
 
@@ -393,7 +394,7 @@ public class PipelineManager {
        try {
            String descendantId = item.getStringProperty("ID");
            if (descendantId != null) {
-               ArrayList<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, true);
+               List<ArcProjectDescendantPipelineI> pipelines = getPipelinesForProjectDescendant(projectId, descendantXsiType, true);
                rtn = canDescendantPipelineBeLaunched(pipelines,descendantId,descendantXsiType, stepId, user);
            }
        }catch(FieldNotFoundException fne) {
@@ -409,14 +410,14 @@ public class PipelineManager {
    
    /* PROJECT BASED PIPELINE QUERIES */
    
-    public static ArrayList<ArcProjectPipelineI> getPipelinesForProject(String projectId, boolean sort) {
-        ArrayList rtn = new ArrayList();
+    public static List<ArcProjectPipelineI> getPipelinesForProject(String projectId, boolean sort) {
+        List rtn = new ArrayList();
         ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
         if (arcProject != null) {
-          ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+          List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
           if (sort) {
 	          Hashtable pipelineHash = new Hashtable();
-	          for (ArcProjectPipeline pipe: pipelines) {
+	          for (ArcProjectPipelineI pipe: pipelines) {
 	        	  pipelineHash.put(pipe.getStepid(), pipe);
 	          }
 	          Vector v = new Vector(pipelineHash.keySet());
@@ -435,10 +436,10 @@ public class PipelineManager {
         ArrayList rtn = new ArrayList();
         ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
         if (arcProject != null) {
-          ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+          List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
           ArrayList<ArcProjectPipeline> dependent = new ArrayList<ArcProjectPipeline>();
-          for (ArcProjectPipeline pipe: pipelines) {
-        	  if (pipe.getDependent()) dependent.add(pipe);
+          for (ArcProjectPipelineI pipe: pipelines) {
+        	  if (pipe.getDependent()) dependent.add((ArcProjectPipeline)pipe);
           }
           if (sort) {
 	          Hashtable pipelineHash = new Hashtable();
@@ -461,10 +462,10 @@ public class PipelineManager {
         ArrayList rtn = new ArrayList();
         ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
         if (arcProject != null) {
-          ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+          List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
           ArrayList<ArcProjectPipeline> independent = new ArrayList<ArcProjectPipeline>();
-          for (ArcProjectPipeline pipe: pipelines) {
-        	  if (!pipe.getDependent()) independent.add(pipe);
+          for (ArcProjectPipelineI pipe: pipelines) {
+        	  if (!pipe.getDependent()) independent.add((ArcProjectPipeline)pipe);
           }
           if (sort) {
 	          Hashtable pipelineHash = new Hashtable();
@@ -484,7 +485,7 @@ public class PipelineManager {
     }
     
     public static ArcProjectPipelineI getPipelineForProject(String projectId, String stepId) {
-        ArrayList<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId,false);
+        List<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId,false);
         ArcProjectPipelineI rtn = null;
         if (pipelines != null) {
             for (ArcProjectPipelineI pipe:pipelines) {
@@ -497,7 +498,7 @@ public class PipelineManager {
     }
     
     public ArcProjectPipelineI getPipelineForProjectByPath(String projectId,  String pipelineFullPath) {
-        ArrayList<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId,false);
+        List<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId,false);
         ArcProjectPipelineI rtn = null;
          for (ArcProjectPipelineI pipe: pipelines) {
         	 if (PipelineManager.getFullPath(pipe).equalsIgnoreCase(pipelineFullPath)) {
@@ -516,7 +517,7 @@ public class PipelineManager {
     }   
 
     public static ArcProjectPipelineI getPipelineForProjectBySequence(String projectId, int stepNo) {
-        ArrayList<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId, false);
+        List<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId, false);
         ArcProjectPipelineI rtn = null;
         if (pipelines != null) {
             try {
@@ -567,7 +568,7 @@ public class PipelineManager {
     public static LinkedHashMap getBatchParametersForPipeline(String projectId, String stepId) {
         LinkedHashMap rtn = new LinkedHashMap();
         try {
-            ArrayList params = getParametersForPipeline(projectId, stepId);
+            List params = getParametersForPipeline(projectId, stepId);
             if (params != null) {
                 for (int i = 0; i < params.size(); i++) {
                     ArcPipelineparameterdataI aParam = ((ArcPipelineparameterdataI)params.get(i));
@@ -641,7 +642,7 @@ public class PipelineManager {
     }
 
     public static ArcPipelineparameterdataI getParameterByName(String projectId, String step,String nameToMatch, boolean ignoreCase) throws Exception{
-        ArrayList  params = getParametersForPipeline(projectId,step);
+        List  params = getParametersForPipeline(projectId,step);
         ArcPipelineparameterdataI rtn = null;
         if (params == null) return null;
         for (int i = 0; i < params.size(); i++) {
@@ -660,7 +661,7 @@ public class PipelineManager {
         //System.out.println("Came here " + stepId + "  " +  projectId);
         LinkedHashMap parametersHash = new LinkedHashMap();
         try {
-            ArrayList parameters = getParametersForPipeline(projectId,stepId);
+            List parameters = getParametersForPipeline(projectId,stepId);
             SAXSource ss = new SAXSource(new  InputSource(new ByteArrayInputStream(item.toXML_BOS(TurbineUtils.GetFullServerPath() + "/schemas").toByteArray())));
             DocumentInfo docInfo = new StaticQueryContext(new Configuration()).buildDocument(ss);
     
@@ -691,8 +692,8 @@ public class PipelineManager {
         return parametersHash;
     }
     
-    public static ArrayList getParametersForPipeline(String projectId, String stepId) throws Exception{
-        ArrayList rtn = null;
+    public static List getParametersForPipeline(String projectId, String stepId) throws Exception{
+        List rtn = null;
         ArcProjectPipelineI arcProject = getPipelineForProject(projectId, stepId);
         if (arcProject == null)  return rtn;
         rtn = arcProject.getParameters_parameter();
@@ -700,7 +701,7 @@ public class PipelineManager {
     } 
     
 
-    private static boolean isDependentPipeline(ArrayList<ArcProjectPipelineI> pipelines, String stepId) {
+    private static boolean isDependentPipeline(List<ArcProjectPipelineI> pipelines, String stepId) {
         boolean rtn = true;
         if (pipelines != null) {
             for (ArcProjectPipelineI pipe:pipelines) {
@@ -713,7 +714,7 @@ public class PipelineManager {
         return rtn;
     }
     
-    private static boolean isDependentDescendantPipeline(ArrayList<ArcProjectDescendantPipelineI> pipelines, String stepId) {
+    private static boolean isDependentDescendantPipeline(List<ArcProjectDescendantPipelineI> pipelines, String stepId) {
         boolean rtn = true;
         if (pipelines != null) {
             for (ArcProjectDescendantPipelineI pipe:pipelines) {
@@ -727,7 +728,7 @@ public class PipelineManager {
     }
     
     public static boolean isDependentPipeline(String projectId, String stepId) {
-        ArrayList<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId, false);
+        List<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId, false);
         return isDependentPipeline(pipelines, stepId);
     }
     
@@ -739,12 +740,12 @@ public class PipelineManager {
      */
     
     public static BuildStatus canPipelineBeLaunched(String projectId, String stepId,  UserI user) {
-        ArrayList<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId, false);
+        List<ArcProjectPipelineI> pipelines = getPipelinesForProject(projectId, false);
         return canPipelineBeLaunched(pipelines,projectId,org.nrg.xdat.om.XnatProjectdata.SCHEMA_ELEMENT_NAME,stepId, user);
     }
     
     
-    private static BuildStatus canPipelineBeLaunched(ArrayList<ArcProjectPipelineI> pipelines, String id, String xsiType, String stepId, UserI user) {
+    private static BuildStatus canPipelineBeLaunched(List<ArcProjectPipelineI> pipelines, String id, String xsiType, String stepId, UserI user) {
         BuildStatus rtn = new BuildStatus(null,false);
         boolean checkDependency = false;
         if (pipelines != null) {
@@ -773,7 +774,7 @@ public class PipelineManager {
         return rtn;
     }
     
-    private static BuildStatus canDescendantPipelineBeLaunched(ArrayList<ArcProjectDescendantPipelineI> pipelines, String id, String xsiType, String stepId, UserI user) {
+    private static BuildStatus canDescendantPipelineBeLaunched(List<ArcProjectDescendantPipelineI> pipelines, String id, String xsiType, String stepId, UserI user) {
         BuildStatus rtn = new BuildStatus(null,false);
         boolean checkDependency = false;
         if (pipelines != null) {

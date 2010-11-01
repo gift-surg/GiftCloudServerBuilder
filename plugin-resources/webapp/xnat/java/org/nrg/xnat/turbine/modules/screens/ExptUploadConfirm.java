@@ -8,24 +8,16 @@ package org.nrg.xnat.turbine.modules.screens;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatCatalogTagBean;
 import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
-import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.FileUtils;
-import org.nrg.xnat.turbine.modules.actions.ExptFileUpload;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.xml.sax.SAXException;
 
 public class ExptUploadConfirm extends SecureReport {

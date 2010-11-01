@@ -5,9 +5,11 @@
  *
  */
 package org.nrg.xdat.om.base;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
+import org.nrg.xdat.model.XnatStatisticsdataAddfieldI;
+import org.nrg.xdat.model.XnatStatisticsdataAdditionalstatisticsI;
 import org.nrg.xdat.om.XnatStatisticsdataAddfield;
 import org.nrg.xdat.om.XnatStatisticsdataAdditionalstatistics;
 import org.nrg.xdat.om.base.auto.AutoXnatStatisticsdata;
@@ -44,10 +46,10 @@ public abstract class BaseXnatStatisticsdata extends AutoXnatStatisticsdata {
 	
 	public XnatStatisticsdataAdditionalstatistics getAdditionalstatistics(String name) {
 		XnatStatisticsdataAdditionalstatistics rtn = null;
-		ArrayList<XnatStatisticsdataAdditionalstatistics> additionalStats = getAdditionalstatistics() ;
+		List<XnatStatisticsdataAdditionalstatisticsI> additionalStats = getAdditionalstatistics() ;
 		for (int i = 0; i < additionalStats.size(); i++) {
 			if (additionalStats.get(i).getName().equals(name)) {
-				rtn = additionalStats.get(i);
+				rtn = (XnatStatisticsdataAdditionalstatistics)additionalStats.get(i);
 				break;
 			}
 		}
@@ -56,10 +58,10 @@ public abstract class BaseXnatStatisticsdata extends AutoXnatStatisticsdata {
 
 	public XnatStatisticsdataAddfield getAddfield(String name) {
 		XnatStatisticsdataAddfield rtn = null;
-		ArrayList<XnatStatisticsdataAddfield> additionalFields = getAddfield() ;
+		List<XnatStatisticsdataAddfieldI> additionalFields = getAddfield() ;
 		for (int i = 0; i < additionalFields.size(); i++) {
 			if (additionalFields.get(i).getName().equals(name)) {
-				rtn = additionalFields.get(i);
+				rtn = (XnatStatisticsdataAddfield)additionalFields.get(i);
 				break;
 			}
 		}

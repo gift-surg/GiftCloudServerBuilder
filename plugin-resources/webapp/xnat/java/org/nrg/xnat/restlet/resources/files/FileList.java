@@ -19,6 +19,10 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
+import org.nrg.xdat.model.CatCatalogBeanI;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatEntryBeanI;
+import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -312,9 +316,9 @@ public class FileList extends XNATCatalogTemplate {
 						
 						File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
 						String parentPath=catFile.getParent();
-						CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
+						CatCatalogI cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
 
-						CatEntryBean entry = this.getEntryByURI(cat, filepath);
+						CatEntryI entry = this.getEntryByURI(cat, filepath);
 						
 						if(entry==null){
 							entry = this.getEntryById(cat, filepath);
@@ -333,7 +337,7 @@ public class FileList extends XNATCatalogTemplate {
 							try
 							{
 							    FileWriter fw = new FileWriter(catFile);
-								cat.toXML(fw, true);
+								((CatCatalogBean)cat).toXML(fw, true);
 								fw.close();
 								
 								if(FileUtils.CountFiles(f.getParentFile(),true)==0){
@@ -363,17 +367,17 @@ public class FileList extends XNATCatalogTemplate {
 			}
 		}
 	
-	private boolean removeEntry(CatCatalogBean cat,CatEntryBean entry)
+	private boolean removeEntry(CatCatalogI cat,CatEntryI entry)
 	{
 		for(int i=0;i<cat.getEntries_entry().size();i++){
-			CatEntryBean e= cat.getEntries_entry().get(i);
+			CatEntryI e= cat.getEntries_entry().get(i);
 			if(e.getUri().equals(entry.getUri())){
 				cat.getEntries_entry().remove(i);
 				return true;
 			}
 		}
 		
-		for(CatCatalogBean subset: cat.getSets_entryset()){
+		for(CatCatalogI subset: cat.getSets_entryset()){
 			if(removeEntry(subset,entry)){
 				return true;
 			}
@@ -822,7 +826,7 @@ public class FileList extends XNATCatalogTemplate {
 							    		table.rows().addAll(this.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip || (index!=null),entryFilter));
 							    	}
 								}else{
-									CatEntryBean entry = this.getEntryByURI(cat, filepath);
+									CatEntryI entry = this.getEntryByURI(cat, filepath);
 									
 									if(entry==null){
 										entry = this.getEntryById(cat, filepath);

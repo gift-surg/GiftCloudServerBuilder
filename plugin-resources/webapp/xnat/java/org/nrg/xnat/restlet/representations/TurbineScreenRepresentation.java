@@ -16,7 +16,6 @@ import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.ServerData;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xnat.restlet.representations.TurbineScreenRepresentation.RestletTurbineConfigurationException;
 import org.nrg.xnat.restlet.rundata.RestletRunData;
 import org.nrg.xnat.restlet.servlet.XNATRestletServlet;
 import org.restlet.data.MediaType;

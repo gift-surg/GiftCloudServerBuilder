@@ -11,13 +11,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrscandata;
 import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.base.auto.AutoXnatMrsessiondata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
@@ -190,7 +190,7 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
             }
             
             String[] types = new String[]{"FLASH5","FLASH20","FLASH30","FLASH3","BDYMAP100","BDYMAP","BOLD","DTI","FLAIR","FLASH","FST_MEF","HDMAP100","HDMAP","LO_RES","MEF30","MEF5","MPRAGE","MTC5","TSE","LOCALIZER","AASCOUT","3DT2"};
-            ArrayList al = this.getScans_scan();
+            List<XnatImagescandataI> al = this.getScans_scan();
             if (al != null) {
                 for (int i = 0; i < al.size(); i++) {
                     XnatImagescandata scan = (XnatImagescandata) al.get(i);

@@ -11,7 +11,6 @@ import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFT;
 
 /**
  * @author timo

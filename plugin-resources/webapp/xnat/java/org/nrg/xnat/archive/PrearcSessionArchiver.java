@@ -19,10 +19,11 @@ import org.apache.commons.collections.MultiMap;
 import org.nrg.StatusListener;
 import org.nrg.StatusMessage;
 import org.nrg.StatusMessage.Status;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
@@ -283,13 +284,13 @@ public final class PrearcSessionArchiver implements Callable<URL> {
 	 */
 	private void fixScans(final File arcSessionDir) {
 		final String root = arcSessionDir.getPath().replace('\\','/') + "/";
-		for (final XnatImagescandata scan : session.getScans_scan()) {
-			for (final XnatAbstractresource file : scan.getFile()) {
+		for (final XnatImagescandataI scan : session.getScans_scan()) {
+			for (final XnatAbstractresourceI file : scan.getFile()) {
 				// appendToPaths() is poorly named: should maybe be prependPathsWith()
-				file.appendToPaths(root);
+				((XnatAbstractresource)file).appendToPaths(root);
 				// TODO: this is surrounded by a try/catch(Throwable) that logs but
 				// TODO: otherwise discards the Throwable. Was this needed?
-				if (isNullOrEmpty(file.getContent())) {
+				if (isNullOrEmpty(((XnatAbstractresource)file).getContent())) {
 					((XnatResource)file).setContent("RAW");
 				}
 			}

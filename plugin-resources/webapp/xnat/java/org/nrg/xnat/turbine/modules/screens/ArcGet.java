@@ -22,10 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
+import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.model.XnatReconstructedimagedataI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xdat.om.XnatReconstructedimagedataI;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
@@ -268,10 +269,10 @@ created in buildPDF.
                                             }else{
                                                 if (raw.trim().equalsIgnoreCase("ALL")){
                                                     Hashtable fileGroups = mr.getFileGroups();
-                                                    Collection<XnatImagescandata> scans= mr.getSortedScans();
+                                                    Collection<XnatImagescandataI> scans= mr.getSortedScans();
                                                     if (scans!=null && scans.size()>0)
                                                     {
-                                                        for(XnatImagescandata scan: scans){
+                                                        for(XnatImagescandataI scan: scans){
                                                             boolean include = true;
                                                             if (quality != null){
                                                                 include = false;

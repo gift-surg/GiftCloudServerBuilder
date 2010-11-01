@@ -5,7 +5,6 @@
  */
 package org.nrg.xnat.turbine.utils;
 
-import java.io.File;
 import java.util.Hashtable;
 
 import org.nrg.xdat.bean.CatCatalogBean;

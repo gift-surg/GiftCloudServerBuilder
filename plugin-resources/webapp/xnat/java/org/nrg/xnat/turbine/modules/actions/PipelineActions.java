@@ -14,13 +14,14 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineManager;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.xdat.om.ArcPipelineparameterdataI;
+import org.nrg.xdat.model.ArcPipelineparameterdataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -218,7 +219,7 @@ public class PipelineActions extends SecureAction{
     private Hashtable<String,String> setCommandLineArguments(RunData data, Hashtable<String,String> paramNameValue, String projectId, String step, XnatPipelineLauncher xnatPipelineLauncher) {
         Hashtable<String,String> trueNameValues = new Hashtable<String,String>(); 
         try {
-            ArrayList parameters = PipelineManager.getParametersForPipeline(projectId, step);
+            List parameters = PipelineManager.getParametersForPipeline(projectId, step);
             if (parameters != null) {
                 LinkedHashMap<String,String> parametersHash = new LinkedHashMap<String,String>();
                 //TrueName is required as the data parameter names are case insensitive

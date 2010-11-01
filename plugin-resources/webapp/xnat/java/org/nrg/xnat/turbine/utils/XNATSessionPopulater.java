@@ -5,18 +5,6 @@
  */
 package org.nrg.xnat.turbine.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.nrg.ecat.xnat.PETSessionBuilder;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatPetsessiondata;
-import org.nrg.xft.XFTItem;
-import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
-import org.nrg.xft.security.UserI;
-import org.xml.sax.SAXException;
 
 /**
  * @author timo

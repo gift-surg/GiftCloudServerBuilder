@@ -8,14 +8,10 @@
 
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;

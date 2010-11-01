@@ -10,17 +10,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
-import org.nrg.xdat.turbine.modules.actions.SecureAction;
-import org.nrg.xdat.turbine.utils.PopulateItem;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.db.DBAction;
-import org.nrg.xft.search.ItemSearch;
-import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 /**
  * @author Tim

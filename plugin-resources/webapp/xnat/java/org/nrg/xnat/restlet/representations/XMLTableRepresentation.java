@@ -5,12 +5,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xft.XFTTable;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;

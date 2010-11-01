@@ -8,12 +8,9 @@ package org.nrg.xnat.services;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.base.BaseXnatSubjectdata;
-import org.nrg.xft.XFT;
 
 public class RequestSubjectId {
    private static Hashtable<String,Calendar> ids = new Hashtable<String, Calendar>();

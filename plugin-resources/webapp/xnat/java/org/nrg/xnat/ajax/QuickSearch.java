@@ -7,14 +7,15 @@ package org.nrg.xnat.ajax;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -70,8 +71,8 @@ public class QuickSearch {
                             ">");
 
                     sb.append("<projects>");
-                    ArrayList<XnatExperimentdataShare> projects = expt.getSharing_share();
-                    for (XnatExperimentdataShare project : projects){
+                    List<XnatExperimentdataShareI> projects = expt.getSharing_share();
+                    for (XnatExperimentdataShareI project : projects){
                         sb.append("<project label=\"" + project.getLabel()+"\">");
                         sb.append(project.getProject());
                         sb.append("</project>");

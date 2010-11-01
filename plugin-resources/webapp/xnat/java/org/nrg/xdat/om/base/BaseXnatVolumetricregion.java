@@ -5,12 +5,14 @@
  *
  */
 package org.nrg.xdat.om.base;
-import org.nrg.xdat.om.XnatVolumetricregionSubregion;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
-import org.nrg.xft.security.UserI;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
-import java.util.*;
+import org.nrg.xdat.om.XnatVolumetricregionSubregion;
+import org.nrg.xdat.om.base.auto.AutoXnatVolumetricregion;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.security.UserI;
 
 /**
  * @author XDAT
@@ -39,7 +41,7 @@ public class BaseXnatVolumetricregion extends AutoXnatVolumetricregion {
 
     public BaseXnatVolumetricregionSubregion getSubRegionByName(String name)
     {
-        ArrayList al = this.getSubregions_subregion();
+        List al = this.getSubregions_subregion();
         Iterator iter = al.iterator();
         while (iter.hasNext())
         {

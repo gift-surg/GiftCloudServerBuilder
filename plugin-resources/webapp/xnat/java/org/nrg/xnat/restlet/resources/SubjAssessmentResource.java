@@ -7,11 +7,12 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
@@ -220,12 +221,12 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 
 							int index=0;
 							XnatExperimentdataShare matched=null;
-							for(XnatExperimentdataShare pp : expt.getSharing_share()){
+							for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 								if(pp.getProject().equals(newProject.getId())){
-									matched=pp;
+									matched=(XnatExperimentdataShare)pp;
 									if(newLabel!=null && !pp.getLabel().equals(newLabel)){
-										pp.setLabel(newLabel);
-										pp.save(user,false,false);
+										((XnatExperimentdataShare)pp).setLabel(newLabel);
+										((XnatExperimentdataShare)pp).save(user,false,false);
 									}
 									break;
 								}
@@ -305,7 +306,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						}else if(expt.getProject().equals(this.proj.getId())){
 						}else{
 							boolean matched=false;
-							for(XnatExperimentdataShare pp : expt.getSharing_share()){
+							for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 								if(pp.getProject().equals(this.proj.getId())){
 									matched=true;
 									break;
@@ -334,7 +335,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						}
 
 						if(existing==null){
-							for(XnatExperimentdataShare pp : expt.getSharing_share()){
+							for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 								existing=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
 								if(existing!=null){
 									break;
@@ -355,7 +356,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							}
 							
 							if(this.subject==null){
-								for(XnatExperimentdataShare pp : expt.getSharing_share()){
+								for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 									this.subject=XnatSubjectdata.GetSubjectByProjectIdentifier(pp.getProject(), expt.getSubjectId(),user, false);
 									if(this.subject!=null){
 										break;

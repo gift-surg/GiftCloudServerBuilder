@@ -6,35 +6,15 @@
 package org.nrg.xnat.ajax;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.log4j.Logger;
-import org.apache.turbine.services.rundata.RunDataService;
-import org.apache.turbine.services.rundata.TurbineRunDataFacade;
-import org.apache.turbine.services.velocity.TurbineVelocity;
-import org.apache.turbine.util.RunData;
-import org.apache.turbine.util.TurbineException;
-import org.apache.velocity.context.Context;
-import org.nrg.xdat.exceptions.IllegalAccessException;
-import org.nrg.xdat.om.XnatAbstractprotocol;
-import org.nrg.xdat.search.CriteriaCollection;
-import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XdatStoredSearch;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTTableI;
-import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 
 public class RequestSearchXML {

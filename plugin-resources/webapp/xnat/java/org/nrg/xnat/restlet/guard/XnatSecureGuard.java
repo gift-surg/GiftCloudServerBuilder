@@ -4,9 +4,8 @@ package org.nrg.xnat.restlet.guard;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.Authenticator;
-import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.restlet.representations.RESTLoginRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.BrowserDetector;

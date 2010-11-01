@@ -7,7 +7,6 @@
 package org.nrg.xdat.om.base;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -25,10 +24,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.om.XnatAbstractdemographicdataI;
+import org.nrg.xdat.model.XnatAbstractdemographicdataI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatAbstractsubjectmetadataI;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatProjectdataI;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatSubjectassessordataI;
+import org.nrg.xdat.model.XnatSubjectdataFieldI;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatAbstractsubjectmetadataI;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatDemographicdata;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -36,15 +42,12 @@ import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatFielddefinitiongroup;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.XnatSubjectdataAddid;
-import org.nrg.xdat.om.XnatSubjectdataField;
-import org.nrg.xdat.om.XnatSubjectdataFieldI;
 import org.nrg.xdat.om.XnatSubjectmetadata;
 import org.nrg.xdat.om.base.auto.AutoXnatSubjectdata;
 import org.nrg.xdat.schema.SchemaElement;
@@ -692,9 +695,9 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         		 
         		 al.get(projects.get(expt.getProject())).add(new MinLoadExptByP(expt.getProject(), expt.getIdentifier(expt.getProject()),expt));
         		 
-        		 for(final XnatExperimentdataShare share:expt.getSharing_share()){
+        		 for(final XnatExperimentdataShareI share:expt.getSharing_share()){
             		 if(projects.get(share.getProject())==null){
-                		 final String pAlias=share.getProjectDisplayID();
+                		 final String pAlias=((XnatExperimentdataShare)share).getProjectDisplayID();
             			 projects.put(share.getProject(), pAlias);
             			 al.put(pAlias, new ArrayList<MinLoadExptByP>());
             		 }
@@ -905,7 +908,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         		ids.put(this.getId(), this.getProject());
         	}
         }
-        for (final XnatProjectparticipant pp:this.getSharing_share())
+        for (final XnatProjectparticipantI pp:this.getSharing_share())
         {
             if (pp.getLabel()!=null){
                 if (ids.containsKey(pp.getLabel()))
@@ -938,12 +941,12 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 
     public Hashtable<XnatProjectdataI,String> getProjectDatas(){
         final Hashtable<XnatProjectdataI,String> hash = new Hashtable<XnatProjectdataI,String>();
-        for (final XnatProjectparticipant pp:this.getSharing_share())
+        for (final XnatProjectparticipantI pp:this.getSharing_share())
         {
             if (pp.getLabel()==null)
-                hash.put(pp.getProjectData(), this.getId());
+                hash.put(((XnatProjectparticipant)pp).getProjectData(), this.getId());
             else
-                hash.put(pp.getProjectData(), pp.getLabel());
+                hash.put(((XnatProjectparticipant)pp).getProjectData(), pp.getLabel());
         }
 
         return hash;
@@ -953,7 +956,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     public Hashtable getFieldsByName(){
         if (fieldsByName == null){
             fieldsByName=new Hashtable();
-            for (final XnatSubjectdataField field : this.getFields_field()){
+            for (final XnatSubjectdataFieldI field : this.getFields_field()){
                 fieldsByName.put(field.getName(), field);
             }
         }
@@ -974,11 +977,11 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     public XnatProjectdataI getProject(String projectID, boolean preLoad)
     {
         XnatProjectparticipant ep = null;
-        for (final XnatProjectparticipant tempep: this.getSharing_share())
+        for (final XnatProjectparticipantI tempep: this.getSharing_share())
         {
             if (tempep.getProject().equals(projectID))
             {
-                ep=tempep;
+                ep=(XnatProjectparticipant)tempep;
                 break;
             }
         }
@@ -1011,7 +1014,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     {
         XnatProjectparticipant ep = null;
         if (!this.getSharing_share().isEmpty()){
-        	ep = this.getSharing_share().get(0);
+        	ep = (XnatProjectparticipant)this.getSharing_share().get(0);
         }
 
         try {
@@ -1033,7 +1036,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         		}
         	}
         	
-            for (final XnatProjectparticipant pp: this.getSharing_share())
+            for (final XnatProjectparticipantI pp: this.getSharing_share())
             {
                 if (pp.getProject().equals(project))
                 {
@@ -1188,8 +1191,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
             XnatAbstractprotocol prot = ((XnatProjectdata)entry.getKey()).getProtocolByDataType(dataType);
             if (prot!=null && prot instanceof XnatDatatypeprotocol){
                 XnatDatatypeprotocol dataProt=(XnatDatatypeprotocol)prot;
-                for(XnatFielddefinitiongroup group : dataProt.getDefinitions_definition()){
-                    groups.put(group.getId(), group);
+                for(XnatFielddefinitiongroupI group : dataProt.getDefinitions_definition()){
+                    groups.put(group.getId(), (XnatFielddefinitiongroup)group);
                 }
             }
         }
@@ -1224,7 +1227,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
     		
-    		for(XnatAbstractresource abstRes:this.getResources_resource()){
+    		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
     			String uri= null;
     			if(abstRes instanceof XnatResource){
     				uri=((XnatResource)abstRes).getUri();
@@ -1259,9 +1262,9 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         				}
         				existingSessionDir=uri.substring(0,lastSlash);
         			}
-        			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
     			}else{
-        			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
+    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
     			}
     		}
     		
@@ -1279,7 +1282,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		if(this.getProject().equals(proj_id)){
 		    return true;
 		}else{
-		    for(XnatProjectparticipant pp: this.getSharing_share()){
+		    for(XnatProjectparticipantI pp: this.getSharing_share()){
 			if(pp.getProject().equals(proj_id)){
 			    return true;
 			}
@@ -1310,8 +1313,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				return "Unable to delete subject.";
 			}
 			
-    		for(XnatSubjectassessordata sad: subj.getExperiments_experiment()){
-    			String msg=sad.canDelete(proj,user);
+    		for(XnatSubjectassessordataI sad: subj.getExperiments_experiment()){
+    			String msg=((XnatSubjectassessordata)sad).canDelete(proj,user);
     			if(msg!=null){
     				return msg;
     			}
@@ -1345,9 +1348,9 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				
 				int index = 0;
 				int match = -1;
-				for(XnatProjectparticipant pp : sub.getSharing_share()){
+				for(XnatProjectparticipantI pp : sub.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", pp.getItem(), user);
+						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -1358,8 +1361,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				
 				this.removeSharing_share(match);
 				
-				final  ArrayList<XnatSubjectassessordata> expts = sub.getExperiments_experiment();
-		        for (XnatSubjectassessordata exptI : expts){
+				final  List<XnatSubjectassessordataI> expts = sub.getExperiments_experiment();
+		        for (XnatSubjectassessordataI exptI : expts){
 		        	final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 		            expt.delete(proj,user,false);
 		        }
@@ -1383,8 +1386,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 					this.deleteFiles();
 				}
 
-				final  ArrayList<XnatSubjectassessordata> expts = sub.getExperiments_experiment();
-		        for (XnatSubjectassessordata exptI : expts){
+				final  List<XnatSubjectassessordataI> expts = sub.getExperiments_experiment();
+		        for (XnatSubjectassessordataI exptI : expts){
 		        	final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 		            msg=expt.delete(proj,user,removeFiles);
 		            if(msg!=null)return msg;
@@ -1413,8 +1416,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		FileUtils.MoveToCache(dir);
     	}
     	
-    	for(XnatAbstractresource abstRes:this.getResources_resource()){
-    		abstRes.deleteFromFileSystem(archive);
+    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
+    		((XnatAbstractresource)abstRes).deleteFromFileSystem(archive);
     	}
     }
     
@@ -1477,7 +1480,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		
 		final String expectedPath=getExpectedCurrentDirectory().getAbsolutePath().replace('\\', '/');
 		
-		for(final XnatAbstractresource res: this.getResources_resource()){
+		for(final XnatAbstractresourceI res: this.getResources_resource()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();
@@ -1490,8 +1493,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project: " + uri);
 		}
 		
-		for(final XnatSubjectassessordata expt:this.getExperiments_experiment()){
-			expt.preSave();
+		for(final XnatSubjectassessordataI expt:this.getExperiments_experiment()){
+			((XnatSubjectassessordata)expt).preSave();
 		}
 	}
 

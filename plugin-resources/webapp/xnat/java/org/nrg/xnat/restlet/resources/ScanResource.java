@@ -410,7 +410,7 @@ public class ScanResource  extends ItemResource {
     	if(newmr.getScans_scan().size()>1){
     		throw new Exception("Multiple Scans in single scan folder");
     	}else{
-    		newscan=newmr.getScans_scan().get(0);
+    		newscan=(XnatImagescandata)newmr.getScans_scan().get(0);
     	}
              
         newscan.copyValuesFrom(tempMR);

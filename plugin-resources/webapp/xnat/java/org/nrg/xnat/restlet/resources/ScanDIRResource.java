@@ -1,20 +1,17 @@
 package org.nrg.xnat.restlet.resources;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
+import org.nrg.dcm.DicomDir;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.utils.StringUtils;
-import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.restlet.Context;
@@ -24,11 +21,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
-
-import org.nrg.dcm.DicomDir;
-import org.dcm4che2.media.DicomDirReader;
-import org.dcm4che2.media.DicomDirWriter;
-import org.apache.commons.io.FileUtils;
 
 public class ScanDIRResource extends ScanResource {
     final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanDIRResource.class);

@@ -7,11 +7,11 @@
 package org.nrg.xdat.om.base;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -138,12 +138,12 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
     public void deleteFiles() throws IOException{
     	super.deleteFiles();
     	
-    	for(XnatAbstractresource abstRes:this.getResources_resource()){
-    		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
+    		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
     	}
     	
-    	for(XnatAbstractresource abstRes:this.getOut_file()){
-    		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    	for(XnatAbstractresourceI abstRes:this.getOut_file()){
+    		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
     	}
     }
 
@@ -165,7 +165,7 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
 		
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
-		for(final XnatAbstractresource res: this.getResources_resource()){
+		for(final XnatAbstractresourceI res: this.getResources_resource()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();
@@ -178,7 +178,7 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
 		
-		for(final XnatAbstractresource res: this.getOut_file()){
+		for(final XnatAbstractresourceI res: this.getOut_file()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();

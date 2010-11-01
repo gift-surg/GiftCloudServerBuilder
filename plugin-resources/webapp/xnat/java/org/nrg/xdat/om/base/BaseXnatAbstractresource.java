@@ -8,15 +8,11 @@ package org.nrg.xdat.om.base;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Properties;
 
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatAbstractresourceTag;
+import org.nrg.xdat.model.XnatAbstractresourceTagI;
 import org.nrg.xdat.om.base.auto.AutoXnatAbstractresource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
@@ -176,7 +172,7 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
     
     public String getTagString(){
     	StringBuffer sb =new StringBuffer();
-    	for(XnatAbstractresourceTag tag:this.getTags_tag()){
+    	for(XnatAbstractresourceTagI tag:this.getTags_tag()){
     		if(sb.length()>0){
     			sb.append(",");
     		}

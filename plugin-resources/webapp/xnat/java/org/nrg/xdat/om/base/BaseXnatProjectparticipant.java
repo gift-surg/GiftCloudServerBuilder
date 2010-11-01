@@ -8,8 +8,8 @@ package org.nrg.xdat.om.base;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectparticipant;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;

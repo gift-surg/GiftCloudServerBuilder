@@ -7,27 +7,20 @@ package org.nrg.xnat.turbine.modules.actions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUser;
-import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
-import org.nrg.xdat.security.UserGroupManager;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.security.XDATUser.UserNotFoundException;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xnat.turbine.modules.screens.XDATScreen_report_xnat_projectData;
-import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 public class ManageProjectAccess extends SecureAction {
 	public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ManageProjectAccess.class);

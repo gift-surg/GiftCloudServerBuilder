@@ -8,11 +8,11 @@ package org.nrg.xdat.om.base;
 import java.util.Hashtable;
 
 import org.nrg.xdat.display.DisplayField;
+import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XdatSearchField;
-import org.nrg.xdat.om.XnatFielddefinitiongroup;
-import org.nrg.xdat.om.XnatFielddefinitiongroupField;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.base.auto.AutoXnatDatatypeprotocol;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.XdatStoredSearch;
@@ -53,8 +53,8 @@ public abstract class BaseXnatDatatypeprotocol extends AutoXnatDatatypeprotocol 
     public XdatStoredSearch getDefaultSearch(XnatProjectdataI project){
         XdatStoredSearch xss = super.getDefaultSearch((XnatProjectdata)project);
 
-        for(XnatFielddefinitiongroup group : this.getDefinitions_definition()){
-            for(XnatFielddefinitiongroupField field : group.getFields_field()){
+        for(XnatFielddefinitiongroupI group : this.getDefinitions_definition()){
+            for(XnatFielddefinitiongroupFieldI field : group.getFields_field()){
 
                 XdatSearchField xsf = new XdatSearchField(this.getUser());
                 xsf.setElementName(this.getDataType());

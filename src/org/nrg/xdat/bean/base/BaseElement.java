@@ -528,4 +528,14 @@ public abstract class BaseElement{
     protected TreeMap getXMLAtts() {
         return new TreeMap();
     }
+    
+    public abstract String getFullSchemaElementName();
+    
+    public String getXSIType(){
+    	return this.getFullSchemaElementName();
+}
+    
+    public void toXML(java.io.Writer os) throws java.lang.Exception{
+    	this.toXML(os,false);
+    }
 }

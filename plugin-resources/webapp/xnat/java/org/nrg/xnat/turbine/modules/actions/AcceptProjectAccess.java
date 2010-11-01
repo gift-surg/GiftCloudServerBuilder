@@ -1,22 +1,13 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.util.Calendar;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XdatUserGroupid;
-import org.nrg.xdat.om.XdatUsergroup;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.db.DBAction;
-import org.nrg.xft.db.ItemAccessHistory;
-import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 public class AcceptProjectAccess extends SecureAction {

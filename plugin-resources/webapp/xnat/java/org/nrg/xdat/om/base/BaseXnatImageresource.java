@@ -5,13 +5,11 @@
  *
  */
 package org.nrg.xdat.om.base;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
-import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.FileUtils;
-import org.nrg.xft.utils.StringUtils;
+import java.util.Hashtable;
 
-import java.util.*;
+import org.nrg.xdat.om.base.auto.AutoXnatImageresource;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.security.UserI;
 
 /**
  * @author XDAT

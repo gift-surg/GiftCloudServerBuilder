@@ -13,13 +13,11 @@ import java.util.Hashtable;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.modules.screens.RawScreen;
 import org.apache.turbine.util.RunData;
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.security.UserCache;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
 import org.nrg.xdat.turbine.utils.AccessLogger;

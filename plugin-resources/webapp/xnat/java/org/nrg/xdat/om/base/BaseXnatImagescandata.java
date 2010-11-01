@@ -7,20 +7,20 @@
 package org.nrg.xdat.om.base;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatEntryBean;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatEntryI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatQcscandataI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatDicomseries;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatQcscandataI;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
@@ -147,16 +147,16 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 
     public void deleteFilesFromFileSystem(String rootPath){
-        ArrayList<XnatAbstractresource> files = this.getFile();
+        List<XnatAbstractresourceI> files = this.getFile();
         if (!files.isEmpty())
-        for (XnatAbstractresource resource:files){
-            resource.deleteFromFileSystem(rootPath);
+        for (XnatAbstractresourceI resource:files){
+            ((XnatAbstractresource)resource).deleteFromFileSystem(rootPath);
         }
     }
 
     public ArrayList<java.io.File> getJavaFiles(String rootPath){
         ArrayList<File> jFiles = new ArrayList<File>();
-        ArrayList scanFiles= this.getFile();
+        List scanFiles= this.getFile();
         if (scanFiles.size()>0)
         {
             Iterator files = scanFiles.iterator();
@@ -217,7 +217,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
         {
             final String rootPath =this.getImageSessionData().getArchiveRootPath();
             String last_dir = null;
-                for (XnatAbstractresource xnatFile:this.getFile())
+                for (XnatAbstractresourceI xnatFile:this.getFile())
                 {
                     if (xnatFile instanceof org.nrg.xdat.om.XnatResource){
                         XnatResource resource = (XnatResource)xnatFile;
@@ -346,12 +346,12 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 		    String labelImg=label + "_"+this.getId() + "_qc";
 
 		    String path=null;
-		    for(XnatAbstractresource res: this.getFile()){
+		    for(XnatAbstractresourceI res: this.getFile()){
 				if(res.getLabel()!=null && res.getLabel().equalsIgnoreCase("SNAPSHOTS")){
 				    path="/REST/experiments/"+ses.getId() + "/scans/"+this.getId() + "/resources/SNAPSHOTS/files/";
 				    if(res instanceof XnatResourcecatalog){
-						CatCatalogBean cat=((XnatResourcecatalog)res).getCleanCatalog(ses.getProjectData().getRootArchivePath(), false);
-						for(CatEntryBean entry:cat.getEntries_entry()){
+						CatCatalogI cat=((XnatResourcecatalog)res).getCleanCatalog(ses.getProjectData().getRootArchivePath(), false);
+						for(CatEntryI entry:cat.getEntries_entry()){
 							if(entry.getContent().equalsIgnoreCase("THUMBNAIL")){
 							    snapshot.setThumbnail(path + entry.getUri());
 							}
@@ -433,7 +433,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
-		for(final XnatAbstractresource res: this.getFile()){
+		for(final XnatAbstractresourceI res: this.getFile()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();

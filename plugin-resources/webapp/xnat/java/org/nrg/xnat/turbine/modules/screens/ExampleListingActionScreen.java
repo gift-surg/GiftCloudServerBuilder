@@ -5,7 +5,6 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.turbine.util.RunData;

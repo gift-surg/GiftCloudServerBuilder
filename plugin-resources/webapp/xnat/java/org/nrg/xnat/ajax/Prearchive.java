@@ -32,10 +32,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.xml.sax.SAXException;
-
+import org.nrg.xdat.model.ArcProjectI;
 import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.om.ArcProjectI;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
@@ -47,6 +45,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.archive.PrearcImporterFactory;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.xml.sax.SAXException;
 
 
 /**

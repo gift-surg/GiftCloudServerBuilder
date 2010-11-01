@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nrg.xdat.model.XnatQcmanualassessordataI;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatQcmanualassessordata;
-import org.nrg.xdat.om.XnatQcmanualassessordataI;
 
 public class TestXnatImagesessiondataGetManualQC {
 	private FakeXnatImagesessiondata sessionData;

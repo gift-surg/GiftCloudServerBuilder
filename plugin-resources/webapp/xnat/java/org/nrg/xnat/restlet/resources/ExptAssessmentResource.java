@@ -6,11 +6,12 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
@@ -152,12 +153,12 @@ public class ExptAssessmentResource extends ItemResource {
 						if(newProject!=null){
 							XnatExperimentdataShare matched=null;
 							int index=0;
-							for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+							for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 								if(pp.getProject().equals(newProject.getId())){
-									matched=pp;
+									matched=(XnatExperimentdataShare)pp;
 									if(newLabel!=null && !pp.getLabel().equals(newLabel)){
-										pp.setLabel(newLabel);
-										pp.save(user,false,false);
+										((XnatExperimentdataShare)pp).setLabel(newLabel);
+										((XnatExperimentdataShare)pp).save(user,false,false);
 									}
 									break;
 								}
@@ -228,7 +229,7 @@ public class ExptAssessmentResource extends ItemResource {
 						}else if(assessor.getProject().equals(this.proj.getId())){
 						}else{
 							boolean matched=false;
-							for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+							for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 								if(pp.getProject().equals(this.proj.getId())){
 									matched=true;
 									break;
@@ -258,7 +259,7 @@ public class ExptAssessmentResource extends ItemResource {
 							}
 
 							if(this.assesed==null){
-								for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+								for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 									this.assesed=XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), assessor.getImagesessionId(),user, false);
 									if(this.assesed!=null){
 										break;
@@ -279,7 +280,7 @@ public class ExptAssessmentResource extends ItemResource {
 					}
 
 					if(existing==null){
-						for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+						for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 								existing=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
 							if(existing!=null){
 								break;

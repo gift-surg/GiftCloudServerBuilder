@@ -7,12 +7,8 @@ package org.nrg.xnat.turbine.modules.actions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpSession;
 
@@ -21,25 +17,17 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.velocity.context.Context;
-import org.nrg.PrearcImporter;
 import org.nrg.xdat.om.XnatMrscandata;
 import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.turbine.modules.actions.ModifyItem.CriticalException;
-import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
-import org.nrg.xft.utils.zip.TarUtils;
-import org.nrg.xft.utils.zip.ZipI;
-import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper;
-import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 
 public class MRScanUpload extends StoreImageSession {
 

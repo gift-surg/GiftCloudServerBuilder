@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.nrg.xdat.model.XnatDicomseriesImageI;
 import org.nrg.xdat.om.XnatDicomseriesImage;
 import org.nrg.xdat.om.base.auto.AutoXnatDicomseries;
 import org.nrg.xdat.security.XDATUser;
@@ -159,8 +160,8 @@ public class BaseXnatDicomseries extends AutoXnatDicomseries {
     }
     
     public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception{
-    	for(XnatDicomseriesImage img : this.getImageset_image()){
-    		img.moveTo(newSessionDir, existingSessionDir, rootPath, user);
+    	for(XnatDicomseriesImageI img : this.getImageset_image()){
+    		((XnatDicomseriesImage)img).moveTo(newSessionDir, existingSessionDir, rootPath, user);
     	}
     	this.save(user, true, false);
     }

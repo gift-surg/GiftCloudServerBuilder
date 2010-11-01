@@ -14,12 +14,9 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class UploadImages extends SecureScreen {

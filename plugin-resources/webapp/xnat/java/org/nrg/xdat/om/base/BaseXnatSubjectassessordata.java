@@ -5,21 +5,16 @@
  *
  */
 package org.nrg.xdat.om.base;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourceseries;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
-import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xdat.om.base.auto.AutoXnatSubjectassessordata;
+import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.DateUtils;
-import org.nrg.xft.utils.FileUtils;
-
-import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.*;
 
 /**
  * @author XDAT

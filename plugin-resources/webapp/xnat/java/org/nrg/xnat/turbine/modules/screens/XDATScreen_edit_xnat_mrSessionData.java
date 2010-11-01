@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 
@@ -41,9 +42,9 @@ public class XDATScreen_edit_xnat_mrSessionData extends EditSubjectAssessorScree
         super.finalProcessing(data,context);
         XnatImagesessiondata session = new XnatImagesessiondata(item);
         final Collection<Map<String,Object>> scanprops = new LinkedList<Map<String,Object>>();
-        for (final XnatImagescandata scan : session.getSortedScans()) {
+        for (final XnatImagescandataI scan : session.getSortedScans()) {
             long scanSize = 0;
-            final Collection<File> files = scan.getJavaFiles(session.getArchivePath());
+            final Collection<File> files = ((XnatImagescandata)scan).getJavaFiles(session.getArchivePath());
             for (final File file : files) {
         	scanSize += file.length();
             }

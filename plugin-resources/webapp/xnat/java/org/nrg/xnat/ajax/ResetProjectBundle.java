@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.display.DisplayField;
+import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
 import org.nrg.xdat.om.XdatSearchField;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
-import org.nrg.xdat.om.XnatFielddefinitiongroup;
-import org.nrg.xdat.om.XnatFielddefinitiongroupField;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.UserGroup;
@@ -39,8 +39,8 @@ public class ResetProjectBundle {
             XdatStoredSearch xss = XdatStoredSearch.GetPreLoadedSearch(protocol.getId(), true);
             boolean modified=false;
             if(xss!=null){
-            	for(XnatFielddefinitiongroup group : protocol.getDefinitions_definition()){
-                    for(XnatFielddefinitiongroupField field : group.getFields_field()){
+            	for(XnatFielddefinitiongroupI group : protocol.getDefinitions_definition()){
+                    for(XnatFielddefinitiongroupFieldI field : group.getFields_field()){
                     	                        String fieldID=null;
                         if (field.getType().equals("custom"))
                         {

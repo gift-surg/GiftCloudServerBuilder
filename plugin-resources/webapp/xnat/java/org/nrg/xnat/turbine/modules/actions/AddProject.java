@@ -2,35 +2,22 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
-import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.cache.CacheManager;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
-import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class AddProject extends SecureAction {
 	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AddProject.class);

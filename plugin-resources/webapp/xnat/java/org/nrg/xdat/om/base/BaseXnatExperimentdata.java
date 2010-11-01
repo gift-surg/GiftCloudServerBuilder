@@ -7,8 +7,6 @@
 package org.nrg.xdat.om.base;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,17 +20,19 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatExperimentdataFieldI;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatExperimentdataField;
-import org.nrg.xdat.om.XnatExperimentdataFieldI;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatFielddefinitiongroup;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatExperimentdata;
@@ -40,7 +40,6 @@ import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
@@ -49,7 +48,6 @@ import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.identifier.IDGeneratorFactory;
 import org.nrg.xft.identifier.IDGeneratorI;
@@ -127,7 +125,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     public Hashtable getFieldsByName(){
         if (fieldsByName == null){
             fieldsByName=new Hashtable();
-            for(final XnatExperimentdataField field: this.getFields_field()){
+            for(final XnatExperimentdataFieldI field: this.getFields_field()){
                 fieldsByName.put(field.getName(), field);
             }
         }
@@ -156,7 +154,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         		}
         	}
 
-        	for (final XnatExperimentdataShare pp : this.getSharing_share())
+        	for (final XnatExperimentdataShareI pp : this.getSharing_share())
             {
             	if (pp.getProject().equals(project))
                 {
@@ -177,11 +175,11 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     public XnatProjectdataI getProject(final String projectID, final boolean preLoad)
     {
         XnatExperimentdataShare ep = null;
-        for (final XnatExperimentdataShare pp : this.getSharing_share())
+        for (final XnatExperimentdataShareI pp : this.getSharing_share())
         {
         	if (pp.getProject().equals(projectID))
             {
-                ep=pp;
+                ep=(XnatExperimentdataShare)pp;
                 break;
             }
         }
@@ -212,7 +210,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     {
         XnatExperimentdataShare ep = null;
         if (!this.getSharing_share().isEmpty()){
-        	ep = this.getSharing_share().get(0);
+        	ep = (XnatExperimentdataShare)this.getSharing_share().get(0);
         }
         
         try {
@@ -239,7 +237,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         	}
         }
         
-        for (final XnatExperimentdataShare pp : this.getSharing_share())
+        for (final XnatExperimentdataShareI pp : this.getSharing_share())
         {
 
             if (pp.getLabel()!=null){
@@ -356,14 +354,14 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
     public Hashtable<XnatProjectdataI,String> getProjectDatas(){
         Hashtable<XnatProjectdataI,String> hash = new Hashtable<XnatProjectdataI,String>();
-        for(final XnatExperimentdataShare pp : this.getSharing_share()){
+        for(final XnatExperimentdataShareI pp : this.getSharing_share()){
             if (pp.getLabel()==null)
             	if (this.getId()!=null)
-            		hash.put(pp.getProjectData(), this.getId());
+            		hash.put(((XnatExperimentdataShare)pp).getProjectData(), this.getId());
             	else
-            		hash.put(pp.getProjectData(), "");
+            		hash.put(((XnatExperimentdataShare)pp).getProjectData(), "");
             else
-                hash.put(pp.getProjectData(), pp.getLabel());
+                hash.put(((XnatExperimentdataShare)pp).getProjectData(), pp.getLabel());
         }
 
         return hash;
@@ -384,8 +382,8 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
             XnatAbstractprotocol prot = ((XnatProjectdata)entry.getKey()).getProtocolByDataType(dataType);
             if (prot!=null && prot instanceof XnatDatatypeprotocol){
                 XnatDatatypeprotocol dataProt=(XnatDatatypeprotocol)prot;
-                for(XnatFielddefinitiongroup group : dataProt.getDefinitions_definition()){
-                    groups.put(group.getId(), group);
+                for(XnatFielddefinitiongroupI group : dataProt.getDefinitions_definition()){
+                    groups.put(group.getId(), (XnatFielddefinitiongroup)group);
                 }
             }
         }
@@ -447,7 +445,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
     		
-    		for(XnatAbstractresource abstRes:this.getResources_resource()){
+    		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
     			String uri= null;
     			if(abstRes instanceof XnatResource){
     				uri=((XnatResource)abstRes).getUri();
@@ -484,9 +482,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         				//don't attempt to move sessions which are outside of the Session Directory.
         				throw new Exception("Non-standard file location for file(s):" + uri);
         			}
-        			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
     			}else{
-        			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
+    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
     			}
     		}
     		
@@ -517,7 +515,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 	if(this.getProject().equals(proj_id)){
 	    return true;
 	}else{
-	    for(XnatExperimentdataShare pp: this.getSharing_share()){
+	    for(XnatExperimentdataShareI pp: this.getSharing_share()){
 		if(pp.getProject().equals(proj_id)){
 		    return true;
 		}
@@ -580,9 +578,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				
 				int index = 0;
 				int match = -1;
-				for(XnatExperimentdataShare pp : expt.getSharing_share()){
+				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", pp.getItem(), user);
+						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -674,8 +672,8 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		FileUtils.MoveToCache(dir);
     	}
     	
-    	for(XnatAbstractresource abstRes:this.getResources_resource()){
-    		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
+    		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
     	}
     }
     
@@ -849,7 +847,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
-		for(final XnatAbstractresource res: this.getResources_resource()){
+		for(final XnatAbstractresourceI res: this.getResources_resource()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();

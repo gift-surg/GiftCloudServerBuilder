@@ -8,7 +8,6 @@ package org.nrg.xdat.om.base;
 import java.util.Hashtable;
 
 import org.nrg.xdat.om.base.auto.AutoArcProjectPipeline;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 

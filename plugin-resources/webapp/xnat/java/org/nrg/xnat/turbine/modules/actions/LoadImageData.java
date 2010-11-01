@@ -10,15 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -70,9 +69,9 @@ public class LoadImageData extends SecureAction {
         XnatImagesessiondata imageSessionData =(XnatImagesessiondata) BaseElement.GetGeneratedItem(item);
         imageSessionData.fixScanTypes();
 
-        for(XnatImagescandata scan: imageSessionData.getScans_scan()){
+        for(XnatImagescandataI scan: imageSessionData.getScans_scan()){
         	if(!hasValue(scan.getQuality())){
-        		scan.setQuality("usable");
+        		((XnatImagescandata)scan).setQuality("usable");
         	}
         }
         

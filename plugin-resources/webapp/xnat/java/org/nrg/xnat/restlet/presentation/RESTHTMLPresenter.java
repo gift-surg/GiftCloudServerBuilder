@@ -8,7 +8,12 @@
  */
 package org.nrg.xnat.restlet.presentation;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.display.DisplayFieldReferenceI;
@@ -17,6 +22,7 @@ import org.nrg.xdat.display.ElementDisplay;
 import org.nrg.xdat.display.HTMLLink;
 import org.nrg.xdat.display.HTMLLinkProperty;
 import org.nrg.xdat.display.SQLQueryField;
+import org.nrg.xdat.presentation.PresentationA;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityValues;
@@ -26,7 +32,6 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.XFTTableI;
 import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xdat.presentation.PresentationA;
 /**
  * @author Tim
  *

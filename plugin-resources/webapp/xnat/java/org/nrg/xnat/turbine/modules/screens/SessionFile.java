@@ -7,9 +7,11 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatMrassessordata;
 import org.nrg.xdat.om.XnatMrscandata;
@@ -17,7 +19,6 @@ import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.turbine.modules.screens.FileScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFT;
 
 public class SessionFile extends FileScreen {
 
@@ -36,17 +37,17 @@ public class SessionFile extends FileScreen {
         if (data.getParameters().get("scan")!=null){
             String scanId = data.getParameters().get("scan");
             XnatMrscandata scan = (XnatMrscandata)mr.getScanById(scanId);
-            ArrayList<XnatAbstractresource> resources= scan.getFile();
+            List<XnatAbstractresourceI> resources= scan.getFile();
 
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
-                for(XnatAbstractresource resource : resources){
-                    files.addAll(resource.getCorrespondingFiles(mr.getArchivePath()));
+                for(XnatAbstractresourceI resource : resources){
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
                 }
             }else{
-                for (XnatAbstractresource resource : resources){
+                for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= resource.getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
                     }
                 }
             }
@@ -55,17 +56,17 @@ public class SessionFile extends FileScreen {
         if (data.getParameters().get("assessor")!=null){
             String scanId = data.getParameters().get("assessor");
             XnatMrassessordata scan = (XnatMrassessordata)mr.getAssessorById(scanId);
-            ArrayList<XnatAbstractresource> resources= scan.getOut_file();
+            List<XnatAbstractresourceI> resources= scan.getOut_file();
 
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
-                for(XnatAbstractresource resource : resources){
-                    files.addAll(resource.getCorrespondingFiles(mr.getArchivePath()));
+                for(XnatAbstractresourceI resource : resources){
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
                 }
             }else{
-                for (XnatAbstractresource resource : resources){
+                for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= resource.getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
                     }
                 }
             }
@@ -74,17 +75,17 @@ public class SessionFile extends FileScreen {
         if (data.getParameters().get("reconstruction")!=null){
             String scanId = data.getParameters().get("reconstruction");
             XnatReconstructedimagedata scan = (XnatReconstructedimagedata)mr.getReconstructionByID(scanId);
-            ArrayList<XnatAbstractresource> resources= scan.getOut_file();
+            List<XnatAbstractresourceI> resources= scan.getOut_file();
 
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
-                for(XnatAbstractresource resource : resources){
-                    files.addAll(resource.getCorrespondingFiles(mr.getArchivePath()));
+                for(XnatAbstractresourceI resource : resources){
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
                 }
             }else{
-                for (XnatAbstractresource resource : resources){
+                for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= resource.getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
                     }
                 }
             }
@@ -92,17 +93,17 @@ public class SessionFile extends FileScreen {
         
         if (data.getParameters().get("resource")!=null){
             String scanId = data.getParameters().get("resource");
-            ArrayList<XnatAbstractresource> resources= mr.getResources_resource();
+            List<XnatAbstractresourceI> resources= mr.getResources_resource();
 
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
-                for(XnatAbstractresource resource : resources){
-                    files.addAll(resource.getCorrespondingFiles(mr.getArchivePath()));
+                for(XnatAbstractresourceI resource : resources){
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
                 }
             }else{
-                for (XnatAbstractresource resource : resources){
+                for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= resource.getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
                     }
                 }
             }

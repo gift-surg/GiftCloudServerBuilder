@@ -1,13 +1,11 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.exception.DBPoolException;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;

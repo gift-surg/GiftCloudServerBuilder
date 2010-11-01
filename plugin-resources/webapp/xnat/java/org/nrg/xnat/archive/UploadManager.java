@@ -6,31 +6,12 @@
 package org.nrg.xnat.archive;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.zip.ZipOutputStream;
-
-import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.nrg.PrearcImporter;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.AdminUtils;
-import org.nrg.xft.utils.FileUtils;
-import org.nrg.xft.utils.zip.TarUtils;
-import org.nrg.xft.utils.zip.ZipI;
-import org.nrg.xft.utils.zip.ZipUtils;
-import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 
 public class UploadManager extends Thread{
     static Logger logger = Logger.getLogger(UploadManager.class);

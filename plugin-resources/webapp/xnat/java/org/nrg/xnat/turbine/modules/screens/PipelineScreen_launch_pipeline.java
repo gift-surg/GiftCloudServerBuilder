@@ -9,7 +9,7 @@
 package org.nrg.xnat.turbine.modules.screens;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -54,14 +54,14 @@ public class PipelineScreen_launch_pipeline extends SecureReport {
         	if (projectId != null && schema_element_name  != null) {
         		XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectId, TurbineUtils.getUser(data), false);
         		//Get the list of associated pipelines for this item
-        		ArrayList pipelines = new ArrayList();
+        		List pipelines = new ArrayList();
         		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
         		if (schema_element_name.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME))
         			pipelines = arcProject.getPipelines_pipeline();
         		else	
         			pipelines = arcProject.getPipelinesForDescendant(schema_element_name );
         		context.put("pipelines", pipelines);
-        		ArrayList additionalPipelines = PipelineRepositoryManager.GetInstance().getAdditionalPipelinesForDatatype(project, schema_element_name);
+        		List additionalPipelines = PipelineRepositoryManager.GetInstance().getAdditionalPipelinesForDatatype(project, schema_element_name);
         		context.put("additional_pipelines", additionalPipelines);
         		context.put("project", project.getId());
         	} else {

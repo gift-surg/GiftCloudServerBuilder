@@ -12,8 +12,6 @@ import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatMrscandata;
-import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;

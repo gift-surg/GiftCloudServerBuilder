@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatProjectdataI;
+import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
 import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
@@ -123,9 +124,9 @@ public class SubjectResource extends ItemResource {
 						if(newProject!=null){
 							XnatProjectparticipant matched=null;
 							int index=0;
-							for(XnatProjectparticipant pp : sub.getSharing_share()){
+							for(XnatProjectparticipantI pp : sub.getSharing_share()){
 								if(pp.getProject().equals(newProject.getId())){
-									matched=pp;
+									matched=((XnatProjectparticipant)pp);
 									if(newLabel!=null && (pp.getLabel()==null || (!pp.getLabel().equals(newLabel)))){
 										XnatSubjectdata temp=XnatSubjectdata.GetSubjectByProjectIdentifier(newProject.getId(), newLabel, null, false);
 										if(temp!=null){
@@ -133,8 +134,8 @@ public class SubjectResource extends ItemResource {
 											return;
 										}
 										
-										pp.setLabel(newLabel);
-										pp.save(user,false,false);
+										((XnatProjectparticipant)pp).setLabel(newLabel);
+										((XnatProjectparticipant)pp).save(user,false,false);
 										
 										if(!this.isQueryVariableTrue("primary")){
 											this.returnDefaultRepresentation();
@@ -217,12 +218,12 @@ public class SubjectResource extends ItemResource {
 							}
 						}else{
 							boolean matched=false;
-							for(XnatProjectparticipant pp : sub.getSharing_share()){
+							for(XnatProjectparticipantI pp : sub.getSharing_share()){
 								if(pp.getProject().equals(this.proj.getId())){
 									matched=true;
 									
 									if(pp.getLabel()==null || pp.getLabel().equals("")){
-										pp.setLabel(this.subID);
+										((XnatProjectparticipant)pp).setLabel(this.subID);
 									}
 									break;
 								}
@@ -249,7 +250,7 @@ public class SubjectResource extends ItemResource {
 					}
 					
 					if(existing==null){
-						for(XnatProjectparticipant pp : sub.getSharing_share()){
+						for(XnatProjectparticipantI pp : sub.getSharing_share()){
 								existing=XnatSubjectdata.GetSubjectByProjectIdentifier(pp.getProject(), pp.getLabel(),user, false);
 							if(existing!=null){
 								break;

@@ -91,11 +91,11 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     private Hashtable fileGroups=new Hashtable();
     private Map<String,String> arcFiles = null;
 
-    private ArrayList<XnatImageassessordata> assessors = null;
+    private List<XnatImageassessordataI> assessors = null;
 
-    private List<XnatImagescandata> scans = null;
+    private List<XnatImagescandataI> scans = null;
 
-    protected ArrayList<XnatImageassessordata> minLoadAssessors = null;
+    protected List<XnatImageassessordataI> minLoadAssessors = null;
 
 	public BaseXnatImagesessiondata(ItemI item)
 	{
@@ -152,7 +152,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         return getAssessors(elementName).size();
     }
 
-    public ArrayList<XnatImageassessordata> getAssessors() {
+    public List<XnatImageassessordataI> getAssessors() {
         if (this.assessors == null) {
             try {
                 assessors = this.getAssessors_assessor();
@@ -184,8 +184,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public String getArchivePath(String rootPath) {
         
         String path = "";
-        for(XnatImagescandata scan :  this.getScans_scan()){
-            ArrayList files = scan.getFile();
+        for(XnatImagescandataI scan :  this.getScans_scan()){
+            List files = scan.getFile();
             if (files.size() > 0) {
                 Iterator fIter = files.iterator();
                 while (fIter.hasNext()) {
@@ -235,8 +235,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
     public String getRelativeArchivePath() {
         String path = "";
-        for(XnatImagescandata scan :  this.getScans_scan()){
-            ArrayList files = scan.getFile();
+        for(XnatImagescandataI scan :  this.getScans_scan()){
+            List files = scan.getFile();
             if (files.size() > 0) {
                 Iterator fIter = files.iterator();
                 while (fIter.hasNext()) {
@@ -346,7 +346,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 XNATDirectory dir = getSRBDirectory();
                 if(XFT.VERBOSE)System.out.println("Time to load " + (System.currentTimeMillis()-startTime) + "ms");
                 startTime = System.currentTimeMillis();
-                for(XnatImagescandata scan :  this.getScans_scan()){
+                for(XnatImagescandataI scan :  this.getScans_scan()){
                     int count = 0;
                     long size = 0;
                     try {
@@ -398,7 +398,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             }else{
                 loadLocalFiles();
 
-                for(XnatImagescandata scan :  this.getScans_scan()){
+                for(XnatImagescandataI scan :  this.getScans_scan()){
                     int count = 0;
                     long size = 0;
                     try {
@@ -432,7 +432,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     }
                 }
 
-                for(XnatReconstructedimagedata recon :  this.getReconstructions_reconstructedimage()){
+                for(XnatReconstructedimagedataI recon :  this.getReconstructions_reconstructedimage()){
                     int count = 0;
                     long size = 0;
                     try {
@@ -466,7 +466,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     }
                 }
 
-                for(XnatImageassessordata assess :  this.getAssessors_assessor()){
+                for(XnatImageassessordataI assess :  this.getAssessors_assessor()){
                     int count = 0;
                     long size = 0;
                     try {
@@ -500,7 +500,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     }
                 }
 
-                for(XnatAbstractresource res :  this.getResources_resource()){
+                for(XnatAbstractresourceI res :  this.getResources_resource()){
                     int count = 0;
                     long size = 0;
                     try {
@@ -606,10 +606,10 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public ArrayList<XnatImagescandata> getScansByXSIType(String type) {
         ArrayList<XnatImagescandata> _return = new ArrayList<XnatImagescandata>();
 
-        for(XnatImagescandata scan :  this.getScans_scan()){
+        for(XnatImagescandataI scan :  this.getScans_scan()){
         	try {
-				if(scan.getItem().instanceOf(type)){
-					_return.add(scan);
+				if(((XnatImagescandata)scan).getItem().instanceOf(type)){
+					_return.add((XnatImagescandata)scan);
 				}
 			} catch (ElementNotFoundException e) {
 				e.printStackTrace();
@@ -626,17 +626,17 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public ArrayList<XnatImagescandata> getScansByType(String type) {
         ArrayList<XnatImagescandata> _return = new ArrayList<XnatImagescandata>();
 
-        for(XnatImagescandata scan :  this.getScans_scan()){
+        for(XnatImagescandataI scan :  this.getScans_scan()){
             String scan_type = scan.getType();
             if (scan_type ==null)
             {
                 if (type==null)
                 {
-                    _return.add(scan);
+                    _return.add((XnatImagescandata)scan);
                 }
             }else{
                 if (scan_type.equalsIgnoreCase(type)) {
-                    _return.add(scan);
+                    _return.add((XnatImagescandata)scan);
                 }
             }
         }
@@ -649,9 +649,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
      * @return ArrayList of org.nrg.xdat.om.XnatMrscandata
      */
     public XnatImagescandata getScanById(String id) {
-        for(XnatImagescandata scan : getScans_scan()){
+        for(XnatImagescandataI scan : getScans_scan()){
                 if (scan.getId().equalsIgnoreCase(id)) {
-                    return scan;
+                    return (XnatImagescandata)scan;
                 }
             
         }
@@ -663,9 +663,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
      * @return ArrayList of org.nrg.xdat.om.XnatMrscandata
      */
     public XnatImageassessordata getAssessorById(String id) {
-        for(XnatImageassessordata scan : getAssessors()){
+        for(XnatImageassessordataI scan : getAssessors()){
                 if (scan.getId().equalsIgnoreCase(id)) {
-                    return scan;
+                    return (XnatImageassessordata) scan;
                 }
             
         }
@@ -678,7 +678,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
      */
     public List<XnatReconstructedimagedata> getReconstructionsByType(String type) {
         ArrayList _return = new ArrayList();
-        ArrayList al = this.getReconstructions_reconstructedimage();
+        List al = this.getReconstructions_reconstructedimage();
         if (al != null) {
             for (int i = 0; i < al.size(); i++) {
                 XnatReconstructedimagedata scan = (XnatReconstructedimagedata) al.get(i);
@@ -702,7 +702,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
      * @return org.nrg.xdat.om.XnatReconstructedimagedata
      */
     public XnatReconstructedimagedataI getReconstructionByID(String type) {
-        ArrayList al = this.getReconstructions_reconstructedimage();
+        List al = this.getReconstructions_reconstructedimage();
         if (al != null) {
             for (int i = 0; i < al.size(); i++) {
                 XnatReconstructedimagedata scan = (XnatReconstructedimagedata) al.get(i);
@@ -725,7 +725,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         return s;
     }
 
-    public Collection<XnatImagescandata> getSortedScans() {
+    public Collection<XnatImagescandataI> getSortedScans() {
         if (null == scans) {
             try {
             	scans =getScans_scan();
@@ -769,11 +769,11 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
          return al;
     }
 
-    public ArrayList<XnatImageassessordata> getMinimalLoadAssessors()
+    public List<XnatImageassessordataI> getMinimalLoadAssessors()
     {
         if (minLoadAssessors==null)
         {
-            minLoadAssessors = new ArrayList<XnatImageassessordata>();
+            minLoadAssessors = new ArrayList<XnatImageassessordataI>();
             if(getItem().isPreLoaded())
             {
                 minLoadAssessors=this.getAssessors();
@@ -953,7 +953,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 startTime = System.currentTimeMillis();
 
                 Hashtable<String,XNATMetaData> metas = new Hashtable<String,XNATMetaData>();
-                for(XnatImagescandata scan : this.getSortedScans()){
+                for(XnatImagescandataI scan : this.getSortedScans()){
                     XNATMetaData meta = new XNATMetaData();
                     meta.setCategory("SCAN"); //match operator is = by default
                     meta.setExternalId(scan.getId());
@@ -974,7 +974,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                 }
 
-                for(XnatImageassessordata assess : this.getAssessors_assessor()){
+                for(XnatImageassessordataI assess : this.getAssessors_assessor()){
 
                         XNATMetaData meta = new XNATMetaData();
                         meta.setCategory("ASSESSOR"); //match operator is = by default
@@ -1001,15 +1001,15 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         {
         	rootPath =FileUtils.AppendSlash(rootPath);
         }
-        for(XnatImagescandata scan : this.getSortedScans()){
+        for(XnatImagescandataI scan : this.getSortedScans()){
             final ArrayList fileGrouping = new ArrayList();
             if (!scan.getFile().isEmpty())
             {
-                for (XnatAbstractresource xnatFile:scan.getFile())
+                for (XnatAbstractresourceI xnatFile:scan.getFile())
                 {
-                    ArrayList<File> jFiles = xnatFile.getCorrespondingFiles(rootPath);
+                    List<File> jFiles = ((XnatAbstractresource)xnatFile).getCorrespondingFiles(rootPath);
 
-                    for (File f:xnatFile.getCorrespondingFiles(rootPath))
+                    for (File f:((XnatAbstractresource)xnatFile).getCorrespondingFiles(rootPath))
                     {
                         if (f.exists())
                         {
@@ -1039,7 +1039,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         {
             XnatReconstructedimagedata recon = (XnatReconstructedimagedata)reconIter.next();
             ArrayList fileGrouping = new ArrayList();
-            ArrayList outFiles = recon.getOut_file();
+            List outFiles = recon.getOut_file();
             if (outFiles.size()>0)
             {
                 Iterator files =outFiles.iterator();
@@ -1081,9 +1081,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             }
         }
 
-        for(XnatImageassessordata assess : this.getAssessors_assessor()){
+        for(XnatImageassessordataI assess : this.getAssessors_assessor()){
             ArrayList fileGrouping = new ArrayList();
-            ArrayList outFiles = assess.getOut_file();
+            List outFiles = assess.getOut_file();
             if (outFiles.size()>0)
             {
                 Iterator files =outFiles.iterator();
@@ -1263,7 +1263,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             loadSRBFiles();
             sb.append("  <TR>");
             sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">SCANS</TH><TD>");
-            for(XnatImagescandata scan : this.getSortedScans()){
+            for(XnatImagescandataI scan : this.getSortedScans()){
                     String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(scan.getId(),"-",""),"*","AST");
                     XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get(SCAN_ABBR + parsedScanID);
                     if (scanDIR!=null)
@@ -1413,7 +1413,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
             sb.append("  <TR>");
             sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">ASSESSMENTS</TH><TD>");
-            for(XnatImageassessordata assess : this.getAssessors_assessor()){
+            for(XnatImageassessordataI assess : this.getAssessors_assessor()){
                 try {
                     String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(assess.getId(),"-",""),"*","AST");
                     XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get("assess" + parsedScanID);
@@ -1445,7 +1445,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                 }
                                 sb.append("<span class=\"trigger\" onClick=\"blocking('assess").append(parsedScanID).append("');\">");
                                 sb.append("<img ID=\"IMGassess").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(assess.getId()).append("</b>&nbsp;");
-                                sb.append("(" + assess.getItem().getProperName() + ")&nbsp;");
+                                sb.append("(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")&nbsp;");
 
                                 if (hasFunctionText)
                                 {
@@ -1474,10 +1474,10 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                     allFiles.append("       node.checked=checkAll.checked;\n");
                                 }
                             }else{
-                                sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + assess.getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
+                                sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
                             }
                         }else{
-                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + assess.getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
+                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
                         }
                     }
                 } catch (ElementNotFoundException e) {
@@ -1651,9 +1651,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         }else{
             sb.append("  <TR>");
             sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">SCANS</TH><TD>");
-            for(XnatImagescandata scan : this.getSortedScans()){
+            for(XnatImagescandataI scan : this.getSortedScans()){
                 ArrayList fileGrouping = new ArrayList();
-                ArrayList scanFiles= scan.getFile();
+                List scanFiles= scan.getFile();
                 if (scanFiles.size()>0)
                 {
                     Iterator files = scanFiles.iterator();
@@ -1779,7 +1779,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             {
                 XnatReconstructedimagedata recon = (XnatReconstructedimagedata)reconIter.next();
                 ArrayList fileGrouping = new ArrayList();
-                ArrayList outFiles = recon.getOut_file();
+                List outFiles = recon.getOut_file();
                 if (outFiles.size()>0)
                 {
                     Iterator files =outFiles.iterator();
@@ -1863,9 +1863,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                     sb.append("  <TR>");
                     sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">ASSESSMENTS</TH><TD>");
-                    for(XnatImageassessordata assess : this.getAssessors_assessor()){
+                    for(XnatImageassessordataI assess : this.getAssessors_assessor()){
                         ArrayList fileGrouping = new ArrayList();
-                        ArrayList outFiles = assess.getOut_file();
+                        List outFiles = assess.getOut_file();
                         if (outFiles.size()>0)
                         {
                             Iterator files =outFiles.iterator();
@@ -1923,7 +1923,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                 }
                                 sb.append("<span class=\"trigger\" onClick=\"blocking('assess").append(parsedScanID).append("');\">");
                                 sb.append("<img ID=\"IMGassess").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(assess.getId()).append("</b>&nbsp;");
-                                sb.append("(" + assess.getItem().getProperName() + ")");
+                                sb.append("(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")");
                                 sb.append("</span>");
                                 sb.append("<BR>\n<span class=\"branch\" ID=\"spanassess").append(parsedScanID).append("\">");
                                 sb.append(scanLinkBuffer);
@@ -1937,10 +1937,10 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                     allFiles.append("       node.checked=checkAll.checked;\n");
                                 }
                             }else{
-                                sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + assess.getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
+                                sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
                             }
                         }else{
-                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + assess.getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
+                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
                         }
                     }
                     sb.append("</TD></TR>");
@@ -2006,7 +2006,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                             if (((XnatResourcecatalog)xnatFile).getTags_tag().size()>0){
                                 int counter =0;
                                 label +="&nbsp;&nbsp;Tags: ";
-                                for(XnatAbstractresourceTag tag : xnatFile.getTags_tag()){
+                                for(XnatAbstractresourceTagI tag : xnatFile.getTags_tag()){
                                     if (counter++>0)label+=", ";
                                     label+=tag.getTag();
                                 }
@@ -2200,8 +2200,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
     public boolean hasSRBData(){
         String rootPath =getArchiveRootPath();
-        for(XnatImagescandata scan : this.getSortedScans()){
-            ArrayList scanFiles= scan.getFile();
+        for(XnatImagescandataI scan : this.getSortedScans()){
+            List scanFiles= scan.getFile();
             Iterator files = scanFiles.iterator();
             while (files.hasNext())
             {
@@ -2234,8 +2234,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         {
             final String rootPath =getArchiveRootPath();
             String last_dir = null;
-            for(XnatImagescandata scan : this.getSortedScans()){
-                for (XnatAbstractresource xnatFile:scan.getFile())
+            for(XnatImagescandataI scan : this.getSortedScans()){
+            	for (XnatAbstractresourceI xnatFile:scan.getFile())
                 {
                     if (xnatFile instanceof org.nrg.xdat.om.XnatResource){
                         XnatResource resource = (XnatResource)xnatFile;
@@ -2313,9 +2313,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         if (session_dir==null)
         {
             String rootPath =getArchiveRootPath();
-            for(XnatImagescandata scan : this.getSortedScans()){
+            for(XnatImagescandataI scan : this.getSortedScans()){
             	logger.debug("CHECKING SCAN: "+scan.getId());
-                ArrayList scanFiles= scan.getFile();
+                List scanFiles= scan.getFile();
                 Iterator files = scanFiles.iterator();
                 while (files.hasNext())
                 {
@@ -2436,9 +2436,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
      * @param type
      * @return ArrayList of org.nrg.xdat.om.XnatMrscandata
      */
-    public ArrayList getScansByCondition(String c) {
-        ArrayList _return = new ArrayList();
-        for(XnatImagescandata scan : this.getSortedScans()){
+    public List<XnatImagescandataI> getScansByCondition(String c) {
+        List _return = new ArrayList();
+        for(XnatImagescandataI scan : this.getSortedScans()){
             String condition = scan.getCondition();
             if (condition ==null)
             {
@@ -2452,14 +2452,13 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 }
             }
         }
-        _return.trimToSize();
         return _return;
     }
 
 
-    public ArrayList<XnatAbstractresource> getAllResources(){
-        ArrayList<XnatAbstractresource> resources = new ArrayList<XnatAbstractresource>();
-        for(XnatImagescandata scan : this.getSortedScans()){
+    public List<XnatAbstractresourceI> getAllResources(){
+        List<XnatAbstractresourceI> resources = new ArrayList<XnatAbstractresourceI>();
+        for(XnatImagescandataI scan : this.getSortedScans()){
             Iterator files = scan.getFile().iterator();
             while (files.hasNext()){
                 XnatAbstractresource file = (XnatAbstractresource)files.next();
@@ -2484,7 +2483,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             }
         }
 
-        for(XnatImageassessordata assess : this.getAssessors_assessor()){
+        for(XnatImageassessordataI assess : this.getAssessors_assessor()){
             Iterator outfiles = assess.getOut_file().iterator();
             while (outfiles.hasNext()){
                 XnatAbstractresource file = (XnatAbstractresource)outfiles.next();
@@ -2726,7 +2725,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             }
             
             String[] types = new String[]{"FLASH5","FLASH20","FLASH30","FLASH3","BDYMAP100","BDYMAP","BOLD","DTI","FLAIR","FLASH","FST_MEF","HDMAP100","HDMAP","LO_RES","MEF30","MEF5","MPRAGE","MTC5","TSE","LOCALIZER","AASCOUT","3DT2"};
-            ArrayList al = this.getScans_scan();
+            List al = this.getScans_scan();
             if (al != null) {
                 for (int i = 0; i < al.size(); i++) {
                     XnatImagescandata scan = (XnatImagescandata) al.get(i);
@@ -2784,12 +2783,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 	}
                 	
                 	if(scan.getFile().size()>0){
-            			XnatAbstractresource abstRes=scan.getFile().get(0);
+            			XnatAbstractresourceI abstRes=scan.getFile().get(0);
                 		if(abstRes instanceof XnatResource){
                 			if(((XnatResource)abstRes).getContent()==null || ((XnatResource)abstRes).getContent().equals("")){
                 				((XnatResource)abstRes).setContent("RAW");
                 			}
-                			if(abstRes.getLabel()!=null && abstRes.getFormat()==null){
+                			if(abstRes.getLabel()!=null && ((XnatResource)abstRes).getFormat()==null){
                 				((XnatResource)abstRes).setFormat(abstRes.getLabel());
                 			}
                 		}
@@ -2804,9 +2803,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
     
     public void defaultQuality(String s){
-    	for(XnatImagescandata scan:this.getScans_scan()){
+    	for(XnatImagescandataI scan:this.getScans_scan()){
     		if(scan.getQuality()==null)
-    			scan.setQuality(s);
+    			((XnatImagescandata)scan).setQuality(s);
     	}
     }
     
@@ -2858,8 +2857,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             this.removeSharing_share(0);
         }
         
-        for (final XnatExperimentdataShare project : other.getSharing_share()) {
-            this.setSharing_share(project);
+        for (final XnatExperimentdataShareI project : other.getSharing_share()) {
+            this.setSharing_share((XnatExperimentdataShare)project);
         }
 
         if (null != other.getProject()){
@@ -2874,7 +2873,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         	}
         }
         
-        for(final XnatExperimentdataField otherField : other.getFields_field()){
+        for(final XnatExperimentdataFieldI otherField : other.getFields_field()){
         	final XnatExperimentdataField field=new XnatExperimentdataField(this.getUser());
         	if (otherField.getName() != null){
         		field.setName(otherField.getName());
@@ -2884,15 +2883,15 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         }
 	
 		int scancounter = 0;
-		for (final XnatImagescandata scan : this.getSortedScans()){
+		for (final XnatImagescandataI scan : this.getSortedScans()){
 		    final XnatImagescandata otherScan = other.getScanById(scan.getId());
 		    if (null != otherScan){
 			if (null != otherScan.getType())
-			    scan.setType(otherScan.getType());
+				((XnatImagescandata)scan).setType(otherScan.getType());
 			if (null != otherScan.getQuality())
-			    scan.setQuality(otherScan.getQuality());
+				((XnatImagescandata)scan).setQuality(otherScan.getQuality());
 			if (null != otherScan.getNote())
-			    scan.setNote(otherScan.getNote());
+				((XnatImagescandata)scan).setNote(otherScan.getNote());
 		    }
 		    scancounter++;
 		}
@@ -3021,7 +3020,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public void correctArchivePaths(boolean relativePaths)
     throws InvalidArchiveStructure {
 	final String session_path = getCurrentSessionFolder(false);
-	for (final XnatImagescandata scan : scans) {
+	for (final XnatImagescandataI scan : scans) {
 		final List<XnatAbstractresource> files=scan.getFile();
 	    for (final XnatAbstractresource file : files) {
 			file.appendToPaths(session_path);
@@ -3059,8 +3058,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
     		
-    		for(XnatImagescandata scan:this.getScans_scan()){
-    			for(XnatAbstractresource abstRes: scan.getFile()){
+    		for(XnatImagescandataI scan:this.getScans_scan()){
+    			for(XnatAbstractresourceI abstRes: scan.getFile()){
         			String uri= null;
         			if(abstRes instanceof XnatResource){
         				uri=((XnatResource)abstRes).getUri();
@@ -3096,15 +3095,15 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				//don't attempt to move sessions which are outside of the Session Directory.
             				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
-            			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+            			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
-            			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
         			}
     			}
     		}
     		
-    		for(XnatReconstructedimagedata recon:this.getReconstructions_reconstructedimage()){
-    			for(XnatAbstractresource abstRes: recon.getOut_file()){
+    		for(XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
+    			for(XnatAbstractresourceI abstRes: recon.getOut_file()){
         			String uri= null;
         			if(abstRes instanceof XnatResource){
         				uri=((XnatResource)abstRes).getUri();
@@ -3140,15 +3139,15 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				//don't attempt to move sessions which are outside of the Session Directory.
             				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
-            			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
-            			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
         			}
     			}
     		}
     		
-    		for(XnatImageassessordata assessor:this.getAssessors_assessor()){
-    			for(XnatAbstractresource abstRes: assessor.getOut_file()){
+    		for(XnatImageassessordataI assessor:this.getAssessors_assessor()){
+    			for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
         			String uri= null;
         			if(abstRes instanceof XnatResource){
         				uri=((XnatResource)abstRes).getUri();
@@ -3184,9 +3183,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				//don't attempt to move sessions which are outside of the Session Directory.
             				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
-            			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
         			}else{
-            			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
         			}
     			}
     		}
@@ -3315,8 +3314,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				return "Unable to delete subject.";
 			}
 
-    		for(XnatImageassessordata sad: expt.getAssessors_assessor()){
-    			String msg=sad.canDelete(proj,user);
+    		for(XnatImageassessordataI sad: expt.getAssessors_assessor()){
+    			String msg=((XnatImageassessordata)sad).canDelete(proj,user);
     			if(msg!=null){
     				return msg;
     			}
@@ -3352,9 +3351,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				
 				int index = 0;
 				int match = -1;
-				for(XnatExperimentdataShare pp : expt.getSharing_share()){
+				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", pp.getItem(), user);
+						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -3365,9 +3364,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				
 				this.removeSharing_share(match);
 
-				final  ArrayList<XnatImageassessordata> expts = expt.getAssessors_assessor();
-		        for (XnatImageassessordata iad : expts){
-		        	iad.delete(proj,user,false);
+				final  List<XnatImageassessordataI> expts = expt.getAssessors_assessor();
+		        for (XnatImageassessordataI iad : expts){
+		        	((XnatImageassessordata)iad).delete(proj,user,false);
 		        }
 		        
 				return null;
@@ -3389,7 +3388,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 					this.deleteFiles();
 				}
 
-				final  ArrayList<XnatImageassessordata> expts = expt.getAssessors_assessor();
+				final  List<XnatImageassessordata> expts = expt.getAssessors_assessor();
 		        for (XnatImageassessordata iad : expts){
 		        	msg=iad.delete(proj,user,removeFiles);
 		            if(msg!=null)return msg;
@@ -3413,25 +3412,25 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public void deleteFiles() throws IOException{
     	super.deleteFiles();
     	
-    	for(XnatImagescandata scan: this.getScans_scan()){
-        	for(XnatAbstractresource abstRes:scan.getFile()){
-        		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    	for(final XnatImagescandataI scan: this.getScans_scan()){
+        	for(XnatAbstractresourceI abstRes:scan.getFile()){
+        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
         	}
     	}
     	
-    	for(XnatReconstructedimagedata scan: this.getReconstructions_reconstructedimage()){
-        	for(XnatAbstractresource abstRes:scan.getOut_file()){
-        		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    	for(XnatReconstructedimagedataI scan: this.getReconstructions_reconstructedimage()){
+        	for(XnatAbstractresourceI abstRes:scan.getOut_file()){
+        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
         	}
     	}
     	
-    	for(XnatImageassessordata scan: this.getAssessors_assessor()){
-        	for(XnatAbstractresource abstRes:scan.getResources_resource()){
-        		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    	for(XnatImageassessordataI scan: this.getAssessors_assessor()){
+        	for(XnatAbstractresourceI abstRes:scan.getResources_resource()){
+        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
         	}
         	
-        	for(XnatAbstractresource abstRes:scan.getOut_file()){
-        		abstRes.deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+        	for(XnatAbstractresourceI abstRes:scan.getOut_file()){
+        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
         	}
     	}
     }
@@ -3476,8 +3475,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
-		for(final XnatImagescandata scan:this.getScans_scan()){
-			for(final XnatAbstractresource res: scan.getFile()){
+		for(final XnatImagescandataI scan:this.getScans_scan()){
+			for(final XnatAbstractresourceI res: scan.getFile()){
 				final String uri;
 				if(res instanceof XnatResource){
 					uri=((XnatResource)res).getUri();
@@ -3492,8 +3491,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		}
 		
 
-		for(final XnatReconstructedimagedata recon:this.getReconstructions_reconstructedimage()){
-			for(final XnatAbstractresource res: recon.getOut_file()){
+		for(final XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
+			for(final XnatAbstractresourceI res: recon.getOut_file()){
 				final String uri;
 				if(res instanceof XnatResource){
 					uri=((XnatResource)res).getUri();
@@ -3507,8 +3506,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 			}
 		}
 
-		for(final XnatReconstructedimagedata recon:this.getReconstructions_reconstructedimage()){
-			for(final XnatAbstractresource res: recon.getOut_file()){
+		for(final XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
+			for(final XnatAbstractresourceI res: recon.getOut_file()){
 				final String uri;
 				if(res instanceof XnatResource){
 					uri=((XnatResource)res).getUri();
@@ -3522,8 +3521,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 			}
 		}
 
-		for(final XnatImageassessordata assess:this.getAssessors_assessor()){
-			for(final XnatAbstractresource res: assess.getOut_file()){
+		for(final XnatImageassessordataI assess:this.getAssessors_assessor()){
+			for(final XnatAbstractresourceI res: assess.getOut_file()){
 				final String uri;
 				if(res instanceof XnatResource){
 					uri=((XnatResource)res).getUri();
@@ -3536,7 +3535,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 			}
 			
-			for(final XnatAbstractresource res: assess.getResources_resource()){
+			for(final XnatAbstractresourceI res: assess.getResources_resource()){
 				final String uri;
 				if(res instanceof XnatResource){
 					uri=((XnatResource)res).getUri();

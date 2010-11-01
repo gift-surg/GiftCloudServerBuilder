@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.om.XnatProjectparticipant;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatSubjectdataAddidI;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.XnatSubjectdataAddid;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.collections.ItemCollection;
@@ -72,7 +72,7 @@ public class SubjectFinder {
                         
                         if (!subject.getSharing_share().isEmpty()){
                             sb.append("<sharing>");
-                            for (final XnatProjectparticipant pp : subject.getSharing_share()){
+                            for (final XnatProjectparticipantI pp : subject.getSharing_share()){
                                 sb.append("<share ");
                                 if (pp.getLabel()==null){
                                     sb.append("label=\"").append(subject.getId());
@@ -86,7 +86,7 @@ public class SubjectFinder {
                         }
                         
                         if (!subject.getAddid().isEmpty()){
-                            for (final XnatSubjectdataAddid pp : subject.getAddid()){
+                            for (final XnatSubjectdataAddidI pp : subject.getAddid()){
                                 sb.append("<addID ");
                                 sb.append("name=\"").append(pp.getName()).append("\">");
                                 sb.append(pp.getAddid());

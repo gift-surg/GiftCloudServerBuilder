@@ -16,12 +16,7 @@ import org.apache.velocity.context.Context;
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatDicomseries;
-import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
 public abstract class PipelineLauncher {

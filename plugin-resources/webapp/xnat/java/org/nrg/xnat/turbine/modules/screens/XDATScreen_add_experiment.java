@@ -5,14 +5,8 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.security.ElementSecurity;
-import org.nrg.xdat.security.SecurityManager;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 

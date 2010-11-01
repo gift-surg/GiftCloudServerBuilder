@@ -18,6 +18,12 @@ import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.bean.CatEntryTagBean;
+import org.nrg.xdat.model.CatCatalogBeanI;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatEntryBeanI;
+import org.nrg.xdat.model.CatEntryI;
+import org.nrg.xdat.model.CatEntryMetafieldI;
+import org.nrg.xdat.model.CatEntryTagI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -188,13 +194,13 @@ public class XNATCatalogTemplate extends XNATTemplate {
 		public boolean accept(final CatEntryBean entry);
 	}
     
-    protected ArrayList<File> getFiles(CatCatalogBean cat,String parentPath){
+    protected ArrayList<File> getFiles(CatCatalogBeanI cat,String parentPath){
     	ArrayList<File> al = new ArrayList<File>();
-		for(CatCatalogBean subset:cat.getSets_entryset()){
+		for(CatCatalogBeanI subset:cat.getSets_entryset()){
 			al.addAll(getFiles(subset,parentPath));
 		}
 		
-		for(CatEntryBean entry:cat.getEntries_entry()){
+		for(CatEntryBeanI entry:cat.getEntries_entry()){
 			String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
             File f=getFileOnLocalFileSystem(entryPath);
             
@@ -205,14 +211,14 @@ public class XNATCatalogTemplate extends XNATTemplate {
 		return al;
 	}
 	
-	protected CatEntryBean getEntryByURI(CatCatalogBean cat, String name){
-		CatEntryBean e=null;
-		for(CatCatalogBean subset:cat.getSets_entryset()){
+	protected CatEntryI getEntryByURI(CatCatalogI cat, String name){
+		CatEntryI e=null;
+		for(CatCatalogI subset:cat.getSets_entryset()){
 			e = getEntryByURI(subset,name);
 			if(e!=null) return e;
 		}
 		
-		for(CatEntryBean entry:cat.getEntries_entry()){
+		for(CatEntryI entry:cat.getEntries_entry()){
 			try {
 				String decoded=URLDecoder.decode(name);
 				if(entry.getUri().equals(name) ||  entry.getUri().equals(decoded)){
@@ -246,14 +252,14 @@ public class XNATCatalogTemplate extends XNATTemplate {
 		return null;
 	}
 	
-	protected CatEntryBean getEntryByName(CatCatalogBean cat, String name){
-		CatEntryBean e=null;
-		for(CatCatalogBean subset:cat.getSets_entryset()){
+	protected CatEntryI getEntryByName(CatCatalogI cat, String name){
+		CatEntryI e=null;
+		for(CatCatalogI subset:cat.getSets_entryset()){
 			e = getEntryByName(subset,name);
 			if(e!=null) return e;
 		}
 		
-		for(CatEntryBean entry:cat.getEntries_entry()){
+		for(CatEntryI entry:cat.getEntries_entry()){
 			String decoded=URLDecoder.decode(name);
 			if(entry.getName().equals(name) ||  entry.getName().equals(decoded)){
 				return entry;
@@ -263,14 +269,14 @@ public class XNATCatalogTemplate extends XNATTemplate {
 		return null;
 	}
 	
-	protected CatEntryBean getEntryById(CatCatalogBean cat, String name){
-		CatEntryBean e=null;
-		for(CatCatalogBean subset:cat.getSets_entryset()){
+	protected CatEntryI getEntryById(CatCatalogI cat, String name){
+		CatEntryI e=null;
+		for(CatCatalogI subset:cat.getSets_entryset()){
 			e = getEntryByName(subset,name);
 			if(e!=null) return e;
 		}
 		
-		for(CatEntryBean entry:cat.getEntries_entry()){
+		for(CatEntryI entry:cat.getEntries_entry()){
 			if(entry.getId().equals(name)){
 				return entry;
 			}
@@ -564,7 +570,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
                 	if(!f.isDirectory()){
                     	String relative = destinationDir.toURI().relativize(f.toURI()).getPath();
                     	
-                    	CatEntryBean e= this.getEntryByURI(cat, relative);
+                    	CatEntryI e= this.getEntryByURI(cat, relative);
         				
         				if(e==null){
         				    CatEntryBean newEntry = new CatEntryBean();
@@ -620,7 +626,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 				saveTo.getParentFile().mkdirs();
 				fi.write(saveTo);
 				
-				CatEntryBean e= this.getEntryByURI(cat, dest);
+				CatEntryI e= this.getEntryByURI(cat, dest);
 				
 				if(e==null){
 				    CatEntryBean newEntry = new CatEntryBean();

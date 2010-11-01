@@ -3,8 +3,6 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;

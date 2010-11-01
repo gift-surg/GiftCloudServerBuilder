@@ -7,13 +7,12 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
@@ -21,7 +20,6 @@ import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
-import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
@@ -174,7 +172,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 						}else if(assessor.getProject().equals(this.proj.getId())){
 						}else{
 							boolean matched=false;
-							for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+							for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 								if(pp.getProject().equals(this.proj.getId())){
 									matched=true;
 									break;
@@ -204,7 +202,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 							}
 							
 							if(this.assessed==null){
-								for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+								for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 								this.assessed=XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), assessor.getImagesessionId(),user, false);
 									if(this.assessed!=null){
 										break;
@@ -225,7 +223,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 					}
 					
 					if(existing==null){
-						for(XnatExperimentdataShare pp : assessor.getSharing_share()){
+						for(XnatExperimentdataShareI pp : assessor.getSharing_share()){
 						existing=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
 							if(existing!=null){
 								break;

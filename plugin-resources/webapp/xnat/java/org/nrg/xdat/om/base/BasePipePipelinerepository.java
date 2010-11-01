@@ -5,7 +5,24 @@
  *
  */
 package org.nrg.xdat.om.base;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.nrg.pipeline.PipelineRepositoryManager;
+import org.nrg.xdat.model.ArcProjectDescendantI;
+import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
+import org.nrg.xdat.model.ArcProjectPipelineI;
+import org.nrg.xdat.model.PipePipelinedetailsElementI;
+import org.nrg.xdat.model.PipePipelinedetailsI;
+import org.nrg.xdat.model.PipePipelinedetailsParameterI;
+import org.nrg.xdat.model.XnatAbstractprotocolI;
 import org.nrg.xdat.om.ArcPipelinedata;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
@@ -17,21 +34,16 @@ import org.nrg.xdat.om.PipePipelinedetailsElement;
 import org.nrg.xdat.om.PipePipelinedetailsParameter;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.base.auto.*;
+import org.nrg.xdat.om.base.auto.AutoPipePipelinerepository;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.*;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.ajax.writer.ResponseWriterI;
 import org.nrg.xnat.ajax.writer.WriterFactory;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author XDAT
@@ -122,7 +134,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		cols.add("Generates"); cols.add("Name"); cols.add("Description"); cols.add("Path");
 		cols.add("Datatype");
 		table.initTable(cols);
-		ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
 		if (pipelines.size() > 0 ) {
 			for (int i = 0; i < pipelines.size(); i++) {
 				PipePipelinedetails pipeline = getPipeline(pipelines.get(i).getLocation());
@@ -136,10 +148,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 				table.insertRow(rowEntries);
 			}
 		}
-		ArrayList<ArcProjectDescendant> descendants = arcProject.getPipelines_descendants_descendant();
+		List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
 		if (descendants.size() > 0 ) {
 			for (int i = 0; i < descendants.size(); i++) {
-				ArrayList<ArcProjectDescendantPipeline> pipelinesDesc = descendants.get(i).getPipeline();
+				List<ArcProjectDescendantPipelineI> pipelinesDesc = descendants.get(i).getPipeline();
 				for (int j = 0; j < pipelinesDesc.size(); j++) {
 					PipePipelinedetails pipeline = getPipeline(pipelinesDesc.get(j).getLocation());
 					String[] rowEntries = new String[6];
@@ -158,9 +170,9 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 
 	public PipePipelinedetails getPipeline(String path) {
 		PipePipelinedetails rtn = null;
-		ArrayList<PipePipelinedetails> pipelines = getPipeline();
+		List<PipePipelinedetailsI> pipelines = getPipeline();
 		for (int i = 0; i < pipelines.size(); i++) {
-			PipePipelinedetails pipeline = pipelines.get(i);
+			PipePipelinedetails pipeline = (PipePipelinedetails)pipelines.get(i);
 			if (pipeline.getPath().equals(path)) {
 				rtn = pipeline;
 				break;
@@ -180,7 +192,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		cols.add("DataType");
 		cols.add("Generates"); cols.add("Description"); cols.add("Project");
 		rtn.initTable(cols);
-		ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
 		if (pipelines.size() == 0) { // No pipelines have been set for the project. Return site wide project specific ones
 			return getFilteredResultsTable(project);
 		}
@@ -196,10 +208,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			rtn.insertRow(rowEntries);
 		}
 		//Get all the pipelines for the associated datatypes
-		ArrayList<XnatAbstractprotocol> studyProtocols = project.getStudyprotocol();
+		List<XnatAbstractprotocolI> studyProtocols = project.getStudyprotocol();
 		if (studyProtocols.size() == 0) return rtn;
 		for (int i = 0; i < studyProtocols.size(); i++) {
-			XnatAbstractprotocol protocol = studyProtocols.get(i);
+			XnatAbstractprotocol protocol = (XnatAbstractprotocol)studyProtocols.get(i);
 			XFTTable results = getResultsTable(project.getId(), protocol.getDataType());
 			if (results.getNumRows() >= 1) {
 				while (results.hasMoreRows()) {
@@ -218,10 +230,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 
 	private Hashtable<String, ArrayList<PipePipelinedetails>> getPipelinesPerDataType() {
 		Hashtable<String, ArrayList<PipePipelinedetails>> rtn = new Hashtable<String, ArrayList<PipePipelinedetails>>();
-		ArrayList<PipePipelinedetails> pipelines = getPipeline();
+		List<PipePipelinedetailsI> pipelines = getPipeline();
 		if (pipelines.size() > 0 ) {
 			for (int i = 0; i < pipelines.size(); i++) {
-				PipePipelinedetails pipeline = pipelines.get(i);
+				PipePipelinedetails pipeline = (PipePipelinedetails)pipelines.get(i);
 				if (rtn.containsKey(pipeline.getAppliesto())) {
 					ArrayList<PipePipelinedetails> groupedByAppliesTo = rtn.get(pipeline.getAppliesto());
 					groupedByAppliesTo.add(pipeline);
@@ -276,7 +288,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		rtn.initTable(cols);
 		ArcProjectDescendant descendantEle = arcProject.getDescendant(descendant);
 		if (descendantEle != null) {
-			ArrayList<ArcProjectDescendantPipeline> pipelines = descendantEle.getPipeline();
+			List<ArcProjectDescendantPipelineI> pipelines = descendantEle.getPipeline();
 			for (int i = 0; i < pipelines.size(); i++) {
 				String[] rowEntries = new String[3];
 				rowEntries[0] = lookupElementsGeneratedBy(descendant, pipelines.get(i).getLocation() + File.separator + pipelines.get(i).getName());
@@ -412,10 +424,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			String customwebpage = pipeline.getCustomwebpage();
 			if (customwebpage != null)
 				pBean.setCustomwebpage(customwebpage);
-			ArrayList<PipePipelinedetailsParameter> parameters = pipeline.getParameters_parameter();
+			List<PipePipelinedetailsParameterI> parameters = pipeline.getParameters_parameter();
 			if (parameters != null && parameters.size() > 0 ) {
 				for (int j = 0; j < parameters.size(); j++) {
-					PipePipelinedetailsParameter parameter = parameters.get(j);
+					PipePipelinedetailsParameterI parameter = parameters.get(j);
 					ArcPipelineparameterdata paramData = new ArcPipelineparameterdata();
 					paramData.setName(parameter.getName());
 					description = parameter.getDescription();
@@ -444,9 +456,9 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		boolean save = false;
 		try {
 		if (dataType.equalsIgnoreCase(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
-			ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+			List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
 			for (int i = 0; i < pipelines.size(); i++) {
-				ArcProjectPipeline pipeline = pipelines.get(i);
+				ArcProjectPipeline pipeline = (ArcProjectPipeline)pipelines.get(i);
 				if (pipeline.getLocation().equals(pathToPipeline)) {
 					arcProject.removePipelines_pipeline(i);
 					save = true;
@@ -456,9 +468,9 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			ArcProjectDescendant descendant = arcProject.getDescendant(dataType);
 			if (descendant == null) success = false;
 			else {
-				ArrayList<ArcProjectDescendantPipeline> pipelines =  descendant.getPipeline();
+				List<ArcProjectDescendantPipelineI> pipelines =  descendant.getPipeline();
 				for (int i = 0; i < pipelines.size(); i++) {
-					ArcProjectDescendantPipeline pipeline = pipelines.get(i);
+					ArcProjectDescendantPipeline pipeline = (ArcProjectDescendantPipeline)pipelines.get(i);
 					if (pipeline.getLocation().equals(pathToPipeline)) {
 						descendant.removePipeline(i);
 						save = true;
@@ -499,10 +511,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			String customwebpage = pipeline.getCustomwebpage();
 			if (customwebpage != null)
 				pBean.setCustomwebpage(customwebpage);
-			ArrayList<PipePipelinedetailsParameter> parameters = pipeline.getParameters_parameter();
+			List<PipePipelinedetailsParameterI> parameters = pipeline.getParameters_parameter();
 			if (parameters != null && parameters.size() > 0 ) {
 				for (int j = 0; j < parameters.size(); j++) {
-					PipePipelinedetailsParameter parameter = parameters.get(j);
+					PipePipelinedetailsParameter parameter = (PipePipelinedetailsParameter)parameters.get(j);
 					ArcPipelineparameterdata paramData = new ArcPipelineparameterdata();
 					paramData.setName(parameter.getName());
 					description = parameter.getDescription();
@@ -550,7 +562,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			ArrayList<PipePipelinedetails> pipelinesForDataType = repository.get(dataType);
 			for (int i = 0; i < pipelinesForDataType.size(); i++) {
 				PipePipelinedetails pipeline = pipelinesForDataType.get(i);
-				ArrayList<PipePipelinedetailsElement> generatedElements = pipeline.getGenerateselements_element();
+				List<PipePipelinedetailsElementI> generatedElements = pipeline.getGenerateselements_element();
 				if (generatedElements.size() > 0) {
 					for (int j = 0; j < generatedElements.size(); j++) {
 						rtn.put(generatedElements.get(j).getElement().trim(), "");
@@ -571,7 +583,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		write(resultsTable, request, response);
 	}
 
-	private boolean exists(ArrayList<ArcProjectPipeline> pipelines, String path) {
+	private boolean exists(List<ArcProjectPipelineI> pipelines, String path) {
 		boolean exists = false;
 		if (pipelines == null || path == null || pipelines.size() == 0) return false;
 		for (int i = 0; i < pipelines.size(); i++) {
@@ -584,7 +596,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		return exists;
 	}
 
-	private boolean existsDesc(ArrayList<ArcProjectDescendantPipeline> pipelines, String path) {
+	private boolean existsDesc(List<ArcProjectDescendantPipelineI> pipelines, String path) {
 		boolean exists = false;
 		if (pipelines == null || path == null || pipelines.size() == 0 ) return exists;
 		for (int i = 0; i < pipelines.size(); i++) {
@@ -601,7 +613,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 
 	public String getElementsGeneratedBy(PipePipelinedetails pipeline) {
 		String rtn = "";
-		ArrayList<PipePipelinedetailsElement> generatedElements = pipeline.getGenerateselements_element();
+		List<PipePipelinedetailsElementI> generatedElements = pipeline.getGenerateselements_element();
 		if (generatedElements.size() > 0) {
 				for (int i = 0; i < generatedElements.size(); i++) {
 					rtn +=getDisplayName(generatedElements.get(i).getElement()) + ",";
@@ -654,10 +666,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 				rtn.insertRow(rowEntries);
 			}
 		}
-		ArrayList<XnatAbstractprotocol> studyProtocols = project.getStudyprotocol();
+		List<XnatAbstractprotocolI> studyProtocols = project.getStudyprotocol();
 		if (studyProtocols.size() == 0) return rtn;
 		for (int i = 0; i < studyProtocols.size(); i++) {
-			XnatAbstractprotocol protocol = studyProtocols.get(i);
+			XnatAbstractprotocol protocol = (XnatAbstractprotocol)studyProtocols.get(i);
 			XFTTable results = getResultsTable(project.getId(), protocol.getDataType());
 			if (results.getNumRows() >= 1) {
 				while (results.hasMoreRows()) {
@@ -685,7 +697,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			return new XFTTable();
 		}
 		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project.getId());
-		ArrayList<ArcProjectPipeline> projectSelectedPipelines = arcProject.getPipelines_pipeline();
+		List<ArcProjectPipelineI> projectSelectedPipelines = arcProject.getPipelines_pipeline();
 		//Gather only those pipelines which have not been selected.
 		ArrayList<PipePipelinedetails> additionalPipelines = new ArrayList<PipePipelinedetails>();
 		for (int i = 0; i < pipelines.size(); i++) {
@@ -702,13 +714,13 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			rowEntries[3] = "Site";
 			rtn.insertRow(rowEntries);
 		}
-		ArrayList<XnatAbstractprotocol> studyProtocols = project.getStudyprotocol();
+		List<XnatAbstractprotocolI> studyProtocols = project.getStudyprotocol();
 		if (studyProtocols.size() == 0) return rtn;
 		Hashtable<String, ArrayList<PipePipelinedetails>> additionalPipelineHash = new Hashtable<String,ArrayList<PipePipelinedetails>>();
 		for (int i = 0; i < studyProtocols.size(); i++) {
-			XnatAbstractprotocol protocol = studyProtocols.get(i);
+			XnatAbstractprotocol protocol = (XnatAbstractprotocol)studyProtocols.get(i);
 			ArrayList<PipePipelinedetails> descpipelines =  getAllPipelines(protocol.getDataType());
-			ArrayList<ArcProjectDescendantPipeline> projectSelectedDescPipelines = arcProject.getPipelinesForDescendant(protocol.getDataType());
+			List<ArcProjectDescendantPipelineI> projectSelectedDescPipelines = arcProject.getPipelinesForDescendant(protocol.getDataType());
 			ArrayList<PipePipelinedetails> additionalDescPipelines = new ArrayList<PipePipelinedetails>();
 			if (descpipelines != null) {
 				for (int j = 0; j < descpipelines.size() ; j++) {
@@ -808,7 +820,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		}
 		}catch(Exception e) {}
 */		if (pipelinesHash != null && pipelinesHash.size() > 0) { //There are some site   pipelines
-			ArrayList<ArcProjectPipeline> projectSelectedPipelines = arcProject.getPipelines_pipeline();
+			List<ArcProjectPipelineI> projectSelectedPipelines = arcProject.getPipelines_pipeline();
 			//Gather only those pipelines which have not been selected.
 			ArrayList<ArcPipelinedata> additionalPipelines = new ArrayList<ArcPipelinedata>();
 			ArrayList<ArcPipelinedata> pipelines = pipelinesHash.get(project.SCHEMA_ELEMENT_NAME);
@@ -846,7 +858,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			while (keys.hasMoreElements()) {
 				String xsiType = keys.nextElement();
 				ArrayList<ArcPipelinedata> descpipelines =  pipelinesHash.get(xsiType);
-				ArrayList<ArcProjectDescendantPipeline> projectSelectedDescPipelines = arcProject.getPipelinesForDescendant(xsiType);
+				List<ArcProjectDescendantPipelineI> projectSelectedDescPipelines = arcProject.getPipelinesForDescendant(xsiType);
 				ArrayList<ArcPipelinedata> additionalDescPipelines = new ArrayList<ArcPipelinedata>();
 				if (descpipelines != null) {
 					for (int j = 0; j < descpipelines.size() ; j++) {
@@ -873,8 +885,8 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		return rtn;
 	}
 
-	public ArrayList getAdditionalPipelinesForDatatype(XnatProjectdata project, String schemaType) throws Exception{
-		ArrayList rtn = new ArrayList();
+	public List getAdditionalPipelinesForDatatype(XnatProjectdata project, String schemaType) throws Exception{
+		List rtn = new ArrayList();
 		ArcProject arcProject = getAdditionalPipelines(project);
 		if (arcProject == null) return rtn;
 		if (schemaType.equals(project.SCHEMA_ELEMENT_NAME)) {

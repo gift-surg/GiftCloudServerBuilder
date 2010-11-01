@@ -24,13 +24,13 @@ import org.apache.turbine.modules.screens.RawScreen;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.parser.ParameterParser;
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatCatalogTagBean;
 import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatCatalogTagI;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -152,14 +152,14 @@ public class ArcPut extends RawScreen {
                                 try {
                                     BaseElement base = reader.parse(fis);
                                     if (base instanceof CatCatalogBean){
-                                        CatCatalogBean cBean=(CatCatalogBean)base;
+                                        CatCatalogI cBean=(CatCatalogBean)base;
                                         XnatResourcecatalog cat = new XnatResourcecatalog((UserI)TurbineUtils.getUser(data));
                                         if (cBean.getId()!=null){
                                             cat.setLabel(cBean.getId());
                                         }else{
                                             cat.setLabel(Calendar.getInstance().getTime().toString());
                                         }
-                                        for(CatCatalogTagBean tag: cBean.getTags_tag()){
+                                        for(CatCatalogTagI tag: cBean.getTags_tag()){
                                         	XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)TurbineUtils.getUser(data));
                                             t.setTag(tag.getTag());
                                             cat.setTags_tag(t);
@@ -188,14 +188,14 @@ public class ArcPut extends RawScreen {
                                         try {
                                             BaseElement base = reader.parse(fis);
                                             if (base instanceof CatCatalogBean){
-                                                CatCatalogBean cBean=(CatCatalogBean)base;
+                                                CatCatalogI cBean=(CatCatalogBean)base;
                                                 XnatResourcecatalog cat = new XnatResourcecatalog((UserI)TurbineUtils.getUser(data));
                                                 if (cBean.getId()!=null){
                                                     cat.setLabel(cBean.getId());
                                                 }else{
                                                     cat.setLabel(Calendar.getInstance().getTime().toString());
                                                 }
-                                                for(CatCatalogTagBean tag: cBean.getTags_tag()){
+                                                for(CatCatalogTagI tag: cBean.getTags_tag()){
                                                 	XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)TurbineUtils.getUser(data));
                                                     t.setTag(tag.getTag());
                                                     cat.setTags_tag(t);

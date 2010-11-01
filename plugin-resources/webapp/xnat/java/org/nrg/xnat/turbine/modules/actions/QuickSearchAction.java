@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.om.XdatSearchField;
 import org.nrg.xdat.search.CriteriaCollection;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.ElementSecurity;

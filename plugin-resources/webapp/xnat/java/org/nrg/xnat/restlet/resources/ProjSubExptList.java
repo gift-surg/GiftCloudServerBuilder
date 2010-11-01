@@ -4,26 +4,22 @@ package org.nrg.xnat.restlet.resources;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
@@ -196,7 +192,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 						}else if(expt.getProject().equals(this.proj.getId())){
 						}else{
 							boolean matched=false;
-							for(XnatExperimentdataShare pp : expt.getSharing_share()){
+							for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 								if(pp.getProject().equals(this.proj.getId())){
 									matched=true;
 									break;
@@ -226,7 +222,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 							}
 
 							if(this.subject==null){
-								for(XnatExperimentdataShare pp : expt.getSharing_share()){
+								for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 								this.subject=XnatSubjectdata.GetSubjectByProjectIdentifier(pp.getProject(), expt.getSubjectId(),user, false);
 									if(this.subject!=null){
 										break;
@@ -261,7 +257,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 					}
 
 					if(existing==null){
-						for(XnatExperimentdataShare pp : expt.getSharing_share()){
+						for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 						existing=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
 							if(existing!=null){
 								break;

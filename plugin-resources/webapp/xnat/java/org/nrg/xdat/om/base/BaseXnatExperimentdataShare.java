@@ -5,15 +5,16 @@
  *
  */
 package org.nrg.xdat.om.base;
+import java.sql.SQLException;
+import java.util.Hashtable;
+
+import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectdataI;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
+import org.nrg.xdat.om.base.auto.AutoXnatExperimentdataShare;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.security.UserI;
-
-import java.sql.SQLException;
-import java.util.*;
 
 /**
  * @author XDAT

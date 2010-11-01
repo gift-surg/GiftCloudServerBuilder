@@ -15,20 +15,15 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
-import org.nrg.xdat.turbine.modules.actions.ModifyItem.CriticalException;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 public class ManageEntryAccess extends ModifyItem {

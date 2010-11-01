@@ -4,7 +4,6 @@ package org.nrg.xnat.turbine.modules.actions;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.servlet.http.HttpSession;
 

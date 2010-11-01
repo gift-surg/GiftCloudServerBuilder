@@ -25,9 +25,10 @@ import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatCatalogTagBean;
 import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
+import org.nrg.xdat.model.CatCatalogTagI;
+import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
@@ -312,7 +313,7 @@ public class ExptFileUpload extends SecureAction {
                                         cat.setLabel(Calendar.getInstance().getTime().toString());
                                     }
                                     
-                                    for(CatCatalogTagBean tag: cBean.getTags_tag()){
+                                    for(CatCatalogTagI tag: cBean.getTags_tag()){
                                     	XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)TurbineUtils.getUser(data));
                                         
                                         t.setTag(tag.getTag());
@@ -354,7 +355,7 @@ public class ExptFileUpload extends SecureAction {
                                                 cat.setLabel(Calendar.getInstance().getTime().toString());
                                             }
                                             
-                                            for(CatCatalogTagBean tag: cBean.getTags_tag()){
+                                            for(CatCatalogTagI tag: cBean.getTags_tag()){
                                             	XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)TurbineUtils.getUser(data));
                                                 
                                                 t.setTag(tag.getTag());

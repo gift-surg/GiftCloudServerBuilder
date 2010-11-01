@@ -5,15 +5,10 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Calendar;
 import java.util.Hashtable;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.ListingAction;

@@ -6,14 +6,12 @@
 package org.nrg.xnat.ajax;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xft.ItemI;
 
 public class CountFiles {
 

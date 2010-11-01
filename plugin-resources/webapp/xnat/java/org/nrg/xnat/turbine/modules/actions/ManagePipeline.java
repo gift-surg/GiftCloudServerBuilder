@@ -27,7 +27,7 @@ import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
-import org.nrg.xdat.om.ArcPipelinedataI;
+import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendant;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;

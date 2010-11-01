@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatPetscandataI;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatPetscandataI;
 import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.om.base.auto.AutoXnatPetsessiondata;
 import org.nrg.xft.ItemI;

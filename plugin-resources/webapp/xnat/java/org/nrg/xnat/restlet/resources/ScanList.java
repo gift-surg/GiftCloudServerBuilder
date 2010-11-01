@@ -3,7 +3,6 @@ package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatCtsessiondata;
@@ -19,16 +18,13 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.db.ViewManager;
-import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
-import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;

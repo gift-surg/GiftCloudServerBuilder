@@ -12,7 +12,6 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
-import org.xml.sax.SAXException;
 
 
 public class XMLXFTItemRepresentation extends OutputRepresentation {

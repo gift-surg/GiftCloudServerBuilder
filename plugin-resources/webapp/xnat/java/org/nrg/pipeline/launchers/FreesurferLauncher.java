@@ -17,7 +17,6 @@ import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.pipeline.utils.FileUtils;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.ItemI;
 
 public class FreesurferLauncher extends PipelineLauncher{
 	ArrayList<String> mprageScans = null;

@@ -5,14 +5,16 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatImageassessordataI;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatSubjectassessordataI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XdatUsergroup;
@@ -50,13 +52,13 @@ public class DeleteProjectData extends SecureAction {
                 if (subject!=null){
                 	boolean preventSubjectDelete=false;
                 	boolean preventSubjectDeleteByP=false;
-                   final  ArrayList<XnatSubjectassessordata> expts = subject.getExperiments_experiment();
+                   final  List<XnatSubjectassessordataI> expts = subject.getExperiments_experiment();
                    
                    if(!(preventSubjectDelete || preventSubjectDeleteByP) && expts.size()!=subject.getSubjectAssessorCount()){
                    	preventSubjectDelete=true;
                    }
                    
-                    for (XnatSubjectassessordata exptI : expts){
+                    for (XnatSubjectassessordataI exptI : expts){
                         	if (TurbineUtils.HasPassedParameter("expt_" + exptI.getId().toLowerCase(), data)){
                                 final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 
@@ -80,21 +82,21 @@ public class DeleteProjectData extends SecureAction {
                                     }
                                 }else{
                                 	preventSubjectDelete=true;
-                                	for(XnatExperimentdataShare pp : expt.getSharing_share()){
+                                	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
                                 		if(pp.getProject().equals(project.getId())){
-                                			DBAction.DeleteItem(pp.getItem(),user);
+                                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
                                 		}
                                 	}
                                 }
                             }else{
                                 if (exptI instanceof XnatImagesessiondata){
-                                    for (XnatImageassessordata expt: ((XnatImagesessiondata)exptI).getAssessors_assessor()){
+                                    for (XnatImageassessordataI expt: ((XnatImagesessiondata)exptI).getAssessors_assessor()){
                                         if (TurbineUtils.HasPassedParameter("expt_" + expt.getId().toLowerCase(), data)){
 
                                             if(expt.getProject().equals(project.getId())){
-                                                if(user.canDelete(expt)){
+                                                if(user.canDelete((XnatImageassessordata)expt)){
 		                                        	if (TurbineUtils.HasPassedParameter("removeFiles", data)){
-		                                            	final List<XFTItem> hash = expt.getItem().getChildrenOfType("xnat:abstractResource");
+		                                            	final List<XFTItem> hash = ((XnatImageassessordata)expt).getItem().getChildrenOfType("xnat:abstractResource");
 		                                                
 		                                                for (XFTItem resource : hash){
 		                                                    ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
@@ -104,15 +106,15 @@ public class DeleteProjectData extends SecureAction {
 		                                                    }
 		                                                }
 		                                            }
-		                                            DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+		                                            DBAction.DeleteItem(((XnatImageassessordata)expt).getItem().getCurrentDBVersion(), user);
                                                 }else{
                                                 	preventSubjectDeleteByP=true;
                                                 }
                                             }else{
                                             	preventSubjectDelete=true;
-                                            	for(XnatExperimentdataShare pp : expt.getSharing_share()){
+                                            	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
                                             		if(pp.getProject().equals(project.getId())){
-                                            			DBAction.DeleteItem(pp.getItem(),user);
+                                            			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
                                             		}
                                             	}
                                             }
@@ -128,9 +130,9 @@ public class DeleteProjectData extends SecureAction {
                     
                     if (TurbineUtils.HasPassedParameter("subject_" + subject.getId().toLowerCase(), data)){
                     	if(!subject.getProject().equals(project.getId())){
-                    		for(XnatProjectparticipant pp : subject.getSharing_share()){
+                    		for(XnatProjectparticipantI pp : subject.getSharing_share()){
                         		if(pp.getProject().equals(project.getId())){
-                        			DBAction.DeleteItem(pp.getItem(),user);
+                        			DBAction.DeleteItem(((XnatProjectparticipant)pp).getItem(),user);
                         		}
                         	}
                     	}else{

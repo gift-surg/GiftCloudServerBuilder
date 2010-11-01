@@ -1,19 +1,17 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
-import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
@@ -124,7 +122,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 						}else if(sub.getProject().equals(this.proj.getId())){
 						}else{
 							boolean matched=false;
-							for(XnatProjectparticipant pp : sub.getSharing_share()){
+							for(XnatProjectparticipantI pp : sub.getSharing_share()){
 								if(pp.getProject().equals(this.proj.getId())){
 									matched=true;
 									break;
@@ -132,9 +130,9 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 							}
 							
 							if(!matched){
-								XnatProjectparticipant pp= new XnatProjectparticipant((UserI)user);
-								pp.setProject(this.proj.getId());
-								sub.setSharing_share(pp);
+								XnatProjectparticipantI pp= new XnatProjectparticipant((UserI)user);
+								((XnatProjectparticipant)pp).setProject(this.proj.getId());
+								sub.setSharing_share((XnatProjectparticipant)pp);
 							}
 						}
 					}else{
@@ -152,7 +150,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 					}
 					
 					if(existing==null){
-						for(XnatProjectparticipant pp : sub.getSharing_share()){
+						for(XnatProjectparticipantI pp : sub.getSharing_share()){
 						existing=XnatSubjectdata.GetSubjectByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
 							if(existing!=null){
 								break;

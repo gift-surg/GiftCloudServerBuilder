@@ -6,25 +6,16 @@
 package org.nrg.xnat.turbine.modules.screens;
 
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.TreeMap;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
-import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.XFTTableI;
-import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xnat.turbine.modules.actions.ProcessAccessRequest;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 public class XDATScreen_manage_xnat_projectData  extends SecureReport {

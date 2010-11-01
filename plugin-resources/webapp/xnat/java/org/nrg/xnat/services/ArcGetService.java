@@ -5,45 +5,7 @@
  */
 package org.nrg.xnat.services;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.zip.ZipOutputStream;
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import org.apache.axis.AxisEngine;
-import org.apache.axis.Message;
-import org.apache.axis.MessageContext;
-import org.apache.axis.attachments.AttachmentPart;
 import org.apache.log4j.Logger;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.security.UserCache;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.security.XDATUser.FailedLoginException;
-import org.nrg.xdat.turbine.utils.AccessLogger;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
-import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
-import org.nrg.xft.utils.zip.ZipI;
-import org.nrg.xft.utils.zip.ZipUtils;
-import org.nrg.xnat.srb.XNATDirectory;
-import org.xml.sax.SAXException;
 
 /**
  * @author timo

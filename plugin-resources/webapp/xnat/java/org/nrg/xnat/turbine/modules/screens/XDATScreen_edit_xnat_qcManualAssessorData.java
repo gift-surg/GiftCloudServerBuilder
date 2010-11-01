@@ -2,8 +2,8 @@
 package org.nrg.xnat.turbine.modules.screens;
 
 import org.apache.turbine.util.RunData;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrqcscandata;
 import org.nrg.xdat.om.XnatMrscandata;
@@ -39,7 +39,7 @@ public class XDATScreen_edit_xnat_qcManualAssessorData
 					qcAccessor.setId(XnatExperimentdata.CreateNewID());
 					qcAccessor.setProject(imageSession.getProject());
 					
-					for (XnatImagescandata imageScan: imageSession.getScans_scan()){
+					for (XnatImagescandataI imageScan: imageSession.getScans_scan()){
 						XnatQcscandata scan;
 						if (XnatPetscandata.SCHEMA_ELEMENT_NAME.equals(imageScan.getXSIType())) {
 							scan = new XnatPetqcscandata(user);

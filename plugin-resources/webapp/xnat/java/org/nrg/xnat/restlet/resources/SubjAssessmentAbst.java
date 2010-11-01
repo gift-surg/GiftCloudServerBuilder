@@ -19,6 +19,8 @@ import org.nrg.ecat.xnat.PETSessionBuilder;
 import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.session.SessionBuilder.MultipleSessionException;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -192,16 +194,16 @@ public class SubjAssessmentAbst extends QueryOrganizerResource {
         }else{
             newmr.copyValuesFrom(tempMR);
 
-            for (final XnatImagescandata newscan : newmr.getSortedScans()){
+            for (final XnatImagescandataI newscan : newmr.getSortedScans()){
             	final XnatImagescandata oldScan = tempMR.getScanById(newscan.getId());
             	if(oldScan!=null){
-                	newscan.setXnatImagescandataId(oldScan.getXnatImagescandataId());
+                	((XnatImagescandata)newscan).setXnatImagescandataId(oldScan.getXnatImagescandataId());
                 	
         		    if(!allowDataDeletion){
         		    	if(newscan.getFile().size()>0){
         		    		XnatResource newcat=(XnatResource)newscan.getFile().get(0);
         		    		
-        		    		XnatAbstractresource oldCat=oldScan.getFile().get(0);
+        		    		XnatAbstractresourceI oldCat=oldScan.getFile().get(0);
         		    		if(oldCat instanceof XnatResource){
         		    			if(StringUtils.IsEmpty(((XnatResource)oldCat).getContent()) && !StringUtils.IsEmpty(newcat.getContent()))
         		    				((XnatResource)oldCat).setContent(newcat.getContent());
@@ -211,11 +213,11 @@ public class SubjAssessmentAbst extends QueryOrganizerResource {
         		    				((XnatResource)oldCat).setDescription(newcat.getDescription());
         		    		}
         		    		
-        		    		while(newscan.getFile().size()>0)newscan.removeFile(0);
+        		    		while(newscan.getFile().size()>0)((XnatImagescandata)newscan).removeFile(0);
                     		
-                    		newscan.setFile(oldCat);
+        		    		((XnatImagescandata)newscan).setFile((XnatAbstractresource)oldCat);
         		    	}else{
-        		    		while(newscan.getFile().size()>0)newscan.removeFile(0);
+        		    		while(newscan.getFile().size()>0)((XnatImagescandata)newscan).removeFile(0);
                     		
         		    	}
                 	}

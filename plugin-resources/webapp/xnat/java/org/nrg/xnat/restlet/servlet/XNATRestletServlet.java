@@ -8,8 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.Component;
-
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
 public class XNATRestletServlet extends ServerServlet {

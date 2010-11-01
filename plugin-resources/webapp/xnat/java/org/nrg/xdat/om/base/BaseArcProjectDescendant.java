@@ -5,13 +5,15 @@
  *
  */
 package org.nrg.xdat.om.base;
+import java.util.Hashtable;
+import java.util.List;
+
+import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
+import org.nrg.xdat.om.base.auto.AutoArcProjectDescendant;
+import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
-
-import java.util.*;
 
 /**
  * @author XDAT
@@ -44,7 +46,7 @@ public abstract class BaseArcProjectDescendant extends AutoArcProjectDescendant 
 	
 	public int getPipelineIndex(String pipelinePath) throws PipelineNotFoundException {
 		int i = -1;
-		ArrayList<ArcProjectDescendantPipeline> pipelines = getPipeline();
+		List<ArcProjectDescendantPipelineI> pipelines = getPipeline();
 		for (int j = 0; j <pipelines.size(); j++) {
 			if (pipelines.get(j).getLocation().equals(pipelinePath)) {
 				i = j;
@@ -57,10 +59,10 @@ public abstract class BaseArcProjectDescendant extends AutoArcProjectDescendant 
 
 	public ArcProjectDescendantPipeline getPipeline(String pipelinePath) throws PipelineNotFoundException {
 		ArcProjectDescendantPipeline rtn = null;
-		ArrayList<ArcProjectDescendantPipeline> pipelines = getPipeline();
+		List<ArcProjectDescendantPipelineI> pipelines = getPipeline();
 		for (int j = 0; j <pipelines.size(); j++) {
 			if (pipelines.get(j).getLocation().equals(pipelinePath)) {
-				rtn = pipelines.get(j);
+				rtn = (ArcProjectDescendantPipeline)pipelines.get(j);
 				break;
 			}
 		}

@@ -5,10 +5,11 @@
  *
  */
 package org.nrg.xdat.om.base;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
-import org.nrg.xdat.om.ArcPathinfoI;
+import org.nrg.xdat.model.ArcPathinfoI;
+import org.nrg.xdat.model.ArcProjectI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.base.auto.AutoArcArchivespecification;
 import org.nrg.xft.ItemI;
@@ -108,8 +109,8 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
 
     public String getArchivePathForProject(String id){
         String path = null;
-            ArrayList<ArcProject> projects=this.getProjects_project();
-            for (ArcProject p : projects){
+            List<ArcProjectI> projects=this.getProjects_project();
+            for (ArcProjectI p : projects){
                 if (p.getId().equals(id)){
                     ArcPathinfoI pathInfo= p.getPaths();
                     if (pathInfo!=null){
@@ -136,8 +137,8 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
 
     public String getCachePathForProject(String id){
         String path = null;
-            ArrayList<ArcProject> projects=this.getProjects_project();
-            for (ArcProject p : projects){
+            List<ArcProjectI> projects=this.getProjects_project();
+            for (ArcProjectI p : projects){
                 if (p.getId().equals(id)){
                     ArcPathinfoI pathInfo= p.getPaths();
                     if (pathInfo!=null){
@@ -163,8 +164,8 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
     }
 
     public  Integer getPrearchiveCodeForProject(String id){
-        ArrayList<ArcProject> projects=this.getProjects_project();
-        for (ArcProject p : projects){
+        List<ArcProjectI> projects=this.getProjects_project();
+        for (ArcProjectI p : projects){
             if (p.getId().equals(id)){
             	return p.getPrearchiveCode();
             }
@@ -173,8 +174,8 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
     }
 
     public  Integer getAutoQuarantineCodeForProject(String id){
-        ArrayList<ArcProject> projects=this.getProjects_project();
-        for (ArcProject p : projects){
+        List<ArcProjectI> projects=this.getProjects_project();
+        for (ArcProjectI p : projects){
             if (p.getId().equals(id)){
             	return p.getQuarantineCode();
             }
@@ -184,8 +185,8 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
 
     public  String getPrearchivePathForProject(String id){
         String path = null;
-            ArrayList<ArcProject> projects=this.getProjects_project();
-            for (ArcProject p : projects){
+            List<ArcProjectI> projects=this.getProjects_project();
+            for (ArcProjectI p : projects){
                 if (p.getId().equals(id)){
                     ArcPathinfoI pathInfo= p.getPaths();
                     if (pathInfo!=null){
@@ -212,8 +213,8 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
 
     public String getBuildPathForProject(String id){
         String path = null;
-            ArrayList<ArcProject> projects=this.getProjects_project();
-            for (ArcProject p : projects){
+            List<ArcProjectI> projects=this.getProjects_project();
+            for (ArcProjectI p : projects){
                 if (p.getId().equals(id)){
                     ArcPathinfoI pathInfo= p.getPaths();
                     if (pathInfo!=null){
@@ -239,10 +240,10 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
     }
 
     public  ArcProject getProjectArc(String id){
-            ArrayList<ArcProject> projects=getProjects_project();
-            for (ArcProject p : projects){
+            List<ArcProjectI> projects=getProjects_project();
+            for (ArcProjectI p : projects){
                 if (p.getId().equals(id)){
-                    return p;
+                    return (ArcProject)p;
                 }
             }
         return null;

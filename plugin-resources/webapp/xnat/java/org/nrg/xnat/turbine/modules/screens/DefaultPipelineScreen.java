@@ -67,7 +67,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 			for (int j =0; j <types.length; j++) {
 			ArrayList<XnatImagescandata> scans = mr.getScansByType(types[j].trim());
 			if (scans != null && scans.size() > 0 ) {
-				ArrayList files = scans.get(0).getFile();
+				List files = scans.get(0).getFile();
 				if (files.size() > 0) {
 					for (int i =0; i < files.size(); i++) {
 						XnatAbstractresource absFile = (XnatAbstractresource) files.get(i);
@@ -95,9 +95,9 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 			String project = mr.getProject();
 			int hasFreesurfer = 0;
 			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
-			ArrayList<ArcProjectDescendantPipeline> descPipelines = arcProject.getPipelinesForDescendant(mr.SCHEMA_ELEMENT_NAME);
+			List<ArcProjectDescendantPipelineI> descPipelines = arcProject.getPipelinesForDescendant(mr.SCHEMA_ELEMENT_NAME);
 			for (int i = 0; i < descPipelines.size(); i++) {
-				ArcProjectDescendantPipeline aPipeline = descPipelines.get(i);
+				ArcProjectDescendantPipeline aPipeline = (ArcProjectDescendantPipeline)descPipelines.get(i);
 				if (aPipeline.getLocation().endsWith(File.separator+"StdFreeSurferBuild.xml")); {
 					hasFreesurfer = 1;
 					break;
@@ -229,9 +229,9 @@ public abstract class DefaultPipelineScreen extends SecureReport{
     protected ArcPipelineparameterdata getParameter(ArcProject arcProject, String parameterName) throws PipelineNotFoundException {
     	ArcPipelineparameterdata rtn = null;
     	ArcPipelinedataI pipelineData = arcProject.getPipelineByPath(pipelinePath);
-    	ArrayList<ArcPipelineparameterdata> params = pipelineData.getParameters_parameter();
+    	List<ArcPipelineparameterdataI> params = pipelineData.getParameters_parameter();
         for (int i = 0; i < params.size(); i++) {
-        	ArcPipelineparameterdata aParam = params.get(i);
+        	ArcPipelineparameterdata aParam = (ArcPipelineparameterdata)params.get(i);
         	if (aParam.getName().equals(parameterName)) {
         		rtn = aParam;
         		break;
@@ -245,9 +245,9 @@ public abstract class DefaultPipelineScreen extends SecureReport{
         ArcPipelinedataI pipelineData = null;
         if (arcProject == null) { //Project pipeline hasnt been set
         	PipePipelinedetails pipelineDetails = PipelineRepositoryManager.GetInstance().getPipeline(pipeline);
-        	ArrayList<PipePipelinedetailsParameter> params = pipelineDetails.getParameters_parameter();
+        	List<PipePipelinedetailsParameterI> params = pipelineDetails.getParameters_parameter();
 	        for (int i = 0; i < params.size(); i++) {
-	        	ArcPipelineparameterdata aParam = PipelineRepositoryManager.GetInstance().convertToArcPipelineParameter(params.get(i));
+	        	ArcPipelineparameterdata aParam = (ArcPipelineparameterdata)PipelineRepositoryManager.GetInstance().convertToArcPipelineParameter((PipePipelinedetailsParameter)params.get(i));
 	            projectParameters.put(aParam.getName(),aParam);
 	        }
         }else {
@@ -256,9 +256,9 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	        }else {
 	        	 pipelineData = arcProject.getPipelineForDescendantByPath(om.getXSIType(), pipeline);
 	        }
-	    	ArrayList<ArcPipelineparameterdata> params = pipelineData.getParameters_parameter();
+	    	List<ArcPipelineparameterdataI> params = pipelineData.getParameters_parameter();
 	        for (int i = 0; i < params.size(); i++) {
-	        	ArcPipelineparameterdata aParam = params.get(i);
+	        	ArcPipelineparameterdata aParam = (ArcPipelineparameterdata)params.get(i);
 	            projectParameters.put(aParam.getName(),aParam);
 	        }
         }

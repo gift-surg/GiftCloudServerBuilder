@@ -7,7 +7,9 @@
 package org.nrg.xdat.om.base;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
+import org.nrg.xdat.model.ArcPipelineparameterdataI;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.base.auto.AutoArcPipelinedata;
 import org.nrg.xft.ItemI;
@@ -51,9 +53,9 @@ public abstract class BaseArcPipelinedata extends AutoArcPipelinedata {
 	    		rtn = " -pipeline " +  getLocation()  + " " ;
 	    	}
 	    	//rtn +=  getName();
-	    	ArrayList<ArcPipelineparameterdata> parameters = this.getParameters_parameter();
+	    	List<ArcPipelineparameterdataI> parameters = this.getParameters_parameter();
 	    	for (int i = 0; i < parameters.size(); i++) {
-	    		ArcPipelineparameterdata param = parameters.get(i);
+	    		ArcPipelineparameterdata param = (ArcPipelineparameterdata) parameters.get(i);
 	    		String schemaLink = param.getSchemalink();
 	    		String values = null;
 	    		if (schemaLink != null) {

@@ -8,7 +8,6 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.om.ArcPathinfo;
 import org.nrg.xdat.turbine.modules.screens.AdminScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;

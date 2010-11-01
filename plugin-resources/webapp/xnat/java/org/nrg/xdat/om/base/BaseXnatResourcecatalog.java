@@ -22,18 +22,16 @@ import org.nrg.xdat.bean.CatCatalogMetafieldBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
-import org.nrg.xdat.om.CatCatalog;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatAbstractresourceTag;
+import org.nrg.xdat.model.CatCatalogBeanI;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatEntryBeanI;
+import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.base.auto.AutoXnatResourcecatalog;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
-import org.nrg.xft.utils.ResourceFile;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.xml.sax.SAXException;
 
 /**
@@ -105,7 +103,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
                     String parentPath = f.getParent();
 
                     if (base instanceof CatCatalogBean){
-                        for(CatEntryBean entry: ((CatCatalogBean)base).getEntries_entry()){
+                        for(CatEntryI entry: ((CatCatalogI)base).getEntries_entry()){
                             String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
                             File temp=getFileOnLocalFileSystem(entryPath);
                             if(temp!=null)
@@ -218,19 +216,19 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     }
     
     public int entryCount =0;
-    public boolean formalizeCatalog(CatCatalogBean cat, String catPath){
+    public boolean formalizeCatalog(CatCatalogI cat, String catPath){
     	boolean modified=false;
-    	for(CatCatalogBean subSet:cat.getSets_entryset()){
+    	for(CatCatalogI subSet:cat.getSets_entryset()){
     		if(formalizeCatalog(subSet,catPath)){
     			modified=true;
     		}
     	}
-    	for(CatEntryBean entry: cat.getEntries_entry()){
+    	for(CatEntryI entry: cat.getEntries_entry()){
 	    	if(entry.getId()==null || !entry.getId().equals("")){
 		        String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(catPath,entry.getUri()),"\\","/");
 		        File f =getFileOnLocalFileSystem(entryPath);
 		        if(f!=null){
-			        entry.setId((entryCount++) + "/" + f.getName());
+			        ((CatEntryBean)entry).setId((entryCount++) + "/" + f.getName());
 			        modified=true;
 		        }else{
 		        	logger.error("Missing Resource:" + entryPath);
@@ -397,8 +395,8 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     	this.save(user, true, false);
     }
     
-    public void moveCatalogEntries(CatCatalogBean cat,String existingRootPath,String newRootPath) throws IOException{
-    	for(CatEntryBean entry: cat.getEntries_entry()){
+    public void moveCatalogEntries(CatCatalogI cat,String existingRootPath,String newRootPath) throws IOException{
+    	for(CatEntryI entry: cat.getEntries_entry()){
     		File newLocation = null;
     		File existingLocation=null;
     		String relativePath=null;
@@ -421,7 +419,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     	    			relativePath=uri;
     	    		}
     			}
-    			entry.setUri(relativePath);
+    			((CatEntryBean)entry).setUri(relativePath);
     		}else{
     			existingLocation=new File(existingRootPath,uri);
     			relativePath=uri;
@@ -444,7 +442,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
         	}
     	}
     	
-    	for(CatCatalogBean subset: cat.getSets_entryset()){
+    	for(CatCatalogI subset: cat.getSets_entryset()){
     		moveCatalogEntries(subset, existingRootPath, newRootPath);
     	}
     }

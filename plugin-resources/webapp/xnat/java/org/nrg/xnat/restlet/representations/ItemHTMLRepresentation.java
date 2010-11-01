@@ -3,7 +3,6 @@ package org.nrg.xnat.restlet.representations;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

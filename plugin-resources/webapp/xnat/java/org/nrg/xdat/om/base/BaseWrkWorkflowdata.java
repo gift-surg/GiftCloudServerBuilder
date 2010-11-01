@@ -11,7 +11,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.xdat.om.WrkAbstractexecutionenvironmentI;
+import org.nrg.xdat.model.WrkAbstractexecutionenvironmentI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.WrkXnatexecutionenvironment;
 import org.nrg.xdat.om.base.auto.AutoWrkWorkflowdata;

@@ -6,15 +6,16 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.XnatComputationdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatReconstructedimagedata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
@@ -66,7 +67,7 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
 
         ArrayList files = new ArrayList();
 
-        ArrayList outFiles = getOut_file();
+        List outFiles = getOut_file();
 
         if (outFiles == null || outFiles.size() == 0) return files;
 
@@ -100,7 +101,7 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
 
         ArrayList rtn = new ArrayList();
 
-        ArrayList datums = this.getComputations_datum();
+        List datums = this.getComputations_datum();
 
         if (datums == null || datums.size() == 0) {
 
@@ -136,7 +137,7 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
 		}
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
-		for(final XnatAbstractresource res: this.getOut_file()){
+		for(final XnatAbstractresourceI res: this.getOut_file()){
 			final String uri;
 			if(res instanceof XnatResource){
 				uri=((XnatResource)res).getUri();

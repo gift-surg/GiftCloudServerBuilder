@@ -21,6 +21,7 @@ import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.XFTTableI;
 import org.nrg.xft.schema.design.SchemaElementI;
@@ -125,6 +126,11 @@ public class RESTHTMLPresenter extends PresentationA {
 				tHclass+=" first-td";
 			}
 			
+			String title = "";
+			if(dfr.getDisplayField()!=null && dfr.getDisplayField().getDescription()!=null){
+				title=dfr.getDisplayField().getDescription();
+			}
+			
 			// The id must be unique across tabs or document.getElementByID will not work as expected. 
 			// We add a random number to the id to make it *likely* unique. 
 			headerLink.append("<th class=\"" + tHclass + "\" id=\"" + id + random +"\" name=\"" + id +"\" align=\"left\"");
@@ -145,7 +151,7 @@ public class RESTHTMLPresenter extends PresentationA {
 			{
 				headerLink.append(" valign=\"" + dfr.getHeaderCellVAlign() + "\"");
 			}
-			headerLink.append("><div class=\"yui-dt-liner\">");
+			headerLink.append("><div class=\"yui-dt-liner\" title=\"").append(TurbineUtils.GetInstance().escapeHTML(title)).append("\">");
 			diffLink.append(">Diff</th>");
 			
 			if (this.searchURI != null && !dfr.getHeader().equalsIgnoreCase("") && clickableHeaders)

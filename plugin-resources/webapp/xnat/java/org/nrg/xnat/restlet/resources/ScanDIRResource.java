@@ -97,9 +97,9 @@ public class ScanDIRResource extends ScanResource {
 		    dicomdir.create();
 		    //iterate through scans and only include DICOM files.
 		    for(final XnatImagescandata scan: scans){
-			for(final XnatAbstractresource res: scan.getFile()){
-				    if(res.getFormat()!=null && res.getFormat().equals("DICOM")){
-				for(final File f:res.getCorrespondingFiles(rootPath)){
+			for(final XnatAbstractresourceI res: scan.getFile()){
+				    if(((XnatAbstractresource)res).getFormat()!=null && ((XnatAbstractresource)res).getFormat().equals("DICOM")){
+				for(final File f:((XnatAbstractresource)res).getCorrespondingFiles(rootPath)){
 				    final String uri=f.getAbsolutePath();
 				    final String relative = RestFileUtils.buildRelativePath(uri, session_mapping, valuesToReplace, res.getXnatAbstractresourceId(), res.getLabel());
 				    // create a matching directory structure in the working temp directory

@@ -12,7 +12,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.nrg.xdat.model.XnatQcmanualassessordataI;
-import org.nrg.xdat.model.XnatQcscandataBeanI;
 import org.nrg.xdat.model.XnatQcscandataI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;

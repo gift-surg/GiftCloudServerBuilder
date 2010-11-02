@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -21,7 +22,10 @@ import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.om.ArcPipelinedataI;
+import org.nrg.xdat.model.ArcPipelinedataI;
+import org.nrg.xdat.model.ArcPipelineparameterdataI;
+import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
+import org.nrg.xdat.model.PipePipelinedetailsParameterI;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
@@ -265,13 +269,13 @@ public abstract class DefaultPipelineScreen extends SecureReport{
     }
 
     protected void setParameters(ArcPipelinedataI arcPipeline, Context context) throws Exception {
-    	ArrayList<ArcPipelineparameterdata> pipelineParameters = arcPipeline.getParameters_parameter();
+    	List<ArcPipelineparameterdataI> pipelineParameters = arcPipeline.getParameters_parameter();
     	
     	Parameters parameters = Parameters.Factory.newInstance();
 		ParameterData param = null;
 		
     	for (int i = 0; i < pipelineParameters.size(); i++) {
-    		ArcPipelineparameterdata pipelineParam = pipelineParameters.get(i);
+    		ArcPipelineparameterdataI pipelineParam = pipelineParameters.get(i);
     		String schemaLink = pipelineParam.getSchemalink();
     		if (schemaLink != null) {
     			Object o = om.getItem().getProperty(schemaLink, true);

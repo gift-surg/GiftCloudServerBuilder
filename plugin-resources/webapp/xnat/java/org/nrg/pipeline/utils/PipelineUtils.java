@@ -10,13 +10,13 @@ package org.nrg.pipeline.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-import org.nrg.xdat.om.ArcPipelineparameterdata;
+import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
+import org.nrg.xdat.model.ArcProjectPipelineI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendant;
-import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
-import org.nrg.xft.XFTItem;
 
 
 public class PipelineUtils {
@@ -35,14 +35,14 @@ public class PipelineUtils {
 	        	return rtn;
 	        }
 	        ArrayList<Integer> bins = new ArrayList<Integer>();
-	        ArrayList<ArcProjectDescendantPipeline> pipelines = arcProjectDesc.getPipeline();
+	        List<ArcProjectDescendantPipelineI> pipelines = arcProjectDesc.getPipeline();
 	  	  boolean projectHasAutoArchive = false;
 	  	  if (pipelines == null || pipelines.size() ==0) {
 	  		  rtn += "_1";
 	  		  return rtn;
 	  	  }
 	        for (int i =0; i < pipelines.size(); i++) {
-	      	  ArcProjectDescendantPipeline pipeline = pipelines.get(i);
+	      	  ArcProjectDescendantPipelineI pipeline = pipelines.get(i);
 	      	  String currentId = pipeline.getStepid();
 	      	  if (currentId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
 	      		  projectHasAutoArchive = true;
@@ -53,7 +53,7 @@ public class PipelineUtils {
 	      			    Integer binNo = new Integer(currentIndex);
 		      			bins.add(binNo);
 	      			  }catch(NumberFormatException ne) {
-	      				  
+
 	      			  }
 	      		  }
 	      	  }
@@ -75,11 +75,11 @@ public class PipelineUtils {
 	    public static String getNextAutoArchiveStepId(ArcProject arcProject) {
 	        String rtn = PipelineUtils.AUTO_ARCHIVE;
 	        ArrayList<Integer> bins = new ArrayList<Integer>();
-	        ArrayList<ArcProjectPipeline> pipelines = arcProject.getPipelines_pipeline();
+	        List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
 	  	  boolean projectHasAutoArchive = false;
 
 	        for (int i =0; i < pipelines.size(); i++) {
-	      	  ArcProjectPipeline pipeline = pipelines.get(i);
+	      	  ArcProjectPipelineI pipeline = pipelines.get(i);
 	      	  String currentId = pipeline.getStepid();
 	      	  if (currentId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
 	      		  projectHasAutoArchive = true;

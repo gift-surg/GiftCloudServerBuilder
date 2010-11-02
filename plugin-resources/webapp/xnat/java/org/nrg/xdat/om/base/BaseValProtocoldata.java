@@ -4,9 +4,10 @@
  *
  */
 package org.nrg.xdat.om.base;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
+import org.nrg.xdat.model.ValProtocoldataScanCheckI;
 import org.nrg.xdat.om.ValProtocoldataScanCheck;
 import org.nrg.xdat.om.base.auto.AutoValProtocoldata;
 import org.nrg.xft.ItemI;
@@ -43,10 +44,10 @@ public abstract class BaseValProtocoldata extends AutoValProtocoldata {
 	public ValProtocoldataScanCheck getScanProtocolValidation(String scanId) throws NullPointerException {
 		ValProtocoldataScanCheck rtn = null;
 		if (scanId == null) throw new NullPointerException("Expected a non-null value for the scan id input parameter");
-		ArrayList<org.nrg.xdat.om.ValProtocoldataScanCheck> scans =  super.getScans_scanCheck();
+		List<ValProtocoldataScanCheckI> scans =  super.getScans_scanCheck();
 		if (scans != null && scans.size() > 0) {
 			for (int i=0; i< scans.size(); i++) {
-				ValProtocoldataScanCheck aScan = scans.get(i);
+				ValProtocoldataScanCheck aScan = (ValProtocoldataScanCheck)scans.get(i);
 				if (aScan.getScanId().equals(scanId)) {
 					rtn = aScan;
 					break;

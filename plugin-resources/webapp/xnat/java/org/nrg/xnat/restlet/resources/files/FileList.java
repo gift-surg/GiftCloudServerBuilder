@@ -19,9 +19,7 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
-import org.nrg.xdat.model.CatCatalogBeanI;
 import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatEntryBeanI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -34,11 +32,15 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.helpers.FileWriterWrapper;
+import org.nrg.xnat.helpers.resource.cat.CatalogResourceModifier;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.CatalogUtils;
+import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -222,9 +224,9 @@ public class FileList extends XNATCatalogTemplate {
 								}
 
 						        if(resource instanceof XnatResourcecatalog){
-							        this.storeCatalogEntry(new FileWriterWrapper(entity,filepath), dest, resource);
+    						        	CatalogResourceModifier.storeCatalogEntry(new FileWriterWrapper(entity,filepath), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo());
 						        }else{
-							        this.storeResourceFile(new FileWriterWrapper(entity,filepath), dest, resource);
+    									this.buildResourceModifier().saveFile(new FileWriterWrapper(entity,filepath), dest, (XnatResource)resource, user, this.buildResourceInfo());
 						        }
 						          
 						        if(filepath==null || filepath.equals("")){
@@ -257,11 +259,13 @@ public class FileList extends XNATCatalogTemplate {
 						        }
 						        
 						        if(resource instanceof XnatResourcecatalog){
-							        if(!this.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, resource)){
+    						        	
+    						        	if(!CatalogResourceModifier.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo())){
 							        	break;
 							        }
 						        }else{
-							        if(!this.storeResourceFile(new FileWriterWrapper(fi,fileName), dest, resource)){
+    						        	
+    							        if(!this.buildResourceModifier().saveFile(new FileWriterWrapper(fi,fileName), dest, (XnatResource)resource, user, this.buildResourceInfo())){
 							        	break;
 							        }
 						        }
@@ -291,6 +295,33 @@ public class FileList extends XNATCatalogTemplate {
 		}
 
 
+//	public static void importInbodyFile(final String filepath,final Representation entity,final XnatAbstractresource resource){
+//		String dest = null;
+//        
+//        if(filepath==null || filepath.equals("")){
+//        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri.");
+//        	return;
+//        }else{		
+//        	dest=filepath;
+//        }
+//		
+//		if(entity.getSize()==-1 || entity.getSize()==0){
+//
+//        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message.");
+//        	return;
+//		}
+//
+//        if(resource instanceof XnatResourcecatalog){
+//	        this.storeCatalogEntry(new FileWriterWrapper(entity,filepath), dest, resource);
+//        }else{
+//	        this.storeResourceFile(new FileWriterWrapper(entity,filepath), dest, resource);
+//        }
+//          
+//        if(filepath==null || filepath.equals("")){
+//			this.returnSuccessfulCreateFromList(dest);
+//        }
+//	}
+
 
 	@Override
 	public boolean allowDelete() {
@@ -318,10 +349,10 @@ public class FileList extends XNATCatalogTemplate {
 						String parentPath=catFile.getParent();
 						CatCatalogI cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
 
-						CatEntryI entry = this.getEntryByURI(cat, filepath);
+						CatEntryI entry = CatalogUtils.getEntryByURI(cat, filepath);
 						
 						if(entry==null){
-							entry = this.getEntryById(cat, filepath);
+							entry = CatalogUtils.getEntryById(cat, filepath);
 						}
 						
 						if(entry==null){
@@ -523,9 +554,9 @@ public class FileList extends XNATCatalogTemplate {
 		File f=null;
 		XFTTable table = null;
 		table = new XFTTable();
-		table.initTable(FILE_HEADERS);
+		table.initTable(CatalogUtils.FILE_HEADERS);
 			    	
-    	final CatEntryFilterI entryFilter=buildFilter();
+    	final CatalogUtils.CatEntryFilterI entryFilter=buildFilter();
     	final Integer index=(containsQueryVariable("index"))?Integer.parseInt(getQueryVariable("index")):null;
 
 					if(resource.getItem().instanceOf("xnat:resourceCatalog")){
@@ -542,19 +573,19 @@ public class FileList extends XNATCatalogTemplate {
 					    	String baseURI=this.getBaseURI();
 					    	
 					    	if(cat!=null){
-					    		table.rows().addAll(this.getEntryDetails(cat, parentPath,baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),false,entryFilter));
+					    		table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),false,entryFilter));
 					    	}
 						}else{
 
 							String zipEntry=null;
 							
-							CatEntryBean entry=null;
+							CatEntryI entry=null;
 							if(index!=null){
-								entry =this.getEntryByFilter(cat, new CatEntryFilterI(){
+								entry =CatalogUtils.getEntryByFilter(cat, new CatEntryFilterI(){
 									private int count=0;
 									private CatEntryFilterI filter = entryFilter;
 									
-									public boolean accept(CatEntryBean entry) {
+									public boolean accept(CatEntryI entry) {
 										if(filter.accept(entry)){
 											if(index.equals(count++)){
 												return true;
@@ -577,10 +608,10 @@ public class FileList extends XNATCatalogTemplate {
 						break;
 					}
 				}
-					entry = this.getEntryByURI(cat, this.filepath);
+					entry = CatalogUtils.getEntryByURI(cat, this.filepath);
 					
 					if(entry==null){
-			entry = this.getEntryById(cat, this.filepath);
+			entry = CatalogUtils.getEntryById(cat, this.filepath);
 					}
 				}
 							
@@ -767,7 +798,7 @@ public class FileList extends XNATCatalogTemplate {
 		final String[] file_format=getQueryVariables("file_format");
 		if((file_content!=null && file_content.length>0) || (file_format!=null && file_format.length>0)){
 			return new CatEntryFilterI(){
-				public boolean accept(CatEntryBean entry) {
+				public boolean accept(CatEntryI entry) {
 					if(file_format!=null && file_format.length>0){
 						if(entry.getFormat()==null){
 							if(!ArrayUtils.contains(file_format,"NULL"))return false;
@@ -799,9 +830,9 @@ public class FileList extends XNATCatalogTemplate {
 		final XFTTable table = new XFTTable();
 		
 		if(isZip)
-			table.initTable(FILE_HEADERS_W_FILE);
+			table.initTable(CatalogUtils.FILE_HEADERS_W_FILE);
 		else
-			table.initTable(FILE_HEADERS);
+			table.initTable(CatalogUtils.FILE_HEADERS);
 
     	final String baseURI=this.getBaseURI();
 			    	
@@ -823,13 +854,13 @@ public class FileList extends XNATCatalogTemplate {
 						    	if(filepath==null|| filepath.equals("")){
 							    	
 							    	if(cat!=null){
-							    		table.rows().addAll(this.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip || (index!=null),entryFilter));
+							    		table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip || (index!=null),entryFilter));
 							    	}
 								}else{
-									CatEntryI entry = this.getEntryByURI(cat, filepath);
+									CatEntryI entry = CatalogUtils.getEntryByURI(cat, filepath);
 									
 									if(entry==null){
-										entry = this.getEntryById(cat, filepath);
+										entry = CatalogUtils.getEntryById(cat, filepath);
 									}
 									
 									if(entry!=null){

@@ -183,7 +183,7 @@ public final class Prearchive {
 
 		// Determine which prearchives user should see
 		final Map<String,File> prearcs = new LinkedHashMap<String,File>();
-		final Collection<List<String>> projects = user.getQueryResults("xnat:projectData/ID", "xnat:projectData");
+		final List<List> projects = user.getQueryResults("xnat:projectData/ID", "xnat:projectData");
 		for (final List<String> row : projects) {
 			final String id = row.get(0);
 			if (prearcs.containsKey(id))

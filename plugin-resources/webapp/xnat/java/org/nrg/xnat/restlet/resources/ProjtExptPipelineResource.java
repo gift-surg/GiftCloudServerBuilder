@@ -21,9 +21,9 @@ import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
+import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.model.ArcPipelineparameterdataI;
 import org.nrg.xdat.om.ArcPipelinedata;
-import org.nrg.xdat.om.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -225,9 +225,9 @@ public class ProjtExptPipelineResource extends SecureResource {
 
     	XFTItem itemOfExpectedXsiType = expt.getItem();
 
-		ArrayList<ArcPipelineparameterdata> pipelineParameters = arcPipeline.getParameters_parameter();
+		List<ArcPipelineparameterdataI> pipelineParameters = arcPipeline.getParameters_parameter();
     	for (int i = 0; i < pipelineParameters.size(); i++) {
-    		ArcPipelineparameterdata pipelineParam = pipelineParameters.get(i);
+    		ArcPipelineparameterdataI pipelineParam = pipelineParameters.get(i);
     		String schemaLink = pipelineParam.getSchemalink();
     		if (schemaLink != null) {
     			Object o = itemOfExpectedXsiType.getProperty(schemaLink, true);

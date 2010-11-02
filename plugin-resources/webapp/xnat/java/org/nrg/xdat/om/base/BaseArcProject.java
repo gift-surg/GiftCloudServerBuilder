@@ -88,10 +88,10 @@ public abstract class BaseArcProject extends AutoArcProject {
 
 		public ArrayList<ArcPipelinedataI> getPipelinesForDescendantLikeStepId(String xsiType, String pipelineStep) throws PipelineNotFoundException {
 			ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
-			ArrayList<ArcProjectDescendantPipeline> descendantPipelines = getPipelinesForDescendant(xsiType);
+			List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
 			for (int i = 0; i < descendantPipelines.size(); i++) {
 				if (descendantPipelines.get(i).getStepid()!=null && descendantPipelines.get(i).getStepid().startsWith(pipelineStep)) {
-					rtn.add(descendantPipelines.get(i).getPipelinedata());
+					rtn.add(((ArcProjectDescendantPipeline)descendantPipelines.get(i)).getPipelinedata());
 				}
 			}
 			//if (rtn.size() == 0) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());

@@ -6,9 +6,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.model.CatCatalogBeanI;
 import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatEntryBeanI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;

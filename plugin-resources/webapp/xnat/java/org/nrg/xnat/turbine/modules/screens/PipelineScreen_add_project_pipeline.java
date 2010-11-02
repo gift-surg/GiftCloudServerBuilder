@@ -8,13 +8,14 @@
 
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.pipeline.utils.PipelineUtils;
+import org.nrg.xdat.model.PipePipelinedetailsParameterI;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;

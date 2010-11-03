@@ -210,8 +210,6 @@ public class CatalogResource extends XNATCatalogTemplate {
 	public Representation getRepresentation(Variant variant) {	
 		this.getAllMatches();
 		
-		MediaType mt = overrideVariant(variant);
-
 		if(resources.size()==0){
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified catalog.");
 		}else if(resources.size()==1){

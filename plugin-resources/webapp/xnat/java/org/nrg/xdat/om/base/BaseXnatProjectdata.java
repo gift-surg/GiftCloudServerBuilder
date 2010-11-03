@@ -934,7 +934,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         if (XFT.VERBOSE)System.out.println("Group init() PREP: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
 
         //init owners
-        boolean ownerMod = false;
         XdatUsergroup group = null;
         if (owner.size()==0){
             try {
@@ -943,7 +942,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 group.setDisplayname("Owners");
                 group.setTag(getId());
                 group.save(this.getUser(), true, true);
-                ownerMod = true;
             } catch (Exception e) {
                 logger.error("",e);
             }
@@ -960,10 +958,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 ElementSecurity es = (ElementSecurity)iter.next();
 
 
-                if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false))
-                     ownerMod = true;
-                if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false))
-                    ownerMod = true;
+                if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false)){
+                	//ownerMod = true;
+                }
+                     
+                if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false)){
+                	//ownerMod = true;
+                }
             }
         } catch (Exception e) {
             logger.error("",e);

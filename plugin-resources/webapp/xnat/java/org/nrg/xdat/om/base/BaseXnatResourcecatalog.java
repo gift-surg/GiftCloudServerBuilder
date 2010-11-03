@@ -373,8 +373,6 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
         XDATXMLReader reader = new XDATXMLReader();
         BaseElement base = reader.parse(fis);
 
-        String parentPath = catalog.getParent();
-
         if (base instanceof CatCatalogBean){
         	moveCatalogEntries((CatCatalogBean)base,catalog.getParent(),newFile.getParent());
         }
@@ -395,7 +393,6 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     
     public void moveCatalogEntries(CatCatalogI cat,String existingRootPath,String newRootPath) throws IOException{
     	for(CatEntryI entry: cat.getEntries_entry()){
-    		File newLocation = null;
     		File existingLocation=null;
     		String relativePath=null;
     		

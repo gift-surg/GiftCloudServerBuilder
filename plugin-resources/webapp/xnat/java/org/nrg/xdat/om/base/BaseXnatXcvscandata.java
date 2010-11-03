@@ -15,7 +15,7 @@ import org.nrg.xft.security.UserI;
  * @author XDAT
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatXcvscandata extends AutoXnatXcvscandata {
 
 	public BaseXnatXcvscandata(ItemI item)

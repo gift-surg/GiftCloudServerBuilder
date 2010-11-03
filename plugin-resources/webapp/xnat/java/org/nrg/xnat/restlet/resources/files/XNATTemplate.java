@@ -334,7 +334,6 @@ public class XNATTemplate extends SecureResource {
 
 	public boolean insertCatalag(XnatResourcecatalog catResource)
 			throws InvalidArchiveStructure, Exception {
-		StringBuffer sb = new StringBuffer();
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
 				"yyyyMMdd_HHmmss");
         String uploadID = formatter.format(Calendar.getInstance().getTime());
@@ -343,7 +342,6 @@ public class XNATTemplate extends SecureResource {
 		XnatExperimentdata assessed=null;
 		if(this.assesseds.size()==1)assessed=assesseds.get(0);
 
-		XFTItem toSave =null;
 		if (recons.size()>0) {
 			//reconstruction
 			if (assessed == null) {

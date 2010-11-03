@@ -129,8 +129,7 @@ public class BaseXnatDicomseries extends AutoXnatDicomseries {
         String path = "";
 
         fileNames = new ArrayList();
-        for (int i=0;i<this.getImageset_image().size();i++){
-            org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
+        for (org.nrg.xdat.model.XnatDicomseriesImageI image:this.getImageset_image()){
             path = image.getUri();
             break;
         }

@@ -425,7 +425,6 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
                     final String element = (String)row.get("element_name");
                     try {
                     	final XFTItem child = XFTItem.NewItem(element,this.getUser());
-                        final ItemI om = BaseElement.GetGeneratedItem(child);
 
                         final Object date = row.get("date");
                         final Object id = row.get("id");
@@ -929,7 +928,6 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 
         String identifiers = new String();
 
-        Enumeration enumer = ids.keys();
         int counter=0;
         for (String key: ids.keySet()){
             if (counter++>0)identifiers=identifiers + ", ";

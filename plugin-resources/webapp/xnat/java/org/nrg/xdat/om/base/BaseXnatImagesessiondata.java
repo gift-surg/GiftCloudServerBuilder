@@ -539,9 +539,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 try {
                     ArrayList fileGroup = (ArrayList)getFileGroups().get("misc");
                     if (fileGroup!=null && !fileGroup.isEmpty()){
-                        if (fileGroup==null){
-
-                        }else{
                             Iterator iter = fileGroup.iterator();
                             while(iter.hasNext())
                             {
@@ -549,7 +546,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                 size += this.getFileTracker().getSize(this.getFileTracker().getIDIndex(fID));
                             }
                             count = fileGroup.size();
-                        }
 
                         NumberFormat formatter = NumberFormat.getInstance();
                         formatter.setMinimumFractionDigits(2);
@@ -791,7 +787,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                             Object date = row.get("date");
                             Object id = row.get("id");
-                            Object type = row.get("type");
                             Object note = row.get("note");
                             Object invest_id = row.get("invest_id");
                             Object lastname = row.get("lastname");
@@ -952,7 +947,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 System.out.println("Time to load " + (System.currentTimeMillis()-startTime) + "ms");
                 startTime = System.currentTimeMillis();
 
-                Hashtable<String,XNATMetaData> metas = new Hashtable<String,XNATMetaData>();
                 for(XnatImagescandataI scan : this.getSortedScans()){
                     XNATMetaData meta = new XNATMetaData();
                     meta.setCategory("SCAN"); //match operator is = by default
@@ -988,9 +982,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 meta.setCategory("MISC"); //match operator is = by default
                 fileGroups.put("misc0",dir.filterLocal(meta));
                 startTime = System.currentTimeMillis();
-                if (dir==null){
-                    logger.error("Unable to load XNATDirectory");
-                }
                 System.out.println("Time to sort " + (System.currentTimeMillis()-startTime) + "ms");
         }
     }
@@ -1007,8 +998,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             {
                 for (XnatAbstractresourceI xnatFile:scan.getFile())
                 {
-                    List<File> jFiles = ((XnatAbstractresource)xnatFile).getCorrespondingFiles(rootPath);
-
                     for (File f:((XnatAbstractresource)xnatFile).getCorrespondingFiles(rootPath))
                     {
                         if (f.exists())
@@ -1274,7 +1263,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                             Iterator files = scanFiles.iterator();
                             boolean hasContent= false;
                             boolean hasFunctionText=false;
-                            StringBuffer scanFunctionBuffer = new StringBuffer();
                             StringBuffer scanLinkBuffer = new StringBuffer();
                             while (files.hasNext())
                             {
@@ -1351,7 +1339,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                         Iterator files =outFiles.iterator();
                         boolean hasContent= false;
                         boolean hasFunctionText=false;
-                        StringBuffer scanFunctionBuffer = new StringBuffer();
                         StringBuffer scanLinkBuffer = new StringBuffer();
                         while (files.hasNext())
                         {
@@ -1427,7 +1414,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                             boolean hasContent= false;
                             boolean hasFunctionText=false;
-                            StringBuffer scanFunctionBuffer = new StringBuffer();
                             StringBuffer scanLinkBuffer = new StringBuffer();
                             while (files.hasNext())
                             {
@@ -1507,7 +1493,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                             boolean hasContent= false;
                             boolean hasFunctionText=false;
-                            StringBuffer scanFunctionBuffer = new StringBuffer();
                             StringBuffer scanLinkBuffer = new StringBuffer();
                             while (files.hasNext())
                             {
@@ -1580,7 +1565,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                     boolean hasContent= false;
                     boolean hasFunctionText=false;
-                    StringBuffer scanFunctionBuffer = new StringBuffer();
                     StringBuffer scanLinkBuffer = new StringBuffer();
                     while (files.hasNext())
                     {
@@ -1659,7 +1643,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     Iterator files = scanFiles.iterator();
                     boolean hasContent= false;
                     boolean hasFunctionText=false;
-                    StringBuffer scanFunctionBuffer = new StringBuffer();
                     StringBuffer scanLinkBuffer = new StringBuffer();
                     while (files.hasNext())
                     {
@@ -1785,7 +1768,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     Iterator files =outFiles.iterator();
                 boolean hasContent= false;
                 boolean hasFunctionText=false;
-                StringBuffer scanFunctionBuffer = new StringBuffer();
                 StringBuffer scanLinkBuffer = new StringBuffer();
                 while (files.hasNext())
                 {
@@ -1872,7 +1854,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                             boolean hasContent= false;
                             boolean hasFunctionText=false;
-                            StringBuffer scanFunctionBuffer = new StringBuffer();
                             StringBuffer scanLinkBuffer = new StringBuffer();
                             while (files.hasNext())
                             {
@@ -1961,7 +1942,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         boolean hasContent= false;
                         boolean hasFunctionText=false;
-                        StringBuffer scanFunctionBuffer = new StringBuffer();
                         StringBuffer scanLinkBuffer = new StringBuffer();
 
                         Iterator iter = jFiles.iterator();
@@ -2386,8 +2366,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                     }
                                 }
                             }
-                        }else{
-
                         }
                     }else if(xnatFile instanceof org.nrg.xdat.om.XnatResourceseries){
                         XnatResourceseries resource = (XnatResourceseries)xnatFile;
@@ -2419,8 +2397,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                     }
                                 }
                             }
-                        }else{
-
                         }
                     }
                 }
@@ -2568,7 +2544,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                         String id = (String)o;
 
                         int index = getFileTracker().getIDIndex(id);
-                        String relativePath = getFileTracker().getRelativePath(index);
                         File f = getFileTracker().getFile(index);
                         String identifier = "/file/" + id;
                         CatEntryBean entry = new CatEntryBean();
@@ -2652,7 +2627,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             FileTracker ft =getFileTracker();
             for(String id: ft.getIds()){
                 int index = getFileTracker().getIDIndex(id);
-                String relativePath = getFileTracker().getRelativePath(index);
                 File f = getFileTracker().getFile(index);
                 String identifier = "/file/" + id;
                 CatEntryBean entry = new CatEntryBean();

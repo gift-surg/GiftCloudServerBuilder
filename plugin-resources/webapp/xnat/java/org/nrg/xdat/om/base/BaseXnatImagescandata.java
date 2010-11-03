@@ -57,7 +57,6 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 	{
 		super(properties,user);
 	}
-    private ArrayList _cachedXnatFiles= null;
 
     public String getPreCount()
     {

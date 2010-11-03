@@ -272,7 +272,7 @@ public class DIRResource extends SecureResource {
 			matches.add(f);
 		}
 		
-		public void addAll(Collection files){
+		public void addAll(Collection<File> files){
 			matches.addAll(files);
 		}
 		

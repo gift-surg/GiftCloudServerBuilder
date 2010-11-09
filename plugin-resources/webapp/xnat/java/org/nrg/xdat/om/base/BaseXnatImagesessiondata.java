@@ -2486,12 +2486,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
      * Appends this path to the enclosed URI or path variables.
      * @param root
      */
-    public void appendToPaths(String session_path){
+    public void prependPathsWith(String session_path){
         Iterator files= getAllResources().iterator();
         while(files.hasNext())
         {
             XnatAbstractresource file = (XnatAbstractresource)files.next();
-            file.appendToPaths(session_path);
+            file.prependPathsWith(session_path);
         }
     }
 
@@ -2997,7 +2997,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 	for (final XnatImagescandataI scan : scans) {
 		final List<XnatAbstractresource> files=scan.getFile();
 	    for (final XnatAbstractresource file : files) {
-			file.appendToPaths(session_path);
+			file.prependPathsWith(session_path);
 	
 			try {
 			    if (files.size()==1 || (file.getContent()!=null && file.getContent().endsWith("_RAW")))

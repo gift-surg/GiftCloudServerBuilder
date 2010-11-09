@@ -987,6 +987,15 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r06</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<!-- END XNATFS additions -->
 		<!-- Use APA reverse proxy to feed DicomServer-->
 		<dependency>

@@ -4,6 +4,8 @@ package org.nrg.xnat.restlet.resources;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
@@ -56,6 +58,10 @@ import org.xml.sax.SAXParseException;
 import com.noelios.restlet.http.HttpConstants;
 
 public abstract class SecureResource extends Resource {
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+
+	private static final String ACTION = "action";
+
 	public static final String USER_ATTRIBUTE = "user";
 
 	static Logger logger = Logger.getLogger(SecureResource.class);
@@ -66,6 +72,7 @@ public abstract class SecureResource extends Resource {
 	public static final MediaType APPLICATION_XCAT = MediaType.register(
 			"application/xcat", "XNAT Catalog");
 	
+	protected List<String> actions=null;
 	protected String userName=null;
 	protected XDATUser user =null;
 	protected String requested_format = null;
@@ -611,9 +618,36 @@ public abstract class SecureResource extends Resource {
         } else {
             headers = new Form();
         }
-        headers.add(new Parameter("Content-Disposition",content));
+        headers.add(new Parameter(CONTENT_DISPOSITION,content));
 
         getResponse().getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                 headers);
+	}
+	
+	/**
+	 * Return the list of query string parameters value with the name 'action'.  List is created on first access, and cached for later access.
+	 * @return Should never be null.
+	 */
+	public List<String> getActions(){
+		if(actions==null){
+			final Form f = getQueryVariableForm();
+			if (f != null) {
+				final String[] actionA=f.getValuesArray(ACTION);
+				if(actionA!=null && actionA.length>0){
+					actions=Arrays.asList(actionA);
+}
+			}
+			
+			if(actions==null)actions=new ArrayList<String>();
+		}
+		return actions;
+	}
+	
+	public boolean containsAction(final String name){
+		if(getActions().contains(name)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 }

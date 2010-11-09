@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.nrg.session.SessionBuilder.NoUniqueSessionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.model.XnatProjectdataI;
@@ -38,6 +39,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.xml.sax.SAXException;
 
 public class SubjAssessmentResource extends SubjAssessmentAbst {
 	XnatProjectdata proj=null;
@@ -470,10 +472,10 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						allowDataDeletion=true;
 					}
 					
-					if(this.getQueryVariable("fixScanTypes")!=null && this.getQueryVariable("fixScanTypes").equals("true")){
+					if(this.isQueryVariableTrue(XNATRestConstants.FIX_SCAN_TYPES) || this.containsAction(XNATRestConstants.FIX_SCAN_TYPES)){
 						if(expt instanceof XnatImagesessiondata){
-							((XnatImagesessiondata)expt).fixScanTypes();
-							((XnatImagesessiondata)expt).defaultQuality("usable");
+							FixScanTypes fst=new FixScanTypes(expt,user,proj,false);
+							fst.call();
 						}
 					}
 
@@ -511,9 +513,19 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					}
 
 					if(user.canEdit(expt.getItem())){
-						if(this.isQueryVariableTrue("pullDataFromHeaders") && expt instanceof XnatImagesessiondata){
+						if((this.isQueryVariableTrue(XNATRestConstants.PULL_DATA_FROM_HEADERS) || this.containsAction(XNATRestConstants.PULL_DATA_FROM_HEADERS) ) && expt instanceof XnatImagesessiondata){
 							try {
-								pullDataFromHeaders((XnatImagesessiondata)expt,user,this.allowDataDeletion(),this.isQueryVariableTrue("overwrite"));
+								PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt,user,this.allowDataDeletion(),this.isQueryVariableTrue("overwrite"));
+								pull.call();
+							} catch (SAXException e){
+								logger.error("",e);
+								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
+							} catch (ValidationException e){
+								logger.error("",e);
+								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
+							} catch (NoUniqueSessionException e){
+								logger.error("",e);
+								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
 							} catch (Exception e) {
 								logger.error("",e);
 								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
@@ -521,8 +533,9 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							}
 						}
 						
-						if(this.isQueryVariableTrue("triggerPipelines")){
-							triggerPipelines(expt,true,this.isQueryVariableTrue("supressEmail"),user);
+						if(this.isQueryVariableTrue(XNATRestConstants.TRIGGER_PIPELINES) || this.containsAction(XNATRestConstants.TRIGGER_PIPELINES)){
+							TriggerPipelines tp=new TriggerPipelines(expt,true,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
+							tp.call();
 						}
 					}
 				}

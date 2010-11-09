@@ -18,6 +18,7 @@ import org.nrg.xnat.archive.ArchivingException;
 import org.nrg.xnat.archive.DuplicateSessionLabelException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.archive.ValidationException;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -106,7 +107,14 @@ public final class PrearcSessionResource extends Resource {
 		final File sessionDir = getSessionDir();
 		final String action = queryForm.getFirstValue("action");
 		if (POST_ACTION_ARCHIVE.equals(action)) {
-			final String entity = doArchive(sessionDir);
+			//allowDataDeletion will govern if prexisting xml data can be deleted by new xml.
+			boolean allowDataDeletion=false;
+			
+			if(queryForm.contains(XNATRestConstants.ALLOW_DATA_DELETION)){
+				allowDataDeletion=Boolean.valueOf(queryForm.getFirstValue(XNATRestConstants.ALLOW_DATA_DELETION));
+			}
+			
+			final String entity = doArchive(sessionDir,allowDataDeletion);
 			final Response response = getResponse();
 			response.setEntity(entity + CRLF, MediaType.TEXT_URI_LIST);
 		} else if (POST_ACTION_BUILD.equals(action)) {
@@ -126,13 +134,17 @@ public final class PrearcSessionResource extends Resource {
 		for (final Parameter param : form) {
 			m.put(param.getName(), param.getValue());
 		}
+		
+		// TODO: What if the user supplies paramaters via the body of the message as the session archiving page would.  
+		// Need to parse it into a Form and review its parameters as well. Form bodyForm = new Form(entity);
+		
 		return m;
 	}
 	
-	private String doArchive(final File sessionDir) throws ResourceException {
+	private String doArchive(final File sessionDir, boolean allowDataDeletion) throws ResourceException {
 		final PrearcSessionArchiver archiver;
 		try {
-			archiver = new PrearcSessionArchiver(sessionDir, user, project, makeMultiMap(queryForm));
+			archiver = new PrearcSessionArchiver(sessionDir, user, project, makeMultiMap(queryForm),allowDataDeletion);
 		} catch (FileNotFoundException e) {
 			logger.debug("user attempted to archive session with no XML", e);
 			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
@@ -164,7 +176,11 @@ public final class PrearcSessionResource extends Resource {
 			logger.warn("archiving failed", e);
 			throw new ResourceException(e.getStatus(), e.getMessage(), e);
 		} finally {
-			archiver.dispose();
+			try {
+				archiver.close();
+			} catch (IOException e) {
+				logger.error("",e);
+			}
 		}
 	}
 

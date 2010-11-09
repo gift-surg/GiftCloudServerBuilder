@@ -31,6 +31,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper;
+import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper.HelperResults;
 
 /**
@@ -157,7 +158,7 @@ public class ImageUpload extends SecureAction {
 									
 									XnatSubjectdata subj=mr.getSubjectData();
 									
-									if(subj==null  && loader.hasValue(mr.getSubjectId())){
+									if(subj==null  && XNATUtils.hasValue(mr.getSubjectId())){
 										String cleaned=XnatSubjectdata.cleanValue(mr.getSubjectId());
 										if(!cleaned.equals(mr.getSubjectId())){
 											mr.setSubjectId(cleaned);
@@ -170,7 +171,7 @@ public class ImageUpload extends SecureAction {
 										results.listener.addMessage("PROCESSING", "Creating unmatched subject '" + mr.getSubjectId() +"'");
 										XnatSubjectdata sub=new XnatSubjectdata((UserI)user);
 										sub.setProject(project);
-										if(loader.hasValue(mr.getSubjectId())){
+										if(XNATUtils.hasValue(mr.getSubjectId())){
 											sub.setLabel(XnatSubjectdata.cleanValue(mr.getSubjectId()));
 										}
 										sub.setId(XnatSubjectdata.CreateNewID());
@@ -181,13 +182,13 @@ public class ImageUpload extends SecureAction {
 										upload_log.println("PROCESSING:Matched existing subject '" + mr.getSubjectId() +"'");
 									}
 									
-									if(!loader.hasValue(mr.getLabel())){
+									if(!XNATUtils.hasValue(mr.getLabel())){
 										if(mr.getDcmpatientid()!=null && !mr.getDcmpatientid().equals("") && !mr.getDcmpatientid().equals("NULL")){
 											mr.setLabel(mr.getDcmpatientid());
 										}
 									}
 									
-									if(!loader.hasValue(mr.getLabel())){
+									if(!XNATUtils.hasValue(mr.getLabel())){
 										results.listener.addMessage("ERROR", "Unable to identify appropriate session ID.");
 										upload_log.println("ERROR:Unable to identify appropriate session ID, left in prearchive");
 										html +="<a style='font-color:red' style='font-color:green' target='_parent' href='" + TurbineUtils.GetRelativeServerPath(data) + "/app/template/XDATScreen_prearchives.vm/project/" + mr.getProject() + "'>" + mr.getLabel() + "</a> Placed in prearchive, due to inability to identify an appropriate session ID.<br>";

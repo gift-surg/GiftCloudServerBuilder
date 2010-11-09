@@ -48,6 +48,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.Transfer;
+import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.xml.sax.SAXException;
 
 public class StoreImageSession extends ModifyItem {
@@ -418,7 +419,7 @@ public class StoreImageSession extends ModifyItem {
 	//if a subject doesn't exist, create one
 		XnatSubjectdata subj=session.getSubjectData();
 		
-		if(subj==null  && LoadImageData.hasValue(session.getSubjectId())){
+		if(subj==null  && XNATUtils.hasValue(session.getSubjectId())){
 			String cleaned=XnatSubjectdata.cleanValue(session.getSubjectId());
 			if(!cleaned.equals(session.getSubjectId())){
 				session.setSubjectId(cleaned);
@@ -429,7 +430,7 @@ public class StoreImageSession extends ModifyItem {
 		if(subj==null){
 			XnatSubjectdata sub=new XnatSubjectdata((UserI)user);
 			sub.setProject(session.getProject());
-			if(LoadImageData.hasValue(session.getSubjectId())){
+			if(XNATUtils.hasValue(session.getSubjectId())){
 				sub.setLabel(XnatSubjectdata.cleanValue(session.getSubjectId()));
         }
 			sub.setId(XnatSubjectdata.CreateNewID());
@@ -443,7 +444,7 @@ public class StoreImageSession extends ModifyItem {
         
         for (final XnatImagescandataI scan : session.getScans_scan()) {
             for (final XnatAbstractresourceI file : scan.getFile()) {
-        	((XnatAbstractresource)file).appendToPaths(arcSessionPath);
+        	((XnatAbstractresource)file).prependPathsWith(arcSessionPath);
                  
         	
         	try {

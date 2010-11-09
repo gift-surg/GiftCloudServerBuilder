@@ -27,6 +27,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.xml.sax.SAXException;
 /**
  * @author timo
@@ -63,84 +64,7 @@ public class LoadImageData extends SecureAction {
     private final org.apache.log4j.Logger logger = Logger.getLogger(LoadImageData.class);
 
     public XnatImagesessiondata getSession(XDATUser user, File xml, String project,boolean nullifySubject) throws IOException,SAXException{
-    	final SAXReader reader = new SAXReader(user);
-        final XFTItem item = reader.parse(xml.getAbsolutePath());
-
-        XnatImagesessiondata imageSessionData =(XnatImagesessiondata) BaseElement.GetGeneratedItem(item);
-        imageSessionData.fixScanTypes();
-
-        for(XnatImagescandataI scan: imageSessionData.getScans_scan()){
-        	if(!hasValue(scan.getQuality())){
-        		((XnatImagescandata)scan).setQuality("usable");
-        	}
-        }
-        
-        //if no primary project set, insert from context
-        if (null != project){
-            imageSessionData.setProject(project);
-        }
-        
-        if(hasValue(imageSessionData.getId())){
-        	if(!hasValue(imageSessionData.getLabel())){
-        		imageSessionData.setLabel(imageSessionData.getId());
-        	}
-        	imageSessionData.setId("");
-        }
-
-        if (imageSessionData.getSubjectId()!=null && imageSessionData.getSubjectId().startsWith("INVALID:")) {
-            imageSessionData.setSubjectId(imageSessionData.getSubjectId().substring(8).trim());
-        }
-
-
-        if(hasValue(imageSessionData.getSubjectId())){
-        	imageSessionData.setSubjectId(XnatSubjectdata.cleanValue(imageSessionData.getSubjectId()));
-        	
-        	if (!hasValue(imageSessionData.getSubjectId()))
-            {
-                imageSessionData.setSubjectId("NULL");
-            }
-        }else{
-            imageSessionData.setSubjectId("NULL");
-        }
-        
-        if(!hasValue(imageSessionData.getSubjectId())){
-        	if(hasValue(imageSessionData.getDcmpatientname())){
-        		imageSessionData.setSubjectId(XnatSubjectdata.cleanValue(imageSessionData.getDcmpatientname()));
-
-            	if (!hasValue(imageSessionData.getSubjectId()))
-                {
-                    imageSessionData.setSubjectId("NULL");
-                }
-        	}
-        }
-        
-    	if((!imageSessionData.validateSubjectId()) && nullifySubject){
-            imageSessionData.setSubjectId("NULL");
-    	}
-        
-        return imageSessionData;
-    }
-    
-    public static boolean isNull(String s){
-    	if(s==null){
-    		return true;
-    	}else if(s.equals("NULL")){
-    		return true;
-    	}else{
-    		return false;
-    	}
-    }
-    
-    public static boolean hasValue(String s){
-    	if(isNull(s)){
-    		return false;
-    	}else{
-    		if(StringUtils.isEmpty(s)){
-    			return false;
-    		}
-    	}
-    	
-    	return true;
+    	return (new XNATSessionPopulater(user, xml, project, nullifySubject)).populate();
     }
     
     /* (non-Javadoc)

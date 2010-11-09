@@ -70,15 +70,6 @@ public class BaseXnatResource extends AutoXnatResource {
             if (fullPath.endsWith("/")) {
                 fullPath = fullPath.substring(0,fullPath.length() -1);
             }
-           /* files = new ArrayList();
-            File f = new File(org.nrg.xft.utils.FileUtils.AppendRootPath(rootPath,this.getUri()));
-            if (!f.getPath().startsWith("srb:") && !f.getPath().startsWith("http:")){
-                if (!f.exists() && !getUri().endsWith(".gz"))
-                {
-                    f = new java.io.File(org.nrg.xft.utils.FileUtils.AppendRootPath(rootPath,this.getUri()) + ".gz");
-                }
-            }
-            files.add(f); */
             files = getAssociatedFilesOnLocalFileSystem(fullPath);
         }
         return files;
@@ -120,10 +111,10 @@ public class BaseXnatResource extends AutoXnatResource {
         return fileNames;
     }
     /**
-     * Appends this path to the enclosed URI or path variables.
+     * Prepends this path to the enclosed URI or path variables.
      * @param root
      */
-    public void appendToPaths(String root){
+    public void prependPathsWith(String root){
         if (!FileUtils.IsAbsolutePath(this.getUri())){
             try {
                     this.setUri(root + this.getUri());

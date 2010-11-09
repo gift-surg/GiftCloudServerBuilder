@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -41,7 +42,6 @@ import org.w3c.dom.Element;
  *
  */
 public final class PrearcSessionListResource extends Resource {
-	private static final String TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
 	private static final String XSDATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	private static final String PROJECT_SECURITY_TASK = "xnat:mrSessionData/project";
 	private static final String USER_ATTR = "user";
@@ -90,7 +90,7 @@ public final class PrearcSessionListResource extends Resource {
 				lastBuiltDate = new Date();
 			}
 			
-			final DateFormat format = new SimpleDateFormat(TIMESTAMP_FORMAT);
+			final DateFormat format = new SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP);
 			Date t_uploadDate;
 			try {
 				t_uploadDate = format.parse(sessdir.getParentFile().getName());
@@ -116,7 +116,7 @@ public final class PrearcSessionListResource extends Resource {
 			se.setAttribute("build", xsDateTime.format(getLastBuiltDate()));
 			final StringBuilder url = new StringBuilder(urlBase);
 			url.append("/sessions/");
-			final DateFormat ts = new SimpleDateFormat(TIMESTAMP_FORMAT);
+			final DateFormat ts = new SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP);
 			url.append(ts.format(getUploadDate()));
 			url.append("/").append(getName());
 			se.appendChild(d.createTextNode(url.toString()));

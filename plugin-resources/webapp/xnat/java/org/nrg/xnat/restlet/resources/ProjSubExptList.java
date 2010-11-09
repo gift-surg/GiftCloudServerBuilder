@@ -25,6 +25,8 @@ import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.restlet.actions.TriggerPipelines;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -319,8 +321,9 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 				}
 
 				if(user.canEdit(expt.getItem())){
-					if(this.isQueryVariableTrue("triggerPipelines")){
-						triggerPipelines(expt,true,this.isQueryVariableTrue("supressEmail"),user);
+					if(this.isQueryVariableTrue(XNATRestConstants.TRIGGER_PIPELINES) || this.containsAction(XNATRestConstants.TRIGGER_PIPELINES)){
+						TriggerPipelines tp = new TriggerPipelines(expt,true,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
+						tp.call();
 					}
 				}
 

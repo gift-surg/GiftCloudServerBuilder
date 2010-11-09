@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,6 +35,12 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.archive.XNATSessionBuilder;
+import org.nrg.xnat.exceptions.MultipleScanException;
+import org.nrg.xnat.exceptions.ValidationException;
+import org.nrg.xnat.restlet.actions.PullScanDataFromHeaders;
+import org.nrg.xnat.restlet.util.SimpleDateFormatUtil;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -277,8 +284,9 @@ public class ScanResource  extends ItemResource {
 					
 					MaterializedView.DeleteByUser(user);
 				
-				if(this.isQueryVariableTrue("pullDataFromHeaders")){
-					pullDataFromHeaders(scan,user,allowDataDeletion);
+				if(this.isQueryVariableTrue(XNATRestConstants.PULL_DATA_FROM_HEADERS) || this.containsAction(XNATRestConstants.PULL_DATA_FROM_HEADERS)){
+					PullScanDataFromHeaders pull=new PullScanDataFromHeaders(scan, user, allowDataDeletion);
+					pull.call();
 				}
 				
 				}else{
@@ -378,79 +386,6 @@ public class ScanResource  extends ItemResource {
 					"Unable to find the specified scan.");
 			return null;
 		}
-
-	}
-	
-
-
-	public static void pullDataFromHeaders(XnatImagescandata tempMR, XDATUser user,boolean allowDataDeletion) throws IOException,SAXException,Exception{
-		Date d = Calendar.getInstance().getTime();
-        File scanDir=new File(tempMR.deriveScanDir());
-		
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("yyyyMMdd_HHmmss");
-        String timestamp=formatter.format(d);
-		File xml= new File(scanDir,tempMR.getId()+ "_"+ timestamp+".xml");
-		SessionBuilder builder = new SessionBuilder(scanDir,new FileWriter(xml),new XnatAttrDef.Constant("project", tempMR.getImageSessionData().getProject()));
-	    builder.run();
-		
-	    if(!xml.exists() || xml.length()==0){
-	    	new PETSessionBuilder(scanDir,new FileWriter(xml),tempMR.getImageSessionData().getProject()).run();
-	    }
-	      
-	    if(!xml.exists() || xml.length()==0){
-	    	new Exception("Unable to locate DICOM or ECAT files");
-	    }
-	    
-		SAXReader reader = new SAXReader(user);
-		XFTItem temp2 = reader.parse(xml.getAbsolutePath());
-		XnatImagesessiondata newmr = (XnatImagesessiondata)BaseElement.GetGeneratedItem(temp2);
-        XnatImagescandata newscan=null;
-        
-		
-    	if(newmr.getScans_scan().size()>1){
-    		throw new Exception("Multiple Scans in single scan folder");
-    	}else{
-    		newscan=(XnatImagescandata)newmr.getScans_scan().get(0);
-    	}
-             
-        newscan.copyValuesFrom(tempMR);
-        newscan.setImageSessionId(tempMR.getImageSessionId());
-        newscan.setId(tempMR.getId());
-        newscan.setXnatImagescandataId(tempMR.getXnatImagescandataId());
-    	
-	    if(!allowDataDeletion){
-    		while(newscan.getFile().size()>0)newscan.removeFile(0);
-		}
-
-        final ValidationResults vr = newmr.validate();        
-        
-        if (vr != null && !vr.isValid())
-        {
-            throw new Exception(vr.toString());
-        }else{
-        	XnatImagesessiondata mr=tempMR.getImageSessionData();
-        	XnatProjectdata proj = mr.getProjectData();
-        	if(newscan.save(user,false,allowDataDeletion)){
-				MaterializedView.DeleteByUser(user);
-
-				if(proj.getArcSpecification().getQuarantineCode()!=null && proj.getArcSpecification().getQuarantineCode().equals(1)){
-					mr.quarantine(user);
-				}
-			}
-            
-            try {
-  				WrkWorkflowdata workflow = new WrkWorkflowdata((UserI)user);
-  				workflow.setDataType(mr.getXSIType());
-  				workflow.setExternalid(proj.getId());
-  				workflow.setId(mr.getId());
-  				workflow.setPipelineName("Header Mapping: Scan "+newscan.getId());
-  				workflow.setStatus("Complete");
-  				workflow.setLaunchTime(Calendar.getInstance().getTime());
-  				workflow.save(user, false, false);
-  			} catch (Throwable e) {
-  				e.printStackTrace();
-  			}
-        }
 
 	}
 }

@@ -102,10 +102,10 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
     }
 
     /**
-     * Appends this path to the enclosed URI or path variables.
+     * Prepends this path to the enclosed URI or path variables.
      * @param root
      */
-    public abstract void appendToPaths(String root);
+    public abstract void prependPathsWith(String root);
 
     /**
      * Relatives this path from the first occurence of the indexOf string.

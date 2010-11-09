@@ -9,10 +9,13 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.nrg.xdat.base.BaseElement;
@@ -505,4 +508,45 @@ public class XNATUtils {
         
         return f;
     }
+    
+    public static boolean isNull(String s){
+    	if(s==null){
+    		return true;
+    	}else if(s.equals("NULL")){
+    		return true;
+    	}else{
+    		return false;
+}
+    }
+    
+    public static boolean hasValue(String s){
+    	if(isNull(s)){
+    		return false;
+    	}else{
+    		if(StringUtils.isEmpty(s)){
+    			return false;
+    		}
+    	}
+    	
+    	return true;
+    }
+	
+    public static Object getFirstOf(final Iterator<?> i) {
+		while (i.hasNext()) {
+			final Object o = i.next();
+			if (null != o) {
+				return o;
+			}
+		}
+		return null;
+	}
+	
+    public static Object getFirstOf(final MultiMap m, final Object key) {
+		final Collection<?> vals = (Collection<?>)m.get(key);
+		return null == vals ? null : getFirstOf(vals.iterator());
+	}
+	
+	public static boolean isNullOrEmpty(final String s) {
+		return null == s || "".equals(s);
+	}
 }

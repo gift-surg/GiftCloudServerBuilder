@@ -272,7 +272,7 @@ public class StoreXAR extends RawScreen {
                                                 
                         for (XFTItem resource: session.getItem().getChildrenOfType("xnat:abstractResource")){
                             XnatAbstractresource res =(XnatAbstractresource) org.nrg.xdat.base.BaseElement.GetGeneratedItem(resource);
-                            res.appendToPaths(FileUtils.AppendSlash(dest_path));
+                            res.prependPathsWith(FileUtils.AppendSlash(dest_path));
                         }
                     }else if (itemsByType.containsKey("SCAN")){
                         for(ItemI om : items){
@@ -297,7 +297,7 @@ public class StoreXAR extends RawScreen {
                             
                             for (XFTItem resource: scan.getItem().getChildrenOfType("xnat:abstractResource")){
                                 XnatAbstractresource res =(XnatAbstractresource) org.nrg.xdat.base.BaseElement.GetGeneratedItem(resource);
-                                res.appendToPaths(FileUtils.AppendSlash(dest_path));
+                                res.prependPathsWith(FileUtils.AppendSlash(dest_path));
                             }
                         }
                     }else if (itemsByType.containsKey("RECON")){
@@ -323,7 +323,7 @@ public class StoreXAR extends RawScreen {
                             
                             for (XFTItem resource: scan.getItem().getChildrenOfType("xnat:abstractResource")){
                                 XnatAbstractresource res =(XnatAbstractresource) org.nrg.xdat.base.BaseElement.GetGeneratedItem(resource);
-                                res.appendToPaths(FileUtils.AppendSlash(dest_path));
+                                res.prependPathsWith(FileUtils.AppendSlash(dest_path));
                             }
                         }
                     }else if (itemsByType.containsKey("ASSESSOR")){
@@ -356,7 +356,7 @@ public class StoreXAR extends RawScreen {
                             
                             for (XFTItem resource: scan.getItem().getChildrenOfType("xnat:abstractResource")){
                                 XnatAbstractresource res =(XnatAbstractresource) org.nrg.xdat.base.BaseElement.GetGeneratedItem(resource);
-                                res.appendToPaths(FileUtils.AppendSlash(dest_path));
+                                res.prependPathsWith(FileUtils.AppendSlash(dest_path));
                             }
                         }
                     }

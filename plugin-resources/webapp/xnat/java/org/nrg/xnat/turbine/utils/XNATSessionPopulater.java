@@ -5,87 +5,105 @@
  */
 package org.nrg.xnat.turbine.utils;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.om.XnatImagescandata;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.xml.sax.SAXException;
+
 
 /**
  * @author timo
  * 
  */
 public class XNATSessionPopulater {
-//    private final org.apache.log4j.Logger logger = Logger.getLogger(XNATSessionPopulater.class);
-//    private boolean buildXML = true;
-//    private final File directory;
-//    private final String project;
-//
-//    public final List<Exception> exceptions = new java.util.ArrayList<Exception>();
-//
-//    public XNATSessionPopulater(final File dir, final String project) {
-//	this.directory = dir;
-//	this.project = project;
-//    }
-//
-//    public XnatMrsessiondata populateMR(UserI user) throws IOException, SAXException {
-//	logger.debug("Scanning DICOM fileset " + directory.getAbsolutePath());
-//	
-//	/*
-//	 * Define attributes for the mrSession level
-//	 */
-//	final File xmlFile = new File(directory.getAbsolutePath() + ".xml");
-//	if (buildXML){
-//	    logger.debug("Building mrSessionData for " + directory.getAbsolutePath());
-//	    final MRSessionBuilder mrb = new MRSessionBuilder(new File(directory.getAbsolutePath()), xmlFile,
-//		    new ProjectAttrDef(project));
-//	    mrb.run();
-//	}
-//
-//	if (xmlFile.exists()){
-//	    final SAXReader reader = new SAXReader(user);
-//	    final XFTItem item = reader.parse(xmlFile.getAbsolutePath());
-//	    item.setUser(user);
-//	    if (item.getXSIType().equalsIgnoreCase("xnat:mrSessionData")){
-//		return new XnatMrsessiondata(item);
-//	    }
-//	}
-//
-//	return null;
-//    }
-//
-//    public XnatPetsessiondata populatePET(UserI user) throws IOException, SAXException{
-//	logger.debug("Scanning PET fileset " + directory.getAbsolutePath());
-//
-//	/*
-//	 * Define attributes for the petSession level
-//	 */
-//	final File xmlFile = new File(directory.getAbsolutePath() + ".xml");
-//	if (buildXML){
-//	    logger.debug("Building petSessionData for " + directory.getAbsolutePath());
-//	    final PETSessionBuilder mrb = new PETSessionBuilder(new File(directory.getAbsolutePath()), xmlFile, project);
-//	    mrb.run();
-//	}
-//
-//	if (xmlFile.exists()){
-//	    final SAXReader reader = new SAXReader(user);
-//	    final XFTItem item = reader.parse(xmlFile.getAbsolutePath());
-//	    item.setUser(user);
-//	    if (item.getXSIType().equalsIgnoreCase("xnat:petSessionData")){
-//		return new XnatPetsessiondata(item);
-//	    }
-//	}
-//
-//	return null;
-//    }
-//
-//    /**
-//     * @return the buildXML
-//     */
-//    public boolean buildXML() {
-//	return buildXML;
-//    }
-//
-//    /**
-//     * @param buildXML the buildXML to set
-//     */
-//    public void setBuildXML(boolean buildXML) {
-//	this.buildXML = buildXML;
-//    }
+		private final XDATUser user;
+		private final File xml;
+		private final String project;
+		private final boolean nullifySubject;
+	
+		/**
+		 * Use this object to populate a Session object from the prearchive.  The xml File can point to the xml or the session directory.
+		 * 
+		 * It fixes the scan types, usability, label, and subject id.
+		 * 
+		 * @param user
+		 * @param xml
+		 * @param project
+		 * @param nullifySubject
+		 */
+		public XNATSessionPopulater(XDATUser user, File xml, String project,boolean nullifySubject){
+			this.user=user;
+			this.xml=(xml.getPath().endsWith(".xml"))?xml:new File(xml.getPath()+".xml");
+			this.project=project;
+			this.nullifySubject=nullifySubject;
+		}
+		
+		public XnatImagesessiondata populate() throws IOException,SAXException{			
+			final SAXReader reader = new SAXReader(user);
+	        final XFTItem item = reader.parse(xml.getAbsolutePath());
+
+	        XnatImagesessiondata imageSessionData =(XnatImagesessiondata) BaseElement.GetGeneratedItem(item);
+	        imageSessionData.fixScanTypes();
+
+	        for(final XnatImagescandataI scan: imageSessionData.getScans_scan()){
+	        	if(!XNATUtils.hasValue(scan.getQuality())){
+	        		((XnatImagescandata)scan).setQuality("usable");
+	        	}
+	        }
+	        
+	        //if no primary project set, insert from context
+	        if (null != project){
+	            imageSessionData.setProject(project);
+	        }
+	        
+	        if(XNATUtils.hasValue(imageSessionData.getId())){
+	        	if(!XNATUtils.hasValue(imageSessionData.getLabel())){
+	        		imageSessionData.setLabel(imageSessionData.getId());
+	        	}
+	        	imageSessionData.setId("");
+	        }
+
+	        if (imageSessionData.getSubjectId()!=null && imageSessionData.getSubjectId().startsWith("INVALID:")) {
+	            imageSessionData.setSubjectId(imageSessionData.getSubjectId().substring(8).trim());
+	        }
+
+
+	        if(XNATUtils.hasValue(imageSessionData.getSubjectId())){
+	        	imageSessionData.setSubjectId(XnatSubjectdata.cleanValue(imageSessionData.getSubjectId()));
+	        	
+	        	if (!XNATUtils.hasValue(imageSessionData.getSubjectId()))
+	            {
+	                imageSessionData.setSubjectId("NULL");
+	            }
+	        }else{
+	            imageSessionData.setSubjectId("NULL");
+	        }
+	        
+	        if(!XNATUtils.hasValue(imageSessionData.getSubjectId())){
+	        	if(XNATUtils.hasValue(imageSessionData.getDcmpatientname())){
+	        		imageSessionData.setSubjectId(XnatSubjectdata.cleanValue(imageSessionData.getDcmpatientname()));
+
+	            	if (!XNATUtils.hasValue(imageSessionData.getSubjectId()))
+	                {
+	                    imageSessionData.setSubjectId("NULL");
+	                }
+	        	}
+	        }
+	        
+	    	if((!imageSessionData.validateSubjectId()) && nullifySubject){
+	            imageSessionData.setSubjectId("NULL");
+	    	}
+	        
+	        return imageSessionData;
+		}
+		
 
 }

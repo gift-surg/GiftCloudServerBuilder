@@ -177,10 +177,10 @@ public class BaseXnatResourceseries extends AutoXnatResourceseries {
     }
 
     /**
-     * Appends this path to the enclosed URI or path variables.
+     * Prepends this path to the enclosed URI or path variables.
      * @param root
      */
-    public void appendToPaths(String root){
+    public void prependPathsWith(String root){
         if (!FileUtils.IsAbsolutePath(this.getPath())){
             try {
                 this.setPath(root + this.getPath());

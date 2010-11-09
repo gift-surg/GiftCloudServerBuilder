@@ -56,7 +56,7 @@ public class BaseXnatDicomseriesImage extends AutoXnatDicomseriesImage {
      * Appends this path to the enclosed URI or path variables.
      * @param root
      */
-    public void appendToPaths(String root){
+    public void prependPathsWith(String root){
         if (!FileUtils.IsAbsolutePath(this.getUri())){
             try {
                 this.setUri(root + this.getUri());

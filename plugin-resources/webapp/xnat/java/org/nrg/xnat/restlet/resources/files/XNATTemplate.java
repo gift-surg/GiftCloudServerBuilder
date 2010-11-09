@@ -27,6 +27,7 @@ import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -335,7 +336,7 @@ public class XNATTemplate extends SecureResource {
 	public boolean insertCatalag(XnatResourcecatalog catResource)
 			throws InvalidArchiveStructure, Exception {
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
-				"yyyyMMdd_HHmmss");
+				XNATRestConstants.PREARCHIVE_TIMESTAMP);
         String uploadID = formatter.format(Calendar.getInstance().getTime());
 		String resourceFolder=catResource.getLabel();
 

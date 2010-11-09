@@ -18,8 +18,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.nrg.PrearcImporter;
-import org.nrg.StatusListener;
-import org.nrg.StatusMessage;
+import org.nrg.status.StatusListenerI;
+import org.nrg.status.StatusMessage;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.archive.PrearcImporterFactory;
 
@@ -133,7 +133,7 @@ public class ImageUploadHelper {
     	public PrearcListener listener=null;
     }
     
-    public class PrearcListener implements StatusListener{
+    public class PrearcListener implements StatusListenerI{
         final HttpSession session;
         final String sessionAttribute;
         final ArrayList<String[]> messages = new ArrayList<String[]>();

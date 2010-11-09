@@ -91,10 +91,10 @@ public class BaseXnatDicomseries extends AutoXnatDicomseries {
      * Appends this path to the enclosed URI or path variables.
      * @param root
      */
-    public void appendToPaths(String root){
+    public void prependPathsWith(String root){
         for (int i=0;i<this.getImageset_image().size();i++){
             org.nrg.xdat.om.XnatDicomseriesImage image = (org.nrg.xdat.om.XnatDicomseriesImage)this.getImageset_image().get(i);
-            image.appendToPaths(root);
+            image.prependPathsWith(root);
         }
     }
 

@@ -9,6 +9,7 @@
 package org.nrg.xnat.restlet.resources;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +34,11 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xnat.exceptions.ValidationException;
+import org.nrg.xnat.restlet.actions.FixScanTypes;
+import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
+import org.nrg.xnat.restlet.actions.TriggerPipelines;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -42,6 +48,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+import org.xml.sax.SAXException;
 
 public class ProjtExptPipelineResource extends SecureResource {
 	XnatProjectdata proj=null;
@@ -117,39 +124,42 @@ public class ProjtExptPipelineResource extends SecureResource {
 	public void handlePost() {
 		if(proj!=null && step!=null && expt != null){
 			try {
-				if(step.equals("triggerPipelines")){
+				if(step.equals(XNATRestConstants.TRIGGER_PIPELINES)){
 					if(user.canEdit(expt)){
-						if(expt instanceof XnatImagesessiondata){
-							((XnatImagesessiondata)expt).fixScanTypes();
-							((XnatImagesessiondata)expt).defaultQuality("usable");
+						FixScanTypes fst=new FixScanTypes(expt,user,proj,true);
+						fst.call();
+						
+						TriggerPipelines tp = new TriggerPipelines(expt,true,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
+						tp.call();
 						}
-
-						if(expt.save(user,false,false)){
-							MaterializedView.DeleteByUser(user);
-
-							if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){
-								expt.quarantine(user);
-							}
-						}
-						SubjAssessmentAbst.triggerPipelines(expt,true,this.isQueryVariableTrue("supressEmail"),user);
-					}
-				}else if(step.equals("pullDataFromHeaders") && expt instanceof XnatImagesessiondata){
-					if(user.canEdit(expt))
-						SubjAssessmentAbst.pullDataFromHeaders((XnatImagesessiondata)expt, user, this.isQueryVariableTrue("allowDataDeletion"), this.isQueryVariableTrue("overwrite"));
-				}else if(step.equals("fixScanTypes") && expt instanceof XnatImagesessiondata){
+				}else if(step.equals(XNATRestConstants.PULL_DATA_FROM_HEADERS) && expt instanceof XnatImagesessiondata){
 					if(user.canEdit(expt)){
-						if(expt instanceof XnatImagesessiondata){
-							((XnatImagesessiondata)expt).fixScanTypes();
-							((XnatImagesessiondata)expt).defaultQuality("usable");
-						}
-
-						if(expt.save(user,false,false)){
-							MaterializedView.DeleteByUser(user);
-
-							if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){
-								expt.quarantine(user);
+						try {
+							PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt, user, this.isQueryVariableTrue("allowDataDeletion"), this.isQueryVariableTrue("overwrite"));
+							pull.call();
+						} catch (SAXException e){
+							logger.error("",e);
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
+						} catch (ValidationException e){
+							logger.error("",e);
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
+						} catch (NoUniqueSessionException e){
+							logger.error("",e);
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
+						} catch (Exception e) {
+							logger.error("",e);
+							this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+							return;
 							}
+					}else{
+						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 						}
+				}else if(step.equals(XNATRestConstants.FIX_SCAN_TYPES) && expt instanceof XnatImagesessiondata){
+					if(user.canEdit(expt)){
+						FixScanTypes fst=new FixScanTypes(expt,user,proj,true);
+						fst.call();
+					}else{
+						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 					}
 				}else{
 					ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());

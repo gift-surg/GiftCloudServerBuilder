@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
-import org.nrg.session.SessionBuilder.MultipleSessionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;

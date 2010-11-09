@@ -11,89 +11,85 @@ import java.io.OutputStreamWriter;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.nrg.PrearcImporter;
-import org.nrg.status.StatusListenerI;
-import org.nrg.status.StatusMessage;
+import org.nrg.StatusMessage;
+import org.nrg.StatusMessage.Status;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.archive.PrearcImporterFactory;
 
-public class ImageUploadHelper {
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+
+public class ImageUploadHelper extends StatusProducer{
+    public static final String SESSIONS_RESPONSE = "SESSIONS";
     static org.apache.log4j.Logger logger = Logger.getLogger(ImageUploadHelper.class);
-    private final String uploadID;
-    private final HttpSession session;
     private final String project;
     
-    private Map<String,Object> hash = new Hashtable<String,Object>();
+	private final XDATUser user;
     
-    public ImageUploadHelper(final String upload_identifier, final HttpSession http_session, final String project)
+    private final File src;
+    private final File dest;
+    
+    private Map<String,Object> additionalValues;
+    
+    public ImageUploadHelper(final Object uID,final XDATUser user,final String project,final File src, final File dest,final Map<String,Object> additionalVariables)
     {
-        uploadID = upload_identifier;
-        session = http_session;
+    	super((uID==null)?user:uID);
+    	this.user=user;
         this.project = project;
+        this.src=src;
+        this.dest=dest;
+        this.additionalValues=additionalVariables;
     }
     
-    public void addBatchVariable(String xmlPath, Object value)
+	public Multimap call()
     {
-        hash.put(xmlPath, value);
-    }
-    
-    public Map getBatchVariables()
-    {
-        return hash;
-    }
-    
-    public void clearBatchVariables()
-    {
-        hash =new Hashtable<String,Object>();
-    }
-    
-    public HelperResults run(File src, File dest)
-    {        
-        HelperResults results=new HelperResults();
-        results.listener = null;
         final PrearcImporter pw = PrearcImporterFactory.getFactory().getPrearcImporter(project, dest, src);
-        if (uploadID!=null){
-            session.setAttribute(uploadID + "status", new ArrayList());
-            results.listener= new PrearcListener(session,uploadID + "status");
-        }else{
-        	results.listener= new PrearcListener(null,null);
-        }
-        pw.addStatusListener(results.listener);
+        for(final StatusListenerI listener: this.getListeners()){
+			pw.addStatusListener(listener);
+    }
+    
+        final LocalListener localListener = new LocalListener();
+    
+        pw.addStatusListener(localListener);
+    
         pw.run();
         
-        System.out.println("Done with PrearcImporter.");
+        final Collection<File> sessions=pw.getSessions();
+        final Multimap<String,Object> response= LinkedHashMultimap.create();
         
-        results.sessions=pw.getSessions();
+        for(final File f : sessions){
+        	response.put(SESSIONS_RESPONSE, f);
         
-        for(File f : results.sessions){
             if (f.isDirectory())
             {
-                String s = f.getAbsolutePath() + ".xml";
-                File xml = new File(s);
+            	final String s = f.getAbsolutePath() + ".xml";
+            	final File xml = new File(s);
                 if (xml.exists())
                 {
-                	results.listener.addMessage("PROCESSING", "Setting security field(s) for '" + f.getName() + "'");
-                    SAXReader reader = new SAXReader(null);
+                	if(this.additionalValues!=null && this.additionalValues.size()>0){
+                    	processing("Setting additional values for '" + f.getName() + "'");
+                        final SAXReader reader = new SAXReader(null);
                     try {   
-                        org.nrg.xft.XFTItem item = reader.parse(s);
-                        for (Map.Entry<String, Object> entry :hash.entrySet())
+                        	final org.nrg.xft.XFTItem item = reader.parse(s);
+                            for (Map.Entry<String, Object> entry :additionalValues.entrySet())
                         {
                             try {
                                 item.setProperty(entry.getKey(), entry.getValue());
                             } catch (Throwable e) {
                                 logger.error("",e);
-                                results.listener.addMessage("FAILED", "failed to set appropriate field for '" + f.getName() + "'.  Data may be publicly accessible until archived.");
+                                    failed("failed to set appropriate field for '" + f.getName() + "'.  Data may be publicly accessible until archived.");
                             }
                         }
                                              
-                        FileOutputStream fos=new FileOutputStream(xml);
-                        OutputStreamWriter fw;
+                            final FileOutputStream fos=new FileOutputStream(xml);
+                            final OutputStreamWriter fw;
             			try {
             				FileLock fl=fos.getChannel().lock();
             				try{
@@ -108,29 +104,25 @@ public class ImageUploadHelper {
             			}
                     } catch (Throwable e) {
                         logger.error("",e);
-                        results.listener.addMessage("FAILED", "failed to set appropriate field(s) for '" + f.getName() + "'.  Data may be publicly accessible until archived.");
+                            failed("failed to set appropriate field(s) for '" + f.getName() + "'.  Data may be publicly accessible until archived.");
+                        }
                     }
                 }else{
-                	results.listener.addMessage("FAILED", "failed to load generated xml file ('" + xml.getName() + "').  Data may be publicly accessible until archived.");
+                	failed("failed to load generated xml file ('" + xml.getName() + "').  Data may be publicly accessible until archived.");
                 }
             }
         }
 
         
-        for (String[] s : results.listener.messages){
-            if (s[0].equals("FAILED")){
-                logger.error(s[1]);
+        for (final StatusMessage s : localListener.getCachedMessages()){
+            if (s.getStatus().equals(Status.FAILED)){
+                logger.error(s.getMessage());
             }else{
-                logger.info(s[1]);
+                logger.info(s.getMessage());
             }
         }
         
-        return results;
-    }
-    
-    public class HelperResults{
-    	public Collection<File> sessions=null;
-    	public PrearcListener listener=null;
+        return response;
     }
     
     public class PrearcListener implements StatusListenerI{
@@ -181,5 +173,16 @@ public class ImageUploadHelper {
         public void addMessage(String level, String message){
             messages.add(new String[]{level,message});
         }
+    };
+    
+    public class LocalListener implements StatusListenerI{
+    	private Collection<StatusMessage> cache=new ArrayList<StatusMessage>();
+		public void notify(StatusMessage message) {
+			cache.add(message);
+}
+		
+		public Collection<StatusMessage> getCachedMessages(){
+			return cache;
+		}
     };
 }

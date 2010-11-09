@@ -34,7 +34,6 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.exceptions.ValidationException;
-import org.nrg.xnat.restlet.util.SimpleDateFormatUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Client;

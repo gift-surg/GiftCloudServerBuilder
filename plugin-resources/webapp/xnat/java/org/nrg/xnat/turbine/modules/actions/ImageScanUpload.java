@@ -32,103 +32,103 @@ public class ImageScanUpload extends StoreImageSession {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception{
-        ItemI temp = TurbineUtils.GetItemBySearch(data,false);
-        XnatImagesessiondata pet =  (XnatImagesessiondata)BaseElement.GetGeneratedItem(temp);
-        
-        ParameterParser params = data.getParameters();
-        HttpSession session = data.getSession();
-        String uploadID= null;
-        if (params.get("ID")!=null && !params.get("ID").equals("")){
-            uploadID=params.get("ID");
-            session.setAttribute(uploadID + "Upload", new Integer(0));
-            session.setAttribute(uploadID + "Extract", new Integer(0));
-            session.setAttribute(uploadID + "Analyze", new Integer(0));
-        }
-        if (uploadID!=null)session.setAttribute(uploadID + "Upload", new Integer(0));
-            try {
-                //byte[] bytes = params.getUploadData();
-                //grab the FileItems available in ParameterParser
-                FileItem fi = params.getFileItem("image_archive");
-                if (fi != null)
-                {
-                    String filename = fi.getName();
-                    
-                    String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
-                    if (!cache_path.endsWith(File.separator)){
-                        cache_path += File.separator;
-                    }                    
-                    
-                    cache_path +="uploads" + File.separator + uploadID + File.separator;
-                    File cacheDir = new File(cache_path);
-                    
-                    if (!cacheDir.exists()){
-                        cacheDir.mkdirs();
-                    }
-                    
-                    UserI user = TurbineUtils.getUser(data);
-
-                    String temppath= ArcSpecManager.GetInstance().getGlobalCachePath();
-                    
-                    temppath += "uploads" + File.separator + "temp" + File.separator + user.getUsername() + File.separator;
-                    File tempDIR = new File(temppath);
-                    if (!tempDIR.exists())tempDIR.mkdirs();
-                    
-                    System.out.println("Uploading file.");
-                    //upload file
-                    
-                    if (uploadID!=null)session.setAttribute(uploadID + "Upload", new Integer(100));
-
-                    int index = filename.lastIndexOf('\\');
-                    if (index< filename.lastIndexOf('/'))index = filename.lastIndexOf('/');
-                    if(index>0)filename = filename.substring(index+1);
-                    File uploaded = new File(temppath + filename) ;
-                    fi.write(uploaded);
-
-                    
-                    System.out.println("File Upload Complete.");
-                    
-                    try {
-                	final String project = params.get("project");
-                        final ImageUploadHelper helper = new ImageUploadHelper(uploadID,session, project);
-                        helper.run(tempDIR, cacheDir);
-
-                        if (uploadID!=null) {
-                            session.setAttribute(uploadID + "Extract", new Integer(100));
-                            session.setAttribute(uploadID + "Analyze", new Integer(100));
-                        }
-                        
-                        data.setMessage("File Uploaded.");
-                        data.setScreenTemplate("ImageUploadSummary.vm");
-                    } catch (Throwable e) {
-                        error(e,data);
-                        session.setAttribute(uploadID + "Upload", new Integer(-1));
-                        session.setAttribute(uploadID + "Extract", new Integer(-1));
-                        session.setAttribute(uploadID + "Analyze", new Integer(-1));
-                    }finally{
-                        fi.delete();
-                        
-                        if (tempDIR.exists())
-                            FileUtils.DeleteFile(tempDIR);
-                        
-                        if (uploaded.exists())FileUtils.DeleteFile(uploaded);
-                    }
-                }
-            } catch (FileNotFoundException e) {
-                error(e,data);
-                session.setAttribute(uploadID + "Upload", new Integer(-1));
-                session.setAttribute(uploadID + "Extract", new Integer(-1));
-                session.setAttribute(uploadID + "Analyze", new Integer(-1));
-            } catch (IOException e) {
-                error(e,data);
-                session.setAttribute(uploadID + "Upload", new Integer(-1));
-                session.setAttribute(uploadID + "Extract", new Integer(-1));
-                session.setAttribute(uploadID + "Analyze", new Integer(-1));
-            } catch (RuntimeException e) {
-                error(e,data);
-                session.setAttribute(uploadID + "Upload", new Integer(-1));
-                session.setAttribute(uploadID + "Extract", new Integer(-1));
-                session.setAttribute(uploadID + "Analyze", new Integer(-1));
-            }
+//        ItemI temp = TurbineUtils.GetItemBySearch(data,false);
+//        XnatImagesessiondata pet =  (XnatImagesessiondata)BaseElement.GetGeneratedItem(temp);
+//        
+//        ParameterParser params = data.getParameters();
+//        HttpSession session = data.getSession();
+//        String uploadID= null;
+//        if (params.get("ID")!=null && !params.get("ID").equals("")){
+//            uploadID=params.get("ID");
+//            session.setAttribute(uploadID + "Upload", new Integer(0));
+//            session.setAttribute(uploadID + "Extract", new Integer(0));
+//            session.setAttribute(uploadID + "Analyze", new Integer(0));
+//        }
+//        if (uploadID!=null)session.setAttribute(uploadID + "Upload", new Integer(0));
+//            try {
+//                //byte[] bytes = params.getUploadData();
+//                //grab the FileItems available in ParameterParser
+//                FileItem fi = params.getFileItem("image_archive");
+//                if (fi != null)
+//                {
+//                    String filename = fi.getName();
+//                    
+//                    String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
+//                    if (!cache_path.endsWith(File.separator)){
+//                        cache_path += File.separator;
+//                    }                    
+//                    
+//                    cache_path +="uploads" + File.separator + uploadID + File.separator;
+//                    File cacheDir = new File(cache_path);
+//                    
+//                    if (!cacheDir.exists()){
+//                        cacheDir.mkdirs();
+//                    }
+//                    
+//                    UserI user = TurbineUtils.getUser(data);
+//
+//                    String temppath= ArcSpecManager.GetInstance().getGlobalCachePath();
+//                    
+//                    temppath += "uploads" + File.separator + "temp" + File.separator + user.getUsername() + File.separator;
+//                    File tempDIR = new File(temppath);
+//                    if (!tempDIR.exists())tempDIR.mkdirs();
+//                    
+//                    System.out.println("Uploading file.");
+//                    //upload file
+//                    
+//                    if (uploadID!=null)session.setAttribute(uploadID + "Upload", new Integer(100));
+//
+//                    int index = filename.lastIndexOf('\\');
+//                    if (index< filename.lastIndexOf('/'))index = filename.lastIndexOf('/');
+//                    if(index>0)filename = filename.substring(index+1);
+//                    File uploaded = new File(temppath + filename) ;
+//                    fi.write(uploaded);
+//
+//                    
+//                    System.out.println("File Upload Complete.");
+//                    
+//                    try {
+//                	final String project = params.get("project");
+//                        final ImageUploadHelper helper = new ImageUploadHelper(uploadID,session, project);
+//                        helper.run(tempDIR, cacheDir);
+//
+//                        if (uploadID!=null) {
+//                            session.setAttribute(uploadID + "Extract", new Integer(100));
+//                            session.setAttribute(uploadID + "Analyze", new Integer(100));
+//                        }
+//                        
+//                        data.setMessage("File Uploaded.");
+//                        data.setScreenTemplate("ImageUploadSummary.vm");
+//                    } catch (Throwable e) {
+//                        error(e,data);
+//                        session.setAttribute(uploadID + "Upload", new Integer(-1));
+//                        session.setAttribute(uploadID + "Extract", new Integer(-1));
+//                        session.setAttribute(uploadID + "Analyze", new Integer(-1));
+//                    }finally{
+//                        fi.delete();
+//                        
+//                        if (tempDIR.exists())
+//                            FileUtils.DeleteFile(tempDIR);
+//                        
+//                        if (uploaded.exists())FileUtils.DeleteFile(uploaded);
+//                    }
+//                }
+//            } catch (FileNotFoundException e) {
+//                error(e,data);
+//                session.setAttribute(uploadID + "Upload", new Integer(-1));
+//                session.setAttribute(uploadID + "Extract", new Integer(-1));
+//                session.setAttribute(uploadID + "Analyze", new Integer(-1));
+//            } catch (IOException e) {
+//                error(e,data);
+//                session.setAttribute(uploadID + "Upload", new Integer(-1));
+//                session.setAttribute(uploadID + "Extract", new Integer(-1));
+//                session.setAttribute(uploadID + "Analyze", new Integer(-1));
+//            } catch (RuntimeException e) {
+//                error(e,data);
+//                session.setAttribute(uploadID + "Upload", new Integer(-1));
+//                session.setAttribute(uploadID + "Extract", new Integer(-1));
+//                session.setAttribute(uploadID + "Analyze", new Integer(-1));
+//            }
     }
 
     

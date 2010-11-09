@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
-import org.nrg.session.SessionBuilder.NoUniqueSessionException;
+import org.nrg.session.SessionBuilder.MultipleSessionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatImagescandata;
@@ -24,7 +24,6 @@ import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.exceptions.MultipleScanException;
 import org.nrg.xnat.exceptions.ValidationException;
-import org.nrg.xnat.restlet.util.SimpleDateFormatUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.xml.sax.SAXException;
 
@@ -59,11 +58,11 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
      * @throws ValidationException: Scan invalid according to schema requirements (including xdat tags)
 	 * @throws Exception
 	 */
-	public Boolean call() throws IOException,SAXException,NoUniqueSessionException,MultipleScanException,ValidationException,Exception{
+	public Boolean call() throws IOException,SAXException,MultipleScanException,ValidationException,Exception{
 		final File scanDir=new File(tempMR.deriveScanDir());
         
 		//build timestamped file for SessionBuilder output.
-		final String timestamp=SimpleDateFormatUtil.format(XNATRestConstants.PREARCHIVE_TIMESTAMP, Calendar.getInstance().getTime());
+		final String timestamp=(new java.text.SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar.getInstance().getTime());
 		final File xml= new File(scanDir,tempMR.getId()+ "_"+ timestamp+".xml");
 		
 		//run DICOM builder
@@ -83,7 +82,7 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
     	if(newmr.getScans_scan().size()>1){
     		throw new MultipleScanException();
     	}else{
-    		newscan=newmr.getScans_scan().get(0);
+    		newscan=(XnatImagescandata)newmr.getScans_scan().get(0);
     	}
              
         newscan.copyValuesFrom(tempMR);
@@ -104,11 +103,15 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
         	final XnatImagesessiondata mr=tempMR.getImageSessionData();
         	final XnatProjectdata proj = mr.getProjectData();
         	if(newscan.save(user,false,allowDataDeletion)){
+				try {
 				MaterializedView.DeleteByUser(user);
 
 				if(proj.getArcSpecification().getQuarantineCode()!=null && proj.getArcSpecification().getQuarantineCode().equals(1)){
 					mr.quarantine(user);
 				}
+					} catch (Exception e) {
+						logger.error("",e);
+					}
 			}
             
             try {

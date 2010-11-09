@@ -36,7 +36,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
-import org.nrg.xnat.turbine.modules.actions.LoadImageData;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.slf4j.Logger;
@@ -45,9 +45,32 @@ import org.xml.sax.SAXException;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
+ * @author Timothy R. Olsen <olsent@wustl.edu>
+ *
+ * Archiving new sessions should be straight-forward.
+ * For existing sessions
+ *   If it contains only new scans
+ *      If Modality of session matches
+ *      	Add new scans
+ *          Regenerate session xml
+ *      Else
+ *          Throw Exception (we may need to add support for this later)
+ *   Else
+ *      If Contains only new Files (identified by UID and Class UID From catalogs)
+ *          Add new files
+ *          Regenerate session xml
+ *      Else
+ *          If Overwrite=true
+ *              Copy new files (delete previous ones)
+ *              Regenerate session xml
+ *          Else
+ *              If also contains new files
+ *                  Should it add the files or Fail
+ *              Else
+ *                  Fail
  *
  */
-public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer implements Callable<URL>,StatusPublisherI {
+public final class PrearcSessionArchiver extends StatusProducer implements Callable<URL>,StatusPublisherI {
 	private static final String[] SCANS_DIR_NAMES = {"SCANS", "RAW"};
 	
 	public static final String PARAM_SESSION = "session";
@@ -57,29 +80,31 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 	private final XnatImagesessiondata session;
 	private final XDATUser user;
 	private final String project;
-	private final MultiMap params;
+	private final Map<String,Object> params;
 	
-	private final boolean allowDataDeletion;
+	private final boolean allowDataDeletion;//should the process delete data from an existing resource
+	private final boolean overwrite;//should process proceed if the session already exists
 
 	private boolean shouldForceQuarantine = false;
 	
 
 	public PrearcSessionArchiver(final XnatImagesessiondata session,
 			final XDATUser user, final String project,
-			final MultiMap params, Boolean allowDataDeletion) {
+			final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
 		super(session.getPrearchivePath());
 		this.session = session;
 		this.user = user;
 		this.project = project;
-		this.params = new MultiHashMap(params);
+		this.params = params;
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
+		this.overwrite=(overwrite==null)?false:overwrite;
 	}
 
 	public PrearcSessionArchiver(final File sessionDir,
 			final XDATUser user, final String project,
 			final MultiMap params, boolean allowDataDeletion)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(), user, project, params, allowDataDeletion);
+		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(), user, project, params, allowDataDeletion,overwrite);
 	}
 
 	public boolean forceQuarantine(final boolean shouldForce) {
@@ -88,17 +113,55 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 		return prev;
 	}
 	
+	public void fail(final String msg) throws ArchivingException{
+		failed(msg);
+		throw new ArchivingException(msg);
+	}
+
+	public XnatExperimentdata retrieveExistingExpt() throws ArchivingException{
+		XnatExperimentdata existing=null;
+
+		//review existing sessions
+		if(XNATUtils.hasValue(session.getId())){
+			existing=XnatExperimentdata.getXnatExperimentdatasById(session.getId(), user, false);
+		}
+
+		if(existing!=null){
+			if(!session.getLabel().equals(existing.getLabel())){
+				fail("new session label matches preexisting label for a different experiment");
+			}
+		}else{
+			existing=XnatExperimentdata.GetExptByProjectIdentifier(project, session.getLabel(), user, false);
+		}
+
+		if(existing!=null){
+			if(!existing.getProject().equals(project)){
+				fail("conflict: illegal project change.");
+			}
+
+			if(existing!=null && !overwrite){
+				fail("conflict: session already exists.");
+			}
+
+			if(!existing.getXSIType().equals(session.getXSIType())){
+				//this should catch differences between session types as well as label reuse vs other data types.
+				//TODO: this needs to be smarter, if a single secondary capture is uploaded for an existing MR, that should be allowed.
+				fail("new data conflicts with XSI type of previously archived data.");
+			}
+		}
+
+		return existing;
+	}
+	
 	/**
 	 * Determine an appropriate session label.
 	 * @throws ArchivingException
 	 */
 	private void fixSessionLabel() throws ArchivingException {
-		if (params.containsKey(PARAM_SESSION)) {
-			final String label = (String)XNATUtils.getFirstOf(params, PARAM_SESSION);
+		final String label = (String)params.get(PARAM_SESSION);
 			if (null != label) {
 				session.setLabel(XnatImagesessiondata.cleanValue(label));
 			}
-		}
 		if (!XNATUtils.hasValue(session.getLabel())) {
 			if (XNATUtils.hasValue(session.getDcmpatientid())) {
 				session.setLabel(XnatImagesessiondata.cleanValue(session.getDcmpatientid()));
@@ -116,12 +179,11 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 	 * @throws ArchivingException
 	 */
 	private void fixSubject() throws ArchivingException {
-		if (params.containsKey(PARAM_SUBJECT)) {
-			final String paramLabel = (String)XNATUtils.getFirstOf(params, PARAM_SUBJECT);
+		final String paramLabel = (String)params.get(PARAM_SUBJECT);
 			if (null != paramLabel) {
 				session.setSubjectId(paramLabel);
 			}
-		}
+
 		final String subjectID = session.getSubjectId();
 
 		processing("looking for subject " + subjectID);
@@ -187,14 +249,15 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 		}
 		
 		final File rootArchiveDir = new File(session.getPrimaryProject(false).getRootArchivePath());
+		final XnatExperimentdata existing=this.retrieveExistingExpt();
 		final File arcSessionDir = new File(rootArchiveDir, relativeSessionDir.getPath());
 		
 		// Verify that the proposed archive session directory does not already contain data
-		if (arcSessionDir.exists()) {
+		if (arcSessionDir.exists() && !overwrite) {
 			for (final String scansDirName : SCANS_DIR_NAMES) {
 				final File scansDir = new File(arcSessionDir, scansDirName);
 				if (scansDir.exists() && FileUtils.HasFiles(scansDir)) {
-					failed("project " + project + " already contains a session named " + session.getLabel());
+					failed("project " + project + " already contains a session directory named " + session.getLabel());
 					throw new DuplicateSessionLabelException(session.getLabel(), project);
 				}
 			}
@@ -292,8 +355,8 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 		final Map<String,Object> cleaned=new HashMap<String,Object>();
 		for(final Object key: params.keySet()){
 			if(key instanceof String){
-				if(((String)key).matches(".*:.*/.*")){
-					cleaned.put((String)key, XNATUtils.getFirstOf(params, key));
+				if(((String)key).matches(XNATRestConstants.XML_PATH_REGEXP)){
+					cleaned.put((String)key, params.get(key));
 				}
 			}
 		}
@@ -319,10 +382,10 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 		final File arcSessionDir = getArcSessionDir();
 		
 
-		processing("archiving session");
+		processing("validating loaded data");
 		
 		try {
-			session.setId(XnatExperimentdata.CreateNewID());
+			if(!XNATUtils.hasValue(session.getId()))session.setId(XnatExperimentdata.CreateNewID());
 		} catch (Exception e) {
 			throw new ArchivingException("unable to create new session ID", e);
 		}
@@ -342,6 +405,8 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 		preventConcurrentArchiving();
 		fixScans(arcSessionDir);
 				
+		processing("archiving session");
+		
 		// save the session to the database
 		try {
 			if (session.save(user, false, allowDataDeletion)) {
@@ -375,7 +440,7 @@ public final class PrearcSessionArchiver extends org.nrg.status.StatusProducer i
 			urlb.append("/REST/projects/").append(project);
 			urlb.append("/subjects/");
 			final XnatSubjectdata subjectData = session.getSubjectData();
-			if (LoadImageData.hasValue(subjectData.getLabel())) {
+			if (XNATUtils.hasValue(subjectData.getLabel())) {
 				urlb.append(subjectData.getLabel());
 			} else {
 				urlb.append(subjectData.getId());

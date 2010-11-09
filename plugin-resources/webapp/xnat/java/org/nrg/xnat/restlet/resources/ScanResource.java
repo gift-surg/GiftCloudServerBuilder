@@ -39,7 +39,6 @@ import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.exceptions.MultipleScanException;
 import org.nrg.xnat.exceptions.ValidationException;
 import org.nrg.xnat.restlet.actions.PullScanDataFromHeaders;
-import org.nrg.xnat.restlet.util.SimpleDateFormatUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.MediaType;

@@ -9,8 +9,10 @@ import java.util.Calendar;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
-import org.nrg.session.SessionBuilder.NoUniqueSessionException;
+import org.nrg.session.SessionBuilder.MultipleSessionException;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagescandata;
@@ -26,7 +28,6 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.exceptions.ValidationException;
-import org.nrg.xnat.restlet.util.SimpleDateFormatUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.xml.sax.SAXException;
 
@@ -61,7 +62,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
      * @throws Exception
 	 */
 	public Boolean call()
-	throws IOException,SAXException,ValidationException,NoUniqueSessionException,Exception {
+	throws IOException,SAXException,ValidationException,Exception {
 		//identify session directory location based on existing scans, the deriveSessionDir() method will return null if it can't load it from the scans.
 		final String derivedSessionDir=tempMR.deriveSessionDir();
 		
@@ -72,7 +73,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
 		final File sessionDir=new File(derivedSessionDir);
 		
 		//build session xml document for data in the session directory
-		final String timestamp=SimpleDateFormatUtil.format(XNATRestConstants.PREARCHIVE_TIMESTAMP, Calendar.getInstance().getTime());
+		final String timestamp=(new java.text.SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar.getInstance().getTime());
 		final File xml = new File(sessionDir,tempMR.getLabel()+ "_"+ timestamp+".xml");
 		
 		final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,xml,tempMR.getProject());
@@ -98,12 +99,12 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
         	//copy values from old session, to new session
             newmr.copyValuesFrom(tempMR);
 
-            for (final XnatImagescandata newscan : newmr.getSortedScans()){
+            for (final XnatImagescandataI newscan : newmr.getSortedScans()){
             	final XnatImagescandata oldScan = tempMR.getScanById(newscan.getId());
             	//copy values from old session, to new session
             	//if oldScan is null, then a new scan has been discovered and old values are not present to maintain.
             	if(oldScan!=null){
-                	newscan.setXnatImagescandataId(oldScan.getXnatImagescandataId());
+                	((XnatImagescandata)newscan).setXnatImagescandataId(oldScan.getXnatImagescandataId());
                 	
                 	//if allowDataDeletion=true, then new file tags will replace old ones (modifications to content, format, etc will not be preserved).
         		    if(!allowDataDeletion){
@@ -112,7 +113,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
         		    	if(newscan.getFile().size()>0){
             		    	final XnatResource newcat=(XnatResource)newscan.getFile().get(0);
         		    		
-        		    		final XnatAbstractresource oldCat=oldScan.getFile().get(0);
+        		    		final XnatAbstractresourceI oldCat=oldScan.getFile().get(0);
         		    		if(oldCat instanceof XnatResource){
         		    			if(StringUtils.IsEmpty(((XnatResource)oldCat).getContent()) && !StringUtils.IsEmpty(newcat.getContent()))
         		    				((XnatResource)oldCat).setContent(newcat.getContent());
@@ -122,12 +123,12 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
         		    				((XnatResource)oldCat).setDescription(newcat.getDescription());
         		    		}
         		    		
-        		    		while(newscan.getFile().size()>0)newscan.removeFile(0);
+        		    		while(newscan.getFile().size()>0)((XnatImagescandata)newscan).removeFile(0);
                     		
         		    		//replace new files (catalogs) with old ones.
-                    		newscan.setFile(oldCat);
+                    		((XnatImagescandata)newscan).setFile((XnatAbstractresource)oldCat);
         		    	}else{
-        		    		while(newscan.getFile().size()>0)newscan.removeFile(0);
+        		    		while(newscan.getFile().size()>0)((XnatImagescandata)newscan).removeFile(0);
                     		
         		    	}
                 	}
@@ -149,11 +150,15 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
         }else{
         	final XnatProjectdata proj = newmr.getProjectData();
         	if(newmr.save(user,false,allowDataDeletion)){
+	try {
 				MaterializedView.DeleteByUser(user);
 
 				if(proj.getArcSpecification().getQuarantineCode()!=null && proj.getArcSpecification().getQuarantineCode().equals(1)){
 					newmr.quarantine(user);
 				}
+} catch (Exception e) {
+						logger.error("",e);
+					}
 			}
             
             try {

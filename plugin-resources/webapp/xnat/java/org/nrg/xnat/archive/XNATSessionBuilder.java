@@ -11,8 +11,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -23,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.nrg.dcm.xnat.SessionBuilder;
 import org.nrg.dcm.xnat.XnatAttrDef;
 import org.nrg.ecat.xnat.PETSessionBuilder;
-import org.nrg.session.SessionBuilder.NoUniqueSessionException;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.restlet.resources.SubjAssessmentAbst;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
@@ -134,7 +131,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	 * The iteration will stop once it successfully builds an xml (or runs out of builder configs).
 	 * @throws IOException
 	 */
-	public Boolean call() throws IOException, NoUniqueSessionException{
+	public Boolean call() throws IOException {
 		xml.getParentFile().mkdirs();
 		final FileWriter fw = new FileWriter(xml);
 		
@@ -150,9 +147,6 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 					} finally {
 						builder.dispose();
 					}
-				} catch (NoUniqueSessionException e) {
-					logger.debug(dir + " does not contain a single DICOM study", e);
-					throw e;
 				} catch (IOException e) {
 					logger.warn("unable to process session directory " + dir, e);
 					throw e;

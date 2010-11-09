@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.PopulateItem;
@@ -35,7 +38,10 @@ import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
+import org.nrg.xnat.restlet.util.FileWriterWrapper;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -55,6 +61,8 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 import org.xml.sax.SAXParseException;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import com.noelios.restlet.http.HttpConstants;
 
 public abstract class SecureResource extends Resource {
@@ -649,5 +657,80 @@ public abstract class SecureResource extends Resource {
 		}else{
 			return false;
 		}
+	}
+	
+
+	
+	public List<FileWriterWrapperI> getFileWriters() throws ClientException, ServerException{
+	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
+		final Representation entity=this.getRequest().getEntity();
+		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
+			if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
+				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message (not as part of multi-part form data).");
+		        return null;
+			}else{
+				
+				final String fileName=(filepath==null || filepath.equals(""))?RequestUtil.deriveFileName("upload",entity):filepath;
+				
+				if(fileName==null){
+		        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri, or use an appropriate content-type header.");
+		        	return null;
+}
+				
+				if(entity.getSize()==-1 || entity.getSize()==0){
+
+		        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message.");
+		        	return null;
+				}
+				
+				wrappers.add(new FileWriterWrapper(entity,fileName));
+			}
+		}else{
+			if (RequestUtil.isMultiPartFormData(entity)) {
+				final org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
+				final org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
+			
+			    try {
+					final List<FileItem> items = upload.parseRequest(this.getRequest());
+					
+					
+					for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {    
+					    final FileItem fi = it.next();
+					     
+					    String fileName=fi.getName();
+					    if(fileName.indexOf('\\')>-1){
+					    	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
+					    }
+					    
+					    wrappers.add(new FileWriterWrapper(fi,fileName));
+					}
+				} catch (FileUploadException e) {
+					throw new ClientException("Unable to parse uploaded file.",e);
+				}
+			}
+		}
+		
+		return wrappers;
+	}
+	
+	private Multimap<String,Object> action_params=null;
+	
+	protected Multimap<String,Object> buildActionParams() throws ClientException, ServerException{
+		if(action_params==null){
+			action_params=LinkedHashMultimap.create();
+			
+			//build fileWriters
+			action_params.putAll(XNATRestConstants.FILE, this.getFileWriters());
+			
+			//maintain parameters
+			final Form f = getQueryVariableForm();
+			for(final String key:f.getNames()){
+				for(final String value:f.getValuesArray(key)){
+					action_params.put(key,value);
+				}
+			}
+		}
+		
+		return action_params;
 	}
 }

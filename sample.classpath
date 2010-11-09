@@ -120,6 +120,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-r06.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xdat_core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>

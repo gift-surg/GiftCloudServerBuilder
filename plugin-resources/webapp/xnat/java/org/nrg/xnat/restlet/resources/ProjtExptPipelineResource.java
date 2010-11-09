@@ -9,7 +9,6 @@
 package org.nrg.xnat.restlet.resources;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,7 +32,6 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.db.MaterializedView;
 import org.nrg.xnat.exceptions.ValidationException;
 import org.nrg.xnat.restlet.actions.FixScanTypes;
 import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
@@ -141,9 +139,6 @@ public class ProjtExptPipelineResource extends SecureResource {
 							logger.error("",e);
 							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
 						} catch (ValidationException e){
-							logger.error("",e);
-							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
-						} catch (NoUniqueSessionException e){
 							logger.error("",e);
 							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
 						} catch (Exception e) {

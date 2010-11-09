@@ -79,6 +79,7 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.restlet.data.Status;
 
 /**
  * @author XDAT
@@ -1078,6 +1079,27 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		}
 
         if (XFT.VERBOSE)System.out.println("Group init(): " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
+    }
+
+    public static void quickSave(XnatProjectdata project, XDATUser user,boolean allowDataDeletion,boolean overrideSecurity) throws Exception{
+    	project.initNewProject(user,allowDataDeletion,true);
+
+	
+		project.save(user,overrideSecurity,false);
+		XFTItem item =project.getItem().getCurrentDBVersion(false);
+		
+		XnatProjectdata postSave = new XnatProjectdata(item);
+	    postSave.getItem().setUser(user);
+	
+	    postSave.initGroups();
+	        
+	    user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
+	
+	    postSave.initArcProject(null, user);
+	
+	    user.clearLocalCache();
+		MaterializedView.DeleteByUser(user);
+	    ElementSecurity.refresh();
     }
 
     public XnatAbstractprotocol getProtocolByDataType(String elementName){

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.nrg.session.SessionBuilder.NoUniqueSessionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.model.XnatProjectdataI;
@@ -20,7 +19,6 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
-import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
@@ -30,7 +28,12 @@ import org.nrg.xnat.archive.Rename.DuplicateLabelException;
 import org.nrg.xnat.archive.Rename.FolderConflictException;
 import org.nrg.xnat.archive.Rename.LabelConflictException;
 import org.nrg.xnat.archive.Rename.ProcessingInProgress;
+import org.nrg.xnat.archive.ValidationException;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.restlet.actions.FixScanTypes;
+import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
+import org.nrg.xnat.restlet.actions.TriggerPipelines;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -521,9 +524,6 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 								logger.error("",e);
 								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
 							} catch (ValidationException e){
-								logger.error("",e);
-								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
-							} catch (NoUniqueSessionException e){
 								logger.error("",e);
 								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
 							} catch (Exception e) {

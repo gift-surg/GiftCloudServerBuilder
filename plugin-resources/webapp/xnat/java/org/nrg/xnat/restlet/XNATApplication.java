@@ -33,6 +33,7 @@ import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
 import org.nrg.xnat.restlet.resources.files.FileList;
+import org.nrg.xnat.restlet.services.Importer;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -187,6 +188,8 @@ public class XNATApplication extends Application {
         router.attach("/experiments/{EXPT_ID}/DIR",DIRResource.class);
         router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}/DIR",DIRResource.class);
 
+
+        router.attach("/files/import",Importer.class);
 
         XnatSecureGuard guard = new XnatSecureGuard();
         guard.setNext(router);

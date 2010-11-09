@@ -6,10 +6,9 @@ package org.nrg.xnat.restlet.resources;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.collections.MultiMap;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.nrg.xdat.security.XDATUser;
@@ -34,6 +33,8 @@ import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.Multimap;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -109,12 +110,17 @@ public final class PrearcSessionResource extends Resource {
 		if (POST_ACTION_ARCHIVE.equals(action)) {
 			//allowDataDeletion will govern if prexisting xml data can be deleted by new xml.
 			boolean allowDataDeletion=false;
+			boolean overwrite=false;
 			
 			if(queryForm.contains(XNATRestConstants.ALLOW_DATA_DELETION)){
 				allowDataDeletion=Boolean.valueOf(queryForm.getFirstValue(XNATRestConstants.ALLOW_DATA_DELETION));
 			}
 			
-			final String entity = doArchive(sessionDir,allowDataDeletion);
+			if(queryForm.contains(XNATRestConstants.OVERWRITE)){
+				allowDataDeletion=Boolean.valueOf(queryForm.getFirstValue(XNATRestConstants.OVERWRITE));
+			}
+			
+			final String entity = doArchive(sessionDir,allowDataDeletion,overwrite);
 			final Response response = getResponse();
 			response.setEntity(entity + CRLF, MediaType.TEXT_URI_LIST);
 		} else if (POST_ACTION_BUILD.equals(action)) {
@@ -129,8 +135,8 @@ public final class PrearcSessionResource extends Resource {
 		}
 	}
 
-	private MultiMap makeMultiMap(final Form form) {
-		final MultiHashMap m = new MultiHashMap();
+	private Map<String,Object> makeMap(final Form form) {
+		final Map<String,Object> m = new Hashtable<String,Object>();
 		for (final Parameter param : form) {
 			m.put(param.getName(), param.getValue());
 		}
@@ -141,10 +147,10 @@ public final class PrearcSessionResource extends Resource {
 		return m;
 	}
 	
-	private String doArchive(final File sessionDir, boolean allowDataDeletion) throws ResourceException {
+	private String doArchive(final File sessionDir, final Boolean allowDataDeletion,final Boolean overwrite) throws ResourceException {
 		final PrearcSessionArchiver archiver;
 		try {
-			archiver = new PrearcSessionArchiver(sessionDir, user, project, makeMultiMap(queryForm),allowDataDeletion);
+			archiver = new PrearcSessionArchiver(sessionDir, user, project, makeMap(queryForm),allowDataDeletion,overwrite);
 		} catch (FileNotFoundException e) {
 			logger.debug("user attempted to archive session with no XML", e);
 			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
@@ -176,11 +182,7 @@ public final class PrearcSessionResource extends Resource {
 			logger.warn("archiving failed", e);
 			throw new ResourceException(e.getStatus(), e.getMessage(), e);
 		} finally {
-			try {
-				archiver.close();
-			} catch (IOException e) {
-				logger.error("",e);
-			}
+				archiver.dispose();
 		}
 	}
 

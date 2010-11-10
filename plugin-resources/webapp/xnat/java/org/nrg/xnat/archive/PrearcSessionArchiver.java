@@ -13,8 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
+import org.nrg.status.StatusProducer;
+import org.nrg.status.StatusPublisherI;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
@@ -88,9 +89,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private boolean shouldForceQuarantine = false;
 	
 
-	public PrearcSessionArchiver(final XnatImagesessiondata session,
-			final XDATUser user, final String project,
-			final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
+	public PrearcSessionArchiver(final XnatImagesessiondata session,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
 		super(session.getPrearchivePath());
 		this.session = session;
 		this.user = user;
@@ -100,9 +99,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.overwrite=(overwrite==null)?false:overwrite;
 	}
 
-	public PrearcSessionArchiver(final File sessionDir,
-			final XDATUser user, final String project,
-			final MultiMap params, boolean allowDataDeletion)
+	public PrearcSessionArchiver(final File sessionDir,	final XDATUser user, final String project, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
 	throws IOException,SAXException {
 		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(), user, project, params, allowDataDeletion,overwrite);
 	}

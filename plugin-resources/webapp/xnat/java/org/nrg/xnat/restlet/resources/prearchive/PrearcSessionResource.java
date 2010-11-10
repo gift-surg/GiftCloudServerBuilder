@@ -1,22 +1,24 @@
 /**
  * Copyright 2010 Washington University
  */
-package org.nrg.xnat.restlet.resources;
+package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.AlreadyArchivingException;
 import org.nrg.xnat.archive.ArchivingException;
 import org.nrg.xnat.archive.DuplicateSessionLabelException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.archive.ValidationException;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -33,8 +35,6 @@ import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import com.google.common.collect.Multimap;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -84,7 +84,12 @@ public final class PrearcSessionResource extends Resource {
 	}
 
 	private File getSessionDir() throws ResourceException {
-		final File prearcDir = PrearcSessionListResource.getPrearcDir(user, project);
+		File prearcDir;
+		try {
+			prearcDir = PrearcUtils.getPrearcDir(user, project);
+		} catch (Exception e) {
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+		}
 		final File tsDir = new File(prearcDir, timestamp);
 		final File sessDir = new File(tsDir, session);
 		if (sessDir.isDirectory()) {
@@ -136,7 +141,7 @@ public final class PrearcSessionResource extends Resource {
 	}
 
 	private Map<String,Object> makeMap(final Form form) {
-		final Map<String,Object> m = new Hashtable<String,Object>();
+		final Map<String,Object> m=new HashMap<String,Object>();
 		for (final Parameter param : form) {
 			m.put(param.getName(), param.getValue());
 		}

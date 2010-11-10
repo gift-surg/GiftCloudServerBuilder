@@ -4,12 +4,15 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.status.StatusList;
 import org.nrg.util.GoogleUtils;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue;
+import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
 import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -22,6 +25,7 @@ import org.restlet.data.Status;
 import com.google.common.collect.Multimap;
 
 public class Importer extends SecureResource {
+	private static final String PREARCHIVE = "prearchive";
 	public Importer(Context context, Request request, Response response) {
 		super(context, request, response);
 				
@@ -70,8 +74,10 @@ public class Importer extends SecureResource {
 					additionalValues.put("label", session_id);
 				}else if(key.equals("overwrite")){
 					overwriteV=f.getFirstValue("overwrite");
-				}else if(key.equals("listener_id")){
-					overwriteV=f.getFirstValue("listener_id");
+				}else if(key.equals("transaction_id")){
+					listenerControl=f.getFirstValue("transaction_id");
+				}else if(key.equals(PREARCHIVE)){
+					
 				}else{
 					additionalValues.put(key,f.getFirstValue(key));
 				}
@@ -97,8 +103,17 @@ public class Importer extends SecureResource {
 				}
 			}
 			
+			final boolean archive=!(isQueryVariableTrue(PREARCHIVE));
 			
-			SessionImporter importer= new SessionImporter(listenerControl, user, project_id, session, overwriteV, fw.get(0), additionalValues);
+			final SessionImporter importer= new SessionImporter(listenerControl, user, project_id, session, overwriteV, fw.get(0), additionalValues,archive);
+			
+			if(!StringUtils.isEmpty(listenerControl)){
+				final StatusList sq = new StatusList();
+				importer.addStatusListener(sq);
+				
+				storeStatusList(listenerControl, sq);
+			}
+			
 			final Multimap<String,Object> response=importer.call();
 			
 			this.returnSuccessfulCreateFromList(GoogleUtils.getFirstParam(response, SessionImporter.RESPONSE_URL).toString());
@@ -106,7 +121,17 @@ public class Importer extends SecureResource {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 		} catch (ServerException e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+		}catch (IllegalArgumentException e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 		}
+	}
+
+	private void storeStatusList(final String transaction_id,final StatusList sl) throws IllegalArgumentException{
+		this.retrieveSQManager().storeStatusQueue(transaction_id, sl);
+	}
+	
+	private PersistentStatusQueueManagerI retrieveSQManager(){
+		return new HTTPSessionStatusManagerQueue(this.getHttpSession());
 	}
 
 	

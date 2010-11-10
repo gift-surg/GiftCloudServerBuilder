@@ -17,8 +17,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.nrg.PrearcImporter;
-import org.nrg.StatusMessage;
-import org.nrg.StatusMessage.Status;
+import org.nrg.status.StatusListenerI;
+import org.nrg.status.StatusMessage;
+import org.nrg.status.StatusMessage.Status;
+import org.nrg.status.StatusProducer;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.archive.PrearcImporterFactory;

@@ -5,10 +5,14 @@ package org.nrg.xnat.helpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.status.StatusListenerI;
 import org.nrg.status.StatusProducer;
@@ -19,6 +23,7 @@ import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper;
 
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
 public class PrearcImporterHelper extends StatusProducer implements Callable<Multimap<String,Object>>{
@@ -95,9 +100,36 @@ public class PrearcImporterHelper extends StatusProducer implements Callable<Mul
 			}
 			
 			this.processing("Prearchive:" + prearcDIR.getAbsolutePath());
-			Multimap<String,Object> results=helper.call();
 			
-			return results;
+			final Multimap<String,Object> results=helper.call();
+			
+	        final Multimap<String,Object> response= LinkedHashMultimap.create();
+			
+			final List<PrearcSession> sessions= new ArrayList<PrearcSession>();
+			
+			for(final Object o:results.get(ImageUploadHelper.SESSIONS_RESPONSE)){
+				response.put(ImageUploadHelper.SESSIONS_RESPONSE,new PrearcSession((File)o,new URI(StringUtils.join(new String[]{"REST/prearchives/projects/",project,"/",timestamp,"/",((File)o).getName()}))));
+			}
+			
+			return response;
+	}
+	
+	public class PrearcSession{
+		private final File sessionDIR;
+		private final URI url;
+		
+		private PrearcSession(final File f, final URI u){
+			sessionDIR=f;
+			url=u;
+		}
+
+		public File getSessionDIR() {
+			return sessionDIR;
+		}
+
+		public URI getUrl() {
+			return url;
+		}
 	}
 	
 	public static String cleanFileName(String filename){

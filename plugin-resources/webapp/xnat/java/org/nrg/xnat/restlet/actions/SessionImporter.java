@@ -20,6 +20,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.archive.ArchivingException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
+import org.nrg.xnat.helpers.PrearcImporterHelper.PrearcSession;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper;
 
@@ -35,7 +36,10 @@ public class SessionImporter extends StatusProducer implements Callable<Multimap
 	public static final String RESPONSE_URL = "URL";
 	
 	private final Boolean allowDataDeletion;
+	
 	private final Boolean overwrite;
+	
+	private final Boolean archive;
 	
 	private final FileWriterWrapperI fw;
 	
@@ -59,7 +63,7 @@ public class SessionImporter extends StatusProducer implements Callable<Multimap
 	 *                      'delete' means delete the pre-existing content.
 	 * @param additionalValues: should include project, subject_ID and label (if session is null)
 	 */
-	public SessionImporter(final Object listenerControl, final XDATUser u, final String project_id, final XnatImagesessiondata session, final String overwriteV, final FileWriterWrapperI fw, final Map<String,Object> additionalValues){
+	public SessionImporter(final Object listenerControl, final XDATUser u, final String project_id, final XnatImagesessiondata session, final String overwriteV, final FileWriterWrapperI fw, final Map<String,Object> additionalValues, final boolean archive){
 		super(listenerControl);
 		this.uID=listenerControl;
 		
@@ -88,6 +92,8 @@ public class SessionImporter extends StatusProducer implements Callable<Multimap
 		this.additionalValues=additionalValues;
 		
 		this.project_id=project_id;
+		
+		this.archive=archive;
 	}
 
 	public Multimap<String, Object> call() throws ClientException,ServerException{
@@ -130,11 +136,13 @@ public class SessionImporter extends StatusProducer implements Callable<Multimap
 				throw new ClientException("Upload did not include parseable files for session generation.");
 			}
 			
-			final File session=(File)Iterables.get(sessions, 0);
+			final PrearcSession session=((PrearcSession)Iterables.get(sessions, 0));
+			
+			if(archive){
 			
 			final PrearcSessionArchiver psa;
 			try {
-				psa = new PrearcSessionArchiver(session, user, project_id, additionalValues, allowDataDeletion,overwrite);
+					psa = new PrearcSessionArchiver(session.getSessionDIR(), user, project_id, additionalValues, allowDataDeletion,overwrite);
 			} catch (Exception e) {
 				throw new ServerException(e.getMessage(), e);
 			}
@@ -153,6 +161,11 @@ public class SessionImporter extends StatusProducer implements Callable<Multimap
 				return response;
 			} catch (ArchivingException e) {
 				throw new ServerException(e.getMessage(), e);
+			}
+			}else{
+				final Multimap<String,Object> response=LinkedHashMultimap.create();
+				response.put(RESPONSE_URL, session.getUrl());
+				return response;
 			}
 		} catch (ClientException e) {
 			this.failed(e.getMessage());

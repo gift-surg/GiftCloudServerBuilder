@@ -79,6 +79,16 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			success:function(o){
 				try{
 				    o.argument.subjectResultSet= eval("(" + o.responseText +")");
+				    o.argument.subjectResultSet.ResultSet.Result.sort(function(a,b){
+				    	if(a["label"]<b["label"]){
+				    		return -1;
+				    	}else if(b["label"]<a["label"]){
+				    		return 1;
+				    	}else{
+				    		return 0;
+				    	}
+				    });
+				   
 				}catch(e){
 					o.argument.displayError("ERROR " + o.status+ ": Failed to parse subject list.");
 				}
@@ -111,7 +121,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 		this.subjBox=document.getElementById(this.subjSelect);
 		this.subjBox.options[0]=new Option("SELECT","");
 			this.subjBox.options[0].style.color="black";
-		
+			
 		var matched=false;
 		for(var sC=0;sC<this.subjectResultSet.ResultSet.Result.length;sC++){
 			var defaultSelected=(this.subjectResultSet.ResultSet.Result[sC].ID==this.defaultSubject || this.subjectResultSet.ResultSet.Result[sC]["label"]==this.defaultSubject)?true:false;

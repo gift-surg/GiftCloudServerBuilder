@@ -71,7 +71,7 @@ public abstract class BaseArcProject extends AutoArcProject {
 			ArrayList<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
 			if (xsiType == null || descendants == null) return rtn;
 			for (int i = 0; i < descendants.size(); i++) {
-if (descendants.get(i).getXsitype().equals(xsiType) || descendants.get(i).getXsitype().equals(PipelineRepositoryManager.ALL_DATA_TYPES)) {
+            if (xsiType.equals(descendants.get(i).getXsitype()) || PipelineRepositoryManager.ALL_DATA_TYPES.equals(descendants.get(i).getXsitype())) {
 					rtn = descendants.get(i).getPipeline();
 					break;
 				}
@@ -80,7 +80,30 @@ if (descendants.get(i).getXsitype().equals(xsiType) || descendants.get(i).getXsi
 		}
 
 
+		public ArrayList<ArcPipelinedataI> getPipelinesForDescendantLikeStepId(String xsiType, String pipelineStep) throws PipelineNotFoundException {
+			ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
+			ArrayList<ArcProjectDescendantPipeline> descendantPipelines = getPipelinesForDescendant(xsiType);
+			for (int i = 0; i < descendantPipelines.size(); i++) {
+				if (descendantPipelines.get(i).getStepid()!=null && descendantPipelines.get(i).getStepid().startsWith(pipelineStep)) {
+					rtn.add(descendantPipelines.get(i).getPipelinedata());
+				}
+			}
+			//if (rtn.size() == 0) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());
+			return rtn;
+		}
 
+		public ArrayList<ArcPipelinedataI> getPipelinesForDescendant(String xsiType, String pipelineStep, String match) throws PipelineNotFoundException {
+			ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
+			if (match.equalsIgnoreCase("EXACT")) {
+				ArcPipelinedataI pipeline = getPipelineForDescendant(xsiType, pipelineStep);
+				rtn.add(pipeline);
+			}else if (match.equalsIgnoreCase("LIKE")) {
+			  rtn = getPipelinesForDescendantLikeStepId(xsiType, pipelineStep);	
+			}
+			//if (rtn.size() == 0) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());
+			return rtn;
+			
+		}		
 
 	public ArcPipelinedataI getPipelineForDescendant(String xsiType, String pipelineStep) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;

@@ -18,7 +18,7 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
-public class PipelineScreen_default_launcher extends SecureReport {
+public class PipelineScreen_default_launcher extends DefaultPipelineScreen {
     public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(PipelineScreen_launch_pipeline.class);
 
     public void finalProcessing(RunData data, Context context) {
@@ -42,53 +42,4 @@ public class PipelineScreen_default_launcher extends SecureReport {
     	}
     }
     
-    private void setParameters(ArcPipelinedataI arcPipeline, Context context) throws Exception {
-    	ArrayList<ArcPipelineparameterdata> pipelineParameters = arcPipeline.getParameters_parameter();
-    	
-    	Parameters parameters = Parameters.Factory.newInstance();
-		ParameterData param = null;
-		
-    	for (int i = 0; i < pipelineParameters.size(); i++) {
-    		ArcPipelineparameterdata pipelineParam = pipelineParameters.get(i);
-    		String schemaLink = pipelineParam.getSchemalink();
-    		if (schemaLink != null) {
-    			Object o = om.getItem().getProperty(schemaLink, true);
-    			if (o != null ) {
-	    			try {
-	        			ArrayList<XFTItem>  matches = (ArrayList<XFTItem>) o;
-	        			if (matches !=  null) {
-	        		    	param = parameters.addNewParameter();
-	        		    	param.setName(pipelineParam.getName());
-	        		    	Values values = param.addNewValues();
-	        				if (matches.size() == 1) {
-		        		    	values.setUnique(""+matches.get(0));
-		        			}else { 
-			    				for (int j = 0; j < matches.size(); j++) {
-			    					values.addList(""+matches.get(j));
-			        			}
-		        			}
-	        			}
-	    			}catch(ClassCastException  cce) {
-        		    	param = parameters.addNewParameter();
-        		    	param.setName(pipelineParam.getName());
-        		    	Values values = param.addNewValues();
-        		    	values.setUnique(""+o);
-	    			}
-    			}
-    		}else {
-    			String pValues = pipelineParam.getCsvvalues();
-    			String[] pValuesSplit = pValues.split(",");
-		    	param = parameters.addNewParameter();
-		    	param.setName(pipelineParam.getName());
-		    	Values values = param.addNewValues();
-		    	if (pValuesSplit.length == 1) {
-		    		values.setUnique(pValuesSplit[0]);
-		    	}else 
-	    			for (int j = 0; j < pValuesSplit.length; j++) {
-	    				values.addList(pValuesSplit[j]);
-	    			}
-    		}
-    	}
-    	context.put("parameters",parameters );
-    }
 }

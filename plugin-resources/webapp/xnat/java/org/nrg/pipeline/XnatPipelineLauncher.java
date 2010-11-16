@@ -18,6 +18,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.viewer.QCImageCreator;
 import org.nrg.xdat.om.WrkWorkflowdata;
+import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -25,7 +26,6 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.nrg.xdat.om.XnatImagesessiondata;
 
 public class XnatPipelineLauncher {
     static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);
@@ -430,15 +430,15 @@ public class XnatPipelineLauncher {
     	}
     }
 
-    public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatImagesessiondata imageSession) throws Exception  {
+    public static  XnatPipelineLauncher GetLauncherForExperiment(RunData data, Context context, XnatExperimentdata imageSession) throws Exception  {
 	       XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(data,context);
 	       xnatPipelineLauncher.setSupressNotification(true);
 	       UserI user = TurbineUtils.getUser(data);
 	       xnatPipelineLauncher.setParameter("useremail", user.getEmail());
 	       xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
 	       xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
+	       xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
 	       //xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
-	       //xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
 
 			xnatPipelineLauncher.setId(imageSession.getId());
 			xnatPipelineLauncher.setLabel(imageSession.getLabel());
@@ -448,9 +448,6 @@ public class XnatPipelineLauncher {
 			xnatPipelineLauncher.setParameter("project", imageSession.getProject());
 	        xnatPipelineLauncher.setParameter("cachepath",QCImageCreator.getQCCachePathForSession(imageSession.getProject()));
 
-	       String path = imageSession.getArchivePath();
-	       if (path.endsWith(File.separator)) path = path.substring(0, path.length()-1);
-	       xnatPipelineLauncher.setParameter("archivedir", path);
 	       String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + data.getParameters().get("emailField");
 	       String[] emails = emailsStr.trim().split(",");
 	       for (int i = 0 ; i < emails.length; i++) {
@@ -458,6 +455,15 @@ public class XnatPipelineLauncher {
 	       }
 	       return xnatPipelineLauncher;
 	   }
+
+    
+    public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatImagesessiondata imageSession) throws Exception  {
+	       XnatPipelineLauncher xnatPipelineLauncher = GetLauncherForExperiment(data,context, imageSession);
+	       String path = imageSession.getArchivePath();
+	       if (path.endsWith(File.separator)) path = path.substring(0, path.length()-1);
+	       xnatPipelineLauncher.setParameter("archivedir", path);
+	       return xnatPipelineLauncher;
+	   } 
 
 	/**
 	 * @return the label

@@ -17,6 +17,9 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
+import org.nrg.pipeline.xmlbeans.ParameterData;
+import org.nrg.pipeline.xmlbeans.ParameterData.Values;
+import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
@@ -172,6 +175,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	            	context.put("project",project);
 
 	            	om = BaseElement.GetGeneratedItem(item);
+	     
 	            	context.put("om",om);
 	            	 setWorkflows(data,context);
 	            	 setParameters(pipelinePath);
@@ -260,6 +264,55 @@ public abstract class DefaultPipelineScreen extends SecureReport{
         }
     }
 
+    protected void setParameters(ArcPipelinedataI arcPipeline, Context context) throws Exception {
+    	ArrayList<ArcPipelineparameterdata> pipelineParameters = arcPipeline.getParameters_parameter();
+    	
+    	Parameters parameters = Parameters.Factory.newInstance();
+		ParameterData param = null;
+		
+    	for (int i = 0; i < pipelineParameters.size(); i++) {
+    		ArcPipelineparameterdata pipelineParam = pipelineParameters.get(i);
+    		String schemaLink = pipelineParam.getSchemalink();
+    		if (schemaLink != null) {
+    			Object o = om.getItem().getProperty(schemaLink, true);
+    			if (o != null ) {
+	    			try {
+	        			ArrayList<XFTItem>  matches = (ArrayList<XFTItem>) o;
+	        			if (matches !=  null) {
+	        		    	param = parameters.addNewParameter();
+	        		    	param.setName(pipelineParam.getName());
+	        		    	Values values = param.addNewValues();
+	        				if (matches.size() == 1) {
+		        		    	values.setUnique(""+matches.get(0));
+		        			}else { 
+			    				for (int j = 0; j < matches.size(); j++) {
+			    					values.addList(""+matches.get(j));
+			        			}
+		        			}
+	        			}
+	    			}catch(ClassCastException  cce) {
+        		    	param = parameters.addNewParameter();
+        		    	param.setName(pipelineParam.getName());
+        		    	Values values = param.addNewValues();
+        		    	values.setUnique(""+o);
+	    			}
+    			}
+    		}else {
+    			String pValues = pipelineParam.getCsvvalues();
+    			String[] pValuesSplit = pValues.split(",");
+		    	param = parameters.addNewParameter();
+		    	param.setName(pipelineParam.getName());
+		    	Values values = param.addNewValues();
+		    	if (pValuesSplit.length == 1) {
+		    		values.setUnique(pValuesSplit[0]);
+		    	}else 
+	    			for (int j = 0; j < pValuesSplit.length; j++) {
+	    				values.addList(pValuesSplit[j]);
+	    			}
+    		}
+    	}
+    	context.put("parameters",parameters );
+    }
 
 
 }

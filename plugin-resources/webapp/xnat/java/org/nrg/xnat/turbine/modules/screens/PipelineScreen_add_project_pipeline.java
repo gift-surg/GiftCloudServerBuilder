@@ -8,7 +8,6 @@
 
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.turbine.util.RunData;
@@ -33,8 +32,8 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
     public void finalProcessing(RunData data, Context context) {
     	
     }
-    
-    public void doBuildTemplate(RunData data, Context context) 	{
+
+    public void doBuildTemplate(RunData data, Context context) {
 	    logger.debug("BEGIN SECURE REPORT :" + this.getClass().getName());
 	    String projectId = data.getParameters().get("project");
 	    String pipelinePath = data.getParameters().get("pipeline_path");
@@ -52,13 +51,13 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 					templateFile = newPipeline.getCustomwebpage();
 					context.put("newpipeline", newPipeline);
 					context.put("isAutoArchive",isAutoArchive(newPipeline));
-					redirect(data, templateFile);
+//					redirect(data, templateFile);
 	    		}else {
 					ArcProjectDescendantPipeline newPipeline = arcProject.getPipelineForDescendantEltByPath(dataType, pipelinePath);
 					templateFile = newPipeline.getCustomwebpage();
 					context.put("newpipeline", newPipeline);
 					context.put("isAutoArchive",isAutoArchive(newPipeline));
-					redirect(data, templateFile);
+//					redirect(data, templateFile);
 	    		}
 	    	}else {
 				    //Get the pipeline identified by the pipeline_path
@@ -85,7 +84,7 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 						}
 						context.put("newpipeline", newPipeline);
 						context.put("isAutoArchive",isAutoArchive(newPipeline));
-						redirect(data, templateFile);
+//						redirect(data, templateFile);
 					}else {
 						ArcProjectDescendantPipeline newPipeline = new ArcProjectDescendantPipeline();
 						String pipelineName = getName(pipeline.getPath());
@@ -105,18 +104,22 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 						}
 						context.put("newpipeline", newPipeline);
 						context.put("isAutoArchive",isAutoArchive(newPipeline));
-						redirect(data, templateFile);
+//						redirect(data, templateFile);
 					}
 	    	}
+	    	finalProcessing(data,context);
 	    }catch(Exception e) {
 	    	logger.error("",e);
 	    }
+    	
     }
+
+    
     
     private boolean isAutoArchive(ArcProjectDescendantPipeline newPipeline) {
     	boolean rtn = false;
     	if (newPipeline == null ) return rtn;
-    	if (newPipeline.getStepid()!=null && newPipeline.getStepid().equals(PipelineUtils.AUTO_ARCHIVE))
+    	if (newPipeline.getStepid()!=null && newPipeline.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE))
     		rtn = true;
     	return rtn;
     }
@@ -124,7 +127,7 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
     private boolean isAutoArchive(ArcProjectPipeline newPipeline) {
     	boolean rtn = false;
     	if (newPipeline == null ) return rtn;
-    	if (newPipeline.getStepid()!=null && newPipeline.getStepid().equals(PipelineUtils.AUTO_ARCHIVE))
+    	if (newPipeline.getStepid()!=null && newPipeline.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE))
     		rtn = true;
     	return rtn;
     }
@@ -144,16 +147,19 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
     	return rtn;
     }
 
-    private void redirect(RunData data, String templateFile) {
+    private void redirect(RunData data, String templateFile) throws Exception {
 		if (templateFile != null) {
 			String templateName = "";
 			int index = templateFile.indexOf(".vm");
 			if (index != -1) {
 				String prefix = templateFile.substring(0, index); 
 				templateName += prefix +"_add.vm"; 
+			}else {
+				templateName += templateFile +"_add.vm"; 
 			}
 			logger.debug("PipelineScreen_add_pipeline looking for: " + templateName);
 			if (Velocity.templateExists("/screens/" + templateName)) {
+				//doRedirect(data,templateName);
 				data.setScreenTemplate(templateName );
 			}
 		}

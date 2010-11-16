@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
@@ -22,10 +21,11 @@ import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineAdder;
 import org.nrg.pipeline.utils.PipelineUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
-import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
+import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.om.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcProject;
@@ -70,6 +70,9 @@ public class ManagePipeline extends SecureAction {
 			}else if (task.equalsIgnoreCase("DELETEFROMPROJECT")) {
 				doDeletefromproject(data,context);
 				return;
+			}else if (task.equalsIgnoreCase("projectpipeline")) {
+				doAddpipeline(data,context);
+				return;
 			}
 		}
 	}
@@ -79,6 +82,12 @@ public class ManagePipeline extends SecureAction {
 
 	}
 
+	
+	public void doAddpipeline(RunData data, Context context) throws Exception {
+		PipelineAdder pipelineAdder = new PipelineAdder();
+		pipelineAdder.prepareScreen(data, context);
+	}
+	
 	private void doDeletefromproject(RunData data, Context context) {
 		XDATUser user = TurbineUtils.getUser(data);
 		String projectId = data.getParameters().get("project");
@@ -172,9 +181,12 @@ public class ManagePipeline extends SecureAction {
             found = populater.getItem();
 
             boolean launchedAtAutoArchive = data.getParameters().getBoolean("auto_archive");
-            if (launchedAtAutoArchive) {
-            	found.setProperty("stepId", PipelineUtils.AUTO_ARCHIVE);
-            }
+			String templateSuppliedStepId = found.getStringProperty("stepid");
+
+            //A set of pipelines can be launched on auto archive.This set will have
+            //AUTO_ARCHIVE_<SEQUENTIAL NUMBER> unless site wants to setup the stepid at the template level
+            //If the step is provided at the template level, it must be of the kind AUTO_<SOMETHING>
+            //It is assumed that the sequence will be independent
 
     		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
     		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
@@ -182,32 +194,59 @@ public class ManagePipeline extends SecureAction {
     			if (edit) {
     				ArcProjectPipeline existing = arcProject.getPipelineEltByPath(pipelinePath);
     				copy (data, existing);
-    				if (existing.getStepid().equals(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
+    				if (existing.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
     					existing.setStepid(existing.getDisplaytext());
     				}
     				existing.save(user, false, false);
-    			}else
-    			   arcProject.setPipelines_pipeline(newPipeline.getItem());
+    			}else {
+    				if (templateSuppliedStepId != null) {
+    					if (launchedAtAutoArchive) {
+        					if (templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
+        						newPipeline.setStepid(templateSuppliedStepId);
+        					}else 
+           						newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(arcProject));
+        				}else 
+    						newPipeline.setStepid(newPipeline.getDisplaytext());
+    				}else { 
+    					if (launchedAtAutoArchive) {
+    						newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(arcProject));
+    					}else {
+    						newPipeline.setStepid(newPipeline.getDisplaytext());
+    					}
+    				}arcProject.setPipelines_pipeline(newPipeline.getItem());
+    			}	
     		}else {
     			ArcProjectDescendant existingDesc = arcProject.getDescendant(dataType);
     			ArcProjectDescendant newDesc = new ArcProjectDescendant();
     			ArcProjectDescendantPipeline newPipeline = new ArcProjectDescendantPipeline(found);
     			if (existingDesc == null) {
     				newDesc.setXsitype(dataType);
-        			newDesc.setPipeline(newPipeline.getItem());
+    				if (templateSuppliedStepId != null){
+        				newPipeline.setStepid(templateSuppliedStepId);
+    				}else {
+    					if (launchedAtAutoArchive) 
+    						newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(existingDesc));
+    					else 
+    						newPipeline.setStepid(newPipeline.getDisplaytext());
+    				}
+ 	 				newDesc.setPipeline(newPipeline.getItem());
    					arcProject.setPipelines_descendants_descendant(newDesc.getItem());
     			}else {
        				if (edit) {
        					ArcProjectDescendantPipeline existingPipeline = existingDesc.getPipeline(pipelinePath);
        					copy(data,existingPipeline);
-        				if (existingPipeline.getStepid().equals(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
+        				if (existingPipeline.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
         					existingPipeline.setStepid(existingPipeline.getDisplaytext());
         				}
        					existingPipeline.save(user, false, false);
     				}else {
+        				if (templateSuppliedStepId != null){
+            				newPipeline.setStepid(templateSuppliedStepId);
+        				}else 
+    					newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(existingDesc));
     					existingDesc.setPipeline(newPipeline.getItem());
        				    newDesc.setItem(existingDesc.getItem());
-       					arcProject.setPipelines_descendants_descendant(newDesc.getItem());
+       				    arcProject.setPipelines_descendants_descendant(newDesc.getItem());
     				}
     			}
     		}
@@ -239,12 +278,12 @@ public class ManagePipeline extends SecureAction {
 	    }
 
 	private void copy (RunData data, ArcProjectDescendantPipeline existingPipeline) throws XFTInitException, ElementNotFoundException,FieldNotFoundException, InvalidValueException {
-		Map<String,String> hash = TurbineUtils.GetDataParameterHash(data);
+		  Hashtable hash = (Hashtable) TurbineUtils.GetDataParameterHash(data);
 		  existingPipeline.getItem().setProperties(hash, true);
 	}
 
 	private void copy (RunData data, ArcProjectPipeline existingPipeline) throws XFTInitException, ElementNotFoundException,FieldNotFoundException, InvalidValueException {
-		Map<String,String> hash = TurbineUtils.GetDataParameterHash(data);
+		  Hashtable hash = (Hashtable) TurbineUtils.GetDataParameterHash(data);
 		  existingPipeline.getItem().setProperties(hash, true);
 	}
 
@@ -320,6 +359,7 @@ public class ManagePipeline extends SecureAction {
 	        xnatPipelineLauncher.setParameter("useremail", user.getEmail());
 		    xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
 		    xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
+		    xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
 		    xnatPipelineLauncher.setPipelineName(pipeline_path);
 		    String exptLabel = item.getStringProperty("label");
 		    String project = item.getStringProperty("project");

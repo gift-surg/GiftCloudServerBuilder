@@ -97,6 +97,10 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata {
         int lastIndexOfSlash = rtn.lastIndexOf(File.separator);
         if (lastIndexOfSlash != -1) {
             rtn = rtn.substring(lastIndexOfSlash + 1);
+        }else {
+           lastIndexOfSlash = rtn.lastIndexOf("/");
+           if (lastIndexOfSlash != -1) 
+               rtn = rtn.substring(lastIndexOfSlash + 1);
         }
         int lastIndexOfDot = rtn.lastIndexOf(".");
         if (lastIndexOfDot != -1 ) {

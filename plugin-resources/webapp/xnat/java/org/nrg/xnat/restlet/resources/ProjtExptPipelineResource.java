@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -21,6 +21,7 @@ import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.om.ArcPipelinedata;
+import org.nrg.xdat.om.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -43,10 +44,10 @@ public class ProjtExptPipelineResource extends SecureResource {
 	XnatProjectdata proj=null;
 	XnatExperimentdata expt=null;
     String step = null;
-	
+
 	public ProjtExptPipelineResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		
+
 		String pID = (String) request.getAttributes().get("PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
@@ -72,10 +73,10 @@ public class ProjtExptPipelineResource extends SecureResource {
 			response.setStatus(Status.CLIENT_ERROR_GONE);
 		}
 	}
-	
-	
+
+
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
 		if(proj!=null && step!=null){
 			ArcPipelinedata arcPipeline = null;
 			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
@@ -107,7 +108,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 	public boolean allowPost() {
 		return true;
 	}
-	
+
 
 	@Override
 	public void handlePost() {
@@ -148,15 +149,20 @@ public class ProjtExptPipelineResource extends SecureResource {
 						}
 					}
 				}else{
-					ArcPipelinedata arcPipeline = null;
 					ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
 					arcProject.setItem(arcProject.getCurrentDBVersion());
 					Form f = getRequest().getResourceRef().getQueryAsForm();
-					XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);
+					String match = null;
+					if(f!=null)match=f.getFirstValue("match");
+					if (match == null) match = "EXACT";
+
 					try {
-						arcPipeline = (ArcPipelinedata)arcProject.getPipelineForDescendant(expt.getXSIType(), step);
-						boolean success = launch(arcPipeline);
-						
+						ArrayList<ArcPipelinedataI> arcPipelines = arcProject.getPipelinesForDescendant(expt.getXSIType(), step, match);
+						for (int i =0; i < arcPipelines.size(); i++) {
+							ArcPipelinedataI arcPipeline = arcPipelines.get(i);
+							boolean success = launch(arcPipeline);
+							logger.info("Launching pipeline at step " + arcPipeline.getLocation() + File.separator + arcPipeline.getName());
+						}
 					}catch(Exception e) {
 						e.printStackTrace();
 						getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -170,8 +176,8 @@ public class ProjtExptPipelineResource extends SecureResource {
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 		}
 	}
-	
-	private boolean launch(ArcPipelinedata arcPipeline) throws Exception {
+
+	private boolean launch(ArcPipelinedataI arcPipeline) throws Exception {
 		XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);
 		xnatPipelineLauncher.setSupressNotification(true);
         xnatPipelineLauncher.setParameter("useremail", user.getEmail());
@@ -187,12 +193,12 @@ public class ProjtExptPipelineResource extends SecureResource {
 		buildDir +=   "archive_trigger"  ;
 		xnatPipelineLauncher.setBuildDir(buildDir);
 		xnatPipelineLauncher.setNeedsBuildDir(false);
-		
+
 		Parameters parameters = Parameters.Factory.newInstance();
 		ParameterData param = parameters.addNewParameter();
     	param.setName("xnat_id");
     	param.addNewValues().setUnique(expt.getId());
-    	
+
     	if (expt instanceof XnatImagesessiondata) {
     		String path = ((XnatImagesessiondata)expt).getArchivePath();
     		if (path.endsWith(File.separator)) path = path.substring(0, path.length()-1);
@@ -200,8 +206,8 @@ public class ProjtExptPipelineResource extends SecureResource {
 	    	param.setName("archivedir");
 	    	param.addNewValues().setUnique(path);
     	}
-    	
-    	
+
+
     	param = parameters.addNewParameter();
     	param.setName("sessionId");
     	param.addNewValues().setUnique(expt.getLabel());
@@ -211,7 +217,7 @@ public class ProjtExptPipelineResource extends SecureResource {
     	param.addNewValues().setUnique(expt.getProject());
 
     	XFTItem itemOfExpectedXsiType = expt.getItem();
-    	
+
 		ArrayList<ArcPipelineparameterdata> pipelineParameters = arcPipeline.getParameters_parameter();
     	for (int i = 0; i < pipelineParameters.size(); i++) {
     		ArcPipelineparameterdata pipelineParam = pipelineParameters.get(i);
@@ -227,7 +233,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 	        		    	Values values = param.addNewValues();
 	        				if (matches.size() == 1) {
 		        		    	values.setUnique(""+matches.get(0));
-		        			}else { 
+		        			}else {
 			    				for (int j = 0; j < matches.size(); j++) {
 			    					values.addList(""+matches.get(j));
 			        			}
@@ -248,7 +254,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 		    	Values values = param.addNewValues();
 		    	if (pValuesSplit.length == 1) {
 		    		values.setUnique(pValuesSplit[0]);
-		    	}else 
+		    	}else
 	    			for (int j = 0; j < pValuesSplit.length; j++) {
 	    				values.addList(pValuesSplit[j]);
 	    			}
@@ -258,11 +264,11 @@ public class ProjtExptPipelineResource extends SecureResource {
     	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 	    String s = formatter.format(date);
 		String paramFileName = expt.getLabel() + "_params_" + s + ".xml";
-		String paramFilePath = saveParameters(buildDir+File.separator + expt.getLabel(),paramFileName,parameters);  
+		String paramFilePath = saveParameters(buildDir+File.separator + expt.getLabel(),paramFileName,parameters);
 	    xnatPipelineLauncher.setParameterFile(paramFilePath);
 	    return xnatPipelineLauncher.launch();
 	}
-	
+
 	protected String saveParameters(String rootpath, String fileName, Parameters parameters) throws Exception{
         File dir = new File(rootpath);
         if (!dir.exists()) dir.mkdirs();

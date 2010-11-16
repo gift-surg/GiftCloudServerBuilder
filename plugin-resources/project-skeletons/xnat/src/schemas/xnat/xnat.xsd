@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://nrg.wustl.edu/xnat" xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:prov="http://www.nbirn.net/prov" xmlns:xdat="http://nrg.wustl.edu/xdat" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema targetNamespace="http://nrg.wustl.edu/xnat" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdat="http://nrg.wustl.edu/xdat" xmlns:prov="http://www.nbirn.net/prov" xmlns:xnat="http://nrg.wustl.edu/xnat" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://www.nbirn.net/prov" schemaLocation="../birn/birnprov.xsd"/>
 	<xs:element name="Project" type="xnat:projectData"/>
 	<xs:element name="Subject" type="xnat:subjectData"/>
@@ -972,7 +972,7 @@
 									</xs:simpleType>
 								</xs:element>
 								<xs:element name="dtiAcqCount" type="xs:integer" minOccurs="0"/>
-								<xs:element name="pixelBandwidth" type="xs:double" minOccurs="0" maxOccurs="1">
+								<xs:element name="pixelBandwidth" type="xs:double" minOccurs="0">
 									<xs:annotation>
 										<xs:documentation>Reciprocal of the total sampling period, in Hz/pixel</xs:documentation>
 									</xs:annotation>
@@ -2509,6 +2509,7 @@ rebinning, 6=FORE)</xs:documentation>
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="type" type="xs:string" use="optional"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3671,7 +3672,7 @@ rebinning, 6=FORE)</xs:documentation>
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="xs:string">
-							<xs:attribute name="scale" type="xs:string" />
+							<xs:attribute name="scale" type="xs:string"/>
 						</xs:extension>
 					</xs:simpleContent>
 				</xs:complexType>
@@ -3734,8 +3735,6 @@ rebinning, 6=FORE)</xs:documentation>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
-	
 	<!-- Session level QC assessment -->
 	<xs:complexType name="qcManualAssessorData">
 		<xs:complexContent>

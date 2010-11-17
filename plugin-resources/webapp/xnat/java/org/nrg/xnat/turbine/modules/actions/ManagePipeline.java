@@ -159,7 +159,28 @@ public class ManagePipeline extends SecureAction {
 
 	}
 
-
+	private String getStepId(String templateSuppliedStepId, boolean launchedAtAutoArchive, String nextStepId, String displayText ) {
+		String rtn = templateSuppliedStepId;
+		if (templateSuppliedStepId != null) {
+			if (launchedAtAutoArchive) {
+				if (templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
+					rtn = templateSuppliedStepId;
+				}else 
+					rtn = nextStepId;
+			}else if (!templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE))
+				rtn = templateSuppliedStepId;
+			else
+				rtn = displayText;
+		}else { 
+			if (launchedAtAutoArchive) {
+				rtn = nextStepId;
+			}else {
+				rtn = displayText;
+			}
+		}
+		return rtn;
+	}
+	
 	public void doAddprojectpipeline(RunData data, Context context) throws Exception {
 		XDATUser user = TurbineUtils.getUser(data);
         XFTItem found = null;
@@ -199,36 +220,18 @@ public class ManagePipeline extends SecureAction {
     				}
     				existing.save(user, false, false);
     			}else {
-    				if (templateSuppliedStepId != null) {
-    					if (launchedAtAutoArchive) {
-        					if (templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
-        						newPipeline.setStepid(templateSuppliedStepId);
-        					}else 
-           						newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(arcProject));
-        				}else 
-    						newPipeline.setStepid(newPipeline.getDisplaytext());
-    				}else { 
-    					if (launchedAtAutoArchive) {
-    						newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(arcProject));
-    					}else {
-    						newPipeline.setStepid(newPipeline.getDisplaytext());
-    					}
-    				}arcProject.setPipelines_pipeline(newPipeline.getItem());
-    			}	
+    				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(arcProject), newPipeline.getDisplaytext() );
+    				newPipeline.setStepid(stepId);
+    			}
+    				arcProject.setPipelines_pipeline(newPipeline.getItem());	
     		}else {
     			ArcProjectDescendant existingDesc = arcProject.getDescendant(dataType);
     			ArcProjectDescendant newDesc = new ArcProjectDescendant();
     			ArcProjectDescendantPipeline newPipeline = new ArcProjectDescendantPipeline(found);
     			if (existingDesc == null) {
     				newDesc.setXsitype(dataType);
-    				if (templateSuppliedStepId != null){
-        				newPipeline.setStepid(templateSuppliedStepId);
-    				}else {
-    					if (launchedAtAutoArchive) 
-    						newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(existingDesc));
-    					else 
-    						newPipeline.setStepid(newPipeline.getDisplaytext());
-    				}
+       				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(existingDesc), newPipeline.getDisplaytext() );
+    				newPipeline.setStepid(stepId);
  	 				newDesc.setPipeline(newPipeline.getItem());
    					arcProject.setPipelines_descendants_descendant(newDesc.getItem());
     			}else {
@@ -240,10 +243,8 @@ public class ManagePipeline extends SecureAction {
         				}
        					existingPipeline.save(user, false, false);
     				}else {
-        				if (templateSuppliedStepId != null){
-            				newPipeline.setStepid(templateSuppliedStepId);
-        				}else 
-    					newPipeline.setStepid(PipelineUtils.getNextAutoArchiveStepId(existingDesc));
+    	   				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(existingDesc), newPipeline.getDisplaytext() );
+        				newPipeline.setStepid(stepId);
     					existingDesc.setPipeline(newPipeline.getItem());
        				    newDesc.setItem(existingDesc.getItem());
        				    arcProject.setPipelines_descendants_descendant(newDesc.getItem());
@@ -360,6 +361,7 @@ public class ManagePipeline extends SecureAction {
 		    xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
 		    xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
 		    xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
+		    xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
 		    xnatPipelineLauncher.setPipelineName(pipeline_path);
 		    String exptLabel = item.getStringProperty("label");
 		    String project = item.getStringProperty("project");

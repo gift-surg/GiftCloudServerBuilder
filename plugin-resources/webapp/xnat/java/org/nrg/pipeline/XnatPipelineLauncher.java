@@ -438,6 +438,8 @@ public class XnatPipelineLauncher {
 	       xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
 	       xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
 	       xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
+		    xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
+
 	       //xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
 
 			xnatPipelineLauncher.setId(imageSession.getId());

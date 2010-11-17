@@ -83,8 +83,8 @@ $newpipeline.getDescription()
  	   <input type="hidden" id=$dblQts${schemaType}.parameters.parameter[4].description$dblQts name=$dblQts${schemaType}.parameters.parameter[4].description$dblQts value="XPATH to Experiment Project"/>
 
 
-<input type="hidden"  id=$dblQts${schemaType}.stepId$dblQts name=$dblQts${schemaType}.stepId$dblQts value="AUTO_PROTOCOLCHECK"/></TD>
-<input type="hidden"   id=$dblQts${schemaType}.displayText$dblQts name=$dblQts${schemaType}.displayText$dblQts value="Acquisition Protocol validation"/>
+<input type="hidden"  id=$dblQts${schemaType}.stepId$dblQts name=$dblQts${schemaType}.stepId$dblQts value="AUTO_ARCHIVE_PROTOCOLCHECK"/></TD>
+<input type="hidden"   id=$dblQts${schemaType}.displayText$dblQts name=$dblQts${schemaType}.displayText$dblQts value="ProtocolCheck"/>
 <input type="hidden"  id=$dblQts${schemaType}.name$dblQts name=$dblQts${schemaType}.name$dblQts value="ProtocolCheck"/>
 <input type="hidden"  id=$dblQts${schemaType}.location$dblQts name=$dblQts${schemaType}.location$dblQts value="$newpipeline.getLocation()"/>
 <input type="hidden"  id=$dblQts${schemaType}.customwebpage$dblQts name=$dblQts${schemaType}.customwebpage$dblQts value="$newpipeline.getCustomwebpage()"/>

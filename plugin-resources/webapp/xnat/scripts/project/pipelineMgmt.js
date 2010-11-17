@@ -4,12 +4,12 @@
 
 
 var editbuttonFormatter = function(elCell, oRecord, oColumn, oData) {  
- 	elCell.innerHTML="<a href=\"#\" onclick=\"window.open('" + serverRoot + "/app/action/ManagePipeline?task=projectpipeline&nextpage=PipelineScreen_add_project_pipeline.vm&edit=true&project="+window.pipelineManager.pID + "&pipeline_path=" + oRecord.getData("Path") +"&datatype="+oRecord.getData("Datatype")+"\','_blank','width=950,height=850,scrollbars=yes') \">Edit</a>"  ; 
+ 	elCell.innerHTML="<a href=\"#\" onclick=\"window.open('" + serverRoot + "/app/action/ManagePipeline?task=projectpipeline&template=PipelineScreen_add_project_pipeline.vm&edit=true&project="+window.pipelineManager.pID + "&pipeline_path=" + oRecord.getData("Path") +"&datatype="+oRecord.getData("Datatype")+"\','_blank','width=950,height=850,scrollbars=yes') \">Edit</a>"  ; 
  }; 
 
 
 var addLinkFormatter = function(elCell, oRecord, oColumn, oData) {  
- 	elCell.innerHTML="<a href=\"#\" onclick=\"window.open('" + serverRoot + "/app/action/ManagePipeline?task=projectpipeline&nextpage=PipelineScreen_add_project_pipeline.vm&project="+window.pipelineManager.pID + "&pipeline_path=" + oRecord.getData("Path") +"&datatype="+oRecord.getData("Datatype")+"\','_blank','width=950,height=850,scrollbars=yes') \">Add</a>"  ; 
+ 	elCell.innerHTML="<a href=\"#\" onclick=\"window.open('" + serverRoot + "/app/action/ManagePipeline?task=projectpipeline&template=PipelineScreen_add_project_pipeline.vm&project="+window.pipelineManager.pID + "&pipeline_path=" + oRecord.getData("Path") +"&datatype="+oRecord.getData("Datatype")+"\','_blank','width=950,height=850,scrollbars=yes') \">Add</a>"  ; 
  }; 
 
 

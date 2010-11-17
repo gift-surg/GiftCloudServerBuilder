@@ -28,6 +28,7 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.AdminUtils;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -183,6 +184,10 @@ public class ProjtExptPipelineResource extends SecureResource {
         xnatPipelineLauncher.setParameter("useremail", user.getEmail());
 	    xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
 	    xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
+	    xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
+	    xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
+
+	    
 	    xnatPipelineLauncher.setPipelineName(arcPipeline.getLocation());
 		xnatPipelineLauncher.setId(expt.getId());
 		xnatPipelineLauncher.setLabel(expt.getLabel());

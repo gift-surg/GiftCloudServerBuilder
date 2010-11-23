@@ -24,7 +24,7 @@
 
 <APPLET CODE="org.nrg.upload.ui.UploadAssistantApplet"
   CODEBASE="$content.getURI("applet/")"
-  ARCHIVE="UploadAssistant-0.1-SNAPSHOT.jar,wizard-0.998.2-SNAPSHOT.jar,json-20080701.jar,DicomUtils-1.0.jar,DicomEdit-1.2-SNAPSHOT.jar,dcm4che-core-2.0.22-SNAPSHOT.jar,dcm4che-net-2.0.22-SNAPSHOT.jar,log4j-1.2.15.jar,slf4j-api-1.5.2.jar,slf4j-log4j12-1.5.2.jar,antlr-runtime-3.2.jar,stringtemplate-3.2.jar,ecat-io-0.1-SNAPSHOT.jar,ecat-edit-0.1-SNAPSHOT.jar"
+  ARCHIVE="UploadAssistant-0.2.0.jar,wizard-0.998.2-SNAPSHOT.jar,json-20080701.jar,DicomUtils-1.1.0.jar,DicomEdit-1.2.0.jar,dcm4che-core-2.0.24.jar,dcm4che-net-2.0.24.jar,log4j-1.2.15.jar,slf4j-api-1.6.1.jar,slf4j-log4j12-1.6.1.jar,antlr-runtime-3.2.jar,stringtemplate-3.2.jar,ecat-io-0.1.0.jar,ecat-edit-0.1.0.jar,guava-r07.jar,swing-layout-1.0.3.jar,dicom-xnat-sop-0.1-SNAPSHOT.jar,dicom-xnat-util-0.1-SNAPSHOT.jar"
   width="800"
   height="500"
   MAYSCRIPT>
@@ -32,7 +32,6 @@
   <PARAM NAME="xnat-url" VALUE="$!arc.getSiteUrl()">
   <PARAM NAME="xnat-admin-email" VALUE="$!arc.getSiteAdminEmail()">
   <PARAM NAME="xnat-description" VALUE="$!arc.getSiteId()">
-  <PARAM NAME="scp-url" VALUE="$!arc.getDcm_httpUrl()">
 The XNAT upload applet requires Java (1.5 or greater) to be installed on your computer.
 You can get Java <a href="http://java.com/en/download/index.jsp">here</a>.
 After installing Java, you will most likely need to restart your browser,

@@ -404,7 +404,7 @@ progressPercent=document.getElementById("uploadPercent");
  </tr>
  <tr id="option2">
   <td>
-  <INPUT type="button" style="line-height:10px;font-size:9px;font-weight:700;" VALUE="Launch Uploader" ONCLICK="popupWSize('$link.setPage("DICOMUploadApplet.vm")/popup/true',580,840)"/>
+  <INPUT type="button" style="line-height:10px;font-size:9px;font-weight:700;" VALUE="Launch Uploader" ONCLICK="popupWSize('$link.setPage("UploadApplet.vm")/popup/true',580,840)"/>
   </td>
  </tr>
 #end

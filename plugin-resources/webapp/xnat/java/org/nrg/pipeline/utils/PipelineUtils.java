@@ -37,7 +37,10 @@ public class PipelineUtils {
 	        ArrayList<Integer> bins = new ArrayList<Integer>();
 	        ArrayList<ArcProjectDescendantPipeline> pipelines = arcProjectDesc.getPipeline();
 	  	  boolean projectHasAutoArchive = false;
-
+	  	  if (pipelines == null || pipelines.size() ==0) {
+	  		  rtn += "_1";
+	  		  return rtn;
+	  	  }
 	        for (int i =0; i < pipelines.size(); i++) {
 	      	  ArcProjectDescendantPipeline pipeline = pipelines.get(i);
 	      	  String currentId = pipeline.getStepid();
@@ -46,18 +49,25 @@ public class PipelineUtils {
 	      		  String[] parts = currentId.split("_");
 	      		  if (parts.length > 2) {
 	      			  String currentIndex = parts[2];
-	      			  bins.add(new Integer(currentIndex));
+	      			  try {
+	      			    Integer binNo = new Integer(currentIndex);
+		      			bins.add(binNo);
+	      			  }catch(NumberFormatException ne) {
+	      				  
+	      			  }
 	      		  }
 	      	  }
 	        }
 	        //now sort the existing and add new.
 	        if (projectHasAutoArchive) {
-	        	if (bins.size()>0) { // More than 1 AutoArchive have been defined
+	        	if (bins != null && bins.size()>0) { // More than 1 AutoArchive have been defined
 	            	  Collections.sort(bins);
-	              	  rtn = rtn + "_" + bins.get(bins.size() -1 ).intValue();
+	              	  rtn = rtn + "_" + (bins.get(bins.size() -1 ).intValue() + 1);
 	        	}else {
 	        		rtn += "_1";
 	        	}
+	        }else {
+	      		rtn += "_1";
 	        }
 	        return rtn;
 	      }

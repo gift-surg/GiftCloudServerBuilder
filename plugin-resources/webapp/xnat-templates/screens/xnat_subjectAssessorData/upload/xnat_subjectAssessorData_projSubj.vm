@@ -14,9 +14,10 @@
  <tr>
   <th align="left">Subject:</th>
 
-#if ($!subject != "")
+## #if ($!subject != "")
+#if (!$subject)
 
-#else
+## #else
   #if($mr.getSubjectData())
     #set($subject=$mr.getSubjectData())
   #else

@@ -591,6 +591,7 @@
 				<include name="base/BaseWrk*.java"/>
 				<include name="base/BasePipe*.java"/>
 				<include name="base/BaseArc*.java"/>
+				<include name="base/BaseVal*.java"/>
 			</fileset>
 		</delete>
 		<copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
@@ -629,6 +630,7 @@
 				<include name="base/BaseWrk*.java"/>
 				<include name="base/BasePipe*.java"/>
 				<include name="base/BaseArc*.java"/>
+				<include name="base/BaseVal*.java"/>
 			</fileset>
 		</delete>
 		<copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">

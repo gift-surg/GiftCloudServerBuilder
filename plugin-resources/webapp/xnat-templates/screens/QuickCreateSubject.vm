@@ -25,7 +25,7 @@
      <tr>
       <th align="left">Birth date:</th>
   			<td NOWRAP>
-				#set($years = [ 1901..2010])
+				#set($years = [ 1901..$!turbineUtils.getYear()])
 						#set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 						#set($days = [ 1..31 ])
 						<font face="$ui.sansSerifFonts">

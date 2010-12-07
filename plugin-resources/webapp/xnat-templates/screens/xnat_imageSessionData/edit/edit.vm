@@ -37,7 +37,7 @@ $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 #set($days = [ 1..31 ])
-#set($years = [ 2010..1900])
+#set($years = [ $!turbineUtils.getYear()..1900])
 #if ($data.message)
 <BR><BR><DIV class="error">$data.message</DIV><br>
 #end
@@ -103,7 +103,7 @@ $page.setVlinkColor($ui.vlink)
 				</select>
     		</font>
 		
-#set($years = [ 2010..1990])
+#set($years = [ $!turbineUtils.getYear()..1990])
 			#set ($currentYear = $date.Year + 1900)
 			<select id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year" >
 				<option value="bad">(SELECT)</option>

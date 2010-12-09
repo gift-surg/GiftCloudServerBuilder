@@ -503,7 +503,7 @@
 		<dependency>
 			<groupId>ij</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.39b</version>
+			<version>1.43u</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

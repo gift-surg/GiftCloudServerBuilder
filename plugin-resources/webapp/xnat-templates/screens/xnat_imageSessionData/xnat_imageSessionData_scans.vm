@@ -70,5 +70,12 @@
  	#set ($scanCounter= $scanCounter + 1)
  #end
       </table>
+      
+ <BR><BR>
+ 
+ #set ($qcXsiType = "xnat:qcAssessmentData")
+#parse($turbineUtils.getTemplateName("_details",$qcXsiType,$project))
+ 
+
 
 					<!--END /screens/xnat_imageSessionData/xnat_imageSessionData_scans.vm -->

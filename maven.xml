@@ -18,13 +18,13 @@
 | Duplicate Setup Exception                                                      |
 --------------------------------------------------------------------------
 
- This application has already been setup.  If you want to redo 
- the setup process, delete the ${basedir}/deployments/${xdat.project.name} 
+ This application has already been setup.  If you want to redo
+ the setup process, delete the ${basedir}/deployments/${xdat.project.name}
  directory and call setup again.
- 
- If you want to update your previously created deployment, 
+
+ If you want to update your previously created deployment,
  use the 'update' method rather then the 'setup' one.
- 
+
 --------------------------------------------------------------------------
       			</fail>
 		</u:available>
@@ -73,7 +73,7 @@
 			<attainGoal name="xdat:buildWAR"/>
 		</j:if>
 		<!-- INVOKE PIPELINE SETUP -->
-		<attainGoal name="pipeline:init"/>
+		<!--<attainGoal name="pipeline:init"/>-->
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Copies core Maven jars to the user's repository                                                    -->

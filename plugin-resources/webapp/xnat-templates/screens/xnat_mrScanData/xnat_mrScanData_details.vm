@@ -3,12 +3,7 @@
 	  	  	  	  	  	  <td> </td>
 			  	  	  	  	  	  <td>Image </td>
 					  	  	  	  	  	  <td align="left">
-					  	  	  	  	  	  #set($snapshot=$scan.getSnapshot())
-					  	  	  	  	  	  #if($snapshot)
-					  	  	  	  	  	  <A target="_blank" HREF="$content.getURI("$!snapshot.getFull()")" > <IMG SRC="$content.getURI("$!snapshot.getThumbnail()")"> </A> 
-					  	  	  	  	  	  #else
-					  	  	  	  	  	  N/A
-					  	  	  	  	  	  #end
+											<A target="_blank" HREF="$content.getURI("/REST/experiments/$om.getId()/scans/$scan.getId()/resources/SNAPSHOTS/files?file_content=ORIGINAL&index=0")" > <IMG SRC="$content.getURI("/REST/experiments/$om.getId()/scans/$scan.getId()/resources/SNAPSHOTS/files?file_content=THUMBNAIL&index=0")"> </A> 
 					  	  	  	  	  	  </td>
 		          </tr>
 			#if($scan.getProperty("quality"))

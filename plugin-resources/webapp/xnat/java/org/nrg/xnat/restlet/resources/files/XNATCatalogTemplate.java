@@ -143,43 +143,49 @@ public class XNATCatalogTemplate extends XNATTemplate {
 	public final static String[] FILE_HEADERS = {"Name","Size","URI","collection","file_tags","file_format","file_content","cat_ID"};
 	public final static String[] FILE_HEADERS_W_FILE = {"Name","Size","URI","collection","file_tags","file_format","file_content","cat_ID","file"};
 	
-	protected List<Object[]> getEntryDetails(CatCatalogBean cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile){
+	protected List<Object[]> getEntryDetails(CatCatalogBean cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile, final CatEntryFilterI filter){
 		final ArrayList al = new ArrayList();
 		for(final CatCatalogBean subset:cat.getSets_entryset()){
-			al.addAll(getEntryDetails(subset,parentPath,uriPath,_resource,coll_tags,includeFile));
+			al.addAll(getEntryDetails(subset,parentPath,uriPath,_resource,coll_tags,includeFile,filter));
 		}
 		
 		final int ri=(includeFile)?9:8;
 		for(final CatEntryBean entry:cat.getEntries_entry()){
-			final Object[] row = new Object[ri];
-			final String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
-            final File f=getFileOnLocalFileSystem(entryPath);
-            row[0]=(f.getName());
-            row[1]=(f.length());
-            if(FileUtils.IsAbsolutePath(entry.getUri())){
-                row[2]=uriPath+"/" + entry.getId();
-            }else{
-                row[2]=uriPath+"/" + entry.getUri();
-            }
-            row[3]=_resource.getLabel();
-            
-            row[4]="";
-            for(CatEntryMetafieldBean meta: entry.getMetafields_metafield()){
-            	if(!row[4].equals(""))row[4]=row[4] +",";
-            	row[4]=row[4]+meta.getName() + "=" + meta.getMetafield();
-            }
-            for(CatEntryTagBean tag: entry.getTags_tag()){
-            	if(!row[4].equals(""))row[4]=row[4]+",";
-            	row[4]=row[4]+tag.getTag();
-            }
-            row[5]=entry.getFormat();
-            row[6]=entry.getContent();
-            row[7]=_resource.getXnatAbstractresourceId();
-            if(includeFile)row[8]=f;
-            al.add(row);
+			if(filter==null || filter.accept(entry)){
+				final Object[] row = new Object[ri];
+				final String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
+	            final File f=getFileOnLocalFileSystem(entryPath);
+	            row[0]=(f.getName());
+	            row[1]=(f.length());
+	            if(FileUtils.IsAbsolutePath(entry.getUri())){
+	                row[2]=uriPath+"/" + entry.getId();
+	            }else{
+	                row[2]=uriPath+"/" + entry.getUri();
+	            }
+	            row[3]=_resource.getLabel();
+	            
+	            row[4]="";
+	            for(CatEntryMetafieldBean meta: entry.getMetafields_metafield()){
+	            	if(!row[4].equals(""))row[4]=row[4] +",";
+	            	row[4]=row[4]+meta.getName() + "=" + meta.getMetafield();
+	            }
+	            for(CatEntryTagBean tag: entry.getTags_tag()){
+	            	if(!row[4].equals(""))row[4]=row[4]+",";
+	            	row[4]=row[4]+tag.getTag();
+	            }
+	            row[5]=entry.getFormat();
+	            row[6]=entry.getContent();
+	            row[7]=_resource.getXnatAbstractresourceId();
+	            if(includeFile)row[8]=f;
+	            al.add(row);
+			}
 		}
 		
 		return al;
+	}
+	
+	public interface CatEntryFilterI{
+		public boolean accept(final CatEntryBean entry);
 	}
     
     protected ArrayList<File> getFiles(CatCatalogBean cat,String parentPath){
@@ -212,6 +218,26 @@ public class XNATCatalogTemplate extends XNATTemplate {
 				if(entry.getUri().equals(name) ||  entry.getUri().equals(decoded)){
 				return entry;
 			}
+			} catch (Exception e1) {
+				logger.error(e1);
+			}
+		}
+		
+		return null;
+	}
+	
+	protected CatEntryBean getEntryByFilter(final CatCatalogBean cat, final CatEntryFilterI filter){
+		CatEntryBean e=null;
+		for(CatCatalogBean subset:cat.getSets_entryset()){
+			e = getEntryByFilter(subset,filter);
+			if(e!=null) return e;
+		}
+		
+		for(CatEntryBean entry:cat.getEntries_entry()){
+			try {
+				if(filter.accept(entry)){
+    				return entry;
+    			}
 			} catch (Exception e1) {
 				logger.error(e1);
 			}

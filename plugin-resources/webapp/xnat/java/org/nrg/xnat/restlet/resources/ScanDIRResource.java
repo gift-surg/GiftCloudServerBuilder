@@ -106,7 +106,7 @@ public class ScanDIRResource extends ScanResource {
 		    //iterate through scans and only include DICOM files.
 		    for(final XnatImagescandata scan: scans){
 			for(final XnatAbstractresource res: scan.getFile()){
-			    if(res.getLabel()!=null && res.getLabel().equals("DICOM")){
+				    if(res.getFormat()!=null && res.getFormat().equals("DICOM")){
 				for(final File f:res.getCorrespondingFiles(rootPath)){
 				    final String uri=f.getAbsolutePath();
 				    final String relative = RestFileUtils.buildRelativePath(uri, session_mapping, valuesToReplace, res.getXnatAbstractresourceId(), res.getLabel());

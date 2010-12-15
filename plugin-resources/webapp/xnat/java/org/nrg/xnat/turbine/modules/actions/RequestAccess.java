@@ -73,7 +73,7 @@ public class RequestAccess extends SecureAction {
             bcc.add(ia);
         }
         
-        String from = user.getEmail();
+        String from = AdminUtils.getAdminEmailId();
         String subject = TurbineUtils.GetSystemName() + " Access Request for " + project.getName();
 
         try {

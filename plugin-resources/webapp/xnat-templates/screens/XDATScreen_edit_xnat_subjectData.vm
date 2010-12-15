@@ -5,7 +5,7 @@ $page.setVlinkColor($ui.vlink)
 #set ( $subjectHeadings = ["ID","Labels", "Date" ] )
 #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 #set($days = [ 1..31 ])
-#set($years = [ 2010..1900])
+#set($years = [ $!turbineUtils.getYear()..1900])
 #if ($data.getParameters().getString("popup"))
 	#set ($popup = $data.getParameters().getString("popup") )
 #else

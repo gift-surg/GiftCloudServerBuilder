@@ -54,7 +54,7 @@ $page.setVlinkColor($ui.vlink)
 				</select>
     		</font>
 		
-#set($years = [ 2010..1990])
+#set($years = [ $!turbineUtils.getYear()..1990])
 			#set ($currentYear = $date.Year + 1900)
 			<select id="xnat:ctSessionData.date.year" name="xnat:ctSessionData.date.year" >
 				<option value="bad">(SELECT)</option>

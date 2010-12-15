@@ -1,12 +1,44 @@
  <tr>
   <th align="left">Project</th>
-  <td><select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select></td>
+  <td>
+  	#if($!item.getProperty("project") == "")
+  		<select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select>
+  	#else
+  		$om.getProject($project,false).getDisplayID()
+  		<div style="display:none">
+	  		<select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select>
+  		</div>	
+  	#end
+  </td>
  </tr>
  <tr>
-  <th align="left">Subject</th>
-  <td><select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select></td>
-  #if(!$preventSubject)
-    <td><a onclick="createSubjectForm();">Add New Subject</a></td>
+  <th align="left">Subject:</th>
+
+## #if ($!subject != "")
+#if (!$subject)
+
+## #else
+  #if($mr.getSubjectData())
+    #set($subject=$mr.getSubjectData())
+  #else
+    #if($part)
+      #set($subject=$part)
+    #end
+  #end
+#end
+
+  #if(!$subject || $!item.getProperty("project") == "")
+	  <td><select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select></td>
+	  #if(!$preventSubject)
+	    <td><a onclick="createSubjectForm();">Add New Subject</a></td>
+	  #end	  
+  #else
+	<td>
+	$subject.getIdentifier($project,true)
+  	<div style="display:none">
+  	<select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select>
+  	</div>
+  	</td>
   #end
  </tr>
  <tr>

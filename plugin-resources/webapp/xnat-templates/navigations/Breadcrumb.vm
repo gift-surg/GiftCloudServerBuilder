@@ -152,7 +152,8 @@
     #end
     #end
     
-#elseif($om.getItem().instanceOf("xnat:subjectData")!=-1)
+## #elseif($om.getItem().instanceOf("xnat:subjectData") != -1)
+#elseif($om.getItem().instanceOf("xnat:subjectData"))
 //subjectData
 	    #if($om.getProject($project,false))
 	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";

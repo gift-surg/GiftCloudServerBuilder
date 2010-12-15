@@ -18,7 +18,10 @@
 	    
 		var serverRoot = "$content.getURI('')";
 window.available_elements=new Array();
-#set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
+
+#if($data.getSession().getAttribute("user"))
+	#set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
+#end
 			#foreach ($typeObject in $typeObjects)
 			window.available_elements.push({singular:"$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",plural:"$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",			element_name:"$typeObject.getElementName()",actions:$typeObject.getElementSecurity().getListingActionsJSON(),"lbg":"$!typeObject.getLightColor()","dbg":"$!typeObject.getDarkColor()"});
 				#end

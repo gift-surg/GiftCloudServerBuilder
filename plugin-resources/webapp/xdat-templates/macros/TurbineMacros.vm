@@ -4,6 +4,7 @@
 ##
 ## Put your Application macros in this file.
 ##
+## patch test
 
 #macro(insertPipelineNotification) 
    <br/>
@@ -176,7 +177,7 @@
 	## The hidden box is necessary to submit a "false" value if the checkbox is unchecked
 	## If the checkbox is checked, its true value will override the hidden's "false" value
 	<input type="checkbox" name="$name" value="1" #if($value) CHECKED #end />
-	<input type="hidden" name="$name" value="0" />`
+	<input type="hidden" name="$name" value="0" />
 #end
 
 #macro (xdatBooleanRadio $name $item $defaultValue $vr)
@@ -427,6 +428,30 @@
 	#end
 #end
 
+#macro (xdatIntegerValueSelectBox $name $item $possibleValues $offset $vr)
+#if ($vr)
+	#if($vr.getField($name))
+		<font color="red">&#8658</font>
+	#end
+#end
+	#if($item.isPKField($name) && (!$vr.getField($name)))
+		<input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+		$item.getProperty($name)
+	#else
+		#if ($possibleValues.size()==0)
+			<input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+		#else
+			<SELECT ID="$name" name="$name">
+				<OPTION VALUE="">(SELECT)</OPTION>
+				#foreach ($pValue in $possibleValues)
+				#set($intValue = ($velocityCount - 1) + $offset)
+				<OPTION VALUE="$intValue" #if("$intValue" == "$!item.getProperty($name)") SELECTED #end>$pValue</OPTION>
+				#end
+			</SELECT>
+		#end
+	#end
+#end
+
 #macro (xdatDateBox $name $item $vr $years)
  #if ($vr)
 	  #if($vr.getField($name))
@@ -452,7 +477,7 @@
 				   #end
 			  </select>
 		
-			  #set ($currentYear = $date.Year + 1900)
+##			  #set ($currentYear = $date.Year + 1900)
 			  <select name="${name}.year" onchange="validateDate(this);">
 				   <option value="bad">(SELECT)</option>
 				   #foreach ($year in $years)
@@ -474,7 +499,7 @@
 				   #end
 			  </select>
 		
-			  #set ($currentYear = $date.Year + 1900)
+##			  #set ($currentYear = $date.Year + 1900)
 			  <select name="${name}.year" onchange="validateDate(this);">
 				   <option value="bad">(SELECT)</option>
 				   #foreach ($year in $years)
@@ -516,7 +541,7 @@
 				#end
 			</select>/
 		
-			#set ($currentYear = $date.Year + 1900)
+##			#set ($currentYear = $date.Year + 1900)
 			<select name="${name}.year" >
 				<option value="bad">(SELECT)</option>
 				#foreach ($year in $years)
@@ -563,7 +588,7 @@
 				#end
 			</select>/
 		
-			#set ($currentYear = $date.Year + 1900)
+##			#set ($currentYear = $date.Year + 1900)
 			<select name="${name}.year" >
 				<option value="bad">(SELECT)</option>
 				#foreach ($year in $years)
@@ -723,7 +748,7 @@
 		#else
 			#set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 			#set($days = [ 1..31 ])
-			#set($years = [ 1901..2010])
+			#set($years = [ 1901..$!turbineUtils.getYear()])
 			<TABLE VALIGN="top" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
 		  		#foreach ($displayRow in $elementDisplay.getSearchableFields($cols))
 		  		<TR >
@@ -1069,11 +1094,11 @@ div.ic_spacer{
   					#end
 					
 				  	#if($canAccess.equalsIgnoreCase("true"))
-    						#if ($actionObject.getPopup()=="always")
+ 						#if ($actionObject.getPopup() && $actionObject.getPopup()=="always")
 <li class="yuimenuitem">
 													<A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=700,height=600,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
 													</li>
-						    #elseif($actionObject.getPopup()=="sometimes")
+						    #elseif($actionObject.getPopup() && $actionObject.getPopup()=="sometimes")
 		      					#if ($popup=="true")
 <li class="yuimenuitem">
 <A HREF="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>

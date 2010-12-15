@@ -643,7 +643,7 @@
 	<!-- Generates Java Files for use in XNAT                                      -->
 	<!-- ================================================================ -->
 	<goal name="xdat:generateAllFiles" description="Generates xdat Java Files and Velocity Templates">
-		<java classname="GenerateJavaFile" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-javaDir"/>
@@ -664,7 +664,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -681,7 +681,7 @@
 	<goal name="xdat:generateXDATFiles" description="Generates xdat Java Files and Velocity Templates">
 		<ant:mkdir dir="${basedir}/work/java"/>
 		<ant:mkdir dir="${basedir}/work/templates/screens"/>
-		<java classname="GenerateJavaFile" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-javaDir"/>
@@ -702,7 +702,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -720,7 +720,7 @@
 	<!-- Generates Update SQL                                      -->
 	<!-- ================================================================ -->
 	<goal name="xdat:generateUpdateSQL" description="Generates sql for your schema">
-		<java classname="UpdateSQL" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="UpdateSQL" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -733,7 +733,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -755,7 +755,7 @@
 	<!-- Generates CREATE SQL                                     -->
 	<!-- ================================================================ -->
 	<goal name="xdat:generateSQL" description="Generates sql for your schema">
-		<java classname="CreateSQL" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="CreateSQL" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -768,7 +768,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -790,7 +790,7 @@
 	<!-- Generates javascript Objects                                    -->
 	<!-- ================================================================ -->
 	<goal name="xdat:generateJSFiles" description="Generates javascript objects for your schema">
-		<java classname="GenerateJSFiles" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="GenerateJSFiles" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -807,7 +807,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -824,7 +824,7 @@
 	<goal name="xdat:createGeneratedFiles" description="Generates files for your schema">
 		<ant:mkdir dir="${basedir}/work/java"/>
 		<ant:mkdir dir="${basedir}/work/templates/screens"/>
-		<java classname="GenerateAllCreateFiles" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="GenerateAllCreateFiles" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -845,7 +845,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -866,7 +866,7 @@
 	<goal name="xdat:updateGeneratedFiles" description="Generates files for your schema">
 		<ant:mkdir dir="${basedir}/work/java"/>
 		<ant:mkdir dir="${basedir}/work/templates/screens"/>
-		<java classname="GenerateAllUpdateFiles" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="GenerateAllUpdateFiles" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -887,7 +887,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -912,7 +912,7 @@
 		<j:if test="${context.getVariable('beans.jar.name') ==null}">
 			<j:set var="beans.jar.name" value="beans"/>
 		</j:if>
-		<java classname="GenerateJavaBeans" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -933,7 +933,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -952,7 +952,7 @@
 				<pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
 				<pathelement location="${basedir}/plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
 				<pathelement location="${basedir}/plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
-				<pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.1.jar"/>
+				<pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
 			</classpath>
 		</javac>
 		<jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" basedir="${basedir}/classes">
@@ -1275,7 +1275,7 @@
 	<!-- Insert Meta Data entries                                    -->
 	<!-- ================================================================ -->
 	<goal name="xdat:insertMetaDatas" description="Generates java bean objects for your schema">
-		<java classname="InsertMetaDatas" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="InsertMetaDatas" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -1286,7 +1286,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -1334,7 +1334,7 @@
 	<goal name="xdat:ManageProjectAccessories" description="Generates java bean objects for your schema">
 		<maven:param-check value="${xdat.user.login}" fail="true" message="'xdat.user.login' must be specified"/>
 		<maven:param-check value="${xdat.user.password}" fail="true" message="'xdat.user.password' must be specified"/>
-		<java classname="ManageProjectAccessories" maxmemory="256m" fork="true" failonerror="true">
+		<java classname="ManageProjectAccessories" maxmemory="1024m" fork="true" failonerror="true">
 			<arg value="-xdir"/>
 			<arg value="${basedir}"/>
 			<arg value="-project"/>
@@ -1350,7 +1350,7 @@
 				<pathelement location="./lib/commons-collections-3.0.jar"/>
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.0.jar"/>
+				<pathelement location="./lib/commons-lang-2.5.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>

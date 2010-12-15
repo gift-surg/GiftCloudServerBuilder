@@ -3,11 +3,28 @@
  * Copyright (c) 2008 Washington University
  */
 package org.nrg.xdat.om.base;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatDicomseries;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataField;
@@ -15,26 +32,24 @@ import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatMrscandata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatQcassessmentdata;
+import org.nrg.xdat.om.XnatQcassessmentdataI;
 import org.nrg.xdat.om.XnatQcmanualassessordata;
 import org.nrg.xdat.om.XnatQcmanualassessordataI;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatReconstructedimagedataI;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatResourceseries;
-import org.nrg.xdat.om.XnatSubjectassessordata;
-import org.nrg.xdat.om.base.BaseXnatMrsessiondata.ScanType;
-import org.nrg.xdat.om.base.BaseXnatMrsessiondata.ScanTypeMapping;
-import org.nrg.xdat.om.base.auto.*;
+import org.nrg.xdat.om.base.auto.AutoXnatImagesessiondata;
 import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.*;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.XFT;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
@@ -57,12 +72,6 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.CatalogSet;
 
 import edu.sdsc.grid.io.GeneralFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.*;
 
 /**
  * @author XDAT
@@ -167,6 +176,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         return temp;
     }
 
+     
     public String getArchivePath(){
         return getArchivePath(getArchiveRootPath());
     }
@@ -3445,6 +3455,21 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		return null;
 	}
 
+	public XnatQcassessmentdataI getQCByType(String type) {
+		final List<XnatImageassessordata> assessors = getMinimalLoadAssessors(XnatQcassessmentdata.SCHEMA_ELEMENT_NAME);
+		final List<XnatImageassessordata> qcassessorOfType = new ArrayList<XnatImageassessordata>();
+		for (int i = 0; i < assessors.size(); i++) {
+			if (((XnatQcassessmentdata)assessors.get(i)).getType().equals(type)) {
+				qcassessorOfType.add(assessors.get(i));
+			}
+		}
+		if (qcassessorOfType != null && qcassessorOfType.size() > 0) {
+			return (XnatQcassessmentdata) qcassessorOfType.get(qcassessorOfType.size()-1);
+		}
+		return null;
+	}
+
+	
 	@Override
 	public void preSave() throws Exception{
 		super.preSave();

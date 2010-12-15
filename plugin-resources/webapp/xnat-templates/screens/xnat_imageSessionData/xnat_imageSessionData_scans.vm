@@ -74,7 +74,7 @@
  <BR><BR>
  
  #set ($qcXsiType = "xnat:qcAssessmentData")
-#parse($turbineUtils.getTemplateName("_details",$qcXsiType,$project))
+#parse($turbineUtils.getTemplateName("report_summary",$qcXsiType,$project))
  
 
 

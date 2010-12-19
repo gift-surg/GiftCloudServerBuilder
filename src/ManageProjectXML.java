@@ -1,15 +1,13 @@
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Replace;
 //Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
  * Created on May 8, 2007
@@ -18,6 +16,7 @@ import org.apache.tools.ant.taskdefs.Replace;
 public class ManageProjectXML extends Task {
 	private String src = null;
 	private String dest = null;
+	private String projdepsrc = null;
 	private String projectName = null;
 	/*
 	 * (non-Javadoc)
@@ -25,71 +24,42 @@ public class ManageProjectXML extends Task {
 	 * @see org.apache.tools.ant.Task#execute()
 	 * 
 	 */
-	@SuppressWarnings("deprecation")
 	public void execute() throws BuildException {
 		final File srcF = new File(src);
-		final File destF = new File(dest);
-		
-		final StringBuffer sbSRC = new StringBuffer();
-		final StringBuffer sbDEST = new StringBuffer();
+		final StringBuilder sbSRC = readFileToSB(srcF);
+		addProjectSpecificResources(sbSRC);
+		System.out.println("Creating/Replacing " + dest + " with merged version.");
 		try {
-			final FileInputStream in = new FileInputStream(srcF);
-			final DataInputStream dis = new DataInputStream(in);
-			while (dis.available() != 0)
-			{
-				// Print file line to screen
-				sbSRC.append(dis.readLine()).append("\n");
-			}
-			dis.close();
-		} catch (Exception e) {
-			throw new BuildException(e);
-		}
-		try {
-			final FileInputStream in = new FileInputStream(destF);
-			final DataInputStream dis = new DataInputStream(in);
-			while (dis.available() != 0)
-			{
-				// Print file line to screen
-				sbDEST.append(dis.readLine()).append("\n");
-			}
-			dis.close();
-		} catch (Exception e) {
-			throw new BuildException(e);
-		}
-		final int destEnd = sbDEST.indexOf("<!-- END XDAT Dependencies -->");
-		final int destStart = sbDEST.indexOf("<!-- = JDBC Drivers");
-		if (destEnd == -1 || destStart == -1)
-		{
-			System.out.println("Replacing " + dest + " with new version.");
-			destF.delete();
-			final Project project = new Project();
-			project.init();
-			final Target target = new Target();
-			final Copy move = new Copy();
-			move.setProject(project);
-			move.setOwningTarget(target);
-			move.setFile(srcF);
-			move.setTofile(destF);
-			move.execute();
-			final Replace replace = new Replace();
-			replace.setProject(project);
-			replace.setOwningTarget(target);
-			replace.setFile(destF);
-			replace.setToken("%PROJECT%");
-			replace.setValue(projectName);
-			replace.execute();
-		} else {
-			final int srcEnd = sbSRC.indexOf("<!-- END XDAT Dependencies -->");
-			final int srcStart = sbSRC.indexOf("<!-- = JDBC Drivers");
-			final String newDependencies = sbSRC.substring(srcStart, srcEnd);
-			sbDEST.replace(destStart, destEnd, newDependencies);
-			try {
-				OutputToFile(sbDEST.toString(), dest);
-			} catch (IOException e) {
-				throw new BuildException(e);
-			}
+			outputToFile(sbSRC.toString().replaceAll("%PROJECT%",projectName), dest);
+		} catch (IOException ioe) {
+			throw new BuildException(ioe);
 		}
 	}
+		
+	private void addProjectSpecificResources(StringBuilder sbDEST) {
+		// Add project-specific resources if defined
+		if (projdepsrc == null) {
+			return;
+		}
+		File pDepSrcF =  new File(projdepsrc);
+		if (!pDepSrcF.exists()) {
+			return;
+		}
+		final StringBuilder sbPDEPSRC = readFileToSB(pDepSrcF);
+		int depEndTagLoc = sbDEST.lastIndexOf("</dependencies>");
+		try {
+			while (sbDEST.charAt(depEndTagLoc-1) == '	' || sbDEST.charAt(depEndTagLoc-1) == ' ') {
+				depEndTagLoc--;
+			}
+		} catch (IndexOutOfBoundsException e) {
+			// Do nothing
+		}
+		if (depEndTagLoc>=0) {
+			sbDEST.insert(depEndTagLoc, sbPDEPSRC);
+				
+			}
+		}
+
 	/**
 	 * 
 	 * @return the dest
@@ -126,6 +96,23 @@ public class ManageProjectXML extends Task {
 	}
 	/**
 	 * 
+	 * @return the projdepsrc
+	 * 
+	 */
+	public String getProjdepsrc() {
+		return projdepsrc;
+	}
+	/**
+	 * 
+	 * @param projdepsrc
+	 *            the projdepsrc to set
+	 * 
+	 */
+	public void setProjdepsrc(String projdepsrc) {
+		this.projdepsrc = projdepsrc;
+	}
+	/**
+	 * 
 	 * @return the projectName
 	 * 
 	 */
@@ -141,7 +128,8 @@ public class ManageProjectXML extends Task {
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
-	public static void OutputToFile(String content, String filePath)
+	
+	public static void outputToFile(String content, String filePath)
 			throws IOException
 	{
 		File _outFile;
@@ -162,4 +150,21 @@ public class ManageProjectXML extends Task {
 		{
 		}
 	}
+	
+	private static StringBuilder readFileToSB(File inFile) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			final FileInputStream in = new FileInputStream(inFile);
+			final BufferedReader dis = new BufferedReader(new InputStreamReader(in));
+			while (dis.ready()) {
+					// Print file line to screen
+					sb.append(dis.readLine()).append("\n");
+}
+			dis.close();
+			return sb;
+		} catch (Exception e) {
+			throw new BuildException(e);
+		}
+	}
+	
 }

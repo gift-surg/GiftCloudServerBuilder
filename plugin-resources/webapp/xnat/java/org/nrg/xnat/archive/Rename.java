@@ -342,7 +342,13 @@ public class Rename  implements Callable<File>{
 		
 		if(relative.equals(current)){
 			//not within expected path
+			final File oldSessionDir=new File(expected);
+			if(path.replace('\\', '/').contains("/"+oldSessionDir.getName()+"/")){
+				//session contains resource which is not in the standard format, but is in a directory with the old label.
+				throw new UnsupportedResourceType();
+			}else{
 			return false;
+			}
 		}else{
 			//properly in place
 			setPath(res,(new File(newArchive,relative.getPath())).getAbsolutePath());

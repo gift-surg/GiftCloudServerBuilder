@@ -47,7 +47,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/excalibur-pool/jars/excalibur-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/fop/jars/fop-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/hsqldb/jars/hsqldb-1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.39b.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.43u.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/isorelax/jars/isorelax-20041111.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/iText/jars/itext-2.0.6.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>

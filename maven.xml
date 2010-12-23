@@ -289,7 +289,7 @@
 				<j:if test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
 					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/xnat/xnat.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/xnat/xnat.xsd"/>
 					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/birn/birnprov.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/birn/birnprov.xsd"/>
-					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/xnat/xnat.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/xnat/xnat.xsd"/>
+					<copy file="${basedir}/projects/${xdat.project.name}/src/schemas/xnat/xnat.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/xnat/xnat.xsd"/>
 					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/birn/birnprov.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/birn/birnprov.xsd"/>
 					<copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
 						<fileset dir="${basedir}/plugin-resources/project-skeletons/xnat/sql"/>

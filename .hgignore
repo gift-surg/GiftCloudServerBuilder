@@ -1,7 +1,10 @@
 syntax: glob
 .classpath
 .cvsignore
-.project 
+.project
+.externalToolBuilders
+*.DS_Store
+update_deploy
 build.properties
 plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar
 plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar

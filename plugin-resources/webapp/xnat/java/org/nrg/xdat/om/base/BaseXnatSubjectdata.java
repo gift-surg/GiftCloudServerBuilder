@@ -68,6 +68,7 @@ import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 
@@ -1274,70 +1275,6 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	}
     }
     
-    public void moveToLabel(String newLabel,XDATUser user) throws Exception{
-		if(!user.canEdit(this)){
-			throw new InvalidPermissionException(this.getXSIType());
-		}
-
-    	XnatProjectdata proj = this.getPrimaryProject(false);
-		
-		String existingRootPath=proj.getRootArchivePath();
-		
-		if(newLabel==null)return;
-		
-		File newSessionDir = new File(new File(proj.getRootArchivePath(),proj.getCurrentArc()),newLabel);
-		
-		String current_label=this.getLabel();
-		if(current_label==null)current_label=this.getId();
-		
-		for(XnatAbstractresource abstRes:this.getResources_resource()){
-			String uri= null;
-			if(abstRes instanceof XnatResource){
-				uri=((XnatResource)abstRes).getUri();
-			}else{
-				uri=((XnatResourceseries)abstRes).getPath();
-			}
-			
-			if(FileUtils.IsAbsolutePath(uri)){
-				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-				if(lastIndex>-1)
-				{
-					lastIndex+=1+current_label.length();
-				}
-				if(lastIndex==-1){
-					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-    				if(lastIndex>-1)
-    				{
-    					lastIndex+=1+this.getId().length();
-    				}
-				}
-				String existingSessionDir=null;
-				if(lastIndex>-1){
-    				//in session_dir
-    				existingSessionDir=uri.substring(0,lastIndex);
-    			}else{
-    				//outside session_dir
-    				newSessionDir = new File(newSessionDir,"RESOURCES");
-    				newSessionDir = new File(newSessionDir,"RESOURCES/"+abstRes.getXnatAbstractresourceId());
-    				int lastSlash=uri.lastIndexOf("/");
-    				if(uri.lastIndexOf("\\")>lastSlash){
-    					lastSlash=uri.lastIndexOf("\\");
-    				}
-    				existingSessionDir=uri.substring(0,lastSlash);
-    			}
-    			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-			}else{
-    			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
-			}
-		}
-		
-		XFTItem current=this.getCurrentDBVersion(false);
-		current.setProperty("label", newLabel);    		
-		current.save(user, true, false); 
-		
-		this.setLabel(newLabel);
-    }
-    
     public boolean hasProject(String proj_id){
 		if(this.getProject().equals(proj_id)){
 		    return true;
@@ -1538,8 +1475,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 			throw new Exception("Unable to identify project for:" + this.getProject());
 		}
 		
-    	final String archive=proj.getRootArchivePath();
-		final String expectedPath=new File(archive,"subjects/"+ this.getArchiveDirectoryName()).getAbsolutePath().replace('\\', '/');
+		final String expectedPath=getExpectedCurrentDirectory().getAbsolutePath().replace('\\', '/');
 		
 		for(final XnatAbstractresource res: this.getResources_resource()){
 			final String uri;
@@ -1557,5 +1493,10 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		for(final XnatSubjectassessordata expt:this.getExperiments_experiment()){
 			expt.preSave();
 		}
+	}
+
+	@Override
+	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
+		return new File(this.getPrimaryProject(false).getRootArchivePath(),"subjects/"+ this.getArchiveDirectoryName());
 	}
 }

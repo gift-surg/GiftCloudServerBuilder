@@ -13,6 +13,8 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -518,6 +520,10 @@ public class FileList extends XNATCatalogTemplate {
 		XFTTable table = null;
 		table = new XFTTable();
 		table.initTable(FILE_HEADERS);
+			    	
+    	final CatEntryFilterI entryFilter=buildFilter();
+    	final Integer index=(containsQueryVariable("index"))?Integer.parseInt(getQueryVariable("index")):null;
+
 					if(resource.getItem().instanceOf("xnat:resourceCatalog")){
 						boolean includeRoot=false;
 						if(this.getQueryVariable("includeRootPath")!=null){
@@ -528,15 +534,34 @@ public class FileList extends XNATCatalogTemplate {
 						CatCatalogBean cat= catResource.getCleanCatalog(proj.getRootArchivePath(),includeRoot);
 						String parentPath=catResource.getCatalogFile(proj.getRootArchivePath()).getParent();
 				    					    
-			if(this.filepath==null|| this.filepath.equals("")){
+			if(StringUtils.isEmpty(filepath) && index==null){
 					    	String baseURI=this.getBaseURI();
 					    	
 					    	if(cat!=null){
-					table.rows().addAll(this.getEntryDetails(cat, parentPath,baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),false));
+					    		table.rows().addAll(this.getEntryDetails(cat, parentPath,baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),false,entryFilter));
 					    	}
 						}else{
-				
-				String zipEntry=null;
+
+							String zipEntry=null;
+							
+							CatEntryBean entry=null;
+							if(index!=null){
+								entry =this.getEntryByFilter(cat, new CatEntryFilterI(){
+									private int count=0;
+									private CatEntryFilterI filter = entryFilter;
+									
+									public boolean accept(CatEntryBean entry) {
+										if(filter.accept(entry)){
+											if(index.equals(count++)){
+												return true;
+											}
+										}
+										
+										return false;
+									}
+									
+								});
+							}else{
 				String lowercase=this.filepath.toLowerCase();
 				
 				for(String s: zipExtensions){
@@ -548,12 +573,14 @@ public class FileList extends XNATCatalogTemplate {
 						break;
 					}
 				}
-				
-				CatEntryBean entry = this.getEntryByURI(cat, this.filepath);
+					entry = this.getEntryByURI(cat, this.filepath);
+					
+					if(entry==null){
+			entry = this.getEntryById(cat, this.filepath);
+					}
+				}
 							
-							if(entry==null){
-					entry = this.getEntryById(cat, this.filepath);
-							}
+							
 							
 							if(entry==null){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find catalog entry for given uri.");
@@ -630,7 +657,7 @@ public class FileList extends XNATCatalogTemplate {
 				}else{
 			if(filepath==null|| filepath.equals("")){
 			    	String baseURI=this.getBaseURI();
-			    	
+			    if(entryFilter==null){
 		    	ArrayList<File> files = this.resource.getCorrespondingFiles(proj.getRootArchivePath());
 				for(File subFile:files){
 					Object[] row = new Object[13];
@@ -646,6 +673,7 @@ public class FileList extends XNATCatalogTemplate {
 		            row[7]=this.resource.getXnatAbstractresourceId();
 		            table.rows().add(row);
 				}
+			    }
 			}else{
 				ArrayList<File> files = this.resource.getCorrespondingFiles(proj.getRootArchivePath());
 				for(File subFile:files){
@@ -730,6 +758,36 @@ public class FileList extends XNATCatalogTemplate {
 		return session_ids;
 	}
 	
+	public CatEntryFilterI buildFilter(){
+		final String[] file_content=getQueryVariables("file_content");
+		final String[] file_format=getQueryVariables("file_format");
+		if((file_content!=null && file_content.length>0) || (file_format!=null && file_format.length>0)){
+			return new CatEntryFilterI(){
+				public boolean accept(CatEntryBean entry) {
+					if(file_format!=null && file_format.length>0){
+						if(entry.getFormat()==null){
+							if(!ArrayUtils.contains(file_format,"NULL"))return false;
+						}else{
+							if(!ArrayUtils.contains(file_format,entry.getFormat()))return false;
+						}
+					}
+
+					if(file_content!=null && file_content.length>0){
+						if(entry.getContent()==null){
+							if(!ArrayUtils.contains(file_content,"NULL"))return false;
+						}else{
+							if(!ArrayUtils.contains(file_content,entry.getContent()))return false;
+						}
+					}
+					
+					return true;
+				}
+			};
+		}
+		
+		return null;
+	}
+	
 	protected Representation handleMultipleCatalogs(MediaType mt) throws ElementNotFoundException{
 		final boolean isZip=(mt.equals(MediaType.APPLICATION_ZIP) || mt.equals(MediaType.APPLICATION_GNU_TAR));
     	
@@ -743,7 +801,10 @@ public class FileList extends XNATCatalogTemplate {
 
     	final String baseURI=this.getBaseURI();
 			    	
+    	final CatEntryFilterI entryFilter=buildFilter();
     	
+    	final Integer index=(containsQueryVariable("index"))?Integer.parseInt(getQueryVariable("index")):null;
+
 		for(final XnatAbstractresource temp: resources){			
 						if(temp.getItem().instanceOf("xnat:resourceCatalog")){
 				final boolean includeRoot=(this.getQueryVariable("includeRootPath")!=null);
@@ -758,7 +819,7 @@ public class FileList extends XNATCatalogTemplate {
 						    	if(filepath==null|| filepath.equals("")){
 							    	
 							    	if(cat!=null){
-				    		table.rows().addAll(this.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip));
+							    		table.rows().addAll(this.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip || (index!=null),entryFilter));
 							    	}
 								}else{
 									CatEntryBean entry = this.getEntryByURI(cat, filepath);
@@ -780,21 +841,23 @@ public class FileList extends XNATCatalogTemplate {
 					    	}
 			}else{
 				//not catalog
-				ArrayList<File> files =temp.getCorrespondingFiles(proj.getRootArchivePath());
-				for(File subFile:files){
-					Object[] row = new Object[(isZip)?9:8];
-					row[0]=(subFile.getName());
-		            row[1]=(subFile.length());
-		           
-		            row[2]=(temp.getBaseURI()!=null)?temp.getBaseURI() + "/files/" + subFile.getName():baseURI + "/resources/" + temp.getXnatAbstractresourceId() + "/files/" + subFile.getName();
-		            row[3]=temp.getLabel();
-		            row[4]=temp.getTagString();
-		            row[5]=temp.getFormat();
-		            row[6]=temp.getContent();
-		            row[7]=temp.getXnatAbstractresourceId();
-		            if(isZip)row[8]=subFile;
-		            
-		            table.rows().add(row);
+				if(entryFilter==null){
+    				ArrayList<File> files =temp.getCorrespondingFiles(proj.getRootArchivePath());
+    				for(File subFile:files){
+    					Object[] row = new Object[(isZip)?9:8];
+    					row[0]=(subFile.getName());
+    		            row[1]=(subFile.length());
+    		           
+    		            row[2]=(temp.getBaseURI()!=null)?temp.getBaseURI() + "/files/" + subFile.getName():baseURI + "/resources/" + temp.getXnatAbstractresourceId() + "/files/" + subFile.getName();
+    		            row[3]=temp.getLabel();
+    		            row[4]=temp.getTagString();
+    		            row[5]=temp.getFormat();
+    		            row[6]=temp.getContent();
+    		            row[7]=temp.getXnatAbstractresourceId();
+    		            if(isZip)row[8]=subFile;
+    		            
+    		            table.rows().add(row);
+    				}
 				}
 			}
 						}
@@ -812,7 +875,7 @@ public class FileList extends XNATCatalogTemplate {
 			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".gz");
 					}
 					
-					if(filepath==null|| filepath.equals("")){
+					if(StringUtils.isEmpty(filepath) && index==null){
 //			if(isZip){
 //				//return ZIP
 //				try {
@@ -871,6 +934,10 @@ public class FileList extends XNATCatalogTemplate {
 				return this.representTable(table, mt, params,cp,this.getSessionMaps());
 //			}
 					}else{
+						if(index!=null&& table.rows().size()>index){
+							f=(File)table.rows().get(index)[8];
+						}
+						
 						//return file
 						if(f!=null){
 				if(f!=null && f.exists()){

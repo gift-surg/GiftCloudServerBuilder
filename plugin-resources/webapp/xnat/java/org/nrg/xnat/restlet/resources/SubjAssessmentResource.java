@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -17,10 +18,17 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.archive.Rename;
+import org.nrg.xnat.archive.Rename.DuplicateLabelException;
+import org.nrg.xnat.archive.Rename.FolderConflictException;
+import org.nrg.xnat.archive.Rename.LabelConflictException;
+import org.nrg.xnat.archive.Rename.ProcessingInProgress;
+import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -414,7 +422,38 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 									return;
 								}
 
-								existing.moveToLabel(label, user);
+								Rename renamer = new Rename(proj,existing,label,user);
+								try {
+									renamer.call();
+								} catch (ProcessingInProgress e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Specified session is being processed (" + e.getPipeline_name() +").");
+									return;
+								} catch (DuplicateLabelException e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Specified label is already in use.");
+									return;
+								} catch (LabelConflictException e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Specified label is already in use.");
+									return;
+								} catch (FolderConflictException e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"File system destination contains pre-existing files");
+									return;
+								} catch (InvalidArchiveStructure e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,"Non-standard archive structure in existing experiment directory.");
+									return;
+								} catch (URISyntaxException e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,"Non-standard archive structure in existing experiment directory.");
+									return;
+								} catch (Exception e) {
+									logger.error("", e);
+									this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+									return;
+								}
 							}
 							return;
 						}

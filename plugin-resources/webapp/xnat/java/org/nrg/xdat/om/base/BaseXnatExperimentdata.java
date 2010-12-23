@@ -500,72 +500,6 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	}
     }
     
-    public void moveToLabel(String newLabel,XDATUser user) throws Exception{
-		if(!user.canEdit(this)){
-			throw new InvalidPermissionException(this.getXSIType());
-		}
-		
-    	XnatProjectdata proj = this.getPrimaryProject(false);
-		
-		String existingRootPath=proj.getRootArchivePath();
-		
-		if(newLabel==null)return;
-		
-		final File newSessionDir = new File(new File(proj.getRootArchivePath(),proj.getCurrentArc()),newLabel);
-		
-		String current_label=this.getLabel();
-		if(current_label==null)current_label=this.getId();
-		
-		for(XnatAbstractresource abstRes:this.getResources_resource()){
-			String uri= null;
-			if(abstRes instanceof XnatResource){
-				uri=((XnatResource)abstRes).getUri();
-			}else{
-				uri=((XnatResourceseries)abstRes).getPath();
-			}
-			
-			if(FileUtils.IsAbsolutePath(uri)){
-				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-				if(lastIndex>-1)
-				{
-					lastIndex+=1+current_label.length();
-				}
-				if(lastIndex==-1){
-					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-    				if(lastIndex>-1)
-    				{
-    					lastIndex+=1+this.getId().length();
-    				}
-				}
-				String existingSessionDir=null;
-				if(lastIndex>-1){
-    				//in session_dir
-    				existingSessionDir=uri.substring(0,lastIndex);
-    			}else{
-    				//outside session_dir
-//    				newSessionDir = new File(newSessionDir,"RESOURCES");
-//    				newSessionDir = new File(newSessionDir,"RESOURCES/"+abstRes.getXnatAbstractresourceId());
-//    				int lastSlash=uri.lastIndexOf("/");
-//    				if(uri.lastIndexOf("\\")>lastSlash){
-//    					lastSlash=uri.lastIndexOf("\\");
-//    				}
-//    				existingSessionDir=uri.substring(0,lastSlash);
-    				//don't attempt to move sessions which are outside of the Session Directory.
-    				throw new Exception("Non-standard file location for file(s):" + uri);
-    			}
-    			abstRes.moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-			}else{
-    			abstRes.moveTo(newSessionDir,null,existingRootPath,user);
-			}
-		}
-		
-		XFTItem current=this.getCurrentDBVersion(false);
-		current.setProperty("label", newLabel);    		
-		current.save(user, true, false); 
-		
-		this.setLabel(newLabel);
-    }
-    
     public ArrayList getCatalogSummary() throws Exception{
 		String query="SELECT xnat_abstractresource_id,label,element_name ";
     	query+=", 'resources'::TEXT AS category, '" + this.getId()+"'::TEXT AS cat_id";
@@ -927,5 +861,10 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
+	}
+
+	@Override
+	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
+		return getExpectedSessionDir();
 	}
 }

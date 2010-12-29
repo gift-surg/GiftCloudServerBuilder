@@ -45,7 +45,7 @@ public class PipelineAdder {
 							templateFile = pipeline.getCustomwebpage();
 						}
 					}else {
-						ArcProjectDescendantPipeline newPipeline = new ArcProjectDescendantPipeline();
+						//ArcProjectDescendantPipeline newPipeline = new ArcProjectDescendantPipeline();
 						if (pipeline.getCustomwebpage() != null) {
 							templateFile = pipeline.getCustomwebpage();
 						}

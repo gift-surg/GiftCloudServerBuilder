@@ -1495,7 +1495,6 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		}
 	}
 
-	@Override
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
 		return new File(this.getPrimaryProject(false).getRootArchivePath(),"subjects/"+ this.getArchiveDirectoryName());
 	}

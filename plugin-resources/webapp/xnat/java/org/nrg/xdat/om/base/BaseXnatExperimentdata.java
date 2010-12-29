@@ -863,7 +863,6 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		}
 	}
 
-	@Override
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
 		return getExpectedSessionDir();
 	}

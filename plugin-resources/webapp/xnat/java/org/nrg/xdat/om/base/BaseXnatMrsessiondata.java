@@ -311,6 +311,31 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
         return _return;
     }
 
+    public ArrayList getUnionOfScansByType(String csvType, boolean chronological) {
+        ArrayList _return = new ArrayList();
+        if (chronological) {
+            String[] types = csvType.split(",");
+            Hashtable scanTypes = new Hashtable();
+            if (types != null && types.length > 0) {
+            	for(int i = 0; i < types.length; i++) {
+            		scanTypes.put(types[i].trim(), "");
+            	}
+            }
+            for(XnatImagescandata scan :  this.getScans_scan()){
+            	if (scan.getType() != null && scanTypes.containsKey(scan.getType())) {
+            		_return.add(scan);
+            	}
+            }
+            _return.trimToSize();
+            return _return;
+        }else
+        	return getUnionOfScansByType(csvType);
+    }
+
+    public ArrayList getUnionOfScansByType(String csvType, String chronological) {
+    	return getUnionOfScansByType(csvType, new Boolean(chronological).booleanValue());
+    }
+    
     public Map<String,String> getCustomScanFields(String project){
     	Map<String,String> customheaders= super.getCustomScanFields(project);
     	

@@ -4,6 +4,7 @@ syntax: glob
 .project
 .externalToolBuilders
 *.DS_Store
+.settings
 update_deploy
 build.properties
 plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar

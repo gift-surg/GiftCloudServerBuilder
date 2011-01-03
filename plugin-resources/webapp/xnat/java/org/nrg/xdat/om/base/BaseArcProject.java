@@ -72,8 +72,9 @@ public abstract class BaseArcProject extends AutoArcProject {
 			if (xsiType == null || descendants == null) return rtn;
 			for (int i = 0; i < descendants.size(); i++) {
             if (xsiType.equals(descendants.get(i).getXsitype()) || PipelineRepositoryManager.ALL_DATA_TYPES.equals(descendants.get(i).getXsitype())) {
-					rtn = descendants.get(i).getPipeline();
-					break;
+            	ArrayList<ArcProjectDescendantPipeline> pipelines = descendants.get(i).getPipeline();	
+            	if (pipelines != null && pipelines.size() > 0)
+            		rtn.addAll(pipelines);
 				}
 			}
 			return rtn;

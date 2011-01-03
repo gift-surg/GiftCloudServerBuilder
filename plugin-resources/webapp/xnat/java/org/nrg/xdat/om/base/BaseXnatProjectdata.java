@@ -2045,9 +2045,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	return this.getId();
     }
 
-	@Override
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
-		// TODO Auto-generated method stub
 		return new File(getRootArchivePath(),"resources");
 	}
 }

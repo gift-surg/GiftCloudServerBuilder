@@ -15,6 +15,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.DBItemCache;
 import org.nrg.xft.security.UserI;
+import org.nrg.xnat.archive.Rename.UnsupportedResourceType;
 
 public class RenameTest {
 
@@ -126,6 +127,29 @@ public class RenameTest {
 		org.junit.Assert.assertEquals(new File(session_dir3,snapshot).toURI(),new File(res.getUri()).toURI());
 		
 		org.junit.Assert.assertEquals(0,cache.getStatements().size());
+	}
+
+	@Test
+	public void testModifyResourceRelativePath() throws Throwable{
+		final File session_dir=new File("test/mr1/");
+		final File session_dir2=new File("test/mr2/");
+		final File session_dir3=new File("test/mr3/");
+		final String snapshot = "SCANS/1/SNAPSHOTS/x.gif";
+		
+		final XnatResource res=new XnatResource((UserI)admin_user);
+		res.setUri("arc001/mr1/SCANS/1/SNAPSHOTS/x.gif");
+		
+		final SecurityManager sm= SecurityManager.GetInstance();
+		final DBItemCache cache = new DBItemCache();
+		
+		final Rename rnm=new Rename();
+		try {
+			rnm.modifyResource(res, session_dir.toURI(), session_dir2.getAbsolutePath(), null, sm, cache);
+			
+			org.junit.Assert.fail("Resource with a relative path successfully renamed.");
+		} catch (UnsupportedResourceType e) {
+			
+		}
 	}
 
 	

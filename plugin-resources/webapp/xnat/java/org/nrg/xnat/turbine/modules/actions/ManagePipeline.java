@@ -203,7 +203,8 @@ public class ManagePipeline extends SecureAction {
 
             boolean launchedAtAutoArchive = data.getParameters().getBoolean("auto_archive");
 			String templateSuppliedStepId = found.getStringProperty("stepid");
-
+	   		boolean saved = false;
+	   	 
             //A set of pipelines can be launched on auto archive.This set will have
             //AUTO_ARCHIVE_<SEQUENTIAL NUMBER> unless site wants to setup the stepid at the template level
             //If the step is provided at the template level, it must be of the kind AUTO_<SOMETHING>
@@ -218,7 +219,7 @@ public class ManagePipeline extends SecureAction {
     				if (existing.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
     					existing.setStepid(existing.getDisplaytext());
     				}
-    				existing.save(user, false, false);
+    				saved = existing.save(user, false, false);
     			}else {
     				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(arcProject), newPipeline.getDisplaytext() );
     				newPipeline.setStepid(stepId);
@@ -241,7 +242,7 @@ public class ManagePipeline extends SecureAction {
         				if (existingPipeline.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
         					existingPipeline.setStepid(existingPipeline.getDisplaytext());
         				}
-       					existingPipeline.save(user, false, false);
+       					saved = existingPipeline.save(user, false, false);
     				}else {
     	   				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(existingDesc), newPipeline.getDisplaytext() );
         				newPipeline.setStepid(stepId);
@@ -251,9 +252,14 @@ public class ManagePipeline extends SecureAction {
     				}
     			}
     		}
-    		if (!edit) arcProject.save(user, false, false);
+    		if (!edit) {
+    			saved = arcProject.save(user, false, false);
+    		}
     		ArcSpecManager.Reset();
-            String msg = "<p><b>The pipelines for the project were successfully modified.</b></p>";
+    		String msg = "<p><b>The pipelines for the project could NOT be modified.</b></p>";
+            if (saved) {
+            	msg = "<p><b>The pipelines for the project were successfully modified.</b></p>";
+            }
             data.setMessage(msg);
             data.setScreenTemplate("ClosePage.vm");
     		// ItemI project = TurbineUtils.GetItemBySearch(data,false);

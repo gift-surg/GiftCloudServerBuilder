@@ -493,7 +493,7 @@
 		<dependency>
 			<groupId>ij</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.39b</version>
+			<version>1.43u</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -999,6 +999,35 @@
 		    <war.bundle>true</war.bundle>
 		  </properties>
 		</dependency>
+		<!-- BEGIN web.xml 1.5 additions 12/09/10 MRH -->
+	<dependency>
+	    	<groupId>org.codehaus.cargo</groupId>
+	       	<artifactId>cargo-core-api-module</artifactId>
+		<version>1.0.5</version>
+		<properties>
+			<war.bundle>false</war.bundle>
+		</properties>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+	    	<groupId>org.codehaus.cargo</groupId>
+	       	<artifactId>cargo-core-api-util</artifactId>
+		<version>1.0.5</version>
+		<properties>
+			<war.bundle>false</war.bundle>
+		</properties>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+	    	<groupId>jaxen</groupId>
+	       	<artifactId>jaxen</artifactId>
+		<version>1.1.1</version>
+		<properties>
+			<war.bundle>false</war.bundle>
+		</properties>
+		<type>jar</type>
+	</dependency>
+		<!-- END web.xml 1.5 additions 12/09/10 MRH -->
 		<!-- END XDAT Dependencies -->
 	</dependencies>
 	<build>

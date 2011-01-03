@@ -52,7 +52,7 @@
 		<attainGoal name="xdat:setupProject"/>
 		<!-- AUTO GENERATE -->
 		<attainGoal name="xdat:auto-generate"/>
-		<attainGoal name="xdat:manageWebXML"/>
+		<attainGoal name="xdat:mergeProjectWebXML"/>
 		<attainGoal name="xdat:updateJS"/>
 		<attainGoal name="xdat:generateBeans"/>
 		<!-- CHMOD SH FILES -->
@@ -164,7 +164,7 @@
 		<attainGoal name="xdat:configureLog4j"/>
 		<!-- AUTO GENERATE -->
 		<attainGoal name="xdat:auto-update"/>
-		<attainGoal name="xdat:manageWebXML"/>
+		<attainGoal name="xdat:mergeProjectWebXML"/>
 		<attainGoal name="xdat:generateBeans"/>
 		<!-- CHMOD SH FILES -->
 		<attainGoal name="xdat:chmod"/>
@@ -190,7 +190,10 @@
 		<ant:mkdir dir="${xdat.project.resource.conf}"/>
 		<copy file="${basedir}/VERSION" tofile="${basedir}/deployments/${xdat.project.name}/conf/VERSION" preservelastmodified="true"/>
 		<copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true">
-			<fileset dir="${xdat.project.resource.conf}"/>
+			<fileset dir="${xdat.project.resource.conf}">
+				<!-- Exclude web.xml file here.  That will be moved in during mergeProjectWebXML -->
+				<exclude name="${xdat.project.name}-web.xml"/>
+			</fileset>
 		</copy>
 	</goal>
 	<!-- ================================================================ -->
@@ -445,9 +448,6 @@
 				<ant:replace file="${xdat.TurbineResources}" token="services.VelocityService.file.resource.loader.path = /templates" value="services.VelocityService.file.resource.loader.path = /templates,/xdat-templates"/>
 			</j:otherwise>
 		</j:choose>
-		<maven:makeAbsolutePath var="xdat.webXML" path="deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml" basedir="${basedir}"/>
-		<ant:echo>Edit file: ${xdat.webXML}</ant:echo>
-		<ant:replace file="${xdat.webXML}" token="@INSTANCE_SETTINGS_DIR@" value="${xdat.InstanceSettingsDir}"/>
 		<maven:makeAbsolutePath var="xdat.BuildProperties" path="deployments/${xdat.project.name}/build.properties" basedir="${basedir}"/>
 		<ant:echo>Edit file: ${xdat.BuildProperties}</ant:echo>
 		<maven:makeAbsolutePath var="xdat.local_repository" path="plugin-resources" basedir="${basedir}"/>
@@ -1253,23 +1253,30 @@
 	</goal>
 	<goal name="xdat:manageProjectXML" description="Updates Project xml with more recent dependencies">
 		<ant:taskdef name="ManageProjectXML" classname="ManageProjectXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
-		<ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml"/>
+		<ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml" projdepsrc="${basedir}/projects/${xdat.project.name}/project-dependencies/dependencies.xml" />
 	</goal>
 	<goal name="xdat:manageInstanceSettings" description="Updates Project instance settings with new attributes">
 		<ant:taskdef name="ManageInstanceSettings" classname="ManageInstanceSettings" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
 		<ant:ManageInstanceSettings projectDir="${basedir}/projects/${xdat.project.name}" originalsDir="${basedir}/plugin-resources/originals"/>
 	</goal>
-	<goal name="xdat:manageWebXML" description="Updates Web XML with new attributes">
-		<!-- <copy tofile="${basedir}/projects/${xdat.project.name}/BuildSpec.xml" file="${basedir}/plugin-resources/project-skeletons/xnat/BuildSpec.xml"/> -->
-		<ant:taskdef name="ManageWebXML" classname="ManageWebXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
-		<j:if test="${context.getVariable('xdat.archive.location').startsWith('srb')}">
-			<copy tofile="${xdat.cache.location}/BuildSpec.xml" file="${basedir}/projects/${xdat.project.name}/BuildSpec.xml"/>
-			<ant:ManageWebXML projectName="${xdat.project.name}" buildSpecDest="${xdat.cache.location}" dest="${basedir}/deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml"/>
-		</j:if>
-		<j:if test="!${context.getVariable('xdat.archive.location').startsWith('srb')}">
-			<copy tofile="${xdat.archive.location}/BuildSpec.xml" file="${basedir}/projects/${xdat.project.name}/BuildSpec.xml"/>
-			<ant:ManageWebXML projectName="${xdat.project.name}" buildSpecDest="${xdat.archive.location}" dest="${basedir}/deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml"/>
-		</j:if>
+	<goal name="xdat:mergeProjectWebXML" description="Merge projects web.xml with plugin-resources web.xml">
+		<ant:path id="webxmlmerge.path">
+			<ant:pathelement location="classes"/>
+			<ant:pathelement location="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
+			<ant:pathelement location="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
+			<ant:pathelement location="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
+			<ant:pathelement location="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
+			<ant:pathelement location="plugin-resources/repository/jdom/jars/jdom-1.jar"/>
+		</ant:path>
+		<ant:echo>Merge plugin-resources file with projects file: ${xdat.webXML}</ant:echo>
+		<ant:taskdef name="mergeProjectWebXML" classname="WebXmlMergeTask" classpathref="webxmlmerge.path"/>
+		<ant:mergeProjectWebXML srcfile="${basedir}/plugin-resources/originals/application-web.xml" 
+				mergefile="${basedir}/projects/${xdat.project.name}/src/web-conf/web-projectMerge.xml"
+				destfile="${basedir}/deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml" force="true"/>
+		<ant:echo>Edit file: ${xdat.webXML}</ant:echo>
+		<maven:makeAbsolutePath var="xdat.webXML" path="deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml" basedir="${basedir}"/>
+		<ant:replace file="${xdat.webXML}" token="@TURBINE_APP_NAME@" value="${xdat.project.name}"/>
+		<ant:replace file="${xdat.webXML}" token="@INSTANCE_SETTINGS_DIR@" value="${xdat.InstanceSettingsDir}"/>
 	</goal>
 	<!--================================================= -->
 	<!-- Insert Meta Data entries                                    -->

@@ -196,6 +196,8 @@ public class XNATApplication extends Application {
 
         router.attach("/experiments/{EXPT_ID}/DIR",DIRResource.class);
         router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}/DIR",DIRResource.class);
+        router.attach("/experiments/{EXPT_ID}/XAR",DIRResource.class);
+        router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}/XAR",DIRResource.class);
 
         // Users Cache Space
         router.attach("/user/cache/resources",UserCacheResource.class);

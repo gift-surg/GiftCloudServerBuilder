@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.resource.Representation;
@@ -22,6 +23,7 @@ public class RequestUtil {
 	static{
 		supported_upload_types.put(MediaType.APPLICATION_ALL,"");
 		supported_upload_types.put(MediaType.APPLICATION_ZIP,".zip");
+		supported_upload_types.put(SecureResource.APPLICATION_XAR,".xar");
 		supported_upload_types.put(MediaType.APPLICATION_GNU_TAR,".tar.gz");
 		supported_upload_types.put(MediaType.APPLICATION_GNU_ZIP,".gzip");
 		supported_upload_types.put(MediaType.APPLICATION_OCTET_STREAM,"");
@@ -47,16 +49,23 @@ public class RequestUtil {
 		supported_upload_types.put(MediaType.VIDEO_WMV,".wmv");
 }
 	
-	public static String deriveFileName(final String prefix,final Representation entity){
-		if(entity==null || entity.getMediaType()==null){
+	// method with boolean flag to allow curl processing where media types are not specified
+	public static String deriveFileName(final String prefix,final Representation entity, boolean returnNullForUnsupported){
+		if(!(entity==null || entity.getMediaType()==null)){
+			if(supported_upload_types.containsKey(entity.getMediaType())){
+				return prefix+supported_upload_types.get(entity.getMediaType());
+			}
+		}
+		if (returnNullForUnsupported) {
 			return null;
+		} else {
+			return prefix+".unsuppported";
 		}
-		
-		if(supported_upload_types.containsKey(entity.getMediaType())){
-			return prefix+supported_upload_types.get(entity.getMediaType());
-		}
-		
-		return null;
+	}
+	
+	// original deriveFileName method returned null filename for null/unsupported types
+	public static String deriveFileName(final String prefix,final Representation entity){
+		return deriveFileName(prefix,entity,true);
 	}
 	
 	public static boolean isFileInBody(Representation entity){
@@ -87,6 +96,10 @@ public class RequestUtil {
 			return true;
 		}else if(mt.equals(MediaType.APPLICATION_WWW_FORM))
 		{
+			return true;
+		// check string values of main/subtypes where doesn't resolve to one of the above media types.
+		// Happens for some Curl requests
+		}else if (mt.getMainType().equalsIgnoreCase("multipart") && mt.getSubType().equalsIgnoreCase("form-data")){
 			return true;
 		}else{
 			return false;

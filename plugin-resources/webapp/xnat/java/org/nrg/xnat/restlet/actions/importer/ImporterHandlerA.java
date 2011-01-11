@@ -16,6 +16,7 @@ import org.nrg.status.StatusProducer;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.restlet.actions.SessionImporter;
+import org.nrg.xnat.restlet.actions.XarImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
@@ -34,6 +35,7 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 	public static final String IMPORT_HANDLER_ATTR = "import-handler";
 	
 	static String SESSION_IMPORTER="SI";
+	public static String XAR_IMPORTER="XAR";
 	static String DEFAULT_HANDLER=SESSION_IMPORTER;
 	final static Map<String,Class<? extends ImporterHandlerA>> IMPORTERS=new HashMap<String,Class<? extends ImporterHandlerA>>();
 
@@ -65,6 +67,7 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 			}
 			
 			if(!IMPORTERS.containsKey(SESSION_IMPORTER))IMPORTERS.put(SESSION_IMPORTER, SessionImporter.class);
+			if(!IMPORTERS.containsKey(XAR_IMPORTER))IMPORTERS.put(XAR_IMPORTER, XarImporter.class);
 			
 			String newDefault=PropertiesHelper.GetProperty(props, ORG_NRG_IMPORTER_DEFAULT);
 			if(!StringUtils.isEmpty(newDefault)&& IMPORTERS.containsKey(newDefault)){

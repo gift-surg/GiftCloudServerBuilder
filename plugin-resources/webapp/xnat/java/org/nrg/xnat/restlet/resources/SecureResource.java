@@ -91,6 +91,9 @@ public abstract class SecureResource extends Resource {
 	public static final MediaType APPLICATION_XCAT = MediaType.register(
 			"application/xcat", "XNAT Catalog");
 	
+	public static final MediaType APPLICATION_XAR = MediaType.register(
+			"application/xar", "XAR Archive");
+	
 	protected List<String> actions=null;
 	protected String userName=null;
 	protected XDATUser user =null;
@@ -152,6 +155,8 @@ public abstract class SecureResource extends Resource {
 				return APPLICATION_XLIST;
 			}else if(this.requested_format.equalsIgnoreCase("xcat")){
 				return APPLICATION_XCAT;
+			}else if(this.requested_format.equalsIgnoreCase("xar")){
+				return APPLICATION_XAR;
 			}
 		}
 		return null;
@@ -684,16 +689,18 @@ public abstract class SecureResource extends Resource {
 	public List<FileWriterWrapperI> getFileWriters(final Representation entity) throws FileUploadException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
+			
 			if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message (not as part of multi-part form data).");
 		        return null;
 			}else{
 				
-				final String fileName=(filepath==null || filepath.equals(""))?RequestUtil.deriveFileName("upload",entity):filepath;
+				// NOTE: modified driveFileName here to return a name when content-type is null
+				final String fileName=(filepath==null || filepath.equals(""))?RequestUtil.deriveFileName("upload",entity,false):filepath;
 				
 				if(fileName==null){
 					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
-}
+				}
 				
 				if(entity.getSize()==-1 || entity.getSize()==0){
 					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
@@ -701,18 +708,18 @@ public abstract class SecureResource extends Resource {
 				
 				wrappers.add(new FileWriterWrapper(entity,fileName));
 			}
+			
 		}else{
+			
 			if (RequestUtil.isMultiPartFormData(entity)) {
 				final org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
 				final org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
-			
 				List<FileItem> items;
 			    try {
 					items = upload.parseRequest(this.getRequest());
 				} catch (org.apache.commons.fileupload.FileUploadException e) {
 					throw new FileUploadException(e.getMessage(),e);
 				}
-					
 					
 					for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {    
 					    final FileItem fi = it.next();
@@ -721,10 +728,10 @@ public abstract class SecureResource extends Resource {
 					    if(fileName.indexOf('\\')>-1){
 					    	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
 					    }
-					    
 					    wrappers.add(new FileWriterWrapper(fi,fileName));
 					}
 			}
+			
 		}
 		
 		return wrappers;

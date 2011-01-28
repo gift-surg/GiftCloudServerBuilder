@@ -12,21 +12,17 @@ public class BaseXnatMegscandata extends AutoXnatMegscandata {
 
 	public BaseXnatMegscandata(ItemI item) {
 		super(item);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BaseXnatMegscandata(UserI user) {
 		super(user);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BaseXnatMegscandata() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public BaseXnatMegscandata(Hashtable properties, UserI user) {
 		super(properties, user);
-		// TODO Auto-generated constructor stub
 	}
 
 }

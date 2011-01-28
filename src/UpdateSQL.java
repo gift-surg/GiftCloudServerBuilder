@@ -19,7 +19,6 @@ public class UpdateSQL extends CommandPromptTool {
      */
     public UpdateSQL(String[] args) {
         super(args);
-        // TODO Auto-generated constructor stub
     }
 
     public static void main(String[] args) {

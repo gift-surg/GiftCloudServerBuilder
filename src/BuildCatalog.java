@@ -26,19 +26,16 @@ public class BuildCatalog extends CommandPromptTool {
 
 	@Override
 	public String getAdditionalUsageInfo() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -66,7 +63,6 @@ public class BuildCatalog extends CommandPromptTool {
 			cat.toXML(fw, true);
 			fw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

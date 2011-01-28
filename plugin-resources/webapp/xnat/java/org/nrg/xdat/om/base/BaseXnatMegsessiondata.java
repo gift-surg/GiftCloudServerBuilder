@@ -12,21 +12,17 @@ public class BaseXnatMegsessiondata extends AutoXnatMegsessiondata {
 
 	public BaseXnatMegsessiondata(ItemI item) {
 		super(item);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BaseXnatMegsessiondata(UserI user) {
 		super(user);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BaseXnatMegsessiondata() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public BaseXnatMegsessiondata(Hashtable properties, UserI user) {
 		super(properties, user);
-		// TODO Auto-generated constructor stub
 	}
 
 }

@@ -18,6 +18,7 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -29,6 +30,8 @@ import org.restlet.resource.Variant;
 import org.xml.sax.SAXParseException;
 
 public class SubjectResource extends ItemResource {
+	private static final String PRIMARY = "primary";
+
 	XnatProjectdata proj=null;
 
 	XnatSubjectdata sub = null;
@@ -66,26 +69,7 @@ public class SubjectResource extends ItemResource {
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 
-		this.fieldMapping.put("group", "xnat:subjectData/group");
-		this.fieldMapping.put("label", "xnat:subjectData/label");
-		this.fieldMapping.put("src", "xnat:subjectData/src");
-		this.fieldMapping.put("pi_firstname", "xnat:subjectData/investigator/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:subjectData/investigator/lastname");
-		this.fieldMapping.put("dob", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob");
-		this.fieldMapping.put("yob", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob");
-		this.fieldMapping.put("age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age");
-		this.fieldMapping.put("gender", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender");
-		this.fieldMapping.put("handedness", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness");
-		this.fieldMapping.put("ses", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/ses");
-		this.fieldMapping.put("education", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/education");
-		this.fieldMapping.put("educationDesc", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/educationDesc");
-		this.fieldMapping.put("race", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/race");
-		this.fieldMapping.put("ethnicity", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/ethnicity");
-		this.fieldMapping.put("weight", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/weight");
-		this.fieldMapping.put("height", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/height");
-		this.fieldMapping.put("gestational_age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gestational_age");
-		this.fieldMapping.put("post_menstrual_age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/post_menstrual_age");
-		this.fieldMapping.put("birth_weight", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/birth_weight");
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA));
 	}
 	
 	@Override
@@ -137,7 +121,7 @@ public class SubjectResource extends ItemResource {
 										((XnatProjectparticipant)pp).setLabel(newLabel);
 										((XnatProjectparticipant)pp).save(user,false,false);
 										
-										if(!this.isQueryVariableTrue("primary")){
+										if(!this.isQueryVariableTrue(PRIMARY)){
 											this.returnDefaultRepresentation();
 											return;
 										}
@@ -154,7 +138,7 @@ public class SubjectResource extends ItemResource {
 								}
 							}
 							
-							if(this.isQueryVariableTrue("primary")){
+							if(this.isQueryVariableTrue(PRIMARY)){
 								if(!user.canDelete(sub)){
 									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for subjects in this project.");
 									return;

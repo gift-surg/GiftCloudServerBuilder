@@ -1,13 +1,17 @@
 package org.nrg.xnat.archive;
 
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.util.Hashtable;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.nrg.action.ClientException;
 import org.nrg.test.BaseXDATTestCase;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -23,6 +27,19 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 	private static XnatMrsessiondata mr=null;
 	private static XnatSubjectdata subject=null;
 	private static XnatProjectdata proj=null;
+	
+	final File src = new File("./MergeSrcTest");
+	final File dest = new File("./MergeDestTest");
+
+	@After
+	public void tearDown() throws Exception {
+		deleteDirNoException(src);
+		deleteDirNoException(dest);
+	}
+	
+	public void deleteDirNoException(File s) throws Exception{
+		if(s.exists())org.apache.commons.io.FileUtils.deleteDirectory(s);
+	}
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {	
@@ -58,64 +75,86 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		mr.save(user, false, false);
 	}
 	
-	@Test
-	public void shouldCheckForLblConflict() throws ArchivingException{
-		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
-		newMR.setId(MR);
-		newMR.setProject(PROJECT);
-		newMR.setLabel("TEST2");
-		newMR.setSubjectId(TEST_SUB_1);
-		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,user, PROJECT,new Hashtable<String,Object>(), false, false);
-		try {
-			test.retrieveExistingExpt();
-		} catch (ArchivingException e) {
-			if(!e.getMessage().contains("new session label matches preexisting label")){
-				assertTrue("Expected 'new session label matches preexisting label...' received: " + e.getMessage(),false);
-			}
-		}
-	}
-	
-	@Test
-	public void shouldCheckForProjectConflict() throws ArchivingException{
-		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
-		newMR.setId(MR);
-		newMR.setProject(PROJECT2);
-		newMR.setLabel(MR);
-		newMR.setSubjectId(TEST_SUB_1);
-		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,user, PROJECT2,new Hashtable<String,Object>(), false, false);
-		try {
-			test.retrieveExistingExpt();
-		} catch (ArchivingException e) {
-			if(!e.getMessage().contains("illegal project change")){
-				assertTrue("Expected 'illegal project change...' received: " + e.getMessage(),false);
-			}
-		}
-	}
-	
-	@Test
-	public void shouldCheckForOverride() throws ArchivingException{
-		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
-		newMR.setId(MR);
-		newMR.setProject(PROJECT);
-		newMR.setLabel(MR);
-		newMR.setSubjectId(TEST_SUB_1);
-		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,user, PROJECT,new Hashtable<String,Object>(), false, false);
-		try {
-			test.retrieveExistingExpt();
-		} catch (ArchivingException e) {
-			if(!e.getMessage().contains("conflict")){
-				assertTrue("Expected 'conflict' received: " + e.getMessage(),false);
-			}
-		}
-	}
-	
 	@AfterClass
 	public static void tearDownAfterClass(){
 		if(subject!=null){
 			subject.delete(proj, user, true);
 		}
 	}
-}
+	
+	@Test
+	public void shouldCheckForLblConflict() throws Exception{
+		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
+		newMR.setId(MR);
+		newMR.setProject(PROJECT);
+		newMR.setLabel("TEST2");
+		newMR.setSubjectId(TEST_SUB_1);
+		
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true);
+		try {
+			XnatImagesessiondata existing=test.retrieveExistingExpt();
+
+			test.checkForConflicts(newMR, src, existing, dest);
+			fail("Expected failure");
+		} catch (ClientException e) {
+			if(!e.getMessage().equals(PrearcSessionArchiver.LABEL_MOD)){
+				fail("Expected '" + PrearcSessionArchiver.LABEL_MOD + "' received: " + e.getMessage());
+			}
+		}
+	}
+	
+	@Test
+	public void shouldCheckForProjectConflict() throws Exception{
+		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
+		newMR.setId(MR);
+		newMR.setProject(PROJECT2);
+		newMR.setLabel(MR);
+		newMR.setSubjectId(TEST_SUB_1);
+		
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true);
+		try {
+			XnatImagesessiondata existing=test.retrieveExistingExpt();
+
+			test.checkForConflicts(newMR, src, existing, dest);
+			fail("Expected failure");
+		} catch (ClientException e) {
+			if(!e.getMessage().equals(PrearcSessionArchiver.PROJ_MOD)){
+				fail("Expected '" + PrearcSessionArchiver.PROJ_MOD + "' received: " + e.getMessage());
+			}
+		}
+	}
+	
+	@Test
+	public void shouldCheckForOverride() throws Exception{
+		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
+		newMR.setId(MR);
+		newMR.setProject(PROJECT);
+		newMR.setLabel(MR);
+		newMR.setSubjectId(TEST_SUB_1);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, false);
+		try {
+			XnatImagesessiondata existing=test.retrieveExistingExpt();
+		
+			test.checkForConflicts(newMR, src, existing, dest);
+			fail("Expected failure");
+		} catch (ClientException e) {
+			if(!e.getMessage().equals(PrearcSessionArchiver.PRE_EXISTS)){
+				fail("Expected '" + PrearcSessionArchiver.PRE_EXISTS + "' received: " + e.getMessage());
+			}
+		}
+	}
+	
+	@Test
+	public void shouldAllowOverride() throws Exception{
+		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
+		newMR.setId(MR);
+		newMR.setProject(PROJECT);
+		newMR.setLabel(MR);
+		newMR.setSubjectId(TEST_SUB_1);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true);
+		
+		XnatImagesessiondata existing=test.retrieveExistingExpt();
+
+		test.checkForConflicts(newMR, src, existing, dest);
+		}
+	}

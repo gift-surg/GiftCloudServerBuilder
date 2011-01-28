@@ -42,4 +42,18 @@ public class PropertiesHelper {
 		
 		return objects;
 	}
+	
+	public static String GetProperty(final File props,final String identifier){
+		try {
+			if(props.exists()){
+				final Configuration config=new PropertiesConfiguration(props);
+				
+				return config.getString(identifier);
+}
+		} catch (ConfigurationException e) {
+			logger.error("",e);
+		}
+		
+		return null;
+	}
 }

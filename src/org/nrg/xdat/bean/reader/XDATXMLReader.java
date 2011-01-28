@@ -116,7 +116,7 @@ public class XDATXMLReader extends DefaultHandler {
                             item.setDataField(local,value);
                         } catch (BaseElement.UnknownFieldException e1) {
                             logger.equals(e1);
-                        } catch (BaseElement.FormatException e1) {
+                        } catch (IllegalArgumentException e1) {
                             throw new SAXException("Invalid value for attribute '" + local +"'");
                         }
                     }
@@ -176,7 +176,7 @@ public class XDATXMLReader extends DefaultHandler {
                                         item.setDataField(local,value);
                                     } catch (BaseElement.UnknownFieldException e1) {
                                         logger.equals(e1);
-                                    } catch (BaseElement.FormatException e1) {
+                                    } catch (IllegalArgumentException e1) {
                                         throw new SAXException("Invalid value for attribute '" + local +"'");
                                     }
                                 }
@@ -237,7 +237,7 @@ public class XDATXMLReader extends DefaultHandler {
                             } catch (BaseElement.UnknownFieldException e1) {
                                 logger.error(e1);
                                 throw new SAXException("Unknown field '" + current_header + "/" + local +"'");
-                            } catch (BaseElement.FormatException e1) {
+                            } catch (IllegalArgumentException e1) {
                                 throw new SAXException("Invalid value for attribute '" + local +"'");
                             }
                         }
@@ -296,7 +296,7 @@ public class XDATXMLReader extends DefaultHandler {
                     currentItem.setDataField(current_header,tempValue);
                 } catch (BaseElement.UnknownFieldException e1) {
                     throw new SAXException("Invalid field '" + current_header +"'");
-                } catch (BaseElement.FormatException e1) {
+                } catch (IllegalArgumentException e1) {
                     throw new SAXException("Invalid value for field '" + current_header +"'");
                 } catch (RuntimeException e){
                     logger.error(e);

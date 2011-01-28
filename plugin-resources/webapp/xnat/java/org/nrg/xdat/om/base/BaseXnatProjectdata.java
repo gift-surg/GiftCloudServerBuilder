@@ -2077,4 +2077,32 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
 		return new File(getRootArchivePath(),"resources");
 	}
+	
+	public boolean isAutoArchive(){
+		Integer i= ArcSpecManager.GetInstance().getAutoQuarantineCodeForProject(this.getId());
+		if(i==null || i<4){
+			return false;
+		}else{
+			return true;
+}
+	}
+	
+	public static XnatProjectdata getProjectByIDorAlias(String pID,XDATUser user,boolean preLoad){
+		XnatProjectdata proj=null;
+		if(pID!=null){
+			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, preLoad);
+		}
+
+		if (proj == null) {
+			ArrayList<XnatProjectdata> matches = XnatProjectdata
+					.getXnatProjectdatasByField(
+							"xnat:projectData/aliases/alias/alias", pID,
+							user, preLoad);
+			if (matches.size() > 0) {
+				proj = matches.get(0);
+			}
+		}
+		
+		return proj;
+	}
 }

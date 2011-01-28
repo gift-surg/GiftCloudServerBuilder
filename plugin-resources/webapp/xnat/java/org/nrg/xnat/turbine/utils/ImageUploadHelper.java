@@ -11,12 +11,16 @@ import java.io.OutputStreamWriter;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.nrg.PrearcImporter;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
 import org.nrg.status.StatusListenerI;
 import org.nrg.status.StatusMessage;
 import org.nrg.status.StatusMessage.Status;
@@ -25,10 +29,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.archive.PrearcImporterFactory;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-
-public class ImageUploadHelper extends StatusProducer{
+public class ImageUploadHelper extends StatusProducer implements Callable<List<File>>{
     public static final String SESSIONS_RESPONSE = "SESSIONS";
     static org.apache.log4j.Logger logger = Logger.getLogger(ImageUploadHelper.class);
     private final String project;
@@ -50,7 +51,7 @@ public class ImageUploadHelper extends StatusProducer{
         this.additionalValues=additionalVariables;
     }
     
-	public Multimap call()
+	public List<File> call() throws ClientException,ServerException
     {
         final PrearcImporter pw = PrearcImporterFactory.getFactory().getPrearcImporter(project, dest, src);
         for(final StatusListenerI listener: this.getListeners()){
@@ -64,10 +65,10 @@ public class ImageUploadHelper extends StatusProducer{
         pw.run();
         
         final Collection<File> sessions=pw.getSessions();
-        final Multimap<String,Object> response= LinkedHashMultimap.create();
+        final List<File> response= new ArrayList<File>();
         
         for(final File f : sessions){
-        	response.put(SESSIONS_RESPONSE, f);
+        	response.add(f);
         
             if (f.isDirectory())
             {

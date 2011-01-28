@@ -25,6 +25,7 @@ import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -109,28 +110,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 					"Unable to find project.");
 		}
 
-		this.fieldMapping.put("ID", "xnat:experimentdata/ID");
-		this.fieldMapping.put("visit_id", "xnat:experimentdata/visit_id");
-		this.fieldMapping.put("date", "xnat:experimentdata/date");
-		this.fieldMapping.put("time", "xnat:experimentdata/time");
-		this.fieldMapping.put("note", "xnat:experimentdata/note");
-		this.fieldMapping.put("pi_firstname", "xnat:experimentdata/investigator/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:experimentdata/investigator/lastname");
-		this.fieldMapping.put("validation_method", "xnat:experimentdata/validation/method");
-		this.fieldMapping.put("validation_status", "xnat:experimentdata/validation/status");
-		this.fieldMapping.put("validation_date", "xnat:experimentdata/validation/date");
-		this.fieldMapping.put("validation_notes", "xnat:experimentdata/validation/notes");
-		this.fieldMapping.put("project", "xnat:experimentdata/project");
-		this.fieldMapping.put("label", "xnat:experimentdata/label");
-		
-		this.fieldMapping.put("session_ID", "xnat:imagesessiondata/id");
-		this.fieldMapping.put("session_label", "xnat:imagesessiondata/label");
-		this.fieldMapping.put("session_project", "xnat:imagesessiondata/project");
-		
-		this.fieldMapping.put("insert_date", "xnat:experimentData/meta/insert_date");
-		this.fieldMapping.put("insert_user", "xnat:experimentData/meta/insert_user/login");
-		this.fieldMapping.put("last_modified", "xnat:experimentData/meta/last_modified");
-		this.fieldMapping.put("xsiType", "xnat:experimentData/extension_item/element_name");
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA));
 	}
 
 

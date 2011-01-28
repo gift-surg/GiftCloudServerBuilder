@@ -20,6 +20,7 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -120,10 +121,7 @@ public class ReconList extends QueryOrganizerResource {
 				}
 			}
 
-		this.fieldMapping.put("ID", "xnat:reconstructedImageData/ID");
-		this.fieldMapping.put("type", "xnat:reconstructedImageData/type");
-		this.fieldMapping.put("baseScanType", "xnat:reconstructedImageData/baseScanType");
-		this.fieldMapping.put("xnat_reconstructedimagedata_id", "xnat:reconstructedImageData/xnat_reconstructedimagedata_id");
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.RECON_DATA));
 		
 	}
 

@@ -752,13 +752,13 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     public String getCurrentArchiveFolder() throws InvalidArchiveStructure{
 
           final String arcpath = this.getArchiveRootPath();
-
-          String curA= getPrimaryProject(false).getCurrentArc();
           final File f = new File(arcpath);
 
           if (!f.exists()){
               f.mkdir();
           }
+
+          String curA= getPrimaryProject(false).getCurrentArc();
 
           //Map m = System.getenv();
           if (curA!=null)

@@ -20,6 +20,7 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -94,6 +95,8 @@ public class ExptAssessmentResource extends ItemResource {
 					"Unable to find assessed experiment '" + assessedID + "'");
 		}
 
+
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
 		this.fieldMapping.put("ID", "xnat:experimentdata/ID");
 		this.fieldMapping.put("visit_id", "xnat:experimentdata/visit_id");
 		this.fieldMapping.put("date", "xnat:experimentdata/date");

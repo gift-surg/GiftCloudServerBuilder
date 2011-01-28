@@ -30,7 +30,7 @@ public class WorkflowUtils {
 		return workflow;
 	}
 	
-	public static Collection<WrkWorkflowdata> getOpenWorkflows(final XDATUser user,final String ID) throws FieldNotFoundException{		
+	public static Collection<WrkWorkflowdata> getOpenWorkflows(final XDATUser user,final String ID){		
 		//check to see if a process is already running.
 		final CriteriaCollection cc= new CriteriaCollection("AND");
 		cc.addClause("wrk:workFlowData.ID",ID);

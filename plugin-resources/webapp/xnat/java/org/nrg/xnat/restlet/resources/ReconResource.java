@@ -18,6 +18,7 @@ import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -80,9 +81,7 @@ public class ReconResource extends ItemResource {
 					"Unable to find session '" + assessedID + "'");
 		}
 		
-		this.fieldMapping.put("ID", "xnat:reconstructedImageData/ID");
-		this.fieldMapping.put("type", "xnat:reconstructedImageData/type");
-		this.fieldMapping.put("baseScanType", "xnat:reconstructedImageData/baseScanType");
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.RECON_DATA));
 	}
 
 

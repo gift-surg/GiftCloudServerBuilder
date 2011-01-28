@@ -33,7 +33,6 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
-import org.nrg.xnat.helpers.resource.cat.CatalogResourceModifier;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
@@ -224,7 +223,7 @@ public class FileList extends XNATCatalogTemplate {
 								}
 
 						        if(resource instanceof XnatResourcecatalog){
-    						        	CatalogResourceModifier.storeCatalogEntry(new FileWriterWrapper(entity,filepath), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo());
+    						        	CatalogUtils.storeCatalogEntry(new FileWriterWrapper(entity,filepath), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo());
 						        }else{
     									this.buildResourceModifier().saveFile(new FileWriterWrapper(entity,filepath), dest, (XnatResource)resource, user, this.buildResourceInfo());
 						        }
@@ -260,7 +259,7 @@ public class FileList extends XNATCatalogTemplate {
 						        
 						        if(resource instanceof XnatResourcecatalog){
     						        	
-    						        	if(!CatalogResourceModifier.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo())){
+    						        	if(!CatalogUtils.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo())){
 							        	break;
 							        }
 						        }else{

@@ -25,6 +25,7 @@ import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
@@ -97,63 +98,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 
-		this.fieldMapping.put("ID", "xnat:experimentdata/ID");
-		this.fieldMapping.put("visit_id", "xnat:experimentdata/visit_id");
-		this.fieldMapping.put("date", "xnat:experimentdata/date");
-		this.fieldMapping.put("time", "xnat:experimentdata/time");
-		this.fieldMapping.put("note", "xnat:experimentdata/note");
-		this.fieldMapping.put("pi_firstname", "xnat:experimentdata/investigator/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:experimentdata/investigator/lastname");
-		this.fieldMapping.put("validation_method", "xnat:experimentdata/validation/method");
-		this.fieldMapping.put("validation_status", "xnat:experimentdata/validation/status");
-		this.fieldMapping.put("validation_date", "xnat:experimentdata/validation/date");
-		this.fieldMapping.put("validation_notes", "xnat:experimentdata/validation/notes");
-		this.fieldMapping.put("project", "xnat:experimentdata/project");
-		this.fieldMapping.put("label", "xnat:experimentdata/label");
-
-		this.fieldMapping.put("scanner", "xnat:imageSessionData/scanner");
-		this.fieldMapping.put("operator", "xnat:imageSessionData/operator");
-		this.fieldMapping.put("dcmAccessionNumber", "xnat:imageSessionData/dcmAccessionNumber");
-		this.fieldMapping.put("dcmPatientId", "xnat:imageSessionData/dcmPatientId");
-		this.fieldMapping.put("dcmPatientName", "xnat:imageSessionData/dcmPatientName");
-		this.fieldMapping.put("session_type", "xnat:imageSessionData/session_type");
-		this.fieldMapping.put("modality", "xnat:imageSessionData/modality");
-		this.fieldMapping.put("UID", "xnat:imageSessionData/UID");
-
-		this.fieldMapping.put("coil", "xnat:mrSessionData/coil");
-		this.fieldMapping.put("fieldStrength", "xnat:mrSessionData/fieldStrength");
-		this.fieldMapping.put("marker", "xnat:mrSessionData/marker");
-		this.fieldMapping.put("stabilization", "xnat:mrSessionData/stabilization");
-
-		this.fieldMapping.put("studyType", "xnat:petSessionData/studyType");
-		this.fieldMapping.put("patientID", "xnat:petSessionData/patientID");
-		this.fieldMapping.put("patientName", "xnat:petSessionData/patientName");
-		this.fieldMapping.put("stabilization", "xnat:petSessionData/stabilization");
-		this.fieldMapping.put("scan_start_time", "xnat:petSessionData/start_time_scan");
-		this.fieldMapping.put("injection_start_time", "xnat:petSessionData/start_time_injection");
-		this.fieldMapping.put("tracer_name", "xnat:petSessionData/tracer/name");
-		this.fieldMapping.put("tracer_startTime", "xnat:petSessionData/tracer/startTime");
-		this.fieldMapping.put("tracer_dose", "xnat:petSessionData/tracer/dose");
-		this.fieldMapping.put("tracer_sa", "xnat:petSessionData/tracer/specificActivity");
-		this.fieldMapping.put("tracer_totalmass", "xnat:petSessionData/tracer/totalMass");
-		this.fieldMapping.put("tracer_intermediate", "xnat:petSessionData/tracer/intermediate");
-		this.fieldMapping.put("tracer_isotope", "xnat:petSessionData/tracer/isotope");
-		this.fieldMapping.put("tracer_isotope", "xnat:petSessionData/tracer/isotope/half-life");
-		this.fieldMapping.put("tracer_transmissions", "xnat:petSessionData/tracer/transmissions");
-		this.fieldMapping.put("tracer_transmissions_start", "xnat:petSessionData/tracer/transmissions_starttime");
-
-		this.fieldMapping.put("subject_ID", "xnat:subjectassessordata/subject_id");
-		this.fieldMapping.put("subject_label", "xnat:subjectdata/label");
-		this.fieldMapping.put("subject_project", "xnat:subjectdata/project");
-
-		this.fieldMapping.put("session_ID", "xnat:imagesessiondata/id");
-		this.fieldMapping.put("session_label", "xnat:imagesessiondata/label");
-		this.fieldMapping.put("session_project", "xnat:imagesessiondata/project");
-
-		this.fieldMapping.put("insert_date", "xnat:experimentData/meta/insert_date");
-		this.fieldMapping.put("insert_user", "xnat:experimentData/meta/insert_user/login");
-		this.fieldMapping.put("last_modified", "xnat:experimentData/meta/last_modified");
-		this.fieldMapping.put("xsiType", "xnat:experimentData/extension_item/element_name");
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
 	}
 
 	@Override

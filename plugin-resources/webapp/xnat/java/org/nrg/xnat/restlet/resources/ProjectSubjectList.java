@@ -19,6 +19,7 @@ import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -59,33 +60,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	
-		this.fieldMapping.put("project", "xnat:subjectData/project");
-		this.fieldMapping.put("label", "xnat:subjectData/label");
-		this.fieldMapping.put("ID", "xnat:subjectData/ID");
-
-		this.fieldMapping.put("group", "xnat:subjectData/group");
-		this.fieldMapping.put("src", "xnat:subjectData/src");
-		this.fieldMapping.put("pi_firstname", "xnat:subjectData/investigator/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:subjectData/investigator/lastname");
-		this.fieldMapping.put("dob", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob");
-		this.fieldMapping.put("yob", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob");
-		this.fieldMapping.put("age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age");
-		this.fieldMapping.put("gender", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender");
-		this.fieldMapping.put("handedness", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness");
-		this.fieldMapping.put("ses", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/ses");
-		this.fieldMapping.put("education", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/education");
-		this.fieldMapping.put("educationDesc", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/educationDesc");
-		this.fieldMapping.put("race", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/race");
-		this.fieldMapping.put("ethnicity", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/ethnicity");
-		this.fieldMapping.put("weight", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/weight");
-		this.fieldMapping.put("height", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/height");
-		this.fieldMapping.put("gestational_age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gestational_age");
-		this.fieldMapping.put("post_menstrual_age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/post_menstrual_age");
-		this.fieldMapping.put("birth_weight", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/birth_weight");
-		
-		this.fieldMapping.put("insert_date", "xnat:subjectData/meta/insert_date");
-		this.fieldMapping.put("insert_user", "xnat:subjectData/meta/insert_user/login");
-		this.fieldMapping.put("last_modified", "xnat:subjectData/meta/last_modified");
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA));
 	}
 
 	@Override

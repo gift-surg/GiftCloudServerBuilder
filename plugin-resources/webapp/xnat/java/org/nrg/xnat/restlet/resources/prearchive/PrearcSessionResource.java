@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.AlreadyArchivingException;
@@ -171,21 +173,13 @@ public final class PrearcSessionResource extends Resource {
 		}
 		
 		try {
-			// TODO: need a status listener?
 			return archiver.call().toString();
-		} catch (AlreadyArchivingException e) {
-			logger.debug("user attempted to archive session already in transfer", e);
-			throw new ResourceException(e.getStatus(), e.getMessage(), e);
-		} catch (DuplicateSessionLabelException e) {
-			logger.debug("user attempted to archive session already in archive", e);
-			throw new ResourceException(e.getStatus(), e.getMessage(), e);
-		} catch (ValidationException e) {
-			logger.error("session validation failed", e);
-			throw new ResourceException(e.getStatus(), e.getMessage(), e);
-		} catch (ArchivingException e) {
-			// Other archiving exceptions may be noteworthy
-			logger.warn("archiving failed", e);
-			throw new ResourceException(e.getStatus(), e.getMessage(), e);
+		} catch (ClientException e) {
+			logger.debug("", e);
+			throw new ResourceException(e.status, e.getMessage(), e);
+		} catch (ServerException e) {
+			logger.debug("", e);
+			throw new ResourceException(e.status, e.getMessage(), e);
 		} finally {
 				archiver.dispose();
 		}

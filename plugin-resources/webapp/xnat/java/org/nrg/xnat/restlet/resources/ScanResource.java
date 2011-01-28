@@ -38,6 +38,7 @@ import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.exceptions.MultipleScanException;
 import org.nrg.xnat.exceptions.ValidationException;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PullScanDataFromHeaders;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
@@ -103,41 +104,7 @@ public class ScanResource  extends ItemResource {
 					"Unable to find session '" + assessedID + "'");
 		}
 		
-		this.fieldMapping.put("ID", "xnat:imageScanData/ID");
-		this.fieldMapping.put("type", "xnat:imageScanData/type");
-		this.fieldMapping.put("UID", "xnat:imageScanData/UID");
-		this.fieldMapping.put("note", "xnat:imageScanData/note");
-		this.fieldMapping.put("quality", "xnat:imageScanData/quality");
-		this.fieldMapping.put("condition", "xnat:imageScanData/condition");
-		this.fieldMapping.put("series_description", "xnat:imageScanData/series_description");
-		this.fieldMapping.put("documentation", "xnat:imageScanData/documentation");
-		this.fieldMapping.put("scanner", "xnat:imageScanData/scanner");
-		this.fieldMapping.put("modality", "xnat:imageScanData/modality");
-		this.fieldMapping.put("frames", "xnat:imageScanData/frames");
-		this.fieldMapping.put("validation_method", "xnat:imageScanData/validation/method");
-		this.fieldMapping.put("validation_status", "xnat:imageScanData/validation/status");
-		this.fieldMapping.put("validation_date", "xnat:imageScanData/validation/date");
-		this.fieldMapping.put("validation_notes", "xnat:imageScanData/validation/notes");
-
-		this.fieldMapping.put("coil", "xnat:mrScanData/coil");
-		this.fieldMapping.put("fieldStrength", "xnat:mrScanData/fieldStrength");
-		this.fieldMapping.put("marker", "xnat:mrScanData/marker");
-		this.fieldMapping.put("stabilization", "xnat:mrScanData/stabilization");     
-		
-		this.fieldMapping.put("orientation","xnat:petScanData/parameters/orientation");                                                         
-		this.fieldMapping.put("scanTime","xnat:petScanData/parameters/scanTime");                                                         
-		this.fieldMapping.put("originalFileName","xnat:petScanData/parameters/originalFileName");                                                         
-		this.fieldMapping.put("systemType","xnat:petScanData/parameters/systemType");                                                         
-		this.fieldMapping.put("fileType","xnat:petScanData/parameters/fileType");                                                         
-		this.fieldMapping.put("transaxialFOV","xnat:petScanData/parameters/transaxialFOV");                                                         
-		this.fieldMapping.put("acqType","xnat:petScanData/parameters/acqType");                                                         
-		this.fieldMapping.put("facility","xnat:petScanData/parameters/facility");                                                         
-		this.fieldMapping.put("numPlanes","xnat:petScanData/parameters/numPlanes");                                                         
-		this.fieldMapping.put("numFrames","xnat:petScanData/parameters/frames/numFrames");                                                         
-		this.fieldMapping.put("numGates","xnat:petScanData/parameters/numGates");                                                         
-		this.fieldMapping.put("planeSeparation","xnat:petScanData/parameters/planeSeparation");                                                         
-		this.fieldMapping.put("binSize","xnat:petScanData/parameters/binSize");                                                         
-		this.fieldMapping.put("dataType","xnat:petScanData/parameters/dataType");  
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME));
 	}
 
 

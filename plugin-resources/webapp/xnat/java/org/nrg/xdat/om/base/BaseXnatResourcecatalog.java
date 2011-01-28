@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatCatalogMetafieldBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
@@ -30,6 +29,7 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xnat.utils.CatalogUtils;
 import org.xml.sax.SAXException;
 
 /**
@@ -153,44 +153,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     }
 
     public File getCatalogFile(String rootPath){
-        String fullPath = getFullPath(rootPath);
-        if (fullPath.endsWith("\\")) {
-            fullPath = fullPath.substring(0,fullPath.length() -1);
-        }
-        if (fullPath.endsWith("/")) {
-            fullPath = fullPath.substring(0,fullPath.length() -1);
-        }
-
-
-
-        File f = new File(fullPath);
-        if (!f.exists())
-        {
-            f = new File(fullPath + ".gz");
-        }
-        
-        if(!f.exists()){
-        	f=new File(fullPath);
-        	
-        	CatCatalogBean cat = new CatCatalogBean();
-			if(this.getLabel()!=null){
-				cat.setId(this.getLabel());
-			}else{
-				cat.setId("" + Calendar.getInstance().getTimeInMillis());
-			}
-			
-			f.getParentFile().mkdirs();
-			
-			try {
-				FileWriter fw = new FileWriter(f);
-				cat.toXML(fw, true);
-				fw.close();
-			} catch (IOException e) {
-				logger.error("",e);
-			}
-        }
-
-        return f;
+        return CatalogUtils.getCatalogFile(rootPath, this);
     }
 
     public void deleteFromFileSystem(String rootPath){
@@ -238,61 +201,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     }
     
     public CatCatalogBean getCleanCatalog(String rootPath,boolean includeFullPaths){
-    	try {
-			File catF=getCatalogFile(rootPath);
-			if(catF.getName().endsWith(".gz")){
-				try {
-					FileUtils.GUnzipFiles(catF);
-					catF=getCatalogFile(rootPath);
-				} catch (FileNotFoundException e) {
-			        logger.error("",e);
-				} catch (IOException e) {
-			        logger.error("",e);
-				}
-			}
-			
-			InputStream fis = new FileInputStream(catF);
-			if (catF.getName().endsWith(".gz"))
-			{
-			    fis = new GZIPInputStream(fis);
-			}
-			
-			BaseElement base=null;
-			
-			XDATXMLReader reader = new XDATXMLReader();
-			base = reader.parse(fis);
-				
-			String parentPath = catF.getParent();
-
-			if (base instanceof CatCatalogBean){
-                CatCatalogBean cat = (CatCatalogBean)base;
-                this.entryCount=0;
-                if( formalizeCatalog(cat, parentPath)){
-                    //save file
-//                    FileWriter writer = new FileWriter(catF);
-//                    cat.toXML(writer, true);
-//                    writer.close();
-                }
-                
-                
-                if(includeFullPaths){
-                    CatCatalogMetafieldBean mf = new CatCatalogMetafieldBean();
-                    mf.setName("CATALOG_LOCATION");
-                    mf.setMetafield(parentPath);
-                    cat.addMetafields_metafield(mf);
-                }
-                
-			    return cat;
-			}
-		} catch (FileNotFoundException e) {
-	        logger.error("",e);
-		} catch (IOException e) {
-	        logger.error("",e);
-		} catch (SAXException e) {
-	        logger.error("",e);
-		}
-    	
-    	return null;
+    	return CatalogUtils.getCleanCatalog(rootPath, this, includeFullPaths);
     }
 
     Integer count = null;

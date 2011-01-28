@@ -7,39 +7,41 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.plexus.util.StringUtils;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
+import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusPublisherI;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.AdminUtils;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
+import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
+import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
+import org.nrg.xnat.helpers.uri.UriParserUtils;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
+import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.WorkflowUtils;
+import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -71,17 +73,27 @@ import org.xml.sax.SAXException;
  *                  Fail
  *
  */
-public final class PrearcSessionArchiver extends StatusProducer implements Callable<URL>,StatusPublisherI {
-	private static final String[] SCANS_DIR_NAMES = {"SCANS", "RAW"};
+public final class PrearcSessionArchiver extends StatusProducer implements Callable<List<String>>,StatusPublisherI {
+	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
+
+	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process.";
+
+	public static final String PROJ_MOD = "Invalid modification of session project via archive process.";
+
+	public static final String LABEL_MOD = "Invalid modification of session label via archive process.";
+
+	public static final String LABEL2 = "label";
 	
 	public static final String PARAM_SESSION = "session";
 	public static final String PARAM_SUBJECT = "subject";
 
-	private final Logger logger = LoggerFactory.getLogger(PrearcSessionArchiver.class);
-	private final XnatImagesessiondata session;
+	private final static Logger logger = LoggerFactory.getLogger(PrearcSessionArchiver.class);
+	private final XnatImagesessiondata src;
 	private final XDATUser user;
 	private final String project;
 	private final Map<String,Object> params;
+	
+	private final File srcDIR;
 	
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
@@ -89,19 +101,20 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private boolean shouldForceQuarantine = false;
 	
 
-	public PrearcSessionArchiver(final XnatImagesessiondata session,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
-		super(session.getPrearchivePath());
-		this.session = session;
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
+		super(src.getPrearchivePath());
+		this.src = src;
 		this.user = user;
 		this.project = project;
 		this.params = params;
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
 		this.overwrite=(overwrite==null)?false:overwrite;
+		this.srcDIR=srcDIR;
 	}
 
 	public PrearcSessionArchiver(final File sessionDir,	final XDATUser user, final String project, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(), user, project, params, allowDataDeletion,overwrite);
+		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(),sessionDir, user, project, params, allowDataDeletion,overwrite);
 	}
 
 	public boolean forceQuarantine(final boolean shouldForce) {
@@ -110,41 +123,16 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		return prev;
 	}
 	
-	public void fail(final String msg) throws ArchivingException{
-		failed(msg);
-		throw new ArchivingException(msg);
-	}
-
-	public XnatExperimentdata retrieveExistingExpt() throws ArchivingException{
-		XnatExperimentdata existing=null;
+	public XnatImagesessiondata retrieveExistingExpt() throws ClientException,ServerException{
+		XnatImagesessiondata existing=null;
 
 		//review existing sessions
-		if(XNATUtils.hasValue(session.getId())){
-			existing=XnatExperimentdata.getXnatExperimentdatasById(session.getId(), user, false);
-		}
+		if(XNATUtils.hasValue(src.getId())){
+			existing=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(src.getId(), user, false);
+	}
 
-		if(existing!=null){
-			if(!session.getLabel().equals(existing.getLabel())){
-				fail("new session label matches preexisting label for a different experiment");
-			}
-		}else{
-			existing=XnatExperimentdata.GetExptByProjectIdentifier(project, session.getLabel(), user, false);
-		}
-
-		if(existing!=null){
-			if(!existing.getProject().equals(project)){
-				fail("conflict: illegal project change.");
-			}
-
-			if(existing!=null && !overwrite){
-				fail("conflict: session already exists.");
-			}
-
-			if(!existing.getXSIType().equals(session.getXSIType())){
-				//this should catch differences between session types as well as label reuse vs other data types.
-				//TODO: this needs to be smarter, if a single secondary capture is uploaded for an existing MR, that should be allowed.
-				fail("new data conflicts with XSI type of previously archived data.");
-			}
+		if(existing==null){
+			existing=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project, src.getLabel(), user, false);
 		}
 
 		return existing;
@@ -203,41 +191,40 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			final String newID;
 			try {
 				newID = XnatSubjectdata.CreateNewID();
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				failed("unable to create new subject ID");
-				throw new ArchivingException("Unable to create new subject ID", e);
+				throw new ServerException("Unable to create new subject ID", e);
 			}
 			subject.setId(newID);
 			try {
 				subject.save(user, false, false);
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				failed("unable to save new subject " + newID);
-				throw new ArchivingException("Unable to save new subject " + subject, e);
+				throw new ServerException("Unable to save new subject " + subject, e);
 			}
 			processing("created new subject " + subjectID);
 
-			session.setSubjectId(subject.getId());
+			src.setSubjectId(subject.getId());
 		} else {
+			src.setSubjectId(subject.getId());
 			processing("matches existing subject " + subjectID);
 		}
 	}
 	
 	/**
 	 * Retrieves the archive session directory for the given session.
-	 * Verifies that the path will not overwrite data in an existing session.
 	 * @return archive session directory
 	 * @throws ArchivingException
 	 */
-	private File getArcSessionDir()
-	throws ArchivingException {
+	private File getArcSessionDir() throws ServerException{
 		final File currentArcDir;
 		try {
-			final String path = session.getCurrentArchiveFolder();
-			currentArcDir = null == path ? null : new File(path);
+			final String path = src.getCurrentArchiveFolder();
+			currentArcDir = (null == path) ? null : new File(path);
 		} catch (InvalidArchiveStructure e) {
-			throw new ArchivingException("couldn't get archive folder for " + session, e);
+			throw new ServerException("couldn't get archive folder for " + src, e);
 		}
-		final String sessDirName = session.getArchiveDirectoryName();
+		final String sessDirName = src.getArchiveDirectoryName();
 		final File relativeSessionDir;
 		if (null == currentArcDir) {
 			relativeSessionDir = new File(sessDirName);
@@ -245,20 +232,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			relativeSessionDir = new File(currentArcDir, sessDirName);
 		}
 		
-		final File rootArchiveDir = new File(session.getPrimaryProject(false).getRootArchivePath());
-		final XnatExperimentdata existing=this.retrieveExistingExpt();
+		final File rootArchiveDir = new File(src.getPrimaryProject(false).getRootArchivePath());
 		final File arcSessionDir = new File(rootArchiveDir, relativeSessionDir.getPath());
 		
-		// Verify that the proposed archive session directory does not already contain data
-		if (arcSessionDir.exists() && !overwrite) {
-			for (final String scansDirName : SCANS_DIR_NAMES) {
-				final File scansDir = new File(arcSessionDir, scansDirName);
-				if (scansDir.exists() && FileUtils.HasFiles(scansDir)) {
-					failed("project " + project + " already contains a session directory named " + session.getLabel());
-					throw new DuplicateSessionLabelException(session.getLabel(), project);
-				}
-			}
-		}
 		return arcSessionDir;
 	}
 
@@ -267,32 +243,11 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * Verify that the session isn't already in the transfer pipeline.
 	 * @throws AlreadyArchivingException
 	 */
-	private void preventConcurrentArchiving() throws AlreadyArchivingException {
-		final CriteriaCollection cc= new CriteriaCollection("AND");
-		cc.addClause("wrk:workFlowData.ID",session.getId());
-		cc.addClause("wrk:workFlowData.pipeline_name","Transfer");
-		cc.addClause("wrk:workFlowData.status","In Progress");
-		if (!WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false).isEmpty()){
-			throw new AlreadyArchivingException();
-		}	
-	}
-	
-	/**
-	 * Makes the scan paths absolute; also sets the scan content type to RAW if it's not already set.
-	 * @param arcSessionPath
-	 */
-	private void fixScans(final File arcSessionDir) {
-		final String root = arcSessionDir.getPath().replace('\\','/') + "/";
-		for (final XnatImagescandataI scan : session.getScans_scan()) {
-			for (final XnatAbstractresourceI file : scan.getFile()) {
-				// appendToPaths() is poorly named: should maybe be prependPathsWith()
-				((XnatAbstractresource)file).prependPathsWith(root);
-				// TODO: this is surrounded by a try/catch(Throwable) that logs but
-				// TODO: otherwise discards the Throwable. Was this needed?
-				if (XNATUtils.isNullOrEmpty(((XnatAbstractresource)file).getContent())) {
-					((XnatResource)file).setContent("RAW");
-				}
-			}
+	private void preventConcurrentArchiving(final String id, final XDATUser user) throws ClientException {
+		Collection<WrkWorkflowdata> wrks=WorkflowUtils.getOpenWorkflows(user, id);
+		if (!wrks.isEmpty()){
+			this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName());
+			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName(),new Exception());
 		}
 	}
 	
@@ -301,13 +256,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * otherwise handled; messing up the prearchive session XML is not a disaster.
 	 * @param prearcSessionPath path of session directory in prearchive
 	 */
-	private void updatePrearchiveSessionXML(final String prearcSessionPath) {
+	private void updatePrearchiveSessionXML(final String prearcSessionPath, final XnatImagesessiondata newSession) {
 		final File prearcSessionDir = new File(prearcSessionPath);
 		try {
 			final FileWriter prearcXML = new FileWriter(prearcSessionDir.getPath() + ".xml");
 			try {
-				logger.debug("Preparing to update prearchive XML for {}", session);
-				session.toXML(prearcXML, true);
+				logger.debug("Preparing to update prearchive XML for {}", newSession);
+				newSession.toXML(prearcXML, true);
 			} catch (RuntimeException e) {
 				logger.error("unable to update prearchive session XML", e);
 				warning("updated prearchive session XML could not be written: " + e.getMessage());
@@ -326,19 +281,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		}
 	}
 	
-	private boolean doTransfer(final String prearcSessionPath) {
-		final Transfer transfer = new Transfer(TurbineUtils.GetFullServerPath(),
-				TurbineUtils.GetSystemName(),
-				AdminUtils.getAdminEmailId());
-		if (null == session.getUser()) {
-		    session.getItem().setUser(user);
-		}
-		transfer.setImageSession(session);
-		transfer.setPlaceInRaw(false);
-		transfer.setPrearc(prearcSessionPath);
-		return transfer.execute();
-	}
-	
 
 	/**
 	 * This method will allow users to pass xml path as parameters.  The values supplied will be copied into the loaded session.
@@ -347,93 +289,220 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * @throws FieldNotFoundException
 	 * @throws InvalidValueException
 	 */
-	private void populateAdditionalFields() throws ElementNotFoundException,FieldNotFoundException,InvalidValueException{
+	private void populateAdditionalFields() throws ClientException{
 		//prepare params by removing non xml path names
-		final Map<String,Object> cleaned=new HashMap<String,Object>();
-		for(final Object key: params.keySet()){
-			if(key instanceof String){
-				if(((String)key).matches(XNATRestConstants.XML_PATH_REGEXP)){
-					cleaned.put((String)key, params.get(key));
-				}
+		final Map<String,Object> cleaned=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA);
+
+		try {
+			src.getItem().setProperties(cleaned, true);
+		} catch (Exception e) {
+			failed("unable to map parameters to valid xml path: " + e.getMessage());
+			throw new ClientException("unable to map parameters to valid xml path: ", e);
 			}
 		}
 
-		session.getItem().setProperties(cleaned, true);
+	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
+		if(!src.getLabel().equals(existing.getLabel())){
+			this.failed(LABEL_MOD);
+			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
+		}
+
+		if(!existing.getProject().equals(src.getProject())){
+			failed(PROJ_MOD);
+			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
+		}
+		
+		if(!existing.getSubjectId().equals(existing.getSubjectId())){
+			failed(SUBJECT_MOD);
+			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
+		}
+		
+		if(!overwrite){
+
+			if(existing!=null){
+				failed(PRE_EXISTS);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
+			}
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see java.util.concurrent.Callable#call()
 	 */
-	public URL call() throws ArchivingException {
+	@SuppressWarnings("serial")
+	public List<String> call()  throws ClientException,ServerException {
 		fixSessionLabel();
 		fixSubject();
+		populateAdditionalFields();
+		
+		final XnatImagesessiondata existing=retrieveExistingExpt();
+		
+		if(existing!=null){
+			preventConcurrentArchiving(existing.getId(),user);
+		}
+		
+		if(existing==null){
+			try {
+				if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
+			} catch (Exception e) {
+				failed("unable to create new session ID");
+				throw new ServerException("unable to create new session ID", e);
+			}
+		}else{
+			src.setId(existing.getId());
+		}
+
+		
+		WrkWorkflowdata workflow;
+		try {
+			workflow = WorkflowUtils.buildOpenWorkflow(user, src.getXSIType(), src.getId(), src.getProject());
+			workflow.setPipelineName("Transfer");
+			workflow.setStepDescription("Validating");
+			workflow.save(user, false, false);
+		} catch (Exception e2) {
+			failed("unable to create workflow entry.");
+			throw new ServerException("unable to create workflow entry.", e2);
+		}
 		
 		try {
-			populateAdditionalFields();
-		} catch (Exception e) {
-			failed("unable to map parameters to valid xml path: " + e.getMessage());
-			throw new ArchivingException("unable to map parameters to valid xml path: ", e);
-		}
+			processing("validating loaded data");
+			validateSesssion();
+
+			
+			updatePrearchiveSessionXML(src.getPrearchivepath(),src);
 
 		final File arcSessionDir = getArcSessionDir();
 		
+			checkForConflicts(src,srcDIR,existing,arcSessionDir);
 
-		processing("validating loaded data");
+			if(arcSessionDir.exists()){
+				this.setStep("Merging", workflow);
+				processing("merging files data with existing session");
+			}else{
+				this.setStep("Archiving", workflow);
+				processing("archiving session");
+			}
 		
+			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
+				public void save(XnatImagesessiondata merged) throws Exception {
+					if(merged.save(user,false,false)){
+						user.clearLocalCache();
 		try {
-			if(!XNATUtils.hasValue(session.getId()))session.setId(XnatExperimentdata.CreateNewID());
+							MaterializedView.DeleteByUser(user);
 		} catch (Exception e) {
-			throw new ArchivingException("unable to create new session ID", e);
+							logger.error("",e);
 		}
 
 		try {
-			final ValidationResults validation = session.validate();
+							if (shouldForceQuarantine) {
+								src.quarantine(user);
+							} else {
+								final XnatProjectdata proj = src.getPrimaryProject(false);
+								if (null != proj.getArcSpecification().getQuarantineCode() &&
+										proj.getArcSpecification().getQuarantineCode().equals(1)) {
+									src.quarantine(user);
+								}
+							}
+						} catch (Exception e) {
+							logger.error("",e);
+						}
+					}
+				}
+			};
+			
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,this.src,this.src.getPrearchivepath(),arcSessionDir,existing,existing.getArchiveRootPath(),overwrite, allowDataDeletion,saveImpl))
+				.call();
+
+			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
+			org.nrg.xft.utils.FileUtils.DeleteFile(srcDIR);
+			
+			try {
+				workflow.setStepDescription(WorkflowUtils.COMPLETE);
+				workflow.setStatus(WorkflowUtils.COMPLETE);
+				workflow.save(user, false, false);
+			} catch (Exception e1) {
+				logger.error("", e1);
+			}
+			
+			TriggerPipelines tp=new TriggerPipelines(existing,false,false,user);
+			tp.call();
+		} catch (ServerException e) {
+			try {
+				workflow.setStatus(WorkflowUtils.FAILED);
+				workflow.save(user, false, false);
+			} catch (Exception e1) {
+				logger.error("", e1);
+			}
+			throw e;
+		} catch (ClientException e) {
+			try {
+				workflow.setStatus(WorkflowUtils.FAILED);
+				workflow.save(user, false, false);
+			} catch (Exception e1) {
+				logger.error("", e1);
+			}
+			throw e;
+		}			
+
+		final String url = buildURI(project,src);
+		completed("archiving operation complete");
+		return new ArrayList<String>(){{add(url);}};
+		
+	}
+	
+	public void setStep(String step,WrkWorkflowdata workflow){
+		try {
+			workflow.setStepDescription(step);
+			workflow.save(user, false, false);
+		} catch (Exception e1) {
+			logger.error("", e1);
+		}
+	}
+	
+	public void postSave() throws ClientException, ServerException{
+		user.clearLocalCache();
+		try {
+			MaterializedView.DeleteByUser(user);
+		} catch (Exception e) {
+			throw new ServerException(e.getMessage(),e);
+		}
+	    
+		try {
+			if (this.shouldForceQuarantine) {
+				src.quarantine(user);
+			} else {
+				final XnatProjectdata proj = src.getPrimaryProject(false);
+				if (null != proj.getArcSpecification().getQuarantineCode() &&
+						proj.getArcSpecification().getQuarantineCode().equals(1)) {
+					src.quarantine(user);
+				}
+			}
+		} catch (Exception e) {
+			throw new ServerException(e.getMessage(),e);
+		}
+	}
+	
+	public void validateSesssion() throws ClientException,ServerException{
+		try {
+			if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
+		} catch (Exception e) {
+			throw new ServerException("unable to create new session ID", e);
+		}
+
+		try {
+			final ValidationResults validation = src.validate();
 			if (null != validation && !validation.isValid()) {
 				throw new ValidationException(validation);
 			}
-		} catch (ArchivingException e) {
-			throw e;
 		} catch (Exception e) {
 			failed("unable to perform session validation: " + e.getMessage());
-			throw new ArchivingException("unable to perform session validation", e);
+			throw new ServerException(e.getMessage(), e);
+		}
 		}
 		
-		preventConcurrentArchiving();
-		fixScans(arcSessionDir);
-				
-		processing("archiving session");
-		
-		// save the session to the database
-		try {
-			if (session.save(user, false, allowDataDeletion)) {
-				user.clearLocalCache();
-				MaterializedView.DeleteByUser(user);
-			    
-				if (this.shouldForceQuarantine) {
-					session.quarantine(user);
-				} else {
-					final XnatProjectdata proj = session.getPrimaryProject(false);
-					if (null != proj.getArcSpecification().getQuarantineCode() &&
-							proj.getArcSpecification().getQuarantineCode().equals(1)) {
-						session.quarantine(user);
-					}
-				}				
-			}
-		} catch (Exception e) {
-			logger.error("unable to commit session to database", e);
-			failed("error committing session to database: " + e.getMessage());
-			throw new ArchivingException("unable to commit session to database", e);
-		}
-		
-		final String prearcSessionPath = session.getPrearchivepath();
-		updatePrearchiveSessionXML(prearcSessionPath);
-		final boolean successful = doTransfer(prearcSessionPath);
-		// TODO: what about schema element manipulation?
-		// TODO: what about project scoping line?
-
-		if (successful) {
-			final StringBuilder urlb = new StringBuilder(TurbineUtils.GetFullServerPath());
+	public static String buildURI(final String project, final XnatImagesessiondata session){
+		final StringBuilder urlb = new StringBuilder();
 			urlb.append("/REST/projects/").append(project);
 			urlb.append("/subjects/");
 			final XnatSubjectdata subjectData = session.getSubjectData();
@@ -443,17 +512,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				urlb.append(subjectData.getId());
 			}
 			urlb.append("/experiments/").append(session.getLabel());
-			try {
-				final URL url = new URL(urlb.toString());
-				completed("archiving operation complete");
-				return url;
-			} catch (MalformedURLException e) {
-				throw new RuntimeException("invalid session URL", e);
-			}
-		} else {
-			failed("archiving operation failed");
-			throw new ArchivingException("archiving operation failed");
-		}
+		return urlb.toString();
 	}
 
 	}

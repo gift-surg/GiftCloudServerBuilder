@@ -79,9 +79,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 	}
 
 	
-	private static XnatImagesessiondataI parseSession(final File s) throws IOException, SAXException{
+	public static XnatImagesessiondataBean parseSession(final File s) throws IOException, SAXException{
 		XDATXMLReader parser = new XDATXMLReader();
-		return (XnatImagesessiondataI)parser.parse(s);
+		return (XnatImagesessiondataBean) parser.parse(s);
 	}
 
 	public class ProjectPrearchive implements ProjectPrearchiveI {

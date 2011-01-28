@@ -10,7 +10,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.axis.utils.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImageassessordataI;
@@ -163,7 +162,7 @@ public class Rename  implements Callable<File>{
 
 				this.updateStep(workflow, setStep(STEP.COPY_DIR));
 				
-				if(moveFiles)copy(oldSessionDir, newSessionDir);	
+				if(moveFiles)org.nrg.xft.utils.FileUtils.CopyDir(oldSessionDir, newSessionDir,false);	
 
 				this.updateStep(workflow, setStep(STEP.EXECUTE_SQL));
 				//Execute SQL
@@ -171,7 +170,7 @@ public class Rename  implements Callable<File>{
 
 				this.updateStep(workflow, setStep(STEP.DELETE_OLD_DIR));
 				//if successful, move old directory to cache)
-				if(moveFiles)moveToCache(proj,SUCCESSFUL_RENAMES,oldSessionDir);
+				if(moveFiles)org.nrg.xnat.utils.FileUtils.moveToCache(proj.getId(),SUCCESSFUL_RENAMES,oldSessionDir);
 				
 				//close workflow entry
 				workflow.setStepDescription(setStep(STEP.COMPLETE).toString());
@@ -179,7 +178,7 @@ public class Rename  implements Callable<File>{
 			} catch (final Exception e) {
 				if(!getStep().equals(STEP.DELETE_OLD_DIR)){
 					try {
-						if(moveFiles)moveToCache(proj,FAILED_RENAME,newSessionDir);
+						if(moveFiles)org.nrg.xnat.utils.FileUtils.moveToCache(proj.getId(),FAILED_RENAME,newSessionDir);
 					} catch (IOException e1) {
 						logger.error("", e1);
 					}
@@ -218,26 +217,6 @@ public class Rename  implements Callable<File>{
 	
 	public static boolean checkPermissions(final ArchivableItem i, final XDATUser user) throws Exception{
 		return user.canEdit(i);
-	}
-	
-	public static void moveToCache(final XnatProjectdata proj, final String subdir, final File src) throws IOException{
-		//should include a timestamp in folder name
-		if(src.exists()){
-			final File cache=(StringUtils.isEmpty(subdir))?new File(proj.getCachePath()):new File(proj.getCachePath(),subdir);
-			
-			final File dest= new File(cache,org.nrg.xft.utils.FileUtils.renameWTimestamp(src.getName()));
-						
-			move(src,dest);
-		}
-	}
-	
-	public static void move(final File src, final File dest) throws IOException{
-		//Started out using Ant Move, but that is a big pain in the you know what with ant 1.5.  This should not be more then one line of code.
-		FileUtils.moveDirectory(src, dest);
-	}
-	
-	public static void copy(final File src, final File dest) throws IOException{
-		FileUtils.copyDirectory(src,dest);
 	}
 	
 	/**

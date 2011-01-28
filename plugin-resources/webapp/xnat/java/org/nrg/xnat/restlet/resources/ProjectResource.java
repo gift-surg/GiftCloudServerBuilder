@@ -11,6 +11,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -51,15 +52,7 @@ public class ProjectResource extends ItemResource {
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
 		
-		this.fieldMapping.put("ID", "xnat:projectData/ID");
-		this.fieldMapping.put("secondary_ID", "xnat:projectData/secondary_ID");
-		this.fieldMapping.put("name", "xnat:projectData/name");
-		this.fieldMapping.put("description", "xnat:projectData/description");
-		this.fieldMapping.put("keywords", "xnat:projectData/keywords");
-		this.fieldMapping.put("alias", "xnat:projectData/aliases/alias/alias");
-		this.fieldMapping.put("pi_firstname", "xnat:projectData/PI/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:projectData/PI/lastname");
-		this.fieldMapping.put("note", "xnat:projectData/fields/field[name=note]/field");
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA));
 		
 	}
 	

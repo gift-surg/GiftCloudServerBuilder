@@ -107,6 +107,14 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
         return path;
     }
 
+    private String addEndingSlash(String path){
+    	path = path.replace('\\', '/');
+        if (!path.endsWith("/")){
+            path = path +"/";
+        }
+        return path;
+    }
+
     public String getArchivePathForProject(String id){
         String path = null;
             List<ArcProjectI> projects=this.getProjects_project();
@@ -122,11 +130,11 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
             if (path==null || path.trim().equals("")){
                 ArcPathinfoI pathInfo= this.getGlobalpaths();
                 if (pathInfo!=null){
-                    path=pathInfo.getArchivepath();
+                    path=addEndingSlash(pathInfo.getArchivepath())+id;
                 }
             }
         if (path==null){
-            path =".";
+            path =addEndingSlash(".")+id;
         }
         path = path.replace('\\', '/');
         if (!path.endsWith("/")){
@@ -150,11 +158,11 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
             if (path==null || path.trim().equals("")){
                 ArcPathinfoI pathInfo= this.getGlobalpaths();
                 if (pathInfo!=null){
-                    path=pathInfo.getCachepath();
+                    path=addEndingSlash(pathInfo.getCachepath())+id;
                 }
             }
         if (path==null){
-            path =".";
+            path =addEndingSlash(".")+id;
         }
         path = path.replace('\\', '/');
         if (!path.endsWith("/")){
@@ -198,11 +206,11 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
             if (path==null || path.trim().equals("")){
                 ArcPathinfoI pathInfo= this.getGlobalpaths();
                 if (pathInfo!=null){
-                    path=pathInfo.getPrearchivepath();
+                    path=addEndingSlash(pathInfo.getPrearchivepath())+id;
                 }
             }
         if (path==null){
-            path =".";
+            path =addEndingSlash(".")+id;
         }
         path = path.replace('\\', '/');
         if (!path.endsWith("/")){

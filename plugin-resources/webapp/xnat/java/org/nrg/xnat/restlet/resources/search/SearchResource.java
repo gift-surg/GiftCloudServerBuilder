@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.collections.DisplayFieldCollection.DisplayFieldNotFoundException;
 import org.nrg.xdat.display.DisplayFieldReferenceI;
@@ -135,7 +134,7 @@ public class SearchResource extends SecureResource {
 							}
 					    }
 					}
-				} catch (FileUploadException e) {
+				} catch (org.apache.commons.fileupload.FileUploadException e) {
 					e.printStackTrace();
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}

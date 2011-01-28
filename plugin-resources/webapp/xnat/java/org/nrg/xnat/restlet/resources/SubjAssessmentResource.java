@@ -11,6 +11,7 @@ import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
+import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
@@ -30,6 +31,7 @@ import org.nrg.xnat.archive.Rename.LabelConflictException;
 import org.nrg.xnat.archive.Rename.ProcessingInProgress;
 import org.nrg.xnat.archive.ValidationException;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.FixScanTypes;
 import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
@@ -113,49 +115,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		}else{
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
-
-		this.fieldMapping.put("ID", "xnat:experimentData/ID");
-		this.fieldMapping.put("visit_id", "xnat:experimentData/visit_id");
-		this.fieldMapping.put("date", "xnat:experimentData/date");
-		this.fieldMapping.put("time", "xnat:experimentData/time");
-		this.fieldMapping.put("note", "xnat:experimentData/note");
-		this.fieldMapping.put("pi_firstname", "xnat:experimentData/investigator/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:experimentData/investigator/lastname");
-		this.fieldMapping.put("validation_method", "xnat:experimentData/validation/method");
-		this.fieldMapping.put("validation_status", "xnat:experimentData/validation/status");
-		this.fieldMapping.put("validation_date", "xnat:experimentData/validation/date");
-		this.fieldMapping.put("validation_notes", "xnat:experimentData/validation/notes");
-
-		this.fieldMapping.put("scanner", "xnat:imageSessionData/scanner");
-		this.fieldMapping.put("operator", "xnat:imageSessionData/operator");
-		this.fieldMapping.put("dcmAccessionNumber", "xnat:imageSessionData/dcmAccessionNumber");
-		this.fieldMapping.put("dcmPatientId", "xnat:imageSessionData/dcmPatientId");
-		this.fieldMapping.put("dcmPatientName", "xnat:imageSessionData/dcmPatientName");
-		this.fieldMapping.put("session_type", "xnat:imageSessionData/session_type");
-		this.fieldMapping.put("modality", "xnat:imageSessionData/modality");
-		this.fieldMapping.put("UID", "xnat:imageSessionData/UID");
-
-		this.fieldMapping.put("coil", "xnat:mrSessionData/coil");
-		this.fieldMapping.put("fieldStrength", "xnat:mrSessionData/fieldStrength");
-		this.fieldMapping.put("marker", "xnat:mrSessionData/marker");
-		this.fieldMapping.put("stabilization", "xnat:mrSessionData/stabilization");
-
-		this.fieldMapping.put("studyType", "xnat:petSessionData/studyType");
-		this.fieldMapping.put("patientID", "xnat:petSessionData/patientID");
-		this.fieldMapping.put("patientName", "xnat:petSessionData/patientName");
-		this.fieldMapping.put("stabilization", "xnat:petSessionData/stabilization");
-		this.fieldMapping.put("scan_start_time", "xnat:petSessionData/start_time/scan");
-		this.fieldMapping.put("injection_start_time", "xnat:petSessionData/start_time/injection");
-		this.fieldMapping.put("tracer_name", "xnat:petSessionData/tracer/name");
-		this.fieldMapping.put("tracer_startTime", "xnat:petSessionData/tracer/startTime");
-		this.fieldMapping.put("tracer_dose", "xnat:petSessionData/tracer/dose");
-		this.fieldMapping.put("tracer_sa", "xnat:petSessionData/tracer/specificActivity");
-		this.fieldMapping.put("tracer_totalmass", "xnat:petSessionData/tracer/totalMass");
-		this.fieldMapping.put("tracer_intermediate", "xnat:petSessionData/tracer/intermediate");
-		this.fieldMapping.put("tracer_isotope", "xnat:petSessionData/tracer/isotope");
-		this.fieldMapping.put("tracer_isotope", "xnat:petSessionData/tracer/isotope/half-life");
-		this.fieldMapping.put("tracer_transmissions", "xnat:petSessionData/tracer/transmissions");
-		this.fieldMapping.put("tracer_transmissions_start", "xnat:petSessionData/tracer/transmissions_starttime");
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
 	}
 
 

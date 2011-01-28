@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -67,6 +66,14 @@ import com.google.common.collect.Multimap;
 import com.noelios.restlet.http.HttpConstants;
 
 public abstract class SecureResource extends Resource {
+	public static class FileUploadException extends Exception {
+
+		public FileUploadException(String message, Exception e) {
+			super(message,e);
+		}
+
+	}
+
 	private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
 	private static final String ACTION = "action";
@@ -392,9 +399,9 @@ public abstract class SecureResource extends Resource {
 							}
 						}
 					}
-				} catch (FileUploadException e) {
-					e.printStackTrace();
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				} catch (org.apache.commons.fileupload.FileUploadException e) {
+					logger.error("",e);
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 				}
 			} else {
 				if (entity != null) {
@@ -662,7 +669,7 @@ public abstract class SecureResource extends Resource {
 	
 
 	
-	public List<FileWriterWrapperI> getFileWriters() throws ClientException, ServerException{
+	public List<FileWriterWrapperI> getFileWriters() throws FileUploadException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
 		final Representation entity=this.getRequest().getEntity();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
@@ -674,14 +681,11 @@ public abstract class SecureResource extends Resource {
 				final String fileName=(filepath==null || filepath.equals(""))?RequestUtil.deriveFileName("upload",entity):filepath;
 				
 				if(fileName==null){
-		        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri, or use an appropriate content-type header.");
-		        	return null;
+					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
 }
 				
 				if(entity.getSize()==-1 || entity.getSize()==0){
-
-		        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message.");
-		        	return null;
+					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
 				}
 				
 				wrappers.add(new FileWriterWrapper(entity,fileName));
@@ -691,8 +695,12 @@ public abstract class SecureResource extends Resource {
 				final org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
 				final org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
 			
+				List<FileItem> items;
 			    try {
-					final List<FileItem> items = upload.parseRequest(this.getRequest());
+					items = upload.parseRequest(this.getRequest());
+				} catch (org.apache.commons.fileupload.FileUploadException e) {
+					throw new FileUploadException(e.getMessage(),e);
+				}
 					
 					
 					for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {    
@@ -705,9 +713,6 @@ public abstract class SecureResource extends Resource {
 					    
 					    wrappers.add(new FileWriterWrapper(fi,fileName));
 					}
-				} catch (FileUploadException e) {
-					throw new ClientException("Unable to parse uploaded file.",e);
-				}
 			}
 		}
 		
@@ -716,7 +721,7 @@ public abstract class SecureResource extends Resource {
 	
 	private Multimap<String,Object> action_params=null;
 	
-	protected Multimap<String,Object> buildActionParams() throws ClientException, ServerException{
+	protected Multimap<String,Object> buildActionParams() throws FileUploadException{
 		if(action_params==null){
 			action_params=LinkedHashMultimap.create();
 			

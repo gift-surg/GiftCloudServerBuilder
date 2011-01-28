@@ -23,50 +23,50 @@ public abstract class BaseElement{
     public final static String field_inline_repeater="INLINE";
     public final static String field_LONG_DATA="LONG_DATA";
     public final static String field_NO_CHILD="NO_CHILD";
-    
-    public Date formatDate(String s) throws FormatException{
+
+    public Date formatDate(String s) {
         try {
             return parseDate(s);
         } catch (ParseException e) {
-            throw new FormatException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-    public Date formatDateTime(String s) throws FormatException{
+    public Date formatDateTime(String s) {
         try {
             return parseDateTime(s);
         } catch (ParseException e) {
-            throw new FormatException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-    public Date formatTime(String s) throws FormatException{
+    public Date formatTime(String s) {
         try {
             return parseTime(s);
         } catch (ParseException e) {
-            throw new FormatException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-    public Double formatDouble(String s) throws FormatException{
+    public Double formatDouble(String s) {
        try {
            if (s.equalsIgnoreCase("inf")){
                s="Infinity";
            }else if (s.equalsIgnoreCase("-inf")){
                s="-Infinity";
            }
-           
+
            return Double.valueOf(s);
         } catch (NumberFormatException e) {
-            throw new FormatException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-    public Integer formatInteger(String s) throws FormatException{
+    public Integer formatInteger(String s) {
         try {
             return Integer.valueOf(s);
         } catch (NumberFormatException e) {
-            throw new FormatException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-    
-    public Boolean formatBoolean(String s) throws FormatException{
+
+    public Boolean formatBoolean(String s){
         if (s.equals("0") || s.equalsIgnoreCase("false")|| s.equalsIgnoreCase("f"))
         {
             return Boolean.FALSE;
@@ -74,22 +74,9 @@ public abstract class BaseElement{
        {
             return Boolean.TRUE;
         }
-        throw new FormatException("Unable to translate '" + s + "' to a boolean value.");
+        throw new IllegalArgumentException("Unable to translate '" + s + "' to a boolean value.");
     }
-    public class FormatException extends Exception{
-        public FormatException(String s)
-        {
-            super(s);
-        }
-        public FormatException(Exception s)
-        {
-            super(s);
-        }
-        public FormatException(String s,Exception e)
-        {
-            super(s,e);
-       }
-    }
+
     public class UnknownFieldException extends Exception{
         public UnknownFieldException(String s)
         {
@@ -146,7 +133,7 @@ public abstract class BaseElement{
             StringBuffer sb = new StringBuffer();
                 while(_base.indexOf(_old) != -1)
                 {
-  
+
                     String pre = _base.substring(0,_base.indexOf(_old));
                     String post;
                     try {
@@ -154,12 +141,12 @@ public abstract class BaseElement{
                     } catch (RuntimeException e) {
                         post = "";
                     }
-    
+
                     sb.append(pre).append(_new);
                     _base = post;
                 }
                 sb.append(_base);
-  
+
             return sb.toString();
         }
    }
@@ -225,9 +212,9 @@ public abstract class BaseElement{
                                     }
                                 }
                             }
-                            
+
                         }
-                        
+
                     }
                 }
             }
@@ -257,11 +244,11 @@ public abstract class BaseElement{
             }
         }
     }
-    public void setDataField(String xmlPath,String s) throws FormatException,UnknownFieldException
+    public void setDataField(String xmlPath,String s) throws UnknownFieldException
     {
         throw new UnknownFieldException(xmlPath);
     }
-    public void setReferenceField(String xmlPath,BaseElement s) throws FormatException,UnknownFieldException
+    public void setReferenceField(String xmlPath,BaseElement s) throws UnknownFieldException
     {
         throw new UnknownFieldException(xmlPath);
     }
@@ -269,23 +256,23 @@ public abstract class BaseElement{
     {
         throw new UnknownFieldException(xmlPath);
     }
-    
+
     public String getReferenceFieldName(String xmlPath) throws BaseElement.UnknownFieldException{
         throw new UnknownFieldException(xmlPath);
     }
-    
+
     public Object getReferenceField(String xmlPath) throws BaseElement.UnknownFieldException{
         throw new UnknownFieldException(xmlPath);
     }
-    
+
     public Object getDataFieldValue(String xmlPath) throws BaseElement.UnknownFieldException{
         throw new UnknownFieldException(xmlPath);
     }
-    
+
     public ArrayList getAllFields(){
         return new ArrayList();
     }
-    
+
 
     public String ValueParser(Object o,String type)
     {
@@ -310,7 +297,7 @@ public abstract class BaseElement{
     			}
     		}
 
-    		return StringEscapeUtils.escapeXml(input.toString());           	
+    		return StringEscapeUtils.escapeXml(input.toString());
             }else if (type.equalsIgnoreCase("boolean"))
             {
                 if (o.toString().equalsIgnoreCase("true")|| o.toString().equalsIgnoreCase("1"))
@@ -418,10 +405,10 @@ public abstract class BaseElement{
                     try {
                         java.util.Date d = formatDate((String)o);
                         o=d;
-                    } catch (FormatException e) {
+                    } catch (IllegalArgumentException e) {
                     }
                 }
-                
+
                 if (o instanceof java.util.Date)
                 {
                     java.util.Date d = (java.util.Date)o;
@@ -455,10 +442,10 @@ public abstract class BaseElement{
                     try {
                         java.util.Date d = formatDateTime((String)o);
                         o=d;
-                    } catch (FormatException e) {
+                    } catch (IllegalArgumentException e) {
                     }
                 }
-                
+
                 if (o.getClass().getName().equalsIgnoreCase("java.util.Date"))
                 {
                     java.util.Date d = (java.util.Date)o;
@@ -505,11 +492,11 @@ public abstract class BaseElement{
     protected boolean addXMLBody(java.io.Writer writer,int header) throws java.io.IOException{
         return false;
     }
-    
+
     public abstract String getSchemaElementName();
-    
+
     public abstract void toXML(java.io.Writer os, boolean prettyPrint) throws java.io.IOException;
-    
+
     public String createHeader(int i){
         String header = "";
         int counter =0;
@@ -517,10 +504,10 @@ public abstract class BaseElement{
         {
             header+=getHeaderString();
         }
-        
+
         return header;
     }
-    
+
     public String getHeaderString(){
         return "\t";
     }
@@ -530,13 +517,13 @@ public abstract class BaseElement{
     protected TreeMap getXMLAtts() {
         return new TreeMap();
     }
-    
+
     public abstract String getFullSchemaElementName();
-    
+
     public String getXSIType(){
     	return this.getFullSchemaElementName();
 }
-    
+
     public void toXML(java.io.Writer os) throws java.lang.Exception{
     	this.toXML(os,false);
     }

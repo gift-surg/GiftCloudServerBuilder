@@ -46,6 +46,13 @@ public class PrearcUtils {
 	public static final String sessionUriTemplate = "prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
 	public static final String projectUriTemplate = "prearchive/projects/{PROJECT_ID}";
 
+	public static final String APPEND = "append";
+
+	public static final String DELETE = "delete";
+
+	public static final String PREARC_TIMESTAMP = "PREARC_TIMESTAMP";
+
+	public static final String PREARC_SESSION_FOLDER = "PREARC_SESSION_FOLDER";
 
 	public enum PrearcStatus {
 		RECEIVING,

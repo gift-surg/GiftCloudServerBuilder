@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.SAXException;
@@ -29,7 +30,7 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 
 	@Override
 	public Collection<SessionData> get() throws IllegalStateException {
-		SortedMap<java.util.Date, Collection<PrearcTableBuilder.Session>> sessions = null;
+		SortedMap<java.util.Date, Collection<PrearcTableBuilder.Session>> sessions = new TreeMap<Date, Collection<PrearcTableBuilder.Session>>();
 		ArrayList<SessionData> sds = new ArrayList<SessionData>();
 		long time = System.currentTimeMillis();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -44,6 +45,7 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 				logger.error("Error getting prearchive sessions from the filesystem" , e);
 				throw new IllegalStateException();
 			}
+			Date listFilesTime = new Date(System.currentTimeMillis() - time);
 			for (final Collection<PrearcTableBuilder.Session> ss : sessions.values()) {
 				for (PrearcTableBuilder.Session s : ss) {
 					SessionData _s = s.getSessionData(StringUtils.join(new String[]{PrearcDatabase.projectPath(s.getProject()),"/".intern(),
@@ -56,6 +58,7 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 			long diff = nowTime - time;			
 			StringBuilder sb = new StringBuilder();
 			sb.append(tsdir.getName() + ":");
+			sb.append(dateFormat.format(listFilesTime) + ":");
 			sb.append(dateFormat.format(new Date(diff)));
 			System.out.println(sb);
 			

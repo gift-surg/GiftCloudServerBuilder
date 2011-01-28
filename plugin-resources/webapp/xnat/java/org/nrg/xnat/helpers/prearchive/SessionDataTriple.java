@@ -55,6 +55,10 @@ public class SessionDataTriple {
 		return this;
 	}
 	
+	public static SessionDataTriple makeTriple (String sess, String timestamp, String proj) {
+		return new SessionDataTriple().setName(sess).setProject(proj).setTimestamp(timestamp);
+	}
+	
 	public Map<String,String> toMap () {
 		Map<String,String> ret = new HashMap<String,String>();
 		ret.put("PROJECT_ID", this.getProject());

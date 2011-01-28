@@ -230,10 +230,10 @@ public class PrearcUtils {
 			return PrearcStatus.ERROR;
 		}
 		try {
-			final FileLock lock = fos.getChannel().tryLock();
-			if (null == lock)
-				return PrearcStatus.BUILDING;
-		} catch (IOException e) {
+//			final FileLock lock = fos.getChannel().tryLock();
+//			if (null == lock)
+//				return PrearcStatus.BUILDING;
+		} catch (Exception e) {
 			logger.error("Unable to check lock on session " + sessionXML, e);
 			return PrearcStatus.ERROR;
 		} finally {
@@ -241,6 +241,7 @@ public class PrearcUtils {
 		}
 
 		if (!sessionXML.canRead()) {
+			System.out.println("able to obtain lock, but cannot read " + sessionXML);
 			logger.error("able to obtain lock, but cannot read " + sessionXML);
 			return PrearcStatus.ERROR;
 		}

@@ -51,24 +51,28 @@ public final class PrearcDatabase {
 	 * @throws IOException 
 	 */
 	public static void initDatabase(String prearcPath) throws SQLException, IllegalStateException, SessionException, IOException {
+		if (!PrearcDatabase.ready) {
 		PrearcDatabase.prearcPath = prearcPath;
 		PrearcDatabase.sessionDelegate = new FileSystemSessionData(PrearcDatabase.prearcPath);
 		PrearcDatabase.createDatabase();
 		PrearcDatabase.ready = true;
 	}
+	}
 	
 	public static void initDatabase(String prearcPath, SessionDataDelegate sp) throws SQLException, IllegalStateException, SessionException, IOException {
+		if (!PrearcDatabase.ready){ 
 		PrearcDatabase.prearcPath = prearcPath;
 		PrearcDatabase.sessionDelegate = sp;
 		PrearcDatabase.createDatabase();
-		PrearcDatabase.ready = true;
+		PrearcDatabase.ready = true;}
 	}
 	
 	public static void initDatabase(SessionDataDelegate sp) throws SQLException, IllegalStateException, SessionException, IOException {
+		if (!PrearcDatabase.ready){ 
 		PrearcDatabase.prearcPath = PrearcDatabase.getPrearcPath();
 		PrearcDatabase.sessionDelegate = sp;
 		PrearcDatabase.createDatabase();
-		PrearcDatabase.ready = true;
+		PrearcDatabase.ready = true;}
 	}
 	
 	/**
@@ -79,10 +83,11 @@ public final class PrearcDatabase {
 	 * @throws IOException 
 	 */
 	public static void initDatabase() throws SQLException, IllegalStateException, SessionException, IOException {
+		if (!PrearcDatabase.ready){ 
 		PrearcDatabase.prearcPath = PrearcDatabase.getPrearcPath();
 		PrearcDatabase.sessionDelegate = new FileSystemSessionData(PrearcDatabase.prearcPath);
 		PrearcDatabase.createDatabase();
-		PrearcDatabase.ready = true;
+		PrearcDatabase.ready = true;}
 	}
 	
 	protected static void setSessionDataModifier (SessionDataModifierI sm) {
@@ -90,9 +95,10 @@ public final class PrearcDatabase {
 	}
 	
 	private static void createDatabase() throws SQLException, IllegalStateException, SessionException, IOException {
-		PrearcDatabase.createTable(table);
-		PrearcDatabase.refresh();
 		PrearcDatabase.conn.setAutoCommit(false);
+		PrearcDatabase.createTable(table);
+		PrearcDatabase.conn.commit();
+		PrearcDatabase.refresh();
 	}
 
 
@@ -156,8 +162,8 @@ public final class PrearcDatabase {
 	}
 	
 	private static void addSessions (final Collection<SessionData> ss) throws IllegalStateException, SQLException, SessionException {
-		PrearcDatabase.runOp(new SessionOp<Void>() {
-			public java.lang.Void run () throws SQLException , SessionException {
+		new SessionOp<Void>() {
+			public java.lang.Void op () throws SQLException , SessionException {
 				PreparedStatement statement = PrearcDatabase.conn.prepareStatement(PrearcDatabase.insertSql());
 				for (final SessionData s : ss) {
 					for (int i = 0; i < DatabaseSession.values().length; i++) {
@@ -167,7 +173,7 @@ public final class PrearcDatabase {
 				}
 				return null;
 			}
-		});
+		}.run();
 	}
 	
 	/**
@@ -181,23 +187,23 @@ public final class PrearcDatabase {
 	 */
 	private static void addSession(final SessionData s) throws SQLException, SessionException {
 		PrearcDatabase.checkArgs(s);
-		PrearcDatabase.runOp(new SessionOp<Void>(){
-			public java.lang.Void run () throws SQLException, SessionException {
+		new SessionOp<Void>(){
+			public java.lang.Void op() throws SQLException, SessionException {
 				int rowCount = PrearcDatabase.numDuplicateSessions(s.getName(),s.getTimestamp(),s.getProject());
 				if (rowCount >= 1) {
 					throw new SessionException("Trying to add an existing session");
 				}
 				else {
-					PreparedStatement statement = PrearcDatabase.conn.prepareStatement(PrearcDatabase.insertSql());
+					PreparedStatement statement = this.conn.prepareStatement(PrearcDatabase.insertSql());
 					for (int i = 0; i < DatabaseSession.values().length; i++) {
 						DatabaseSession.values()[i].setInsertStatement(statement, s);
 					}
 					statement.executeUpdate();
 				}
-				PrearcDatabase.conn.commit();
+				this.conn.commit();
 				return null;
 			}
-		});
+		}.run();
 	}
 	
 	
@@ -212,17 +218,17 @@ public final class PrearcDatabase {
 	public static List<SessionData> getProjects (String uri) throws java.util.IllegalFormatException, SQLException, SessionException {
 		final UriParserUtils.ProjectsParser parser = new UriParserUtils.ProjectsParser(new UriParserUtils.UriParser(PrearcUtils.projectUriTemplate));
 		final List<String> projects = parser.readUri(uri);
-		return PrearcDatabase.runOp(new SessionOp<List<SessionData>>(){
-			public List<SessionData> run() throws SQLException, SessionException {
+		return new SessionOp<List<SessionData>>(){
+			public List<SessionData> op() throws SQLException, SessionException {
 				List<SessionData> ls = new ArrayList<SessionData>();
 				String sql = DatabaseSession.PROJECT.allMatchesSql(projects.toArray(new String[projects.size()]));
-				ResultSet rs = PrearcDatabase.conn.createStatement().executeQuery(sql);
+				ResultSet rs = conn.createStatement().executeQuery(sql);
 				while(rs.next()) {
 					ls.add(DatabaseSession.fillSession(rs));
 				}
 				return ls;
 			}
-		});
+		}.run();
 	}
 	
 	/**
@@ -236,11 +242,11 @@ public final class PrearcDatabase {
 	public static SessionData getSession (String uri) throws java.util.IllegalFormatException, SQLException, SessionException {
 		final UriParserUtils.SessionParser parser = new UriParserUtils.SessionParser(new UriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
 		final Map<String,String> sess = parser.readUri(uri);
-		return PrearcDatabase.runOp(new SessionOp<SessionData>() {
-			public SessionData run() throws SQLException, SessionException {
+		return new SessionOp<SessionData>() {
+			public SessionData op() throws SQLException, SessionException {
 				return PrearcDatabase.getSession(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
 			}
-		});
+		}.run();
 	}
 	
 	/**
@@ -249,7 +255,7 @@ public final class PrearcDatabase {
 	 * @return
 	 */
 	static String projectPath (String proj) {
-		return StringUtils.join(new String[]{PrearcDatabase.getPrearcPath(),proj});
+		return StringUtils.join(new String[]{PrearcDatabase.prearcPath,proj});
 	}
 	
 	/**
@@ -327,9 +333,9 @@ public final class PrearcDatabase {
 			}
 			void cacheSync() throws SQLException, SessionException {
 				PrearcDatabase.withSession(sess, timestamp, proj, new SessionOp<Void>(){
-					public Void run () throws SQLException, SessionException {
-						PrearcDatabase.conn.createStatement().execute(DatabaseSession.PROJECT.updateSessionSql(sess, timestamp, proj, newProj));
-						PrearcDatabase.conn.commit();
+					public Void op () throws SQLException, SessionException {
+						this.conn.createStatement().execute(DatabaseSession.PROJECT.updateSessionSql(sess, timestamp, proj, newProj));
+						this.conn.commit();
 						return null;
 					}
 				});
@@ -338,12 +344,14 @@ public final class PrearcDatabase {
 		return true;
 	}
 	
-	protected static void markSessions (List<SessionDataTriple> ss, PrearcUtils.PrearcStatus s) throws SQLException, SessionException{
+	protected static Map<SessionDataTriple, Boolean> markSessions (List<SessionDataTriple> ss, PrearcUtils.PrearcStatus s) throws SQLException, SessionException{
 		java.util.Iterator<SessionDataTriple> i = ss.iterator();
+		Map<SessionDataTriple, Boolean> ret = new HashMap<SessionDataTriple, Boolean>();
 		while (i.hasNext()) {
 			SessionDataTriple t = i.next();
-			PrearcDatabase.setStatus(t.getName(), t.getTimestamp(), t.getProject(), s);
+			ret.put(t, PrearcDatabase.setStatus(t.getName(), t.getTimestamp(), t.getProject(), s));
 		}
+		return ret;
 	}
 	
 	/**
@@ -355,14 +363,29 @@ public final class PrearcDatabase {
 	 * @throws SessionException
 	 * @throws SyncFailedException
 	 */
-	public static Map<SessionDataTriple, Boolean> moveToProject(List<SessionDataTriple> ss, String newProj) throws SQLException, SessionException, SyncFailedException {
-		PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.MOVING);
-		Map<SessionDataTriple, Boolean> ret = new HashMap<SessionDataTriple,Boolean>();
-		java.util.Iterator<SessionDataTriple> i = ss.iterator();
+	public static Map<SessionDataTriple, Boolean> moveToProject(final List<SessionDataTriple> ss, final String newProj) throws SQLException, SessionException, SyncFailedException, IllegalStateException {
+		final Map<SessionDataTriple, Boolean> ret = PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.MOVING);
+		new Thread() {
+			public void run() {
+				final java.util.Iterator<SessionDataTriple> i = ss.iterator();
 		while(i.hasNext()){
 			SessionDataTriple _s = i.next();
-			ret.put(_s, PrearcDatabase.moveToProject(_s.getName(),_s.getTimestamp(),_s.getProject(),newProj));
+					try {
+						PrearcDatabase.moveToProject(_s.getName(),_s.getTimestamp(),_s.getProject(),newProj);
+					} catch (SyncFailedException e) {
+						throw new IllegalStateException();
 		}
+					  catch (SessionException e) {
+						  System.out.println("SessionException : " + e.getMessage());
+						  for (StackTraceElement _e : e.getStackTrace())
+						        System.out.println(_e);
+					  } 
+					  catch (SQLException e) {
+						Thread.dumpStack();
+					}
+				}		
+			}
+		}.start();
 		return ret;
 	}
 	
@@ -374,15 +397,27 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 * @throws SessionException
 	 * @throws SyncFailedException
+	 * @throws {@link IllegalStateException} Thrown if any session fails to sync with the cache, irrecoverable because it indicates that the
+	 * prearchive directory is in a bad state requiring manual intervention.
 	 */
-	public static Map<SessionDataTriple, Boolean> deleteSession(List<SessionDataTriple> ss) throws SQLException, SessionException, SyncFailedException {
+	public static Map<SessionDataTriple, Boolean> deleteSession(final List<SessionDataTriple> ss) throws SQLException, SessionException, SyncFailedException, IllegalStateException {
 		PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.DELETING);
 		Map<SessionDataTriple, Boolean> ret = new HashMap<SessionDataTriple,Boolean>();
+		new Thread() {
+			public void run() {
 		java.util.Iterator<SessionDataTriple> i = ss.iterator();
 		while(i.hasNext()){
 			SessionDataTriple _s = i.next();
-			ret.put(_s, PrearcDatabase.deleteSession(_s.getName(),_s.getTimestamp(),_s.getProject()));
+					try {
+						PrearcDatabase.deleteSession(_s.getName(),_s.getTimestamp(),_s.getProject());
+					} catch (SyncFailedException e) {
+						throw new IllegalStateException();
+					} catch (SQLException e) {
+					} catch (SessionException e) {
 		}
+				}
+			}
+		}.start();
 		return ret;
 	}
 	
@@ -423,9 +458,9 @@ public final class PrearcDatabase {
 			throw new SessionException ("Status argument is null or empty");
 		}
 		PrearcDatabase.withSession(sess, timestamp, proj, new SessionOp<Void>() {
-			public Void run () throws SQLException, SessionException {
-				PrearcDatabase.conn.createStatement().execute(DatabaseSession.STATUS.updateSessionSql(sess, timestamp, proj, status));
-				PrearcDatabase.conn.commit();
+			public Void op () throws SQLException, SessionException {
+				this.conn.createStatement().execute(DatabaseSession.STATUS.updateSessionSql(sess, timestamp, proj, status));
+				this.conn.commit();
 				return null;
 			}
 		}); 
@@ -459,9 +494,9 @@ public final class PrearcDatabase {
 			}
 			void cacheSync() throws SQLException, SessionException {
 				PrearcDatabase.withSession(sess,timestamp,proj, new SessionOp<Void>(){
-					public java.lang.Void run () throws SQLException, SessionException {
-						PrearcDatabase.conn.createStatement().execute(DatabaseSession.deleteSessionSql(sess,timestamp,proj));
-						PrearcDatabase.conn.commit();
+					public java.lang.Void op () throws SQLException, SessionException {
+						this.conn.createStatement().execute(DatabaseSession.deleteSessionSql(sess,timestamp,proj));
+						this.conn.commit();
 						return null;
 					}
 				});
@@ -566,9 +601,9 @@ public final class PrearcDatabase {
 		if (PrearcUtils.inProcessStatusMap.containsKey(sd.getStatus())) {
 			final PrearcUtils.PrearcStatus inp = PrearcUtils.inProcessStatusMap.get(sd.getStatus());
 			PrearcDatabase.withSession(sess,timestamp,proj, new SessionOp<Void>(){
-				public java.lang.Void run () throws SQLException, SessionException {
-					PrearcDatabase.conn.createStatement().execute(DatabaseSession.STATUS.updateSessionSql(sess,timestamp,proj,inp));
-					PrearcDatabase.conn.commit();
+				public java.lang.Void op () throws SQLException, SessionException {
+					this.conn.createStatement().execute(DatabaseSession.STATUS.updateSessionSql(sess,timestamp,proj,inp));
+					this.conn.commit();
 					return null;
 				}
 			});
@@ -603,8 +638,8 @@ public final class PrearcDatabase {
 	 */
 	public static SessionData getSession(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
 		return PrearcDatabase.withSession(sess, timestamp, proj, new SessionOp<SessionData>() {
-			public SessionData run () throws SQLException {
-				ResultSet rs = PrearcDatabase.conn.createStatement().executeQuery(DatabaseSession.findSessionSql(sess, timestamp, proj)); 
+			public SessionData op () throws SQLException {
+				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.findSessionSql(sess, timestamp, proj)); 
 				rs.next();
 				return DatabaseSession.fillSession(rs);
 			}
@@ -621,13 +656,13 @@ public final class PrearcDatabase {
 	 * @throws SessionException 
 	 */
 	private static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
-		return PrearcDatabase.runOp(new SessionOp<Integer>() {
-			public Integer run() throws SQLException, SessionException {
-				ResultSet rs = PrearcDatabase.conn.createStatement().executeQuery(DatabaseSession.countSessionSql(sess, proj));
+		return new SessionOp<Integer>() {
+			public Integer op() throws SQLException, SessionException {
+				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.countSessionSql(sess, proj));
 				rs.next();
 				return rs.getInt(1);
 			}
-		});
+		}.run();
 	}
 
 	/**
@@ -635,8 +670,17 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 */
 	private static void deleteRows() throws SQLException {
-		PrearcDatabase.conn.createStatement().execute("DROP TABLE IF EXISTS " + PrearcDatabase.table);
-		PrearcDatabase.conn.createStatement().execute(DatabaseSession.createTableSql());
+		try {
+			new SessionOp<Void>(){
+				public Void op() throws SQLException {
+					this.conn.createStatement().execute("DROP TABLE IF EXISTS " + PrearcDatabase.table);
+					this.conn.createStatement().execute(DatabaseSession.createTableSql());
+					return null;
+				}
+			}.run();
+		} catch (SessionException e) {
+			// should never happen
+		}
 	}
 	
 	/**
@@ -680,8 +724,20 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 */
 	
-	private static String showAllRows () throws SQLException {
-		return PrearcDatabase.showRows(PrearcDatabase.conn.createStatement().executeQuery("SELECT * FROM " + PrearcDatabase.table));
+	private static String showAllRows () {
+		String ret = null;
+		try {
+			ret = new SessionOp<String>() {
+				public String op() throws SQLException {
+					ResultSet r = this.conn.createStatement().executeQuery("SELECT * FROM " + PrearcDatabase.table);
+					return PrearcDatabase.showRows(r);
+				}
+			}.run();
+		} catch (SessionException e) {}
+		  catch (SQLException e) {
+			  System.out.println(e.getMessage());
+		  }
+		return ret;
 	}
 	
 	// prevent instantiation
@@ -711,10 +767,10 @@ public final class PrearcDatabase {
 	 * @throws SessionException
 	 */
 	public static ArrayList<ArrayList<Object>> buildRows (final String[] projects) throws SQLException, SessionException {
-		return PrearcDatabase.runOp(new SessionOp<ArrayList<ArrayList<Object>>>(){
-			public ArrayList<ArrayList<Object>> run() throws SQLException, SessionException {
+		return new SessionOp<ArrayList<ArrayList<Object>>>(){
+			public ArrayList<ArrayList<Object>> op() throws SQLException, SessionException {
 				ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
-				ResultSet rs = PrearcDatabase.conn.createStatement().executeQuery(DatabaseSession.PROJECT.allMatchesSql(projects));
+				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.PROJECT.allMatchesSql(projects));
 				while(rs.next()) {
 					ArrayList<Object> al = new ArrayList<Object>();
 					for (DatabaseSession d : DatabaseSession.values()) {
@@ -724,7 +780,7 @@ public final class PrearcDatabase {
 				}
 				return ao;
 			}
-		});
+		}.run();
 	}
 	
 	/**
@@ -759,8 +815,30 @@ public final class PrearcDatabase {
 	 *
 	 * @param <T> The type of data returned by the operation, use java.lang.Void of the operation returns nothing
 	 */
-	interface SessionOp<T> {
-		public abstract T run () throws SQLException, SessionException; 
+	
+	static abstract class SessionOp<T> {
+		Connection conn;
+		public void createConnection() throws ClassNotFoundException, SQLException {
+			conn = DriverManager.getConnection("jdbc:h2:mem:" + dbName, "sa", "");
+		}
+		public abstract T op() throws SQLException, SessionException;
+		public T run () throws SQLException, SessionException {
+			conn = DriverManager.getConnection("jdbc:h2:mem:" + dbName, "sa", "");
+			Object o = null;
+			try {
+				o = this.op();
+			}
+			catch (SQLException e) {
+				// all changes are rolled back so any SessionOp's that change the database should 
+				// run conn.commit() after they are done.
+				conn.rollback();
+				throw e;
+			}
+			finally {
+				conn.close();
+			}
+			return (T) o; // unchecked cast
+		}
 	}
 		
 	/**
@@ -800,30 +878,6 @@ public final class PrearcDatabase {
 	}
 	
 	/**
-	 * Run the given SessionOp.
-	 * @param <T> 
-	 * @param op
-	 * @return
-	 * @throws SQLException
-	 * @throws SessionException
-	 */
-	@SuppressWarnings("unchecked")
-	private static <T extends Object> T runOp (SessionOp<T> op) throws SQLException, SessionException {
-		Object o = null;
-		try {
-			o = op.run();
-		}
-		catch (SQLException e) {
-			// all changes are rolled back so any SessionOp's that change the database should 
-			// run conn.commit() after they are done.
-			PrearcDatabase.conn.rollback();
-			throw e;
-		}
-
-		return (T) o; // unchecked cast
-	}
-	
-	/**
 	 * Check session parameters and run the operation
 	 * @param <T>
 	 * @param sess
@@ -837,6 +891,6 @@ public final class PrearcDatabase {
 	
     private static <T extends Object> T withSession (String sess, String timestamp, String proj, SessionOp<T> op) throws SQLException, SessionException {
 		PrearcDatabase.checkSession(sess,timestamp,proj);
-		return PrearcDatabase.runOp(op);
+		return op.run();
 	}
 }

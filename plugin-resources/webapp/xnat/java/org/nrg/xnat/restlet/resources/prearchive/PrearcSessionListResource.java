@@ -174,6 +174,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		
 		XFTTable table = null; 
 		try {
+			PrearcDatabase.initDatabase();
 			table = this.retrieveTable(validProjects);
 		}
 		catch (SQLException e) {

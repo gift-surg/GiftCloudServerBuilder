@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.security.XDATUser;

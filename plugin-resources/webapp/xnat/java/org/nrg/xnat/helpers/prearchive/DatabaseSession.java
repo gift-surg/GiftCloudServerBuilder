@@ -555,7 +555,7 @@ public enum DatabaseSession {
 	 * @throws SQLException
 	 */
 	public <T extends Object> T getFromResult(ResultSet r) throws SQLException {
-		return this.columnType.getFromResult(this.ordinal()+1,r);
+		return (T) this.columnType.getFromResult(this.ordinal()+1,r);
 	}
 	
 	/**

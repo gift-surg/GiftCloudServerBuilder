@@ -104,7 +104,7 @@ public class ScanResource  extends ItemResource {
 					"Unable to find session '" + assessedID + "'");
 		}
 		
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME,false));
 	}
 
 

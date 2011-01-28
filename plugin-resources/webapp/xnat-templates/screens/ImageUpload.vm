@@ -288,9 +288,7 @@ function resetProgress(){
 }
 
 function checkProgress(){
-   var url = "$content.getURI("servlet/AjaxServlet")?remote-class=org.nrg.xnat.ajax.UploadProgress";
-   url = url + "&remote-method=monitor";
-   url = url + "&ID=" + uploadID;
+   var url = "$content.getURI("/REST/status/$uploadID")?format=json";
    if (window.XMLHttpRequest) {
        req = new XMLHttpRequest();
    } else if (window.ActiveXObject) {
@@ -318,7 +316,7 @@ function checkProgress(){
  </tr>
  <tr id="option1">
   <td>
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$link.setAction("ImageUpload")" onSubmit="return prog(this);">
+<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="true"/>
 <INPUT TYPE="hidden" name="ID" value="$uploadID"/>
 <INPUT TYPE="hidden" name="threshhold" value="51516279"/>

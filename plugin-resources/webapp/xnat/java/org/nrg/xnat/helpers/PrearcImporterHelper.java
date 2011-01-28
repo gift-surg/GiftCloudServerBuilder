@@ -34,6 +34,8 @@ import org.nrg.xnat.turbine.utils.ImageUploadHelper;
 import org.restlet.data.Status;
 
 public class PrearcImporterHelper extends PrearcImporterA{
+    private static final String SESSION = "session";
+	private static final String SUBJECT = "subject";
     private static final String TEMP_UNPACK = "temp-unpack";
 	static org.apache.log4j.Logger logger = Logger.getLogger(PrearcImporterHelper.class);
 	
@@ -194,6 +196,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		final XnatImagesessiondataBean src;
 		try {
 			src=PrearcTableBuilder.parseSession(srcXML);
+			src.setProject(project);
 		} catch (Exception e) {
 			failed("Unable to parse meta-data for uploaded data.");
 			throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage(),e);
@@ -218,7 +221,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		};
 		
 		//pass in populated beans and root paths
-		ListenerUtils.addListeners(this,new MergePrearchiveSessions(uID,srcDIR,src,src.getPrearchivepath(),destDIR,dest,dest.getPrearchivepath(),overwrite,allowDataDeletion,saveImpl))
+		ListenerUtils.addListeners(this,new MergePrearchiveSessions(uID,srcDIR,src,src.getPrearchivepath(),destDIR,dest,destDIR.getAbsolutePath(),overwrite,allowDataDeletion,saveImpl))
 			.call();
 
 		org.nrg.xft.utils.FileUtils.DeleteFile(srcXML);

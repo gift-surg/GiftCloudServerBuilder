@@ -28,6 +28,12 @@ public class MergeCatCatalog implements Callable<Boolean> {
 		}
 
 	}
+	public static class EntryConflict extends Exception {
+		public EntryConflict(String string, Exception exception) {
+			super(string,exception);
+		}
+
+	}
 
 	final CatCatalogI src,dest;
 	final boolean overwrite;
@@ -51,18 +57,22 @@ public class MergeCatCatalog implements Callable<Boolean> {
 		}
 		
 		for(final CatEntryI entry: src.getEntries_entry()){
+			if(!overwrite){
 			if(entry instanceof CatDcmentryI && !StringUtils.isEmpty(((CatDcmentryI)entry).getUid())){
-				final CatDcmentryI destEntry=CatalogUtils.getDCMEntryByUID(dest, ((CatDcmentryI)entry).getUid());
+					final CatEntryI destEntry=CatalogUtils.getDCMEntryByUID(dest, ((CatDcmentryI)entry).getUid());
 				if(destEntry!=null){
 					throw new DCMEntryConflict("Duplicate DCM UID cannot be merged at this time.",new Exception());
 				}
 			}
+			}
 			
 			final CatEntryI destEntry=CatalogUtils.getEntryByURI(dest, entry.getUri());
 			
-			if(destEntry==null || overwrite){
+			if(destEntry==null){
 				dest.addEntries_entry(entry);
 				merge=true;
+			}else if(!overwrite){
+				throw new EntryConflict("Duplicate file uploaded.",new Exception());
 			}
 		}
 		

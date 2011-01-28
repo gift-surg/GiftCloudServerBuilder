@@ -264,12 +264,14 @@ function verifyExptId(obj){
 			    if(match!=null){
 			         document.getElementById(elementName+"/ID").value=match.id;
 			         document.getElementById(elementName+"/label").verified=true;
-			         document.getElementById("label_msg").innerHTML="<font color='red'>* Matches existing session.  Continuing could modify that session.</font>";
+			         document.getElementById("label_msg").innerHTML="* Matches existing session.  Continuing could modify that session.  <ul><li>Select append to only add new content to existing session.</li><li>Select overwrite to overwrite existing content.</li></ul>";
+			         document.getElementById("label_opts").innerHTML="<select name='overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
 			         veid=true;
 			    }else{
 			         document.getElementById(elementName+"/ID").value="";
 			         document.getElementById(elementName+"/label").verified=true;
 			         document.getElementById("label_msg").innerHTML="";
+			         document.getElementById("label_opts").innerHTML="";
 			         
 			         veid=true;
 			    }

@@ -1,9 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.util;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,8 +82,22 @@ public class RequestUtil {
 		if(mt.equals(MediaType.MULTIPART_ALL))
 		{
 			return true;
+		}else if(mt.equals(MediaType.MULTIPART_FORM_DATA))
+		{
+			return true;
+		}else if(mt.equals(MediaType.APPLICATION_WWW_FORM))
+		{
+			return true;
 		}else{
 			return false;
 		}
+	}
+	
+	public String getArchiveScriptName(){
+		return "/REST";
+}
+	
+	public String getPrerchiveScriptName(){
+		return "/REST/prearchive";
 	}
 }

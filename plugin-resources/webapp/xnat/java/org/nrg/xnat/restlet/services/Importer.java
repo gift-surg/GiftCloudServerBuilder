@@ -4,24 +4,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusList;
-import org.nrg.util.GoogleUtils;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue;
 import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
-import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.actions.importer.ImporterNotFoundException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
+import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -29,12 +30,12 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-
-import com.google.common.collect.Multimap;
+import org.restlet.resource.Representation;
 
 public class Importer extends SecureResource {
 	private static final String CRLF = "\r\n";
 	private static final String HTTP_SESSION_LISTENER = "http-session-listener";
+    static org.apache.log4j.Logger logger = Logger.getLogger(Importer.class);
 	public Importer(Context context, Request request, Response response) {
 		super(context, request, response);
 				
@@ -49,22 +50,15 @@ public class Importer extends SecureResource {
 		return true;
 	}
 
-	@Override
-	public void handlePost() {		
-		//build fileWriters
-		try {
-			final List<FileWriterWrapperI> fw=this.getFileWriters();
-			
-			final Map<String,Object> params=new Hashtable<String,Object>();
+	List<FileWriterWrapperI> fw=Collections.emptyList();
 			
 			String handler=null;
 			String listenerControl=null;
 			boolean httpSessionListener=false;
 			
+	final Map<String,Object> params=new Hashtable<String,Object>();
 						
-			//maintain parameters
-			final Form f = getQueryVariableForm();
-			//TODO: What about the body form
+	public void loadParams(Form f){
 			for(final String key:f.getNames()){
 				if(key.equals(ImporterHandlerA.IMPORT_HANDLER_ATTR)){
 					handler=f.getFirstValue(ImporterHandlerA.IMPORT_HANDLER_ATTR);
@@ -81,7 +75,22 @@ public class Importer extends SecureResource {
 					params.put(key,f.getFirstValue(key));
 				}
 			}				
+	}
 			
+	@Override
+	public void handlePost() {
+		//build fileWriters
+		try {
+			Representation entity = this.getRequest().getEntity();
+
+			fw=this.getFileWriters(entity);
+
+			if (RequestUtil.isMultiPartFormData(entity)) {
+				loadParams(new Form(entity));
+			}
+
+			//maintain parameters
+			loadParams(getQueryVariableForm());
 
 			if(fw.size()==0){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");

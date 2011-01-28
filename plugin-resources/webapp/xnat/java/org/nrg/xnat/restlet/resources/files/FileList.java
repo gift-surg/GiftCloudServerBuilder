@@ -37,6 +37,7 @@ import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
@@ -187,70 +188,26 @@ public class FileList extends XNATCatalogTemplate {
 						return;
 					}
 						
-//					String parentPath=null;
-//					CatCatalogBean cat=null;
-//					File catFile=null;
-//						
-//
-//					if(resource instanceof XnatResourcecatalog){
-//			        	
-//						XnatResourcecatalog catResource=(XnatResourcecatalog)resource;
-//						catFile = catResource.getCatalogFile(proj.getRootArchivePath());						
-//						parentPath=catFile.getParent();						
-//					}
 						
 						try
 						{
-						Representation entity=this.getRequest().getEntity();
-						if(this.isQueryVariableTrue("inbody")){
-							if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
-								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message (not as part of multi-part form data).");
-						        return;
-							}else{
-						        String dest = null;
+						List<FileWriterWrapperI> files=this.getFileWriters();
 						        
-						        if(filepath==null || filepath.equals("")){
-						        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri.");
-						        	return;
-						        }else{		
-						        	dest=filepath;
-						        }
-								
-								if(entity.getSize()==-1 || entity.getSize()==0){
-
-						        	this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message.");
-						        	return;
-								}
-
-						        if(resource instanceof XnatResourcecatalog){
-    						        	CatalogUtils.storeCatalogEntry(new FileWriterWrapper(entity,filepath), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo());
-						        }else{
-    									this.buildResourceModifier().saveFile(new FileWriterWrapper(entity,filepath), dest, (XnatResource)resource, user, this.buildResourceInfo());
-						        }
-						          
-						        if(filepath==null || filepath.equals("")){
-									this.returnSuccessfulCreateFromList(dest);
-						        }
-							}
-						}else{
-							@SuppressWarnings("deprecation")
-							org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
-							org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
-						
-						    List<FileItem> items = upload.parseRequest(this.getRequest());
-						
-						    int i = 0;
-						    for (FileItem fi:items) {    						         
-						        String fileName=fi.getName();
+						for(FileWriterWrapperI fw:files){
+							String fileName=fw.getName();
 						        if(fileName.indexOf('\\')>-1){
 						        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
 						        }
 						        
 						        String dest = null;
-						        if(filepath==null || filepath.equals("")){
+					        if(StringUtils.isEmpty(filepath)){
+					        	if(fw.getType().equals(FileWriterWrapperI.UPLOAD_TYPE.INBODY)){
+					        		this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri.");
+						        	return;
+					        	}
 						        	dest=fileName;
 						        }else{			
-							        	if(items.size()>1 || filepath.endsWith("/")){
+						        	if(files.size()>1 || filepath.endsWith("/")){
 						        		dest=filepath + "/" + fileName;
 						        	}else{
 						        		dest=filepath;
@@ -259,12 +216,11 @@ public class FileList extends XNATCatalogTemplate {
 						        
 						        if(resource instanceof XnatResourcecatalog){
     						        	
-    						        	if(!CatalogUtils.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo())){
+					        	if(!CatalogUtils.storeCatalogEntry(fw, dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo())){
 							        	break;
 							        }
 						        }else{
-    						        	
-    							        if(!this.buildResourceModifier().saveFile(new FileWriterWrapper(fi,fileName), dest, (XnatResource)resource, user, this.buildResourceInfo())){
+							    if(!this.buildResourceModifier().saveFile(fw, dest, (XnatResource)resource, user, this.buildResourceInfo())){
 							        	break;
 							        }
 						        }
@@ -272,8 +228,6 @@ public class FileList extends XNATCatalogTemplate {
 						        if(filepath==null || filepath.equals("")){
 									this.returnSuccessfulCreateFromList(dest);
 						        }
-						        i++;
-						    }
 						}
 						     
 						 }catch(Exception e){
@@ -731,11 +685,7 @@ public class FileList extends XNATCatalogTemplate {
 		
 		Map<String,Map<String,String>> cp = new Hashtable<String,Map<String,String>>();
 		cp.put("URI", new Hashtable<String,String>());
-		String rootPath = this.getRequest().getRootRef().getPath();
-		if(rootPath.endsWith("/REST")){
-			rootPath=rootPath.substring(0,rootPath.indexOf("/REST"));
-		}
-		cp.get("URI").put("serverRoot", rootPath);
+		cp.get("URI").put("serverRoot", getContextPath());
 
 		return this.representTable(table, mt, params,cp,this.getSessionMaps());
 	}

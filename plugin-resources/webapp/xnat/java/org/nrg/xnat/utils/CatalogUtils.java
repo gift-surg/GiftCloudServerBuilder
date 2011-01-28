@@ -15,15 +15,12 @@ import java.net.URLDecoder;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
-import org.nrg.action.ClientException;
-import org.nrg.action.ServerException;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatCatalogMetafieldBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -36,7 +33,6 @@ import org.nrg.xdat.model.CatDcmentryI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.model.CatEntryMetafieldI;
 import org.nrg.xdat.model.CatEntryTagI;
-import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -49,8 +45,8 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
-import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.xml.sax.SAXException;
 
 /**
@@ -315,7 +311,7 @@ public class CatalogUtils {
 	public final static String[] FILE_HEADERS = {"Name","Size","URI","collection","file_tags","file_format","file_content","cat_ID"};
 	public final static String[] FILE_HEADERS_W_FILE = {"Name","Size","URI","collection","file_tags","file_format","file_content","cat_ID","file"};
 
-	public static boolean storeCatalogEntry(final FileWriterWrapper fi, final String dest, final XnatResourcecatalog catResource, final XnatProjectdata proj, final boolean extract, final XnatResourceInfo info) throws IOException, Exception {
+	public static boolean storeCatalogEntry(final FileWriterWrapperI fi, final String dest, final XnatResourcecatalog catResource, final XnatProjectdata proj, final boolean extract, final XnatResourceInfo info) throws IOException, Exception {
 		final File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
 		final String parentPath = catFile.getParent();
 		final CatCatalogBean cat = catResource.getCleanCatalog(proj.getRootArchivePath(), false);

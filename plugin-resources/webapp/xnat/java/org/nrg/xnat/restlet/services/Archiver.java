@@ -10,40 +10,41 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
-import org.nrg.action.ServerException;
 import org.nrg.status.StatusListenerI;
 import org.nrg.status.StatusMessage;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.CallablesThread;
+import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils.ArchiveURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils.PrearchiveURI;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 public class Archiver extends SecureResource {
+	private static final String REDIRECT2 = "redirect";
 	private static final String FOLDER = "folder";
 	private static final String URL = "URL";
 	private static final String ADDITIONAL_VALUES = "additionalValues";
 	private static final String SRC = "src";
 	private static final String OVERWRITE = "overwrite";
-	private static final String SESSION = "session";
-	private static final String SUBJECT = "subject";
-	private static final String PREARC_SESSION = "sessionFolder";
-	private static final String PREARC_TIMESTAMP = "timestamp";
 	private static final String PROJECT = "project";
 	private static final String CRLF = "\r\n";
 	private static final String DEST = "dest";
@@ -62,10 +63,6 @@ public class Archiver extends SecureResource {
 		return true;
 	}
 
-	@Override
-	public void handlePost() {		
-		//build fileWriters
-		try {					
 			final Map<String,Object> additionalValues=new Hashtable<String,Object>();
 			
 			String project_id=null;
@@ -73,31 +70,45 @@ public class Archiver extends SecureResource {
 			String timestamp=null;
 			String[] sessionFolder=null;
 			String dest=null;
+	String redirect=null;
 			String[] srcs=null;
 			
-			//maintain parameters
-			final Form f = getQueryVariableForm();
+	public void loadParams(Form f) {
 			for(final String key:f.getNames()){
+			if(f.getFirstValue(key)!=null){
 				if(key.equals(PROJECT)){
-					project_id=f.getFirstValue(PROJECT);
-				}else if(key.equals(PREARC_TIMESTAMP)){
-					timestamp=f.getFirstValue(PREARC_TIMESTAMP);
-				}else if(key.equals(PREARC_SESSION)){
-					sessionFolder=f.getValuesArray(PREARC_SESSION);
-				}else if(key.equals(SUBJECT)){
-					additionalValues.put(key,f.getFirstValue("subject_ID"));
-				}else if(key.equals(SESSION)){
-					additionalValues.put(key,f.getFirstValue("label"));
+					additionalValues.put("project",project_id);
+				}else if(key.equals(PrearcUtils.PREARC_TIMESTAMP)){
+					timestamp=f.getFirstValue(PrearcUtils.PREARC_TIMESTAMP);
+				}else if(key.equals(PrearcUtils.PREARC_SESSION_FOLDER)){
+					sessionFolder=f.getValuesArray(PrearcUtils.PREARC_SESSION_FOLDER);
 				}else if(key.equals(OVERWRITE)){
 					overwriteV=f.getFirstValue(OVERWRITE);
 				}else if(key.equals(DEST)){
 					dest=f.getFirstValue(DEST);
 				}else if(key.equals(SRC)){
 					srcs=f.getValuesArray(SRC);
+				}else if(key.equals(REDIRECT2)){
+					redirect=f.getFirstValue(REDIRECT2);
 				}else{
 					additionalValues.put(key,f.getFirstValue(key));
 				}
 			}
+		}
+	}
+
+	@Override
+	public void handlePost() {		
+		//build fileWriters
+		try {					
+			Representation entity = this.getRequest().getEntity();
+													
+			if (RequestUtil.isMultiPartFormData(entity)) {
+				loadParams(new Form(entity));
+			}
+			
+			loadParams(getQueryVariableForm());			
+			
 			
 			boolean allowDataDeletion=false;
 			boolean overwrite=false;
@@ -120,7 +131,9 @@ public class Archiver extends SecureResource {
 			
 			final List<Map<String,Object>> sessions=new ArrayList<Map<String,Object>>();
 						
-			if((project_id==null || timestamp==null || sessionFolder==null) && (dest==null)){
+			project_id=PrearcImporterHelper.identifyProject(additionalValues);
+			
+			if((project_id==null || timestamp==null || sessionFolder==null) && (srcs==null)){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unknown prearchive session.");
 				return;
 			}else if(srcs!=null){
@@ -159,8 +172,8 @@ public class Archiver extends SecureResource {
 				for(final String s:sessionFolder){
 					final Map<String,Object> session= new HashMap<String,Object>();
 					session.put(PROJECT,project_id);
-					session.put(PREARC_TIMESTAMP,timestamp);
-					session.put(PREARC_SESSION,s);
+					session.put(PrearcUtils.PREARC_TIMESTAMP,timestamp);
+					session.put(PrearcUtils.PREARC_SESSION_FOLDER,s);
 					session.put(URL, "/prearchive/projects/"+ project_id + "/" + timestamp + "/" + s);
 
 					session.put(ADDITIONAL_VALUES,additionalValues);
@@ -170,10 +183,10 @@ public class Archiver extends SecureResource {
 			
 			//validate specified folders
 			for(final Map<String,Object> map: sessions){
-				final String p=(String)map.get(PROJECT);
+				final String p=PrearcImporterHelper.identifyProject(map);
 				final String prearc=getPrearchivePath(p);
-				final String time=getPrearchivePath((String)map.get(PREARC_TIMESTAMP));
-				final String ses=getPrearchivePath((String)map.get(PREARC_SESSION));
+				final String time=(String)map.get(PrearcUtils.PREARC_TIMESTAMP);
+				final String ses=(String)map.get(PrearcUtils.PREARC_SESSION_FOLDER);
 				
 				if(p==null || prearc==null || time==null || ses==null){
 					throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, map.get(URL) + " not found.");
@@ -192,27 +205,31 @@ public class Archiver extends SecureResource {
 				preRegisterAction((String)map.get(URL));
 			}
 			
+			
 			if(sessions.size()==1){
-				PrearcSessionArchiver archiver=buildArchiver(sessions.get(0),allowDataDeletion,overwrite);
+				final PrearcSessionArchiver archiver=buildArchiver(sessions.get(0),PrearcImporterHelper.identifyProject(sessions.get(0)),allowDataDeletion,overwrite);
 				archiver.addStatusListener(new ActionListener());
 				String _return =null;
 				try {
 					_return= archiver.call().toString();
-				}  catch (ClientException e) {
+				}catch (ActionException e) {
 					logger.debug("", e);
-					throw new ResourceException(e.status, e.getMessage(), e);
-				} catch (ServerException e) {
-					logger.debug("", e);
-					throw new ResourceException(e.status, e.getMessage(), e);
+					throwResourceException(e);
 				} finally {
 						archiver.dispose();
 				}
+				
+				if(!StringUtils.isEmpty(redirect) && redirect.equalsIgnoreCase("true")){
+					getResponse().redirectSeeOther(getContextPath()+_return);
+				}else{
 				getResponse().setEntity(_return+CRLF, MediaType.TEXT_URI_LIST);
+				}
 				return;
+				
 			}else{
-				CallablesThread thread = new CallablesThread();
+				CallablesThread<String> thread = new CallablesThread<String>();
 				for(final Map<String,Object> map: sessions){
-					PrearcSessionArchiver archiver=buildArchiver(map,allowDataDeletion,overwrite);
+					PrearcSessionArchiver archiver=buildArchiver(map,PrearcImporterHelper.identifyProject(sessions.get(0)),allowDataDeletion,overwrite);
 					archiver.addStatusListener(new ActionListener());
 					thread.addCallable(archiver);
 				}
@@ -223,9 +240,21 @@ public class Archiver extends SecureResource {
 				response.setEntity("", MediaType.TEXT_URI_LIST);
 			}
 		} catch (ResourceException e) {
+			logger.error("",e);
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
 		} catch (IllegalArgumentException e) {
+			logger.error("",e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+		}
+	}
+	
+	private void throwResourceException(ActionException e) throws ResourceException{
+		if(e.status!=null){
+			throw new ResourceException(e.status, e.getMessage(), e);
+		}else if(e instanceof ClientException){
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage(),e);
+		}else{
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,e.getMessage(),e);
 		}
 	}
 	
@@ -274,8 +303,8 @@ public class Archiver extends SecureResource {
 		return proj.getPrearchivePath();
 	}
 	
-	private PrearcSessionArchiver buildArchiver(final Map<String,Object> session, final Boolean allowDataDeletion,final Boolean overwrite) throws ResourceException{
-		return buildArchiver((File)session.get(FOLDER),(String)session.get(PROJECT),(Map<String,Object>)session.get(ADDITIONAL_VALUES),allowDataDeletion,overwrite,(String)session.get(URL));
+	private PrearcSessionArchiver buildArchiver(final Map<String,Object> session,final String project, final Boolean allowDataDeletion,final Boolean overwrite) throws ResourceException{
+		return buildArchiver((File)session.get(FOLDER),project,(Map<String,Object>)session.get(ADDITIONAL_VALUES),allowDataDeletion,overwrite,(String)session.get(URL));
 	}
 	
 	private PrearcSessionArchiver buildArchiver(final File sessionDir,final String project_id,Map<String,Object> additionalValues, final Boolean allowDataDeletion,final Boolean overwrite, final String url) throws ResourceException {

@@ -81,7 +81,7 @@ public class ReconResource extends ItemResource {
 					"Unable to find session '" + assessedID + "'");
 		}
 		
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.RECON_DATA));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.RECON_DATA,false));
 	}
 
 

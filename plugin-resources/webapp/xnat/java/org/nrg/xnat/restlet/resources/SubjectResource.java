@@ -69,7 +69,7 @@ public class SubjectResource extends ItemResource {
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA,false));
 	}
 	
 	@Override

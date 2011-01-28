@@ -7,9 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -20,6 +18,7 @@ import org.nrg.action.ServerException;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusPublisherI;
+import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -74,6 +73,10 @@ import org.xml.sax.SAXException;
  *
  */
 public final class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusPublisherI {
+	private static final String LABEL3 = "session";
+
+	private static final String TRIGGER_PIPELINES = "triggerPipelines";
+
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
 
 	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process.";
@@ -88,7 +91,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	public static final String PARAM_SUBJECT = "subject";
 
 	private final static Logger logger = LoggerFactory.getLogger(PrearcSessionArchiver.class);
-	private final XnatImagesessiondata src;
+	private XnatImagesessiondata src;
 	private final XDATUser user;
 	private final String project;
 	private final Map<String,Object> params;
@@ -262,7 +265,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			final FileWriter prearcXML = new FileWriter(prearcSessionDir.getPath() + ".xml");
 			try {
 				logger.debug("Preparing to update prearchive XML for {}", newSession);
-				newSession.toXML(prearcXML, true);
+				newSession.toXML(prearcXML, false);
 			} catch (RuntimeException e) {
 				logger.error("unable to update prearchive session XML", e);
 				warning("updated prearchive session XML could not be written: " + e.getMessage());
@@ -291,14 +294,17 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 */
 	private void populateAdditionalFields() throws ClientException{
 		//prepare params by removing non xml path names
-		final Map<String,Object> cleaned=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA);
+		final Map<String,Object> cleaned=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA,false);
 
+		if(cleaned.size()>0){
 		try {
 			src.getItem().setProperties(cleaned, true);
 		} catch (Exception e) {
 			failed("unable to map parameters to valid xml path: " + e.getMessage());
 			throw new ClientException("unable to map parameters to valid xml path: ", e);
 			}
+		}
+			src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(src.getItem());
 		}
 
 	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{

@@ -71,4 +71,14 @@ public class FileWriterWrapper implements FileWriterWrapperI{
 			fi.delete();
 		}
 	}
+
+	@Override
+	public UPLOAD_TYPE getType() {
+		if(entry!=null){
+			return FileWriterWrapperI.UPLOAD_TYPE.INBODY;
+		}else{
+			return FileWriterWrapperI.UPLOAD_TYPE.MULTIPART;
+		}
+		
+	}
 }

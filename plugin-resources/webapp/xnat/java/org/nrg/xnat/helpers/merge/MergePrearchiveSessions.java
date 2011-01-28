@@ -18,7 +18,7 @@ import org.restlet.data.Status;
 public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondataBean>  {
 
 	public MergePrearchiveSessions(Object control,final File srcDIR, final XnatImagesessiondataBean src, final String srcRootPath, final File destDIR, final XnatImagesessiondataBean existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion, SaveHandlerI<XnatImagesessiondataBean> saver) {
-		super(control, srcDIR, src, destRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion, saver);
+		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion, saver);
 	}
 
 

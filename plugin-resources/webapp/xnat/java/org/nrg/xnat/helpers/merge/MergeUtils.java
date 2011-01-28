@@ -1,7 +1,9 @@
 package org.nrg.xnat.helpers.merge;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourceI;
@@ -21,21 +23,29 @@ public class MergeUtils {
 	}
 
 	protected static XnatImagescandataI getMatchingScan(final XnatImagescandataI scan, final List<XnatImagescandataI> list){
+		try {
 		return Iterables.find(list,new Predicate<XnatImagescandataI>(){
 			@Override
 			public boolean apply(XnatImagescandataI scan2) {
-				return scan.getId().equals(scan2.getId());
+					return StringUtils.equals(scan.getId(), scan2.getId());
 			}}
 		);
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 
 	protected static XnatAbstractresourceI getMatchingResource(final XnatAbstractresourceI res, List<XnatAbstractresourceI> list){
+		try {
 		return Iterables.find(list,new Predicate<XnatAbstractresourceI>(){
 			@Override
 			public boolean apply(XnatAbstractresourceI res2) {
-				return res.getLabel().equals(res2.getLabel());
+					return StringUtils.equals(res.getLabel(),res2.getLabel());
 			}}
 		);
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 	
 	

@@ -20,7 +20,7 @@ import org.restlet.data.Status;
 
 public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesessiondata> {
 	public MergePrearcToArchiveSession(Object control,final File srcDIR, final XnatImagesessiondata src, final String srcRootPath, final File destDIR, final XnatImagesessiondata existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion,SaveHandlerI<XnatImagesessiondata> saver) {
-		super(control, srcDIR, src, destRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion,saver);
+		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion,saver);
 	}
 
 
@@ -56,29 +56,37 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 		try {
 			for(final XnatImagescandataI srcScan: srcScans){
 				final XnatImagescandataI destScan = MergeUtils.getMatchingScan(srcScan,destScans);
-				if(destScan!=null){
+				if(destScan==null){
+					dest.addScans_scan(srcScan); 
+				}else{
 					final List<XnatAbstractresourceI> srcRess=srcScan.getFile();
 					final List<XnatAbstractresourceI> destRess=destScan.getFile();
 					
 					for(final XnatAbstractresourceI srcRes:srcRess){
 						final XnatAbstractresourceI destRes=MergeUtils.getMatchingResource(srcRes,destRess);
-						if(destRes!=null){
+						if(destRes==null){
+							destScan.addFile(srcRes);
+						}else{
 							if(destRes instanceof XnatResourcecatalogI){
 								File del=mergeCatalogs(srcRootPath,(XnatResourcecatalogI)srcRes,destRootPath,(XnatResourcecatalogI)destRes);
 								if(del!=null)toDelete.add(del);
 							}else if(destRes instanceof XnatResourceseriesI){
 								srcRes.setLabel(srcRes.getLabel()+"2");
 								srcScan.addFile(destRes);
+								
+								destScan.addFile(srcRes);
 							}else if(destRes instanceof XnatResourceI){
 								srcRes.setLabel(srcRes.getLabel()+"2");
 								srcScan.addFile(destRes);
+								
+								destScan.addFile(srcRes);
 							}
 						}
 					}
 				}
 			}
 			
-			src.copyValuesFrom(dest);
+			
 		} catch (MergeCatCatalog.DCMEntryConflict e) {
 			failed("Duplicate DCM UID cannot be merged at this time.");
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,e.getMessage(), e);
@@ -87,7 +95,17 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 			throw new ServerException(e.getMessage(), e);
 		}
 		
+		if(src.getXSIType().equals(dest.getXSIType())){
+			try {
+				src.copyValuesFrom(dest);
+			} catch (Exception e) {
+				failed("Failed to merge upload into existing data.");
+				throw new ServerException(e.getMessage(), e);
+			}
 		return new UpdatedSession<XnatImagesessiondata>(src, toDelete);
+		}else{
+			return new UpdatedSession<XnatImagesessiondata>(dest, toDelete);
+		}
 	}
 
 }

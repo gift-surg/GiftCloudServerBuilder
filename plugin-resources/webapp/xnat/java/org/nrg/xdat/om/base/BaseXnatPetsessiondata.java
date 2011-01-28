@@ -74,6 +74,7 @@ public class BaseXnatPetsessiondata extends AutoXnatPetsessiondata {
     
     public void copyValuesFrom(XnatImagesessiondata otherImage) throws Exception {
     	super.copyValuesFrom(otherImage);
+    	if(otherImage instanceof XnatPetsessiondata){
 		final XnatPetsessiondata tempPET = (XnatPetsessiondata)otherImage;
 		if (null != tempPET.getTracer_dose())
 		    this.setTracer_dose(tempPET.getTracer_dose());
@@ -101,6 +102,7 @@ public class BaseXnatPetsessiondata extends AutoXnatPetsessiondata {
 		    this.setStartTimeInjection(tempPET.getStartTimeInjection());
 		if (null != tempPET.getStartTimeScan())
 		    this.setStartTimeScan(tempPET.getStartTimeScan());
+    	}
 
     }
 

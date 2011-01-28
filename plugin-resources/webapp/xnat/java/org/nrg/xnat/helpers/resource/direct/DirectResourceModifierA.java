@@ -9,19 +9,12 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import org.apache.commons.lang.StringUtils;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImageassessordata;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
-import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.utils.CatalogUtils;
-import org.restlet.data.Status;
 
 /**
  * @author timo
@@ -29,7 +22,7 @@ import org.restlet.data.Status;
  */
 public abstract class DirectResourceModifierA {
 	
-	public boolean saveFile(final FileWriterWrapper fi,final String relativePath, final XnatResource resource, final XDATUser user, final XnatResourceInfo info) throws IOException,FileNotFoundException,Exception{
+	public boolean saveFile(final FileWriterWrapperI fi,final String relativePath, final XnatResource resource, final XDATUser user, final XnatResourceInfo info) throws IOException,FileNotFoundException,Exception{
 		CatalogUtils.configureEntry(resource, info, user);
 		
 		final String dest_path=this.buildDestinationPath();

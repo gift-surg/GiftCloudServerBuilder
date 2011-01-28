@@ -60,7 +60,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA,true));
 	}
 
 	@Override

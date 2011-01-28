@@ -98,7 +98,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA,true));
 	}
 
 	@Override

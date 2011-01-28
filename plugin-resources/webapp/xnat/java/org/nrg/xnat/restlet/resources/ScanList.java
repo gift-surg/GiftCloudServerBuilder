@@ -124,7 +124,7 @@ public class ScanList extends QueryOrganizerResource {
 				}
 			}
 
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME,true));
 
 	}
 

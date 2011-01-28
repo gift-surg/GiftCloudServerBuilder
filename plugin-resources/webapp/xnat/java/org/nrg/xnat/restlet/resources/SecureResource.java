@@ -24,6 +24,7 @@ import org.nrg.action.ServerException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.PopulateItem;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -667,11 +668,12 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-
-	
 	public List<FileWriterWrapperI> getFileWriters() throws FileUploadException{
+		return getFileWriters(this.getRequest().getEntity());
+	}
+
+	public List<FileWriterWrapperI> getFileWriters(final Representation entity) throws FileUploadException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
-		final Representation entity=this.getRequest().getEntity();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
 			if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message (not as part of multi-part form data).");
@@ -743,4 +745,14 @@ public abstract class SecureResource extends Resource {
 	public HttpSession getHttpSession() {
 		return getHttpServletRequest().getSession();
 }
+
+	public static String CONTEXT_PATH=null;
+
+	public String getContextPath(){
+		if(CONTEXT_PATH==null){
+			CONTEXT_PATH=TurbineUtils.GetRelativePath(getHttpServletRequest());
+}
+		return CONTEXT_PATH;
+	}
+
 }

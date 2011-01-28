@@ -5,8 +5,7 @@ package org.nrg.action;
 
 import org.restlet.data.Status;
 
-public class ClientException extends Exception {
-	public Status status =null;
+public class ClientException extends ActionException {
 	public ClientException(String msg,Exception e){
 		super(msg,e);
 	}

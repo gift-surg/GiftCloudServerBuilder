@@ -75,19 +75,14 @@ public class LoadImageData extends SecureAction {
         final String root = (String)TurbineUtils.GetPassedParameter("root",data);
         final XDATUser user = TurbineUtils.getUser(data);
         
-        if (null == folder || null == root) {
+        final String project = (String)TurbineUtils.GetPassedParameter("project",data);	// can we final this?
+        if (null == folder || null == root || null == project) {
             data.setMessage("Unknown folder: " + folder);
             data.setScreenTemplate(PREARC_PAGE);
             return;
         }
 
-        String project = (String)TurbineUtils.GetPassedParameter("project",data);	// can we final this?
-        final String prearchive_path;
-        if (null == project) {
-            prearchive_path=ArcSpecManager.GetInstance().getGlobalPrearchivePath();
-        } else {
-            prearchive_path=ArcSpecManager.GetInstance().getPrearchivePathForProject(project);
-        }
+        final String prearchive_path=ArcSpecManager.GetInstance().getPrearchivePathForProject(project);
             
             
         //LOAD FOLDER
@@ -123,6 +118,7 @@ public class LoadImageData extends SecureAction {
             final String tag = root+"_"+folder;
             data.getSession().setAttribute(tag, imageSessionData);
             data.getParameters().add("tag", tag);
+        data.getParameters().add("src","/prearchive/projects/"+ project+"/"+ root +"/"+ folder);
             data.setScreenTemplate("XDATScreen_uploaded_xnat_imageSessionData.vm");
     }
 

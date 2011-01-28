@@ -30,6 +30,7 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
@@ -154,7 +155,6 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				if(destination instanceof UriParserUtils.PrearchiveURI){
 					prearc_parameters.putAll(destination.getProps());
 				}else{
-					//TODO: Duplicate code with params check
 					project=PrearcImporterHelper.identifyProject(destination.getProps());
 					if(!StringUtils.isEmpty(project)){
 						prearc_parameters.put("project", project);
@@ -241,6 +241,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 						.call();
 					return new ArrayList<String>(){{add(uri);}};
 			}else{
+				this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
 				return returnURLs(sessions);
 			}
 			
@@ -256,6 +257,9 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		} catch (SAXException e) {
 			this.failed(e.getMessage());
 			throw new ClientException(e.getMessage(),e);
+		} catch (Throwable e) {
+			logger.error("",e);
+			throw new ServerException(e.getMessage(),new Exception());
 		}
 	}
 	
@@ -278,7 +282,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		}
 			
 		if(isd.getProject()==null){
-			throw new ServerException("Project was inproperly configured for uploaded data.", new Exception());
+			return false;
 		}
 		
 		if(!autoarchive){

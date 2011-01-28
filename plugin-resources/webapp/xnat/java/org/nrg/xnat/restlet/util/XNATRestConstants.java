@@ -22,4 +22,5 @@ public class XNATRestConstants {
 	public static final String TRANSACTION_RECORD_ID="transaction";
 	
 	public static final String XML_PATH_REGEXP=".*:.*/.*";
+	public static final String XML_PATH_REGEXP2=".*:.*\\..*";
 }

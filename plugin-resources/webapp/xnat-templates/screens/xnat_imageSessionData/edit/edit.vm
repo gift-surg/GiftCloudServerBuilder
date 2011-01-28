@@ -132,6 +132,10 @@ $page.setVlinkColor($ui.vlink)
 #xdatEditProps($item $edit_screen)
 <input type="hidden" name="tag" value="$!tag"/>
 <DIV ID="ADDIN"></DIV>
+	#if($src)
+	<input type="hidden" name="src" value="$!src"/>
+	<input type="hidden" name="redirect" value="true"/>
+	#end
     	<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
     	<input type="submit" name="eventSubmit_doInsert" value="Submit"/>
     	

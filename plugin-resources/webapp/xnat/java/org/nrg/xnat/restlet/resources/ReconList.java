@@ -121,7 +121,7 @@ public class ReconList extends QueryOrganizerResource {
 				}
 			}
 
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.RECON_DATA));
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.RECON_DATA,true));
 		
 	}
 

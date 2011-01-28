@@ -151,7 +151,6 @@ window.invest_manager.init();
 function stringCamelCaps(val)
 {
         var temp = val.replace(/^\s*|\s*$/g,"");
-        //temp = temp.replace(/[-]/," ");
         temp = temp.replace(/[&]/," ");
         temp = temp.replace(/[?]/," ");
         temp = temp.replace(/[<]/," ");

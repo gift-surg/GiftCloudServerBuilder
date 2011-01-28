@@ -23,7 +23,8 @@ public class FileUtils {
 		}
 	}
 	
-	public static File buildCachepath(final String project, final String subdir,final String destName){
+	public static File buildCachepath(String project, final String subdir,final String destName){
+		if(project==null)project="Unknown";
 		final File cache=(StringUtils.isEmpty(subdir))?new File(XFT.GetCachePath(),project):new File(new File(XFT.GetCachePath(),project),subdir);
 		
 		final File dest= new File(cache,org.nrg.xft.utils.FileUtils.renameWTimestamp(destName));

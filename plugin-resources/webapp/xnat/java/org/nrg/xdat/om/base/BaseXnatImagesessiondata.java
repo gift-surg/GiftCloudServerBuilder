@@ -2857,7 +2857,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         }
 	
 		int scancounter = 0;
-		for (final XnatImagescandataI scan : this.getSortedScans()){
+		for (final XnatImagescandataI scan : this.getScans_scan()){
 		    final XnatImagescandata otherScan = other.getScanById(scan.getId());
 		    if (null != otherScan){
 			if (null != otherScan.getType())

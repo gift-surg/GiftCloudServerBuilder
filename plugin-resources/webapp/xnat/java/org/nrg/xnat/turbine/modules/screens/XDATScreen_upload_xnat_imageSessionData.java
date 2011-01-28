@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 
 public class XDATScreen_upload_xnat_imageSessionData extends SecureReport {
 	static Logger logger = Logger.getLogger(XDATScreen_upload_xnat_imageSessionData.class);

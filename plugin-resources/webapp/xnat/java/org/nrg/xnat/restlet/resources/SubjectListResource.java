@@ -24,7 +24,7 @@ public class SubjectListResource extends QueryOrganizerResource {
 		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA,true));
 	}
 	
 	

@@ -95,6 +95,12 @@ public final class XDATScreen_uploaded_xnat_imageSessionData extends
         data.getSession().setAttribute(tag, session);
         context.put("tag", tag);
         
+
+        
+        if(TurbineUtils.HasPassedParameter("src", data)){
+        	context.put("src", TurbineUtils.GetPassedParameter("src", data));
+        }
+        
 		//review label
 		String label = session.getLabel();
 		if(session.getLabel()==null){

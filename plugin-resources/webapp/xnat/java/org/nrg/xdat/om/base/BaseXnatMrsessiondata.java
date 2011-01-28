@@ -279,6 +279,7 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
     public void copyValuesFrom(final XnatImagesessiondata otherImageSession) throws Exception {
 	super.copyValuesFrom(otherImageSession);
         
+    	if(otherImageSession instanceof XnatMrsessiondata){
 	final XnatMrsessiondata otherMR = (XnatMrsessiondata)otherImageSession;
 	
         if (null != otherMR.getStabilization()){
@@ -292,6 +293,7 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
         if (null != otherMR.getCoil()){
             this.setCoil(otherMR.getCoil());
         }
+    }
     }
         
     public String getDefaultIdentifier(){

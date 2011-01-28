@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface FileWriterWrapperI {
+	public static enum UPLOAD_TYPE{INBODY,MULTIPART};
 
 	public abstract void write(File f) throws IOException, Exception;
 
@@ -16,5 +17,7 @@ public interface FileWriterWrapperI {
 	public abstract InputStream getInputStream() throws IOException, Exception;
 
 	public abstract void delete();
+
+	public abstract UPLOAD_TYPE getType();
 
 }

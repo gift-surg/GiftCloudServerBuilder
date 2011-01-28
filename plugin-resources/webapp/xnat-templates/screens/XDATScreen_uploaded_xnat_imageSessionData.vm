@@ -1,3 +1,3 @@
-#set($target=$link.setAction("StoreImageSession"))
+#set($target=$content.getURI("/REST/services/archive"))
 #set($allowDataDeletion="false")
 			#parse($turbineUtils.getTemplateName("edit",$om.getXSIType(),$project,"edit"))

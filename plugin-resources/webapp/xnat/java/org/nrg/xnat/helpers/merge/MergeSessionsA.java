@@ -68,7 +68,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 			try {
 				if(FileUtils.FindFirstMatch(srcDIR, destDIR, new FileFilter(){
 					public boolean accept(File pathname) {
-						return !pathname.getName().endsWith(".xml");
+						return !(pathname.getName().endsWith(".xml") ||pathname.getName().endsWith(".log"));
 					}})!= null){
 					failed(HAS_FILES);
 					throw new ClientException(Status.CLIENT_ERROR_CONFLICT,HAS_FILES, new Exception());
@@ -254,7 +254,14 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 
 	public void mergeDirectories(File srcDIR2, File destDIR2, boolean overwrite) throws ClientException, ServerException {
 		try {
-			org.nrg.xft.utils.FileUtils.MoveDir(srcDIR2,destDIR2,overwrite,null);			
+			FileUtils.MoveDir(srcDIR2,destDIR2,overwrite,new FileFilter(){
+				public boolean accept(File pathname) {
+					return (!pathname.getName().endsWith(".log"));
+				}});
+			
+			if(!FileUtils.HasFiles(srcDIR2.getParentFile())){
+				FileUtils.DeleteFile(srcDIR2.getParentFile());
+			}
 		} catch (IOException e) {
 			failed("Unable to merge uploaded data into destination directory.");
 			throw new ServerException(e.getMessage(),e);

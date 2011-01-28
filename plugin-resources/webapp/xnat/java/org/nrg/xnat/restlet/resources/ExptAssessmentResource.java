@@ -96,18 +96,7 @@ public class ExptAssessmentResource extends ItemResource {
 		}
 
 
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
-		this.fieldMapping.put("ID", "xnat:experimentdata/ID");
-		this.fieldMapping.put("visit_id", "xnat:experimentdata/visit_id");
-		this.fieldMapping.put("date", "xnat:experimentdata/date");
-		this.fieldMapping.put("time", "xnat:experimentdata/time");
-		this.fieldMapping.put("note", "xnat:experimentdata/note");
-		this.fieldMapping.put("pi_firstname", "xnat:experimentdata/investigator/firstname");
-		this.fieldMapping.put("pi_lastname", "xnat:experimentdata/investigator/lastname");
-		this.fieldMapping.put("validation_method", "xnat:experimentdata/validation/method");
-		this.fieldMapping.put("validation_status", "xnat:experimentdata/validation/status");
-		this.fieldMapping.put("validation_date", "xnat:experimentdata/validation/date");
-		this.fieldMapping.put("validation_notes", "xnat:experimentdata/validation/notes");
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA,false));
 	}
 
 

@@ -32,7 +32,7 @@ public class ExperimentListResource  extends QueryOrganizerResource {
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 		
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA,true));
 		
 		}
 	

@@ -1,7 +1,9 @@
 package org.nrg.xnat.helpers.xmlpath;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.nrg.xdat.om.XnatDeriveddata;
@@ -24,6 +26,7 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 	public static final String PROJECT_DATA=XnatProjectdata.SCHEMA_ELEMENT_NAME;
 	
 	private Map<String,Map<String,String>> shortcuts=new Hashtable<String,Map<String,String>>();
+	private Map<String,Map<String,String>> readonly=new Hashtable<String,Map<String,String>>();
 	
 	private XMLPathShortcuts(){
 		this.addShortCut(IMAGE_SCAN_DATA, "ID", "xnat:imageScanData/ID");
@@ -42,7 +45,7 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		this.addShortCut(IMAGE_SCAN_DATA, "validation_date", "xnat:imageScanData/validation/date");
 		this.addShortCut(IMAGE_SCAN_DATA, "validation_notes", "xnat:imageScanData/validation/notes");
 
-		this.addShortCut(IMAGE_SCAN_DATA, "xnat_imagescandata_id", "xnat:imageScanData/xnat_imagescandata_id");
+		this.addShortCut(IMAGE_SCAN_DATA, "xnat_imagescandata_id", "xnat:imageScanData/xnat_imagescandata_id",true);
 
 		this.addShortCut(IMAGE_SCAN_DATA, "coil", "xnat:mrScanData/coil");
 		this.addShortCut(IMAGE_SCAN_DATA, "fieldStrength", "xnat:mrScanData/fieldStrength");
@@ -64,11 +67,11 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		this.addShortCut(IMAGE_SCAN_DATA, "binSize","xnat:petScanData/parameters/binSize");
 		this.addShortCut(IMAGE_SCAN_DATA, "dataType","xnat:petScanData/parameters/dataType");
 
-		this.addShortCut(IMAGE_SCAN_DATA, "insert_date", "xnat:imageScanData/meta/insert_date");
-		this.addShortCut(IMAGE_SCAN_DATA, "insert_user", "xnat:imageScanData/meta/insert_user/login");
-		this.addShortCut(IMAGE_SCAN_DATA, "last_modified", "xnat:imageScanData/meta/last_modified");
+		this.addShortCut(IMAGE_SCAN_DATA, "insert_date", "xnat:imageScanData/meta/insert_date",true);
+		this.addShortCut(IMAGE_SCAN_DATA, "insert_user", "xnat:imageScanData/meta/insert_user/login",true);
+		this.addShortCut(IMAGE_SCAN_DATA, "last_modified", "xnat:imageScanData/meta/last_modified",true);
 
-		this.addShortCut(IMAGE_SCAN_DATA, "xsiType", "xnat:imageScanData/extension_item/element_name");
+		this.addShortCut(IMAGE_SCAN_DATA, "xsiType", "xnat:imageScanData/extension_item/element_name",true);
 		
 		
 		//experiments
@@ -120,17 +123,17 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 
 		
 		this.addShortCut(EXPERIMENT_DATA, "subject_ID", "xnat:subjectassessordata/subject_id");
-		this.addShortCut(EXPERIMENT_DATA, "subject_label", "xnat:subjectdata/label");
-		this.addShortCut(EXPERIMENT_DATA, "subject_project", "xnat:subjectdata/project");
+		this.addShortCut(EXPERIMENT_DATA, "subject_label", "xnat:subjectdata/label",true);
+		this.addShortCut(EXPERIMENT_DATA, "subject_project", "xnat:subjectdata/project",true);
 		
-		this.addShortCut(EXPERIMENT_DATA, "session_ID", "xnat:imagesessiondata/id");
-		this.addShortCut(EXPERIMENT_DATA, "session_label", "xnat:imagesessiondata/label");
-		this.addShortCut(EXPERIMENT_DATA, "session_project", "xnat:imagesessiondata/project");
+		this.addShortCut(EXPERIMENT_DATA, "session_ID", "xnat:imagesessiondata/id",true);
+		this.addShortCut(EXPERIMENT_DATA, "session_label", "xnat:imagesessiondata/label",true);
+		this.addShortCut(EXPERIMENT_DATA, "session_project", "xnat:imagesessiondata/project",true);
 		
-		this.addShortCut(EXPERIMENT_DATA, "insert_date", "xnat:experimentData/meta/insert_date");
-		this.addShortCut(EXPERIMENT_DATA, "insert_user", "xnat:experimentData/meta/insert_user/login");
-		this.addShortCut(EXPERIMENT_DATA, "last_modified", "xnat:experimentData/meta/last_modified");
-		this.addShortCut(EXPERIMENT_DATA, "xsiType", "xnat:experimentData/extension_item/element_name");
+		this.addShortCut(EXPERIMENT_DATA, "insert_date", "xnat:experimentData/meta/insert_date",true);
+		this.addShortCut(EXPERIMENT_DATA, "insert_user", "xnat:experimentData/meta/insert_user/login",true);
+		this.addShortCut(EXPERIMENT_DATA, "last_modified", "xnat:experimentData/meta/last_modified",true);
+		this.addShortCut(EXPERIMENT_DATA, "xsiType", "xnat:experimentData/extension_item/element_name",true);
 		
 		
 		//subjects
@@ -158,15 +161,15 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		this.addShortCut(SUBJECT_DATA, "post_menstrual_age", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/post_menstrual_age");
 		this.addShortCut(SUBJECT_DATA, "birth_weight", "xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/birth_weight");
 		
-		this.addShortCut(SUBJECT_DATA, "insert_date", "xnat:subjectData/meta/insert_date");
-		this.addShortCut(SUBJECT_DATA, "insert_user", "xnat:subjectData/meta/insert_user/login");
-		this.addShortCut(SUBJECT_DATA, "last_modified", "xnat:subjectData/meta/last_modified");
+		this.addShortCut(SUBJECT_DATA, "insert_date", "xnat:subjectData/meta/insert_date",true);
+		this.addShortCut(SUBJECT_DATA, "insert_user", "xnat:subjectData/meta/insert_user/login",true);
+		this.addShortCut(SUBJECT_DATA, "last_modified", "xnat:subjectData/meta/last_modified",true);
 		
 		//recon
 		this.addShortCut(RECON_DATA, "ID", "xnat:reconstructedImageData/ID");
 		this.addShortCut(RECON_DATA, "type", "xnat:reconstructedImageData/type");
 		this.addShortCut(RECON_DATA, "baseScanType", "xnat:reconstructedImageData/baseScanType");
-		this.addShortCut(RECON_DATA, "xnat_reconstructedimagedata_id", "xnat:reconstructedImageData/xnat_reconstructedimagedata_id");
+		this.addShortCut(RECON_DATA, "xnat_reconstructedimagedata_id", "xnat:reconstructedImageData/xnat_reconstructedimagedata_id",true);
 		
 		//assessor
 		this.addShortCut(DERIVED_DATA, "ID", "xnat:experimentdata/ID");
@@ -183,14 +186,14 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		this.addShortCut(DERIVED_DATA, "project", "xnat:experimentdata/project");
 		this.addShortCut(DERIVED_DATA, "label", "xnat:experimentdata/label");
 		
-		this.addShortCut(DERIVED_DATA, "session_ID", "xnat:imagesessiondata/id");
-		this.addShortCut(DERIVED_DATA, "session_label", "xnat:imagesessiondata/label");
-		this.addShortCut(DERIVED_DATA, "session_project", "xnat:imagesessiondata/project");
+		this.addShortCut(DERIVED_DATA, "session_ID", "xnat:imagesessiondata/id",true);
+		this.addShortCut(DERIVED_DATA, "session_label", "xnat:imagesessiondata/label",true);
+		this.addShortCut(DERIVED_DATA, "session_project", "xnat:imagesessiondata/project",true);
 		
-		this.addShortCut(DERIVED_DATA, "insert_date", "xnat:experimentData/meta/insert_date");
-		this.addShortCut(DERIVED_DATA, "insert_user", "xnat:experimentData/meta/insert_user/login");
-		this.addShortCut(DERIVED_DATA, "last_modified", "xnat:experimentData/meta/last_modified");
-		this.addShortCut(DERIVED_DATA, "xsiType", "xnat:experimentData/extension_item/element_name");
+		this.addShortCut(DERIVED_DATA, "insert_date", "xnat:experimentData/meta/insert_date",true);
+		this.addShortCut(DERIVED_DATA, "insert_user", "xnat:experimentData/meta/insert_user/login",true);
+		this.addShortCut(DERIVED_DATA, "last_modified", "xnat:experimentData/meta/last_modified",true);
+		this.addShortCut(DERIVED_DATA, "xsiType", "xnat:experimentData/extension_item/element_name",true);
 		
 		//project
 		this.addShortCut(PROJECT_DATA, "ID", "xnat:projectData/ID");
@@ -205,11 +208,20 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 	}
 	
 	public void addShortCut(final String xsiType,final String key, final String path){
+		this.addShortCut(xsiType, key, path, false);
+	}
+	
+	public void addShortCut(final String xsiType,final String key, final String path,boolean readOnly){
 		if(!shortcuts.containsKey(xsiType)){
 			shortcuts.put(xsiType.intern(), new Hashtable<String,String>());
+			readonly.put(xsiType.intern(), new Hashtable<String,String>());
 		}
 		
+		if(readOnly){
+			readonly.get(xsiType).put(key.intern(), path.intern());
+		}else{
 		shortcuts.get(xsiType).put(key.intern(), path.intern());
+	}
 	}
 	
 	public static synchronized XMLPathShortcutsI getInstance(){
@@ -226,16 +238,34 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 	 * @param params
 	 * @return
 	 */
-	public static Map<String,Object> identifyUsableFields(final Map<String,Object> params, final String TYPE){
-		final Map<String,String> shortcuts=XMLPathShortcuts.getInstance().getShortcuts(TYPE);
+	public static Map<String,Object> identifyUsableFields(final Map<String,Object> params, final String TYPE,boolean readOnly){
+		 return XMLPathShortcuts.getInstance().identifyFields(params,TYPE,readOnly);
 		
+		
+	}
+	
+	final static List<String> REGEXP=new ArrayList<String>(){{
+		add(XNATRestConstants.XML_PATH_REGEXP);
+		add(XNATRestConstants.XML_PATH_REGEXP2);}};
+	
+	public Map<String,Object> identifyFields(final Map<String,Object> params, final String TYPE,boolean readOnly){
 		final Map<String,Object> relevant=new HashMap<String,Object>();
 		
 		for(Map.Entry<String,Object> entry:params.entrySet()){
-			if((entry.getKey()).matches(XNATRestConstants.XML_PATH_REGEXP)){
+			for(final String reg:REGEXP){
+				if((entry.getKey()).matches(reg)){
 				relevant.put(entry.getKey(),entry.getValue());
-			}else if(shortcuts.containsKey(entry.getKey())){
-				relevant.put(entry.getKey(),entry.getValue());
+					continue;
+				}
+			}
+			if(shortcuts.get(TYPE).containsKey(entry.getKey())){
+				relevant.put(shortcuts.get(TYPE).get(entry.getKey()),entry.getValue());
+			}
+			
+			if(readOnly){
+				if(readonly.get(TYPE).containsKey(entry.getKey())){
+					relevant.put(readonly.get(TYPE).get(entry.getKey()),entry.getValue());
+				}
 			}
 		}
 		
@@ -243,8 +273,10 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 	}
 
 	@Override
-	public Map<String, String> getShortcuts(String xsiType) {
-		return shortcuts.get(xsiType);
+	public Map<String, String> getShortcuts(String type, boolean readOnly) {
+		Map<String,String> temp=new HashMap<String,String>(this.shortcuts.get(type));
+		if(readOnly)temp.putAll(this.readonly.get(type));
+		return temp;
 	}
 
 }

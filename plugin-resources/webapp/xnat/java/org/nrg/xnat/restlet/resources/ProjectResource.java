@@ -52,7 +52,7 @@ public class ProjectResource extends ItemResource {
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
 		
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA));
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA,false));
 		
 	}
 	

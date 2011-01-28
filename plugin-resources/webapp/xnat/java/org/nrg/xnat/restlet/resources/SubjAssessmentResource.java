@@ -51,7 +51,8 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 	XnatSubjectdata subject=null;
 	XnatSubjectassessordata expt = null;
 	String exptID=null;
-	XnatSubjectassessordata existing = null;
+	XnatSubjectassessordata existing;
+	String subID= null;
 	
 	public SubjAssessmentResource(Context context, Request request, Response response) {
 		super(context, request, response);
@@ -76,7 +77,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 			return;
 			}
 
-			String subID= (String)request.getAttributes().get("SUBJECT_ID");
+			subID= (String)request.getAttributes().get("SUBJECT_ID");
 			if(subID!=null){
 			subject = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 					.getId(), subID, user, false);
@@ -115,7 +116,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		}else{
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA,false));
 	}
 
 
@@ -313,6 +314,10 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					if(this.subject!=null){
 							expt.setSubjectId(this.subject.getId());
 					}else{
+						if(StringUtils.IsEmpty(expt.getSubjectId()) && org.apache.commons.lang.StringUtils.isNotEmpty(subID)){
+							expt.setSubjectId(subID);
+						}
+
 						if(expt.getSubjectId()!=null && !expt.getSubjectId().equals("")){
 							this.subject=XnatSubjectdata.getXnatSubjectdatasById(expt.getSubjectId(), user, false);
 							

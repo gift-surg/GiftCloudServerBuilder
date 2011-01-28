@@ -110,7 +110,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 					"Unable to find project.");
 		}
 
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA));
+			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA,true));
 	}
 
 

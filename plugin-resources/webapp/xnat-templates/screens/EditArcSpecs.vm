@@ -283,7 +283,6 @@ $!template.setLayoutTemplate("NoMenu.vm")
 function stringCamelCaps(val)
 {
         var temp = stringTrim(val);
-        temp = temp.replace(/[-]/," ");
         temp = temp.replace(/[&]/," ");
         temp = temp.replace(/[?]/," ");
         temp = temp.replace(/[<]/," ");

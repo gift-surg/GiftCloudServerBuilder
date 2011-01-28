@@ -36,6 +36,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.helpers.prearchive.PrearcTableBuilderI#buildTable(java.lang.String[])
 	 */
+	@Override
 	public ProjectPrearchiveI buildTable(final String project, final XDATUser user, final String urlBase) throws IOException, InvalidPermissionException, Exception {
 		final XFTTable table = new XFTTable();
 		table.initTable(PREARC_HEADERS);
@@ -50,7 +51,6 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 					if(s.getLastBuiltDate().after(lastMod)){
 						lastMod=s.getLastBuiltDate();
 					}
-					
 					table.rows().add(buildRow(s,urlBase));
 				}
 			}
@@ -71,7 +71,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		row[3]=s.getDate();
 		row[4]=s.getTime();
 		row[5]=s.getSubjectId();
-		row[6]=s.getLabel();
+		row[6]=PrearcTableBuilder.Session.pickName(s);
 		row[7]=s.getStatus();
 		row[8]=StringUtils.join(new String[]{urlBase,"/".intern(),s.getTimestamp(),"/".intern(),s.getName()});
 		
@@ -96,6 +96,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		/* (non-Javadoc)
 		 * @see org.nrg.xnat.helpers.prearchive.ProjectPrearchiveI#getLastMod()
 		 */
+		@Override
 		public Date getLastMod() {
 			return lastMod;
 		}
@@ -103,6 +104,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		/* (non-Javadoc)
 		 * @see org.nrg.xnat.helpers.prearchive.ProjectPrearchiveI#getContent()
 		 */
+		@Override
 		public XFTTable getContent() {
 			return content;
 		}
@@ -110,35 +112,38 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		
 	}
 
+	@Override
 	public String[] getColumns() {
 		return PREARC_HEADERS;
 	}
 	
 
+	public static String printSession (Session s) {
+		ArrayList<String> as = new ArrayList<String>();
+		as.add("--Session--");
+		as.add("Name : " + s.getName());
+		as.add("Status : " + s.getStatus());
+		as.add("SubjectId: " + s.getSubjectId());
+		as.add("Scan Time : " + s.getTimestamp().toString());
+		as.add("Uploaded : " + s.getUploadDate().toString());
+		return StringUtils.join(as.toArray(new String[as.size()]), "\n");
+	}
 
-	private class Session implements Comparable<Session> {
-		private final String name;
-		
-		private String timestamp;
-
-		private final Date uploadDate;
-
-		private final Date lastBuiltDate;
-
+	public static class Session implements Comparable<Session> {
 		private final File sessionXML;
 		
 		private XnatImagesessiondataI session=null;
 		
-		private PrearcStatus status;
+		private SessionData data = new SessionData();
 
 		Session(final File sessdir) {
-			name = sessdir.getName();
+			data.sessionTriple.name = sessdir.getName();
 
 			sessionXML = new File(sessdir.getPath() + ".xml");
 			if (sessionXML.exists()) {
-				lastBuiltDate = new Date(sessionXML.lastModified());
-			} else {
-				lastBuiltDate = new Date();
+				data.lastBuiltDate = new Date(sessionXML.lastModified());
+			} else {			
+				data.lastBuiltDate = new Date();
 			}
 
 			final DateFormat format = new SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP);
@@ -149,43 +154,70 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 				logger.error("Unable to parse upload date from session parent " + sessdir.getParentFile(), e);
 				t_uploadDate = null;
 			}
-			uploadDate = t_uploadDate;
+			data.uploadDate = t_uploadDate;
 
 			
-			status=PrearcUtils.checkSessionStatus(sessionXML);
+			data.status=PrearcUtils.checkSessionStatus(sessionXML);
 			try {
 				session=parseSession(sessionXML);
 
 				final String sessionID = session.getId();
 				if (null == sessionID || "".equals(sessionID) || "NULL".equals(sessionID)) {
-					status = PrearcStatus.READY;
+					data.status = PrearcStatus.READY;
 				} else {
-					status = PrearcStatus.ARCHIVING;
+					data.status = PrearcStatus.ARCHIVING;
 				}
 			} catch (Exception e) {
-				status=PrearcStatus.ERROR;
+				data.status=PrearcStatus.ERROR;
 				logger.error("",e);
 			}
 		}
+		
+		public SessionData getSessionData (String urlBase) {
+			//populate the rest of the session data object.
+			data.setProject(this.getProject());
+			data.setScan_date(this.getDate());
+			data.setScan_time(this.getTime());
+			data.setName(Session.pickName(this));
+			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),data.getName()}));
+			return this.data;
+		}
+		
+		public static String pickName(final PrearcTableBuilder.Session s) {
+			String ret = "";
+			if (s.getLabel() != null) {
+				ret = s.getLabel();
+			}
+			if (ret.equals("") && s.getPatientId() != null) {
+				ret = s.getPatientId();
+			}
+			if (ret.equals("") && s.getPatientName() != null) {
+				ret = s.getPatientName();
+			}
+			return ret;
+		}
 
+		public void setName(String name) {
+			this.data.sessionTriple.name = name;
+		}
 		public Date getLastBuiltDate() {
-			return lastBuiltDate;
+			return data.lastBuiltDate;
 		}
 
 		public String getName() {
-			return name;
+			return data.sessionTriple.name;
 		}
 
 		public Date getUploadDate() {
-			return uploadDate;
+			return data.uploadDate;
 		}
 
 		public String getTimestamp() {
-			return timestamp;
+			return data.sessionTriple.timestamp;
 		}
 
 		public void setTimestamp(String timestamp) {
-			this.timestamp = timestamp;
+			this.data.sessionTriple.timestamp = timestamp;
 		}
 
 		public String getProject(){
@@ -209,20 +241,34 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			
 		}
 		
-		public PrearcStatus getStatus(){
-			return status;
+		public String getPatientId() {
+			return (session!=null)?session.getDcmpatientid():null;
 		}
+		
+		public String getPatientName() {
+			return (session!=null)?session.getDcmpatientname():null;
+		}
+		
+		public PrearcStatus getStatus(){
+			return data.status;
+		}
+		
+		
+		
+		
+		
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
+		@Override
 		public int compareTo(final Session other) {
 			return getLastBuiltDate().compareTo(other.getLastBuiltDate());
 		}
 	}
 
-	private SortedMap<Date, Collection<Session>> getPrearcSessions(final File prearcDir) throws IOException, SAXException {
+	public SortedMap<Date, Collection<Session>> getPrearcSessions(final File prearcDir) throws IOException, SAXException {
 		final SortedMap<Date, Collection<Session>> sessions = new TreeMap<Date, Collection<Session>>();
 		for (final File tsdir : prearcDir.listFiles(PrearcUtils.isTimestampDirectory)) {
 			for (final File sessdir : tsdir.listFiles(PrearcUtils.isDirectory)) {

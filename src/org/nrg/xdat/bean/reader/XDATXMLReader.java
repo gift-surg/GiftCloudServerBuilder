@@ -436,15 +436,35 @@ public class XDATXMLReader extends DefaultHandler {
         }
     }
     
+    /**
+     * Convert null unicode characters into spaces. The given InputStream is iterated and 
+     * mark set to the beginning afterwards.
+     * @param i
+     * @return
+     * @throws IOException
+     */
+    public static InputStream removeNullUnicodeChars (InputStream i) throws IOException {
+    	byte [] bs = new byte[i.available()];
+    	i.read(bs);
+    	for (int j = 0; j < bs.length ; j++) {
+    		if (bs[j] == Byte.decode("0x00")) {
+    			bs[j] =' ';
+    		}
+    	}
+    	return new java.io.ByteArrayInputStream(bs);
+    }
+    
     public BaseElement parse(java.io.File data) throws IOException, SAXException{
         SAXParserFactory spf = SAXParserFactory.newInstance();
         try {
             spf.setNamespaceAware(true);
-        
+            java.io.FileInputStream fi = new java.io.FileInputStream(data);
             //get a new instance of parser
             SAXParser sp = spf.newSAXParser();
             //parse the file and also register this class for call backs
-            sp.parse(data, this);
+            sp.parse(XDATXMLReader.removeNullUnicodeChars(fi), this);
+            // sp.parse(fi, this);
+            fi.close();
             
         }catch(ParserConfigurationException pce) {
             pce.printStackTrace();

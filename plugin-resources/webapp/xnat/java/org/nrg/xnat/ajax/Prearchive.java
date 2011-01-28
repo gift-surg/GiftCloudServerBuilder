@@ -44,6 +44,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.archive.PrearcImporterFactory;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
 
@@ -62,21 +63,6 @@ public final class Prearchive {
 	private static final FileFilter isXMLFileFilter = new FileFilter() {
 		public boolean accept(final File f) { return f.isFile() && f.getName().matches(".*\\.[xX][mM][lL]\\z"); }
 	};
-
-	private static final FileFilter isSessionGeneratedFileFilter = new FileFilter() {
-		private final Pattern conversionLogPattern = Pattern.compile("(\\w*)toxnat\\.log");
-		private final Pattern scanCatalogPattern = Pattern.compile("scan_(\\d*)_catalog.xml");
-		public boolean accept(final File f) {
-			return scanCatalogPattern.matcher(f.getName()).matches()
-			|| conversionLogPattern.matcher(f.getName()).matches();
-		}
-	};
-
-	//	private static final Comparator<File> nameComparator = new Comparator<File>() {
-	//		public int compare(final File f1, final File f2) {
-	//			return f1.getName().compareTo(f2.getName());
-	//		}
-	//	};
 
 	private static final Comparator<File> lastModifiedComparator = new Comparator<File>() {
 		public int compare(final File f1, final File f2) {
@@ -720,7 +706,7 @@ public final class Prearchive {
 		// move the session contents, and build the new session XML.
 		final File tsdir = fromSession.getParentFile();
 		new File(tsdir, fromSession.getName() + XML_SUFFIX).delete();
-		for (final File file : fromSession.listFiles(isSessionGeneratedFileFilter)) {
+		for (final File file : fromSession.listFiles(PrearcUtils.isSessionGeneratedFileFilter)) {
 			file.delete();
 		}
 		final File newTsdir = new File(toPrearc, tsdir.getName());

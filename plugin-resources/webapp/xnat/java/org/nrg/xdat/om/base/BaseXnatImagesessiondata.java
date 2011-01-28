@@ -3282,7 +3282,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				
 				if (!user.canDeleteByXMLPath(se,values))
 				{
-					return "User cannot delete subjects for project " + proj.getId();
+					return "User cannot delete experiments for project " + proj.getId();
 				}
 			} catch (Exception e1) {
 				return "Unable to delete subject.";
@@ -3320,7 +3320,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				
 				if (!user.canDelete(expt) && !user.canDeleteByXMLPath(this.getSchemaElement(),values))
 				{
-					return "User cannot delete subjects for project " + proj.getId();
+					return "User cannot delete experiments for project " + proj.getId();
 				}
 				
 				int index = 0;

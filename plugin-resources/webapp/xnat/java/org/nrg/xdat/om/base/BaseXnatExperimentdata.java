@@ -543,7 +543,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				
 				if (!user.canDeleteByXMLPath(se,values))
 				{
-					return "User cannot delete subjects for project " + proj.getId();
+					return "User cannot delete experiments for project " + proj.getId();
 				}
 			} catch (Exception e1) {
 				return "Unable to delete subject.";
@@ -573,7 +573,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				
 				if (!user.canDelete(expt) && !user.canDeleteByXMLPath(this.getSchemaElement(),values))
 				{
-					return "User cannot delete subjects for project " + proj.getId();
+					return "User cannot delete experiments for project " + proj.getId();
 				}
 				
 				int index = 0;

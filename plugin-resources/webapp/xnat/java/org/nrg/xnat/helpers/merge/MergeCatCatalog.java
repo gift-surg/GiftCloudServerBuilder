@@ -5,7 +5,7 @@ package org.nrg.xnat.helpers.merge;
 
 import java.util.concurrent.Callable;
 
-import org.apache.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatDcmentryI;
 import org.nrg.xdat.model.CatEntryI;

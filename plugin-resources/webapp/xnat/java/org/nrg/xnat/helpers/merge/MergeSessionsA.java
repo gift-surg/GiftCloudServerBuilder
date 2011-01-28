@@ -108,7 +108,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 
 		deleteCatalogFiles(update.getToDelete(),rootBackup);
 		
-		mergeDirectories(srcDIR,destDIR,allowDataDeletion,false);
+		mergeDirectories(srcDIR,destDIR,allowDataDeletion);
 		
 		try {
 			this.processing("Updating stored meta-data.");
@@ -215,13 +215,14 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 		final CatCatalogBean srcCat=CatalogUtils.getCleanCatalog(srcRootPath, (XnatResourcecatalogI)srcRes, false);
 		
 		//WARNING: this command will create a catalog if it doesn't already exist
-		final CatCatalogBean destCat=CatalogUtils.getCleanCatalog(destRootPath, (XnatResourcecatalogI)destRes, false);
+		final CatCatalogBean cat=CatalogUtils.getCleanCatalog(destRootPath, (XnatResourcecatalogI)destRes, false);
 		
-		MergeCatCatalog merge= new MergeCatCatalog(srcCat, destCat, overwrite);
+		MergeCatCatalog merge= new MergeCatCatalog(srcCat, cat, overwrite);
+
 		if(merge.call()){
 			try {
 				//write merged destination file to src directory for merge process to move
-				CatalogUtils.writeCatalogToFile(destCat, CatalogUtils.getCatalogFile(srcRootPath, (XnatResourcecatalogI)srcRes));
+				CatalogUtils.writeCatalogToFile(cat, CatalogUtils.getCatalogFile(srcRootPath, (XnatResourcecatalogI)srcRes));
 				
 				return CatalogUtils.getCatalogFile(destRootPath, destRes);
 			} catch (Exception e) {
@@ -251,13 +252,9 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 		}		
 	}
 
-	public void mergeDirectories(File srcDIR2, File destDIR2, boolean overwrite, boolean includeXML) throws ClientException, ServerException {
+	public void mergeDirectories(File srcDIR2, File destDIR2, boolean overwrite) throws ClientException, ServerException {
 		try {
-			org.nrg.xft.utils.FileUtils.MoveDir(srcDIR2,destDIR2,overwrite,(includeXML)?null:new FileFilter(){
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.getName().endsWith(".xml");
-				}});			
+			org.nrg.xft.utils.FileUtils.MoveDir(srcDIR2,destDIR2,overwrite,null);			
 		} catch (IOException e) {
 			failed("Unable to merge uploaded data into destination directory.");
 			throw new ServerException(e.getMessage(),e);

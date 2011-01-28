@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.plexus.util.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusProducer;
@@ -30,7 +30,7 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
  *
  *	Developers should add a conf file to their project called prearc-importer.properties with the structure defined below.  The name given in the configuration file, can then be passed to the Importer action, and will be used to get the proper prearc importer.
  */
-public abstract class PrearcImporterA extends StatusProducer implements Callable<List<PrearcSession>>{
+public abstract class PrearcImporterA extends StatusProducer implements Callable<Iterable<PrearcSession>>{
 	@SuppressWarnings("serial")
 	public static class UnknownPrearcImporterException extends Exception {
 

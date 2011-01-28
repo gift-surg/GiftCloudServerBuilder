@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.ListenerUtils;
@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
  *                  Fail
  *
  */
-public final class PrearcSessionArchiver extends StatusProducer implements Callable<List<String>>,StatusPublisherI {
+public final class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusPublisherI {
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
 
 	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process.";
@@ -302,6 +302,12 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		}
 
 	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
+		if(existing!=null){
+			if(!overwrite){
+				failed(PRE_EXISTS);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
+			}
+
 		if(!src.getLabel().equals(existing.getLabel())){
 			this.failed(LABEL_MOD);
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
@@ -316,13 +322,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			failed(SUBJECT_MOD);
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
 		}
-		
-		if(!overwrite){
-
-			if(existing!=null){
-				failed(PRE_EXISTS);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
-			}
 		}
 	}
 
@@ -330,17 +329,12 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * (non-Javadoc)
 	 * @see java.util.concurrent.Callable#call()
 	 */
-	@SuppressWarnings("serial")
-	public List<String> call()  throws ClientException,ServerException {
+	public String call()  throws ClientException,ServerException {
 		fixSessionLabel();
 		fixSubject();
 		populateAdditionalFields();
 		
 		final XnatImagesessiondata existing=retrieveExistingExpt();
-		
-		if(existing!=null){
-			preventConcurrentArchiving(existing.getId(),user);
-		}
 		
 		if(existing==null){
 			try {
@@ -351,6 +345,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 		}else{
 			src.setId(existing.getId());
+			preventConcurrentArchiving(existing.getId(),user);
 		}
 
 		
@@ -374,7 +369,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 		final File arcSessionDir = getArcSessionDir();
 		
-			checkForConflicts(src,srcDIR,existing,arcSessionDir);
+			if(existing!=null)checkForConflicts(src,srcDIR,existing,arcSessionDir);
 
 			if(arcSessionDir.exists()){
 				this.setStep("Merging", workflow);
@@ -446,8 +441,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		}			
 
 		final String url = buildURI(project,src);
+
 		completed("archiving operation complete");
-		return new ArrayList<String>(){{add(url);}};
+		return url;
 		
 	}
 	

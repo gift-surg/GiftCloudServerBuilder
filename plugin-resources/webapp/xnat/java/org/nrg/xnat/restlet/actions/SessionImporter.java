@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.plexus.util.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.ListenerUtils;
@@ -71,8 +71,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	 * @param listenerControl
 	 * @param u
 	 * @param session
-	 * @param overwriteV:   'prevent' means do not touch (DEFAULT), 
-	 *                      'append' means overwrite, but preserve un-modified content (don't delete anything)
+	 * @param overwrite:   'append' means overwrite, but preserve un-modified content (don't delete anything)
 	 *                      'delete' means delete the pre-existing content.
 	 * @param additionalValues: should include project, subject_ID and label (if session is null)
 	 */
@@ -147,9 +146,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			
 			String project=null;
 			
-			Map<String,Object> prearc_parameters=new HashMap<String,Object>(){{
-				putAll(params);
-			}};
+			Map<String,Object> prearc_parameters=new HashMap<String,Object>(params);
 			
 			
 			//check for existing session by URI
@@ -157,6 +154,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				if(destination instanceof UriParserUtils.PrearchiveURI){
 					prearc_parameters.putAll(destination.getProps());
 				}else{
+					//TODO: Duplicate code with params check
 					project=PrearcImporterHelper.identifyProject(destination.getProps());
 					if(!StringUtils.isEmpty(project)){
 						prearc_parameters.put("project", project);
@@ -217,7 +215,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			}
 			
 			//import to prearchive
-			final List<PrearcSession> sessions=importToPrearc(this,(String)params.remove(PrearcImporterA.PREARC_IMPORTER_ATTR),uID,user,fw,params,overwrite,allowDataDeletion);
+			final List<PrearcSession> sessions=importToPrearc(this,(String)params.remove(PrearcImporterA.PREARC_IMPORTER_ATTR),uID,user,fw,prearc_parameters,overwrite,allowDataDeletion);
 			
 			if(sessions.size()==0){
 				throw new ClientException("Upload did not include parseable files for session generation.");
@@ -238,9 +236,10 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				
 			final XnatImagesessiondataI isd=PrearcTableBuilder.parseSession(session.getSessionXML());
 				
-			if(isAutoArchive(params,destination,session,isd)){				
-					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session.getSessionDIR(), user, isd.getProject(), removePrearcVariables(params), allowDataDeletion,overwrite))
+			if(isAutoArchive(params,destination,isd)){
+					final String uri=ListenerUtils.addListeners(this, new PrearcSessionArchiver(session.getSessionDIR(), user, isd.getProject(), removePrearcVariables(params), allowDataDeletion,overwrite))
 						.call();
+					return new ArrayList<String>(){{add(uri);}};
 			}else{
 				return returnURLs(sessions);
 			}
@@ -260,7 +259,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		}
 	}
 	
-	public static boolean isAutoArchive(final Map<String,Object> params, final UriParserUtils.DataURIA destination,final PrearcSession session,final XnatImagesessiondataI isd) throws ServerException, IOException, SAXException{
+	public static boolean isAutoArchive(final Map<String,Object> params, final UriParserUtils.DataURIA destination,final XnatImagesessiondataI isd) throws ServerException, IOException, SAXException{
 		//determine auto-archive setting
 		String aa = (String)params.remove(AA);
 		
@@ -283,7 +282,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		}
 		
 		if(!autoarchive){
-			Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(isd.getProject());
+			final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(isd.getProject());
 			if(code!=null && code.equals(4)){
 				autoarchive=true;
 			}

@@ -23,50 +23,6 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 		super(control, srcDIR, src, destRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion,saver);
 	}
 
-//	public XnatImagesessiondata mergeSessions(final XnatImagesessiondata src, final String srcRootPath, final XnatImagesessiondata dest, final String destRootPath) throws ClientException, ServerException {
-//		if(dest==null)return src;
-//		
-//		final List<XnatImagescandataI> srcScans=src.getScans_scan();
-//		final List<XnatImagescandataI> destScans=dest.getScans_scan();
-//	
-//		processing("Merging new meta-data into existing meta-data.");
-//		try {
-//			for(final XnatImagescandataI srcScan: srcScans){
-//				final XnatImagescandataI destScan = MergeUtils.getMatchingScan(srcScan,destScans);
-//				if(destScan==null){
-//					dest.addScans_scan(srcScan); 
-//				}else{
-//					final List<XnatAbstractresourceI> srcRess=srcScan.getFile();
-//					final List<XnatAbstractresourceI> destRess=destScan.getFile();
-//					
-//					for(final XnatAbstractresourceI srcRes:srcRess){
-//						final XnatAbstractresourceI destRes=MergeUtils.getMatchingResource(srcRes,destRess);
-//						if(destRes==null){
-//							destScan.addFile(srcRes);
-//						}else{
-//							if(destRes instanceof XnatResourcecatalogI){
-//								mergeCatalogs(srcRootPath,(XnatResourcecatalogI)srcRes,destRootPath,(XnatResourcecatalogI)destRes);								
-//							}else if(destRes instanceof XnatResourceseriesI){
-//								srcRes.setLabel(srcRes.getLabel()+"2");
-//								destScan.addFile(srcRes);
-//							}else if(destRes instanceof XnatResourceI){
-//								srcRes.setLabel(srcRes.getLabel()+"2");
-//								destScan.addFile(srcRes);
-//							}
-//						}
-//					}
-//				}
-//			}
-//		} catch (MergeCatCatalog.DCMEntryConflict e) {
-//			failed("Duplicate DCM UID cannot be merged at this time.");
-//			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,e.getMessage(), e);
-//		} catch (Exception e) {
-//			failed("Failed to merge upload into existing prearchive.");
-//			throw new ServerException(e.getMessage(), e);
-//		}
-//		
-//		return dest;
-//	}
 
 	public String getCacheBKDirName() {
 		return "merge";

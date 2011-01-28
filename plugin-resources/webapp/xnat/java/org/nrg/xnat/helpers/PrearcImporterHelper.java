@@ -76,8 +76,8 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		
 	public List<PrearcSession> call() throws ClientException,ServerException{
 		final String project=identifyProject(params);
-		final String old_session_folder=(String)params.remove(PrearcUtils.PREARC_SESSION_FOLDER);
-		String old_timestamp=(String)params.remove(PrearcUtils.PREARC_TIMESTAMP);
+		final String old_session_folder=(String)params.get(PrearcUtils.PREARC_SESSION_FOLDER);
+		String old_timestamp=(String)params.get(PrearcUtils.PREARC_TIMESTAMP);
 			
 		final String new_timestamp=(new java.text.SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar.getInstance().getTime());
 		
@@ -87,13 +87,13 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		//ELSE import directly to project.
 				
 		boolean destination_specified=false;
-		if(!StringUtils.isEmpty(old_timestamp)&& !StringUtils.isEmpty(old_session_folder)){
+		if(StringUtils.isNotEmpty(old_timestamp)&& StringUtils.isNotEmpty(old_session_folder)){
 			destination_specified=true;
-			if(!StringUtils.isEmpty(project)){
+			if(StringUtils.isEmpty(project)){
 				this.failed("User must specify project portion of prearchive path, if timestamp/session portion is specified.");
 				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,"User must specify project portion of prearchive path, if timestamp/session portion is specified.",new IllegalArgumentException());
 			}
-		}else{
+		}else if(StringUtils.isNotEmpty(old_session_folder)){
 			if(StringUtils.isEmpty(old_timestamp)){
 				this.failed("User must specify timestamp portion of prearchive path, if session portion is specified.");
 				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,"User must specify timestamp portion of prearchive path, if session portion is specified.",new IllegalArgumentException());
@@ -113,8 +113,12 @@ public class PrearcImporterHelper extends PrearcImporterA{
 			}else{
 				projectPrearc=new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project));
 			}
+
+			//CAn this return the project?
 			List<File> tempFiles=reorganize(cacheDIR, new File(projectPrearc,new_timestamp), additionalValues);
 			
+			//should 2-srcs to project=null also be merged?
+			//Merge_to_destination will write it to separate folders if old_session_folder is null
 			files=new ArrayList<File>();
 			for(final File f:tempFiles){
 				File builtF=merge_to_destination(project,old_timestamp,old_session_folder,f);
@@ -224,8 +228,9 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		
 	}
 	
-	private static String identifyProject(final File f, final XDATUser user) throws ClientException,ServerException{
+	private static String identifyProject(File f, final XDATUser user) throws ClientException,ServerException{
 		try {
+			if(!f.getName().endsWith(".xml"))f=new File(f.getParentFile(),f.getName()+".xml");
 			final XnatImagesessiondataI session=PrearcTableBuilder.parseSession(f);
 			final String project =session.getProject();
 			

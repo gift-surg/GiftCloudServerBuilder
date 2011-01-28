@@ -55,7 +55,7 @@ public class MergePrearchiveSessionsTest {
 		org.apache.commons.io.FileUtils.writeStringToFile(child2, content2);
 		
 		MergePrearchiveSessions merger=new MergePrearchiveSessions("", MergeSessions1,null,null, MergeSessions2,null,null, true,false,null);
-		merger.mergeDirectories(MergeSessions1, MergeSessions2,true,false);
+		merger.mergeDirectories(MergeSessions1, MergeSessions2,true);
 		
 		org.junit.Assert.assertEquals(content, org.apache.commons.io.FileUtils.readFileToString(child2));
 	}
@@ -76,7 +76,7 @@ public class MergePrearchiveSessionsTest {
 		org.apache.commons.io.FileUtils.writeStringToFile(child2, content2);
 		
 		MergePrearchiveSessions merger=new MergePrearchiveSessions("", MergeSessions1,null,null, MergeSessions2,null,null, true,false,null);
-		merger.mergeDirectories(MergeSessions1, MergeSessions2,true,false);
+		merger.mergeDirectories(MergeSessions1, MergeSessions2,true);
 
 		final File child3=new File(MergeSessions2,"TEST.txt");
 		org.junit.Assert.assertEquals(content, org.apache.commons.io.FileUtils.readFileToString(child3));
@@ -95,7 +95,7 @@ public class MergePrearchiveSessionsTest {
 		org.apache.commons.io.FileUtils.writeStringToFile(child, content);		
 		
 		MergePrearchiveSessions merger=new MergePrearchiveSessions("", MergeSessions1,null,null, MergeSessions2,null,null, true,false,null);
-		merger.mergeDirectories(MergeSessions1, MergeSessions2,true,false);
+		merger.mergeDirectories(MergeSessions1, MergeSessions2,true);
 		
 		final File child3=new File(MergeSessions2,"TEST.txt");
 		org.junit.Assert.assertEquals(content, org.apache.commons.io.FileUtils.readFileToString(child3));

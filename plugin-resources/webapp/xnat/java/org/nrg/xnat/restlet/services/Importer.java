@@ -64,6 +64,7 @@ public class Importer extends SecureResource {
 						
 			//maintain parameters
 			final Form f = getQueryVariableForm();
+			//TODO: What about the body form
 			for(final String key:f.getNames()){
 				if(key.equals(ImporterHandlerA.IMPORT_HANDLER_ATTR)){
 					handler=f.getFirstValue(ImporterHandlerA.IMPORT_HANDLER_ATTR);

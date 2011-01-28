@@ -2,6 +2,7 @@ package org.nrg.xnat.helpers.uri;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -193,7 +194,10 @@ public final class UriParserUtils {
 	
 	public static DataURIA parseURI(String s) throws MalformedURLException{
 		if(s.startsWith("/prearchive")){
-			if(s.equals("/prearchive"))return new PrearchiveURI(new HashMap<String,Object>(),s);
+			if(s.equals("/prearchive")){
+				final Map<String,Object> t=Collections.emptyMap();
+				return new PrearchiveURI(t,s);
+			}
 			
 			for(String template: prearcTemplates){
 				Map<String,Object> map=new UriParser(template,Template.MODE_EQUALS).readUri(s);
@@ -202,7 +206,10 @@ public final class UriParserUtils {
 				}
 			}
 		}else if(s.startsWith("/archive")){
-			if(s.equals("/archive"))return new ArchiveURI(new HashMap<String,Object>(),s);
+			if(s.equals("/archive")){
+				final Map<String,Object> t=Collections.emptyMap();
+				return new ArchiveURI(t,s);
+			}
 			
 			for(String template: arcTemplates){
 				Map<String,Object> map=new UriParser(template,Template.MODE_EQUALS).readUri(s);

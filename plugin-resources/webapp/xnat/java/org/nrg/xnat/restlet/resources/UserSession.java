@@ -58,8 +58,4 @@ public class UserSession extends SecureResource {
 		return new StringRepresentation(getHttpSession().getId(),
 				MediaType.TEXT_PLAIN);
 	}
-
-	private HttpSession getHttpSession() {
-		return getHttpServletRequest().getSession();
 	}
-}

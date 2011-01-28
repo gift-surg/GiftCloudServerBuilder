@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
@@ -733,4 +734,8 @@ public abstract class SecureResource extends Resource {
 		
 		return action_params;
 	}
+	
+	public HttpSession getHttpSession() {
+		return getHttpServletRequest().getSession();
+}
 }

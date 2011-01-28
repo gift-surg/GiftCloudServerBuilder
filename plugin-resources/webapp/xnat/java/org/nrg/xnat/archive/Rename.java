@@ -12,14 +12,17 @@ import org.apache.axis.utils.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatImageassessordataI;
+import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.model.XnatImagesessiondataI;
+import org.nrg.xdat.model.XnatReconstructedimagedataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImageassessordata;
-import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -254,37 +257,37 @@ public class Rename  implements Callable<File>{
 		final SecurityManager sm= SecurityManager.GetInstance();
 		//set label and modify URI
 		if(i instanceof XnatSubjectdata){
-			for(final XnatAbstractresource res: ((XnatSubjectdata)i).getResources_resource()){
-				modifyResource(res,expected,newArchive,user,sm,cache);
+			for(final XnatAbstractresourceI res: ((XnatSubjectdata)i).getResources_resource()){
+				modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache);
 			}
 		}else{
-			for(final XnatAbstractresource res: ((XnatExperimentdata)i).getResources_resource()){
-				modifyResource(res,expected,newArchive,user,sm,cache);
+			for(final XnatAbstractresourceI res: ((XnatExperimentdata)i).getResources_resource()){
+				modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache);
 			}
 			
 			if(i instanceof XnatImagesessiondata){
-				for(final XnatImagescandata scan: ((XnatImagesessiondata)i).getScans_scan()){
-					for(final XnatAbstractresource res: scan.getFile()){
-						modifyResource(res,expected,newArchive,user,sm,cache);
+				for(final XnatImagescandataI scan: ((XnatImagesessiondataI)i).getScans_scan()){
+					for(final XnatAbstractresourceI res: scan.getFile()){
+						modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache);
 					}
 				}
 
-				for(final XnatReconstructedimagedata recon: ((XnatImagesessiondata)i).getReconstructions_reconstructedimage()){
-					for(final XnatAbstractresource res: recon.getIn_file()){
-						modifyResource(res,expected,newArchive,user,sm,cache);
+				for(final XnatReconstructedimagedataI recon: ((XnatImagesessiondataI)i).getReconstructions_reconstructedimage()){
+					for(final XnatAbstractresourceI res: recon.getIn_file()){
+						modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache);
 					}
 					
-					for(final XnatAbstractresource res: recon.getOut_file()){
-						modifyResource(res,expected,newArchive,user,sm,cache);
+					for(final XnatAbstractresourceI res: recon.getOut_file()){
+						modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache);
 					}
 				}
 
-				for(final XnatImageassessordata assess: ((XnatImagesessiondata)i).getAssessors_assessor()){
+				for(final XnatImageassessordataI assess: ((XnatImagesessiondataI)i).getAssessors_assessor()){
 					boolean checkdPermissions =false;
-					for(final XnatAbstractresource res: assess.getResources_resource()){
-						if(modifyResource(res,expected,newArchive,user,sm,cache)){
+					for(final XnatAbstractresourceI res: assess.getResources_resource()){
+						if(modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache)){
 							if(!checkdPermissions){
-								if(checkPermissions(assess, user)){
+								if(checkPermissions((XnatImageassessordata)assess, user)){
 									checkdPermissions=true;
 								}else{
 									throw new IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
@@ -293,10 +296,10 @@ public class Rename  implements Callable<File>{
 						}
 					}
 					
-					for(final XnatAbstractresource res: assess.getIn_file()){
-						if(modifyResource(res,expected,newArchive,user,sm,cache)){
+					for(final XnatAbstractresourceI res: assess.getIn_file()){
+						if(modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache)){
 							if(!checkdPermissions){
-								if(checkPermissions(assess, user)){
+								if(checkPermissions((XnatImageassessordata)assess, user)){
 									checkdPermissions=true;
 								}else{
 									throw new IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
@@ -305,10 +308,10 @@ public class Rename  implements Callable<File>{
 						}
 					}
 					
-					for(final XnatAbstractresource res: assess.getOut_file()){
-						if(modifyResource(res,expected,newArchive,user,sm,cache)){
+					for(final XnatAbstractresourceI res: assess.getOut_file()){
+						if(modifyResource((XnatAbstractresource)res,expected,newArchive,user,sm,cache)){
 							if(!checkdPermissions){
-								if(checkPermissions(assess, user)){
+								if(checkPermissions((XnatImageassessordata)assess, user)){
 									checkdPermissions=true;
 								}else{
 									throw new IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());

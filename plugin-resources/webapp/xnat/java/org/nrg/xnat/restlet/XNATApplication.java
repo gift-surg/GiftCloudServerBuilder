@@ -29,6 +29,7 @@ import org.nrg.xnat.restlet.resources.ScannerListing;
 import org.nrg.xnat.restlet.resources.SubjAssessmentResource;
 import org.nrg.xnat.restlet.resources.SubjectListResource;
 import org.nrg.xnat.restlet.resources.SubjectResource;
+import org.nrg.xnat.restlet.resources.UserCacheResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
@@ -190,6 +191,12 @@ public class XNATApplication extends Application {
 
         router.attach("/experiments/{EXPT_ID}/DIR",DIRResource.class);
         router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}/DIR",DIRResource.class);
+
+        // Users Cache Space
+        router.attach("/user/cache/resources",UserCacheResource.class);
+        router.attach("/user/cache/resources/{XNAME}",UserCacheResource.class);
+        router.attach("/user/cache/resources/{XNAME}/files",UserCacheResource.class);
+        router.attach("/user/cache/resources/{XNAME}/files/{FILE}",UserCacheResource.class);
 
 
         router.attach("/services/import",Importer.class);

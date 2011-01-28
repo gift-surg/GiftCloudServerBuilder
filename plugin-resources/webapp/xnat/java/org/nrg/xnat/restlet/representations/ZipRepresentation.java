@@ -89,6 +89,19 @@ public class ZipRepresentation extends OutputRepresentation {
 		}
 	}
 	
+	public void addAllAtRelativeDirectory(String ins, ArrayList<File> fs) {
+		ins=ins.replace('\\','/');
+		for(File f: fs){
+			String pathS = f.getAbsolutePath().replace('\\','/');
+			int pos=pathS.indexOf(ins);
+			if (pos>=0) {
+				this.addEntry(pathS.substring(pos+ins.length()+1),f);
+			} else {
+				this.addEntry(f);
+			}
+		}
+	}
+	
 	public String getTokenName(){
 		if(this._tokens.size()>1){
 			return "various";

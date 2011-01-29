@@ -72,7 +72,10 @@ public class LoadImageData extends SecureAction {
      */
     public void doPerform(final RunData data, final Context context) throws Exception {
         final String folder = (String)TurbineUtils.GetPassedParameter("folder",data);
-        final String root = (String)TurbineUtils.GetPassedParameter("root",data);
+        String root = (String)TurbineUtils.GetPassedParameter("root",data);
+        if(root==null){
+        	root=(String)TurbineUtils.GetPassedParameter("timestamp",data);
+        }
         final XDATUser user = TurbineUtils.getUser(data);
         
         final String project = (String)TurbineUtils.GetPassedParameter("project",data);	// can we final this?

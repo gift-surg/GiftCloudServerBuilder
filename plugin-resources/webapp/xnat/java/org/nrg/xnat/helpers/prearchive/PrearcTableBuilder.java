@@ -169,7 +169,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 					data.status = PrearcStatus.ARCHIVING;
 				}
 			} catch (Exception e) {
-				data.status=PrearcStatus.ERROR;
+				if(PrearcStatus.potentiallyReady(data.status))data.status=PrearcStatus.ERROR;
 				logger.error("",e);
 			}
 		}
@@ -271,6 +271,19 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 
 	public SortedMap<Date, Collection<Session>> getPrearcSessions(final File prearcDir) throws IOException, SAXException {
 		final SortedMap<Date, Collection<Session>> sessions = new TreeMap<Date, Collection<Session>>();
+		if(PrearcUtils.isTimestampDirectory.accept(prearcDir)){
+			for (final File sessdir : prearcDir.listFiles(PrearcUtils.isDirectory)) {
+				final Session session = new Session(sessdir);
+				final Date builtDate = session.getLastBuiltDate();
+				
+				session.setTimestamp(prearcDir.getName());
+				
+				if (!sessions.containsKey(builtDate)) {
+					sessions.put(builtDate, new ArrayList<Session>(1));
+				}
+				sessions.get(builtDate).add(session);
+			}
+		}else{		
 		for (final File tsdir : prearcDir.listFiles(PrearcUtils.isTimestampDirectory)) {
 			for (final File sessdir : tsdir.listFiles(PrearcUtils.isDirectory)) {
 				final Session session = new Session(sessdir);
@@ -283,6 +296,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 				}
 				sessions.get(builtDate).add(session);
 			}
+		}
 		}
 		return sessions;
 	}

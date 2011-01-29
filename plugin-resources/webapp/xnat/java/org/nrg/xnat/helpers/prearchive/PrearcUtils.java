@@ -20,6 +20,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 
@@ -50,7 +51,11 @@ public class PrearcUtils {
 		ERROR, 
 		DELETING,
 		MOVING,
-		_RECEIVING,_BUILDING,_ARCHIVING,_DELETING,_MOVING
+		_RECEIVING,_BUILDING,_ARCHIVING,_DELETING,_MOVING;
+
+		public static boolean potentiallyReady(PrearcStatus status) {
+			return (status==null || status.equals(READY));			    
+		}
 	};
 
 	public static final Map<PrearcStatus, PrearcStatus> inProcessStatusMap = createInProcessMap();
@@ -260,4 +265,6 @@ public class PrearcUtils {
 			|| conversionLogPattern.matcher(f.getName()).matches();
 		}
 	};
+
+	public static final String TEMP_UNPACK = "temp-unpack";
 }

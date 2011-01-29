@@ -323,7 +323,7 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
             		scanTypes.put(types[i].trim(), "");
             	}
             }
-            for(XnatImagescandata scan :  this.getScans_scan()){
+            for(XnatImagescandataI scan :  this.getScans_scan()){
             	if (scan.getType() != null && scanTypes.containsKey(scan.getType())) {
             		_return.add(scan);
             	}

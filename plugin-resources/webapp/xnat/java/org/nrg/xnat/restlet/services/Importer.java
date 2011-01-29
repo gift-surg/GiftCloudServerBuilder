@@ -102,78 +102,130 @@ public class Importer extends SecureResource {
 				return;
 			}
 			
-			final Map<String,Object> additionalValues=new Hashtable<String,Object>();
+//			XnatImagesessiondata session=null;
+//
+//			if(session_id!=null){
+//				session=XnatImagesessiondata.getXnatImagesessiondatasById(session_id, user, false);
+//			}
+//
+//			if(session==null){
+//				if(project_id!=null){
+//					session=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project_id, session_id, user, false);
+//				}
+//			}
+//
+//			if(session==null){
+//				if(project_id==null || subject_id==null || session_id==null){
+//					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "New sessions require a project, subject and session id.");
+//					return;
+//				}
+//			}
 			
-			String project_id=null;
-			String subject_id=null;
-			String session_id=null;
-			String overwriteV=null;
-			String listenerControl=null;
-			
-			//maintain parameters
-			final Form f = getQueryVariableForm();
-			for(final String key:f.getNames()){
-				if(key.equals("project")){
-					project_id=f.getFirstValue("project");
-					additionalValues.put("project", project_id);
-				}else if(key.equals("subject")){
-					subject_id=f.getFirstValue("subject");
-					additionalValues.put("subject_ID", subject_id);
-				}else if(key.equals("session")){
-					session_id=f.getFirstValue("session");
-					additionalValues.put("label", session_id);
-				}else if(key.equals("overwrite")){
-					overwriteV=f.getFirstValue("overwrite");
-				}else if(key.equals("transaction_id")){
-					listenerControl=f.getFirstValue("transaction_id");
-				}else if(key.equals(PREARCHIVE)){
-					
-				}else{
-					additionalValues.put(key,f.getFirstValue(key));
+			ImporterHandlerA importer;
+			try {
+				importer = ImporterHandlerA.buildImporter(handler, listenerControl, user, fw.get(0), params);
+			} catch (SecurityException e) {
+				logger.error("",e);
+				throw new ServerException(e.getMessage(),e);
+			} catch (IllegalArgumentException e) {
+				logger.error("",e);
+				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage(),e);
+			} catch (NoSuchMethodException e) {
+				logger.error("",e);
+				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage(),e);
+			} catch (InstantiationException e) {
+				logger.error("",e);
+				throw new ServerException(e.getMessage(),e);
+			} catch (IllegalAccessException e) {
+				logger.error("",e);
+				throw new ServerException(e.getMessage(),e);
+			} catch (InvocationTargetException e) {
+				logger.error("",e);
+				throw new ServerException(e.getMessage(),e);
+			} catch (ImporterNotFoundException e) {
+				logger.error("",e);
+				throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,e.getMessage(),e);
 				}
 				
-			}
 			
-			XnatImagesessiondata session=null;
-			
-			if(session_id!=null){
-				session=XnatImagesessiondata.getXnatImagesessiondatasById(session_id, user, false);
-			}
-			
-			if(session==null){
-				if(project_id!=null){
-					session=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project_id, session_id, user, false);
-				}
-			}
-			
-			if(session==null){
-				if(project_id==null || subject_id==null || session_id==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "New sessions require a project, subject and session id.");
+			if(httpSessionListener){
+				if(StringUtils.isEmpty(listenerControl)){
+					getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"'" + XNATRestConstants.TRANSACTION_RECORD_ID+ "' is required when requesting '" + HTTP_SESSION_LISTENER + "'.");
 					return;
 				}
-			}
-			
-			final boolean archive=!(isQueryVariableTrue(PREARCHIVE));
-			
-			final SessionImporter importer= new SessionImporter(listenerControl, user, project_id, session, overwriteV, fw.get(0), additionalValues,archive);
-			
-			if(!StringUtils.isEmpty(listenerControl)){
 				final StatusList sq = new StatusList();
 				importer.addStatusListener(sq);
 				
 				storeStatusList(listenerControl, sq);
 			}
 			
-			final Multimap<String,Object> response=importer.call();
+			List<String> response = importer.call();
 			
-			this.returnSuccessfulCreateFromList(GoogleUtils.getFirstParam(response, SessionImporter.RESPONSE_URL).toString());
+			getResponse().setEntity(convertListURItoString(response), MediaType.TEXT_URI_LIST);
 		} catch (ClientException e) {
-			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+			logger.error("",e);
+			this.getResponse().setStatus((e.status!=null)?e.status:Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 		} catch (ServerException e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			logger.error("",e);
+			this.getResponse().setStatus((e.status!=null)?e.status:Status.SERVER_ERROR_INTERNAL, e.getMessage());
 		}catch (IllegalArgumentException e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			logger.error("",e);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+		} catch (FileUploadException e) {
+			logger.error("",e);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 		}
+	}
+
+	public FileWriterWrapperI retrievePrestoreFile(final String src){
+		//TODO retrieve FILE
+
+		return new FileWriterWrapperI(){
+			public void write(File f) throws IOException, Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+			public String getName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public InputStream getInputStream() throws IOException, Exception {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public void delete() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public UPLOAD_TYPE getType() {
+				// TODO Auto-generated method stub
+				return null;
+			}};
+	}
+
+	public String convertListURItoString(final List<String> response){
+		StringBuffer sb = new StringBuffer();
+		for(final String s:response){
+			sb.append(s).append(CRLF);
+		}
+
+		return sb.toString();
+	}
+
+
+	Map<String,XnatProjectdata> projects=new HashMap<String,XnatProjectdata>();
+
+	private XnatProjectdata getProject(final String s){
+		if(!projects.containsKey(s)){
+			projects.put(s,XnatProjectdata.getXnatProjectdatasById(s, user, false));
+		}
+
+		return this.projects.get(s);
 	}
 
 	private void storeStatusList(final String transaction_id,final StatusList sl) throws IllegalArgumentException{

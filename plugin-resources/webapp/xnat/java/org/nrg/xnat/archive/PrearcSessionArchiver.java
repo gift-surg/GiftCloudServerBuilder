@@ -101,9 +101,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
 
-	private boolean shouldForceQuarantine = false;
-	
-
 	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
 		super(src.getPrearchivePath());
 		this.src = src;
@@ -120,11 +117,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(),sessionDir, user, project, params, allowDataDeletion,overwrite);
 	}
 
-	public boolean forceQuarantine(final boolean shouldForce) {
-		final boolean prev = this.shouldForceQuarantine;
-		this.shouldForceQuarantine = shouldForce;
-		return prev;
-	}
 	
 	public XnatImagesessiondata retrieveExistingExpt() throws ClientException,ServerException{
 		XnatImagesessiondata existing=null;
@@ -145,42 +137,78 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * Determine an appropriate session label.
 	 * @throws ArchivingException
 	 */
-	private void fixSessionLabel() throws ArchivingException {
-		final String label = (String)params.get(PARAM_SESSION);
-			if (null != label) {
-				session.setLabel(XnatImagesessiondata.cleanValue(label));
+	private void fixSessionLabel()  throws ClientException,ServerException {
+		String label = (String)params.get(PARAM_SESSION);
+
+		if(StringUtils.isEmpty(label)){
+			label = (String)params.get(UriParserUtils.EXPT_LABEL);
 			}
-		if (!XNATUtils.hasValue(session.getLabel())) {
-			if (XNATUtils.hasValue(session.getDcmpatientid())) {
-				session.setLabel(XnatImagesessiondata.cleanValue(session.getDcmpatientid()));
+
+		if(StringUtils.isEmpty(label)){
+			label = (String)params.get(LABEL2);
+			}
+
+		if (StringUtils.isNotEmpty(label)) {
+			src.setLabel(XnatImagesessiondata.cleanValue(label));
+		}
+
+		if (!XNATUtils.hasValue(src.getLabel())) {
+			if (XNATUtils.hasValue(src.getDcmpatientid())) {
+				src.setLabel(XnatImagesessiondata.cleanValue(src.getDcmpatientid()));
 			}
 		}
-		if (!XNATUtils.hasValue(session.getLabel())) {
+		if (!XNATUtils.hasValue(src.getLabel())) {
 			failed("unable to deduce session label");
-			throw new ArchivingException("unable to deduce session label");
+			throw new ClientException("unable to deduce session label");
 		}		
 	}
 	
+	public static XnatSubjectdata retrieveMatchingSubject(final String id, final String project,final XDATUser user){
+		XnatSubjectdata sub=null;
+		if(StringUtils.isNotEmpty(project)){
+			sub=XnatSubjectdata.GetSubjectByProjectIdentifier(project, id, user, false);
+		}
+		if(sub==null){
+			sub=XnatSubjectdata.getXnatSubjectdatasById(id, user, false);
+		}
+
+		return sub;
+	}
+
 	/**
 	 * Ensure that the subject label and ID are set in the session --
 	 * by deriving and setting them, if necessary.
 	 * @throws ArchivingException
 	 */
-	private void fixSubject() throws ArchivingException {
-		final String paramLabel = (String)params.get(PARAM_SUBJECT);
-			if (null != paramLabel) {
-				session.setSubjectId(paramLabel);
+	private void fixSubject()  throws ClientException,ServerException {
+		String subjectID =  (String)params.get(PARAM_SUBJECT);
+
+		if(!XNATUtils.hasValue(subjectID)){
+			subjectID = (String)params.get(UriParserUtils.SUBJECT_ID);
 			}
 
-		final String subjectID = session.getSubjectId();
+		if(!XNATUtils.hasValue(subjectID)){
+			subjectID = src.getSubjectId();
+		}
+
+		if (!XNATUtils.hasValue(subjectID)) {
+			if (XNATUtils.hasValue(src.getDcmpatientname())) {
+				subjectID=XnatImagesessiondata.cleanValue(src.getDcmpatientname());
+			}
+		}
+
+		if(!XNATUtils.hasValue(subjectID)){
+			failed("Unable to identify subject.");
+			throw new ClientException("Unable to identify subject.");
+		}
 
 		processing("looking for subject " + subjectID);
-		XnatSubjectdata subject = session.getSubjectData();
+		XnatSubjectdata subject = retrieveMatchingSubject(subjectID, project, user);
+
 		if (null == subject && XNATUtils.hasValue(subjectID)) {
 			final String cleaned = XnatSubjectdata.cleanValue(subjectID);
 			if (!cleaned.equals(subjectID)) {
-				session.setSubjectId(cleaned);
-				subject = session.getSubjectData();
+				subject = retrieveMatchingSubject(cleaned, project, user);
 			}
 		}
 
@@ -336,9 +364,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public String call()  throws ClientException,ServerException {
+		if(StringUtils.isEmpty(project)){
+			failed("unable to identify destination project");
+			throw new ClientException("unable to identify destination project", new Exception());
+		}
+		populateAdditionalFields();
+
 		fixSessionLabel();
 		fixSubject();
-		populateAdditionalFields();
 		
 		final XnatImagesessiondata existing=retrieveExistingExpt();
 		
@@ -370,9 +403,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			processing("validating loaded data");
 			validateSesssion();
 
-			
-			updatePrearchiveSessionXML(src.getPrearchivepath(),src);
-
 		final File arcSessionDir = getArcSessionDir();
 		
 			if(existing!=null)checkForConflicts(src,srcDIR,existing,arcSessionDir);
@@ -385,6 +415,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				processing("archiving session");
 			}
 		
+			final boolean shouldForceQuarantine;
+			if(params.containsKey("quarantine") && params.get("quarantine").equals("true")){
+				shouldForceQuarantine=true;
+			}else{
+				shouldForceQuarantine=false;
+			}
+
 			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
 				public void save(XnatImagesessiondata merged) throws Exception {
 					if(merged.save(user,false,false)){
@@ -412,7 +449,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				}
 			};
 			
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,this.src,this.src.getPrearchivepath(),arcSessionDir,existing,existing.getArchiveRootPath(),overwrite, allowDataDeletion,saveImpl))
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, allowDataDeletion,saveImpl))
 				.call();
 
 			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
@@ -426,8 +463,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				logger.error("", e1);
 			}
 			
-			TriggerPipelines tp=new TriggerPipelines(existing,false,false,user);
+			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
+				TriggerPipelines tp=new TriggerPipelines(src,false,false,user);
 			tp.call();
+			}
 		} catch (ServerException e) {
 			try {
 				workflow.setStatus(WorkflowUtils.FAILED);
@@ -444,6 +483,15 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				logger.error("", e1);
 			}
 			throw e;
+		} catch (Throwable e) {
+			try {
+				workflow.setStatus(WorkflowUtils.FAILED);
+				workflow.save(user, false, false);
+			} catch (Exception e1) {
+				logger.error("", e1);
+			}
+			logger.error("",e);
+			throw new ServerException(e.getMessage(),new Exception());
 		}			
 
 		final String url = buildURI(project,src);
@@ -459,29 +507,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			workflow.save(user, false, false);
 		} catch (Exception e1) {
 			logger.error("", e1);
-		}
-	}
-	
-	public void postSave() throws ClientException, ServerException{
-		user.clearLocalCache();
-		try {
-			MaterializedView.DeleteByUser(user);
-		} catch (Exception e) {
-			throw new ServerException(e.getMessage(),e);
-		}
-	    
-		try {
-			if (this.shouldForceQuarantine) {
-				src.quarantine(user);
-			} else {
-				final XnatProjectdata proj = src.getPrimaryProject(false);
-				if (null != proj.getArcSpecification().getQuarantineCode() &&
-						proj.getArcSpecification().getQuarantineCode().equals(1)) {
-					src.quarantine(user);
-				}
-			}
-		} catch (Exception e) {
-			throw new ServerException(e.getMessage(),e);
 		}
 	}
 	

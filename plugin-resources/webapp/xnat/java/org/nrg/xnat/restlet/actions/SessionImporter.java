@@ -218,17 +218,20 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			final List<PrearcSession> sessions=importToPrearc(this,(String)params.remove(PrearcImporterA.PREARC_IMPORTER_ATTR),uID,user,fw,prearc_parameters,overwrite,allowDataDeletion);
 			
 			if(sessions.size()==0){
+				failed("Upload did not include parseable files for session generation.");
 				throw new ClientException("Upload did not include parseable files for session generation.");
 			}
 			
 			//if prearc=destination, then return
 			if(destination!=null && destination instanceof UriParserUtils.PrearchiveURI){
+				this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
 				return returnURLs(sessions);
 			}
 
 			
 			//if unknown destination, only one session supported
 			if(sessions.size()>1){
+				failed("Upload included files for multiple imaging sessions.");
 				throw new ClientException("Upload included files for multiple imaging sessions.");
 			}
 			

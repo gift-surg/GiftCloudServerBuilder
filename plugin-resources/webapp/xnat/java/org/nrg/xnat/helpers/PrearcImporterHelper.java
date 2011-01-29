@@ -36,7 +36,6 @@ import org.restlet.data.Status;
 public class PrearcImporterHelper extends PrearcImporterA{
     private static final String SESSION = "session";
 	private static final String SUBJECT = "subject";
-    private static final String TEMP_UNPACK = "temp-unpack";
 	static org.apache.log4j.Logger logger = Logger.getLogger(PrearcImporterHelper.class);
 	
 	
@@ -104,20 +103,27 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		
 		List<File> files=null;
 		
-		final Map<String,Object> additionalValues=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA);
+		final Map<String,Object> additionalValues=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA,false);
+		if(params.containsKey(SUBJECT)){
+			additionalValues.put("xnat:subjectAssessorData/subject_ID".intern(), params.remove(SUBJECT));
+		}
+
+		if(params.containsKey(SESSION)){
+			additionalValues.put("xnat:experimentData/label".intern(), params.remove(SESSION));
+		}
 		
 		if(StringUtils.isEmpty(old_timestamp))old_timestamp=new_timestamp;
 					
 		if(destination_specified || project==null){
 			File projectPrearc;
 			if(project==null){
-				projectPrearc=new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath(),TEMP_UNPACK);
+				projectPrearc=new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath(),PrearcUtils.TEMP_UNPACK);
 			}else{
 				projectPrearc=new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project));
 			}
 
 			//CAn this return the project?
-			List<File> tempFiles=reorganize(cacheDIR, new File(projectPrearc,new_timestamp), additionalValues);
+			List<File> tempFiles=reorganize(cacheDIR, new File(projectPrearc,new_timestamp),null, additionalValues);
 			
 			//should 2-srcs to project=null also be merged?
 			//Merge_to_destination will write it to separate folders if old_session_folder is null
@@ -129,7 +135,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 				}
 			}
 		}else{
-			files=reorganize(cacheDIR, new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project),old_timestamp), additionalValues);
+			files=reorganize(cacheDIR, new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project),old_timestamp),project, additionalValues);
 		}			
 					
 		final List<PrearcSession> sessions= new ArrayList<PrearcSession>();
@@ -250,7 +256,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		return null;
 	}
 	
-	public List<File> reorganize(final File cacheDIR, final File prearcDIR,Map<String,Object> additionalValues) throws ClientException,ServerException{
+	public List<File> reorganize(final File cacheDIR, final File prearcDIR, final String project,Map<String,Object> additionalValues) throws ClientException,ServerException{
 			if (!prearcDIR.exists()){
 			this.processing("mkdir " + prearcDIR.getAbsolutePath());
 			    prearcDIR.mkdirs();
@@ -259,7 +265,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		this.processing("Importing to " + prearcDIR.getAbsolutePath());
 	    prearcDIR.mkdirs();
 		
-		return ListenerUtils.addListeners(this,new ImageUploadHelper(uID,this.user,TEMP_UNPACK,cacheDIR, prearcDIR,additionalValues))
+		return ListenerUtils.addListeners(this,new ImageUploadHelper(uID,this.user,project,cacheDIR, prearcDIR,additionalValues))
 			.call();
 			}
 			

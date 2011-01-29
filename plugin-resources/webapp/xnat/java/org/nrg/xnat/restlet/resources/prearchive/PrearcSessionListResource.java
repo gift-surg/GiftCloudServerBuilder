@@ -107,29 +107,20 @@ public final class PrearcSessionListResource extends SecureResource {
 		//I would much rather create an interface that the Representation implementations use so that I wouldn't 
 		//have to keep using this ugly XFTTable thing.  But, that is beyond the scope here, and this will work.
 
-		List<String> projects=null;
-
-		if(requestedProject!=null){
-			if(requestedProject.contains(",")){
-				projects=Arrays.asList(StringUtils.split(requestedProject,','));
-			} else {
-				projects=Arrays.asList(new String[]{requestedProject});
-			}
-		}else{
-			projects=new ArrayList<String>();
-			for (final List<String> row : user.getQueryResults("xnat:projectData/ID", "xnat:projectData")) {
-				final String id = row.get(0);
-				if (projects.contains(id))
-					continue;
-			try {
-					if (user.canAction("xnat:mrSessionData/project", id, SecurityManager.CREATE)) {
-						projects.add(id);
-					}
+		ArrayList<String> projects = null;
+		try {
+			projects = PrearcUtils.getProjects(user, requestedProject);
 		} catch (Exception e) {
-					logger.error("Exception caught testing prearchive access", e);
-				}
+			logger.error(" Unable to get list of projects", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+			return null;
 		}
-		}
+
+//		catch (Exception e) {
+//			logger.error(" Unable to get list of projects", e);
+//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+//			return null;
+//		}
 		
 		String path=prearcRef.getBaseRef().toString();
 	
@@ -137,24 +128,19 @@ public final class PrearcSessionListResource extends SecureResource {
 			path = StringUtils.join(new String[]{path,"/",requestedProject});
 		}
 	
-		final XFTTable table = new XFTTable();
-		table.initTable(this.getPrearcBuider().getColumns());
+		ArrayList<String> validProjects = new ArrayList<String>();
+		ArrayList<String> invalidProjects =new ArrayList<String>();
 
 		for(final String project:projects){
 			try {
-				XFTTable t=retrieveTable(project,path);
-
-				if(t!=null){
-					table.rows().addAll(t.rows());
+				if (PrearcUtils.validUser(user, project)) {
+					validProjects.add(project);
 		}
-			} catch (InvalidPermissionException e) {
-				logger.error("Unable to build prearchive session list representation for " + project, e);
-				if(projects.size()==1){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,e.getMessage());
-				return null;
+				else {
+					invalidProjects.add(project);
 			}
 			} catch (Exception e) {
-				logger.error("Unable to build prearchive session list representation for " + project, e);
+				logger.error("Unable to check project permissions : ", e);
 				if(projects.size()==1){
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 			return null;

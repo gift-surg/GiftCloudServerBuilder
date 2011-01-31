@@ -179,6 +179,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setProject(this.getProject());
 			data.setScan_date(this.getDate());
 			data.setScan_time(this.getTime());
+			data.setSubject(this.getSubjectId());
 			data.setName(Session.pickName(this));
 			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),data.getName()}));
 			return this.data;

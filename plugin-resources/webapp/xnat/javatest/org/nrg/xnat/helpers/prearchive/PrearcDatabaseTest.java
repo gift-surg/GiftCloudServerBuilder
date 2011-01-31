@@ -281,107 +281,7 @@ public class PrearcDatabaseTest {
 		}
 	}
 	
-	@Test
-	public final void testMoveToProject() {
-		// move a session to a new project
-		String uri = "prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
-		try {
-			Assert.assertTrue(PrearcDatabase.moveToProject(uri));
-		}
-		catch (SQLException e) {
-			fail ("SQLException " + e.getMessage());
-		}
-		catch (SessionException e) {
-			fail ("SessionException " + e.getMessage());
-		} catch (Exception e) {
-			fail ("Exception " + e.getMessage());
-		}
-		
-		// retrieve the session and make sure that the project name is the new project
-		String newUri = "prearchive/projects/proj_newProj/1000/sess_0";
-		SessionData s = null;
-		try {
-			s = PrearcDatabase.getSession(newUri);
-		}
-		catch (SQLException e) {
-			fail("Threw a SQLException");
-		}
-		catch (SessionException e) {
-			fail("Threw a SessionException");
-		}
-		assert(s.getProject() == "proj_newProj");
-	}
-	@Test
-	public final void multipleMoveToProject () {
-		// move multiple sessions to a new project
-		String uri = "prearchive/projects/proj_3";
-		List<SessionData> projs = null;
-		try {
-			projs = PrearcDatabase.getProjects(uri);
-		}
-		catch (SQLException e) {
-			fail ("SQLException" + e.getMessage());
-		}
-		catch (SessionException e) {
-			fail ("SessionException" + e.getMessage());
-		}
-		Iterator<SessionData> di = projs.iterator();
-		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
-		while(di.hasNext()) {
-			SessionData _s = di.next();
-			ls.add(_s.sessionTriple);
-		}
-		
-		Map<SessionDataTriple,Boolean> m = null;
-		try {
-			m = PrearcDatabase.moveToProject(ls,"proj_1");
-		} 
-		catch (SyncFailedException e) {
-			fail ("SyncFailedException " + e.getMessage());
-		} 
-		catch (SQLException e) {
-			fail ("SQLException" + e.getMessage());
-		}
-		catch (SessionException e) {
-			fail ("SessionException" + e.getMessage());
-		}
-		
-		// make sure each one is renamed
-		// block for up to 3 seconds for each session.
-		Iterator<SessionDataTriple> li = ls.iterator();
-		int counter = 3;
-		boolean found = false;
-		while(li.hasNext()){
-			SessionDataTriple _s = li.next();
-			SessionData sd = null;
-			while(counter != 0) {
-			try {
-					sd = PrearcDatabase.getSession(_s.getName(),_s.getTimestamp(), "proj_1");
-					found = true;
-			} 
-			catch (SQLException e) {
-				fail ("SQLException" + e.getMessage());
-			}
-			catch (SessionException e) {
-					found = false;
-			}
-				if (!found) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {}
-			
-					counter--;
-				}
-				else {
-					break;
-				}
-			}
-			Assert.assertTrue(found);
-			Assert.assertEquals("proj_1", sd.getProject());
-			Assert.assertEquals(_s.getTimestamp(), sd.getTimestamp());
-			Assert.assertEquals(_s.getName(), sd.getName());
-		}
-	}
+
 	
 	@Test
 	public final void testSessionLock () {
@@ -408,6 +308,9 @@ public class PrearcDatabaseTest {
 			}
 		}	
 	}
+	
+	
+	
 	
 	@Test
 	public final void testSessionUnlock () {
@@ -442,6 +345,39 @@ public class PrearcDatabaseTest {
 			fail("Threw a SessionException " + e);
 		}
 	}
+	
+	@Test
+	public final void testMoveToProject() {
+		// move a session to a new project
+		String uri = "prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
+		try {
+			Assert.assertTrue(PrearcDatabase.moveToProject(uri));
+		}
+		catch (SQLException e) {
+			fail ("SQLException " + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException " + e.getMessage());
+		} catch (Exception e) {
+			fail ("Exception " + e.getMessage());
+		}
+		
+		// retrieve the session and make sure that the project name is the new project
+		String newUri = "prearchive/projects/proj_newProj/1000/sess_0";
+		SessionData s = null;
+		try {
+			s = PrearcDatabase.getSession(newUri);
+		}
+		catch (SQLException e) {
+			fail("Threw a SQLException");
+		}
+		catch (SessionException e) {
+			fail("Threw a SessionException");
+		}
+		assert(s.getProject() == "proj_newProj");
+	}
+	
+	
 	
 	@Test
 	public final void testDeleteLockedSession () {
@@ -493,7 +429,7 @@ public class PrearcDatabaseTest {
 	public final void testSetStatus() {
 		String uri = "prearchive/projects/proj_0/1000/sess_0";
 		try {
-			PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.ERROR);
+			Assert.assertTrue(PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.ERROR));
 		}
 		catch (SQLException e) {
 			fail("Threw a SQLException " + e);
@@ -511,7 +447,7 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail("Threw a SessionException " + e);
 		}
-		Assert.assertEquals(s.getStatus(), PrearcUtils.PrearcStatus.ERROR);
+		Assert.assertEquals(PrearcUtils.PrearcStatus.ERROR, s.getStatus());
 	}
 	
 	@Test
@@ -748,6 +684,77 @@ public class PrearcDatabaseTest {
 		while(di.hasNext()) {
 			SessionData _s = di.next();
 			Assert.assertEquals(PrearcUtils.PrearcStatus.DELETING, _s.getStatus());
+		}
+	}
+	@Test
+	public final void multipleMoveToProject () {
+		// move multiple sessions to a new project
+		String uri = "prearchive/projects/proj_3";
+		List<SessionData> projs = null;
+		try {
+			projs = PrearcDatabase.getProjects(uri);
+		}
+		catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException" + e.getMessage());
+		}
+		Iterator<SessionData> di = projs.iterator();
+		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
+		while(di.hasNext()) {
+			SessionData _s = di.next();
+			ls.add(_s.sessionTriple);
+		}
+		
+		Map<SessionDataTriple,Boolean> m = null;
+		try {
+			m = PrearcDatabase.moveToProject(ls,"proj_1");
+		} 
+		catch (SyncFailedException e) {
+			fail ("SyncFailedException " + e.getMessage());
+		} 
+		catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException" + e.getMessage());
+		}
+		
+		// make sure each one is renamed
+		// block for up to 3 seconds for each session.
+		Iterator<SessionDataTriple> li = ls.iterator();
+		int counter = 3;
+		boolean found = false;
+		while(li.hasNext()){
+			SessionDataTriple _s = li.next();
+			SessionData sd = null;
+			while(counter != 0) {
+			try {
+					sd = PrearcDatabase.getSession(_s.getName(),_s.getTimestamp(), "proj_1");
+					found = true;
+			} 
+			catch (SQLException e) {
+				fail ("SQLException" + e.getMessage());
+			}
+			catch (SessionException e) {
+					found = false;
+			}
+				if (!found) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {}
+			
+					counter--;
+				}
+				else {
+					break;
+				}
+			}
+			Assert.assertTrue(found);
+			Assert.assertEquals("proj_1", sd.getProject());
+			Assert.assertEquals(_s.getTimestamp(), sd.getTimestamp());
+			Assert.assertEquals(_s.getName(), sd.getName());
 		}
 	}
 }

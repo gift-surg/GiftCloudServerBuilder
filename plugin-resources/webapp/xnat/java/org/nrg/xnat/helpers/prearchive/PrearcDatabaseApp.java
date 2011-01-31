@@ -3,6 +3,8 @@ package org.nrg.xnat.helpers.prearchive;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.xml.sax.SAXException;
 
 public final class PrearcDatabaseApp {

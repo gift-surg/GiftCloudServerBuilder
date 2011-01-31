@@ -25,3 +25,4 @@ syntax: regexp
 # all auto-generated launch scripts start with capital letters
 ^bin/[A-Z].+
 glob:plugin-resources/repository/commons-lang/jars/commons-lang-2.0.jar*
+build.properties.sample

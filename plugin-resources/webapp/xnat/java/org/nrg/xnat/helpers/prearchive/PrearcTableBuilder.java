@@ -180,8 +180,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setScan_date(this.getDate());
 			data.setScan_time(this.getTime());
 			data.setSubject(this.getSubjectId());
-			data.setName(Session.pickName(this));
-			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),data.getName()}));
+			data.setName(this.getName());
+			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),this.getName()}));
 			return this.data;
 		}
 		

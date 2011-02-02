@@ -185,7 +185,7 @@ public final class PrearcDatabase {
 	 * @throws UniqueRowNotFoundException 
 	 * @throws BadSessionInformationException 
 	 */
-	private static void addSession(final SessionData s) throws SQLException, SessionException {
+	public static void addSession(final SessionData s) throws SQLException, SessionException {
 		PrearcDatabase.checkArgs(s);
 		new SessionOp<Void>(){
 			public java.lang.Void op() throws SQLException, SessionException {
@@ -655,7 +655,7 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 * @throws SessionException 
 	 */
-	private static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
+	public static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
 		return new SessionOp<Integer>() {
 			public Integer op() throws SQLException, SessionException {
 				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.countSessionSql(sess, proj));

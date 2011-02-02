@@ -2,13 +2,13 @@ package org.nrg.xnat.helpers.prearchive;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -155,17 +155,29 @@ public class PrearcDatabaseTest {
 		};		
 		PrearcDatabaseTest.sd = new SessionDataDelegate(sp,sm) {};
 		PrearcDatabaseTest.sessions = sd.get();
-	}	
-
-	@Before
-	public void setUp() throws Exception {
 		try {
 			PrearcDatabase.initDatabase("/home/aditya/Java/PRE_ARCHIVE_NEW/", PrearcDatabaseTest.sd);
 		} catch (SessionException e) {
 			fail("SessionException " + e);
 		}
+	}	
+	
+	@Before
+	public void reinitDatabase () {
+		try {
+			PrearcDatabase.refresh();
+		} catch (IllegalStateException e) {
+			fail("IllegalStateException " + e);
+		} catch (SQLException e) {
+			fail("SQLException " + e);
+		} catch (IOException e) {
+			fail("IOException " + e);
+		} catch (SessionException e) {
+			fail("SessionException " + e);
+		}
 	}
 	
+
 	@Test
 	public final void testGetUnassigned () {
 		String unassignedUri = "prearchive/projects/Unassigned";

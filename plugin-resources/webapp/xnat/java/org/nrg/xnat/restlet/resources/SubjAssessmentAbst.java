@@ -29,6 +29,7 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
@@ -76,7 +77,7 @@ public class SubjAssessmentAbst extends QueryOrganizerResource {
         xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
         xnatPipelineLauncher.setParameter("sessionType", expt.getXSIType());
         xnatPipelineLauncher.setParameter("xnat_project", expt.getProject());
-        
+                
         if (clearExistingWorkflows)
         {
             try {

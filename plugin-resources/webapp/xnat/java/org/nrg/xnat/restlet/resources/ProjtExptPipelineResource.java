@@ -81,7 +81,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 		if(proj!=null && step!=null){
 			ArcPipelinedata arcPipeline = null;
 			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
-			arcProject.setItem(arcProject.getCurrentDBVersion());
+			//arcProject.setItem(arcProject.getCurrentDBVersion());
 			Form f = getRequest().getResourceRef().getQueryAsForm();
 			try {
 				if (expt == null) { // Look for Project level pipeline
@@ -151,7 +151,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 					}
 				}else{
 					ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
-					arcProject.setItem(arcProject.getCurrentDBVersion());
+					//arcProject.setItem(arcProject.getCurrentDBVersion());
 					Form f = getRequest().getResourceRef().getQueryAsForm();
 					String match = null;
 					if(f!=null)match=f.getFirstValue("match");

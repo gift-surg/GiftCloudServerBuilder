@@ -437,10 +437,10 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		return rtn;
 	}
 
-	public boolean delete(ArcProject arcProject1, String pathToPipeline, String dataType, XDATUser user)  throws Exception {
+	public boolean delete(ArcProject arcProject, String pathToPipeline, String dataType, XDATUser user)  throws Exception {
 		boolean success = true;
-		ArcProject arcProject = new ArcProject();
-		arcProject.setItem(arcProject1.getCurrentDBVersion(true));
+		//ArcProject arcProject = new ArcProject();
+		//arcProject.setItem(arcProject1.getCurrentDBVersion(true));
 		boolean save = false;
 		try {
 		if (dataType.equalsIgnoreCase(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
@@ -450,6 +450,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 				if (pipeline.getLocation().equals(pathToPipeline)) {
 					arcProject.removePipelines_pipeline(i);
 					save = true;
+					break;
 				}
 			}
 		}else {
@@ -462,11 +463,14 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 					if (pipeline.getLocation().equals(pathToPipeline)) {
 						descendant.removePipeline(i);
 						save = true;
+						break;
 					}
 				}
 			}
 		}
-		if (save) arcProject.save(user, false, true);
+		if (save) {
+			arcProject.save(user, false, true);
+		}
 		}catch(Exception e) {
 			success = false;
 			throw e;

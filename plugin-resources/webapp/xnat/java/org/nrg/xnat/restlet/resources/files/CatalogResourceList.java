@@ -133,67 +133,66 @@ public class CatalogResourceList extends XNATTemplate {
 	public Representation getRepresentation(Variant variant) {	
 			XFTTable table = null;
 					
-			if(recons.size()>0 || scans.size()>0 || expts.size()>0 || sub!=null || proj!=null){
+		if(recons.size()>0 || scans.size()>0 || expts.size()>0 || sub!=null || proj!=null){
+			try {
+				table=this.loadCatalogs(null,false,true);
+			} catch (Exception e) {
+				logger.error("",e);
+			}
+		}
 					
-					try {
-					table=this.loadCatalogs(null,false,true);
-				} catch (Exception e) {
-		            logger.error("",e);
-								}
-							}
-						
-			if(this.getQueryVariable("file_stats")!=null && this.getQueryVariable("file_stats").equals("true")){
-				try {
-					if(proj==null){
-						if(parent.getItem().instanceOf("xnat:experimentData")){
-							proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
-						}else if(security.getItem().instanceOf("xnat:experimentData")){
-							proj = ((XnatExperimentdata)security).getPrimaryProject(false);
-						}else if(security.getItem().instanceOf("xnat:subjectData")){
-							proj = ((XnatSubjectdata)security).getPrimaryProject(false);
-						}else if(security.getItem().instanceOf("xnat:projectData")){
-							proj = (XnatProjectdata)security;
-						}
+		if(this.getQueryVariable("file_stats")!=null && this.getQueryVariable("file_stats").equals("true")){
+			try {
+				if(proj==null){
+					if(parent.getItem().instanceOf("xnat:experimentData")){
+						proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+					}else if(security.getItem().instanceOf("xnat:experimentData")){
+						proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+					}else if(security.getItem().instanceOf("xnat:subjectData")){
+						proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+					}else if(security.getItem().instanceOf("xnat:projectData")){
+						proj = (XnatProjectdata)security;
+					}
 				}
 				
-					XFTTable t = new XFTTable();
-					String [] fields={"xnat_abstractresource_id","label","element_name","category","cat_id","cat_desc","file_count","file_size","tags","content","format"};
-					t.initTable(fields);
-					table.resetRowCursor();
-					while(table.hasMoreRows() ){
-						Object[] old=table.nextRow();
-						Object[] _new=new Object[11];
-						_new[0]=old[0];
-						_new[1]=old[1];
-						_new[2]=old[2];
-						_new[3]=old[3];
-						_new[4]=old[4];
-						_new[5]=old[5];
-						
-						XnatAbstractresource res= XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(old[0], user, false);
-						_new[6]=res.getCount(proj.getRootArchivePath());
-						_new[7]=res.getSize(proj.getRootArchivePath());
-
-						_new[8]=res.getTagString();
-						_new[9]=res.getContent();
-						_new[10]=res.getFormat();
+				XFTTable t = new XFTTable();
+				String [] fields={"xnat_abstractresource_id","label","element_name","category","cat_id","cat_desc","file_count","file_size","tags","content","format"};
+				t.initTable(fields);
+				table.resetRowCursor();
+				while(table.hasMoreRows() ){
+					Object[] old=table.nextRow();
+					Object[] _new=new Object[11];
+					_new[0]=old[0];
+					_new[1]=old[1];
+					_new[2]=old[2];
+					_new[3]=old[3];
+					_new[4]=old[4];
+					_new[5]=old[5];
 					
-						t.rows().add(_new);
-					}
+					XnatAbstractresource res= XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(old[0], user, false);
+					_new[6]=res.getCount(proj.getRootArchivePath());
+					_new[7]=res.getSize(proj.getRootArchivePath());
 
-					table=null;
-					table=t;
-				} catch (ElementNotFoundException e) {
-					e.printStackTrace();
+					_new[8]=res.getTagString();
+					_new[9]=res.getContent();
+					_new[10]=res.getFormat();
+				
+					t.rows().add(_new);
 				}
+
+				table=null;
+				table=t;
+			} catch (ElementNotFoundException e) {
+				e.printStackTrace();
 			}
-			
-			Hashtable<String,Object> params=new Hashtable<String,Object>();
-			params.put("title", "Resources");
-	
-			MediaType mt = overrideVariant(variant);
-	
-			if(table!=null)params.put("totalRecords", table.size());
-			return this.representTable(table, mt, params);
+		}
+		
+		Hashtable<String,Object> params=new Hashtable<String,Object>();
+		params.put("title", "Resources");
+
+		MediaType mt = overrideVariant(variant);
+
+		if(table!=null)params.put("totalRecords", table.size());
+		return this.representTable(table, mt, params);
 	}
 }

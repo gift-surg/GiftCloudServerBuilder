@@ -119,7 +119,7 @@ public class PrearcUtils {
 			throw new InvalidPermissionException("null user object");
 		}
 		String prearcPath;
-		if(project.equals(COMMON)){
+		if(project==null || project.equals(COMMON)){
 			if (user.checkRole(ROLE_SITE_ADMIN)) {
 				prearcPath=ArcSpecManager.GetInstance().getGlobalPrearchivePath();
 			}else{
@@ -255,7 +255,11 @@ public class PrearcUtils {
 	}
 	public static java.util.Date timestamp2Date (java.sql.Timestamp t) {
 		return new java.util.Date(t.getTime());
-}
+	}
+	
+	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session) throws IOException, InvalidPermissionException, Exception{
+		return new File(new File(getPrearcDir(user, project),timestamp),session);
+	}
 
 	public static final FileFilter isSessionGeneratedFileFilter = new FileFilter() {
 		private final Pattern conversionLogPattern = Pattern.compile("(\\w*)toxnat\\.log");

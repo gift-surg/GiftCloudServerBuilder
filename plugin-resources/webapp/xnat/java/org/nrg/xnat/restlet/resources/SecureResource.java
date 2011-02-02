@@ -18,7 +18,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.xdat.security.XDATUser;
@@ -228,6 +230,14 @@ public abstract class SecureResource extends Resource {
 	
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params,Map<String,Map<String,String>> cp){
 		if(table!=null){
+			if(this.getQueryVariable("sortBy")!=null){
+				final String sortBy=this.getQueryVariable("sortBy");
+				table.sort(Arrays.asList(StringUtils.split(sortBy, ',')));
+				if(this.isQueryVariable("sortOrder","DESC",false)){
+					table.reverse();
+				}
+			}
+			
 	        if (mt.equals(MediaType.TEXT_XML)){
 				return new XMLTableRepresentation(table,cp,params,MediaType.TEXT_XML);
 			}else if (mt.equals(MediaType.APPLICATION_JSON)){
@@ -751,8 +761,11 @@ public abstract class SecureResource extends Resource {
 	public String getContextPath(){
 		if(CONTEXT_PATH==null){
 			CONTEXT_PATH=TurbineUtils.GetRelativePath(getHttpServletRequest());
-}
+		}
 		return CONTEXT_PATH;
 	}
 
+	public void setResponseStatus(final ActionException e){
+		this.getResponse().setStatus(e.getStatus(), e, e.getMessage());
+	}
 }

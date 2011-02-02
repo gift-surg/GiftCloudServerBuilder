@@ -21,6 +21,7 @@ import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -65,7 +66,7 @@ public class UserCacheResource extends SecureResource {
 		
 		try {
 			
-			String userPath = getUserPath();
+			String userPath = UserUtils.getUserCacheUploadsPath(user);
 	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
 	        String pFILE = (String)getRequest().getAttributes().get("FILE");
 	        
@@ -97,16 +98,12 @@ public class UserCacheResource extends SecureResource {
 		}
     }
 	
-	public String getUserPath(){
-		return ArcSpecManager.GetInstance().getGlobalCachePath() + "USERS" + File.separator + user.getXdatUserId();
-	}
-	
 	@Override
 	public void handleDelete() {
 		
 		try {
 			
-			String userPath = getUserPath();
+			String userPath = UserUtils.getUserCacheUploadsPath(user);
 	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
 	        String pFILE = (String)getRequest().getAttributes().get("FILE");
 	        
@@ -133,7 +130,7 @@ public class UserCacheResource extends SecureResource {
 	@Override
 	public void handlePost() {
 		
-		String userPath = getUserPath();
+		String userPath = UserUtils.getUserCacheUploadsPath(user);
 	    String pXNAME = (String)getRequest().getAttributes().get("XNAME");
 	    String pFILE = (String)getRequest().getAttributes().get("FILE");
 	        
@@ -164,7 +161,7 @@ public class UserCacheResource extends SecureResource {
 		
 		try {
 			
-			String userPath = getUserPath();
+			String userPath = UserUtils.getUserCacheUploadsPath(user);
 	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
 	        String pFILE = (String)getRequest().getAttributes().get("FILE");
 	        
@@ -223,7 +220,7 @@ public class UserCacheResource extends SecureResource {
 			
 			ArrayList<File> fileList = new ArrayList<File>();
 			fileList.addAll(FileUtils.listFiles(dir,null,true));
-			// TODO - Implement a sorting comparator on file list
+			//Implement a sorting comparator on file list: Unnecessary, it is sorted by the representTable method.
 	        ArrayList<String> columns=new ArrayList<String>();
 	        columns.add("Name");
 	        columns.add("Size");
@@ -249,7 +246,7 @@ public class UserCacheResource extends SecureResource {
 	
 	private void returnFile(String userPath,String pXNAME,String pFILE) {
 		
-		File reqFile = new File (userPath + File.separator + pXNAME + File.separator + pFILE + getRequest().getResourceRef().getRemainingPart().replaceFirst("\\?.*$", ""));
+		File reqFile = new File(new File(userPath,pXNAME),pFILE + getRequest().getResourceRef().getRemainingPart().replaceFirst("\\?.*$", ""));
 		if (reqFile.exists() && reqFile.isFile()) {
 			sendFileRepresentation(reqFile);
 		} else {
@@ -260,7 +257,7 @@ public class UserCacheResource extends SecureResource {
 	
 	private void deleteUserResource(String userPath,String pXNAME) {
 		
-		File dir = new File (userPath + File.separator + pXNAME);
+		File dir = new File (userPath,pXNAME);
 		
 		if (dir.exists() && dir.isDirectory()) {
 			
@@ -285,7 +282,7 @@ public class UserCacheResource extends SecureResource {
 		if (fileString.contains(",")) {
 			String[] fileArr = fileString.split(",");
             for (String s : fileArr) {  
-            	File f = new File(userPath + File.separator + pXNAME + File.separator + s);
+            	File f = new File(new File(userPath,pXNAME),s);
             	if (f.exists()) {
             		fileList.add(f);
             	} else {
@@ -294,7 +291,7 @@ public class UserCacheResource extends SecureResource {
             	}
             }
 		} else {
-			File f = new File(userPath + File.separator + pXNAME + File.separator + fileString);
+			File f = new File(new File(userPath,pXNAME),fileString);
            	if (f.exists()) {
            		fileList.add(f);
            	}
@@ -329,7 +326,7 @@ public class UserCacheResource extends SecureResource {
 		
 		// Create any subdirectories requested as well
 		String dirString = pXNAME + getRequest().getResourceRef().getRemainingPart().replaceFirst("\\?.*$", "");
-		File dir = new File (userPath + File.separator + dirString);
+		File dir = new File (userPath,dirString);
 		if (dir.exists()) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,"Resource with this name already exists.");
 		} else {
@@ -389,7 +386,7 @@ public class UserCacheResource extends SecureResource {
 			}
 	        
 	        // Write original file if not requesting or have non-archive file
-			File ouf=new File(dirString + File.separator + fileName);
+			File ouf=new File(dirString,fileName);
        		FileOutputStream fos=new FileOutputStream(ouf);
 	        ByteUtils.write(getRequest().getEntity().getStream(), fos);
 	        fos.close();
@@ -553,14 +550,14 @@ public class UserCacheResource extends SecureResource {
 			
     private String constructURI(String resource) {
     	
-    	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
-    	return requestPart + File.separator + resource;
+    	String requestPart = this.getContextPath()+this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
+    	return requestPart + "/" + resource;
     	
     }
 			
     private String constructURI(File f) {
     	
-    	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
+    	String requestPart = this.getContextPath()+this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
     	if (requestPart.endsWith("/resources/files") || !requestPart.endsWith("/files")) {
     		requestPart+="/files";
     	}
@@ -579,7 +576,7 @@ public class UserCacheResource extends SecureResource {
 		if (fileString.contains(",")) {
 			String[] fileArr = fileString.split(",");
             for (String s : fileArr) {  
-            	File f = new File(userPath + File.separator + pXNAME + File.separator + s);
+            	File f = new File(new File(userPath,pXNAME),s);
             	if (f.exists() && f.isDirectory()) {
             		fileList.addAll(FileUtils.listFiles(f,null,true));
             	} else if (f.exists()) {
@@ -588,7 +585,7 @@ public class UserCacheResource extends SecureResource {
             }
 		    zipFileName = pXNAME;
 		} else {
-			File f = new File(userPath + File.separator + pXNAME + File.separator + fileString);
+			File f = new File(new File(userPath,pXNAME),fileString);
            	if (f.exists() && f.isDirectory()) {
            		fileList.addAll(FileUtils.listFiles(f,null,true));
            	} else if (f.exists()) {
@@ -607,7 +604,7 @@ public class UserCacheResource extends SecureResource {
 	@SuppressWarnings("unchecked")
 	private void returnZippedFiles(String userPath, String pXNAME) {
 		
-		File dir = new File (userPath + File.separator + pXNAME);
+		File dir = new File (userPath,pXNAME);
 		if (dir.exists() && dir.isDirectory()) {
 			ArrayList<File> fileList = new ArrayList<File>();
 			fileList.addAll(FileUtils.listFiles(dir,null,true));

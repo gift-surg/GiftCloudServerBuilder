@@ -1,0 +1,86 @@
+package org.nrg.xnat.restlet.resources.prearchive;
+
+import java.io.File;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
+import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.restlet.resources.SecureResource;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Variant;
+
+public abstract class PrearcSessionResourceA extends SecureResource {
+	static Logger logger = Logger.getLogger(PrearcSessionResourceA.class);
+
+	protected static final String PROJECT_ATTR = "PROJECT_ID";
+	protected static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
+	protected static final String SESSION_LABEL = "SESSION_LABEL";
+	protected final String project;
+	protected final String timestamp;
+	protected final String session;
+
+
+	public PrearcSessionResourceA(Context context, Request request,
+			Response response) {
+		super(context, request, response);
+		
+		final Map<String,Object> attrs = request.getAttributes();
+		project = (String)attrs.get(PROJECT_ATTR);
+		timestamp = (String)attrs.get(SESSION_TIMESTAMP);
+		session = (String)attrs.get(SESSION_LABEL);
+		
+		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+		this.getVariants().add(new Variant(MediaType.TEXT_XML));
+	}
+	
+	
+	public class PrearcInfo{
+		public final File sessionDIR;
+		public final File sessionXML;
+		public final XnatImagesessiondataBean session;
+		
+		public PrearcInfo(final File dir, final File xml, final XnatImagesessiondataBean session){
+			this.sessionDIR=dir;
+			this.sessionXML=xml;
+			this.session=session;
+		}
+	}
+
+	protected PrearcInfo retrieveSessionBean() throws ActionException {
+		File sessionDIR;
+		File srcXML;
+		try {
+			sessionDIR = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+			srcXML=new File(sessionDIR.getAbsolutePath()+".xml");
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,e);
+		} catch (Exception e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		}
+		
+		if(!srcXML.exists()){
+			throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unable to locate prearc resource.",new Exception());
+		}
+		
+		try {
+			return new PrearcInfo(sessionDIR,srcXML,PrearcTableBuilder.parseSession(srcXML));
+		} catch (Exception e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		}
+	}
+
+}

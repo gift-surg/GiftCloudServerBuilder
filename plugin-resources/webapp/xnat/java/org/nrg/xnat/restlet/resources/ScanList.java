@@ -304,7 +304,7 @@ public class ScanList extends QueryOrganizerResource {
 			if(rep!=null)return rep;
 
 			XFTTable table;
-				try {
+			try {
 				final String re=this.getRootElementName();
 
 				final QueryOrganizer qo = new QueryOrganizer(re, user,
@@ -322,8 +322,8 @@ public class ScanList extends QueryOrganizerResource {
 
 				table = formatHeaders(table, qo, "xnat:imageScanData/ID",
 						String.format("/REST/experiments/%s/scans/",session.getId()));
-				} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}

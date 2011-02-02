@@ -10,31 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.restlet.resources.ExperimentListResource;
-import org.nrg.xnat.restlet.resources.ExperimentResource;
-import org.nrg.xnat.restlet.resources.ExptAssessmentResource;
-import org.nrg.xnat.restlet.resources.ProjSubExptAsstList;
-import org.nrg.xnat.restlet.resources.ProjSubExptList;
-import org.nrg.xnat.restlet.resources.ProjectAccessibilityResource;
-import org.nrg.xnat.restlet.resources.ProjectArchive;
-import org.nrg.xnat.restlet.resources.ProjectListResource;
-import org.nrg.xnat.restlet.resources.ProjectMemberResource;
-import org.nrg.xnat.restlet.resources.ProjectResource;
-import org.nrg.xnat.restlet.resources.ProjectSearchResource;
-import org.nrg.xnat.restlet.resources.ProjectSubjectList;
-import org.nrg.xnat.restlet.resources.ProjectUserListResource;
-import org.nrg.xnat.restlet.resources.ProtocolResource;
-import org.nrg.xnat.restlet.resources.ReconList;
-import org.nrg.xnat.restlet.resources.ReconResource;
-import org.nrg.xnat.restlet.resources.ScanDIRResource;
-import org.nrg.xnat.restlet.resources.ScanList;
-import org.nrg.xnat.restlet.resources.ScanResource;
-import org.nrg.xnat.restlet.resources.ScanTypeListing;
-import org.nrg.xnat.restlet.resources.ScannerListing;
-import org.nrg.xnat.restlet.resources.SubjAssessmentResource;
-import org.nrg.xnat.restlet.resources.SubjectListResource;
-import org.nrg.xnat.restlet.resources.SubjectResource;
-import org.restlet.Router;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
@@ -166,6 +141,7 @@ public final class UriParserUtils {
 	}
 		
 	
+	@SuppressWarnings("serial")
 	static List<String> arcTemplates=new ArrayList<String>(){{
 		add("/archive/projects/{" + PROJECT_ID + "}/experiments/{" + EXPT_ID + "}".intern());
 		add("/archive/projects/{" + PROJECT_ID + "}/subjects/{" + SUBJECT_ID + "}".intern());
@@ -184,6 +160,7 @@ public final class UriParserUtils {
 		add("/archive/subjects/{SUBJECT_ID}".intern());
 	}};
 	
+	@SuppressWarnings("serial")
 	static List<String> prearcTemplates=new ArrayList<String>(){
 		{
 			add("/prearchive/projects/{" + PROJECT_ID + "}/{" +PrearcUtils.PREARC_TIMESTAMP + "}/{" + PrearcUtils.PREARC_SESSION_FOLDER + "}".intern());
@@ -227,13 +204,13 @@ public final class UriParserUtils {
 	 * @author aditya
 	 *
 	 */
-	static class UriParser implements UriParserI<Map <String, Object>> {
+	public static class UriParser implements UriParserI<Map <String, Object>> {
 		String template;
 		int mode=Template.MODE_STARTS_WITH;
 		UriParser (String template) {
 			this.template = template;
 		}
-		UriParser (String template, int mode) {
+		public UriParser (String template, int mode) {
 			this.template = template;
 			this.mode=mode;
 		}

@@ -1,29 +1,31 @@
 package org.nrg.xnat.restlet.services;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusList;
-import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue;
 import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
+import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.actions.importer.ImporterNotFoundException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
+import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -31,6 +33,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.Template;
 
 public class Importer extends SecureResource {
 	private static final String CRLF = "\r\n";
@@ -58,7 +61,7 @@ public class Importer extends SecureResource {
 			
 	final Map<String,Object> params=new Hashtable<String,Object>();
 						
-	public void loadParams(Form f){
+	public void loadParams(Form f) throws ClientException{
 			for(final String key:f.getNames()){
 				if(key.equals(ImporterHandlerA.IMPORT_HANDLER_ATTR)){
 					handler=f.getFirstValue(ImporterHandlerA.IMPORT_HANDLER_ATTR);
@@ -177,36 +180,50 @@ public class Importer extends SecureResource {
 		}
 	}
 
-	public FileWriterWrapperI retrievePrestoreFile(final String src){
-		//TODO retrieve FILE
-
-		return new FileWriterWrapperI(){
-			public void write(File f) throws IOException, Exception {
-				// TODO Auto-generated method stub
-
-			}
-
-			public String getName() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public InputStream getInputStream() throws IOException, Exception {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public void delete() {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public UPLOAD_TYPE getType() {
-				// TODO Auto-generated method stub
-				return null;
-			}};
+	public FileWriterWrapperI retrievePrestoreFile(final String src) throws ClientException{
+		
+		Map<String,Object> map=new UriParser("/user/cache/resources/{XNAME}/files/{FILE}",Template.MODE_EQUALS).readUri(src);
+		
+		if(!map.containsKey("XNAME") || !map.containsKey("FILE")){
+			throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,"src uri is invalid.",new Exception());
+		}
+		
+		File f=UserUtils.getUserCacheFile(user, (String)map.get("XNAME"), (String)map.get("FILE"));
+		
+		if(f.exists()){
+			return new UserCacheFile(f);
+		}else{
+			throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown src file.",new Exception());
+		}
 	}
+	
+	class UserCacheFile implements FileWriterWrapperI{
+		final File stored;
+		
+		public UserCacheFile(final File f){
+			stored=f;
+		}
+		
+		public void write(File f) throws IOException, Exception {
+			FileUtils.moveFile(stored, f);
+		}
+
+		public String getName() {
+			return stored.getName();
+		}
+
+		public InputStream getInputStream() throws IOException, Exception {
+			return new FileInputStream(stored);
+		}
+
+		public void delete() {
+			if(stored.exists())FileUtils.deleteQuietly(stored);
+		}
+
+		@Override
+		public UPLOAD_TYPE getType() {
+			return UPLOAD_TYPE.OTHER;
+		}};
 
 	public String convertListURItoString(final List<String> response){
 		StringBuffer sb = new StringBuffer();
@@ -215,17 +232,6 @@ public class Importer extends SecureResource {
 		}
 
 		return sb.toString();
-	}
-
-
-	Map<String,XnatProjectdata> projects=new HashMap<String,XnatProjectdata>();
-
-	private XnatProjectdata getProject(final String s){
-		if(!projects.containsKey(s)){
-			projects.put(s,XnatProjectdata.getXnatProjectdatasById(s, user, false));
-		}
-
-		return this.projects.get(s);
 	}
 
 	private void storeStatusList(final String transaction_id,final StatusList sl) throws IllegalArgumentException{

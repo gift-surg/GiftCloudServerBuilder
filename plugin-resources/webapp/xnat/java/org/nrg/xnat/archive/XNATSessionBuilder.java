@@ -44,7 +44,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 
 	private static final String SESSION_BUILDER_PROPERTIES = "session-builder.properties";
 
-	static Logger logger = Logger.getLogger(SubjAssessmentAbst.class);
+	static Logger logger = Logger.getLogger(XNATSessionBuilder.class);
     
 	private static final String DICOM = "DICOM";
 
@@ -153,7 +153,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				} catch (SQLException e) {
 					logger.error("unable to process session directory " + dir, e);
 				} catch (Throwable e) {
-					logger.error(e);
+					logger.error("",e);
 				}
 			}else if(bc.getCode().equals(ECAT)){
 				//hard coded implementation for ECAT
@@ -166,19 +166,19 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 						org.nrg.session.SessionBuilder builder=(org.nrg.session.SessionBuilder) con.newInstance(new Object[]{dir.getPath(),fw});
 						builder.run();
 					} catch (IllegalArgumentException e) {
-						logger.error(e);
+						logger.error("",e);
 					} catch (InstantiationException e) {
-						logger.error(e);
+						logger.error("",e);
 					} catch (IllegalAccessException e) {
-						logger.error(e);
+						logger.error("",e);
 					} catch (InvocationTargetException e) {
-						logger.error(e);
+						logger.error("",e);
 					}
 					
 				} catch (SecurityException e) {
-					logger.error(e);
+					logger.error("",e);
 				} catch (NoSuchMethodException e) {
-					logger.error(e);
+					logger.error("",e);
 				}
 			}
 			

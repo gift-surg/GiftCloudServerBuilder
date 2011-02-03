@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,6 @@ import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 

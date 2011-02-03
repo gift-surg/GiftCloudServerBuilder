@@ -76,7 +76,22 @@ public abstract class BaseElement{
         }
         throw new IllegalArgumentException("Unable to translate '" + s + "' to a boolean value.");
     }
-
+    
+    public class FormatException extends Exception{
+        public FormatException(String s)
+        {
+           super(s);
+        }
+        public FormatException(Exception s)
+        {
+            super(s);
+        }
+        public FormatException(String s,Exception e)
+        {
+            super(s,e);
+        }
+    }
+    
     public class UnknownFieldException extends Exception{
         public UnknownFieldException(String s)
         {

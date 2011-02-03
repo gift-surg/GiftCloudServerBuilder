@@ -4,6 +4,7 @@
 package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,9 +13,11 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.TurbineException;
+import org.nrg.dcm.xnat.SessionBuilder;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
@@ -94,11 +97,17 @@ public final class PrearcSessionResource extends SecureResource {
 		
 		final String action = queryForm.getFirstValue("action");
 		if (POST_ACTION_BUILD.equals(action)) {
-			// TODO: (re)build the session document
-			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "session build operation not yet implemented");
+			if(checkModifyStatus()){
+				final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project);
+				try {
+					builder.call();
+				} catch (IOException e) {
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				}
+			}
 		} else if (POST_ACTION_RESET.equals(action)) {
-			// TODO: move the session to a different project
-			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
+			// TODO: reset status based on xml contents
+			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "rest status not yet implemented");
 		} else if (POST_ACTION_MOVE.equals(action)) {
 			// TODO: move the session to a different project
 			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
@@ -106,6 +115,11 @@ public final class PrearcSessionResource extends SecureResource {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
 					"unsupported action on prearchive session: " + action);
 		}
+	}
+	
+	public boolean checkModifyStatus(){
+		//TODO: CHECK status -- can refresh?
+		return true;
 	}
 
 	@Override

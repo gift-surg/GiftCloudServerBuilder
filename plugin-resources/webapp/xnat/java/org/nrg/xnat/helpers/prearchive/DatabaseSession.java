@@ -464,19 +464,7 @@ public enum DatabaseSession {
 	public static String findSessionSql (String sess, String timestamp, String proj) {
 		return "SELECT * FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
 	}
-	
-	/**
-	 * Count the number of sessions that match the given arguments.
-	 * @param sess
-	 * @param proj
-	 * @return
-	 */
-	public static String countSessionSql (String sess, String proj) {
-		return "SELECT COUNT(*) FROM " + PrearcDatabase.table + " WHERE " + 
-		    DatabaseSession.NAME.searchSql(sess) + " AND " + 
-            DatabaseSession.PROJECT.searchSql(proj);
-	}
-	
+		
 	/**
 	 * Count the number of sessions that match the given arguments.
 	 * @param sess

@@ -5,25 +5,28 @@ package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.SyncFailedException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.TurbineException;
-import org.nrg.dcm.xnat.SessionBuilder;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.XNATSessionBuilder;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
+import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+import org.nrg.xnat.helpers.prearchive.SessionData;
+import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
-import org.nrg.xnat.turbine.modules.actions.LoadImageData;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -52,7 +55,8 @@ public final class PrearcSessionResource extends SecureResource {
 	
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionResource.class);
 
-	private final String project, timestamp, session;
+	private String project;
+	private final String timestamp, session;
 	private final Form queryForm;
 
 	/**
@@ -83,43 +87,80 @@ public final class PrearcSessionResource extends SecureResource {
 	public final boolean allowPost() { return true; }
 	
 	@Override
+	public final boolean allowDelete() { return true; }
+	
+	@Override
 	public void handlePost(){
+		if(project.equalsIgnoreCase("Unassigned"))project=null;
 		final File sessionDir;
 		try {
 			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
 		} catch (InvalidPermissionException e) {
+			logger.error("",e);
 			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
 			return;
 		} catch (Exception e) {
+			logger.error("",e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 			return;
 		}
 		
 		final String action = queryForm.getFirstValue("action");
 		if (POST_ACTION_BUILD.equals(action)) {
-			if(checkModifyStatus()){
-				final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project);
-				try {
+			try {
+				if(!PrearcDatabase.isLocked(session, timestamp, project)){
+					//change status to _building
+					PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._BUILDING);
+					
+					final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project);
 					builder.call();
-				} catch (IOException e) {
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+						
+					PrearcUtils.resetStatus(user,project,timestamp,session);
 				}
+			} catch (InvalidPermissionException e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+			} catch (Exception e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 			}
 		} else if (POST_ACTION_RESET.equals(action)) {
-			// TODO: reset status based on xml contents
-			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "rest status not yet implemented");
+			try {
+				if(!PrearcDatabase.isLocked(session, timestamp, project)){
+					PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._BUILDING);
+					
+					PrearcUtils.resetStatus(user,project,timestamp,session);
+				}
+			} catch (InvalidPermissionException e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+			} catch (Exception e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			}
 		} else if (POST_ACTION_MOVE.equals(action)) {
-			// TODO: move the session to a different project
-			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
+			String newProj=this.getQueryVariable("newProject");
+			
+			if(StringUtils.isNotEmpty(newProj)){
+				//TODO: convert ALIAS to project ID (if necessary)
+			}
+			
+			try {
+				PrearcDatabase.moveToProject(session, timestamp, project, newProj);
+			} catch (SyncFailedException e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+			} catch (SQLException e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+			} catch (SessionException e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e);
+			}			
 		} else {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
 					"unsupported action on prearchive session: " + action);
 		}
-	}
-	
-	public boolean checkModifyStatus(){
-		//TODO: CHECK status -- can refresh?
-		return true;
 	}
 
 	@Override
@@ -128,45 +169,21 @@ public final class PrearcSessionResource extends SecureResource {
 		try {
 			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
 		} catch (InvalidPermissionException e) {
+			logger.error("",e);
 			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
 			return;
 		} catch (Exception e) {
+			logger.error("",e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 			return;
 		}
-		final File sessionXML = new File(sessionDir.getPath() + ".xml");
-		sessionXML.delete();
-		if (sessionXML.exists()) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
-					"Unable to delete session XML " + sessionXML);
-			return;
-		}
-
+		
 		try {
-			final File tsDir = sessionDir.getParentFile();
-
-			final Project antProject = new Project();
-			antProject.setBaseDir(tsDir);
-
-			final Delete delete = new Delete();
-			delete.setProject(antProject);
-			delete.setDir(sessionDir);
-			delete.execute();
-
-			if (0 == tsDir.listFiles().length) {
-				tsDir.delete();
-			}
-		} finally {
-			if (sessionXML.exists()) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
-						"Unable to delete session XML " + sessionXML);
-				return;
-			}
-			if (sessionDir.exists()) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
-						"Unable to delete session " + session);
-				return;
-			}
+			PrearcDatabase.deleteSession(session, timestamp, project);
+		} catch (Exception e) {
+			logger.error("",e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			return;
 		}
 	}
 

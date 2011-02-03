@@ -185,7 +185,7 @@ public final class PrearcDatabase {
 	 * @throws UniqueRowNotFoundException 
 	 * @throws BadSessionInformationException 
 	 */
-	private static void addSession(final SessionData s) throws SQLException, SessionException {
+	public static void addSession(final SessionData s) throws SQLException, SessionException {
 		PrearcDatabase.checkArgs(s);
 		new SessionOp<Void>(){
 			public java.lang.Void op() throws SQLException, SessionException {
@@ -453,7 +453,7 @@ public final class PrearcDatabase {
 		return true;
 	}
 	
-	private static void unsafeSetStatus (final String sess, final String timestamp, final String proj, final PrearcUtils.PrearcStatus status) throws SQLException, SessionException {
+	public static void unsafeSetStatus (final String sess, final String timestamp, final String proj, final PrearcUtils.PrearcStatus status) throws SQLException, SessionException {
 		if (null == status) {
 			throw new SessionException ("Status argument is null or empty");
 		}
@@ -483,12 +483,52 @@ public final class PrearcDatabase {
 	 * @throws UniqueRowNotFoundException thrown if the number of rows with 'sess' and 'proj' is not 1.
 	 * @throws BadSessionInformationException thrown if any arguments are null or empty
 	 */
+	public static boolean deleteCacheRow (final String sess, final String timestamp, final String proj) throws SQLException, SessionException, SyncFailedException {
+		if (PrearcDatabase.isLocked(sess, timestamp, proj)) {
+			return false;
+		}
+		new LockAndSync(sess,timestamp,proj){
+			protected boolean unlock(){
+				return false;
+			}			
+			
+			void extSync() throws SyncFailedException {
+			}
+			void cacheSync() throws SQLException, SessionException {
+				PrearcDatabase.withSession(sess,timestamp,proj, new SessionOp<Void>(){
+					public java.lang.Void op () throws SQLException, SessionException {
+						this.conn.createStatement().execute(DatabaseSession.deleteSessionSql(sess,timestamp,proj));
+						this.conn.commit();
+						return null;
+					}
+				});
+			}
+		}.run();
+		return true;
+	}
+	
+	
+	/**
+	 * Delete a session from the prearchive database. 
+	 * if the session is locked.
+	 * @param sess
+	 * @param proj
+	 * @return Return true if successful, false
+	 * @throws SQLException
+	 * @throws SyncFailedException 
+	 * @throws UniqueRowNotFoundException thrown if the number of rows with 'sess' and 'proj' is not 1.
+	 * @throws BadSessionInformationException thrown if any arguments are null or empty
+	 */
 	public static boolean deleteSession (final String sess, final String timestamp, final String proj) throws SQLException, SessionException, SyncFailedException {
 		if (PrearcDatabase.isLocked(sess, timestamp, proj)) {
 			return false;
 		}
 		final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
 		new LockAndSync(sess,timestamp,proj){
+			protected boolean unlock(){
+				return false;
+			}			
+			
 			void extSync() throws SyncFailedException {
 				sessionDelegate.delete(sd);
 			}
@@ -512,10 +552,16 @@ public final class PrearcDatabase {
 			this.timestamp = timestamp;
 			this.proj = proj;
 		} 
+		
+		protected boolean unlock(){
+			return true;
+		}
+		
 		abstract void extSync () throws SyncFailedException;
 		abstract void cacheSync () throws SQLException, SessionException;
 		void run() throws SQLException, SessionException, SyncFailedException{
 			try {
+				lockSession(sess, timestamp, proj);
 				extSync();
 				cacheSync();
 			}
@@ -558,12 +604,12 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 * @throws SessionException
 	 */
-	protected static boolean isLocked(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
+	public static boolean isLocked(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
 		SessionData sd = PrearcDatabase.getSession(sess, timestamp,proj);
 		return PrearcUtils.inProcessStatusMap.containsValue(sd.getStatus());
 	}
 	
-	protected static void unLockSession(String uri) throws SQLException, SessionException {
+	public static void unLockSession(String uri) throws SQLException, SessionException {
 		final UriParserUtils.SessionParser parser = new UriParserUtils.SessionParser(new UriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
 		final Map<String,String> sess = parser.readUri(uri);
 		PrearcDatabase.unLockSession(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
@@ -658,7 +704,7 @@ public final class PrearcDatabase {
 	private static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
 		return new SessionOp<Integer>() {
 			public Integer op() throws SQLException, SessionException {
-				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.countSessionSql(sess, proj));
+				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.countSessionSql(sess,timestamp, proj));
 				rs.next();
 				return rs.getInt(1);
 			}
@@ -724,7 +770,7 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 */
 	
-	private static String showAllRows () {
+	public static String showAllRows () {
 		String ret = null;
 		try {
 			ret = new SessionOp<String>() {
@@ -774,7 +820,14 @@ public final class PrearcDatabase {
 				while(rs.next()) {
 					ArrayList<Object> al = new ArrayList<Object>();
 					for (DatabaseSession d : DatabaseSession.values()) {
-						al.add(d.getFromResult(rs));
+						if(d.equals(DatabaseSession.URL)){
+							final String project=DatabaseSession.PROJECT.getFromResult(rs);
+							final String timestamp=DatabaseSession.TIMESTAMP.getFromResult(rs);
+							final String session=DatabaseSession.NAME.getFromResult(rs);
+							al.add(String.format("/prearchive/projects/%s/%s/%s",project,timestamp,session));
+						}else{
+							al.add(d.getFromResult(rs));
+						}
 					}
 					ao.add(al);
 				}

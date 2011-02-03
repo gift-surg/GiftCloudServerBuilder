@@ -1,20 +1,14 @@
 package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.SyncFailedException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
-import org.apache.xml.serialize.XMLSerializer;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 /**
  * Modify the session on the filesystem 
@@ -45,7 +39,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	static class Move {
 		final String basePath, sess, uri, newProj;
 		final File f, tsdir, newTsdir, xml;
-		Document doc = null;
+		XnatImagesessiondataBean doc = null;
 		
 		/**
 		 * Each step of the move is a Transaction that
@@ -56,7 +50,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 		 * 'copy' step.  
 		 */
 		Transaction<java.lang.Void> copy;
-		Transaction<Document> setXml;
+		Transaction<XnatImagesessiondataBean> setXml;
 		Transaction<java.lang.Void>writeXml;
 		
 		class Copy implements Transaction<java.lang.Void>{
@@ -87,19 +81,18 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			}
 		}
 		
-		class SetXml implements Transaction<Document>{
+		class SetXml implements Transaction<XnatImagesessiondataBean>{
 			File xml;
 			String newProj;
 			public SetXml(File xml, String newProj) {
 				this.xml = xml;
 				this.newProj = newProj;
 			}
-			public Document run() throws SyncFailedException {
-				Document doc = null;
+			public XnatImagesessiondataBean run() throws SyncFailedException {
+				XnatImagesessiondataBean doc = null;
 				try {
-					doc = FileSystemSessionDataModifier.setProjInSessionXML(xml.getAbsolutePath(), newProj);
-				} catch (ParserConfigurationException e) {
-					throwSync(e.getMessage());
+					doc=PrearcTableBuilder.parseSession(xml);
+					doc.setProject(newProj);
 				} catch (SAXException e) {
 					throwSync(e.getMessage());
 				} catch (IOException e) {
@@ -122,12 +115,17 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 				xml = new File(tsdir, sess + ".xml");
 			}
 			public Void run() throws SyncFailedException {
-				XMLSerializer serializer = new XMLSerializer();
+				FileWriter fw=null;
 			    try {
-					serializer.setOutputCharStream(new java.io.FileWriter(xml));
-				    serializer.serialize(doc);
-				} catch (IOException e) {
+			    	fw=new FileWriter(xml);
+			    	doc.toXML(fw);
+				} catch (Exception e) {
 					throwSync(e.getMessage());
+				}finally{
+					if(fw!=null)
+						try {
+							fw.close();
+						} catch (IOException e) {}
 				}
 			    return null;
 			}
@@ -163,7 +161,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			return writeXml;
 		}
 
-		public Transaction<Document> getSetXml() {
+		public Transaction<XnatImagesessiondataBean> getSetXml() {
 			return setXml;
 		}
 
@@ -175,7 +173,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			this.writeXml = writeXml;
 		}
 
-		public void setSetXml(Transaction<Document> setXml) {
+		public void setSetXml(Transaction<XnatImagesessiondataBean> setXml) {
 			this.setXml = setXml;
 		}
 
@@ -205,12 +203,14 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 				throw e;
 			}
 			// If everything was moved, we can remove the session and timestamp directories.
-			f.delete();
-			if (f.isDirectory()) {
+			FileUtils.deleteDirQuietly(f);
+			if (f.exists()) {
 				logger.warn("moved session " + sess + " to " + newProj + ", but unable to delete original directory.");
 			}
-			// timestamp directory might contain another session, so no warning if deletion fails.		
-			tsdir.delete();	
+			// timestamp directory might contain another session, so no warning if deletion fails.
+			if(tsdir.list().length==0){
+				tsdir.delete();	
+			}
 		}
 	}
 	
@@ -222,22 +222,16 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 		move.run();
 	}
 	
-	protected static Document setProjInSessionXML (String pathToXML, String proj) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-		Document doc = docBuilder.parse(new File(pathToXML));
-		Element e = doc.getDocumentElement();
-		e.normalize();
-		e.setAttribute("project", proj);
-		return doc;
-	}
-	
 	public void delete(SessionData sd) {
 		File f = new File(sd.getUrl());
 		new File(f.getPath() + ".xml").delete();	// remove the session XML
 		final File tsdir = f.getParentFile();
 		FileUtils.DeleteFile(f);
 		tsdir.delete();	// delete timestamp parent only if empty.
+	}
+	
+	public void resetStatus(SessionData sd) {
+		
 	}
 	
 	public void setStatus(SessionData sd, PrearcStatus status) {

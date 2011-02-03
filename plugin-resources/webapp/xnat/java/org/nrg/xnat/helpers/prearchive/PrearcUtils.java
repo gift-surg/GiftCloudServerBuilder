@@ -19,6 +19,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 
@@ -270,6 +271,22 @@ public class PrearcUtils {
 			|| conversionLogPattern.matcher(f.getName()).matches();
 		}
 	};
+	
+
+
+	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
+		PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
+		PrearcDatabase.deleteCacheRow(session,timestamp,project);
+		
+		addSession(user,project,timestamp,session);
+	}
+	
+	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
+		Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session), timestamp);
+		SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
+
+		PrearcDatabase.addSession(sd);
+	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";
 }

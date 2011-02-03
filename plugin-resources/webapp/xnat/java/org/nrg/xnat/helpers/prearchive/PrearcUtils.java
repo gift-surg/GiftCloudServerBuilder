@@ -258,6 +258,9 @@ public class PrearcUtils {
 	}
 	
 	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session) throws IOException, InvalidPermissionException, Exception{
+		if(user==null||timestamp==null||session==null){
+			throw new IllegalArgumentException();
+		}
 		return new File(new File(getPrearcDir(user, project),timestamp),session);
 	}
 

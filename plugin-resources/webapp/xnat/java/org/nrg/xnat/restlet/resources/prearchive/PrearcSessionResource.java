@@ -4,58 +4,51 @@
 package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.nrg.action.ClientException;
-import org.nrg.action.ServerException;
-import org.nrg.xdat.security.XDATUser;
+import org.apache.turbine.util.RunData;
+import org.apache.turbine.util.TurbineException;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xnat.archive.AlreadyArchivingException;
-import org.nrg.xnat.archive.ArchivingException;
-import org.nrg.xnat.archive.DuplicateSessionLabelException;
-import org.nrg.xnat.archive.PrearcSessionArchiver;
-import org.nrg.xnat.archive.ValidationException;
+import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
+import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
+import org.nrg.xnat.restlet.representations.ZipRepresentation;
+import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.turbine.modules.actions.LoadImageData;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
  *
  */
-public final class PrearcSessionResource extends Resource {
-	private static final String USER_ATTR = "user";
+public final class PrearcSessionResource extends SecureResource {
 	private static final String PROJECT_ATTR = "PROJECT_ID";
 	private static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
 	private static final String SESSION_LABEL = "SESSION_LABEL";
 	private static final String CRLF = "\r\n";
 	
-	public static final String POST_ACTION_ARCHIVE = "archive";
+	public static final String POST_ACTION_RESET = "reset-status";
 	public static final String POST_ACTION_BUILD = "build";
 	public static final String POST_ACTION_MOVE = "move";
 	
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionResource.class);
 
-	private final XDATUser user;
 	private final String project, timestamp, session;
 	private final Form queryForm;
 
@@ -70,9 +63,6 @@ public final class PrearcSessionResource extends Resource {
 
 		final Map<String,Object> attrs = getRequest().getAttributes();
 
-		// User comes either from traditional session or via XnatSecureGuard
-		user = (XDATUser) attrs.get(USER_ATTR);
-
 		// Project, timestamp, session are explicit in the request
 		project = (String)attrs.get(PROJECT_ATTR);
 		timestamp = (String)attrs.get(SESSION_TIMESTAMP);
@@ -81,122 +71,61 @@ public final class PrearcSessionResource extends Resource {
 		queryForm = request.getResourceRef().getQueryAsForm();
 
 		getVariants().add(new Variant(MediaType.TEXT_XML));
-		//		getVariants().add(new Variant(MediaType.APPLICATION_GNU_ZIP));
-		//		getVariants().add(new Variant(MediaType.APPLICATION_ZIP));
+		getVariants().add(new Variant(MediaType.APPLICATION_ZIP));
+		getVariants().add(new Variant(MediaType.APPLICATION_GNU_ZIP));
+		getVariants().add(new Variant(MediaType.TEXT_HTML));
 	}
-
-	private File getSessionDir() throws ResourceException {
-		File prearcDir;
-		try {
-			prearcDir = PrearcUtils.getPrearcDir(user, project);
-		} catch (Exception e) {
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-		}
-		final File tsDir = new File(prearcDir, timestamp);
-		final File sessDir = new File(tsDir, session);
-		if (sessDir.isDirectory()) {
-			return sessDir;
-		} else {
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-		}
-	}
-
 	
 	@Override
 	public final boolean allowPost() { return true; }
 	
-	/*
-	 * (non-Javadoc)
-	 * @see org.restlet.resource.Resource#acceptRepresentation(org.restlet.resource.Representation)
-	 */
 	@Override
-	public void acceptRepresentation(final Representation representation)
-	throws ResourceException {
-		final File sessionDir = getSessionDir();
+	public void handlePost(){
+		final File sessionDir;
+		try {
+			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+		} catch (InvalidPermissionException e) {
+			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+			return;
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			return;
+		}
+		
 		final String action = queryForm.getFirstValue("action");
-		if (POST_ACTION_ARCHIVE.equals(action)) {
-			//allowDataDeletion will govern if prexisting xml data can be deleted by new xml.
-			boolean allowDataDeletion=false;
-			boolean overwrite=false;
-			
-			if(queryForm.contains(XNATRestConstants.ALLOW_DATA_DELETION)){
-				allowDataDeletion=Boolean.valueOf(queryForm.getFirstValue(XNATRestConstants.ALLOW_DATA_DELETION));
-			}
-			
-			if(queryForm.contains(XNATRestConstants.OVERWRITE)){
-				allowDataDeletion=Boolean.valueOf(queryForm.getFirstValue(XNATRestConstants.OVERWRITE));
-			}
-			
-			final String entity = doArchive(sessionDir,allowDataDeletion,overwrite);
-			final Response response = getResponse();
-			response.setEntity(entity + CRLF, MediaType.TEXT_URI_LIST);
-		} else if (POST_ACTION_BUILD.equals(action)) {
+		if (POST_ACTION_BUILD.equals(action)) {
 			// TODO: (re)build the session document
-			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "session build operation not yet implemented");
+			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "session build operation not yet implemented");
+		} else if (POST_ACTION_RESET.equals(action)) {
+			// TODO: move the session to a different project
+			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
 		} else if (POST_ACTION_MOVE.equals(action)) {
 			// TODO: move the session to a different project
-			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
+			this.getResponse().setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED, "move operation not yet implemented");
 		} else {
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
 					"unsupported action on prearchive session: " + action);
 		}
 	}
 
-	private Map<String,Object> makeMap(final Form form) {
-		final Map<String,Object> m=new HashMap<String,Object>();
-		for (final Parameter param : form) {
-			m.put(param.getName(), param.getValue());
-		}
-		
-		// TODO: What if the user supplies paramaters via the body of the message as the session archiving page would.  
-		// Need to parse it into a Form and review its parameters as well. Form bodyForm = new Form(entity);
-		
-		return m;
-	}
-	
-	private String doArchive(final File sessionDir, final Boolean allowDataDeletion,final Boolean overwrite) throws ResourceException {
-		final PrearcSessionArchiver archiver;
-		try {
-			archiver = new PrearcSessionArchiver(sessionDir, user, project, makeMap(queryForm),allowDataDeletion,overwrite);
-		} catch (FileNotFoundException e) {
-			logger.debug("user attempted to archive session with no XML", e);
-			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
-					"Session metadata could not be read. Send a build request and try again.", e);
-		} catch (IOException e) {
-			logger.error("unable to read session document", e);
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-					"Unable to read session document", e);
-		} catch (SAXException e) {
-			logger.error("error in session document", e);
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-					"Unable to parse session document", e);
-		}
-		
-		try {
-			return archiver.call().toString();
-		} catch (ClientException e) {
-			logger.debug("", e);
-			throw new ResourceException(e.status, e.getMessage(), e);
-		} catch (ServerException e) {
-			logger.debug("", e);
-			throw new ResourceException(e.status, e.getMessage(), e);
-		} finally {
-				archiver.dispose();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.restlet.resource.Resource#removeRepresentations()
-	 */
 	@Override
-	public void removeRepresentations() throws ResourceException {
-		final File sessionDir = getSessionDir();
+	public void handleDelete() {
+		final File sessionDir;
+		try {
+			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+		} catch (InvalidPermissionException e) {
+			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+			return;
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			return;
+		}
 		final File sessionXML = new File(sessionDir.getPath() + ".xml");
 		sessionXML.delete();
 		if (sessionXML.exists()) {
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 					"Unable to delete session XML " + sessionXML);
+			return;
 		}
 
 		try {
@@ -215,12 +144,14 @@ public final class PrearcSessionResource extends Resource {
 			}
 		} finally {
 			if (sessionXML.exists()) {
-				throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 						"Unable to delete session XML " + sessionXML);
+				return;
 			}
 			if (sessionDir.exists()) {
-				throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 						"Unable to delete session " + session);
+				return;
 			}
 		}
 	}
@@ -230,28 +161,72 @@ public final class PrearcSessionResource extends Resource {
 	 * (non-Javadoc)
 	 * @see org.restlet.resource.Resource#represent(org.restlet.resource.Variant)
 	 */
+	@SuppressWarnings("serial")
 	@Override
-	public Representation represent(final Variant variant) throws ResourceException {
-		final File sessionDir = getSessionDir();
-		final MediaType mt = variant.getMediaType();
+	public Representation getRepresentation(final Variant variant){
+		final File sessionDir;
+		try {
+			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+		} catch (InvalidPermissionException e) {
+			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+			return null;
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			return null;
+		}
+		
+		final MediaType mt = overrideVariant(variant);
 		if (MediaType.TEXT_XML.equals(mt)) {
 			// Return the session XML, if it exists
 			final File sessionXML = new File(sessionDir.getPath() + ".xml");
 			if (!sessionXML.isFile()) {
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 						"The named session exists, but its XNAT session document is not available." +
 				"The session is likely invalid or incomplete.");
+				return null;
 			}
 			return new FileRepresentation(sessionXML, variant.getMediaType(), 0);
-		} else if (MediaType.APPLICATION_GNU_ZIP.equals(mt)) {
-			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED,
-			".tgz request not yet implemented");
-		} else if (MediaType.APPLICATION_ZIP.equals(mt)) {
-			throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED,
-			".zip request not yet implemented");
+		}else if (MediaType.TEXT_HTML.equals(mt)) {
+			// Return the session XML, if it exists
+			final File sessionXML = new File(sessionDir.getPath() + ".xml");
+			final XnatImagesessiondataBean sessionBean;
+			try {
+				sessionBean = PrearcTableBuilder.parseSession(sessionXML);
+			} catch (Exception e) {
+				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to parse session xml");
+				return null;
+			}
+			
+			String screen=this.getQueryVariable("screen");
+			if(StringUtils.isEmpty(screen)){
+				screen="XDATScreen_brief_xnat_imageSessionData.vm";
+			}else if (screen.equals("XDATScreen_uploaded_xnat_imageSessionData.vm")){
+				if(project==null){
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Projects in the unassigned folder cannot be archived.");
+					return null;
+				}
+				getResponse().redirectSeeOther(getContextPath()+String.format("/app/action/LoadImageData/project/%s/timestamp/%s/folder/%s/popup/false",project,timestamp,session));
+				return null;
+			}
+							
+			try {
+				return new StandardTurbineScreen(mt, getRequest(), user, screen, new HashMap<String,String>(){{
+					put("project",project);
+					put("timestamp",timestamp);
+					put("folder",session);
+				}});
+			} catch (TurbineException e) {
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+				return null;
+			}
+
+		} else if (MediaType.APPLICATION_GNU_ZIP.equals(mt) || MediaType.APPLICATION_ZIP.equals(mt)) {
+			ZipRepresentation zip = new ZipRepresentation(mt, sessionDir.getName());
+			zip.addFolder(sessionDir.getName(), sessionDir);
+			return zip;
 		} else {
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-					"Requested type " + mt + " is not supported");
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Requested type " + mt + " is not supported");
+			return null;
 		}
 	}
 }

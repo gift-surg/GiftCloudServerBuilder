@@ -55,11 +55,12 @@ import org.xml.sax.SAXException;
  * @author timo
  *
  */
+@SuppressWarnings("deprecation")
 public class CatalogUtils {
     static Logger logger = Logger.getLogger(CatalogUtils.class);
 	
 	public static List<Object[]> getEntryDetails(CatCatalogI cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile, final CatEntryFilterI filter){
-		final ArrayList al = new ArrayList();
+		final ArrayList<Object[]> al = new ArrayList<Object[]>();
 		for(final CatCatalogI subset:cat.getSets_entryset()){
 			al.addAll(getEntryDetails(subset,parentPath,uriPath,_resource,coll_tags,includeFile,filter));
 		}
@@ -395,6 +396,7 @@ public class CatalogUtils {
 				zipper = new ZipUtils();
 			}
 	
+			@SuppressWarnings("unchecked")
 			final List<File> files = zipper.extract(is, destinationDir.getAbsolutePath());
 	
 			for (final File f : files) {

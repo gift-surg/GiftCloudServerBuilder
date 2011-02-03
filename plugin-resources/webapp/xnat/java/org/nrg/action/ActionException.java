@@ -3,7 +3,7 @@ package org.nrg.action;
 import org.restlet.data.Status;
 
 public abstract class ActionException extends Exception {
-
+	private static final long serialVersionUID = -2423585253188531015L;
 	public Status status = null;
 
 	public ActionException() {

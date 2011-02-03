@@ -4,6 +4,7 @@ package org.nrg.xnat.restlet.guard;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.turbine.util.TurbineException;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.restlet.representations.RESTLoginRepresentation;
@@ -20,6 +21,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 public class XnatSecureGuard extends Filter {
 	static org.apache.log4j.Logger logger = Logger.getLogger(XnatSecureGuard.class);
@@ -41,7 +43,12 @@ public class XnatSecureGuard extends Filter {
 	}
 
 	protected Representation loginRepresentation(Request request) {
-		return new RESTLoginRepresentation(MediaType.TEXT_HTML, request, null);
+		try {
+			return new RESTLoginRepresentation(MediaType.TEXT_HTML, request, null);
+		} catch (TurbineException e) {
+			logger.error("",e);
+			return new StringRepresentation("An error has occured. Unable to load login page.");
+		}
 	}
 
 	protected HttpServletRequest getHttpServletRequest(Request request) {

@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusProducer;
@@ -117,7 +118,7 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		super(control);
 	}
 	
-	public abstract List<PrearcSession> call() throws ClientException, ServerException;
+	public abstract List<PrearcSession> call() throws ActionException;
 	
 	public static class PrearcSession{
 		private final File sessionDIR;

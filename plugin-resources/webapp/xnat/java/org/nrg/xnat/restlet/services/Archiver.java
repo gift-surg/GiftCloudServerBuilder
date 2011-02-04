@@ -1,7 +1,6 @@
 package org.nrg.xnat.restlet.services;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -11,14 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.nrg.action.ActionException;
-import org.nrg.action.ClientException;
 import org.nrg.status.StatusListenerI;
-import org.nrg.status.StatusMessage;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
-import org.nrg.xnat.helpers.CallablesThread;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils.ArchiveURI;
@@ -48,7 +45,7 @@ public class Archiver extends SecureResource {
 	private static final String PROJECT = "project";
 	private static final String CRLF = "\r\n";
 	private static final String DEST = "dest";
-	private final Logger logger = LoggerFactory.getLogger(Archiver.class);
+	private final static Logger logger = LoggerFactory.getLogger(Archiver.class);
 	public Archiver(Context context, Request request, Response response) {
 		super(context, request, response);
 				
@@ -198,44 +195,34 @@ public class Archiver extends SecureResource {
 				}
 				
 				map.put(FOLDER, ps);
-			}
-			
-			//register actions
-			for(final Map<String,Object> map: sessions){
-				preRegisterAction((String)map.get(URL));
-			}
-			
+			}			
 			
 			if(sessions.size()==1){
-				final PrearcSessionArchiver archiver=buildArchiver(sessions.get(0),PrearcImporterHelper.identifyProject(sessions.get(0)),allowDataDeletion,overwrite);
-				archiver.addStatusListener(new ActionListener());
-				String _return =null;
+				String _return;
 				try {
-					_return= archiver.call().toString();
-				}catch (ActionException e) {
-					logger.debug("", e);
-					throwResourceException(e);
-				} finally {
-						archiver.dispose();
+					_return = PrearcDatabase.archive(sessions.get(0), PrearcImporterHelper.identifyProject(sessions.get(0)), allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+				} catch (Exception e) {
+					logger.error("",e);
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+					return;
 				}
-				
+								
 				if(!StringUtils.isEmpty(redirect) && redirect.equalsIgnoreCase("true")){
 					getResponse().redirectSeeOther(getContextPath()+_return);
 				}else{
-				getResponse().setEntity(_return+CRLF, MediaType.TEXT_URI_LIST);
+					getResponse().setEntity(_return+CRLF, MediaType.TEXT_URI_LIST);
 				}
 				return;
 				
-			}else{
-				CallablesThread<String> thread = new CallablesThread<String>();
-				for(final Map<String,Object> map: sessions){
-					PrearcSessionArchiver archiver=buildArchiver(map,PrearcImporterHelper.identifyProject(sessions.get(0)),allowDataDeletion,overwrite);
-					archiver.addStatusListener(new ActionListener());
-					thread.addCallable(archiver);
+			}else{				
+				try {
+					PrearcDatabase.archive(sessions, PrearcImporterHelper.identifyProject(sessions.get(0)), allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+				} catch (Exception e) {
+					logger.error("",e);
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+					return;
 				}
-				
-				thread.start();
-				
+								
 				final Response response = getResponse();
 				response.setEntity("", MediaType.TEXT_URI_LIST);
 			}
@@ -248,53 +235,6 @@ public class Archiver extends SecureResource {
 		}
 	}
 	
-	private void throwResourceException(ActionException e) throws ResourceException{
-		if(e.status!=null){
-			throw new ResourceException(e.status, e.getMessage(), e);
-		}else if(e instanceof ClientException){
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage(),e);
-		}else{
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,e.getMessage(),e);
-		}
-	}
-	
-	private void preRegisterAction(final String sessionURL){
-		//TODO
-	}
-	
-	public static class ActionListener implements StatusListenerI{
-		private boolean initd=false;
-		
-		public ActionListener(){
-			
-		}
-		
-		@Override
-		public void notify(StatusMessage message) {
-			if(message.getStatus().equals(StatusMessage.Status.FAILED)){
-				handleFailure();
-			}else if(message.getStatus().equals(StatusMessage.Status.COMPLETED)){
-				handleComplete();
-			}else if(message.getStatus().equals(StatusMessage.Status.PROCESSING) && !initd){
-				initd=true;
-				handleProcessing();
-			}
-		}
-		
-		public void handleFailure(){
-			//TODO
-		}
-		
-		public void handleComplete(){
-			//TODO
-		}
-		
-		public void handleProcessing(){
-			//TODO
-		}
-		
-	}
-	
 	private String getPrearchivePath(final String project_id) throws ResourceException{
 		XnatProjectdata proj = XnatProjectdata.getXnatProjectdatasById(project_id, user, false);
 		if(proj==null){
@@ -303,29 +243,19 @@ public class Archiver extends SecureResource {
 		return proj.getPrearchivePath();
 	}
 	
+	public static File getSrcDIR(Map<String,Object> params){
+		return (File)params.get(FOLDER);
+	}
+		
 	@SuppressWarnings("unchecked")
-	private PrearcSessionArchiver buildArchiver(final Map<String,Object> session,final String project, final Boolean allowDataDeletion,final Boolean overwrite) throws ResourceException{
-		return buildArchiver((File)session.get(FOLDER),project,(Map<String,Object>)session.get(ADDITIONAL_VALUES),allowDataDeletion,overwrite,(String)session.get(URL));
+	public static  PrearcSessionArchiver buildArchiver(final Map<String,Object> session,final String project, final Boolean allowDataDeletion,final Boolean overwrite,final XDATUser user) throws IOException, SAXException{
+		return buildArchiver(getSrcDIR(session),project,(Map<String,Object>)session.get(ADDITIONAL_VALUES),allowDataDeletion,overwrite,(String)session.get(URL),user);
 	}
 	
-	private PrearcSessionArchiver buildArchiver(final File sessionDir,final String project_id,Map<String,Object> additionalValues, final Boolean allowDataDeletion,final Boolean overwrite, final String url) throws ResourceException {
+	public static PrearcSessionArchiver buildArchiver(final File sessionDir,final String project_id,Map<String,Object> additionalValues, final Boolean allowDataDeletion,final Boolean overwrite, final String url,final XDATUser user) throws IOException, SAXException {
 		final PrearcSessionArchiver archiver;
-		try {
-			archiver = new PrearcSessionArchiver(sessionDir, user, project_id, additionalValues, allowDataDeletion,overwrite);
-		} catch (FileNotFoundException e) {
-			logger.debug("user attempted to archive session with no XML", e);
-			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
-					"Session metadata could not be read. Send a build request and try again.", e);
-		} catch (IOException e) {
-			logger.error("unable to read session document", e);
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-					"Unable to read session document", e);
-		} catch (SAXException e) {
-			logger.error("error in session document", e);
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-					"Unable to parse session document", e);
-		}
-		
+		archiver = new PrearcSessionArchiver(sessionDir, user, project_id, additionalValues, allowDataDeletion,overwrite);
+			
 		return archiver;
 	}
 }

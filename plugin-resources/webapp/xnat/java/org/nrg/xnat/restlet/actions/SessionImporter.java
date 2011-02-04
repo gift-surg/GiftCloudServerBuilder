@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.ListenerUtils;
@@ -21,16 +22,17 @@ import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
@@ -102,7 +104,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			}
 		}
 		
-	public static List<PrearcSession> importToPrearc(StatusProducer parent,String format,Object listener,XDATUser user,FileWriterWrapperI fw,Map<String,Object> params,boolean overwrite, boolean allowDataDeletion) throws ClientException, ServerException{
+	public static List<PrearcSession> importToPrearc(StatusProducer parent,String format,Object listener,XDATUser user,FileWriterWrapperI fw,Map<String,Object> params,boolean overwrite, boolean allowDataDeletion) throws ActionException{
 		//write file
 		try {
 			return ListenerUtils.addListeners(parent, PrearcImporterA.buildImporter(format,listener, user, fw, params,overwrite,allowDataDeletion))
@@ -225,27 +227,35 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			//if prearc=destination, then return
 			if(destination!=null && destination instanceof UriParserUtils.PrearchiveURI){
 				this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
+				resetStatus(sessions);
 				return returnURLs(sessions);
 			}
 
 			
 			//if unknown destination, only one session supported
 			if(sessions.size()>1){
+				resetStatus(sessions);
 				failed("Upload included files for multiple imaging sessions.");
 				throw new ClientException("Upload included files for multiple imaging sessions.");
 			}
 			
 			final PrearcSession session = sessions.get(0);
 				
-			final XnatImagesessiondataI isd=PrearcTableBuilder.parseSession(session.getSessionXML());
-				
-			if(isAutoArchive(params,destination,isd)){
-					final String uri=ListenerUtils.addListeners(this, new PrearcSessionArchiver(session.getSessionDIR(), user, isd.getProject(), removePrearcVariables(params), allowDataDeletion,overwrite))
-						.call();
-					return new ArrayList<String>(){{add(uri);}};
-			}else{
-				this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
-				return returnURLs(sessions);
+			try {
+				final XnatImagesessiondataI isd=PrearcTableBuilder.parseSession(session.getSessionXML());
+					
+				if(isAutoArchive(params,destination,isd)){
+						final String uri=ListenerUtils.addListeners(this, new PrearcSessionArchiver(session.getSessionDIR(), user, isd.getProject(), removePrearcVariables(params), allowDataDeletion,overwrite))
+							.call();
+						return new ArrayList<String>(){{add(uri);}};
+				}else{
+					this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
+					resetStatus(sessions);
+					return returnURLs(sessions);
+				}
+			} catch (Exception e) {
+				resetStatus(sessions);
+				throw e;
 			}
 			
 		} catch (ClientException e) {
@@ -255,9 +265,11 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			this.failed(e.getMessage());
 			throw e;
 		} catch (IOException e) {
+			logger.error("",e);
 			this.failed(e.getMessage());
 			throw new ServerException(e.getMessage(),e);
 		} catch (SAXException e) {
+			logger.error("",e);
 			this.failed(e.getMessage());
 			throw new ClientException(e.getMessage(),e);
 		} catch (Throwable e) {
@@ -305,12 +317,29 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		return params;
 	}
 	
-	public static List<String> returnURLs(final List<PrearcSession> sessions){
+	public List<String> returnURLs(final List<PrearcSession> sessions)throws ActionException{
 		List<String> _return= new ArrayList<String>();
 		for(final PrearcSession ps: sessions){
 			_return.add(ps.getUrl().toString());
 		}
 		return _return;
+	}
+	
+	public void resetStatus(final List<PrearcSession> sessions)throws ActionException{
+		for(final PrearcSession ps:sessions){
+
+			Map<String,String> sess=PrearcUtils.parseURI(ps.getUrl().toString());
+			try {
+				try {
+					PrearcUtils.addSession(user, sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
+				} catch (SessionException e) {
+					PrearcUtils.resetStatus(user, sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
+				}
+			} catch (Exception e) {
+				logger.error("",e);
+				throw new ServerException(e);
+			}
+		}
 	}
 	
 }

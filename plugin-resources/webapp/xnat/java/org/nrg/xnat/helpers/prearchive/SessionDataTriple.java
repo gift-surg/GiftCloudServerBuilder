@@ -1,5 +1,6 @@
 package org.nrg.xnat.helpers.prearchive;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,5 +71,10 @@ public class SessionDataTriple {
 		return new SessionDataTriple().setName(m.get("SESSION_LABEL"))
 		                              .setProject(m.get("PROJECT_ID"))
 		                              .setTimestamp(m.get("SESSION_TIMESTAMP"));
+	}
+	public static SessionDataTriple fromFile (final String project, final File f) {
+		return new SessionDataTriple().setName(f.getName())
+		                              .setProject(project)
+		                              .setTimestamp(f.getParentFile().getName());
 	}
 }

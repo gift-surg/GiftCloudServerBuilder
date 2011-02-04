@@ -271,8 +271,6 @@ public class PrearcUtils {
 			|| conversionLogPattern.matcher(f.getName()).matches();
 		}
 	};
-	
-
 
 	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
 		PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
@@ -282,10 +280,15 @@ public class PrearcUtils {
 	}
 	
 	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
-		Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session), timestamp);
-		SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
+		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session), timestamp);
+		final SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
 
 		PrearcDatabase.addSession(sd);
+	}
+	
+	public static Map<String,String> parseURI(final String uri){
+		final UriParserUtils.SessionParser parser = new UriParserUtils.SessionParser(new UriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		return parser.readUri(uri);
 	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";

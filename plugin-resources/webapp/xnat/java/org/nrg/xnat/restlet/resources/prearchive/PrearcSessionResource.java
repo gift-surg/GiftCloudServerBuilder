@@ -146,7 +146,9 @@ public final class PrearcSessionResource extends SecureResource {
 			}
 			
 			try {
-				PrearcDatabase.moveToProject(session, timestamp, project, newProj);
+				if(PrearcDatabase.setStatus(session, timestamp, project, PrearcStatus.MOVING)){
+					PrearcDatabase.moveToProject(session, timestamp, project, newProj);
+				}				
 			} catch (SyncFailedException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
@@ -165,9 +167,10 @@ public final class PrearcSessionResource extends SecureResource {
 
 	@Override
 	public void handleDelete() {
-		final File sessionDir;
+		
 		try {
-			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+			//checks if the user can access this session
+			PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
 		} catch (InvalidPermissionException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -219,14 +222,6 @@ public final class PrearcSessionResource extends SecureResource {
 			return new FileRepresentation(sessionXML, variant.getMediaType(), 0);
 		}else if (MediaType.TEXT_HTML.equals(mt)) {
 			// Return the session XML, if it exists
-			final File sessionXML = new File(sessionDir.getPath() + ".xml");
-			final XnatImagesessiondataBean sessionBean;
-			try {
-				sessionBean = PrearcTableBuilder.parseSession(sessionXML);
-			} catch (Exception e) {
-				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to parse session xml");
-				return null;
-			}
 			
 			String screen=this.getQueryVariable("screen");
 			if(StringUtils.isEmpty(screen)){

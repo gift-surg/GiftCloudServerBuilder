@@ -116,6 +116,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	throws IOException,SAXException {
 		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(),sessionDir, user, project, params, allowDataDeletion,overwrite);
 	}
+	
+	public File getSrcDIR(){
+		return srcDIR;
+	}
 
 	
 	public XnatImagesessiondata retrieveExistingExpt() throws ClientException,ServerException{

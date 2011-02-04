@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.ListenerUtils;
@@ -23,8 +24,11 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.helpers.merge.MergePrearchiveSessions;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PrearcImporterA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -74,8 +78,8 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		}
 		return null;
 	}
-		
-	public List<PrearcSession> call() throws ClientException,ServerException{
+			
+	public List<PrearcSession> call() throws ActionException{
 		final String project=identifyProject(params);
 		final String old_session_folder=(String)params.get(PrearcUtils.PREARC_SESSION_FOLDER);
 		String old_timestamp=(String)params.get(PrearcUtils.PREARC_TIMESTAMP);
@@ -86,13 +90,25 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		
 		//IF timestamp,session is specified then push to a temporary space and merge
 		//ELSE import directly to project.
-				
+		SessionData sd =null;
 		boolean destination_specified=false;
 		if(StringUtils.isNotEmpty(old_timestamp)&& StringUtils.isNotEmpty(old_session_folder)){
 			destination_specified=true;
 			if(StringUtils.isEmpty(project)){
 				this.failed("User must specify project portion of prearchive path, if timestamp/session portion is specified.");
 				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,"User must specify project portion of prearchive path, if timestamp/session portion is specified.",new IllegalArgumentException());
+			}
+			
+			try {
+				sd=PrearcDatabase.getSession(old_session_folder, old_timestamp, project);
+				if(sd!=null){
+					if(!PrearcDatabase.setStatus(old_session_folder, old_timestamp, project, PrearcStatus._RECEIVING)){
+						this.failed("Prearc destination is locked.");
+						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Prearc destination is locked.",new IllegalArgumentException());
+					}
+				}
+			} catch (Exception e) {
+				logger.error("",e);
 			}
 		}else if(StringUtils.isNotEmpty(old_session_folder)){
 			if(StringUtils.isEmpty(old_timestamp)){
@@ -101,42 +117,54 @@ public class PrearcImporterHelper extends PrearcImporterA{
 			}
 		}
 		
-		List<File> files=null;
-		
-		final Map<String,Object> additionalValues=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA,false);
-		if(params.containsKey(SUBJECT)){
-			additionalValues.put("xnat:subjectAssessorData/subject_ID".intern(), params.remove(SUBJECT));
-		}
-
-		if(params.containsKey(SESSION)){
-			additionalValues.put("xnat:experimentData/label".intern(), params.remove(SESSION));
-		}
-		
-		if(StringUtils.isEmpty(old_timestamp))old_timestamp=new_timestamp;
-					
-		if(destination_specified || project==null){
-			File projectPrearc;
-			if(project==null){
-				projectPrearc=new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath(),PrearcUtils.TEMP_UNPACK);
-			}else{
-				projectPrearc=new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project));
+		List<File> files;
+		try {
+			files = null;
+			
+			final Map<String,Object> additionalValues=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA,false);
+			if(params.containsKey(SUBJECT)){
+				additionalValues.put("xnat:subjectAssessorData/subject_ID".intern(), params.remove(SUBJECT));
 			}
 
-			//CAn this return the project?
-			List<File> tempFiles=reorganize(cacheDIR, new File(projectPrearc,new_timestamp),null, additionalValues);
+			if(params.containsKey(SESSION)){
+				additionalValues.put("xnat:experimentData/label".intern(), params.remove(SESSION));
+			}
 			
-			//should 2-srcs to project=null also be merged?
-			//Merge_to_destination will write it to separate folders if old_session_folder is null
-			files=new ArrayList<File>();
-			for(final File f:tempFiles){
-				File builtF=merge_to_destination(project,old_timestamp,old_session_folder,f);
-				if(!files.contains(builtF)){
-					files.add(builtF);
+			if(StringUtils.isEmpty(old_timestamp))old_timestamp=new_timestamp;
+								
+			if(destination_specified || project==null){
+				File projectPrearc;
+				if(project==null){
+					projectPrearc=new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath(),PrearcUtils.TEMP_UNPACK);
+				}else{
+					projectPrearc=new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project));
+				}
+
+				//CAn this return the project?
+				List<File> tempFiles=reorganize(cacheDIR, new File(projectPrearc,new_timestamp),null, additionalValues);
+				
+				//should 2-srcs to project=null also be merged?
+				//Merge_to_destination will write it to separate folders if old_session_folder is null
+				files=new ArrayList<File>();
+				for(final File f:tempFiles){
+					File builtF=merge_to_destination(project,old_timestamp,old_session_folder,f);
+					if(!files.contains(builtF)){
+						files.add(builtF);
+					}
+				}
+			}else{
+				files=reorganize(cacheDIR, new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project),old_timestamp),project, additionalValues);
+			}
+		} catch (ActionException e1) {
+			if(sd!=null){
+				try {
+					PrearcUtils.resetStatus(user, project, old_timestamp, old_session_folder);
+				} catch (Exception e) {
+					logger.error("",e);
 				}
 			}
-		}else{
-			files=reorganize(cacheDIR, new File(ArcSpecManager.GetInstance().getPrearchivePathForProject(project),old_timestamp),project, additionalValues);
-		}			
+			throw e1;	
+		}
 					
 		final List<PrearcSession> sessions= new ArrayList<PrearcSession>();
 		

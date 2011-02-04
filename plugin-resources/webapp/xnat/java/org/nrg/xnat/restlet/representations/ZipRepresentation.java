@@ -40,6 +40,24 @@ public class ZipRepresentation extends OutputRepresentation {
 		_entries.add(new ZipStreamEntry(p,is));
 	}
 	
+	public void addFolder(String p, File dir){
+		if(dir.isDirectory()){
+			for(final File f:dir.listFiles()){
+				if(f.isDirectory()){
+					this.addFolder(append(p,f.getName()),f);
+				}else{
+					this.addEntry(append(p,f.getName()),f);
+				}
+			}
+		}else{
+			this.addEntry(append(p,dir.getName()),dir);
+		}
+	}
+	
+	public String append(String pre, String post){
+		return (pre.endsWith("/"))?pre+post:pre+"/"+post;
+	}
+	
 	public void addEntry(File f){
 		String p = f.getAbsolutePath().replace('\\','/');
 		int i=-1;
@@ -86,6 +104,19 @@ public class ZipRepresentation extends OutputRepresentation {
 	public void addAll(List<File> fs){
 		for(File f: fs){
 			this.addEntry(f);
+		}
+	}
+	
+	public void addAllAtRelativeDirectory(String ins, ArrayList<File> fs) {
+		ins=ins.replace('\\','/');
+		for(File f: fs){
+			String pathS = f.getAbsolutePath().replace('\\','/');
+			int pos=pathS.indexOf(ins);
+			if (pos>=0) {
+				this.addEntry(pathS.substring(pos+ins.length()+1),f);
+			} else {
+				this.addEntry(f);
+			}
 		}
 	}
 	

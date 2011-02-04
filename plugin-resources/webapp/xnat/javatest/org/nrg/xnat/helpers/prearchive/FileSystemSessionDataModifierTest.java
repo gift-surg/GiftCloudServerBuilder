@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xnat.helpers.prearchive.FileSystemSessionDataModifier.Move;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,7 +70,7 @@ public class FileSystemSessionDataModifierTest {
 				public Except (File xml, String sess){
 					super(xml,sess);
 				}
-				public Document run () throws SyncFailedException {
+				public XnatImagesessiondataBean run () throws SyncFailedException {
 					throw new SyncFailedException("Test exception");
 				}
 			}

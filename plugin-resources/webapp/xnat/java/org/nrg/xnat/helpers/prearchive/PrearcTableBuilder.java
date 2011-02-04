@@ -159,18 +159,22 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 
 			
 			data.status=PrearcUtils.checkSessionStatus(sessionXML);
-			try {
-				session=parseSession(sessionXML);
 
-				final String sessionID = session.getId();
-				if (null == sessionID || "".equals(sessionID) || "NULL".equals(sessionID)) {
-					data.status = PrearcStatus.READY;
-				} else {
-					data.status = PrearcStatus.ARCHIVING;
+			if(!sessionXML.exists()){
+				if(PrearcStatus.potentiallyReady(data.status))data.status=PrearcStatus.RECEIVING;
+			}else{
+				try {
+					session=parseSession(sessionXML);
+					
+					final String sessionID = session.getId();
+					if (null == sessionID || "".equals(sessionID) || "NULL".equals(sessionID)) {
+						data.status = PrearcStatus.READY;
+					} else {
+						data.status = PrearcStatus.ARCHIVING;
+					}
+				} catch (Exception e) {
+					if(PrearcStatus.potentiallyReady(data.status))data.status=PrearcStatus.ERROR;
 				}
-			} catch (Exception e) {
-				if(PrearcStatus.potentiallyReady(data.status))data.status=PrearcStatus.ERROR;
-				logger.error("",e);
 			}
 		}
 		
@@ -187,14 +191,18 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		
 		public static String pickName(final PrearcTableBuilder.Session s) {
 			String ret = "";
-			if (s.getLabel() != null) {
+			if (StringUtils.isNotEmpty(s.getLabel())) {
 				ret = s.getLabel();
 			}
-			if (ret.equals("") && s.getPatientId() != null) {
+			if (StringUtils.isEmpty(ret) && StringUtils.isNotEmpty(s.getPatientId())) {
 				ret = s.getPatientId();
 			}
-			if (ret.equals("") && s.getPatientName() != null) {
+			if (StringUtils.isEmpty(ret) && StringUtils.isNotEmpty(s.getPatientName())) {
 				ret = s.getPatientName();
+			}
+			
+			if (StringUtils.isEmpty(ret)){
+				return s.getName();
 			}
 			return ret;
 		}
@@ -274,10 +282,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		final SortedMap<Date, Collection<Session>> sessions = new TreeMap<Date, Collection<Session>>();
 		if(PrearcUtils.isTimestampDirectory.accept(prearcDir)){
 			for (final File sessdir : prearcDir.listFiles(PrearcUtils.isDirectory)) {
-				final Session session = new Session(sessdir);
-				final Date builtDate = session.getLastBuiltDate();
+				final Session session = buildSessionObject(sessdir,prearcDir.getName());
 				
-				session.setTimestamp(prearcDir.getName());
+				final Date builtDate = session.getLastBuiltDate();
 				
 				if (!sessions.containsKey(builtDate)) {
 					sessions.put(builtDate, new ArrayList<Session>(1));
@@ -287,11 +294,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}else{		
 		for (final File tsdir : prearcDir.listFiles(PrearcUtils.isTimestampDirectory)) {
 			for (final File sessdir : tsdir.listFiles(PrearcUtils.isDirectory)) {
-				final Session session = new Session(sessdir);
+				final Session session = buildSessionObject(sessdir,tsdir.getName());
+
 				final Date builtDate = session.getLastBuiltDate();
-				
-				session.setTimestamp(tsdir.getName());
-				
 				if (!sessions.containsKey(builtDate)) {
 					sessions.put(builtDate, new ArrayList<Session>(1));
 				}
@@ -300,5 +305,11 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}
 		}
 		return sessions;
+	}
+	
+	public static Session buildSessionObject(final File sessdir,final String timestamp){
+		final Session session = new Session(sessdir);		
+		session.setTimestamp(timestamp);
+		return session;
 	}
 }

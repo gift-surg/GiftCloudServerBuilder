@@ -128,13 +128,13 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		XnatImagesessiondata expt=null;
 		if(!StringUtils.isEmpty(project)){
 			expt=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project, expt_id, user, false);
-			}
+		}
 			
 		if(expt==null){
 			expt=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(expt_id, user, false);
-			}
+		}
 		return expt;
-			}
+	}
 			
 	@SuppressWarnings("serial")
 	public List<String> call() throws ClientException,ServerException{
@@ -158,7 +158,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 					project=PrearcImporterHelper.identifyProject(destination.getProps());
 					if(!StringUtils.isEmpty(project)){
 						prearc_parameters.put("project", project);
-			}
+					}
 			
 					if(destination.getProps().containsKey(UriParserUtils.SUBJECT_ID)){
 						prearc_parameters.put("subject_ID", destination.getProps().get(UriParserUtils.SUBJECT_ID));
@@ -167,7 +167,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 					String expt_id=(String)destination.getProps().get(UriParserUtils.EXPT_ID);
 					if(!StringUtils.isEmpty(expt_id)){
 						expt=getExperimentByIdorLabel(project, expt_id,user);
-			}
+					}
 			
 					if(expt==null){
 						if(!StringUtils.isEmpty(expt_id)){

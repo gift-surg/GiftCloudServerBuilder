@@ -1,0 +1,4 @@
+NOTE:  This is the location to put any project-specific configuration files needed for the web application.
+       Files placed here will be copied to the WEB-INF/conf subdirectory upon deployment.
+NOTE:  These files should only be added under the "projects" subdirectory, not under the conf directory
+       under plugin-resources/project/skeletons.

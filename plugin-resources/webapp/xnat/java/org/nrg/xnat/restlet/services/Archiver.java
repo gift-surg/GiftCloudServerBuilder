@@ -303,6 +303,7 @@ public class Archiver extends SecureResource {
 		return proj.getPrearchivePath();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private PrearcSessionArchiver buildArchiver(final Map<String,Object> session,final String project, final Boolean allowDataDeletion,final Boolean overwrite) throws ResourceException{
 		return buildArchiver((File)session.get(FOLDER),project,(Map<String,Object>)session.get(ADDITIONAL_VALUES),allowDataDeletion,overwrite,(String)session.get(URL));
 	}

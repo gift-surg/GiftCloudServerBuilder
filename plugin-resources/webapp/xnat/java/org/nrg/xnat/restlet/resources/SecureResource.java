@@ -18,9 +18,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.nrg.action.ClientException;
-import org.nrg.action.ServerException;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.PopulateItem;
@@ -66,8 +66,10 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.noelios.restlet.http.HttpConstants;
 
+@SuppressWarnings("deprecation")
 public abstract class SecureResource extends Resource {
 	public static class FileUploadException extends Exception {
+		private static final long serialVersionUID = 1L;
 
 		public FileUploadException(String message, Exception e) {
 			super(message,e);
@@ -228,6 +230,14 @@ public abstract class SecureResource extends Resource {
 	
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params,Map<String,Map<String,String>> cp){
 		if(table!=null){
+			if(this.getQueryVariable("sortBy")!=null){
+				final String sortBy=this.getQueryVariable("sortBy");
+				table.sort(Arrays.asList(StringUtils.split(sortBy, ',')));
+				if(this.isQueryVariable("sortOrder","DESC",false)){
+					table.reverse();
+				}
+			}
+			
 	        if (mt.equals(MediaType.TEXT_XML)){
 				return new XMLTableRepresentation(table,cp,params,MediaType.TEXT_XML);
 			}else if (mt.equals(MediaType.APPLICATION_JSON)){
@@ -272,13 +282,6 @@ public abstract class SecureResource extends Resource {
 			} else {
 				return null;
 			}
-			// else if (mt.equals(MediaType.APPLICATION_JSON)){
-			// return new
-			// JSONTableRepresentation(table,params,MediaType.APPLICATION_JSON);
-			// }else{
-			// return new
-			// HTMLTableRepresentation(table,params,MediaType.TEXT_HTML);
-			// }
 		} else {
 			return null;
 		}
@@ -287,9 +290,14 @@ public abstract class SecureResource extends Resource {
 	public Representation representItem(XFTItem item, MediaType mt){
 
 		if (mt.equals(MediaType.TEXT_HTML)) {
-			return new ItemHTMLRepresentation(item, MediaType.TEXT_HTML,					getRequest(), user);
+			try {
+				return new ItemHTMLRepresentation(item, MediaType.TEXT_HTML, getRequest(), user);
+			} catch (Exception e) {
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				return null;
+			}
 		} else {
-			return new ItemXMLRepresentation(item, MediaType.TEXT_XML, true,					!this.isQueryVariableTrue("concealHiddenFields"));
+			return new ItemXMLRepresentation(item, MediaType.TEXT_XML, true,!this.isQueryVariableTrue("concealHiddenFields"));
 		}
 	}
 	
@@ -626,6 +634,7 @@ public abstract class SecureResource extends Resource {
 		return new RequestUtil().getHttpServletRequest(getRequest());
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void setContentDisposition(String content){
 		Object oHeaders = getResponse().getAttributes().get(
                 HttpConstants.ATTRIBUTE_HEADERS);
@@ -751,8 +760,11 @@ public abstract class SecureResource extends Resource {
 	public String getContextPath(){
 		if(CONTEXT_PATH==null){
 			CONTEXT_PATH=TurbineUtils.GetRelativePath(getHttpServletRequest());
-}
+		}
 		return CONTEXT_PATH;
 	}
 
+	public void setResponseStatus(final ActionException e){
+		this.getResponse().setStatus(e.getStatus(), e, e.getMessage());
+	}
 }

@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.apache.turbine.modules.PageLoader;
 import org.apache.turbine.services.rundata.TurbineRunData;
 import org.apache.turbine.services.template.TemplateService;
@@ -22,20 +23,29 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.resource.OutputRepresentation;
 
-public abstract class TurbineScreenRepresentation extends OutputRepresentation {
-	RunData data =null;
-	Request request=null;
-	XDATUser user =null;
+import com.noelios.restlet.ext.servlet.ServletCall;
+import com.noelios.restlet.http.HttpRequest;
 
-	public TurbineScreenRepresentation(MediaType mediaType,Request _request, XDATUser _user) {
+public abstract class TurbineScreenRepresentation extends OutputRepresentation {
+	static org.apache.log4j.Logger logger = Logger.getLogger(TurbineScreenRepresentation.class);
+	final RunData data;
+	final Request request;
+	final XDATUser user;
+
+	public TurbineScreenRepresentation(MediaType mediaType,Request request, XDATUser _user) throws TurbineException{
 		super(mediaType);
-		request=_request;
+		this.request=request;
 		user=_user;
+		
+		HttpServletRequest _request = ((ServletCall)((HttpRequest) request).getHttpCall()).getRequest(); 
+		HttpServletResponse _response = ((ServletCall)((HttpRequest) request).getHttpCall()).getResponse(); 
+		
+		data = populateRunData(_request,_response,user);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void turbineScreen(RunData data,OutputStream out)throws IOException,Exception{
-		TemplateService templateService = null;
-        templateService = TurbineTemplate.getService();
+		TemplateService templateService = TurbineTemplate.getService();
         String defaultPage = (templateService == null)
                 ? null :templateService.getDefaultPageName(data);
 
@@ -96,8 +106,24 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
 	}
 	
 	public class RestletTurbineConfigurationException extends Exception{
+		private static final long serialVersionUID = 1L;
+
 		public RestletTurbineConfigurationException(String msg){
 			super(msg);
 		}
 	}
+	
+	@Override
+	public void write(OutputStream out) throws IOException {
+		try {
+	    	data.setScreenTemplate(getScreen());
+			turbineScreen(data,out);
+		} catch (TurbineException e) {
+			logger.error("",e);
+		} catch (Exception e) {
+			logger.error("",e);
+		}
+	}
+	
+	public abstract String getScreen();
 }

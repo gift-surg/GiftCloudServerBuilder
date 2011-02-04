@@ -15,6 +15,8 @@ import java.net.URLDecoder;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -53,11 +55,12 @@ import org.xml.sax.SAXException;
  * @author timo
  *
  */
+@SuppressWarnings("deprecation")
 public class CatalogUtils {
     static Logger logger = Logger.getLogger(CatalogUtils.class);
 	
 	public static List<Object[]> getEntryDetails(CatCatalogI cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile, final CatEntryFilterI filter){
-		final ArrayList al = new ArrayList();
+		final ArrayList<Object[]> al = new ArrayList<Object[]>();
 		for(final CatCatalogI subset:cat.getSets_entryset()){
 			al.addAll(getEntryDetails(subset,parentPath,uriPath,_resource,coll_tags,includeFile,filter));
 		}
@@ -124,6 +127,26 @@ public class CatalogUtils {
 		
 		return null;
 	}
+	
+	public static Collection<CatEntryI> getEntriesByFilter(final CatCatalogI cat, final CatEntryFilterI filter){
+		List<CatEntryI> entries=new ArrayList<CatEntryI>();
+	
+		for(CatCatalogI subset:cat.getSets_entryset()){
+			entries.addAll(getEntriesByFilter(subset,filter));
+		}
+		
+		for(CatEntryI entry:cat.getEntries_entry()){
+			try {
+				if(filter==null || filter.accept(entry)){
+    				entries.add(entry);
+    			}
+			} catch (Exception e1) {
+				logger.error(e1);
+			}
+		}
+		
+		return entries;
+	}
 
 	public static CatCatalogI getCatalogByFilter(final CatCatalogI cat, final CatCatalogFilterI filter){
 		CatCatalogI e=null;
@@ -135,8 +158,8 @@ public class CatalogUtils {
 		return null;
 	}
 
-	public static ArrayList<File> getFiles(CatCatalogI cat,String parentPath){
-		ArrayList<File> al = new ArrayList<File>();
+	public static List<File> getFiles(CatCatalogI cat,String parentPath){
+		List<File> al = new ArrayList<File>();
 		for(CatCatalogI subset:cat.getSets_entryset()){
 			al.addAll(getFiles(subset,parentPath));
 		}
@@ -150,6 +173,34 @@ public class CatalogUtils {
 		}
 		
 		return al;
+	}
+
+	public static File getFile(CatEntryI entry,String parentPath){
+		String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
+	    return getFileOnLocalFileSystem(entryPath);
+	}
+	
+	public static Stats getFileStats(CatCatalogI cat,String parentPath){
+		return new Stats(cat,parentPath);
+	}
+	
+	public static class Stats{
+		public int count;
+		public long size;
+		
+		public Stats(CatCatalogI cat, String parentPath){
+			count = 0;
+			size = 0;
+            Iterator<File> files = getFiles(cat,parentPath).iterator();
+            while (files.hasNext()){
+                File f = files.next();
+               
+                if (f!=null && f.exists() && !f.getName().endsWith("catalog.xml")){
+                    count++;
+                    size+=f.length();
+                }
+            }
+		}
 	}
 
 	public static CatEntryI getEntryByURI(CatCatalogI cat, String name){
@@ -345,6 +396,7 @@ public class CatalogUtils {
 				zipper = new ZipUtils();
 			}
 	
+			@SuppressWarnings("unchecked")
 			final List<File> files = zipper.extract(is, destinationDir.getAbsolutePath());
 	
 			for (final File f : files) {

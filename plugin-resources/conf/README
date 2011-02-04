@@ -1,0 +1,2 @@
+NOTE:  This is the location to put any additional configuration files needed for the web application.
+       Files placed here will be copied to the WEB-INF/conf subdirectory upon deployment.

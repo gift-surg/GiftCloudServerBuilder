@@ -187,14 +187,22 @@
 	<!-- ================================================================ -->
 	<goal name="xdat:copyConf">
 		<maven:makeAbsolutePath var="xdat.project.resource.conf" path="projects/${xdat.project.name}/src/conf" basedir="${basedir}"/>
+		<maven:makeAbsolutePath var="xdat.plugins.resource.conf" path="plugin-resources/conf" basedir="${basedir}"/>
 		<ant:mkdir dir="${xdat.project.resource.conf}"/>
 		<copy file="${basedir}/VERSION" tofile="${basedir}/deployments/${xdat.project.name}/conf/VERSION" preservelastmodified="true"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true">
+		<!-- The plugin-resources copy needs to happen first so files can be superseded by files applied at the project level -->
+		<ant:copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true" overwrite="true">
+			<fileset dir="${xdat.plugins.resource.conf}">
+				<exclude name="README"/>
+			</fileset>
+		</ant:copy>
+		<ant:copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true" overwrite="true">
 			<fileset dir="${xdat.project.resource.conf}">
 				<!-- Exclude web.xml file here.  That will be moved in during mergeProjectWebXML -->
 				<exclude name="${xdat.project.name}-web.xml"/>
+				<exclude name="README"/>
 			</fileset>
-		</copy>
+		</ant:copy>
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Calls the maven task for the deployment xdat:deploy                                      -->
@@ -1270,9 +1278,7 @@
 		</ant:path>
 		<ant:echo>Merge plugin-resources file with projects file: ${xdat.webXML}</ant:echo>
 		<ant:taskdef name="mergeProjectWebXML" classname="WebXmlMergeTask" classpathref="webxmlmerge.path"/>
-		<ant:mergeProjectWebXML srcfile="${basedir}/plugin-resources/originals/application-web.xml" 
-				mergefile="${basedir}/projects/${xdat.project.name}/src/web-conf/web-projectMerge.xml"
-				destfile="${basedir}/deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml" force="true"/>
+		<ant:mergeProjectWebXML srcfile="${basedir}/plugin-resources/originals/application-web.xml" mergefile="${basedir}/projects/${xdat.project.name}/src/web-conf/web-projectMerge.xml" destfile="${basedir}/deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml" force="true"/>
 		<ant:echo>Edit file: ${xdat.webXML}</ant:echo>
 		<maven:makeAbsolutePath var="xdat.webXML" path="deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml" basedir="${basedir}"/>
 		<ant:replace file="${xdat.webXML}" token="@TURBINE_APP_NAME@" value="${xdat.project.name}"/>

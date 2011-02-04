@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 
@@ -119,7 +118,7 @@ public class PrearcUtils {
 			throw new InvalidPermissionException("null user object");
 		}
 		String prearcPath;
-		if(project.equals(COMMON)){
+		if(project==null || project.equals(COMMON)){
 			if (user.checkRole(ROLE_SITE_ADMIN)) {
 				prearcPath=ArcSpecManager.GetInstance().getGlobalPrearchivePath();
 			}else{
@@ -255,7 +254,14 @@ public class PrearcUtils {
 	}
 	public static java.util.Date timestamp2Date (java.sql.Timestamp t) {
 		return new java.util.Date(t.getTime());
-}
+	}
+	
+	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session) throws IOException, InvalidPermissionException, Exception{
+		if(user==null||timestamp==null||session==null){
+			throw new IllegalArgumentException();
+		}
+		return new File(new File(getPrearcDir(user, project),timestamp),session);
+	}
 
 	public static final FileFilter isSessionGeneratedFileFilter = new FileFilter() {
 		private final Pattern conversionLogPattern = Pattern.compile("(\\w*)toxnat\\.log");
@@ -265,6 +271,22 @@ public class PrearcUtils {
 			|| conversionLogPattern.matcher(f.getName()).matches();
 		}
 	};
+	
+
+
+	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
+		PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
+		PrearcDatabase.deleteCacheRow(session,timestamp,project);
+		
+		addSession(user,project,timestamp,session);
+	}
+	
+	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
+		Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session), timestamp);
+		SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
+
+		PrearcDatabase.addSession(sd);
+	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";
 }

@@ -57,9 +57,7 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 			Date listFilesTime = new Date(System.currentTimeMillis() - time);
 			for (final Collection<PrearcTableBuilder.Session> ss : sessions.values()) {
 				for (PrearcTableBuilder.Session s : ss) {
-					SessionData _s = s.getSessionData(StringUtils.join(new String[]{PrearcDatabase.projectPath(s.getProject()),"/".intern(),
-																	   s.getTimestamp(),"/".intern(),
-																	   s.getName()}));
+					SessionData _s = s.getSessionData(StringUtils.join(new String[]{PrearcDatabase.projectPath(s.getProject())}));
 					sds.add(_s);
 				}
 			}

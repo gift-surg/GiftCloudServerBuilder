@@ -177,14 +177,7 @@ public final class PrearcSessionListResource extends SecureResource {
 			return null;
 		}
 
-		if(this.getQueryVariable("sortBy")!=null){
-			final String sortBy=this.getQueryVariable("sortBy");
-			table.sort(Arrays.asList(StringUtils.split(sortBy, ',')));
-			if(this.isQueryVariable("sortOrder","DESC",false)){
-				table.reverse();
-					}
-				}
-		
+			
 		return this.representTable(table, mt, new Hashtable<String,Object>());
 			}
 	

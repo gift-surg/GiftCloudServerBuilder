@@ -155,6 +155,9 @@ public final class SessionData {
 		}
 		return this;
 	}
+	public String getExternalUrl() {
+		return String.format("/prearchive/projects/%s/%s/%s",getProject(),getTimestamp(),getName());
+	}
 	public String getUrl() {
 		return url;
 	}

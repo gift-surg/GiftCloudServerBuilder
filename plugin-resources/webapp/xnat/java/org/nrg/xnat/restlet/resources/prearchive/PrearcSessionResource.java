@@ -108,15 +108,8 @@ public final class PrearcSessionResource extends SecureResource {
 		final String action = queryForm.getFirstValue("action");
 		if (POST_ACTION_BUILD.equals(action)) {
 			try {
-				if(!PrearcDatabase.isLocked(session, timestamp, project)){
-					//change status to _building
-					PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._BUILDING);
-					
-					final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project);
-					builder.call();
-						
-					PrearcUtils.resetStatus(user,project,timestamp,session);
-				}
+				PrearcDatabase.buildSession(sessionDir, session, timestamp, project);
+				PrearcUtils.resetStatus(user, project, timestamp, session);
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -126,11 +119,8 @@ public final class PrearcSessionResource extends SecureResource {
 			}
 		} else if (POST_ACTION_RESET.equals(action)) {
 			try {
-				if(!PrearcDatabase.isLocked(session, timestamp, project)){
-					PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._BUILDING);
-					
-					PrearcUtils.resetStatus(user,project,timestamp,session);
-				}
+				PrearcDatabase.buildSession(sessionDir, session, timestamp, project);
+				PrearcUtils.resetStatus(user, project, timestamp, session);
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());

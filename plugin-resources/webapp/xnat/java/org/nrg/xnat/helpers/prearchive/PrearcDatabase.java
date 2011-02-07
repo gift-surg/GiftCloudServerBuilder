@@ -520,8 +520,7 @@ public final class PrearcDatabase {
 	 * prearchive directory is in a bad state requiring manual intervention.
 	 */
 	public static Map<SessionDataTriple, Boolean> deleteSession(final List<SessionDataTriple> ss) throws SQLException, SessionException, SyncFailedException, IllegalStateException {
-		PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.DELETING);
-		Map<SessionDataTriple, Boolean> ret = new HashMap<SessionDataTriple,Boolean>();
+		Map<SessionDataTriple, Boolean> ret = PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.DELETING);
 		new Thread() {
 			public void run() {
 				java.util.Iterator<SessionDataTriple> i = ss.iterator();
@@ -958,6 +957,34 @@ public final class PrearcDatabase {
 			public ArrayList<ArrayList<Object>> op() throws SQLException, SessionException {
 				ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
 				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.PROJECT.allMatchesSql(projects));
+				ao=convertRStoList(rs);
+				return ao;
+			}
+		}.run();
+	}
+	
+	/**
+	 * Build a list of sessions in the given projects. 
+	 * @param projects
+	 * @return
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
+	public static ArrayList<ArrayList<Object>> buildRows (final Collection<SessionDataTriple> ss) throws SQLException, SessionException {
+		return new SessionOp<ArrayList<ArrayList<Object>>>(){
+			public ArrayList<ArrayList<Object>> op() throws SQLException, SessionException {
+				ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
+				for(final SessionDataTriple s: ss){
+					ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.findSessionSql(s.getName(), s.getTimestamp(), s.getProject()));
+					ao.addAll(convertRStoList(rs));
+				}
+				return ao;
+			}
+		}.run();
+	}
+	
+	private static ArrayList<ArrayList<Object>> convertRStoList(ResultSet rs) throws SQLException{
+		ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
 				while(rs.next()) {
 					ArrayList<Object> al = new ArrayList<Object>();
 					for (DatabaseSession d : DatabaseSession.values()) {
@@ -974,8 +1001,6 @@ public final class PrearcDatabase {
 				}
 				return ao;
 			}
-		}.run();
-	}
 	
 	/**
 	 * Get the columns in the database table.

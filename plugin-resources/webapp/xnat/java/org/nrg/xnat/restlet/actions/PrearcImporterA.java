@@ -31,6 +31,7 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
  *
  *	Developers should add a conf file to their project called prearc-importer.properties with the structure defined below.  The name given in the configuration file, can then be passed to the Importer action, and will be used to get the proper prearc importer.
  */
+@SuppressWarnings("unchecked")
 public abstract class PrearcImporterA extends StatusProducer implements Callable<Iterable<PrearcSession>>{
 	@SuppressWarnings("serial")
 	public static class UnknownPrearcImporterException extends Exception {

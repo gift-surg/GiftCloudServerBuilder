@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -18,6 +19,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -86,7 +88,7 @@ public class PrearcUtils {
 				if (projects.contains(id))
 					continue;
 				try {
-					if (user.canAction("xnat:mrSessionData/project", id, SecurityManager.CREATE)) {
+					if (canModify(user,id)) {
 						projects.add(id);
 					}
 				} catch (Exception e) {
@@ -100,6 +102,17 @@ public class PrearcUtils {
 		}
 		return projects;
 	}
+	
+	public static boolean canModify(final XDATUser user, final String p) throws Exception{
+		if(user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)){
+			return true;
+		}else if(p==null){
+			return false;
+		}else{
+			return user.canAction("xnat:mrSessionData/project", p, SecurityManager.CREATE);
+		}
+	}
+	
 	/**
 	 * Retrieves the File reference to the prearchive root directory for the
 	 * named project.
@@ -273,8 +286,11 @@ public class PrearcUtils {
 	};
 
 	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
+		try {
 		PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
 		PrearcDatabase.deleteCacheRow(session,timestamp,project);
+		} catch (SessionException e) {
+		}
 		
 		addSession(user,project,timestamp,session);
 	}
@@ -289,6 +305,16 @@ public class PrearcUtils {
 	public static Map<String,String> parseURI(final String uri){
 		final UriParserUtils.SessionParser parser = new UriParserUtils.SessionParser(new UriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
 		return parser.readUri(uri);
+	}
+
+	public static XFTTable convertArrayLtoTable(ArrayList<ArrayList<Object>> rows){
+		XFTTable table = new XFTTable();
+		table.initTable(PrearcDatabase.getCols());
+		Iterator<ArrayList<Object>> i = rows.iterator();
+		while(i.hasNext()) {
+			table.insertRow(i.next().toArray());
+		}
+		return table;
 	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";

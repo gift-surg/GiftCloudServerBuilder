@@ -48,7 +48,6 @@ public class JSONTableRepresentation extends OutputRepresentation {
 		    int columnCounter=0;
 	    	for(Map.Entry<String,Map<String,String>> column: cp.entrySet()){
 	    		if(columnCounter++>0)writer.write(",");
-	    		int propCounter=0;
 			    writer.write("{\"key\":\"" + column.getKey()+ "\"");
 	    		for(Map.Entry<String,String> prop:column.getValue().entrySet()){
 	    			writer.write(",\"" + prop.getKey()+ "\":");
@@ -99,6 +98,7 @@ public class JSONTableRepresentation extends OutputRepresentation {
 	private String flattenValue(Object v) {
 		if (v == null) return "\"\"";
 		if(v instanceof ArrayList){
+			@SuppressWarnings("unchecked")
 			ArrayList<String> values = (ArrayList<String>)v;
 			if (values.size() == 1) {
 				String rtn = "\"" + values.get(0) + "\"";

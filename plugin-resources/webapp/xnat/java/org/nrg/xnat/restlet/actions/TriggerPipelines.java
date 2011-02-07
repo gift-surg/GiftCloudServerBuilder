@@ -15,7 +15,6 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
-import org.nrg.xnat.restlet.resources.SubjAssessmentAbst;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 

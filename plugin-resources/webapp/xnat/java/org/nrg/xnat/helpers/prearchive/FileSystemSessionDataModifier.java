@@ -224,14 +224,21 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	
 	public void delete(SessionData sd) {
 		File f = new File(sd.getUrl());
-		new File(f.getPath() + ".xml").delete();	// remove the session XML
+		try {
+			FileUtils.MoveToCache(new File(f.getPath() + ".xml"));
+		} catch (Exception e) {
+			logger.error("",e);
+		}
 		final File tsdir = f.getParentFile();
-		FileUtils.DeleteFile(f);
+		try {
+			FileUtils.MoveToCache(f);
+		} catch (Exception e) {
+			logger.error("",e);
+		}
+		
+		if(tsdir.listFiles().length==0){
 		tsdir.delete();	// delete timestamp parent only if empty.
 	}
-	
-	public void resetStatus(SessionData sd) {
-		
 	}
 	
 	public void setStatus(SessionData sd, PrearcStatus status) {

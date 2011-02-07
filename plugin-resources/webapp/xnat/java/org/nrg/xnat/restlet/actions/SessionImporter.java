@@ -22,7 +22,6 @@ import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;

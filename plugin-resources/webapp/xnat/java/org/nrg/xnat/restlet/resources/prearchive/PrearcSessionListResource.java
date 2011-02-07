@@ -6,10 +6,8 @@ package org.nrg.xnat.restlet.resources.prearchive;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xft.XFTTable;
@@ -19,7 +17,6 @@ import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilderI;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.ProjectPrearchiveI;
-import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
@@ -33,10 +30,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
+ * @author Timothy R. Olsen <olsent@wustl.edu>
  *
  */
 public final class PrearcSessionListResource extends SecureResource {
@@ -187,43 +184,10 @@ public final class PrearcSessionListResource extends SecureResource {
 		}
 	
 	public XFTTable retrieveTable(ArrayList<String> projects) throws SQLException, SessionException {
-//		try {
-//			PrearcDatabase.refresh();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		try {
-//			PrearcDatabase.setStatus("F063TE", "Test2", PrearcUtils.PrearcStatus.ERROR);
-//		} catch (UniqueRowNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (EmptyArgumentException e){
-//			
-//		}
-//		try {
-//			PrearcDatabase.moveToProject("F063TE", "Test2", "Test4");
-//		} catch (UniqueRowNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (EmptyArgumentException e) {
-//			
-//		}
-
 		String [] _proj = new String[projects.size()];
-		XFTTable table = new XFTTable();
-		ArrayList<ArrayList<Object>> rows = PrearcDatabase.buildRows(projects.toArray(_proj));
-		table.initTable(PrearcDatabase.getCols());
-		Iterator<ArrayList<Object>> i = rows.iterator();
-		while(i.hasNext()) {
-			table.insertRow(i.next().toArray());
-		}
+
+		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
 		
-//		PrearcDatabase.moveToProject("F063TE","20101129_133041","Test2","Test4");
-//		List<SessionData> ss = PrearcDatabase.getProjects("prearchive/projects/Unassigned,Test2");
 		return table;
 	}
 	

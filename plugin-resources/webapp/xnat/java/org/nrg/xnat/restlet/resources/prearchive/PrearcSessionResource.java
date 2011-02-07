@@ -4,25 +4,18 @@
 package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.turbine.util.TurbineException;
-import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
-import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
@@ -47,7 +40,6 @@ public final class PrearcSessionResource extends SecureResource {
 	private static final String PROJECT_ATTR = "PROJECT_ID";
 	private static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
 	private static final String SESSION_LABEL = "SESSION_LABEL";
-	private static final String CRLF = "\r\n";
 	
 	public static final String POST_ACTION_RESET = "reset-status";
 	public static final String POST_ACTION_BUILD = "build";
@@ -134,6 +126,8 @@ public final class PrearcSessionResource extends SecureResource {
 			if(StringUtils.isNotEmpty(newProj)){
 				//TODO: convert ALIAS to project ID (if necessary)
 			}
+			
+			//TODO: check permissions on new Project
 			
 			try {
 				if(PrearcDatabase.setStatus(session, timestamp, project, PrearcStatus.MOVING)){

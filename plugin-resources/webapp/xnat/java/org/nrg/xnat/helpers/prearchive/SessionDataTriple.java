@@ -77,4 +77,7 @@ public class SessionDataTriple {
 		                              .setProject(project)
 		                              .setTimestamp(f.getParentFile().getName());
 	}
+	public static SessionDataTriple fromURI (final String uri) {
+		return SessionDataTriple.fromMap(PrearcUtils.parseURI(uri));
+	}
 }

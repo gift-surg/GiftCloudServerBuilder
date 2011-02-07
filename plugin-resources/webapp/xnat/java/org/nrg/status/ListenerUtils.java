@@ -3,6 +3,7 @@ package org.nrg.status;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+@SuppressWarnings("rawtypes")
 public class ListenerUtils {
 
 	

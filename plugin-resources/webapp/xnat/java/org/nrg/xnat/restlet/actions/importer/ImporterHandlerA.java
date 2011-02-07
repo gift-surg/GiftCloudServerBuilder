@@ -19,6 +19,7 @@ import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ImporterHandlerA  extends StatusProducer implements Callable<List<String>>{
 
 
@@ -50,7 +51,6 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 			final Map<String,Map<String,Object>> confBuilders=PropertiesHelper.RetrievePropertyObjects(props, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS);
 			for(final String key:confBuilders.keySet()){
 				final String className=(String)confBuilders.get(key).get(CLASS_NAME);
-				final String seqS=(String)confBuilders.get(key).get(CLASS_NAME);
 				
 				if(className!=null){
 					try {

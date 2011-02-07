@@ -419,7 +419,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 					
 				this.populateQuery(qo);
 				
-				if(this.containsQueryVariable("restrict")){
+				if(this.containsQueryVariable("restrict") && user.getGroup("ALL_DATA_ADMIN")==null){
 					final String restriction=this.getQueryVariable("restrict");
 					if(restriction.equals(SecurityManager.EDIT) || restriction.equals(SecurityManager.DELETE)){
 						final List<Object> ps=user.getAllowedValues("xnat:projectData", "xnat:projectData/ID", restriction);

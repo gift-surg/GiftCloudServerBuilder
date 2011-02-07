@@ -1,5 +1,6 @@
 package org.nrg.xnat.helpers.prearchive;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.SyncFailedException;
 import java.sql.Connection;
@@ -19,6 +20,7 @@ import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusListenerI;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
+import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -437,6 +439,30 @@ public final class PrearcDatabase {
 		return l.s;
 	}
 	
+	public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project) throws SyncFailedException, SQLException, SessionException {
+		final SessionData sd = PrearcDatabase.getSession(session, timestamp, project);
+		try {
+			new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
+				java.lang.Void extSync() throws SyncFailedException {
+					try {
+						new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project).call();
+					} catch (IOException e) {
+						throw new SyncFailedException(e.getMessage());
+					}
+					return null;
+				}
+				void cacheSync() {}
+				@Override
+				boolean checkStatus() {
+					return sd.getStatus().equals(PrearcStatus.BUILDING);
+				}
+			}.run();
+		} 
+		// cacheSync is empty so it can't throw an exception
+		catch (SQLException e) {} 
+		catch (SessionException e) {}
+	}
+	
 	protected static Map<SessionDataTriple, Boolean> markSessions (List<SessionDataTriple> ss, PrearcUtils.PrearcStatus s) throws SQLException, SessionException{
 		java.util.Iterator<SessionDataTriple> i = ss.iterator();
 		Map<SessionDataTriple, Boolean> ret = new HashMap<SessionDataTriple, Boolean>();
@@ -816,7 +842,7 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 * @throws SessionException 
 	 */
-	private static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
+	public static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws SQLException, SessionException {
 		return new SessionOp<Integer>() {
 			public Integer op() throws SQLException, SessionException {
 				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.countSessionSql(sess,timestamp, proj));

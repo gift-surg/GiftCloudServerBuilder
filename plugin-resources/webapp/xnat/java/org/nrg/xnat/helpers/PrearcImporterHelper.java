@@ -22,6 +22,7 @@ import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.helpers.merge.MergePrearchiveSessions;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
@@ -158,7 +159,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		} catch (ActionException e1) {
 			if(sd!=null){
 				try {
-					PrearcUtils.resetStatus(user, project, old_timestamp, old_session_folder);
+					PrearcUtils.resetStatus(user, project, old_timestamp, old_session_folder,true);
 				} catch (Exception e) {
 					logger.error("",e);
 				}
@@ -170,7 +171,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		
 		for(final File f:files){
 			try {
-				sessions.add(new PrearcSession(f,new File(f.getAbsolutePath()+".xml"),new URI(StringUtils.join(new String[]{"/prearchive/projects/",project,"/",new_timestamp,"/",f.getName()}))));
+				sessions.add(new PrearcSession(f,new File(f.getAbsolutePath()+".xml"),new URI(StringUtils.join(new String[]{"/prearchive/projects/",(project==null)?PrearcUtils.COMMON:project,"/",old_timestamp,"/",f.getName()}))));
 			} catch (URISyntaxException e) {
 				throw new ServerException(e.getMessage(),e);
 			}
@@ -259,7 +260,11 @@ public class PrearcImporterHelper extends PrearcImporterA{
 			.call();
 
 		org.nrg.xft.utils.FileUtils.DeleteFile(srcXML);
-		org.nrg.xft.utils.FileUtils.DeleteFile(srcDIR);
+		org.nrg.xft.utils.FileUtils.deleteDirQuietly(srcDIR);
+		
+		if(!FileUtils.HasFiles(srcDIR.getParentFile())){
+			org.nrg.xft.utils.FileUtils.deleteDirQuietly(srcDIR.getParentFile());
+		}
 		
 		return destDIR;
 		

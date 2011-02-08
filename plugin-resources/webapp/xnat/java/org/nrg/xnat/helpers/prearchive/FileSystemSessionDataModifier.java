@@ -215,7 +215,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	}
 	
 	public void move(final SessionData sd, final String newProj) throws SyncFailedException {
-		this._move(new Move (this.basePath, sd.getName(), sd.getUrl(), newProj){});
+		this._move(new Move (this.basePath, sd.getFolderName(), sd.getUrl(), newProj){});
 	}
 	
 	protected void _move(Move move) throws SyncFailedException {
@@ -236,9 +236,9 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			logger.error("",e);
 		}
 		
-		if(tsdir.listFiles().length==0){
-		tsdir.delete();	// delete timestamp parent only if empty.
-	}
+		if(!FileUtils.HasFiles(tsdir)){
+			FileUtils.deleteDirQuietly(tsdir);	// delete timestamp parent only if empty.
+		}
 	}
 	
 	public void setStatus(SessionData sd, PrearcStatus status) {

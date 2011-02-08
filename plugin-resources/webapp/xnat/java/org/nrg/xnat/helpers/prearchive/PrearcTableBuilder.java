@@ -33,35 +33,6 @@ import org.xml.sax.SAXException;
 public class PrearcTableBuilder implements PrearcTableBuilderI {
 	static Logger logger = Logger.getLogger(PrearcTableBuilder.class);
 
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.prearchive.PrearcTableBuilderI#buildTable(java.lang.String[])
-	 */
-	@Override
-	public ProjectPrearchiveI buildTable(final String project, final XDATUser user, final String urlBase) throws IOException, InvalidPermissionException, Exception {
-		final XFTTable table = new XFTTable();
-		table.initTable(PREARC_HEADERS);
-		
-		final File prearc= PrearcUtils.getPrearcDir(user, project);
-		Date lastMod=null;
-		if(prearc.exists()){
-			lastMod=new Date(prearc.lastModified());
-			
-			for (final Collection<Session> ss : getPrearcSessions(prearc).values()) {
-				for (final Session s : ss) {
-					if(s.getLastBuiltDate().after(lastMod)){
-						lastMod=s.getLastBuiltDate();
-					}
-					table.rows().add(buildRow(s,urlBase));
-				}
-			}
-		}else{
-			return null;
-		}
-		
-		return new ProjectPrearchive(lastMod,table);
-	}
-	
 	public final static String[] PREARC_HEADERS = {"project".intern(),"last_mod".intern(),"uploaded".intern(),"scan_date".intern(),"scan_time".intern(),"subject".intern(),"session".intern(),"status".intern(),"url".intern()};
 	
 	public static Object[] buildRow(final Session s,final String urlBase){
@@ -71,10 +42,10 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		row[2]=s.getUploadDate();
 		row[3]=s.getDate();
 		row[4]=s.getTime();
-		row[5]=s.getSubjectId();
-		row[6]=PrearcTableBuilder.Session.pickName(s);
+		row[5]=PrearcTableBuilder.Session.pickSubjectName(s);
+		row[6]=PrearcTableBuilder.Session.pickSessionName(s);
 		row[7]=s.getStatus();
-		row[8]=StringUtils.join(new String[]{urlBase,"/".intern(),s.getTimestamp(),"/".intern(),s.getName()});
+		row[8]=StringUtils.join(new String[]{urlBase,"/".intern(),s.getTimestamp(),"/".intern(),s.getFolderName()});
 		
 		return row;
 	}
@@ -122,7 +93,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 	public static String printSession (Session s) {
 		ArrayList<String> as = new ArrayList<String>();
 		as.add("--Session--");
-		as.add("Name : " + s.getName());
+		as.add("Name : " + s.getFolderName());
 		as.add("Status : " + s.getStatus());
 		as.add("SubjectId: " + s.getSubjectId());
 		as.add("Scan Time : " + s.getTimestamp().toString());
@@ -138,13 +109,13 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		private SessionData data = new SessionData();
 
 		Session(final File sessdir) {
-			data.sessionTriple.name = sessdir.getName();
+			data.setFolderName(sessdir.getName());
 
 			sessionXML = new File(sessdir.getPath() + ".xml");
 			if (sessionXML.exists()) {
-				data.lastBuiltDate = new Date(sessionXML.lastModified());
+				data.setLastBuiltDate(new Date(sessionXML.lastModified()));
 			} else {			
-				data.lastBuiltDate = new Date();
+				data.setLastBuiltDate(new Date());
 			}
 
 			final DateFormat format = new SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP);
@@ -155,25 +126,25 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 				logger.error("Unable to parse upload date from session parent " + sessdir.getParentFile(), e);
 				t_uploadDate = null;
 			}
-			data.uploadDate = t_uploadDate;
+			data.setUploadDate(t_uploadDate);
 
 			
-			data.status=PrearcUtils.checkSessionStatus(sessionXML);
+			data.setStatus(PrearcUtils.checkSessionStatus(sessionXML));
 
 			if(!sessionXML.exists()){
-				if(PrearcStatus.potentiallyReady(data.status))data.status=PrearcStatus.RECEIVING;
+				if(PrearcStatus.potentiallyReady(data.getStatus()))data.setStatus(PrearcStatus.RECEIVING);
 			}else{
 				try {
 					session=parseSession(sessionXML);
 					
 					final String sessionID = session.getId();
 					if (null == sessionID || "".equals(sessionID) || "NULL".equals(sessionID)) {
-						data.status = PrearcStatus.READY;
+						data.setStatus(PrearcStatus.READY);
 					} else {
-						data.status = PrearcStatus.ARCHIVING;
+						data.setStatus(PrearcStatus.ARCHIVING);
 					}
 				} catch (Exception e) {
-					if(PrearcStatus.potentiallyReady(data.status))data.status=PrearcStatus.ERROR;
+					if(PrearcStatus.potentiallyReady(data.getStatus()))data.setStatus(PrearcStatus.ERROR);
 				}
 			}
 		}
@@ -183,13 +154,26 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setProject(this.getProject());
 			data.setScan_date(this.getDate());
 			data.setScan_time(this.getTime());
-			data.setSubject(this.getSubjectId());
-			data.setName(this.getName());
-			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),this.getName()}));
+			data.setSubject(PrearcTableBuilder.Session.pickSubjectName(this));
+			data.setName(PrearcTableBuilder.Session.pickSessionName(this));
+			data.setFolderName(this.getFolderName());
+			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),this.getFolderName()}));
 			return this.data;
 		}
 		
-		public static String pickName(final PrearcTableBuilder.Session s) {
+		public static String pickSubjectName(final PrearcTableBuilder.Session s) {
+			String ret = "";
+			if (StringUtils.isNotEmpty(s.getSubjectId())) {
+				ret = s.getSubjectId();
+			}
+			if (StringUtils.isEmpty(ret) && StringUtils.isNotEmpty(s.getPatientName())) {
+				ret = s.getPatientName();
+			}
+			
+			return ret;
+		}
+		
+		public static String pickSessionName(final PrearcTableBuilder.Session s) {
 			String ret = "";
 			if (StringUtils.isNotEmpty(s.getLabel())) {
 				ret = s.getLabel();
@@ -197,37 +181,46 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			if (StringUtils.isEmpty(ret) && StringUtils.isNotEmpty(s.getPatientId())) {
 				ret = s.getPatientId();
 			}
-			if (StringUtils.isEmpty(ret) && StringUtils.isNotEmpty(s.getPatientName())) {
-				ret = s.getPatientName();
-			}
 			
 			if (StringUtils.isEmpty(ret)){
-				return s.getName();
+				return s.getFolderName();
 			}
 			return ret;
 		}
 
-		public void setName(String name) {
-			this.data.sessionTriple.name = name;
+		public void setFolderName(String name) {
+			this.data.setFolderName(name);
 		}
-		public Date getLastBuiltDate() {
-			return data.lastBuiltDate;
+		
+		public String getFolderName() {
+			return data.getFolderName();
 		}
 
-		public String getName() {
-			return data.sessionTriple.name;
+		public void setSessionName(String name) {
+			this.data.setName(name);
+		}
+		
+		public String getSessionName() {
+			return data.getName();
+		}
+		
+		public Date getLastBuiltDate() {
+			return data.getLastBuiltDate();
+		}
+		public void setLastBuiltDate(Date lastBuiltDate) {
+			data.setLastBuiltDate(lastBuiltDate);
 		}
 
 		public Date getUploadDate() {
-			return data.uploadDate;
+			return data.getUploadDate();
 		}
 
 		public String getTimestamp() {
-			return data.sessionTriple.timestamp;
+			return data.getTimestamp();
 		}
 
 		public void setTimestamp(String timestamp) {
-			this.data.sessionTriple.timestamp = timestamp;
+			this.data.setTimestamp(timestamp);
 		}
 
 		public String getProject(){
@@ -260,7 +253,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}
 		
 		public PrearcStatus getStatus(){
-			return data.status;
+			return data.getStatus();
 		}
 		
 		

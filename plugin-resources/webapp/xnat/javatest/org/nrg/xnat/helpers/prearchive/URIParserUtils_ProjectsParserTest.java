@@ -16,7 +16,7 @@ import org.junit.Test;
 public class URIParserUtils_ProjectsParserTest {	
 	@Test
 	public final void testSessionParser() {
-		final UriParserUtils.SessionParser parser = new UriParserUtils.SessionParser(new UriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
 		this.missingLabel(parser);
 		this.missingProject(parser);
 		this.missingTimestamp(parser);
@@ -26,14 +26,14 @@ public class URIParserUtils_ProjectsParserTest {
 	
 	@Test
 	public final void testProjectsParser () {
-		final UriParserUtils.ProjectsParser parser = new UriParserUtils.ProjectsParser(new UriParserUtils.UriParser(PrearcUtils.projectUriTemplate));
+		final PrearcUriParserUtils.ProjectsParser parser = new PrearcUriParserUtils.ProjectsParser(new PrearcUriParserUtils.UriParser(PrearcUtils.projectUriTemplate));
 		this.singleProject(parser);
 		this.multipleProjects(parser);
 		this.unassignedProjectToNull(parser);
 		this.sessionUriToProjectsParser(parser);
 	}
 	
-	public final void sessionUriToProjectsParser (UriParserUtils.ProjectsParser parser) {
+	public final void sessionUriToProjectsParser (PrearcUriParserUtils.ProjectsParser parser) {
 		String uri = "prearchive/projects/proj/timestamp/label";
 		try {
 			parser.readUri(uri);
@@ -44,25 +44,25 @@ public class URIParserUtils_ProjectsParserTest {
 	}
 	
 
-	public final void singleProject (UriParserUtils.ProjectsParser parser) {
+	public final void singleProject (PrearcUriParserUtils.ProjectsParser parser) {
 		String uri = "prearchive/projects/proj";
 		final List<String> ls = parser.readUri(uri);
 		assert(ls.size() == 1 && ls.contains((String) "proj"));
 	}
 	
-	public final void multipleProjects (UriParserUtils.ProjectsParser parser) {
+	public final void multipleProjects (PrearcUriParserUtils.ProjectsParser parser) {
 		String uri = "prearchive/projects/proj1,proj2,proj3";
 		final List<String> ls = parser.readUri(uri);
 		assert(ls.size() == 3 && ls.contains((String) "proj1") && ls.contains((String) "proj2") && ls.contains((String) "proj3"));
 	}
 	
-	public final void unassignedProjectToNull (UriParserUtils.ProjectsParser parser) {
+	public final void unassignedProjectToNull (PrearcUriParserUtils.ProjectsParser parser) {
 		String uri = "prearchive/projects/Unassigned";
 		final List<String> ls = parser.readUri(uri);
 		assert(ls.size() == 1 && null == ls.get(0));
 	}
 	
-	public final void missingLabel (UriParserUtils.SessionParser parser) {
+	public final void missingLabel (PrearcUriParserUtils.SessionParser parser) {
 		String uri = "prearchive/projects/proj/timestamp/";
 		try {
 			final Map<String,String> sess = parser.readUri(uri);
@@ -72,7 +72,7 @@ public class URIParserUtils_ProjectsParserTest {
 		}		
 	}
 	
-	public final void missingProject (UriParserUtils.SessionParser parser) {
+	public final void missingProject (PrearcUriParserUtils.SessionParser parser) {
 		String uri = "prearchive/projects//timestamp/label";
 		try {
 			parser.readUri(uri);
@@ -82,7 +82,7 @@ public class URIParserUtils_ProjectsParserTest {
 		}		
 	}
 	
-	public final void missingTimestamp (UriParserUtils.SessionParser parser) {
+	public final void missingTimestamp (PrearcUriParserUtils.SessionParser parser) {
 		String uri = "prearchive/projects/proj//label";
 		try {
 			final Map<String,String> sess = parser.readUri(uri);
@@ -92,13 +92,13 @@ public class URIParserUtils_ProjectsParserTest {
 		}		
 	}
 	
-	public final void unassignedProjectToNull (UriParserUtils.SessionParser parser) {
+	public final void unassignedProjectToNull (PrearcUriParserUtils.SessionParser parser) {
 		String uri = "prearchive/projects/Unassigned/timestamp/label";
 		final Map<String,String> sess = parser.readUri(uri);
 		assertNull(sess.get("PROJECT_ID"));
 	}
 	
-	public final void wellFormedSession (UriParserUtils.SessionParser parser) {
+	public final void wellFormedSession (PrearcUriParserUtils.SessionParser parser) {
 		String uri = "prearchive/projects/proj/timestamp/sess";
 		final Map<String,String> sess = parser.readUri(uri);
 		assertEquals(sess.get("SESSION_LABEL"), "sess");

@@ -1,5 +1,6 @@
 package org.nrg.xnat.restlet.services.prearchive;
 
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 			}				
 	}
 
-	protected SessionDataTriple buildSessionDataTriple(String uri) {
+	protected SessionDataTriple buildSessionDataTriple(String uri) throws MalformedURLException {
 		return SessionDataTriple.fromURI(uri);
 	}
 

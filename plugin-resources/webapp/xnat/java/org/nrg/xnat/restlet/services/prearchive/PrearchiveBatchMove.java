@@ -86,17 +86,17 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 		final List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
 		
 		for(final String src:srcs){
-			SessionDataTriple s=buildSessionDataTriple(src);
 			try {
+				SessionDataTriple s=buildSessionDataTriple(src);
 				if (!PrearcUtils.canModify(user, s.getProject())) {
 					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
 					return;
 				}
+				ss.add(s);
 			} catch (Exception e) {
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 				return;
 			}
-			ss.add(s);
 		}
 			
 		try {

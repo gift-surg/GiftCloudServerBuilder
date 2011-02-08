@@ -127,7 +127,7 @@ public class PrearcDatabaseTest {
 				// are filler and generated randomly.
 				for (int i = 0; i < numSessions; i++) {
 					SessionData s = new SessionData();
-					s.setName(sessNameGen.next())
+					s.setFolderName(sessNameGen.next())
 					 .setProject(projectCycler.next())
 					 .setTimestamp(timestampGen.next().toString())
 					 .setSubject(anySubj.any())
@@ -135,7 +135,7 @@ public class PrearcDatabaseTest {
 					 .setUploadDate(RandomPatientInfo.after(s.getScan_date()))
 					 .setLastBuiltDate(RandomPatientInfo.after(s.getUploadDate()))
 					 .setScan_time(RandomPatientInfo.randomTimestamp())
-					 .setUrl(StringUtils.join(new String[]{"/tmp/".intern(),s.getTimestamp(),"/".intern(),s.getName()}));
+					 .setUrl(StringUtils.join(new String[]{"/tmp/".intern(),s.getTimestamp(),"/".intern(),s.getFolderName()}));
 					if ("Unassigned" == s.getProject()) {
 						s.setStatus(PrearcUtils.PrearcStatus.ERROR);
 					}
@@ -276,7 +276,7 @@ public class PrearcDatabaseTest {
 		
 		Assert.assertEquals("proj_0", s.getProject());
 		Assert.assertEquals("1000", s.getTimestamp());
-		Assert.assertEquals("sess_0", s.getName());
+		Assert.assertEquals("sess_0", s.getFolderName());
 	}
 	
 	public final void getNonExistingSession() {
@@ -516,7 +516,7 @@ public class PrearcDatabaseTest {
 		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
 		while(di.hasNext()) {
 			SessionData _s = di.next();
-			ls.add(_s.sessionTriple);
+			ls.add(_s.getSessionDataTriple());
 		}
 		
 		Map<SessionDataTriple,Boolean> m = null;
@@ -542,7 +542,7 @@ public class PrearcDatabaseTest {
 			SessionDataTriple _s = li.next();
 			while(counter != 0) {
 			try {
-				PrearcDatabase.getSession(_s.getName(),_s.getTimestamp(),_s.getProject());
+				PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
 					notFound = false;
 			} 
 				catch (SQLException e) {
@@ -661,7 +661,7 @@ public class PrearcDatabaseTest {
 		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
 		while(di.hasNext()) {
 			SessionData _s = di.next();
-			ls.add(_s.sessionTriple);
+			ls.add(_s.getSessionDataTriple());
 		}
 		
 		Map<SessionDataTriple,Boolean> m = null;
@@ -716,7 +716,7 @@ public class PrearcDatabaseTest {
 		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
 		while(di.hasNext()) {
 			SessionData _s = di.next();
-			ls.add(_s.sessionTriple);
+			ls.add(_s.getSessionDataTriple());
 		}
 		
 		Map<SessionDataTriple,Boolean> m = null;
@@ -743,7 +743,7 @@ public class PrearcDatabaseTest {
 			SessionData sd = null;
 			while(counter != 0) {
 			try {
-					sd = PrearcDatabase.getSession(_s.getName(),_s.getTimestamp(), "proj_1");
+					sd = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(), "proj_1");
 					found = true;
 			} 
 			catch (SQLException e) {
@@ -766,7 +766,7 @@ public class PrearcDatabaseTest {
 			Assert.assertTrue(found);
 			Assert.assertEquals("proj_1", sd.getProject());
 			Assert.assertEquals(_s.getTimestamp(), sd.getTimestamp());
-			Assert.assertEquals(_s.getName(), sd.getName());
+			Assert.assertEquals(_s.getFolderName(), sd.getFolderName());
 		}
 	}
 }

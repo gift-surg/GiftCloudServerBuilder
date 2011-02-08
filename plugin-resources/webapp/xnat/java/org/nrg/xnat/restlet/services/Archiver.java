@@ -19,6 +19,7 @@ import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils.ArchiveURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
@@ -202,7 +203,12 @@ public class Archiver extends BatchPrearchiveActionsA  {
 						return;
 					}
 					
-					_return = PrearcDatabase.archive(sessions.get(0), project, allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+					if(PrearcDatabase.setStatus((String)sessions.get(0).get(PrearcUtils.PREARC_SESSION_FOLDER), (String)sessions.get(0).get(PrearcUtils.PREARC_TIMESTAMP), project, PrearcStatus.ARCHIVING)){
+						_return = PrearcDatabase.archive(sessions.get(0), project, allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+					}else{
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
+						return;
+					}
 				} catch (Exception e) {
 					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);

@@ -1,26 +1,27 @@
 package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SessionDataTriple {
-	public String name;
-	public String timestamp;
-	public String project;
+	private String folderName;
+	private String timestamp;
+	private String project;
 
 	public SessionDataTriple() {
 	}
-	public String getName() {
-		return this.name;
+	public String getFolderName() {
+		return this.folderName;
 	}
-	public SessionDataTriple setName(String name) {
-		this.name = name;
+	public SessionDataTriple setFolderName(String name) {
+		this.folderName = name;
 		return this;
 	}
-	public SessionDataTriple setName(Object o) {
+	public SessionDataTriple setFolderName(Object o) {
 		if (o != null) {
-			this.setName((String)o);
+			this.setFolderName((String)o);
 		}
 		return this;
 	}
@@ -57,27 +58,27 @@ public class SessionDataTriple {
 	}
 	
 	public static SessionDataTriple makeTriple (String sess, String timestamp, String proj) {
-		return new SessionDataTriple().setName(sess).setProject(proj).setTimestamp(timestamp);
+		return new SessionDataTriple().setFolderName(sess).setProject(proj).setTimestamp(timestamp);
 	}
 	
 	public Map<String,String> toMap () {
 		Map<String,String> ret = new HashMap<String,String>();
 		ret.put("PROJECT_ID", this.getProject());
 		ret.put("SESSION_TIMESTAMP", this.getTimestamp());
-		ret.put("SESSION_LABEL", this.getName());
+		ret.put("SESSION_LABEL", this.getFolderName());
 		return ret;
 	}
-	public static SessionDataTriple fromMap (Map<String,String> m) {
-		return new SessionDataTriple().setName(m.get("SESSION_LABEL"))
+	public static SessionDataTriple fromMap (Map<String,Object> m) {
+		return new SessionDataTriple().setFolderName(m.get("SESSION_LABEL"))
 		                              .setProject(m.get("PROJECT_ID"))
 		                              .setTimestamp(m.get("SESSION_TIMESTAMP"));
 	}
 	public static SessionDataTriple fromFile (final String project, final File f) {
-		return new SessionDataTriple().setName(f.getName())
+		return new SessionDataTriple().setFolderName(f.getName())
 		                              .setProject(project)
 		                              .setTimestamp(f.getParentFile().getName());
 	}
-	public static SessionDataTriple fromURI (final String uri) {
+	public static SessionDataTriple fromURI (final String uri) throws MalformedURLException {
 		return SessionDataTriple.fromMap(PrearcUtils.parseURI(uri));
 	}
 }

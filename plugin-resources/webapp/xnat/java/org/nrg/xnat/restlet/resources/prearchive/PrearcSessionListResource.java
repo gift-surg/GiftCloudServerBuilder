@@ -130,7 +130,7 @@ public final class PrearcSessionListResource extends SecureResource {
 
 		for(final String project:projects){
 			try {
-				if (PrearcUtils.validUser(user, project)) {
+				if (PrearcUtils.validUser(user, project,false)) {
 					validProjects.add(project);
 		}
 				else {
@@ -176,12 +176,7 @@ public final class PrearcSessionListResource extends SecureResource {
 
 			
 		return this.representTable(table, mt, new Hashtable<String,Object>());
-			}
-	
-	public XFTTable retrieveTable(final String project, final String path) throws IOException, InvalidPermissionException, Exception{
-		ProjectPrearchiveI t=getPrearcBuider().buildTable(project, user, path);
-		return (t!=null)?t.getContent():null;
-		}
+	}
 	
 	public XFTTable retrieveTable(ArrayList<String> projects) throws SQLException, SessionException {
 		String [] _proj = new String[projects.size()];

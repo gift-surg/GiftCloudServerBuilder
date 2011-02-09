@@ -82,17 +82,20 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 		}
 		
 		class SetXml implements Transaction<XnatImagesessiondataBean>{
-			File xml;
-			String newProj;
-			public SetXml(File xml, String newProj) {
+			final File xml;
+			final String newProj,newDirPath;
+			public SetXml(File xml, String newProj, String newDirPath) {
 				this.xml = xml;
 				this.newProj = newProj;
+				this.newDirPath = newDirPath;
 			}
 			public XnatImagesessiondataBean run() throws SyncFailedException {
 				XnatImagesessiondataBean doc = null;
 				try {
 					doc=PrearcTableBuilder.parseSession(xml);
 					doc.setProject(newProj);
+					//modified to also set the new prearchive path.
+					doc.setPrearchivepath(newDirPath);
 				} catch (SAXException e) {
 					throwSync(e.getMessage());
 				} catch (IOException e) {
@@ -145,7 +148,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			this.newTsdir = new File(this.basePath + this.newProj, this.tsdir.getName());
 			this.xml =  new File(tsdir, sess + ".xml");
 			copy = new Copy(tsdir, newTsdir, sess);
-			setXml = new SetXml(xml,newProj);
+			setXml = new SetXml(xml,newProj,(new File(newTsdir,sess)).getAbsolutePath());
 			writeXml = new WriteXml(newTsdir,sess);
 		}
 

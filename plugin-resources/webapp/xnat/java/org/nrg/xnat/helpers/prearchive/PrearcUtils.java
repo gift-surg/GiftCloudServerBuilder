@@ -306,7 +306,7 @@ public class PrearcUtils {
 	}
 	
 	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
-		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,allowUnassigned), timestamp);
+		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,allowUnassigned), timestamp,project);
 		final SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
 
 		PrearcDatabase.addSession(sd);

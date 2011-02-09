@@ -48,7 +48,7 @@ public class FileSystemSessionDataModifierTest {
 		fs = new FileSystemSessionDataModifier(basePath);
 		move = new FileSystemSessionDataModifier.Move(basePath,sess,uri,newProj);
 		copy = move.new Copy(new File(tsdir), new File(newTsdir), sess);
-		setXml = move.new SetXml(new File(xml), newProj);
+		setXml = move.new SetXml(new File(xml), newProj,new File(newTsdir, sess).getAbsolutePath());
 		copyException = new Move(basePath,sess,uri,newProj) {
 			{
 				this.copy = new Except(tsdir, newTsdir, sess);
@@ -68,7 +68,7 @@ public class FileSystemSessionDataModifierTest {
 			}
 			class Except extends SetXml {
 				public Except (File xml, String sess){
-					super(xml,sess);
+					super(xml,sess,null);
 				}
 				public XnatImagesessiondataBean run () throws SyncFailedException {
 					throw new SyncFailedException("Test exception");

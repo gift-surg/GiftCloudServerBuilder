@@ -19,9 +19,7 @@ import org.apache.log4j.Logger;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.model.XnatImagesessiondataI;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.xml.sax.SAXException;
@@ -108,7 +106,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		
 		private SessionData data = new SessionData();
 
-		Session(final File sessdir) {
+		//passed in project should override what is in the session xml, if it exists
+		Session(final File sessdir, final String project) {
 			data.setFolderName(sessdir.getName());
 
 			sessionXML = new File(sessdir.getPath() + ".xml");
@@ -132,10 +131,16 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setStatus(PrearcUtils.checkSessionStatus(sessionXML));
 
 			if(!sessionXML.exists()){
+				if(project!=null){
+					session=new XnatImagesessiondataBean();
+					session.setProject(project);
+				}
 				if(PrearcStatus.potentiallyReady(data.getStatus()))data.setStatus(PrearcStatus.RECEIVING);
 			}else{
 				try {
 					session=parseSession(sessionXML);
+					
+					session.setProject(project);
 					
 					final String sessionID = session.getId();
 					if (null == sessionID || "".equals(sessionID) || "NULL".equals(sessionID)) {
@@ -275,7 +280,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		final SortedMap<Date, Collection<Session>> sessions = new TreeMap<Date, Collection<Session>>();
 		if(PrearcUtils.isTimestampDirectory.accept(prearcDir)){
 			for (final File sessdir : prearcDir.listFiles(PrearcUtils.isDirectory)) {
-				final Session session = buildSessionObject(sessdir,prearcDir.getName());
+				final Session session = buildSessionObject(sessdir,prearcDir.getName(),null);
 				
 				final Date builtDate = session.getLastBuiltDate();
 				
@@ -287,7 +292,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}else{		
 		for (final File tsdir : prearcDir.listFiles(PrearcUtils.isTimestampDirectory)) {
 			for (final File sessdir : tsdir.listFiles(PrearcUtils.isDirectory)) {
-				final Session session = buildSessionObject(sessdir,tsdir.getName());
+				final Session session = buildSessionObject(sessdir,tsdir.getName(),prearcDir.getName());
 
 				final Date builtDate = session.getLastBuiltDate();
 				if (!sessions.containsKey(builtDate)) {
@@ -300,8 +305,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		return sessions;
 	}
 	
-	public static Session buildSessionObject(final File sessdir,final String timestamp){
-		final Session session = new Session(sessdir);		
+	public static Session buildSessionObject(final File sessdir,final String timestamp, final String project){
+		final Session session = new Session(sessdir,project);		
 		session.setTimestamp(timestamp);
 		return session;
 	}

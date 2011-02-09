@@ -38,6 +38,7 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 
+@SuppressWarnings("serial")
 public class Rename  implements Callable<File>{
 	enum STEP{PREPARING,PREPARE_SQL,COPY_DIR,EXECUTE_SQL,DELETE_OLD_DIR,COMPLETE};
 	static org.apache.log4j.Logger logger = Logger.getLogger(Rename.class);

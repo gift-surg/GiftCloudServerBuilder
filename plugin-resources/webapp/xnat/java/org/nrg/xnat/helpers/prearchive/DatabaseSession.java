@@ -97,6 +97,16 @@ public enum DatabaseSession {
 			s.setSubject(o);
 		}
 	},
+	FOLDER_NAME("folderName", ColType.VARCHAR, true){
+		@Override
+		public Object readSession (SessionData s){
+			return s.getFolderName();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setFolderName(o);
+		}
+	},
 	NAME("name", ColType.VARCHAR, false){
 		@Override
 		public Object readSession (SessionData s){
@@ -477,7 +487,7 @@ public enum DatabaseSession {
 	}
 	
 	private static String sessionSql (String sess, String timestamp, String proj) {
-		return DatabaseSession.NAME.searchSql(sess) + " AND " + 
+		return DatabaseSession.FOLDER_NAME.searchSql(sess) + " AND " + 
                DatabaseSession.TIMESTAMP.searchSql(timestamp) + " AND " +
                DatabaseSession.PROJECT.searchSql(proj);
 	}

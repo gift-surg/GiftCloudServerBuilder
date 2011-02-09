@@ -88,12 +88,19 @@ public class Importer extends SecureResource {
 
 			fw=this.getFileWriters(entity);
 
-			if (RequestUtil.isMultiPartFormData(entity)) {
-				loadParams(new Form(entity));
-			}
-
 			//maintain parameters
 			loadParams(getQueryVariableForm());
+			
+			// TODO  The XAR_IMPORTER exclusion here is a current hack to prevent a REST from issuing the following error:
+			//       "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required"
+			//       This loadParams call is performing another read of the entity representation.  The loading should not be necessary
+			//       for a simple XAR import, but it would be preferable to better handle this situation.
+			// NOTE:  Considered loading parameters, then pulling filewriters from parameter list rather than using the getFileWriters call above, 
+			//        but the new Form(entity) is throwing exceptions on the request entity.
+			//MIKE HODGE is working on fixing this.
+			if (RequestUtil.isMultiPartFormData(entity) && !handler.equals(ImporterHandlerA.XAR_IMPORTER)) {
+				loadParams(new Form(entity));
+			}
 
 			if(fw.size()==0){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");

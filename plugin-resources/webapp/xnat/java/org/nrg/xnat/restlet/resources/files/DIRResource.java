@@ -2,6 +2,7 @@
 package org.nrg.xnat.restlet.resources.files;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +15,9 @@ import org.apache.oro.io.GlobFilenameFilter;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
@@ -57,7 +60,6 @@ public class DIRResource extends SecureResource {
 		if (exptID != null) {
 			if(exptID!=null){
 				expt=XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
-				
 				if(expt==null && proj!=null){
 					expt=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(proj.getId(), exptID,user, false);
 				}
@@ -70,14 +72,21 @@ public class DIRResource extends SecureResource {
 		}else{
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 		}
+		
 	}
 
 	public final static String[] FILE_HEADERS = {"Name","DIR","Size","URI"};
 	
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		MediaType mt = overrideVariant(variant);
 		
+		MediaType mt=null;
+		if (isXarReference()) {
+			mt=APPLICATION_XAR;
+		} else {
+			mt=overrideVariant(variant);
+		}
+			
 		if(user==null){
 			this.getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
 					return null;
@@ -87,14 +96,14 @@ public class DIRResource extends SecureResource {
 			if(filepath==null){
 				filepath="";
 			}
-			
+
 			final File session_dir=expt.getSessionDir();
 			if(session_dir==null){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 				"Session directory doesn't exist in standard location for this experiment.");
 				return null;
 			}
-		
+			
 			try {
 				final List<File> src;
 				if(filepath.equals("")){
@@ -103,20 +112,19 @@ public class DIRResource extends SecureResource {
 				}else{
 					src=getFiles(session_dir,filepath,true);
 				}
-
+			
 				if(src.size()==0){
+						
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 					"Specified request didn't match any stored files.");
 					return null;
 				}else if (src.size()==1 && !src.get(0).isDirectory()){
 					final File f=src.get(0);
-					
+					// TODO:  Need to add XAR output here?  (Probably not for single-file zipping)
 					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) )){
 						ZipRepresentation rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName());
 						rep.addEntry(f);
-						
 						this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",f.getName()));
-						
 						return rep;
 					}else{
 						return this.representFile(f, mt);
@@ -127,7 +135,7 @@ public class DIRResource extends SecureResource {
 					for(File f: src){
 						final FileSet set=new FileSet(f);
 						if(f.isDirectory()){
-							if(this.isQueryVariableTrue("recursive")){
+							if(this.isQueryVariableTrue("recursive") || isXarReference()) { 
 								set.addAll(FileUtils.listFiles(f, null, true));
 							}else{
 								File[] children=f.listFiles();
@@ -140,18 +148,31 @@ public class DIRResource extends SecureResource {
 						}
 						dest.add(set);
 					}
-					
-					
-					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) )){
-						
+			
+					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) || (mt.equals(APPLICATION_XAR)) )){
 						final ZipRepresentation rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName());
-						
+						if (mt.equals(APPLICATION_XAR)) {
+							try {
+								File outF = File.createTempFile("expt_","");
+								outF.deleteOnExit();
+								FileOutputStream fos=new FileOutputStream(outF);
+								SAXWriter writer = new SAXWriter(fos,true);
+								writer.setAllowSchemaLocation(true);
+								writer.setLocation(TurbineUtils.GetRelativePath(this.getHttpServletRequest()) + "/" + "schemas/");
+								writer.setRelativizePath(((XnatSubjectassessordata)expt).getArchiveDirectoryName()+"/");
+								writer.write(expt.getItem());
+								rep.addEntry(((XnatSubjectassessordata)expt).getId() + ".xml",outF);
+							} catch (Exception e) {
+								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+									"Unable to retrieve/save session XML.");
+								return null;
+							}
+						}
 						for(FileSet fs:dest){
 							rep.addAll(fs.getMatches());
 						}
-						
+			
 						this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
-						
 						return rep;
 					}else{
 
@@ -173,7 +194,7 @@ public class DIRResource extends SecureResource {
 								final Object[] row = new Object[8];
 								row[0]=((parent.toURI().relativize(f.toURI())).getPath());
 								row[1]=f.isDirectory();
-					            row[2]=(f.length());
+								row[2]=(f.length());
 					           
 					            final String rel=(session_dir.toURI().relativize(f.toURI())).getPath();
 					            final String qs=(f.isDirectory())?qsParams:"";
@@ -279,5 +300,12 @@ public class DIRResource extends SecureResource {
 		public File getParent(){
 			return parent;
 		}
+	}
+	
+	private boolean isXarReference() {
+		if (getRequest().getResourceRef().getLastSegment().equals("XAR")) {
+			return true;
+		}
+		return false;
 	}
 }

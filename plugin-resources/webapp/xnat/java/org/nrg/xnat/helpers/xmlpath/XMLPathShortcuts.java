@@ -244,6 +244,7 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		
 	}
 	
+	@SuppressWarnings("serial")
 	final static List<String> REGEXP=new ArrayList<String>(){{
 		add(XNATRestConstants.XML_PATH_REGEXP);
 		add(XNATRestConstants.XML_PATH_REGEXP2);}};

@@ -4,25 +4,18 @@
 package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.turbine.util.TurbineException;
-import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
-import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
@@ -47,7 +40,6 @@ public final class PrearcSessionResource extends SecureResource {
 	private static final String PROJECT_ATTR = "PROJECT_ID";
 	private static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
 	private static final String SESSION_LABEL = "SESSION_LABEL";
-	private static final String CRLF = "\r\n";
 	
 	public static final String POST_ACTION_RESET = "reset-status";
 	public static final String POST_ACTION_BUILD = "build";
@@ -94,7 +86,7 @@ public final class PrearcSessionResource extends SecureResource {
 		if(project.equalsIgnoreCase("Unassigned"))project=null;
 		final File sessionDir;
 		try {
-			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
 		} catch (InvalidPermissionException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -109,7 +101,7 @@ public final class PrearcSessionResource extends SecureResource {
 		if (POST_ACTION_BUILD.equals(action)) {
 			try {
 				PrearcDatabase.buildSession(sessionDir, session, timestamp, project);
-				PrearcUtils.resetStatus(user, project, timestamp, session);
+				PrearcUtils.resetStatus(user, project, timestamp, session,true);
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -120,7 +112,7 @@ public final class PrearcSessionResource extends SecureResource {
 		} else if (POST_ACTION_RESET.equals(action)) {
 			try {
 				PrearcDatabase.buildSession(sessionDir, session, timestamp, project);
-				PrearcUtils.resetStatus(user, project, timestamp, session);
+				PrearcUtils.resetStatus(user, project, timestamp, session,true);
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -134,8 +126,12 @@ public final class PrearcSessionResource extends SecureResource {
 			if(StringUtils.isNotEmpty(newProj)){
 				//TODO: convert ALIAS to project ID (if necessary)
 			}
-			
+
 			try {
+				if(!PrearcUtils.canModify(user, newProj)){
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unable to modify session data for destination project.");
+					return;
+				}
 				if(PrearcDatabase.setStatus(session, timestamp, project, PrearcStatus.MOVING)){
 					PrearcDatabase.moveToProject(session, timestamp, project, newProj);
 				}				
@@ -148,6 +144,9 @@ public final class PrearcSessionResource extends SecureResource {
 			} catch (SessionException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e);
+			} catch (Exception e) {
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 			}			
 		} else {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -157,10 +156,12 @@ public final class PrearcSessionResource extends SecureResource {
 
 	@Override
 	public void handleDelete() {
+
+		if(project.equalsIgnoreCase("Unassigned"))project=null;
 		
 		try {
 			//checks if the user can access this session
-			PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+			PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
 		} catch (InvalidPermissionException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -172,7 +173,18 @@ public final class PrearcSessionResource extends SecureResource {
 		}
 		
 		try {
-			PrearcDatabase.deleteSession(session, timestamp, project);
+			if(!PrearcUtils.canModify(user, project)){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unable to modify session data for destination project.");
+				return;
+			}
+			
+			if(PrearcDatabase.setStatus(session, timestamp, project, PrearcStatus.DELETING)){
+				PrearcDatabase.deleteSession(session, timestamp, project);
+			}
+		} catch (SessionException e) {
+			logger.error("",e);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
+			return;
 		} catch (Exception e) {
 			logger.error("",e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -190,7 +202,7 @@ public final class PrearcSessionResource extends SecureResource {
 	public Representation getRepresentation(final Variant variant){
 		final File sessionDir;
 		try {
-			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+			sessionDir = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
 		} catch (InvalidPermissionException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
 			return null;

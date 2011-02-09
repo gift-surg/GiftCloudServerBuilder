@@ -21,30 +21,41 @@ import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
  * @author aditya siram 
  */
 public final class SessionData {
-	public Date uploadDate;
-	public Date lastBuiltDate;
-	public PrearcStatus status;
-	public SessionDataTriple sessionTriple = new SessionDataTriple();
-	public Date scan_date;
-	public String scan_time;
-	public String subject;
-	public String url;
+	private Date uploadDate;
+	private Date lastBuiltDate;
+	private PrearcStatus status;
+	private SessionDataTriple sessionTriple = new SessionDataTriple();
+	private Date scan_date;
+	private String scan_time,subject,url,session;
 	public SessionData() {
 	}
+	public String getFolderName() {
+		return sessionTriple.getFolderName();
+	}
+	public SessionData setFolderName(String name) {
+		this.sessionTriple.setFolderName(name);
+		return this;
+	}
+	public SessionData setFolderName(Object o) {
+		this.sessionTriple.setFolderName(o);
+		return this;
+	}
 	public String getName() {
-		return sessionTriple.name;
+		return session;
 	}
 	public SessionData setName(String name) {
-		this.sessionTriple.setName(name);
+		this.session=name;
 		return this;
 	}
 	public SessionData setName(Object o) {
-		this.sessionTriple.setName(o);
+		if (null != o) {
+			this.setName((String)o);
+		}
 		return this;
 	}
 	
 	public String getTimestamp() {
-		return sessionTriple.timestamp;
+		return sessionTriple.getTimestamp();
 	}
 	public SessionData setTimestamp(String timestamp) {
 		this.sessionTriple.setTimestamp(timestamp);
@@ -100,7 +111,7 @@ public final class SessionData {
 		return this;
 	}
 	public String getProject() {
-		return sessionTriple.project;
+		return sessionTriple.getProject();
 	}
 	public SessionData setProject(String project) {
 		if (project != null) {
@@ -156,7 +167,7 @@ public final class SessionData {
 		return this;
 	}
 	public String getExternalUrl() {
-		return String.format("/prearchive/projects/%s/%s/%s",getProject(),getTimestamp(),getName());
+		return String.format("/prearchive/projects/%s/%s/%s",getProject(),getTimestamp(),getFolderName());
 	}
 	public String getUrl() {
 		return url;
@@ -170,6 +181,10 @@ public final class SessionData {
 			this.setUrl((String)o);
 		}
 		return this;
+	}
+	
+	public SessionDataTriple getSessionDataTriple(){
+		return sessionTriple;
 	}
 	
 	@Override

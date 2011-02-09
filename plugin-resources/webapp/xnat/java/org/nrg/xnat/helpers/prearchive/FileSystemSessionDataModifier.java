@@ -215,7 +215,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	}
 	
 	public void move(final SessionData sd, final String newProj) throws SyncFailedException {
-		this._move(new Move (this.basePath, sd.getName(), sd.getUrl(), newProj){});
+		this._move(new Move (this.basePath, sd.getFolderName(), sd.getUrl(), newProj){});
 	}
 	
 	protected void _move(Move move) throws SyncFailedException {
@@ -224,14 +224,21 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	
 	public void delete(SessionData sd) {
 		File f = new File(sd.getUrl());
-		new File(f.getPath() + ".xml").delete();	// remove the session XML
+		try {
+			FileUtils.MoveToCache(new File(f.getPath() + ".xml"));
+		} catch (Exception e) {
+			logger.error("",e);
+		}
 		final File tsdir = f.getParentFile();
-		FileUtils.DeleteFile(f);
-		tsdir.delete();	// delete timestamp parent only if empty.
-	}
-	
-	public void resetStatus(SessionData sd) {
+		try {
+			FileUtils.MoveToCache(f);
+		} catch (Exception e) {
+			logger.error("",e);
+		}
 		
+		if(!FileUtils.HasFiles(tsdir)){
+			FileUtils.deleteDirQuietly(tsdir);	// delete timestamp parent only if empty.
+		}
 	}
 	
 	public void setStatus(SessionData sd, PrearcStatus status) {

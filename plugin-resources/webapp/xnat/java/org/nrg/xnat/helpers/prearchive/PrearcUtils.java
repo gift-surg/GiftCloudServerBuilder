@@ -5,8 +5,10 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -18,8 +20,10 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
+import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 
@@ -75,10 +79,10 @@ public class PrearcUtils {
 			if(requestedProject.contains(",")){
 				String [] _tmp = StringUtils.split(requestedProject,',');
 				for (int i = 0; i < _tmp.length; i++) {
-				    projects.add(_tmp[i]);
+				    projects.add(cleanProject(_tmp[i]));
 				}
 			}else{
-				projects.add(requestedProject);
+				projects.add(cleanProject(requestedProject));
 			}
 		}else{
 			for (final List<String> row : user.getQueryResults("xnat:projectData/ID", "xnat:projectData")) {
@@ -86,7 +90,7 @@ public class PrearcUtils {
 				if (projects.contains(id))
 					continue;
 				try {
-					if (user.canAction("xnat:mrSessionData/project", id, SecurityManager.CREATE)) {
+					if (canModify(user,id)) {
 						projects.add(id);
 					}
 				} catch (Exception e) {
@@ -100,6 +104,25 @@ public class PrearcUtils {
 		}
 		return projects;
 	}
+	
+	private static String cleanProject(final String p){
+		if(COMMON.equals(p)){
+			return null;
+		}else{
+			return p;
+		}
+	}
+	
+	public static boolean canModify(final XDATUser user, final String p) throws Exception{
+		if(user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)){
+			return true;
+		}else if(p==null){
+			return false;
+		}else{
+			return user.canAction("xnat:mrSessionData/project", p, SecurityManager.CREATE);
+		}
+	}
+	
 	/**
 	 * Retrieves the File reference to the prearchive root directory for the
 	 * named project.
@@ -113,13 +136,13 @@ public class PrearcUtils {
 	 *             have create permission for it, or if the prearchive directory
 	 *             does not exist.
 	 */
-	public static File getPrearcDir(final XDATUser user, final String project) throws IOException,InvalidPermissionException,Exception {
+	public static File getPrearcDir(final XDATUser user, final String project, final boolean allowUnassigned) throws IOException,InvalidPermissionException,Exception {
 		if (null == user) {
 			throw new InvalidPermissionException("null user object");
 		}
 		String prearcPath;
 		if(project==null || project.equals(COMMON)){
-			if (user.checkRole(ROLE_SITE_ADMIN)) {
+			if (allowUnassigned || user.checkRole(ROLE_SITE_ADMIN)) {
 				prearcPath=ArcSpecManager.GetInstance().getGlobalPrearchivePath();
 			}else{
 				throw new InvalidPermissionException("user " + user.getUsername() + " does not have permission to access the Unassigned directory ");
@@ -172,14 +195,14 @@ public class PrearcUtils {
 	 * @throws Exception 
 	 * @throws IOException 
 	 */
-	public static boolean validUser (final XDATUser user, final String project) throws IOException, Exception {
+	public static boolean validUser (final XDATUser user, final String project, final boolean allowUnassigned) throws IOException, Exception {
 		boolean valid = true;
 		try {
 			if (null == project) {
-				PrearcUtils.getPrearcDir(user,PrearcUtils.COMMON); 
+				PrearcUtils.getPrearcDir(user,PrearcUtils.COMMON,allowUnassigned); 
 			}
 			else {
-				PrearcUtils.getPrearcDir(user,project);	 	
+				PrearcUtils.getPrearcDir(user,project,allowUnassigned);	 	
 			}
 		}
 		catch (InvalidPermissionException e) {
@@ -256,11 +279,11 @@ public class PrearcUtils {
 		return new java.util.Date(t.getTime());
 	}
 	
-	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session) throws IOException, InvalidPermissionException, Exception{
+	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session, final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception{
 		if(user==null||timestamp==null||session==null){
 			throw new IllegalArgumentException();
 		}
-		return new File(new File(getPrearcDir(user, project),timestamp),session);
+		return new File(new File(getPrearcDir(user, project,allowUnassigned),timestamp),session);
 	}
 
 	public static final FileFilter isSessionGeneratedFileFilter = new FileFilter() {
@@ -272,23 +295,35 @@ public class PrearcUtils {
 		}
 	};
 
-	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
+	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session, final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
+		try {
 		PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
 		PrearcDatabase.deleteCacheRow(session,timestamp,project);
+		} catch (SessionException e) {
+		}
 		
-		addSession(user,project,timestamp,session);
+		addSession(user,project,timestamp,session,allowUnassigned);
 	}
 	
-	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception {
-		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session), timestamp);
+	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
+		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,allowUnassigned), timestamp);
 		final SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
 
 		PrearcDatabase.addSession(sd);
 	}
 	
-	public static Map<String,String> parseURI(final String uri){
-		final UriParserUtils.SessionParser parser = new UriParserUtils.SessionParser(new UriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
-		return parser.readUri(uri);
+	public static Map<String,Object> parseURI(final String uri) throws MalformedURLException{
+		return UriParserUtils.parseURI(uri).getProps();
+	}
+
+	public static XFTTable convertArrayLtoTable(ArrayList<ArrayList<Object>> rows){
+		XFTTable table = new XFTTable();
+		table.initTable(PrearcDatabase.getCols());
+		Iterator<ArrayList<Object>> i = rows.iterator();
+		while(i.hasNext()) {
+			table.insertRow(i.next().toArray());
+		}
+		return table;
 	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";

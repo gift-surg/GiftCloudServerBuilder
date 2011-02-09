@@ -16,7 +16,7 @@ import org.restlet.data.Reference;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
-public final class UriParserUtils {
+public final class PrearcUriParserUtils {
 		
 	/**
 	 * A uri parser that reads prearchive uri that requests an action on multiple projects.
@@ -24,8 +24,8 @@ public final class UriParserUtils {
 	 *
 	 */
 	static class ProjectsParser implements UriParserI<List<String>> {
-		final UriParserUtils.UriParser i;
-		public ProjectsParser(UriParserUtils.UriParser i) {
+		final PrearcUriParserUtils.UriParser i;
+		public ProjectsParser(PrearcUriParserUtils.UriParser i) {
 			this.i = i;
 		}
 		
@@ -63,8 +63,8 @@ public final class UriParserUtils {
 	 *
 	 */
 	static class SessionParser implements UriParserI<Map<String,String>> {
-		final UriParserUtils.UriParser i;
-		SessionParser(UriParserUtils.UriParser i) {
+		final PrearcUriParserUtils.UriParser i;
+		SessionParser(PrearcUriParserUtils.UriParser i) {
 			this.i=i;
 		}
 		/**

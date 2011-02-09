@@ -12,6 +12,7 @@ import java.util.zip.ZipOutputStream;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
+import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 
@@ -137,6 +138,9 @@ public class ZipRepresentation extends OutputRepresentation {
 		if (this.mt.equals(MediaType.APPLICATION_GNU_TAR))
         {
             return getTokenName()+".tar.gz";
+        }else if (this.mt.equals(SecureResource.APPLICATION_XAR))
+        {
+            return getTokenName()+".xar";
         }else{
             return getTokenName() +".zip";
         }

@@ -80,7 +80,7 @@ public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondata
 	@Override
 	public void finalize(XnatImagesessiondataBean session)
 			throws ClientException, ServerException {
-		
+		session.setPrearchivepath(this.destRootPath);
 	}
 
 

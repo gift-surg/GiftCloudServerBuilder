@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -17,11 +18,13 @@ import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils.ArchiveURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils.PrearchiveURI;
-import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.services.prearchive.BatchPrearchiveActionsA;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -35,31 +38,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-public class Archiver extends SecureResource {
+public class Archiver extends BatchPrearchiveActionsA  {
 	private static final String REDIRECT2 = "redirect";
 	private static final String FOLDER = "folder";
 	private static final String URL = "URL";
 	private static final String ADDITIONAL_VALUES = "additionalValues";
-	private static final String SRC = "src";
 	private static final String OVERWRITE = "overwrite";
 	private static final String PROJECT = "project";
 	private static final String CRLF = "\r\n";
 	private static final String DEST = "dest";
+	
 	private final static Logger logger = LoggerFactory.getLogger(Archiver.class);
+	
 	public Archiver(Context context, Request request, Response response) {
 		super(context, request, response);
 				
 	}
 	
-	public boolean allowGet(){
-		return false;
-	}
-
-	@Override
-	public boolean allowPost() {
-		return true;
-	}
-
 			final Map<String,Object> additionalValues=new Hashtable<String,Object>();
 			
 			String project_id=null;
@@ -68,8 +63,8 @@ public class Archiver extends SecureResource {
 			String[] sessionFolder=null;
 			String dest=null;
 	String redirect=null;
-			String[] srcs=null;
 			
+	@Override
 	public void loadParams(Form f) {
 			for(final String key:f.getNames()){
 			if(f.getFirstValue(key)!=null){
@@ -84,7 +79,7 @@ public class Archiver extends SecureResource {
 				}else if(key.equals(DEST)){
 					dest=f.getFirstValue(DEST);
 				}else if(key.equals(SRC)){
-					srcs=f.getValuesArray(SRC);
+					srcs=Arrays.asList(f.getValuesArray(SRC));
 				}else if(key.equals(REDIRECT2)){
 					redirect=f.getFirstValue(REDIRECT2);
 				}else{
@@ -199,8 +194,21 @@ public class Archiver extends SecureResource {
 			
 			if(sessions.size()==1){
 				String _return;
+				
+				final String project=PrearcImporterHelper.identifyProject(sessions.get(0));
+				
 				try {
-					_return = PrearcDatabase.archive(sessions.get(0), PrearcImporterHelper.identifyProject(sessions.get(0)), allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+					if (!PrearcUtils.canModify(user, project)) {
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
+						return;
+					}
+					
+					if(PrearcDatabase.setStatus((String)sessions.get(0).get(PrearcUtils.PREARC_SESSION_FOLDER), (String)sessions.get(0).get(PrearcUtils.PREARC_TIMESTAMP), project, PrearcStatus.ARCHIVING)){
+						_return = PrearcDatabase.archive(sessions.get(0), project, allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+					}else{
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
+						return;
+					}
 				} catch (Exception e) {
 					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
@@ -215,16 +223,30 @@ public class Archiver extends SecureResource {
 				return;
 				
 			}else{				
+				Map<SessionDataTriple,Boolean> m;
+				
+				final String project=PrearcImporterHelper.identifyProject(sessions.get(0));
+				
 				try {
-					PrearcDatabase.archive(sessions, PrearcImporterHelper.identifyProject(sessions.get(0)), allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+					if (!PrearcUtils.canModify(user, project)) {
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
+						return;
+					}
+					
+					m=PrearcDatabase.archive(sessions, project, allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
 				} catch (Exception e) {
 					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 					return;
 				}
 								
-				final Response response = getResponse();
-				response.setEntity("", MediaType.TEXT_URI_LIST);
+				try {
+					getResponse().setEntity(updatedStatusRepresentation(m.keySet(),overrideVariant(getPreferredVariant())));
+				} catch (Exception e) {
+					logger.error("",e);
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+					return;
+				}
 			}
 		} catch (ResourceException e) {
 			logger.error("",e);

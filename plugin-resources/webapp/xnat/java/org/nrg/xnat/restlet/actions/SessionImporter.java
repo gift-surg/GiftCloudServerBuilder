@@ -328,13 +328,16 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	public void resetStatus(final List<PrearcSession> sessions)throws ActionException{
 		for(final PrearcSession ps:sessions){
 
-			Map<String,String> sess=PrearcUtils.parseURI(ps.getUrl().toString());
 			try {
+				Map<String,Object> sess=PrearcUtils.parseURI(ps.getUrl().toString());
 				try {
-					PrearcUtils.addSession(user, sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
+					PrearcUtils.addSession(user, (String) sess.get(UriParserUtils.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				} catch (SessionException e) {
-					PrearcUtils.resetStatus(user, sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
+					PrearcUtils.resetStatus(user, (String) sess.get(UriParserUtils.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				}
+			} catch (InvalidPermissionException e) {
+				logger.error("",e);
+				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,e);
 			} catch (Exception e) {
 				logger.error("",e);
 				throw new ServerException(e);

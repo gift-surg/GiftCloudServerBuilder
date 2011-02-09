@@ -61,7 +61,7 @@ public abstract class PrearcSessionResourceA extends SecureResource {
 		File sessionDIR;
 		File srcXML;
 		try {
-			sessionDIR = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session);
+			sessionDIR = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
 			srcXML=new File(sessionDIR.getAbsolutePath()+".xml");
 		} catch (InvalidPermissionException e) {
 			logger.error("",e);

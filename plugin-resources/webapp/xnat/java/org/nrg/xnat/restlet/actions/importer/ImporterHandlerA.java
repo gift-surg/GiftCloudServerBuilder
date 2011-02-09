@@ -16,9 +16,11 @@ import org.nrg.status.StatusProducer;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.restlet.actions.SessionImporter;
+import org.nrg.xnat.restlet.actions.XarImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ImporterHandlerA  extends StatusProducer implements Callable<List<String>>{
 
 
@@ -33,6 +35,7 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 	public static final String IMPORT_HANDLER_ATTR = "import-handler";
 	
 	static String SESSION_IMPORTER="SI";
+	public static String XAR_IMPORTER="XAR";
 	static String DEFAULT_HANDLER=SESSION_IMPORTER;
 	final static Map<String,Class<? extends ImporterHandlerA>> IMPORTERS=new HashMap<String,Class<? extends ImporterHandlerA>>();
 
@@ -50,7 +53,6 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 			final Map<String,Map<String,Object>> confBuilders=PropertiesHelper.RetrievePropertyObjects(props, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS);
 			for(final String key:confBuilders.keySet()){
 				final String className=(String)confBuilders.get(key).get(CLASS_NAME);
-				final String seqS=(String)confBuilders.get(key).get(CLASS_NAME);
 				
 				if(className!=null){
 					try {
@@ -65,6 +67,7 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 			}
 			
 			if(!IMPORTERS.containsKey(SESSION_IMPORTER))IMPORTERS.put(SESSION_IMPORTER, SessionImporter.class);
+			if(!IMPORTERS.containsKey(XAR_IMPORTER))IMPORTERS.put(XAR_IMPORTER, XarImporter.class);
 			
 			String newDefault=PropertiesHelper.GetProperty(props, ORG_NRG_IMPORTER_DEFAULT);
 			if(!StringUtils.isEmpty(newDefault)&& IMPORTERS.containsKey(newDefault)){

@@ -3,8 +3,6 @@
  */
 package org.nrg.xnat.restlet.actions;
 
-import java.util.concurrent.Callable;
-
 import org.apache.log4j.Logger;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;

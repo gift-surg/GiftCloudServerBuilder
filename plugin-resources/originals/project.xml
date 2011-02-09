@@ -650,7 +650,7 @@
 		</dependency>
 		<dependency>
 			<groupId>dcm</groupId>
-			<artifactId>DICOMImageUtils</artifactId>
+			<artifactId>DicomImageUtils</artifactId>
 			<version>1.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>

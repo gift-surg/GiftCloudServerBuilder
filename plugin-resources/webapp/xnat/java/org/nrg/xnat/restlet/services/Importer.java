@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,6 @@ import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.actions.importer.ImporterNotFoundException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
@@ -53,55 +52,49 @@ public class Importer extends SecureResource {
 		return true;
 	}
 
-	List<FileWriterWrapperI> fw=Collections.emptyList();
+	List<FileWriterWrapperI> fw=new ArrayList<FileWriterWrapperI>();
 			
-			String handler=null;
-			String listenerControl=null;
-			boolean httpSessionListener=false;
+	String handler=null;
+	String listenerControl=null;
+	boolean httpSessionListener=false;
 			
 	final Map<String,Object> params=new Hashtable<String,Object>();
 						
 	public void loadParams(Form f) throws ClientException{
-			for(final String key:f.getNames()){
-				if(key.equals(ImporterHandlerA.IMPORT_HANDLER_ATTR)){
-					handler=f.getFirstValue(ImporterHandlerA.IMPORT_HANDLER_ATTR);
-				}else if(key.equals(XNATRestConstants.TRANSACTION_RECORD_ID)){
-					listenerControl=f.getFirstValue(XNATRestConstants.TRANSACTION_RECORD_ID);
-				}else if(key.equals("src")){
-					for(String src:f.getValuesArray("src")){
-						fw.add(retrievePrestoreFile(src));
-					}
-				}else if(key.equals(HTTP_SESSION_LISTENER)){
-					listenerControl=f.getFirstValue(HTTP_SESSION_LISTENER);
-					httpSessionListener=true;
-				}else{
-					params.put(key,f.getFirstValue(key));
-				}
-			}				
+		for(final String key:f.getNames()){
+			for(String v:f.getValuesArray(key)){
+				handleParam(key,v);
+			}
+		}
 	}
-			
+	
+	@Override
+	public void handleParam(String key, Object value) throws ClientException {
+		if(key.equals(ImporterHandlerA.IMPORT_HANDLER_ATTR)){
+			handler=(String)value;
+		}else if(key.equals(XNATRestConstants.TRANSACTION_RECORD_ID)){
+			listenerControl=(String)value;
+		}else if(key.equals("src")){
+				fw.add(retrievePrestoreFile((String)value));
+		}else if(key.equals(HTTP_SESSION_LISTENER)){
+			listenerControl=(String)value;
+			httpSessionListener=true;
+		}else{
+			params.put(key,value);
+		}
+	}
+
 	@Override
 	public void handlePost() {
 		//build fileWriters
 		try {
 			Representation entity = this.getRequest().getEntity();
 
-			fw=this.getFileWriters(entity);
+			fw=this.getFileWritersAndLoadParams(entity);
 
 			//maintain parameters
 			loadParams(getQueryVariableForm());
 			
-			// TODO  The XAR_IMPORTER exclusion here is a current hack to prevent a REST from issuing the following error:
-			//       "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required"
-			//       This loadParams call is performing another read of the entity representation.  The loading should not be necessary
-			//       for a simple XAR import, but it would be preferable to better handle this situation.
-			// NOTE:  Considered loading parameters, then pulling filewriters from parameter list rather than using the getFileWriters call above, 
-			//        but the new Form(entity) is throwing exceptions on the request entity.
-			//MIKE HODGE is working on fixing this.
-			if (RequestUtil.isMultiPartFormData(entity) && !handler.equals(ImporterHandlerA.XAR_IMPORTER)) {
-				loadParams(new Form(entity));
-			}
-
 			if(fw.size()==0){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
 				return;

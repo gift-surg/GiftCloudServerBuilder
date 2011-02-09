@@ -55,13 +55,13 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				
 	}
 	
-			final Map<String,Object> additionalValues=new Hashtable<String,Object>();
-			
-			String project_id=null;
-			String overwriteV=null;
-			String timestamp=null;
-			String[] sessionFolder=null;
-			String dest=null;
+	final Map<String,Object> additionalValues=new Hashtable<String,Object>();
+	
+	String project_id=null;
+	String overwriteV=null;
+	String timestamp=null;
+	String[] sessionFolder=null;
+	String dest=null;
 	String redirect=null;
 			
 	@Override

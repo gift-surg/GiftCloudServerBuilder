@@ -21,6 +21,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.PopulateItem;
@@ -682,11 +683,16 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-	public List<FileWriterWrapperI> getFileWriters() throws FileUploadException{
-		return getFileWriters(this.getRequest().getEntity());
+	public List<FileWriterWrapperI> getFileWriters() throws FileUploadException, ClientException{
+		return getFileWritersAndLoadParams(this.getRequest().getEntity());
 	}
+	
 
-	public List<FileWriterWrapperI> getFileWriters(final Representation entity) throws FileUploadException{
+	public void handleParam(final String key,final Object value) throws ClientException{
+		
+	}
+			
+	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
 			
@@ -694,7 +700,6 @@ public abstract class SecureResource extends Resource {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message (not as part of multi-part form data).");
 		        return null;
 			}else{
-				
 				// NOTE: modified driveFileName here to return a name when content-type is null
 				final String fileName=(filepath==null || filepath.equals(""))?RequestUtil.deriveFileName("upload",entity,false):filepath;
 				
@@ -710,7 +715,6 @@ public abstract class SecureResource extends Resource {
 			}
 			
 		}else{
-			
 			if (RequestUtil.isMultiPartFormData(entity)) {
 				final org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
 				final org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
@@ -721,41 +725,29 @@ public abstract class SecureResource extends Resource {
 					throw new FileUploadException(e.getMessage(),e);
 				}
 					
-					for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {    
-					    final FileItem fi = it.next();
-					     
-					    String fileName=fi.getName();
-					    if(fileName.indexOf('\\')>-1){
-					    	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
-					    }
-					    wrappers.add(new FileWriterWrapper(fi,fileName));
-					}
+				for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {    
+				    final FileItem fi = it.next();
+				     
+                    if (fi.isFormField()) {
+                    	// Load form field to passed parameters map
+                    	handleParam(fi.getFieldName(),fi.getString());
+                       	continue;
+                    } 
+                    if (fi.getName()==null) {
+                    	throw new FileUploadException("multi-part form posts must contain the file name of the uploaded file.", new Exception());
+                    } 
+				    
+				    String fileName=fi.getName();
+				    if(fileName.indexOf('\\')>-1){
+				    	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
+				    }
+				    wrappers.add(new FileWriterWrapper(fi,fileName));
+				}
 			}
 			
 		}
 		
 		return wrappers;
-	}
-	
-	private Multimap<String,Object> action_params=null;
-	
-	protected Multimap<String,Object> buildActionParams() throws FileUploadException{
-		if(action_params==null){
-			action_params=LinkedHashMultimap.create();
-			
-			//build fileWriters
-			action_params.putAll(XNATRestConstants.FILE, this.getFileWriters());
-			
-			//maintain parameters
-			final Form f = getQueryVariableForm();
-			for(final String key:f.getNames()){
-				for(final String value:f.getValuesArray(key)){
-					action_params.put(key,value);
-				}
-			}
-		}
-		
-		return action_params;
 	}
 	
 	public HttpSession getHttpSession() {

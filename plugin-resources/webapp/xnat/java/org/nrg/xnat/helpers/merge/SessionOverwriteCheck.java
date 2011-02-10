@@ -83,7 +83,7 @@ public class SessionOverwriteCheck implements Callable<Boolean> {
 			
 			final CatEntryI destEntry=CatalogUtils.getEntryByURI(dest, entry.getUri());
 			
-			if(destEntry==null){
+			if(destEntry!=null){
 				return true;
 			}
 		}

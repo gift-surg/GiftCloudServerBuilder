@@ -754,7 +754,7 @@ public final class PrearcDatabase {
 					return false;
 				}
 				lockSession(this.sess, this.timestamp, this.proj);
-				extSync();
+				s=extSync();
 				cacheSync();
 				return true;
 			}

@@ -4,6 +4,7 @@
 package org.nrg.xnat.restlet.services.prearchive;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -66,7 +67,17 @@ public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
 			
 			
 		try {
-			PrearcDatabase.deleteSession(ss);
+			if (async) {
+				PrearcDatabase.deleteSession(ss);
+			}
+			else {
+				Iterator<SessionDataTriple> i = ss.iterator();
+				while (i.hasNext()) {
+					SessionDataTriple s = i.next();
+					PrearcDatabase.deleteSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+				}
+			}
+			
 		} catch (Exception e) {
 			logger.error("",e);
 			//ignore failure and return current status's

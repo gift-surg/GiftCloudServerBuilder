@@ -6,17 +6,22 @@ package org.nrg.xnat.restlet.resources.prearchive;
 import java.io.File;
 import java.io.SyncFailedException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.TurbineException;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionException;
+import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -222,7 +227,18 @@ public final class PrearcSessionResource extends SecureResource {
 				return null;
 			}
 			return new FileRepresentation(sessionXML, variant.getMediaType(), 0);
-		}else if (MediaType.TEXT_HTML.equals(mt)) {
+		} else if (MediaType.APPLICATION_JSON.equals(mt)) {
+			List<SessionDataTriple> l = new ArrayList<SessionDataTriple>();
+			l.add(new SessionDataTriple().setFolderName(sessionDir.getName()).setProject(project).setTimestamp(timestamp));
+			XFTTable table = null;
+			try {
+				table = PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(l));
+			} catch (Exception e) {
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			} 
+			return this.representTable(table, MediaType.APPLICATION_JSON, new Hashtable<String,Object>());
+		} 
+		else if (MediaType.TEXT_HTML.equals(mt)) {
 			// Return the session XML, if it exists
 			
 			String screen=this.getQueryVariable("screen");

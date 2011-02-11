@@ -60,9 +60,8 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 			if (RequestUtil.isMultiPartFormData(entity)) {
 				loadParams(new Form(entity));
 			}
-	
 			//maintain parameters
-			loadParams(getQueryVariableForm());
+			loadParams(getQueryVariableForm());				
 		} catch (ClientException e) {
 			this.getResponse().setStatus(e.getStatus(),e);
 			return;

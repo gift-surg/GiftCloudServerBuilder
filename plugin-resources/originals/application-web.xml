@@ -20,8 +20,8 @@
   </listener>
 -->
 	<context-param>
-		<param-name>org.restlet.application</param-name>
-		<param-value>org.nrg.xnat.restlet.XNATApplication</param-value>
+        <param-name>org.restlet.component</param-name>
+        <param-value>org.nrg.xnat.restlet.XNATComponent</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>

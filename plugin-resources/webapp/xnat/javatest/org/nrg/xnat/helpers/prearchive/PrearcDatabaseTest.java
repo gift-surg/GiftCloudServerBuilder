@@ -126,8 +126,10 @@ public class PrearcDatabaseTest {
 				// generated as describe above. The rest of the attributes
 				// are filler and generated randomly.
 				for (int i = 0; i < numSessions; i++) {
+					String name = sessNameGen.next();
 					SessionData s = new SessionData();
-					s.setFolderName(sessNameGen.next())
+					s.setFolderName(name)
+					 .setName(name)
 					 .setProject(projectCycler.next())
 					 .setTimestamp(timestampGen.next().toString())
 					 .setSubject(anySubj.any())
@@ -180,7 +182,7 @@ public class PrearcDatabaseTest {
 
 	@Test
 	public final void testGetUnassigned () {
-		String unassignedUri = "prearchive/projects/Unassigned";
+		String unassignedUri = "/prearchive/projects/Unassigned";
 		List<SessionData> projs = null;
 		try {
 			projs = PrearcDatabase.getProjects(unassignedUri);
@@ -224,7 +226,7 @@ public class PrearcDatabaseTest {
 	@Test
 	public final void testGetProjects() {
 		// construct a uri with all projects.
-		String allProjUri = "prearchive/projects/" + StringUtils.join(test_projects.toArray(new String[test_projects.size()]), ",");
+		String allProjUri = "/prearchive/projects/" + StringUtils.join(test_projects.toArray(new String[test_projects.size()]), ",");
 
 		// get the projects
 		List<SessionData> projs = null;
@@ -262,7 +264,7 @@ public class PrearcDatabaseTest {
 	}
 	
 	public final void getExistingSession() {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		SessionData s = null;
 		try {
 			s = PrearcDatabase.getSession(uri);
@@ -281,7 +283,7 @@ public class PrearcDatabaseTest {
 	
 	public final void getNonExistingSession() {
 		// test that a non-existent project throws a SessionException
-		String uri = "prearchive/projects/nonExistentProj/nonExistentTimestamp/nonExistentSession";
+		String uri = "/prearchive/projects/nonExistentProj/nonExistentTimestamp/nonExistentSession";
 		try {
 			PrearcDatabase.getSession(uri);
 			fail("Should have thrown a SessionException");
@@ -297,7 +299,7 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testSessionLock () {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		for (PrearcUtils.PrearcStatus s : PrearcUtils.PrearcStatus.values()) {
 			// lock the session with the appropriate lock
 			SessionData sd = null;
@@ -326,7 +328,7 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testSessionUnlock () {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.BUILDING);
 			PrearcDatabase.lockSession(uri);
@@ -346,7 +348,7 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testIsLocked() {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			PrearcDatabase.setStatus(uri,PrearcUtils.PrearcStatus.BUILDING);
 			PrearcDatabase.lockSession(uri);
@@ -360,8 +362,10 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testMoveToProject() {
+
+		
 		// move a session to a new project
-		String uri = "prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
 		try {
 			Assert.assertTrue(PrearcDatabase.moveToProject(uri));
 		}
@@ -373,9 +377,9 @@ public class PrearcDatabaseTest {
 		} catch (Exception e) {
 			fail ("Exception " + e.getMessage());
 		}
-		
+
 		// retrieve the session and make sure that the project name is the new project
-		String newUri = "prearchive/projects/proj_newProj/1000/sess_0";
+		String newUri = "/prearchive/projects/proj_newProj/1000/sess_0";
 		SessionData s = null;
 		try {
 			s = PrearcDatabase.getSession(newUri);
@@ -384,19 +388,20 @@ public class PrearcDatabaseTest {
 			fail("Threw a SQLException");
 		}
 		catch (SessionException e) {
-			fail("Threw a SessionException");
+			fail("Threw a SessionException : " + e);
 		}
 		assert(s.getProject() == "proj_newProj");
+		assert(s.getStatus().equals(PrearcUtils.PrearcStatus.READY));
 	}
 	
 	
 	
 	@Test
 	public final void testDeleteLockedSession () {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.BUILDING);
-			PrearcDatabase.lockSession(uri);
+			System.out.println(PrearcDatabase.lockSession(uri));
 		} catch (SQLException e) {
 			fail("Threw a SQLException " + e);
 		} catch (SessionException e) {
@@ -416,9 +421,9 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testMoveLockedSession () {
-		String uri = "prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
 		try {
-			PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.BUILDING);
+			PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus._BUILDING);
 			PrearcDatabase.lockSession(uri);
 		} catch (SQLException e) {
 			fail("Threw a SQLException " + e);
@@ -439,7 +444,7 @@ public class PrearcDatabaseTest {
 		
 	@Test
 	public final void testSetStatus() {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			Assert.assertTrue(PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.ERROR));
 		}
@@ -464,7 +469,7 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testSetStatusLockedSession () {
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.BUILDING);
 			PrearcDatabase.lockSession(uri);
@@ -479,7 +484,7 @@ public class PrearcDatabaseTest {
 	@Test
 	public final void testDeleteSession() {
 		//delete a single session
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			PrearcDatabase.deleteSession(uri);			
 		}
@@ -501,7 +506,7 @@ public class PrearcDatabaseTest {
 	@Test
 	public final void multipleDeleteSession () {
 		// delete multiple sessions
-		String uri = "prearchive/projects/proj_3";
+		String uri = "/prearchive/projects/proj_3";
 		List<SessionData> projs = null;
 		try {
 			projs = PrearcDatabase.getProjects(uri);
@@ -577,7 +582,7 @@ public class PrearcDatabaseTest {
 		};
 		PrearcDatabase.setSessionDataModifier(sm);
 		
-		String uri = "prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";
 		try {
 			Assert.assertTrue(PrearcDatabase.moveToProject(uri));
 			fail("Should have thrown a SyncFailedException");
@@ -616,7 +621,7 @@ public class PrearcDatabaseTest {
 		};
 		PrearcDatabase.setSessionDataModifier(sm);
 		
-		String uri = "prearchive/projects/proj_0/1000/sess_0";
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
 		try {
 			Assert.assertTrue(PrearcDatabase.deleteSession(uri));
 			fail("Should have thrown a SyncFailedException");
@@ -646,7 +651,7 @@ public class PrearcDatabaseTest {
 	
 	@Test
 	public final void testMarkSessions () {
-		String uri = "prearchive/projects/proj_100";
+		String uri = "/prearchive/projects/proj_100";
 		List<SessionData> projs = null;
 		try {
 			projs = PrearcDatabase.getProjects(uri);
@@ -701,7 +706,7 @@ public class PrearcDatabaseTest {
 	@Test
 	public final void multipleMoveToProject () {
 		// move multiple sessions to a new project
-		String uri = "prearchive/projects/proj_3";
+		String uri = "/prearchive/projects/proj_3";
 		List<SessionData> projs = null;
 		try {
 			projs = PrearcDatabase.getProjects(uri);

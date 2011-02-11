@@ -43,130 +43,139 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.resource.Resource;
 
 public class XNATApplication extends Application {
+	public XNATApplication() {
+		super();
+	}
 	public XNATApplication(Context parentContext) {
         super(parentContext);
     }
 
+	public void attachArchiveURI(final Router router,final String uri,final Class<? extends Resource> clazz){
+		router.attach(uri.intern(),clazz);
+		router.attach(("/archive"+uri).intern(),clazz);
+	}
+	
     @Override
     public synchronized Restlet createRoot() {
         Router router = new Router(getContext());
 
-        router.attach("/investigators",InvestigatorListResource.class);
+        attachArchiveURI(router,"/investigators",InvestigatorListResource.class);
         
         //BEGIN ---- Pipelines section
-        router.attach("/projects/{PROJECT_ID}/pipelines",ProjectPipelineListResource.class);
-        router.attach("/projects/{PROJECT_ID}/pipelines/{STEP_ID}/experiments/{EXPT_ID}",ProjtExptPipelineResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines",ProjectPipelineListResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines/{STEP_ID}/experiments/{EXPT_ID}",ProjtExptPipelineResource.class);
         //END ---- Pipelines section
 
-        router.attach("/projects/{PROJECT_ID}/archive_spec",ProjectArchive.class);
-        router.attach("/projects/{PROJECT_ID}/experiments",ProjSubExptList.class);
-        router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}",ExperimentResource.class);
-        router.attach("/projects/{PROJECT_ID}/users",ProjectUserListResource.class);
-        router.attach("/projects/{PROJECT_ID}/users/{GROUP_ID}/{USER_ID}",ProjectMemberResource.class);
-        router.attach("/projects/{PROJECT_ID}/searches/{SEARCH_ID}",ProjectSearchResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects",ProjectSubjectList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}",SubjectResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments",ProjSubExptList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}",SubjAssessmentResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}",ExptAssessmentResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans",ScanList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",ScanResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
-        router.attach("/projects/{PROJECT_ID}/accessibility",ProjectAccessibilityResource.class);
-        router.attach("/projects/{PROJECT_ID}/accessibility/{ACCESS_LEVEL}",ProjectAccessibilityResource.class);
-        router.attach("/projects/{PROJECT_ID}",ProjectResource.class);
-        router.attach("/projects",ProjectListResource.class);
-        router.attach("/projects/{PROJECT_ID}/scan_types",ScanTypeListing.class);
-        router.attach("/scan_types",ScanTypeListing.class);
-        router.attach("/scanners",ScannerListing.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/archive_spec",ProjectArchive.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments",ProjSubExptList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments/{EXPT_ID}",ExperimentResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/users",ProjectUserListResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/users/{GROUP_ID}/{USER_ID}",ProjectMemberResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/searches/{SEARCH_ID}",ProjectSearchResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects",ProjectSubjectList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}",SubjectResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments",ProjSubExptList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}",SubjAssessmentResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}",ExptAssessmentResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans",ScanList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",ScanResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/accessibility",ProjectAccessibilityResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/accessibility/{ACCESS_LEVEL}",ProjectAccessibilityResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}",ProjectResource.class);
+        attachArchiveURI(router,"/projects",ProjectListResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/scan_types",ScanTypeListing.class);
+        attachArchiveURI(router,"/scan_types",ScanTypeListing.class);
+        attachArchiveURI(router,"/scanners",ScannerListing.class);
 
-        router.attach("/projects/{PROJECT_ID}/protocols/{PROTOCOL_ID}",ProtocolResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/protocols/{PROTOCOL_ID}",ProtocolResource.class);
 
-        router.attach("/experiments",ExperimentListResource.class);
-        router.attach("/experiments/{EXPT_ID}",ExperimentResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans",ScanList.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",ScanResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
-		router.attach("/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}",ExptAssessmentResource.class);
+        attachArchiveURI(router,"/experiments",ExperimentListResource.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}",ExperimentResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans",ScanList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",ScanResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
+		attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}",ExptAssessmentResource.class);
 
-        router.attach("/subjects/{SUBJECT_ID}",SubjectResource.class);
-        router.attach("/subjects",SubjectListResource.class);
+        attachArchiveURI(router,"/subjects/{SUBJECT_ID}",SubjectResource.class);
+        attachArchiveURI(router,"/subjects",SubjectListResource.class);
         
         //resources
-        router.attach("/projects/{PROJECT_ID}/resources",CatalogResourceList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources",CatalogResourceList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/resources",CatalogResourceList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources",CatalogResourceList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources",CatalogResourceList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources",CatalogResourceList.class);
-        router.attach("/experiments/{EXPT_ID}/resources",CatalogResourceList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources",CatalogResourceList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources",CatalogResourceList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources",CatalogResourceList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources",CatalogResourceList.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources",CatalogResourceList.class);
 
-        router.attach("/subjects/{SUBJECT_ID}/resources",CatalogResourceList.class);
+        attachArchiveURI(router,"/subjects/{SUBJECT_ID}/resources",CatalogResourceList.class);
 
         //resources (catalogs)
-        router.attach("/projects/{PROJECT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/experiments/{EXPT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
 
-        router.attach("/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
+        attachArchiveURI(router,"/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}",CatalogResource.class);
 
         //resource files
-        router.attach("/projects/{PROJECT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files",FileList.class);
 
-        router.attach("/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
+        attachArchiveURI(router,"/subjects/{SUBJECT_ID}/resources/{RESOURCE_ID}/files",FileList.class);
 
         //file short-cut
-        router.attach("/projects/{PROJECT_ID}/files", FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/files",FileList.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/files",FileList.class);
-        router.attach("/experiments/{EXPT_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/files",FileList.class);
-        router.attach("/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/files", FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/files",FileList.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/{TYPE}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/{TYPE}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}/files",FileList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/files",FileList.class);
 
-        router.attach("/subjects/{SUBJECT_ID}/files",FileList.class);
+        attachArchiveURI(router,"/subjects/{SUBJECT_ID}/files",FileList.class);
 
         router.attach("/users",org.nrg.xnat.restlet.resources.UserListResource.class);
         router.attach("/users/favorites/{DATA_TYPE}",org.nrg.xnat.restlet.resources.UserFavoritesList.class);
@@ -194,10 +203,10 @@ public class XNATApplication extends Application {
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourcesList.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourceFiles.class);
 
-        router.attach("/experiments/{EXPT_ID}/DIR",DIRResource.class);
-        router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}/DIR",DIRResource.class);
-        router.attach("/experiments/{EXPT_ID}/XAR",DIRResource.class);
-        router.attach("/projects/{PROJECT_ID}/experiments/{EXPT_ID}/XAR",DIRResource.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}/DIR",DIRResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments/{EXPT_ID}/DIR",DIRResource.class);
+        attachArchiveURI(router,"/experiments/{EXPT_ID}/XAR",DIRResource.class);
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments/{EXPT_ID}/XAR",DIRResource.class);
 
         // Users Cache Space
         router.attach("/user/cache/resources",UserCacheResource.class);

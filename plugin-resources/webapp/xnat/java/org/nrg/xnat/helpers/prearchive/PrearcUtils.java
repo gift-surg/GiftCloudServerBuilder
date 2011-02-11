@@ -35,8 +35,8 @@ public class PrearcUtils {
 	public static final String ROLE_SITE_ADMIN = "Administrator";
 	public static final String PROJECT_SECURITY_TASK = "xnat:mrSessionData/project";
 	//replicated from XNATApplication.java. Please keep the two in sync.
-	public static final String sessionUriTemplate = "prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
-	public static final String projectUriTemplate = "prearchive/projects/{PROJECT_ID}";
+	public static final String sessionUriTemplate = "/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
+	public static final String projectUriTemplate = "/prearchive/projects/{PROJECT_ID}";
 
 	public static final String APPEND = "append";
 

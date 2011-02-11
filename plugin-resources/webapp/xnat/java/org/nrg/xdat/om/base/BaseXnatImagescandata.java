@@ -347,7 +347,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 		    String path=null;
 		    for(XnatAbstractresourceI res: this.getFile()){
 				if(res.getLabel()!=null && res.getLabel().equalsIgnoreCase("SNAPSHOTS")){
-				    path="/REST/experiments/"+ses.getId() + "/scans/"+this.getId() + "/resources/SNAPSHOTS/files/";
+				    path="/data/experiments/"+ses.getId() + "/scans/"+this.getId() + "/resources/SNAPSHOTS/files/";
 				    if(res instanceof XnatResourcecatalog){
 						CatCatalogI cat=((XnatResourcecatalog)res).getCleanCatalog(ses.getProjectData().getRootArchivePath(), false);
 						for(CatEntryI entry:cat.getEntries_entry()){

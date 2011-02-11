@@ -187,7 +187,7 @@ public class ExperimentListResource  extends QueryOrganizerResource {
 					}
 				
 					if(table.size()>0){
-						table=formatHeaders(table,qo,rootElementName+"/ID","/REST/experiments/");
+						table=formatHeaders(table,qo,rootElementName+"/ID","/data/experiments/");
 					}
 			} catch (SQLException e) {
 					logger.error("",e);

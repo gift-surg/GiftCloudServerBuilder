@@ -233,7 +233,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 				table = XFTTable.Execute(query, user.getDBName(), userName);
 
 				table = formatHeaders(table, qo, "xnat:subjectData/ID",
-						"/REST/subjects/");
+						"/data/subjects/");
 				
 				final Integer labelI=table.getColumnIndex("label");
 				final Integer idI=table.getColumnIndex("ID");

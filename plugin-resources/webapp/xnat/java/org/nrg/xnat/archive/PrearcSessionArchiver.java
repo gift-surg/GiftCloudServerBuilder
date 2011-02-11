@@ -534,7 +534,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		
 	public static String buildURI(final String project, final XnatImagesessiondata session){
 		final StringBuilder urlb = new StringBuilder();
-			urlb.append("/REST/projects/").append(project);
+			urlb.append("/archive/projects/").append(project);
 			urlb.append("/subjects/");
 			final XnatSubjectdata subjectData = session.getSubjectData();
 			if (XNATUtils.hasValue(subjectData.getLabel())) {

@@ -63,7 +63,7 @@ public class SubjectListResource extends QueryOrganizerResource {
 			table = XFTTable.Execute(query, user.getDBName(), userName);
 
 			table = formatHeaders(table, qo, "xnat:subjectData/ID",
-					"/REST/subjects/");
+					"/data/subjects/");
 		} catch (Exception e) {
 			e.printStackTrace();
 			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

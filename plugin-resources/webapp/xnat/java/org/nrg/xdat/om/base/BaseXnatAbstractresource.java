@@ -188,10 +188,10 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
     private String base_URI=null;
     public String getBaseURI(){return base_URI;}
     public void setBaseURI(String b){
-    	if(b.startsWith("/REST")){
+    	if(b.startsWith("/REST") || b.startsWith("/data")){
     		this.base_URI=b;
     	}else{
-    		this.base_URI="/REST" +b;
+    		this.base_URI="/data" +b;
     	}
     }
     

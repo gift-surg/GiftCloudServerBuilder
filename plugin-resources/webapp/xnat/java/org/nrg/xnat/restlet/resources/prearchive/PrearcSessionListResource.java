@@ -6,17 +6,19 @@ package org.nrg.xnat.restlet.resources.prearchive;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilderI;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.prearchive.ProjectPrearchiveI;
+import org.nrg.xnat.helpers.prearchive.SessionData;
+import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
@@ -100,78 +102,86 @@ public final class PrearcSessionListResource extends SecureResource {
 	@Override
 	public Representation represent(final Variant variant) throws ResourceException {
 		final MediaType mt = overrideVariant(variant);
-	
-		//I would much rather create an interface that the Representation implementations use so that I wouldn't 
-		//have to keep using this ugly XFTTable thing.  But, that is beyond the scope here, and this will work.
 
-		ArrayList<String> projects = null;
-		try {
-			projects = PrearcUtils.getProjects(user, requestedProject);
-		} catch (Exception e) {
-			logger.error(" Unable to get list of projects", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-			return null;
-		}
-
-//		catch (Exception e) {
-//			logger.error(" Unable to get list of projects", e);
-//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-//			return null;
-//		}
-		
-		String path=prearcRef.getBaseRef().toString();
-	
-		if(requestedProject!=null){
-			path = StringUtils.join(new String[]{path,"/",requestedProject});
-		}
-	
-		ArrayList<String> validProjects = new ArrayList<String>();
-		ArrayList<String> invalidProjects =new ArrayList<String>();
-
-		for(final String project:projects){
-			try {
-				if (PrearcUtils.validUser(user, project,false)) {
-					validProjects.add(project);
-		}
-				else {
-					invalidProjects.add(project);
-			}
-			} catch (Exception e) {
-				logger.error("Unable to check project permissions : ", e);
-				if(projects.size()==1){
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-			return null;
-		}
-	}
-}
-
-		if (invalidProjects.size() > 0) {
-			Iterator<String> i = invalidProjects.iterator();
-			if (projects.size()==1) {
-				this.getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, 
-						                            "user " + user.getUsername() + " does not have create permissions " +
-						                     		"for the following projects : " + StringUtils.join(i, ','));
-			}
-			return null;
-		}
-		
 		XFTTable table = null; 
-		try {
-			PrearcDatabase.initDatabase();
-			table = this.retrieveTable(validProjects);
-		}
-		catch (SQLException e) {
-			logger.error("Unable to query prearchive table : ", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-			return null;
-		} catch (SessionException e) {
-			logger.error("Unable to query prearchive table : ", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-			return null;
-		} catch (Exception e) {
-			logger.error("Unable to query prearchive table : ", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-			return null;
+		
+		if(this.getQueryVariable("tag")!=null){
+			final String tag=getQueryVariable("tag");
+			try {
+				if(!PrearcUtils.canModify(user,null)){
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Non admin user's can not query by tag");
+					return null;
+				}
+				
+				table=retrieveTable(tag);
+			} catch (Exception e) {
+				logger.error("", e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return null;
+			}
+		}else{		
+			ArrayList<String> projects = null;
+			
+			try {
+				projects = PrearcUtils.getProjects(user, requestedProject);
+			} catch (Exception e) {
+				logger.error(" Unable to get list of projects", e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return null;
+			}
+			
+			String path=prearcRef.getBaseRef().toString();
+		
+			if(requestedProject!=null){
+				path = StringUtils.join(new String[]{path,"/",requestedProject});
+			}
+		
+			ArrayList<String> validProjects = new ArrayList<String>();
+			ArrayList<String> invalidProjects =new ArrayList<String>();
+	
+			for(final String project:projects){
+				try {
+					if (PrearcUtils.validUser(user, project,false)) {
+						validProjects.add(project);
+			}
+					else {
+						invalidProjects.add(project);
+				}
+						} catch (Exception e) {
+							logger.error("Unable to check project permissions : ", e);
+							if(projects.size()==1){
+								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+						return null;
+					}
+				}
+			}
+	
+			if (invalidProjects.size() > 0) {
+				Iterator<String> i = invalidProjects.iterator();
+				if (projects.size()==1) {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, 
+							                            "user " + user.getUsername() + " does not have create permissions " +
+							                     		"for the following projects : " + StringUtils.join(i, ','));
+				}
+				return null;
+			}
+						
+			try {
+				table = this.retrieveTable(validProjects);
+			}
+			catch (SQLException e) {
+				logger.error("Unable to query prearchive table : ", e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return null;
+			} catch (SessionException e) {
+				logger.error("Unable to query prearchive table : ", e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return null;
+			} catch (Exception e) {
+				logger.error("Unable to query prearchive table : ", e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return null;
+			}	
 		}
 
 			
@@ -182,6 +192,20 @@ public final class PrearcSessionListResource extends SecureResource {
 		String [] _proj = new String[projects.size()];
 
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
+		
+		return table;
+	}
+	
+	public XFTTable retrieveTable(String tag) throws SQLException, SessionException {
+		final Collection<SessionData> matches=PrearcDatabase.getSessionByUID(tag);
+
+		final List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
+		
+		for(final SessionData s:matches){
+			ss.add(s.getSessionDataTriple());
+		}
+		
+		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(ss));
 		
 		return table;
 	}

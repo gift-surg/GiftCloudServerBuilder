@@ -347,7 +347,7 @@ public final class PrearcDatabase {
 							PrearcDatabase.addSession(newSd);
 						} catch (SyncFailedException e) {
 							logger.error(e);
-							throw new IllegalStateException(e);
+							throw new IllegalStateException(e.getMessage());
 						}
 						return null;
 					}

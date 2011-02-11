@@ -33,6 +33,15 @@ public enum DatabaseSession {
 		public void writeSession (SessionData s, Object o) {
 			s.setProject(o);
 		}
+		@Override
+		public String searchSql (Object o) {
+			if (null == o|| ((String)o).equals(PrearcUtils.COMMON)) {
+				return this.nullSql();
+			}
+			else {
+				return this.eqSql(this.getColumnType().typeToString(o));
+			}
+		}
 	},
 	TIMESTAMP("timestamp", ColType.VARCHAR, false){
 		@Override
@@ -379,13 +388,7 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public String searchSql (SessionData s) {
-		Object data = this.readSession(s);
-		if (null == data) {
-			return this.nullSql();
-		}
-		else {
-			return this.eqSql(this.columnType.typeToString(data));
-		}
+		return searchSql(this.readSession(s));
 	}
 	
 	/**
@@ -483,7 +486,8 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public static String countSessionSql (String sess, String timestamp, String proj) {
-		return "SELECT COUNT(*) FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+		return s;
 	}
 	
 	private static String sessionSql (String sess, String timestamp, String proj) {

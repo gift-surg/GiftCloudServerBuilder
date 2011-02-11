@@ -142,6 +142,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 					
 					session.setProject(project);
 					
+					data.setTag(session.getUid());
+					
 					final String sessionID = session.getId();
 					if (null == sessionID || "".equals(sessionID) || "NULL".equals(sessionID)) {
 						data.setStatus(PrearcStatus.READY);
@@ -162,6 +164,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setSubject(PrearcTableBuilder.Session.pickSubjectName(this));
 			data.setName(PrearcTableBuilder.Session.pickSessionName(this));
 			data.setFolderName(this.getFolderName());
+			data.setTag(this.getTag());
 			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),this.getFolderName()}));
 			return this.data;
 		}
@@ -199,6 +202,14 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		
 		public String getFolderName() {
 			return data.getFolderName();
+		}
+
+		public void setTag(String name) {
+			this.data.setTag(name);
+		}
+		
+		public String getTag() {
+			return data.getTag();
 		}
 
 		public void setSessionName(String name) {

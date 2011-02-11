@@ -97,7 +97,7 @@ public final class PrearcSessionResource extends SecureResource {
 			return;
 		}
 		
-		final String action = queryForm.getFirstValue("action");
+		final String action = this.getQueryVariable("action");
 		if (POST_ACTION_BUILD.equals(action)) {
 			try {
 				PrearcDatabase.buildSession(sessionDir, session, timestamp, project);
@@ -111,7 +111,8 @@ public final class PrearcSessionResource extends SecureResource {
 			}
 		} else if (POST_ACTION_RESET.equals(action)) {
 			try {
-				PrearcUtils.resetStatus(user, project, timestamp, session,true);
+				final String tag= getQueryVariable("tag");
+				PrearcUtils.resetStatus(user, project, timestamp, session,tag,true);
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -177,9 +178,7 @@ public final class PrearcSessionResource extends SecureResource {
 				return;
 			}
 			
-			if(PrearcDatabase.setStatus(session, timestamp, project, PrearcStatus.DELETING)){
-				PrearcDatabase.deleteSession(session, timestamp, project);
-			}
+			PrearcDatabase.deleteSession(session, timestamp, project);
 		} catch (SessionException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());

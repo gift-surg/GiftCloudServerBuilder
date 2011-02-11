@@ -26,7 +26,7 @@ public final class SessionData {
 	private PrearcStatus status;
 	private SessionDataTriple sessionTriple = new SessionDataTriple();
 	private Date scan_date;
-	private String scan_time,subject,url,session;
+	private String scan_time,subject,url,session,tag;
 	public SessionData() {
 	}
 	public String getFolderName() {
@@ -50,6 +50,19 @@ public final class SessionData {
 	public SessionData setName(Object o) {
 		if (null != o) {
 			this.setName((String)o);
+		}
+		return this;
+	}
+	public String getTag() {
+		return tag;
+	}
+	public SessionData setTag(String t) {
+		this.tag=t;
+		return this;
+	}
+	public SessionData setTag(Object o) {
+		if (null != o) {
+			this.setTag((String)o);
 		}
 		return this;
 	}

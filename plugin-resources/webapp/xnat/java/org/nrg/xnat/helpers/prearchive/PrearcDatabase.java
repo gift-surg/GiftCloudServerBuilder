@@ -889,6 +889,27 @@ public final class PrearcDatabase {
 			}
 		});
 	}
+	
+	
+	/**
+	 * Search for a session given its UID.
+	 * @param uid
+	 * @return
+	 * @throws SQLException
+	 * @throws SessionException Throws if the given arguments match more than one session 
+	 */
+	public static Collection<SessionData> getSessionByUID(final String uid) throws SQLException, SessionException {
+		return new SessionOp<Collection<SessionData>>() {
+			public Collection<SessionData> op() throws SQLException {
+				List<SessionData> matches=new ArrayList<SessionData>();
+				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.TAG.findSql(uid)); 
+				while(rs.next()) {
+					matches.add(DatabaseSession.fillSession(rs));
+				}
+				return matches;
+			}
+		}.run();
+	}
 
 	/**
 	 * Count the number of session in the database with the given name associated with the 

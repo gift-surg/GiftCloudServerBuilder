@@ -23,8 +23,10 @@ import org.restlet.resource.Representation;
 
 public abstract class BatchPrearchiveActionsA extends SecureResource {
 	public static final String SRC = "src";
+	public static final String ASYNC = "async";
 
 	protected List<String> srcs = new ArrayList<String>();
+	protected boolean async = true;
 
 	public boolean allowGet() {
 		return false;
@@ -46,16 +48,18 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 						srcs.add(src);
 					}
 				}
+				else if (key.equals(ASYNC)) {
+					async = f.getValues(SRC).equals("true") ? true : false;
+				}
 			}				
 	}
 
 	protected SessionDataTriple buildSessionDataTriple(String uri) throws MalformedURLException {
 		return SessionDataTriple.fromURI(uri);
 	}
-
+	
 	public Representation updatedStatusRepresentation(final Collection<SessionDataTriple> ss, final MediaType mt)	throws SQLException, SessionException {
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(ss));
 		return this.representTable(table, mt, new Hashtable<String,Object>());
 	}
-
 }

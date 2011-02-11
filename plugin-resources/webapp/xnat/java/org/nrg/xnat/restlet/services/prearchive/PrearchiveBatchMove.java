@@ -4,6 +4,7 @@
 package org.nrg.xnat.restlet.services.prearchive;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -99,7 +100,16 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 		}
 			
 		try {
-			PrearcDatabase.moveToProject(ss, newProject);
+			if (async) {
+				PrearcDatabase.moveToProject(ss, newProject);
+			}
+			else {
+				Iterator<SessionDataTriple> i = ss.iterator();
+				while (i.hasNext()) {
+					SessionDataTriple s = i.next();
+					PrearcDatabase.moveToProject(s.getFolderName(), s.getTimestamp(), s.getProject(), newProject);
+				}
+			}
 		} catch (Exception e) {
 			logger.error("",e);
 			//ignore failure and return current status's

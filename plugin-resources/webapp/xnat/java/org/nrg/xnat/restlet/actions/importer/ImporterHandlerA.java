@@ -19,6 +19,7 @@ import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.actions.XarImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.restlet.VirtualHost;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ImporterHandlerA  extends StatusProducer implements Callable<List<String>>{
@@ -49,30 +50,10 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 		//org.nrg.import.handler=NIFTI
 		//org.nrg.import.handler.impl.NIFTI.className=org.nrg.import.handler.CustomNiftiImporter
 		try {
-			final File props=new File(XFT.GetConfDir(),IMPORTER_PROPERTIES);
-			final Map<String,Map<String,Object>> confBuilders=PropertiesHelper.RetrievePropertyObjects(props, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS);
-			for(final String key:confBuilders.keySet()){
-				final String className=(String)confBuilders.get(key).get(CLASS_NAME);
-				
-				if(className!=null){
-					try {
-						final Class c=Class.forName(className);
-						IMPORTERS.put(key,c);
-					} catch (NumberFormatException e) {
-						logger.error("",e);
-					} catch (ClassNotFoundException e) {
-						logger.error("",e);
-					}
-				}
-			}
-			
+			IMPORTERS.putAll((new PropertiesHelper<ImporterHandlerA>()).buildClassesFromProps(IMPORTER_PROPERTIES, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS, CLASS_NAME));
+						
 			if(!IMPORTERS.containsKey(SESSION_IMPORTER))IMPORTERS.put(SESSION_IMPORTER, SessionImporter.class);
 			if(!IMPORTERS.containsKey(XAR_IMPORTER))IMPORTERS.put(XAR_IMPORTER, XarImporter.class);
-			
-			String newDefault=PropertiesHelper.GetProperty(props, ORG_NRG_IMPORTER_DEFAULT);
-			if(!StringUtils.isEmpty(newDefault)&& IMPORTERS.containsKey(newDefault)){
-				DEFAULT_HANDLER=newDefault;
-			}
 		} catch (Exception e) {
 			logger.error("",e);
 		}

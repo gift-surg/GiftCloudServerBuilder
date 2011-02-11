@@ -19,6 +19,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
+import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
@@ -62,30 +63,10 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		//org.nrg.PrearcImporter=NIFTI
 		//org.nrg.PrearcImporter.impl.NIFTI.className=org.nrg.prearc.importers.CustomNiftiImporter
 		try {
-			final File props=new File(XFT.GetConfDir(),SESSION_BUILDER_PROPERTIES);
-			final Map<String,Map<String,Object>> confBuilders=PropertiesHelper.RetrievePropertyObjects(props, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS);
-			for(final String key:confBuilders.keySet()){
-				final String className=(String)confBuilders.get(key).get(CLASS_NAME);
-				
-				if(className!=null){
-					try {
-						final Class<? extends PrearcImporterA> c=(Class<? extends PrearcImporterA>)Class.forName(className);
-						PREARC_IMPORTERS.put(key,c);
-					} catch (NumberFormatException e) {
-						logger.error("",e);
-					} catch (ClassNotFoundException e) {
-						logger.error("",e);
-					}
-				}
-			}
+			PREARC_IMPORTERS.putAll((new PropertiesHelper<PrearcImporterA>()).buildClassesFromProps(SESSION_BUILDER_PROPERTIES, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS, CLASS_NAME));
 			
 			if(!PREARC_IMPORTERS.containsKey(DICOM))PREARC_IMPORTERS.put(DICOM, PrearcImporterHelper.class);
 			if(!PREARC_IMPORTERS.containsKey(ECAT))PREARC_IMPORTERS.put(ECAT, PrearcImporterHelper.class);
-			
-			String newDefault=PropertiesHelper.GetProperty(props, "org.nrg.PrearcImporter.default");
-			if(!StringUtils.isEmpty(newDefault)&& PREARC_IMPORTERS.containsKey(newDefault)){
-				DEFAULT_HANDLER=newDefault;
-			}
 		} catch (Exception e) {
 			logger.error("",e);
 		}

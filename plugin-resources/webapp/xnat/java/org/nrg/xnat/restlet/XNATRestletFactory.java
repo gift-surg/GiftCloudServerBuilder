@@ -68,7 +68,7 @@ public class XNATRestletFactory {
 	   return virtualHosts;
     }
 	
-	public static Application buildDefaultApplication(final org.restlet.Context context) {
+	public synchronized static Application buildDefaultApplication(final org.restlet.Context context) {
 		Application app= ((new PropertiesHelper<Application>()).buildObjectsFromProps(config, RESTLET_APP_IDENTIFIER, RESTLET_APP_PROP_OBJECT_FIELDS, CLASS_NAME, RESTLET_APP_PARAMETER_TYPES, new Object[]{context}).get(DEFAULT));
 		if(app==null){
 			return new XNATApplication(context);

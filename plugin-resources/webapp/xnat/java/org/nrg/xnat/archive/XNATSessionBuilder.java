@@ -73,7 +73,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 			final Map<String,Map<String,Object>> confBuilders=PropertiesHelper.RetrievePropertyObjects(props, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS);
 			for(final String key:confBuilders.keySet()){
 				final String className=(String)confBuilders.get(key).get(CLASS_NAME);
-				final String seqS=(String)confBuilders.get(key).get(CLASS_NAME);
+				final String seqS=(String)confBuilders.get(key).get(SEQUENCE);
 				
 				if(className!=null){
 					try {

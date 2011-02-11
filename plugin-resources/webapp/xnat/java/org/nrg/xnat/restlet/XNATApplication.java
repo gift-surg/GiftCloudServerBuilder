@@ -45,10 +45,12 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.resource.Resource;
 
+/**
+ * @author tolsen01
+ *
+ * To add additional URIs to this file (non-xnat developers), build a class which extends this class.  Override the addRoutes method (calling the super.addRoutes(router)) to add your new URIs.  Then modify the XNATRestletFactory to load your class as the default application.
+ */
 public class XNATApplication extends Application {
-	public XNATApplication() {
-		super();
-	}
 	public XNATApplication(Context parentContext) {
         super(parentContext);
     }
@@ -58,10 +60,7 @@ public class XNATApplication extends Application {
 		router.attach(("/archive"+uri).intern(),clazz);
 	}
 	
-    @Override
-    public synchronized Restlet createRoot() {
-        Router router = new Router(getContext());
-
+	public void addRoutes(final Router router){
         attachArchiveURI(router,"/investigators",InvestigatorListResource.class);
         
         //BEGIN ---- Pipelines section
@@ -221,8 +220,11 @@ public class XNATApplication extends Application {
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
         
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
+	}
         
-        
+    @Override
+    public synchronized Restlet createRoot() {
+        Router router = new Router(getContext());
 
         XnatSecureGuard guard = new XnatSecureGuard();
         guard.setNext(router);

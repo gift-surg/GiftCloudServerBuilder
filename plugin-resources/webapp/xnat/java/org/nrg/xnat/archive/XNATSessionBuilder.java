@@ -33,6 +33,7 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
  * Helper class to execute all of the available SessionBuilders. 
  * Initially this only supports DICOM and ECAT.  But, it is a step towards allowing other implementations.
  */
+@SuppressWarnings("rawtypes")
 public class XNATSessionBuilder implements Callable<Boolean>{
     private static final String SEQUENCE = "sequence";
 

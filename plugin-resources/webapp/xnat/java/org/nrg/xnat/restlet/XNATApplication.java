@@ -226,6 +226,8 @@ public class XNATApplication extends Application {
     public synchronized Restlet createRoot() {
         Router router = new Router(getContext());
 
+        addRoutes(router);
+        
         XnatSecureGuard guard = new XnatSecureGuard();
         guard.setNext(router);
         

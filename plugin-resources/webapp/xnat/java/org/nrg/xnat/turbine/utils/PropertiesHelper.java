@@ -73,7 +73,7 @@ public class PropertiesHelper<T extends Object>  {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map<String,T> buildObjectsFromProps(final Configuration config, final String identifier,final String[] propFields, final String classNameProp, final Class[] contructorArgT, final Object[] contructorArgs){
 		final Map<String,T> objs=new HashMap<String,T>();
 		   

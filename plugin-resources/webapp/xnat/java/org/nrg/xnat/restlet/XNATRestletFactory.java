@@ -13,6 +13,7 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
 import org.restlet.Application;
 import org.restlet.VirtualHost;
 
+@SuppressWarnings("rawtypes")
 public class XNATRestletFactory {
 	   private static final String DEFAULT = "DEFAULT";
 
@@ -24,6 +25,7 @@ public class XNATRestletFactory {
 	
 	private static final String RESTLET_VIRTUAL_HOST_IDENTIFIER = "org.nrg.VirtualHost.impl";
 	private static final String[] RESTLET_VIRTUAL_HOST_PROP_OBJECT_FIELDS = new String[]{CLASS_NAME};
+	
 	private static final Class[] RESTLET_VIRTUAL_HOST_PARAMETER_TYPES=new Class[]{org.restlet.Context.class};
 	
 	private static final String RESTLET_APP_IDENTIFIER = "org.nrg.Application.impl";
@@ -45,11 +47,11 @@ public class XNATRestletFactory {
 	   private static Configuration config =null;
 	   
 	   static{
-		   try {
-			config=PropertiesHelper.RetrieveConfiguration(new File(XFT.GetConfDir(),XNAT_RESTLET_PROPERTIES));
-		} catch (ConfigurationException e) {
-			logger.error("",e);
-		}
+		    try {
+			   config=PropertiesHelper.RetrieveConfiguration(new File(XFT.GetConfDir(),XNAT_RESTLET_PROPERTIES));
+			} catch (ConfigurationException e) {
+				logger.error("",e);
+			}
 	   }
 	   
 	public synchronized static Collection<VirtualHost> buildVirtualHosts(final org.restlet.Context context){

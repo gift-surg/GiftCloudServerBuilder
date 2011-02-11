@@ -19,7 +19,6 @@ import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.actions.XarImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
-import org.restlet.VirtualHost;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ImporterHandlerA  extends StatusProducer implements Callable<List<String>>{

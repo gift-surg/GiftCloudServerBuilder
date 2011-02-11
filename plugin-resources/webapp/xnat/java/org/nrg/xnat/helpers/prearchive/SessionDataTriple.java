@@ -3,6 +3,7 @@ package org.nrg.xnat.helpers.prearchive;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class SessionDataTriple {
@@ -68,7 +69,8 @@ public class SessionDataTriple {
 		ret.put("SESSION_LABEL", this.getFolderName());
 		return ret;
 	}
-	public static SessionDataTriple fromMap (Map<String,Object> m) {
+	
+	public static SessionDataTriple fromMap (Map<String,String> m) {
 		return new SessionDataTriple().setFolderName(m.get("SESSION_LABEL"))
 		                              .setProject(m.get("PROJECT_ID"))
 		                              .setTimestamp(m.get("SESSION_TIMESTAMP"));
@@ -79,6 +81,7 @@ public class SessionDataTriple {
 		                              .setTimestamp(f.getParentFile().getName());
 	}
 	public static SessionDataTriple fromURI (final String uri) throws MalformedURLException {
-		return SessionDataTriple.fromMap(PrearcUtils.parseURI(uri));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		return SessionDataTriple.fromMap(parser.readUri(uri));
 	}
 }

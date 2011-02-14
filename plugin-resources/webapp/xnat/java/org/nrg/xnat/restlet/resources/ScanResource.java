@@ -1,21 +1,11 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import org.nrg.dcm.xnat.SessionBuilder;
-import org.nrg.dcm.xnat.XnatAttrDef;
-import org.nrg.ecat.xnat.PETSessionBuilder;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatCtsessiondata;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -24,20 +14,14 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
-import org.nrg.xnat.archive.XNATSessionBuilder;
-import org.nrg.xnat.exceptions.MultipleScanException;
-import org.nrg.xnat.exceptions.ValidationException;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PullScanDataFromHeaders;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
@@ -48,7 +32,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
-import org.xml.sax.SAXException;
 
 public class ScanResource  extends ItemResource {
 	final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanResource.class);

@@ -101,28 +101,35 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/org.restlet-1.1.6.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/org.restlet.ext.fileupload_1.2-1.1.6.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-core-2.0.20.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.20.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-image-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-io/jars/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-2.0.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ecat4xnat-1.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ecat4xnat-1.5.0b1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.5.8.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/json/jars/json-20090211.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-r06.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4xnat-1.4.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.0.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-1.5.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/nrg-status-1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.4.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.4.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-r08.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.0b2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.0b2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.0b2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/nrg-status-1.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.0b1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.0b2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xdat_core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>

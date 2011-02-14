@@ -18,11 +18,10 @@ import java.util.concurrent.Callable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
-import org.nrg.dcm.xnat.SessionBuilder;
+import org.nrg.dcm.xnat.DICOMSessionBuilder;
 import org.nrg.dcm.xnat.XnatAttrDef;
 import org.nrg.ecat.xnat.PETSessionBuilder;
 import org.nrg.xft.XFT;
-import org.nrg.xnat.restlet.resources.SubjAssessmentAbst;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
 
@@ -49,7 +48,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
     
 	private static final String DICOM = "DICOM";
 
-	private static final BuilderConfig DICOM_BUILDER = new BuilderConfig(DICOM,SessionBuilder.class,0);
+	private static final BuilderConfig DICOM_BUILDER = new BuilderConfig(DICOM,DICOMSessionBuilder.class,0);
 	private static final String ECAT = "ECAT";
 
 	private static final BuilderConfig ECAT_BUILDER = new BuilderConfig(ECAT,PETSessionBuilder.class,1);
@@ -140,13 +139,13 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 			if(bc.getCode().equals(DICOM)){
 				//hard coded implementation for DICOM. 
 				try {
-					final SessionBuilder builder = new SessionBuilder(dir,
+					final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir,
 							fw,
 							new XnatAttrDef.Constant("project", project));
 					try {
 						builder.run();
 					} finally {
-						builder.dispose();
+						builder.close();
 					}
 				} catch (IOException e) {
 					logger.warn("unable to process session directory " + dir, e);

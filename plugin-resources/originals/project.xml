@@ -570,7 +570,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dcm4che-core</artifactId>
-			<version>2.0.20</version>
+			<version>2.0.25</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -579,7 +579,52 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dcm4che-net</artifactId>
-			<version>2.0.20</version>
+			<version>2.0.25</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>dcm4che-image</artifactId>
+			<version>2.0.25</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>dcm4che-imageio</artifactId>
+			<version>2.0.25</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>dcm4che-imageio-rle</artifactId>
+			<version>2.0.25</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>jai-codec</artifactId>
+			<version>1.1.4</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>jai-core</artifactId>
+			<version>1.1.4</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -588,7 +633,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>ExtAttr</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>2.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -597,7 +642,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>SessionBuilders</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0b2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -606,7 +651,25 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomDB</artifactId>
-			<version>2.0</version>
+			<version>3.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>dicom-xnat-mx</artifactId>
+			<version>1.5.0b2</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>dicom-xnat-sop</artifactId>
+			<version>1.5.0b2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -623,17 +686,8 @@
 		</dependency>
 		<dependency>
 			<groupId>dcm</groupId>
-			<artifactId>dcm4xnat</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>dcm</groupId>
 			<artifactId>ecat4xnat</artifactId>
-			<version>1.4</version>
+			<version>1.5.0b1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -642,7 +696,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>PrearcImporter</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0b1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -651,7 +705,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomUtils</artifactId>
-			<version>1.0</version>
+			<version>1.1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -669,7 +723,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>nrg-status</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1008,7 +1062,7 @@
 		<dependency>
 			<groupId>guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r06</version>
+			<version>r08</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

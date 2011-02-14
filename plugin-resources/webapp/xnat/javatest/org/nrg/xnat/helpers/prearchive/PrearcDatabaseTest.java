@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -540,6 +541,45 @@ public class PrearcDatabaseTest {
 		catch (SQLException e) {}
 		catch (SessionException e) {}
 	}
+	
+	@Test
+	public final void testGetOrCreateSession () {
+		String uri = "/prearchive/projects/proj_test/1000/sess_test";
+		try {
+			PrearcDatabase.getSession(uri);
+			fail("Should have thrown a SessionException");
+		} 
+		catch (SessionException e){} 
+		catch (IllegalFormatException e) {
+			fail("IllegalFormatException " + e.getMessage());
+		} 
+		catch (SQLException e) {
+			fail("SQLException " + e.getMessage());
+		}
+		
+		SessionData s = new SessionData().setProject("proj_test")
+		                                 .setTimestamp("1000")
+		                                 .setFolderName("sess_test")
+		                                 .setStatus(PrearcUtils.PrearcStatus.RECEIVING)
+		                                 .setUrl("test_url"); 
+		try {
+			s = PrearcDatabase.getOrCreateSession(s);
+		} 	
+		catch (SessionException e){
+			fail("SessionException " + e.getMessage());
+		} 
+		catch (IllegalFormatException e) {
+			fail("IllegalFormatException " + e.getMessage());
+		} 
+		catch (SQLException e) {
+			fail("SQLException " + e.getMessage());
+		}
+		
+		Assert.assertEquals(s.getProject(), "proj_test");
+		Assert.assertEquals(s.getTimestamp(), "1000");
+		Assert.assertEquals(s.getFolderName(), "sess_test");
+	}
+	
 	@Test
 	public final void multipleDeleteSession () {
 		// delete multiple sessions

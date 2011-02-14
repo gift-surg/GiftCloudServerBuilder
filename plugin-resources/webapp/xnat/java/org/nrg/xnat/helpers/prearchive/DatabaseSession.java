@@ -117,7 +117,7 @@ public enum DatabaseSession {
 			s.setFolderName(o);
 		}
 	},
-	NAME("name", ColType.VARCHAR, false){
+	NAME("name", ColType.VARCHAR, true){
 		@Override
 		public Object readSession (SessionData s){
 			return s.getName();

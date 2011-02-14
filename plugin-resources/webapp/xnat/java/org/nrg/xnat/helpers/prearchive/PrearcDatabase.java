@@ -255,6 +255,18 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
+	public static SessionData getOrCreateSession(final SessionData _s) throws java.util.IllegalFormatException, SQLException, SessionException{
+		SessionData s = _s;
+		try  {
+			PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
+		}
+		catch (SessionException e) {
+			PrearcDatabase.addSession(_s);
+			s = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
+		}
+		return s;
+	}
+		
 	/**
 	 * Path to the project in the users prearchive directory
 	 * @param s

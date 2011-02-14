@@ -903,6 +903,20 @@ public final class PrearcDatabase {
 		});
 	}
 	
+	public static List<SessionData> getAllSessions () throws SessionException, SQLException {
+		final List<SessionData> sds = new ArrayList<SessionData>();
+		new SessionOp<Void>() {
+			public Void op() throws SQLException{
+				ResultSet rs = this.conn.createStatement().executeQuery(DatabaseSession.getAllRows());
+				while (rs.next()) {
+					sds.add(DatabaseSession.fillSession(rs));
+				}
+				return null;
+			}
+		}.run();
+		return sds;
+	}
+	
 	
 	/**
 	 * Search for a session given its UID.

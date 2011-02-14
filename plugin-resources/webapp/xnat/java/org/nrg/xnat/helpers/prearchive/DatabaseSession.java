@@ -609,6 +609,10 @@ public enum DatabaseSession {
 		return s.toString();
 	}
 	
+	public static String getAllRows() {
+		return "SELECT * FROM " + PrearcDatabase.table; 
+	}
+	
 	/**
 	 * Transfer the values from a ResultSet into a SessionData object 
 	 * @param r

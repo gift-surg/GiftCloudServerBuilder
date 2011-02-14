@@ -7,7 +7,9 @@ import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +26,7 @@ import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 public class PrearcDatabaseTest {
 
 	private static SessionDataDelegate sd;
-	private static int numSessions = 1000;
+	private static int numSessions = 10;
 	private static ArrayList<String> test_projects = new ArrayList<String>(Arrays.asList(new String[]{"proj_0", "proj_1", "proj_2", "proj_3", PrearcUtils.COMMON}));
 	private static Collection<SessionData> sessions;
 	
@@ -472,7 +474,12 @@ public class PrearcDatabaseTest {
 	@Test
 	public final void testSetStatus() {
 		String uri = "/prearchive/projects/proj_0/1000/sess_0";
+		SessionData s = null;
+		Date d = null;
 		try {
+			s = PrearcDatabase.getSession(uri);
+			s.setLastBuiltDate(Calendar.getInstance().getTime());
+			d = s.getLastBuiltDate();
 			Assert.assertTrue(PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.ERROR));
 		}
 		catch (SQLException e) {
@@ -481,9 +488,12 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail("Threw a SessionException " + e);
 		}
-		SessionData s = null;
+		SessionData t = null;
+		Date _d = null;
 		try {
-			s = PrearcDatabase.getSession(uri);
+			t = PrearcDatabase.getSession(uri);
+			_d = t.getLastBuiltDate();
+			Assert.assertTrue(d.getTime() < _d.getTime());
 		}
 		catch (SQLException e) {
 			fail("Threw a SQLException " + e);
@@ -491,7 +501,7 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail("Threw a SessionException " + e);
 		}
-		Assert.assertEquals(PrearcUtils.PrearcStatus.ERROR, s.getStatus());
+		Assert.assertEquals(PrearcUtils.PrearcStatus.ERROR, t.getStatus());
 	}
 	
 	@Test

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -134,6 +135,14 @@ public enum DatabaseSession {
 		@Override
 		public void writeSession (SessionData s, Object o) {
 			s.setStatus(o);
+		}
+		@Override
+		public String updateSessionSql (String sess, String timestamp, String proj, Object newVal) {
+			String s =  "UPDATE " + PrearcDatabase.table + " SET " + 
+			       this.searchSql(newVal) +
+			       ", " + DatabaseSession.LASTMOD.searchSql(Calendar.getInstance().getTime()) + 
+			       " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+			return s;
 		}
 	}
 	,

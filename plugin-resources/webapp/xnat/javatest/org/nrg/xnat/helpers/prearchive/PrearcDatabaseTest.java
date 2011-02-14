@@ -203,6 +203,33 @@ public class PrearcDatabaseTest {
 		}
 		assert(projs.size() == numUnassigned);
 	}
+	
+	@Test
+	public final void testDeleteUnassigned () {
+		String unassignedUri = "/prearchive/projects/Unassigned";
+		List<SessionData> projs = null;
+		SessionData s = null;
+		try {
+			projs = PrearcDatabase.getProjects(unassignedUri);
+			s = projs.get(0);
+			PrearcDatabase.deleteSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+		}
+		catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		} catch (SessionException e) {
+			fail ("SessionException" + e.getMessage());
+		} catch (SyncFailedException e) {
+			fail ("SyncFailedException" + e.getMessage());
+		}
+		
+		
+		try {	
+			PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+			fail("Should have throws a SessionException");
+		}catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		} catch (SessionException e) {} 
+	}
 
 
 	/**
@@ -759,7 +786,7 @@ public class PrearcDatabaseTest {
 			}
 				if (!found) {
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(1500);
 					} catch (InterruptedException e) {}
 			
 					counter--;

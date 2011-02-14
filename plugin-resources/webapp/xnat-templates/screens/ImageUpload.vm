@@ -78,8 +78,32 @@ function setUploadProgress(i)
   }
 }
 
-function setExtractSummary(messages){
-    document.getElementById("extractSummary").innerHTML=messages;
+function setExtractSummary(jsonobj){
+    var messages = "";
+    try {
+       var respPos=jsonobj.msgs[0].length-1;
+       for (i=0; i<=respPos; i++) {
+           var level = jsonobj.msgs[0][i].status;
+           var message = jsonobj.msgs[0][i].msg;
+           if (level=="COMPLETED") {
+              message = "<TR bgcolor='#CCFFCC'><TD>" + message;
+           }else if (level=="PROCESSING") {
+              message = "<TR bgcolor='#CCFFFF'><TD>" + message;
+           }else if (level=="WARNING") {
+              message = "<TR bgcolor='#FFCCC'><TD>" + message;
+           }else if (level=="FAILED") {
+              message = "<TR bgcolor='#FF99CC'><TD>" + message;
+   	   }else{
+              message = "<TR bgcolor='#CCCCCC'><TD>" + message;
+           }
+           messages = messages +  message + "</TD></TR>";
+        }
+      } catch (e) {
+      }
+      document.getElementById("extractSummary").innerHTML=
+         "<TABLE width='100%' cellpadding='2' cellspacing='0'><TR><TH>Extraction / Review summary:</TH></TR>" +
+            messages +
+         "</TABLE>"; 
 }
 
 function toggleExtractSummary(){
@@ -111,6 +135,20 @@ function setExtractProgress(i)
   }
 }
 
+function evaluateDestination(ele)
+{
+   if (ele.value=='2') {
+	document.getElementById("auto-archive").value='true';
+	document.getElementById("quarantine").value='true';
+   } else if (ele.value=='1') {
+	document.getElementById("auto-archive").value='true';
+	document.getElementById("quarantine").value='false';
+   } else if (ele.value=='0') {
+	document.getElementById("auto-archive").value='false';
+	document.getElementById("quarantine").value='false';
+   }
+}
+
 var checkProgressFinal = 0;
 
 function prog(theform)
@@ -136,65 +174,38 @@ function prog(theform)
   
   return true;
 }
+
 function callback() {
     if (req.readyState == 4) {
         if (req.status == 200) {
       			         started=1;
             // handle response 
-            var xmlDoc = req.responseXML;
-            //logResponse(req.responseText);
+            var respDat = YAHOO.lang.JSON.parse(req.responseText);
+            var respPos=respDat.msgs[0].length-1;
             var uploadI=0;
             var extractI=0;
-            var statusText = "";
             var statusCount = 0;
-            if (xmlDoc)
+            if (respDat.msgs[0].length>0)
             {
-               var statusRoot = xmlDoc.getElementsByTagName("uploadStatus")[0];
-               if (statusRoot)
-               {
-                  var rootAttributes = statusRoot.attributes;
-                  if (rootAttributes){
-                     uploadI=parseInt(rootAttributes.getNamedItem("upload").value);
-                     extractI=parseInt(rootAttributes.getNamedItem("extract").value);
-                  }
-                  
-                  statusCount = statusRoot.childNodes.length;
-                  
-                  if (statusRoot.childNodes.length > 0)
-                  {
-                    statusText= "<TABLE width='100%' cellpadding='2' cellspacing='0'><TR><TH>Extraction / Review summary:</TH></TR>";
-                    for(var j=0;j<statusRoot.childNodes.length;j++)
-                    {
-                       var statusChild = statusRoot.childNodes[j];
-                       var childAttributes = statusChild.attributes;
-                       if (childAttributes)
-                       {
-                          var level = childAttributes.getNamedItem("level").value;
-                          var message = childAttributes.getNamedItem("message").value;
-                          if (level=="COMPLETED")
-                          {
-                             statusText = statusText + "<TR bgcolor='#CCFFCC'>";
-                          }else if (level=="PROCESSING")
-                          {
-                             statusText = statusText + "<TR bgcolor='#CCFFFF'>";
-                          }else if (level=="WARNING")
-                          {
-                             statusText = statusText + "<TR bgcolor='#FFCCC'>";
-                          }else if (level=="FAILED")
-                          {
-                             statusText = statusText + "<TR bgcolor='#FF99CC'>";
-                          }else{
-                             statusText = statusText + "<TR bgcolor='#CCCCCC'>";
-                          }
-                          statusText = statusText + "<TD>" + message + "</TD></TR>";
-                       }
-                    }
-                    statusText = statusText + "</TABLE>"; 
-                  }
-               }
+                if (respDat.msgs[0].length>0) {
+                   var level = respDat.msgs[0][respPos].status;
+                   var message = respDat.msgs[0][respPos].msg;
+                }
             }
+ 
+            if (req.responseText.indexOf("file uploaded")>=0) {
+               uploadI=100;
+            }
+            if (req.responseText.indexOf("Successfully uploaded")>=0) {
+               extractI=100;
+            }
+            if (req.responseText.indexOf("archiving operation complete")>=0) {
+               extractI=100;
+            }
+            setExtractSummary(respDat);
+            setCurrentStep(message);
             
-            //alert("Upload(" + uploadI + "); Extract(" + extractI + ");\r\n" + statusText);  
+            //alert("Upload(" + uploadI + "); Extract(" + extractI + ");\r\n" + statusText + "\r\n" + req.responseText);  
 
 	            if (uploadI==-1)
 	            {
@@ -228,7 +239,7 @@ function callback() {
 	               setUploadProgress(100);
       			         setExtractProgress(100);
       			         
-      			         setExtractSummary(statusText);
+      			         setExtractSummary(respDat);
       			           setCurrentStep(message);
       			         if (checkProgressFinal == 0)
       			         {
@@ -259,7 +270,7 @@ function callback() {
       			         
       			         if (statusCount> 0)
       			         {
-      			           setExtractSummary(statusText);
+      			           setExtractSummary(respDat);
       			           setCurrentStep(message);
       			         }
       			      	   setTimeout("checkProgress();", extractTimeOut); 
@@ -268,9 +279,12 @@ function callback() {
     }
 }
 
+
 function setCurrentStep(message)
 {
-   document.getElementById("current_step").innerHTML="<A href='' ONCLICK='toggleExtractSummary();return false;'>" + message + "...</A>";
+   if (message!=null && message!=undefined) {
+      document.getElementById("current_step").innerHTML="<A href='' ONCLICK='toggleExtractSummary();return false;'>" + message + "...</A>";
+   }
 }
 
 function resetProgress(){
@@ -288,6 +302,7 @@ function resetProgress(){
 }
 
 function checkProgress(){
+   //var url = "$content.getURI("/REST/status/$uploadID")?format=json";
    var url = "$content.getURI("/REST/status/$uploadID")?format=json";
    if (window.XMLHttpRequest) {
        req = new XMLHttpRequest();
@@ -316,9 +331,8 @@ function checkProgress(){
  </tr>
  <tr id="option1">
   <td>
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import")" onSubmit="return prog(this);">
+<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="true"/>
-<INPUT TYPE="hidden" name="ID" value="$uploadID"/>
 <INPUT TYPE="hidden" name="threshhold" value="51516279"/>
 <TABLE border=0>
 													<TR><TH align="left">Project</TH><TD>
@@ -327,9 +341,11 @@ function checkProgress(){
 			<TR>
 		<TH align="left">Destination</TH>
 		<TD>
-		<label><input id="pc_0" type='radio' name='prearchive_code' value='0' CHECKED/> Prearchive</label>&nbsp;&nbsp;&nbsp;
-		<label><input id="pc_1" type='radio' name='prearchive_code' value='2'/> Archive in quarantine</label>&nbsp;&nbsp;&nbsp;
-		<label><input id="pc_2" type='radio' name='prearchive_code' value='1'/> Archive no quarantine</label>
+		<label><input id="pc_0" type='radio' name='prearchive_code' value='0' CHECKED onchange="evaluateDestination(this)"/> Prearchive</label>&nbsp;&nbsp;&nbsp;
+		<label><input id="pc_1" type='radio' name='prearchive_code' value='2' onchange="evaluateDestination(this)"/> Archive in quarantine</label>&nbsp;&nbsp;&nbsp;
+		<label><input id="pc_2" type='radio' name='prearchive_code' value='1' onchange="evaluateDestination(this)"/> Archive no quarantine</label>
+		<input type="hidden" id="auto-archive" name='auto-archive' value='FALSE'/>
+		<input type="hidden" id="quarantine" name='quarantine' value='FALSE'/>
 		</TD>
 	</TR>
 	<TR>

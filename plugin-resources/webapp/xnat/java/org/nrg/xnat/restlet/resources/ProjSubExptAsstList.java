@@ -331,7 +331,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 				table=XFTTable.Execute(query, user.getDBName(), userName);
 				
 				if(table.size()>0){
-					table=formatHeaders(table,qo,rootElementName+"/ID","/REST/experiments/");
+					table=formatHeaders(table,qo,rootElementName+"/ID","/data/experiments/");
 					
 					final Integer labelI=table.getColumnIndex("label");
 					final Integer idI=table.getColumnIndex(rootElementName+"/ID");

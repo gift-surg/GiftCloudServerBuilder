@@ -86,7 +86,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	public static final String LABEL_MOD = "Invalid modification of session label via archive process.";
 
 	public static final String LABEL2 = "label";
-	
+
 	public static final String PARAM_SESSION = "session";
 	public static final String PARAM_SUBJECT = "subject";
 
@@ -95,9 +95,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final XDATUser user;
 	private final String project;
 	private final Map<String,Object> params;
-	
+
 	private final File srcDIR;
-	
+
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
 
@@ -116,12 +116,12 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	throws IOException,SAXException {
 		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(),sessionDir, user, project, params, allowDataDeletion,overwrite);
 	}
-	
+
 	public File getSrcDIR(){
 		return srcDIR;
 	}
 
-	
+
 	public XnatImagesessiondata retrieveExistingExpt() throws ClientException,ServerException{
 		XnatImagesessiondata existing=null;
 
@@ -136,7 +136,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 		return existing;
 	}
-	
+
 	/**
 	 * Determine an appropriate session label.
 	 * @throws ArchivingException
@@ -164,9 +164,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		if (!XNATUtils.hasValue(src.getLabel())) {
 			failed("unable to deduce session label");
 			throw new ClientException("unable to deduce session label");
-		}		
+		}
 	}
-	
+
 	public static XnatSubjectdata retrieveMatchingSubject(final String id, final String project,final XDATUser user){
 		XnatSubjectdata sub=null;
 		if(StringUtils.isNotEmpty(project)){
@@ -245,7 +245,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			processing("matches existing subject " + subjectID);
 		}
 	}
-	
+
 	/**
 	 * Retrieves the archive session directory for the given session.
 	 * @return archive session directory
@@ -266,14 +266,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		} else {
 			relativeSessionDir = new File(currentArcDir, sessDirName);
 		}
-		
+
 		final File rootArchiveDir = new File(src.getPrimaryProject(false).getRootArchivePath());
 		final File arcSessionDir = new File(rootArchiveDir, relativeSessionDir.getPath());
-		
+
 		return arcSessionDir;
 	}
 
-	
+
 	/**
 	 * Verify that the session isn't already in the transfer pipeline.
 	 * @throws AlreadyArchivingException
@@ -285,7 +285,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName(),new Exception());
 		}
 	}
-	
+
 	/**
 	 * Updates the prearchive session XML, if possible. Errors here are logged but not
 	 * otherwise handled; messing up the prearchive session XML is not a disaster.
@@ -315,7 +315,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			warning("could not update prearchive session XML: " + e.getMessage());
 		}
 	}
-	
+
 
 	/**
 	 * This method will allow users to pass xml path as parameters.  The values supplied will be copied into the loaded session.
@@ -355,7 +355,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			failed(PROJ_MOD);
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
 		}
-		
+
 		if(!existing.getSubjectId().equals(existing.getSubjectId())){
 			failed(SUBJECT_MOD);
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
@@ -376,9 +376,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 		fixSessionLabel();
 		fixSubject();
-		
+
 		final XnatImagesessiondata existing=retrieveExistingExpt();
-		
+
 		if(existing==null){
 			try {
 				if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
@@ -391,7 +391,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			preventConcurrentArchiving(existing.getId(),user);
 		}
 
-		
+
 		WrkWorkflowdata workflow;
 		try {
 			workflow = WorkflowUtils.buildOpenWorkflow(user, src.getXSIType(), src.getId(), src.getProject());
@@ -402,13 +402,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			failed("unable to create workflow entry.");
 			throw new ServerException("unable to create workflow entry.", e2);
 		}
-		
+
 		try {
 			processing("validating loaded data");
 			validateSesssion();
 
 		final File arcSessionDir = getArcSessionDir();
-		
+
 			if(existing!=null)checkForConflicts(src,srcDIR,existing,arcSessionDir);
 
 			if(arcSessionDir.exists()){
@@ -418,9 +418,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				this.setStep("Archiving", workflow);
 				processing("archiving session");
 			}
-		
+
 			final boolean shouldForceQuarantine;
-			if(params.containsKey("quarantine") && params.get("quarantine").equals("true")){
+			if(params.containsKey("quarantine") && params.get("quarantine").toString().equalsIgnoreCase("true")){
 				shouldForceQuarantine=true;
 			}else{
 				shouldForceQuarantine=false;
@@ -452,13 +452,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 					}
 				}
 			};
-			
+
 			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, allowDataDeletion,saveImpl))
 				.call();
 
 			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
 			org.nrg.xft.utils.FileUtils.DeleteFile(srcDIR);
-			
+
 			try {
 				workflow.setStepDescription(WorkflowUtils.COMPLETE);
 				workflow.setStatus(WorkflowUtils.COMPLETE);
@@ -466,7 +466,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
-			
+
 			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
 				TriggerPipelines tp=new TriggerPipelines(src,false,false,user);
 			tp.call();
@@ -496,15 +496,15 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 			logger.error("",e);
 			throw new ServerException(e.getMessage(),new Exception());
-		}			
+		}
 
 		final String url = buildURI(project,src);
 
 		completed("archiving operation complete");
 		return url;
-		
+
 	}
-	
+
 	public void setStep(String step,WrkWorkflowdata workflow){
 		try {
 			workflow.setStepDescription(step);
@@ -513,7 +513,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			logger.error("", e1);
 		}
 	}
-	
+
 	public void validateSesssion() throws ClientException,ServerException{
 		try {
 			if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
@@ -531,10 +531,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			throw new ServerException(e.getMessage(), e);
 		}
 		}
-		
+
 	public static String buildURI(final String project, final XnatImagesessiondata session){
 		final StringBuilder urlb = new StringBuilder();
-			urlb.append("/REST/projects/").append(project);
+			urlb.append("/archive/projects/").append(project);
 			urlb.append("/subjects/");
 			final XnatSubjectdata subjectData = session.getSubjectData();
 			if (XNATUtils.hasValue(subjectData.getLabel())) {

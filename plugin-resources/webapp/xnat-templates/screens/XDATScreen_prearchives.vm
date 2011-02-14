@@ -12,7 +12,6 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 
 <BR>
 
-<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/build/script/prearchiveui.js')"></script>
 
 <div class='instructions'>
 	<p>
@@ -44,6 +43,8 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <div id="prearcs" class="prearcs"></div>
 <div id="serverRoot" title="$content.getURI('')"></div>
 </br>
+
+<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/build/script/prearchiveui.js')"></script>
 
 <!-- <div id="match-op" class="match-op"></div> -->
 

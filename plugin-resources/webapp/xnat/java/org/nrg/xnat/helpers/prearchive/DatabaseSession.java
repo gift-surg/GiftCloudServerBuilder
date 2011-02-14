@@ -107,7 +107,7 @@ public enum DatabaseSession {
 			s.setSubject(o);
 		}
 	},
-	FOLDER_NAME("folderName", ColType.VARCHAR, true){
+	FOLDER_NAME("folderName", ColType.VARCHAR, false){
 		@Override
 		public Object readSession (SessionData s){
 			return s.getFolderName();
@@ -125,6 +125,16 @@ public enum DatabaseSession {
 		@Override
 		public void writeSession (SessionData s, Object o) {
 			s.setName(o);
+		}
+	},
+	TAG("tag", ColType.VARCHAR, true){
+		@Override
+		public Object readSession (SessionData s){
+			return s.getTag();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setTag(o);
 		}
 	},
 	STATUS("status", ColType.STATUS, false){
@@ -467,6 +477,10 @@ public enum DatabaseSession {
 	
 	public String findSql (String sess, String timestamp, String proj) {
 		return "SELECT " + this.columnName + " FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+	}
+	
+	public String findSql (final Object o) {
+		return "SELECT * FROM " + PrearcDatabase.table + " WHERE " + this.searchSql(o);
 	}
 	/**
 	 * Generate SQL to find a row that matches all the given Sessions' slots.

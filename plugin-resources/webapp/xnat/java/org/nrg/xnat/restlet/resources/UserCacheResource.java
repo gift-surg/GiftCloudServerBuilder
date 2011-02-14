@@ -499,6 +499,9 @@ public class UserCacheResource extends SecureResource {
 		if (containsURI) {
 			cp.put("URI", new Hashtable<String,String>());
 			String rootPath = this.getRequest().getRootRef().getPath();
+			if(rootPath.endsWith("/data")){
+				rootPath=rootPath.substring(0,rootPath.indexOf("/data"));
+			}
 			if(rootPath.endsWith("/REST")){
 				rootPath=rootPath.substring(0,rootPath.indexOf("/REST"));
 			}

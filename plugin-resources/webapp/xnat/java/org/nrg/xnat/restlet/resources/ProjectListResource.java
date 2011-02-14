@@ -435,7 +435,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				table = XFTTable.Execute(query, user.getDBName(), userName);
 
-				table = formatHeaders(table, qo, re+"/ID","/REST/projects/");
+				table = formatHeaders(table, qo, re+"/ID","/data/projects/");
 			} catch (Exception e) {
 				e.printStackTrace();
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

@@ -198,7 +198,7 @@ public class DIRResource extends SecureResource {
 					           
 					            final String rel=(session_dir.toURI().relativize(f.toURI())).getPath();
 					            final String qs=(f.isDirectory())?qsParams:"";
-					            row[3]=String.format("/REST/experiments/%1s/DIR/%2s%3s", new Object[]{expt.getId(),rel,qs});
+					            row[3]=String.format("/data/experiments/%1s/DIR/%2s%3s", new Object[]{expt.getId(),rel,qs});
 					       				            
 					            table.rows().add(row);
 							}
@@ -209,6 +209,9 @@ public class DIRResource extends SecureResource {
 						cp.put("URI", new Hashtable<String,String>());
 						
 						String rootPath = this.getRequest().getRootRef().getPath();
+						if(rootPath.endsWith("/data")){
+							rootPath=rootPath.substring(0,rootPath.indexOf("/data"));
+						}
 						if(rootPath.endsWith("/REST")){
 							rootPath=rootPath.substring(0,rootPath.indexOf("/REST"));
 						}

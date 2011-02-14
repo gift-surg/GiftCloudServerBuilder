@@ -57,7 +57,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 	
 	
 	public String getBaseURI() throws ElementNotFoundException{
-		StringBuffer sb =new StringBuffer("/REST");
+		StringBuffer sb =new StringBuffer("/data");
 		if(proj!=null && sub!=null){
 			sb.append("/projects/");
 			sb.append(proj.getId());

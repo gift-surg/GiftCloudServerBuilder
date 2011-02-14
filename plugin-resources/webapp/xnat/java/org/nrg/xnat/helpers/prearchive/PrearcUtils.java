@@ -304,11 +304,25 @@ public class PrearcUtils {
 		
 		addSession(user,project,timestamp,session,allowUnassigned);
 	}
+
+	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session,final String uID, final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
+		try {
+		PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
+		PrearcDatabase.deleteCacheRow(session,timestamp,project);
+		} catch (SessionException e) {
+		}
+		
+		addSession(user,project,timestamp,session,uID,allowUnassigned);
+	}
 	
 	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
-		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,allowUnassigned), timestamp);
+		addSession(user,project,timestamp,session,null,allowUnassigned);
+	}
+	
+	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session, final String uID,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
+		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,allowUnassigned), timestamp,project);
 		final SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
-
+		if(StringUtils.isNotEmpty(uID))sd.setTag(uID);
 		PrearcDatabase.addSession(sd);
 	}
 	

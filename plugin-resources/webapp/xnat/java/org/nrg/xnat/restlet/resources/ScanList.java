@@ -321,7 +321,7 @@ public class ScanList extends QueryOrganizerResource {
 					table=XFTTable.Execute(query, user.getDBName(), userName);
 
 				table = formatHeaders(table, qo, "xnat:imageScanData/ID",
-						String.format("/REST/experiments/%s/scans/",session.getId()));
+						String.format("/data/experiments/%s/scans/",session.getId()));
 			} catch (Exception e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

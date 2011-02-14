@@ -91,6 +91,12 @@ public final class UriParserUtils {
 		}};
 	
 	public static DataURIA parseURI(String s) throws MalformedURLException{
+		if(s.startsWith("/data")){
+			s=s.substring(5);
+		}else if(s.startsWith("/REST")){
+			s=s.substring(5);
+		}
+		
 		if(s.startsWith("/prearchive")){
 			if(s.equals("/prearchive")){
 				final Map<String,Object> t=Collections.emptyMap();

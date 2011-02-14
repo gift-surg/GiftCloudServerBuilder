@@ -105,12 +105,4 @@ public class RequestUtil {
 			return false;
 		}
 	}
-	
-	public String getArchiveScriptName(){
-		return "/REST";
-}
-	
-	public String getPrerchiveScriptName(){
-		return "/REST/prearchive";
-	}
 }

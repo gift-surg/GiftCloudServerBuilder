@@ -55,13 +55,13 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				
 	}
 	
-			final Map<String,Object> additionalValues=new Hashtable<String,Object>();
-			
-			String project_id=null;
-			String overwriteV=null;
-			String timestamp=null;
-			String[] sessionFolder=null;
-			String dest=null;
+	final Map<String,Object> additionalValues=new Hashtable<String,Object>();
+	
+	String project_id=null;
+	String overwriteV=null;
+	String timestamp=null;
+	String[] sessionFolder=null;
+	String dest=null;
 	String redirect=null;
 			
 	@Override
@@ -204,7 +204,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					}
 					
 					if(PrearcDatabase.setStatus((String)sessions.get(0).get(PrearcUtils.PREARC_SESSION_FOLDER), (String)sessions.get(0).get(PrearcUtils.PREARC_TIMESTAMP), project, PrearcStatus.ARCHIVING)){
-						_return = PrearcDatabase.archive(sessions.get(0), project, allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
+						_return = "/data" +PrearcDatabase.archive(sessions.get(0), project, allowDataDeletion, overwrite, user, new ArrayList<StatusListenerI>());
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
 						return;

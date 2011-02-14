@@ -71,7 +71,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/parser/jars/parser-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/PlexiViewer-1.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/PlexiViewer-1.4.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/saaj/jars/saaj-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-dom/jars/saxon8-dom-1.jar"/>

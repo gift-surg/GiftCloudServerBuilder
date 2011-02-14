@@ -20,9 +20,17 @@
   </listener>
 -->
 	<context-param>
-		<param-name>org.restlet.application</param-name>
-		<param-value>org.nrg.xnat.restlet.XNATApplication</param-value>
+        <param-name>org.restlet.component</param-name>
+        <param-value>org.nrg.xnat.restlet.XNATComponent</param-value>
 	</context-param>
+	<!-- Add the Servlet context path to routes: DEFAULT=true 
+		If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify this parameter BUT....
+		DO NOT MODIFY THIS FILE.  Instead, modify the file in your project directory xnat/projects/xnat/src/web-conf/web-projectMerge.xml
+	-->
+    <context-param>
+            <param-name>org.restlet.autoWire</param-name>
+            <param-value>true</param-value>
+    </context-param>
 	<listener>
 		<listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
 	</listener>
@@ -47,6 +55,7 @@
 	<servlet>
 		<servlet-name>RestletServlet</servlet-name>
 		<servlet-class>org.nrg.xnat.restlet.servlet.XNATRestletServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<!-- ======================================================================== -->
 	<!-- INSERTED FOR XNATFSServlet -->
@@ -66,14 +75,6 @@
           <param-name>filter_1</param-name>
           <param-value>org.xnat.xnatfs.filter.ChatterFilter</param-value>
         </init-param>
-	</servlet>
-	<!-- ======================================================================== -->
-	<!-- INSERTED FOR ArchiveServlet -->
-	<!-- ======================================================================== -->
-	<servlet>
-		<servlet-name>ArchiveServlet</servlet-name>
-		<servlet-class>org.nrg.xnat.servlet.ArchiveServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<!-- ======================================================================== -->
 	<!-- INSERTED FOR Ajax -->
@@ -155,6 +156,10 @@
 		<servlet-name>RestletServlet</servlet-name>
 		<url-pattern>/REST/*</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RestletServlet</servlet-name>
+		<url-pattern>/data/*</url-pattern>
+	</servlet-mapping>
 	<!-- ======================================================================== -->
 	<!-- INSERTED FOR XNATFSServlet  -->
 	<!-- ======================================================================== -->
@@ -226,13 +231,6 @@
 	<servlet-mapping>
 		<servlet-name>PublisherServlet</servlet-name>
 		<url-pattern>/servlet/PublisherServlet</url-pattern>
-	</servlet-mapping>
-	<!-- ======================================================================== -->
-	<!-- INSERTED FOR ArchiveServlet -->
-	<!-- ======================================================================== -->
-	<servlet-mapping>
-		<servlet-name>ArchiveServlet</servlet-name>
-		<url-pattern>/archive/*</url-pattern>
 	</servlet-mapping>
 	<session-config>
 		<!-- Default to 5 minute session timeouts -->

@@ -17,6 +17,6 @@ public class XNATComponent extends Component {
 	public XNATComponent() {
 		super();
 		
-		getHosts().addAll(XNATRestletFactory.buildVirtualHosts(this.getContext()));
+		getHosts().addAll(XNATRestletFactory.buildVirtualHosts(this.getContext().createChildContext()));
 	}
 }

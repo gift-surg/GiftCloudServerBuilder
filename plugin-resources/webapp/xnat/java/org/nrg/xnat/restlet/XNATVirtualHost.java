@@ -9,11 +9,11 @@ public class XNATVirtualHost extends VirtualHost {
 	public XNATVirtualHost(Context parentContext) {
 		super(parentContext);
 		
-		attachApplications(parentContext);
+		attachApplications();
 	}
 	
-	public void attachApplications(Context parentContext){
-		Application app=XNATRestletFactory.buildDefaultApplication(parentContext);
+	public void attachApplications(){
+		Application app=XNATRestletFactory.buildDefaultApplication(this.getContext().createChildContext());
 		
 		attach("/REST", app);
 		attach("/data",app);

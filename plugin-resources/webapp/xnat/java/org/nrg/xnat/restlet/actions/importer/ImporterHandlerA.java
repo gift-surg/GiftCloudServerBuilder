@@ -15,6 +15,7 @@ import org.nrg.action.ServerException;
 import org.nrg.status.StatusProducer;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
+import org.nrg.xnat.archive.GradualDicomImporter;
 import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.actions.XarImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -35,8 +36,10 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 
 	public static final String IMPORT_HANDLER_ATTR = "import-handler";
 	
-	static String SESSION_IMPORTER="SI";
+	public static String SESSION_IMPORTER="SI";
 	public static String XAR_IMPORTER="XAR";
+	public static String GRADUAL_DICOM_IMPORTER="gradual-DICOM";
+	
 	static String DEFAULT_HANDLER=SESSION_IMPORTER;
 	final static Map<String,Class<? extends ImporterHandlerA>> IMPORTERS=new HashMap<String,Class<? extends ImporterHandlerA>>();
 
@@ -54,6 +57,7 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 						
 			if(!IMPORTERS.containsKey(SESSION_IMPORTER))IMPORTERS.put(SESSION_IMPORTER, SessionImporter.class);
 			if(!IMPORTERS.containsKey(XAR_IMPORTER))IMPORTERS.put(XAR_IMPORTER, XarImporter.class);
+			if(!IMPORTERS.containsKey(GRADUAL_DICOM_IMPORTER))IMPORTERS.put(GRADUAL_DICOM_IMPORTER, GradualDicomImporter.class);
 		} catch (Exception e) {
 			logger.error("",e);
 		}

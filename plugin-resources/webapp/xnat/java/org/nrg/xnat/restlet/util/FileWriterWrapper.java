@@ -55,7 +55,7 @@ public class FileWriterWrapper implements FileWriterWrapperI{
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#getInputStream()
 	 */
-	public InputStream getInputStream() throws IOException,Exception{
+	public InputStream getInputStream() throws IOException {
 		if(fi!=null){
 			return fi.getInputStream();
 		}else{

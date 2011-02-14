@@ -108,7 +108,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		if(this.getQueryVariable("tag")!=null){
 			final String tag=getQueryVariable("tag");
 			try {
-				if(!PrearcUtils.canModify(user,null)){
+				if(!user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Non admin user's can not query by tag");
 					return null;
 				}

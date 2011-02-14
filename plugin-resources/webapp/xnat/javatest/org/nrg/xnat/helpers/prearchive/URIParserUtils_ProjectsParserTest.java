@@ -12,11 +12,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nrg.xnat.restlet.XNATApplication;
 
 public class URIParserUtils_ProjectsParserTest {	
 	@Test
 	public final void testSessionParser() {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		this.missingLabel(parser);
 		this.missingProject(parser);
 		this.missingTimestamp(parser);
@@ -26,7 +27,7 @@ public class URIParserUtils_ProjectsParserTest {
 	
 	@Test
 	public final void testProjectsParser () {
-		final PrearcUriParserUtils.ProjectsParser parser = new PrearcUriParserUtils.ProjectsParser(new PrearcUriParserUtils.UriParser(PrearcUtils.projectUriTemplate));
+		final PrearcUriParserUtils.ProjectsParser parser = new PrearcUriParserUtils.ProjectsParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_PROJECT_URI));
 		this.singleProject(parser);
 		this.multipleProjects(parser);
 		this.unassignedProjectToNull(parser);

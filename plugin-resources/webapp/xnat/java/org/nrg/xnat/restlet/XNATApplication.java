@@ -51,6 +51,9 @@ import org.restlet.resource.Resource;
  * To add additional URIs to this file (non-xnat developers), build a class which extends this class.  Override the addRoutes method (calling the super.addRoutes(router)) to add your new URIs.  Then modify the XNATRestletFactory to load your class as the default application.
  */
 public class XNATApplication extends Application {
+     public static String PREARC_PROJECT_URI = "/prearchive/projects/{PROJECT_ID}",
+    PREARC_SESSION_URI = PREARC_PROJECT_URI + "/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
+    
 	public XNATApplication(Context parentContext) {
         super(parentContext);
     }
@@ -196,8 +199,8 @@ public class XNATApplication extends Application {
         router.attach("/JSESSION",org.nrg.xnat.restlet.resources.UserSession.class);
         
         router.attach("/prearchive",org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
-        router.attach("/prearchive/projects/{PROJECT_ID}",org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
-        router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource.class);
+        router.attach(PREARC_PROJECT_URI,org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
+        router.attach(PREARC_SESSION_URI, org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans", org.nrg.xnat.restlet.resources.prearchive.PrearcScansListResource.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourcesList.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourceFiles.class);

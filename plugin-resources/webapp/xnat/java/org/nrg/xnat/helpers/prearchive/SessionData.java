@@ -208,10 +208,10 @@ public final class SessionData {
 			sb.append(fs[i].toString());
 			sb.append(":");
 			try {
-				sb.append(fs[i].get(this).toString());
+			    sb.append(fs[i].get(this));
 			}
 			catch (IllegalAccessException e) {
-				
+				sb.append("<cannot access>");
 			}
 			sb.append("\n");
 		}

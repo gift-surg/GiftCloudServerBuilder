@@ -86,6 +86,8 @@ public abstract class SecureResource extends Resource {
 
 	static Logger logger = Logger.getLogger(SecureResource.class);
 	public Hashtable<String, String> fieldMapping = new Hashtable<String, String>();
+	
+	// TODO: these should be proper extension types: application/x-xList, application/x-xcat+xml, application/x-xar
 	public static final MediaType APPLICATION_XLIST = MediaType.register(
 			"application/xList", "XNAT Listing");
 	
@@ -94,6 +96,9 @@ public abstract class SecureResource extends Resource {
 	
 	public static final MediaType APPLICATION_XAR = MediaType.register(
 			"application/xar", "XAR Archive");
+	
+	public static final MediaType APPLICATION_DICOM = MediaType.register(
+	        "application/dicom", "Digital Imaging and Communications in Medicine");
 	
 	protected List<String> actions=null;
 	protected String userName=null;

@@ -32,12 +32,13 @@ public class PrearcScheduler extends JobBuilderA {
 	public final static int MIN_SINCE_MOD=5, SCHED_INTERVAL=1;
 	
 	public PrearcScheduler () {
+		logger.error("Creating prearcScheduler");
 	}
 	
 	public static double diffInMinutes (long start, long end) {
 		double seconds = Math.floor((end - start) / 1000);
 		return Math.floor(seconds / 60);
-	} 
+	}
 	
 	public int getMinutes(){
 		return MIN_SINCE_MOD;
@@ -52,7 +53,7 @@ public class PrearcScheduler extends JobBuilderA {
 		List<XJob> js = new ArrayList<XJob>();
         JobDetail jobDetail = new JobDetail("session-rebuilder", "prearchive-jobs", SessionXMLRebuilder.class);
         SimpleTrigger simpleTrigger = new SimpleTrigger("session-rebuilder-trigger", "prearchive-triggers");
-        simpleTrigger.setStartTime(Calendar.getInstance().getTime());
+        simpleTrigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
         // run every minute
         simpleTrigger.setRepeatInterval(1000 * 60 * getInterval());
         JobDataMap map = new JobDataMap();
@@ -67,6 +68,7 @@ public class PrearcScheduler extends JobBuilderA {
 		@Override
 		public void execute(JobExecutionContext arg0)
 				throws JobExecutionException {
+			logger.error("Running prearc job");
 			JobDataMap map = arg0.getMergedJobDataMap();
 			XDATUser user = null;
 			try {
@@ -112,8 +114,11 @@ public class PrearcScheduler extends JobBuilderA {
 					} catch (Exception e) {
 						logger.error(e.getMessage());
 					}
-					long then = s.getLastBuiltDate().getTime();
-					if (PrearcScheduler.diffInMinutes(now, then) > map.getDoubleValue("interval")) {
+					long then = s.getLastBuiltDate().getTime();					
+					double interval = (double) map.getIntValue("interval");
+					double diff = PrearcScheduler.diffInMinutes(then, now);
+					if (diff >= interval) {
+						logger.error("rebuilding");
 						try {
 							updated++;
 							if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {

@@ -182,6 +182,35 @@ public class PrearcDatabaseTest {
 		}
 	}
 	
+	@Test
+	public final void testGetAllSessions () {
+		List<SessionData> sds = null;
+		try {
+			sds = PrearcDatabase.getAllSessions();
+		}
+		catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException" + e.getMessage());
+		}
+		Iterator<SessionData> i = sessions.iterator();
+		while(i.hasNext()){
+			SessionData existing = i.next();
+			Iterator<SessionData> j = sds.iterator();
+			boolean found = false;
+			while(j.hasNext()) {
+				if (!found) {
+					SessionData received = j.next(); 
+					found = (received.getFolderName().equals(existing.getFolderName()))
+				           && (received.getTimestamp().equals(existing.getTimestamp()))
+					       && (received.getProject().equals(existing.getProject()));
+				} 
+			}
+			Assert.assertTrue(found);
+		}
+	}
+	
 
 	@Test
 	public final void testGetUnassigned () {

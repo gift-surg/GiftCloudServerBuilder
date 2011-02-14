@@ -297,7 +297,7 @@ public class Importer extends SecureResource {
 			stored=f;
 		}
 
-		public void write(File f) throws IOException, Exception {
+		public void write(File f) throws IOException {
 			FileUtils.moveFile(stored, f);
 		}
 
@@ -305,7 +305,7 @@ public class Importer extends SecureResource {
 			return stored.getName();
 		}
 
-		public InputStream getInputStream() throws IOException, Exception {
+		public InputStream getInputStream() throws IOException {
 			return new FileInputStream(stored);
 		}
 

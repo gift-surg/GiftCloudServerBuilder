@@ -2,20 +2,20 @@ package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
@@ -26,17 +26,14 @@ import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PrearcUtils {
-	static Logger logger = Logger.getLogger(PrearcUtils.class);
-
 	public static final String COMMON = "Unassigned";
 
 	public static final String ROLE_SITE_ADMIN = "Administrator";
 	public static final String PROJECT_SECURITY_TASK = "xnat:mrSessionData/project";
-	//replicated from XNATApplication.java. Please keep the two in sync.
-	public static final String sessionUriTemplate = "/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
-	public static final String projectUriTemplate = "/prearchive/projects/{PROJECT_ID}";
 
 	public static final String APPEND = "append";
 
@@ -61,6 +58,8 @@ public class PrearcUtils {
 		}
 	};
 
+	private static Logger logger() { return LoggerFactory.getLogger(PrearcUtils.class); }
+	
 	public static final Map<PrearcStatus, PrearcStatus> inProcessStatusMap = createInProcessMap();
 	
 	public static Map<PrearcStatus, PrearcStatus> createInProcessMap () {
@@ -94,7 +93,7 @@ public class PrearcUtils {
 						projects.add(id);
 					}
 				} catch (Exception e) {
-					logger.error("Exception caught testing prearchive access", e);
+					logger().error("Exception caught testing prearchive access", e);
 				}
 			}
 			// if the user is an admin also add unassigned projects
@@ -122,6 +121,7 @@ public class PrearcUtils {
 			return user.canAction("xnat:mrSessionData/project", p, SecurityManager.CREATE);
 		}
 	}
+
 	
 	/**
 	 * Retrieves the File reference to the prearchive root directory for the
@@ -165,20 +165,20 @@ public class PrearcUtils {
 					throw new InvalidPermissionException("user " + user.getUsername() + " does not have create permissions for project " + projectData.getId());
 				}
 			} catch (final Exception e) {
-				logger.error("Unable to check security for " + user.getUsername() + " on " + projectData.getId(), e);
+				logger().error("Unable to check security for " + user.getUsername() + " on " + projectData.getId(), e);
 				throw new Exception(e.getMessage());
 			}
 
 			if (null == prearcPath) {
 				final String message = "Unable to retrieve prearchive path for project " + projectData.getId();
-				logger.error(message);
+				logger().error(message);
 				throw new Exception(message);
 			}
 		}
 		final File prearc = new File(prearcPath);
 		if (prearc.exists() && !prearc.isDirectory()) {
 			final String message = "Prearchive directory is invalid for project " + project;
-			logger.error(message);
+			logger().error(message);
 			throw new Exception(message);
 		}
 		return prearc;
@@ -221,11 +221,12 @@ public class PrearcUtils {
 		return d.list( DirectoryFileFilter.INSTANCE );
 	}
 
-	public  static final Pattern timestampPattern = Pattern.compile("[0-9]{8}_[0-9]{6}");
+	private static final Pattern TSDIR_PATTERN = Pattern.compile("[0-9]{8}_[0-9]{6}");
+	private static final String TSDIR_FORMAT = "yyyyMMdd_HHmmss";
 
 	public  static final FileFilter isTimestampDirectory = new FileFilter() {
 		public boolean accept(final File f) {
-			return f.isDirectory() && timestampPattern.matcher(f.getName()).matches();
+			return f.isDirectory() && TSDIR_PATTERN.matcher(f.getName()).matches();
 		}
 	};
 
@@ -235,9 +236,19 @@ public class PrearcUtils {
 		}
 	};
 	
+	/**
+	 * Creates a new timestamp subdirectory of the given parent directory
+	 * @param parent directory that will contain the new timestamp subdirectory
+	 * @return timestamp directory
+	 */
+	public static File makeTimestampDir(final File parent) {
+	    final SimpleDateFormat formatter = new SimpleDateFormat(TSDIR_FORMAT, Locale.US);
+	    return new File(parent, formatter.format(new Date()));
+	}
+	
 
 	/**
-	 * Checks for obvious problems with a session XML: existence, lock, permissions.
+	 * Checks for obvious problems with a session XML: existence, permissions.
 	 * @param sessionDir Directory holding the session
 	 * @return
 	 */
@@ -246,35 +257,16 @@ public class PrearcUtils {
 			return PrearcStatus.RECEIVING;
 		}
 		if (!sessionXML.isFile()) {
-			logger.error(sessionXML.toString() + " exists, but is not a file");
+			logger().error("{} exists, but is not a file", sessionXML);
 			return PrearcStatus.ERROR;
 		}
-		final FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(sessionXML, true);
-		} catch (FileNotFoundException e) {
-			logger.error("File not found (but passed .exists()!)", e);
-			return PrearcStatus.ERROR;
-		}
-		try {
-//			final FileLock lock = fos.getChannel().tryLock();
-//			if (null == lock)
-//				return PrearcStatus.BUILDING;
-		} catch (Exception e) {
-			logger.error("Unable to check lock on session " + sessionXML, e);
-			return PrearcStatus.ERROR;
-		} finally {
-			try { fos.close(); } catch (IOException ignore) {}
-		}
-
 		if (!sessionXML.canRead()) {
-			System.out.println("able to obtain lock, but cannot read " + sessionXML);
-			logger.error("able to obtain lock, but cannot read " + sessionXML);
+			logger().error("cannot read {}" + sessionXML);
 			return PrearcStatus.ERROR;
 		}
-
 		return null;
 	}
+	
 	public static java.util.Date timestamp2Date (java.sql.Timestamp t) {
 		return new java.util.Date(t.getTime());
 	}

@@ -22,6 +22,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+import org.nrg.xnat.restlet.XNATApplication;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
@@ -222,7 +223,7 @@ public final class PrearcDatabase {
 	 * @throws SessionException 
 	 */
 	public static List<SessionData> getProjects (String uri) throws java.util.IllegalFormatException, SQLException, SessionException {
-		final PrearcUriParserUtils.ProjectsParser parser = new PrearcUriParserUtils.ProjectsParser(new PrearcUriParserUtils.UriParser(PrearcUtils.projectUriTemplate));
+		final PrearcUriParserUtils.ProjectsParser parser = new PrearcUriParserUtils.ProjectsParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_PROJECT_URI));
 		final List<String> projects = parser.readUri(uri);
 		return new SessionOp<List<SessionData>>(){
 			public List<SessionData> op() throws SQLException, SessionException {
@@ -246,7 +247,7 @@ public final class PrearcDatabase {
 	 * @throws SessionException
 	 */
 	public static SessionData getSession (String uri) throws java.util.IllegalFormatException, SQLException, SessionException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
 		return new SessionOp<SessionData>() {
 			public SessionData op() throws SQLException, SessionException {
@@ -573,7 +574,7 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 */
 	public static boolean moveToProject (String uri) throws SessionException, SyncFailedException, SQLException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		Map<String,String> sess = parser.readUri(uri);
 		return PrearcDatabase.moveToProject(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"), parser.i.f.getValues("dest"));		
 	}
@@ -626,7 +627,7 @@ public final class PrearcDatabase {
 	}
 	
 	public static boolean setStatus(final String uri, final PrearcUtils.PrearcStatus status, boolean overrideLock) throws SQLException, SessionException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
 		return PrearcDatabase.setStatus(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"), status,overrideLock);
 	}
@@ -782,7 +783,7 @@ public final class PrearcDatabase {
 	 * @throws SessionException
 	 */
 	protected static boolean isLocked (String uri) throws SQLException, SessionException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
 		return PrearcDatabase.isLocked(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
 	}
@@ -803,7 +804,7 @@ public final class PrearcDatabase {
 	}
 	
 	public static void unLockSession(String uri) throws SQLException, SessionException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
 		PrearcDatabase.unLockSession(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
 	}
@@ -825,7 +826,7 @@ public final class PrearcDatabase {
 	 * @throws SessionException
 	 */
 	protected static boolean lockSession(String uri) throws SQLException, SessionException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
 		return PrearcDatabase.lockSession(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
 	}
@@ -866,7 +867,7 @@ public final class PrearcDatabase {
 	 * @throws SyncFailedException 
 	 */
 	public static boolean deleteSession (String uri) throws SQLException, SessionException, SyncFailedException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
 		return PrearcDatabase.deleteSession(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
 	}

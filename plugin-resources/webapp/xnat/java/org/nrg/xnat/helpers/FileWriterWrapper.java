@@ -1,5 +1,5 @@
 /**
- * Copyright 2010 Washington University
+ * Copyright 2010,2011 Washington University
  */
 package org.nrg.xnat.helpers;
 
@@ -9,54 +9,91 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.restlet.resource.Representation;
 
-public class FileWriterWrapper{
-	public FileItem fi=null;
-	public Representation entry=null;
-	public String name=null;
-	
-	public FileWriterWrapper(FileItem f,String n){
-		fi=f;
-		name=n;
-	}
+/**
+ * @author Tim Olsen <olsent@mir.wustl.edu>
+ * @author Kevin A. Archie <karchie@wustl.edu>
+ *
+ */
+public class FileWriterWrapper implements FileWriterWrapperI {
+    public final FileItem fi;
+    public final Representation entry;
+    public final String name;
 
-	public FileWriterWrapper(Representation f,String n){
-		entry=f;
-		name=n;
-	}
-	
-	public void write(File f) throws IOException,Exception{
-		if(fi!=null){
-			fi.write(f);
-		}else{
-			FileOutputStream fw = new FileOutputStream(f);
-			if(entry.getSize()>2000000){
-				org.apache.commons.io.IOUtils.copyLarge(entry.getStream(), fw);
-			}else{
-				org.apache.commons.io.IOUtils.copy(entry.getStream(), fw);
-			}
-			fw.close();
-		}
-	}
-	
-	public String getName(){
-		return name;
-	}
-	
+    public FileWriterWrapper(final FileItem fi, final String name) {
+        this.fi = fi;
+        this.entry = null;
+        this.name = name;
+    }
 
-	
-	public InputStream getInputStream() throws IOException,Exception{
-		if(fi!=null){
-			return fi.getInputStream();
-		}else{
-			return entry.getStream();
-		}
-	}
-	
-	public void delete(){
-		if(fi!=null){
-			fi.delete();
-		}
-	}
+    public FileWriterWrapper(final Representation representation, final String name) {
+        this.fi = null;
+        this.entry = representation;
+        this.name = name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#delete()
+     */
+    public void delete(){
+        if (fi!=null) {
+            fi.delete();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#getInputStream()
+     */
+    public InputStream getInputStream() throws IOException {
+        return null == fi ? entry.getStream() : fi.getInputStream();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#getName()
+     */
+    public String getName(){
+        return name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#getType()
+     */
+    public UPLOAD_TYPE getType() {
+        throw new UnsupportedOperationException();  // TODO: fix this
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#write(java.io.File)
+     */
+    public void write(final File f) throws IOException,Exception {
+        if (null == fi) {
+            final FileOutputStream fw = new FileOutputStream(f);
+            IOException ioexception = null;
+            try {
+                if (entry.getSize()>2000000) {
+                    IOUtils.copyLarge(entry.getStream(), fw);
+                } else {
+                    IOUtils.copy(entry.getStream(), fw);
+                }
+            } catch (IOException e) {
+                throw ioexception = e;
+            } finally {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    throw null == ioexception ? e : ioexception;
+                }
+            }
+        } else {
+            fi.write(f);
+        }
+    }
 }

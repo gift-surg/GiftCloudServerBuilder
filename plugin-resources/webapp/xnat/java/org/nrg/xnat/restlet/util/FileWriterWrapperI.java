@@ -7,17 +7,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @author Tim Olsen <olsent@mir.wustl.edu>
+ * @author Kevin A. Archie <karchie@wustl.edu>
+ *
+ */
 public interface FileWriterWrapperI {
-	public static enum UPLOAD_TYPE{INBODY,MULTIPART,OTHER};
+	static enum UPLOAD_TYPE{INBODY,MULTIPART,OTHER};
 
-	public abstract void write(File f) throws IOException, Exception;
+	void write(File f) throws Exception;
 
-	public abstract String getName();
+	String getName();
 
-	public abstract InputStream getInputStream() throws IOException, Exception;
+	InputStream getInputStream() throws IOException;
 
-	public abstract void delete();
+	void delete();
 
-	public abstract UPLOAD_TYPE getType();
+	UPLOAD_TYPE getType();
 
 }

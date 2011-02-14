@@ -22,6 +22,7 @@ public class RequestUtil {
 	
 	static{
 		supported_upload_types.put(MediaType.APPLICATION_ALL,"");
+		supported_upload_types.put(SecureResource.APPLICATION_DICOM, ".dcm");
 		supported_upload_types.put(MediaType.APPLICATION_ZIP,".zip");
 		supported_upload_types.put(SecureResource.APPLICATION_XAR,".xar");
 		supported_upload_types.put(MediaType.APPLICATION_GNU_TAR,".tar.gz");

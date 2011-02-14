@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.nrg.xnat.restlet.XNATApplication;
+
 public class SessionDataTriple {
 	private String folderName;
 	private String timestamp;
@@ -81,7 +83,7 @@ public class SessionDataTriple {
 		                              .setTimestamp(f.getParentFile().getName());
 	}
 	public static SessionDataTriple fromURI (final String uri) throws MalformedURLException {
-		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(PrearcUtils.sessionUriTemplate));
+		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		return SessionDataTriple.fromMap(parser.readUri(uri));
 	}
 }

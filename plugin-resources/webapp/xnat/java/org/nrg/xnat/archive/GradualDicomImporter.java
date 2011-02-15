@@ -311,7 +311,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
             sessdir = new File(tsdir, sess.getFolderName());
             uri = sess.getUrl();
             try {
-                PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.RECEIVING);
+                PrearcDatabase.setStatus(sess.getFolderName(), sess.getTimestamp(),
+                        null == project ? null : project.getId(),
+                        PrearcUtils.PrearcStatus.RECEIVING);
             } catch (SQLException e) {
                 logger.error("unable to update prearchive session status to RECEIVING", e);
             } catch (SessionException e) {

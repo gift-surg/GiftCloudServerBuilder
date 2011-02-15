@@ -33,6 +33,10 @@ public class ArcSpecManager {
     }
     
     public synchronized static  ArcArchivespecification GetInstance(){
+    	return GetInstance(true);
+    }
+    
+    public synchronized static  ArcArchivespecification GetInstance(boolean dbInit){
         if (arcSpec==null){
             System.out.print("Initializing ArcSpec...");
             ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
@@ -160,12 +164,15 @@ public class ArcSpecManager {
             }
             System.out.println("done");
             
+            if(dbInit){
             try {
     			PrearcDatabase.initDatabase();
     		} catch (Exception e) {
     			logger.error("",e);
     		}
         }
+        }
+        
         return arcSpec;
     }
 

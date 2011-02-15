@@ -140,7 +140,7 @@ public final class PrearcDatabase {
 	 */
 	
 	protected static String getPrearcPath () {
-		return ArcSpecManager.GetInstance().getGlobalPrearchivePath();
+		return ArcSpecManager.GetInstance(false).getGlobalPrearchivePath();
 	}
 
 	/**

@@ -143,7 +143,7 @@ public class PrearcUtils {
 		String prearcPath;
 		if(project==null || project.equals(COMMON)){
 			if (allowUnassigned || user.checkRole(ROLE_SITE_ADMIN)) {
-				prearcPath=ArcSpecManager.GetInstance().getGlobalPrearchivePath();
+				prearcPath=ArcSpecManager.GetInstance(false).getGlobalPrearchivePath();
 			}else{
 				throw new InvalidPermissionException("user " + user.getUsername() + " does not have permission to access the Unassigned directory ");
 			}
@@ -217,7 +217,7 @@ public class PrearcUtils {
 	 * @return a list of project names
 	 */
 	public static String[] allPrearchiveProjects () {
-		File d = new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath());
+		File d = new File(ArcSpecManager.GetInstance(false).getGlobalPrearchivePath());
 		return d.list( DirectoryFileFilter.INSTANCE );
 	}
 

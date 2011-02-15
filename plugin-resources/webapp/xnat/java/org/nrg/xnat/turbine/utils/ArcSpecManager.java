@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.xml.sax.SAXException;
 
 /**
@@ -158,6 +159,12 @@ public class ArcSpecManager {
                 logger.error("",e);
             }
             System.out.println("done");
+            
+            try {
+    			PrearcDatabase.initDatabase();
+    		} catch (Exception e) {
+    			logger.error("",e);
+    		}
         }
         return arcSpec;
     }
@@ -170,218 +177,4 @@ public class ArcSpecManager {
     	return GetInstance().getEmailspecifications_transfer();
     }
     
-    /*
-    public  String getGlobalArchivePath(){
-        ArcArchivespecification spec = GetInstance();
-        String path = null;
-        if (spec!=null){
-            ArcPathinfoI pathInfo= spec.getGlobalpaths();
-            if (pathInfo!=null){
-                path=pathInfo.getArchivepath();
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public String getGlobalPrearchivePath(){
-        ArcArchivespecification spec = GetInstance();
-        String path = null;
-        if (spec!=null){
-            ArcPathinfoI pathInfo= spec.getGlobalpaths();
-            if (pathInfo!=null){
-                path=pathInfo.getPrearchivepath();
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public String getGlobalCachePath(){
-        ArcArchivespecification spec = GetInstance();
-        String path = null;
-        if (spec!=null){
-            ArcPathinfoI pathInfo= spec.getGlobalpaths();
-            if (pathInfo!=null){
-                path=pathInfo.getCachepath();
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public  String getGlobalBuildPath(){
-        ArcArchivespecification spec = GetInstance();
-        String path = null;
-        if (spec!=null){
-            ArcPathinfoI pathInfo= spec.getGlobalpaths();
-            if (pathInfo!=null){
-                path=pathInfo.getBuildpath();
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public String GetArchivePathForProject(String id){
-        String path = null;
-        ArcArchivespecification spec = GetInstance();
-        if (spec !=null){
-            ArrayList<ArcProject> projects=spec.getProjects_project();
-            for (ArcProject p : projects){
-                if (p.getId().equals(id)){
-                    ArcPathinfoI pathInfo= p.getPaths();
-                    if (pathInfo!=null){
-                        path=pathInfo.getArchivepath();
-                    }
-                    break;
-                }
-            }
-            if (path==null || path.trim().equals("")){
-                ArcPathinfoI pathInfo= spec.getGlobalpaths();
-                if (pathInfo!=null){
-                    path=pathInfo.getArchivepath();
-                }
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public String GetCachePathForProject(String id){
-        String path = null;
-        ArcArchivespecification spec = GetInstance();
-        if (spec !=null){
-            ArrayList<ArcProject> projects=spec.getProjects_project();
-            for (ArcProject p : projects){
-                if (p.getId().equals(id)){
-                    ArcPathinfoI pathInfo= p.getPaths();
-                    if (pathInfo!=null){
-                        path=pathInfo.getCachepath();
-                    }
-                    break;
-                }
-            }
-            if (path==null || path.trim().equals("")){
-                ArcPathinfoI pathInfo= spec.getGlobalpaths();
-                if (pathInfo!=null){
-                    path=pathInfo.getCachepath();
-                }
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public  String GetPrearchivePathForProject(String id){
-        String path = null;
-        ArcArchivespecification spec = GetInstance();
-        if (spec !=null){
-            ArrayList<ArcProject> projects=spec.getProjects_project();
-            for (ArcProject p : projects){
-                if (p.getId().equals(id)){
-                    ArcPathinfoI pathInfo= p.getPaths();
-                    if (pathInfo!=null){
-                        path=pathInfo.getPrearchivepath();
-                    }
-                    break;
-                }
-            }
-            if (path==null || path.trim().equals("")){
-                ArcPathinfoI pathInfo= spec.getGlobalpaths();
-                if (pathInfo!=null){
-                    path=pathInfo.getPrearchivepath();
-                }
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public String GetBuildPathForProject(String id){
-        String path = null;
-        ArcArchivespecification spec = GetInstance();
-        if (spec !=null){
-            ArrayList<ArcProject> projects=spec.getProjects_project();
-            for (ArcProject p : projects){
-                if (p.getId().equals(id)){
-                    ArcPathinfoI pathInfo= p.getPaths();
-                    if (pathInfo!=null){
-                        path=pathInfo.getBuildpath();
-                    }
-                    break;
-                }
-            }
-            if (path==null || path.trim().equals("")){
-                ArcPathinfoI pathInfo= spec.getGlobalpaths();
-                if (pathInfo!=null){
-                    path=pathInfo.getBuildpath();
-                }
-            }
-        }
-        if (path==null){
-            path =".";
-        }
-        path = path.replace('\\', '/');
-        if (!path.endsWith("/")){
-            path = path +"/";
-        }
-        return path;
-    }
-
-    public  ArcProject GetProjectArc(String id){
-        ArcArchivespecification spec = GetInstance();
-        if (spec !=null){
-            ArrayList<ArcProject> projects=spec.getProjects_project();
-            for (ArcProject p : projects){
-                if (p.getId().equals(id)){
-                    return p;
-                }
-            }
-        }
-        return null;
-    }
-    */
 }

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +65,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
     throws IOException,ClientException {
         super(listenerControl, u, fw, params);
         this.user = u;
-        this.o = read(fw.getInputStream());
+        this.o = read(fw.getInputStream(), fw.getName());
         this.params = params;
         this.name = null == fw.getName() ? namer.makeFileName(o) : fw.getName();
     }
@@ -77,13 +78,20 @@ public class GradualDicomImporter extends ImporterHandlerA {
         this.params = params;
     }
 
-    private static DicomObject read(final InputStream in) throws ClientException {
+    private static DicomObject read(final InputStream in, final String name) throws ClientException {
         final BufferedInputStream bis = new BufferedInputStream(in);
         IOException ioexception = null;
         try {
             final DicomInputStream dis = new DicomInputStream(bis);
             try {
-                return dis.readDicomObject();
+                final DicomObject o = dis.readDicomObject();
+                if (Strings.isNullOrEmpty(o.getString(Tag.SOPClassUID))) {
+                    throw new ClientException("object " + name + " contains no SOP Class UID");
+                }
+                if (Strings.isNullOrEmpty(o.getString(Tag.SOPInstanceUID))) {
+                    throw new ClientException("object " + name + " contains no SOP Instance UID");
+                }
+                return o;
             } catch (IOException e) {
                 throw ioexception = e;
             } finally {
@@ -208,6 +216,35 @@ public class GradualDicomImporter extends ImporterHandlerA {
         return sb.toString();
     }
 
+    private File getSafeFile(File sessionDir, String scan, String name, DicomObject o) {
+        final File safeFile = Files.getImageFile(sessionDir, scan, namer.makeFileName(o));
+        final String valname = Files.toFileNameChars(name);
+        if (!Files.isValidFilename(valname)) {
+            return safeFile;
+        }
+        final File reqFile = Files.getImageFile(sessionDir, scan, valname);
+        if (reqFile.exists()) {
+            try {
+                final FileInputStream fin = new FileInputStream(reqFile);
+                try {
+                    final DicomObject o1 = read(fin, name);
+                    if (Objects.equal(o.get(Tag.SOPInstanceUID), o1.get(Tag.SOPInstanceUID)) &&
+                            Objects.equal(o.get(Tag.SOPClassUID), o1.get(Tag.SOPClassUID))) {
+                        return reqFile;  // object are equivalent; ok to overwrite
+                    } else {
+                        return safeFile;
+                    }
+                } finally {
+                    fin.close();
+                }
+            } catch (Throwable t) {
+                return safeFile;                    
+            }
+        } else {
+            return reqFile;
+        }
+    }
+
     @Override
     public List<String> call() throws ClientException, ServerException {
         final DicomObjectIdentifier<XnatProjectdata> id =
@@ -305,7 +342,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             fmi.initFileMetaInformation(sopClassUID, sopInstanceUID, transferSyntaxUID);
         }
 
-        final File f = Files.getImageFile(sessdir, scan, null == name ? namer.makeFileName(o) : name);
+        final File f = getSafeFile(sessdir, scan, name, o);
         f.getParentFile().mkdirs();
         try {
             write(fmi, o, f);

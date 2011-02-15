@@ -33,6 +33,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.restlet.representations.CSVTableRepresentation;
 import org.nrg.xnat.restlet.representations.HTMLTableRepresentation;
 import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
@@ -40,10 +41,8 @@ import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
-import org.nrg.xnat.restlet.util.FileWriterWrapper;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -63,8 +62,6 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 import org.xml.sax.SAXParseException;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import com.noelios.restlet.http.HttpConstants;
 
 @SuppressWarnings("deprecation")

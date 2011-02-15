@@ -19,9 +19,9 @@ import org.restlet.resource.Representation;
  *
  */
 public class FileWriterWrapper implements FileWriterWrapperI {
-    public final FileItem fi;
-    public final Representation entry;
-    public final String name;
+    private final FileItem fi;
+    private final Representation entry;
+    private final String name;
 
     public FileWriterWrapper(final FileItem fi, final String name) {
         this.fi = fi;
@@ -66,9 +66,9 @@ public class FileWriterWrapper implements FileWriterWrapperI {
      * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#getType()
      */
     public UPLOAD_TYPE getType() {
-        throw new UnsupportedOperationException();  // TODO: fix this
+        return null == entry ? FileWriterWrapperI.UPLOAD_TYPE.MULTIPART : FileWriterWrapperI.UPLOAD_TYPE.INBODY;
     }
-    
+
     /*
      * (non-Javadoc)
      * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#write(java.io.File)

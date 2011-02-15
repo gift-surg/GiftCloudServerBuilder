@@ -13,6 +13,7 @@ import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class XNATRestletServlet extends ServerServlet {
     public static void startDicomSCP() {
         final XDATUser user;
         try {
-            user = new XDATUser("admin");   // TODO: make this configurable
+            user = UserUtils.getDICOMStoreUser(); 
         } catch (Exception e) {
             logger().error("unable to get user", e);
             return;

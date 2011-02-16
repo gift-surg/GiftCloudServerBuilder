@@ -1335,6 +1335,7 @@
 				<ant:arg value="${cwd}\pipeline\setup.bat"/>
 				<ant:arg value="${xdat.admin_email}"/>
 				<ant:arg value="${xdat.smtp.server}"/>
+				<ant:arg value="${cwd}"/>
 				<env key="MAVEN_TERMINATE_CMD" value="on"/>
 			</ant:exec>
 		</j:if>
@@ -1347,6 +1348,7 @@
 			<ant:exec executable="${basedir}/pipeline/setup.sh" failonerror="true">
 				<ant:arg value="${xdat.admin_email}"/>
 				<ant:arg value="${xdat.smtp.server}"/>
+				<ant:arg value="${cwd}"/>
 			</ant:exec>
 		</j:if>
 	</goal>

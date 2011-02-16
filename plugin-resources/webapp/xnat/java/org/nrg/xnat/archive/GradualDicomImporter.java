@@ -309,7 +309,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         } else {
             tsdir = new File(root, sess.getTimestamp());
             sessdir = new File(tsdir, sess.getFolderName());
-            uri = sess.getUrl();
+            uri = buildURI(project, tsdir, sessdir);
             try {
                 PrearcDatabase.setStatus(sess.getFolderName(), sess.getTimestamp(),
                         null == project ? null : project.getId(),

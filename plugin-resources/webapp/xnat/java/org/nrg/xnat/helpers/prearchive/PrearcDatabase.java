@@ -477,7 +477,7 @@ public final class PrearcDatabase {
 			new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
 				java.lang.Void extSync() throws SyncFailedException {
 					try {
-						new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project).call();
+						new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project,true).call();
 					} catch (IOException e) {
 						throw new SyncFailedException(e.getMessage());
 					}

@@ -133,7 +133,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 				}else if(step.equals(XNATRestConstants.PULL_DATA_FROM_HEADERS) && expt instanceof XnatImagesessiondata){
 					if(user.canEdit(expt)){
 						try {
-							PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt, user, this.isQueryVariableTrue("allowDataDeletion"), this.isQueryVariableTrue("overwrite"));
+							PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt, user, this.isQueryVariableTrue("allowDataDeletion"), this.isQueryVariableTrue("overwrite"),false);
 							pull.call();
 						} catch (SAXException e){
 							logger.error("",e);

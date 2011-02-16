@@ -114,15 +114,25 @@ public class XDATScreen_download_sessions extends SecureScreen {
             
             context.put("assessors", assessors);
             
-            //SELECT RESOURCES
+            //SELECT SCAN_FORMATS
 
-            query= "SELECT COUNT(*) FROM xnat_experimentData_resource expt_r " +
-                    " WHERE expt_r.xnat_experimentdata_id IN (" + sessionString +");";
+            query= "SELECT label,COUNT(*) FROM xnat_imagescandata JOIN xnat_abstractResource ON xnat_imagescandata.xnat_imagescandata_id=xnat_abstractResource.xnat_imagescandata_xnat_imagescandata_id " +
+                    " WHERE xnat_imagescandata.image_session_id IN (" + sessionString +") GROUP BY label;";
             
             table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
             
-            scans =table.toArrayListOfLists();
-            context.put("resources", scans);
+            ArrayList<List> formats =table.toArrayListOfLists();
+            context.put("scan_formats", formats);
+            
+            //SELECT RESOURCES
+
+            query= "SELECT label,COUNT(*) FROM xnat_experimentData_resource JOIN xnat_abstractResource ON xnat_experimentData_resource.xnat_abstractresource_xnat_abstractresource_id=xnat_abstractResource.xnat_abstractresource_id " +
+                    " WHERE xnat_experimentData_resource.xnat_experimentdata_id IN (" + sessionString +") GROUP BY label;";
+            
+            table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
+            
+            ArrayList<List> resources =table.toArrayListOfLists();
+            context.put("resources", resources);
         }
     }
 

@@ -28,11 +28,14 @@ public class DownloadSessionsAction2 extends SecureAction {
     public void doPerform(RunData data, Context context) throws Exception {
         String [] session_ids=data.getParameters().getStrings("sessions");
         
+        String [] scanFormats=data.getParameters().getStrings("scan_format");
+        
         String [] scanTypes=data.getParameters().getStrings("scan_type");
         String [] recons=data.getParameters().getStrings("recon");
         String [] assessors=data.getParameters().getStrings("assessors");
-        
-//IOWA customization: to allow project and subject included in path
+
+        String [] resources=data.getParameters().getStrings("resources");
+		//BEGIN:IOWA customization: to allow project and subject included in path
         boolean projectIncludedInPath = "true".equalsIgnoreCase(data.getParameters().getString("projectIncludedInPath"));
         boolean subjectIncludedInPath = "true".equalsIgnoreCase(data.getParameters().getString("subjectIncludedInPath"));
         String extraParam = "";
@@ -42,7 +45,8 @@ public class DownloadSessionsAction2 extends SecureAction {
         if(subjectIncludedInPath){
             extraParam += "&subjectIncludedInPath=true";
         }
-
+		//END:
+        
         String server = TurbineUtils.GetFullServerPath();
         if (!server.endsWith("/")){
             server +="/";
@@ -59,9 +63,34 @@ public class DownloadSessionsAction2 extends SecureAction {
                 CatCatalogBean scansCatalog = new CatCatalogBean();
                 scansCatalog.setId("RAW");
                 for(String scanType : scanTypes){
-                    CatEntryBean entry = new CatEntryBean();
+                	if(scanFormats!=null && scanFormats.length>0){
+                		for(String scanFormat : scanFormats){
+                            CatEntryBean entry = new CatEntryBean();
+                            entry.setFormat("ZIP");
+                            String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType) + "/resources/" + URLEncoder.encode(scanFormat) + "/files?format=zip" + extraParam;
+                            entry.setUri(uri);
+                            l.add(uri);
+                            scansCatalog.addEntries_entry(entry);
+                		}
+                	}else{
+                        CatEntryBean entry = new CatEntryBean();
+                        entry.setFormat("ZIP");
+                        String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType) + "/files?format=zip" + extraParam;
+                        entry.setUri(uri);
+                        l.add(uri);
+                        scansCatalog.addEntries_entry(entry);
+                	}
+                }
+                sessionCatalog.addSets_entryset(scansCatalog);
+            }
+            
+            if (resources!=null && resources.length>0){
+                final CatCatalogBean scansCatalog = new CatCatalogBean();
+                scansCatalog.setId("RESOURCES");
+                for(final String res : resources){
+                    final CatEntryBean entry = new CatEntryBean();
                     entry.setFormat("ZIP");
-                    String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType) + "/files?format=zip" + extraParam;
+                    String uri=server + "data/experiments/" + session + "/resources/" + URLEncoder.encode(res) + "/files?format=zip" + extraParam;
                     entry.setUri(uri);
                     l.add(uri);
                     scansCatalog.addEntries_entry(entry);

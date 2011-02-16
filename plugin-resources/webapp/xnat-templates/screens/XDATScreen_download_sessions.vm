@@ -222,7 +222,7 @@ document.getElementById("dataTable").style.display="block";
 
  <TR>
 
-  <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['scan_type','recon','assessors']);" ID="toggleAllSessions"/></TD>
+  <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['scan_type','scan_format','recon','assessors']);" ID="toggleAllSessions"/></TD>
 
   <TD>Toggle All</TD>
 
@@ -230,7 +230,7 @@ document.getElementById("dataTable").style.display="block";
 
  <TR>
 
-  <TD></TD><TD><DIV class="edit_header3">Raw Scans</DIV></TD>
+  <TD></TD><TD><DIV class="edit_header3">Scan Types</DIV></TD>
 
  </TR>
 
@@ -280,12 +280,112 @@ document.getElementById("dataTable").style.display="block";
 
  <TR>
 
-  <TD></TD><TD><DIV class="edit_header3">Reconstructions</DIV></TD>
+  <TD></TD><TD><DIV class="edit_header3">Scan Formats</DIV></TD>
 
  </TR>
 
  <TR>
 
+  <TD></TD><TD>
+  
+  <TABLE>
+  
+    		    #foreach($scan in $scan_formats)
+  
+    		     #if($!scan.get(0))
+  
+    		      <TR>
+  
+    		       <TD><input type="checkbox" name="scan_format" value="$!scan.get(0)"/></TD>
+  
+    		       <TD>$!scan.get(0)</TD>
+  
+    		      </TR>
+  
+    		     #else
+  
+    		      <TR>
+  
+    		       <TD><input type="checkbox" name="scan_format" value="NULL"/></TD>
+  
+    		       <TD>Unspecified</TD>
+  
+    		      </TR>
+  
+    		     #end
+  
+    		    #end
+  
+  		  </TABLE>
+  
+  </TD>
+  
+   </TR>
+
+ <TR>
+
+  <TD>&nbsp;</TD>
+
+ </TR>
+
+ <TR>
+
+  <TD></TD><TD><DIV class="edit_header3">Addl Resources</DIV></TD>
+
+ </TR>
+
+ <TR>
+
+  <TD></TD><TD>
+  
+  <TABLE>
+  
+    		    #foreach($res in $resources)
+  
+    		     #if($!res.get(0))
+  
+    		      <TR>
+  
+    		       <TD><input type="checkbox" name="resources" value="$!res.get(0)"/></TD>
+  
+    		       <TD>$!res.get(0)</TD>
+  
+    		      </TR>
+  
+    		     #else
+  
+    		      <TR>
+  
+    		       <TD><input type="checkbox" name="resources" value="NULL"/></TD>
+  
+    		       <TD>Unspecified</TD>
+  
+    		      </TR>
+  
+    		     #end
+  
+    		    #end
+  
+  		  </TABLE>
+  
+  </TD>
+  
+   </TR>
+  
+   <TR>
+  
+    <TD>&nbsp;</TD>
+  
+   </TR>
+  
+   <TR>
+  
+    <TD></TD><TD><DIV class="edit_header3">Reconstructions</DIV></TD>
+  
+   </TR>
+  
+   <TR>
+  
   <TD></TD><TD>
 
   		  <TABLE ID="subTable">

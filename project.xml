@@ -279,6 +279,12 @@
 			</properties>
 		</dependency>
 		<dependency>
+			<groupId>xdat</groupId>
+			<artifactId>xdat-restClient</artifactId>
+			<version>1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
 			<version>1.6.1</version>
@@ -330,6 +336,25 @@
 			<groupId>json</groupId>
 			<artifactId>json</artifactId>
 			<version>20090211</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.4</version>
+			<url>http://jakarta.apache.org/commons/logging.html</url>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.2</version>
 			<type>jar</type>
 		</dependency>
 	</dependencies>

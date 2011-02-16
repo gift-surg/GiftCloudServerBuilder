@@ -209,15 +209,17 @@ public class Importer extends SecureResource {
 		}
 
 		private Representation buildHTMLresponse(List<String> response) {
-			ArrayList<String> preList=new ArrayList<String>();
-			ArrayList<String> archList=new ArrayList<String>();
-			StringBuffer sb=new StringBuffer("<html><head>" +
-			"<link type='text/css' rel='stylesheet' href='/xnat/style/xdat.css'>" +
-			"<link type='text/css' rel='stylesheet' href='/xnat/style/xnat.css'>" +
-			"</head><body class='yui-skin-sam'>"
-			);
+			final ArrayList<String> preList=new ArrayList<String>();
+			final ArrayList<String> archList=new ArrayList<String>();
+			final StringBuilder sb=new StringBuilder("<html><head>");
+			sb.append("<link type='text/css' rel='stylesheet' href='");
+			sb.append(TurbineUtils.GetRelativePath(this.getHttpServletRequest()));
+			sb.append("/style/xdat.css'>");
+			sb.append("<link type='text/css' rel='stylesheet' href='/xnat/style/xnat.css'>");
+			sb.append("</head><body class='yui-skin-sam'>");
+			
 			for(final String s: response){
-				DataURIA obj;
+				final DataURIA obj;
 				try {
 					obj = UriParserUtils.parseURI(s);
 					if(obj instanceof UriParserUtils.ArchiveURI){
@@ -235,40 +237,51 @@ public class Importer extends SecureResource {
 				sb.append("The following sessions have been uploaded:<br>");
 				if (!preList.isEmpty()) {
 					try {
-						for (String s : preList) {
-							String[] sarray=s.split("/");
-							sb.append("<br>&nbsp;&nbsp;&nbsp;<a target='_parent' href='" + TurbineUtils.GetRelativePath(this.getHttpServletRequest()) +
-										"/app/template/XDATScreen_prearchives.vm'>" + sarray[5] +
-									  "</a> has been moved to the pre-archive for project " + sarray[3]);
+						for (final String s : preList) {
+							final String[] sarray=s.split("/");
+							sb.append("<br>&nbsp;&nbsp;&nbsp;<a target='_parent' href='");
+							sb.append(TurbineUtils.GetRelativePath(this.getHttpServletRequest()));
+							sb.append("/app/template/XDATScreen_prearchives.vm'>");
+							sb.append(sarray[5]);
+							sb.append("</a> has been moved to the pre-archive for project ");
+							sb.append(sarray[3]);
 						}
 					} catch (Exception e) {
-						sb.append("<br>A total of " + preList.size() + " session(s) have been moved to pre-archive.<br>");
+						sb.append("<br>A total of ");
+						sb.append(preList.size());
+						sb.append(" session(s) have been moved to pre-archive.<br>");
 					}
-					String tempString=sb.toString();
-					System.out.println("HELLO" + tempString);
 				}
 				if (!archList.isEmpty()) {
 					try {
-						for (String s : archList) {
-							String[] sarray=s.split("/");
-							sb.append("<br>&nbsp;&nbsp;&nbsp;<a target='_parent' href='" + TurbineUtils.GetRelativePath(this.getHttpServletRequest()) + "/data" + s +
-										"'>" + sarray[7] +
-									  "</a> has been archived for project " + sarray[3]);
+						for (final String s : archList) {
+							final String[] sarray=s.split("/");
+							sb.append("<br>&nbsp;&nbsp;&nbsp;<a target='_parent' href='");
+							sb.append(TurbineUtils.GetRelativePath(this.getHttpServletRequest()));
+							sb.append("/data");
+							sb.append(s);
+							sb.append("'>");
+							sb.append(sarray[7]);
+							sb.append("</a> has been archived for project " + sarray[3]);
 						}
 					} catch (Exception e) {
-						sb.append("<br>A total of " + archList.size() + " session(s) have archived.<br>");
+						sb.append("<br>A total of ");
+						sb.append(archList.size());
+						sb.append(" session(s) have archived.<br>");
 					}
 				}
 				sb.append("</body></html>");
 			} else {
 				sb.append("ERROR: The process could not be completed due to exceptions - <br>");
-				for (String s : response) {
-					sb.append("<br><span style='color:#DD0000'>" + s + "</span>");
+				for (final String s : response) {
+					sb.append("<br><span style='color:#DD0000'>");
+					sb.append(s);
+					sb.append("</span>");
 				}
-				sb.append("</body><script type='text/javascript'>" +
-						"parent.document.getElementById('ex').style.display='none';" +
-						"parent.toggleExtractSummary();" +
-						"</script></html>");
+				sb.append("</body><script type='text/javascript'>");
+				sb.append("parent.document.getElementById('ex').style.display='none';");
+				sb.append("parent.toggleExtractSummary();");
+				sb.append("</script></html>");
 			}
 		return new StringRepresentation(sb.toString(),MediaType.TEXT_HTML);
 	}

@@ -298,7 +298,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
             sess.setTag(studyInstanceUID);
             sess.setTimestamp(tsdir.getName());
-            sess.setUrl(uri);
+            sess.setUrl(sessdir.getPath());
             try {
                 PrearcDatabase.addSession(sess);
             } catch (SQLException e) {

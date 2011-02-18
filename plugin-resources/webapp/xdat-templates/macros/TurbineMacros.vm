@@ -935,7 +935,7 @@
 #end
 
 #macro (formLabel $label)
-  <TH ALIGN="left">$label</TH>
+  <TH ALIGN="left" style="white-space:nowrap">$label</TH>
 #end
 
 #macro (formLabelRequired $label)

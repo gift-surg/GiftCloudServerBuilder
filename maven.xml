@@ -54,6 +54,7 @@
     <attainGoal name="xdat:auto-generate"/>
     <attainGoal name="xdat:manageWebXML"/>
     <attainGoal name="xdat:updateJS"/>
+    <attainGoal name="xdat:updateCSS"/>
     <attainGoal name="xdat:generateBeans"/>
     <!-- CHMOD SH FILES -->
     <attainGoal name="xdat:chmod"/>

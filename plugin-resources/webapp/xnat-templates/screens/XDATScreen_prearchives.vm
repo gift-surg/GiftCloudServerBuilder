@@ -13,29 +13,29 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <BR>
 
 
-<div class='instructions'>
-	<p>
-	The sessions listed below have been uploaded but not yet placed in the archive.
-	Click on a session name to examine that session and, optionally,
-	move it to the archive.  Click the <kbd>remove</kbd> icon
-	to delete the session.
-	</p>
-	<p>
-	If you have uploaded any files to the FTP server, they will appear above the
-	sessions, in the FTP inbox.  <kbd>Import</kbd> those files to organize them into sessions
-	in the session list.
-	</p>
-	<p>
-	<div class="colorkey">
-		Status key: 
-		<span class="RECEIVING">Receiving</span>
-		<span class="BUILDING">Building</span>
-		<span class="READY">Ready</span>
-		<span class="ARCHIVING">Archiving</span>
-		<span class="ERROR">Error</span>
-	</div>
+<!-- <div class='instructions'> -->
+<!-- 	<p> -->
+<!-- 	The sessions listed below have been uploaded but not yet placed in the archive. -->
+<!-- 	Click on a session name to examine that session and, optionally, -->
+<!-- 	move it to the archive.  Click the <kbd>remove</kbd> icon -->
+<!-- 	to delete the session. -->
+<!-- 	</p> -->
+<!-- 	<p> -->
+<!-- 	If you have uploaded any files to the FTP server, they will appear above the -->
+<!-- 	sessions, in the FTP inbox.  <kbd>Import</kbd> those files to organize them into sessions -->
+<!-- 	in the session list. -->
+<!-- 	</p> -->
+<!-- 	<p> -->
+<!-- 	<div class="colorkey"> -->
+<!-- 		Status key:  -->
+<!-- 		<span class="RECEIVING">Receiving</span> -->
+<!-- 		<span class="BUILDING">Building</span> -->
+<!-- 		<span class="READY">Ready</span> -->
+<!-- 		<span class="ARCHIVING">Archiving</span> -->
+<!-- 		<span class="ERROR">Error</span> -->
+<!-- 	</div> -->
 		
-</div>
+<!-- </div> -->
 
 <br>
 <div id="prearchive_table"></div>

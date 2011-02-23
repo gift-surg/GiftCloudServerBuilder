@@ -505,7 +505,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					}
 				}
 
-				this.returnString(expt.getId());
+				this.returnString(expt.getId(),(existing==null)?Status.SUCCESS_CREATED:Status.SUCCESS_OK);
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");
 				}

@@ -18,6 +18,8 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xnat.archive.FinishImageUpload;
+import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.utils.UserUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -32,7 +34,7 @@ public class PrearcScheduler extends JobBuilderA {
 	public final static int MIN_SINCE_MOD=5, SCHED_INTERVAL=1;
 	
 	public PrearcScheduler () {
-		logger.error("Creating prearcScheduler");
+		logger.debug("Creating prearcScheduler");
 	}
 	
 	public static double diffInMinutes (long start, long end) {
@@ -68,34 +70,34 @@ public class PrearcScheduler extends JobBuilderA {
 		@Override
 		public void execute(JobExecutionContext arg0)
 				throws JobExecutionException {
-			logger.error("Running prearc job");
+			logger.debug("Running prearc job");
 			JobDataMap map = arg0.getMergedJobDataMap();
 			XDATUser user = null;
 			try {
 				user = UserUtils.getDICOMStoreUser();
 			} catch (UserNotFoundException e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			} catch (XFTInitException e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			} catch (ElementNotFoundException e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			} catch (DBPoolException e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			} catch (SQLException e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			} catch (FieldNotFoundException e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			} catch (Exception e1) {
-				logger.error(e1.getMessage());
+				logger.error("",e1);
 			}
 			List<SessionData> sds = null;
 			long now = Calendar.getInstance().getTimeInMillis();
 			try {
 				sds = PrearcDatabase.getAllSessions();
 			} catch (SessionException e) {
-				logger.error(e.getMessage());
+				logger.error("",e);
 			} catch (SQLException e) {
-				logger.error(e.getMessage());
+				logger.error("",e);
 			}
 			int updated=0;
 			int total=0;
@@ -108,35 +110,38 @@ public class PrearcScheduler extends JobBuilderA {
 					try {
 						sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(),false);
 					} catch (IOException e) {
-						logger.error(e.getMessage());
+						logger.error("",e);
 					} catch (InvalidPermissionException e) {
-						logger.error(e.getMessage());
+						logger.error("",e);
 					} catch (Exception e) {
-						logger.error(e.getMessage());
+						logger.error("",e);
 					}
 					long then = s.getLastBuiltDate().getTime();					
 					double interval = (double) map.getIntValue("interval");
 					double diff = PrearcScheduler.diffInMinutes(then, now);
 					if (diff >= interval) {
-						logger.error("rebuilding");
+						logger.debug("commiting " +s.getExternalUrl());
 						try {
 							updated++;
 							if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
 							    PrearcDatabase.buildSession(sessionDir, s.getFolderName(), s.getTimestamp(), s.getProject());
 							    PrearcUtils.resetStatus(user, s.getProject(), s.getTimestamp(), s.getFolderName(),true);
+							    
+							    final FinishImageUpload uploader=new FinishImageUpload(null, user, new PrearcSession(s.getProject(), s.getTimestamp(), s.getFolderName(),null,user), null, false, true, false);
+			                    uploader.call();
 							}
 						} catch (SyncFailedException e) {
-							logger.error(e.getMessage());
+							logger.error("",e);
 						} catch (SQLException e) {
-							logger.error(e.getMessage());
+							logger.error("",e);
 						} catch (SessionException e) {
-							logger.error(e.getMessage());
+							logger.error("",e);
 						} catch (IOException e) {
-							logger.error(e.getMessage());
+							logger.error("",e);
 						} catch (InvalidPermissionException e) {
-							logger.error(e.getMessage());
+							logger.error("",e);
 						} catch (Exception e) {
-							logger.error(e.getMessage());
+							logger.error("",e);
 						} 
 					}
 				}

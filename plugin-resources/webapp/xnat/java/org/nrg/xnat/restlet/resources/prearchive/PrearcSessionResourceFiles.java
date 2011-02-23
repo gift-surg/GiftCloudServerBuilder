@@ -7,15 +7,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.merge.MergeUtils;
+import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
+import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -24,6 +28,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author tolsen01
@@ -41,13 +47,8 @@ public class PrearcSessionResourceFiles extends PrearcSessionResourcesList {
 
 
 	
-	final static ArrayList<String> columns=new ArrayList<String>(){
-		private static final long serialVersionUID = 1L;
-	{
-		add("Name");
-		add("Size");
-		add("URI");
-	}};
+	final static ArrayList<String> columns=Lists.newArrayList("Name","Size","URI");
+
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
@@ -98,7 +99,7 @@ public class PrearcSessionResourceFiles extends PrearcSessionResourcesList {
 	}
 			
     private String constructURI(String resource) {
-    	String requestPart = this.getContextPath()+this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
+    	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
     	return requestPart + "/" + resource;
     	
     }

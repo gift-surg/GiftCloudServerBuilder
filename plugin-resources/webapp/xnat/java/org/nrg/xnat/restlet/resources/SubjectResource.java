@@ -301,7 +301,7 @@ public class SubjectResource extends ItemResource {
 						else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
 					}
 					
-					this.returnString(sub.getId());
+					this.returnString(sub.getId(),(existing==null)?Status.SUCCESS_CREATED:Status.SUCCESS_OK);
 				}
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");

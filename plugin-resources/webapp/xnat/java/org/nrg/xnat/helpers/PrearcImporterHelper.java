@@ -5,6 +5,7 @@ package org.nrg.xnat.helpers;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper;
 import org.restlet.data.Status;
+import org.xml.sax.SAXException;
 
 public class PrearcImporterHelper extends PrearcImporterA{
     private static final String SESSION = "session";
@@ -171,8 +173,8 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		
 		for(final File f:files){
 			try {
-				sessions.add(new PrearcSession(f,new File(f.getAbsolutePath()+".xml"),new URI(StringUtils.join(new String[]{"/prearchive/projects/",(project==null)?PrearcUtils.COMMON:project,"/",old_timestamp,"/",f.getName()}))));
-			} catch (URISyntaxException e) {
+				sessions.add(new PrearcSession(f));
+			} catch (Exception e) {
 				throw new ServerException(e.getMessage(),e);
 			}
 		}

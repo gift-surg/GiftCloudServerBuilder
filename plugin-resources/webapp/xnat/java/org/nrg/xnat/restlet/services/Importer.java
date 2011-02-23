@@ -72,14 +72,6 @@ public class Importer extends SecureResource {
 
 	List<String> response=null;
 
-	public void loadParams(Form f) throws ClientException{
-		for(final String key:f.getNames()){
-			for(String v:f.getValuesArray(key)){
-				handleParam(key,v);
-			}
-		}
-	}
-
 	@Override
 	public void handleParam(String key, Object value) throws ClientException {
 		if(key.equals(ImporterHandlerA.IMPORT_HANDLER_ATTR)){
@@ -334,7 +326,7 @@ public class Importer extends SecureResource {
 	public String convertListURItoString(final List<String> response){
 		StringBuffer sb = new StringBuffer();
 		for(final String s:response){
-			sb.append("/data").append(s).append(CRLF);
+			sb.append(wrapPartialDataURI(s)).append(CRLF);
 		}
 
 		return sb.toString();

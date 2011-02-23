@@ -36,6 +36,7 @@ import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
+import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
@@ -73,8 +74,6 @@ import org.xml.sax.SAXException;
  *
  */
 public final class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusPublisherI {
-	private static final String LABEL3 = "session";
-
 	private static final String TRIGGER_PIPELINES = "triggerPipelines";
 
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
@@ -112,9 +111,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.srcDIR=srcDIR;
 	}
 
-	public PrearcSessionArchiver(final File sessionDir,	final XDATUser user, final String project, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
+	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, sessionDir, project, false)).populate(),sessionDir, user, project, params, allowDataDeletion,overwrite);
+		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite);
 	}
 
 	public File getSrcDIR(){
@@ -336,8 +335,8 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			throw new ClientException("unable to map parameters to valid xml path: ", e);
 			}
 		}
-			src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(src.getItem());
-		}
+		src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(src.getItem());
+	}
 
 	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
 		if(existing!=null){

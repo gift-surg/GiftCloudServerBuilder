@@ -483,7 +483,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					if(user.canEdit(expt.getItem())){
 						if((this.isQueryVariableTrue(XNATRestConstants.PULL_DATA_FROM_HEADERS) || this.containsAction(XNATRestConstants.PULL_DATA_FROM_HEADERS) ) && expt instanceof XnatImagesessiondata){
 							try {
-								PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt,user,this.allowDataDeletion(),this.isQueryVariableTrue("overwrite"));
+								PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt,user,this.allowDataDeletion(),this.isQueryVariableTrue("overwrite"),false);
 								pull.call();
 							} catch (SAXException e){
 								logger.error("",e);
@@ -505,7 +505,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					}
 				}
 
-				this.returnString(expt.getId());
+				this.returnString(expt.getId(),(existing==null)?Status.SUCCESS_CREATED:Status.SUCCESS_OK);
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");
 				}

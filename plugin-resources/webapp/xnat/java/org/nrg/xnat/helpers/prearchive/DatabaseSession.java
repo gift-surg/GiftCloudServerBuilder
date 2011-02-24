@@ -609,6 +609,7 @@ public enum DatabaseSession {
 		return s.toString();
 	}
 	
+
 	public static String getAllRows() {
 		return "SELECT * FROM " + PrearcDatabase.table; 
 	}

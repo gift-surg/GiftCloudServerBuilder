@@ -337,7 +337,7 @@ public class ExptAssessmentResource extends ItemResource {
 						if(user.canActivate(assessor.getItem()))assessor.quarantine(user);
 						else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
 					}
-					this.returnString(assessor.getId());
+					this.returnString(assessor.getId(),(existing==null)?Status.SUCCESS_CREATED:Status.SUCCESS_OK);
 				}
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");
@@ -432,7 +432,7 @@ public class ExptAssessmentResource extends ItemResource {
 				}
 			}else if(filepath!=null && filepath.startsWith("projects")){
 				XFTTable t = new XFTTable();
-				ArrayList al = new ArrayList();
+				ArrayList<String> al = new ArrayList<String>();
 				al.add("label");
 				al.add("ID");
 				al.add("Secondary_ID");

@@ -189,6 +189,16 @@ public abstract class SecureResource extends Resource {
 		return f;
 	}
 	
+	public Form getBodyAsForm(){
+		Representation entity = this.getRequest().getEntity();
+		
+		if (RequestUtil.isMultiPartFormData(entity)) {
+			return new Form(entity);
+		}
+		
+		return null;
+	}
+	
 	public String getQueryVariable(String key){
 		Form f = getQueryVariableForm();
 		if (f != null) {
@@ -568,17 +578,17 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 
-	public void returnString(String message) {
-		getResponse().setEntity(new StringRepresentation(message));
-		Representation selectedRepresentation = getResponse().getEntity();
-		if (getRequest().getConditions().hasSome()) {
-			final Status status = getRequest().getConditions().getStatus(					getRequest().getMethod(), selectedRepresentation);
+	public void returnString(String message,Status status) {
+		returnRepresentation(new StringRepresentation(message),status);
+	}
 
-			if (status != null) {
-				getResponse().setStatus(status);
-				getResponse().setEntity(null);
+	public void returnString(String message,MediaType mt,Status st) {
+		returnRepresentation(new StringRepresentation(message,mt),st);
 			}
-		}
+
+	public void returnRepresentation(Representation message,Status st) {
+		getResponse().setEntity(message);
+		getResponse().setStatus(st);
 	}
 
 	public void returnXML(XFTItem item) {
@@ -693,6 +703,16 @@ public abstract class SecureResource extends Resource {
 	public void handleParam(final String key,final Object value) throws ClientException{
 		
 	}
+
+	public void loadParams(Form f) throws ClientException{
+		if(f!=null){
+			for(final String key:f.getNames()){
+				for(String v:f.getValuesArray(key)){
+					handleParam(key,v);
+				}
+			}
+		}
+	}
 			
 	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
@@ -763,6 +783,10 @@ public abstract class SecureResource extends Resource {
 			CONTEXT_PATH=TurbineUtils.GetRelativePath(getHttpServletRequest());
 		}
 		return CONTEXT_PATH;
+	}
+
+	public String wrapPartialDataURI(String uri){
+		return "/data"+uri;
 	}
 
 	public void setResponseStatus(final ActionException e){

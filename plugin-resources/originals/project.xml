@@ -642,7 +642,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>SessionBuilders</artifactId>
-			<version>1.5.0b2</version>
+			<version>1.5.0b3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -651,7 +651,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomDB</artifactId>
-			<version>3.0.0</version>
+			<version>3.0.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -660,7 +660,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-mx</artifactId>
-			<version>1.5.0b2</version>
+			<version>1.5.0b3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -687,7 +687,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>ecat4xnat</artifactId>
-			<version>1.5.0b1</version>
+			<version>1.5.0b2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -696,7 +696,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>PrearcImporter</artifactId>
-			<version>1.5.0b1</version>
+			<version>1.5.0b2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

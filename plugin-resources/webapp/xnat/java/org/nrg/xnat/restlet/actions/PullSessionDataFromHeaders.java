@@ -41,13 +41,14 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
 	private final XnatImagesessiondata tempMR;
 	private final XDATUser user;
 	private boolean allowDataDeletion;
-	private final boolean overwrite;
+	private final boolean overwrite,isInPrearchive;
 	
-	public PullSessionDataFromHeaders(final XnatImagesessiondata mr, final XDATUser user, boolean allowDataDeletion, final boolean overwrite){
+	public PullSessionDataFromHeaders(final XnatImagesessiondata mr, final XDATUser user, boolean allowDataDeletion, final boolean overwrite, final boolean isInPrearchive){
 		this.tempMR=mr;
 		this.user=user;
 		this.allowDataDeletion=allowDataDeletion;
 		this.overwrite=overwrite;
+		this.isInPrearchive=isInPrearchive;
 	}
 
 
@@ -75,7 +76,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
 		final String timestamp=(new java.text.SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar.getInstance().getTime());
 		final File xml = new File(sessionDir,tempMR.getLabel()+ "_"+ timestamp+".xml");
 		
-		final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,xml,tempMR.getProject());
+		final XNATSessionBuilder builder= new XNATSessionBuilder(sessionDir,xml,tempMR.getProject(),isInPrearchive);
 		builder.call();
 	      
 	    //this should really throw a specific execution object

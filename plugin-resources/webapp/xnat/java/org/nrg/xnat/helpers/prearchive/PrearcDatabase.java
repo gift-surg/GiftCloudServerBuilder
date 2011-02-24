@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,6 +24,7 @@ import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.restlet.XNATApplication;
+import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
@@ -396,21 +398,21 @@ public final class PrearcDatabase {
 	 * @throws SQLException 
 	 * @throws Exception 
 	 */
-	public static Map<SessionDataTriple, Boolean> archive(final List<Map<String,Object>> sessions, final String project, final boolean allowDataDeletion, final boolean overwrite, final XDATUser user, final List<StatusListenerI> listeners) throws SQLException, SessionException, SyncFailedException, IllegalStateException {
+	public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final boolean allowDataDeletion, final boolean overwrite, final XDATUser user, final Set<StatusListenerI> listeners) throws SQLException, SessionException, SyncFailedException, IllegalStateException {
 		List<SessionDataTriple> ss= new ArrayList<SessionDataTriple>();
 		
-		for(Map<String,Object> map:sessions){
-			ss.add(SessionDataTriple.fromFile(project, Archiver.getSrcDIR(map)));
+		for(PrearcSession map:sessions){
+			ss.add(SessionDataTriple.fromPrearcSession(map));
 		}
 		
 		final Map<SessionDataTriple, Boolean> ret = PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.ARCHIVING);
 		new Thread() {
 			public void run() {
-				final java.util.Iterator<Map<String,Object>> i = sessions.iterator();
+				final java.util.Iterator<PrearcSession> i = sessions.iterator();
 					while(i.hasNext()){
-						Map<String,Object> _s = i.next();
+						PrearcSession _s = i.next();
 						try {
-							PrearcDatabase.archive(_s,project,allowDataDeletion,overwrite,user,listeners);
+							PrearcDatabase.archive(_s,allowDataDeletion,overwrite,user,listeners);
 						} catch (SyncFailedException e) {
 							logger.error("",e);
 							throw new IllegalStateException();
@@ -428,20 +430,21 @@ public final class PrearcDatabase {
 	}
 	
 	
-	public static String archive (Map<String,Object> session, String project, boolean allowDataDeletion, boolean overwrite, XDATUser user, List<StatusListenerI> listeners) throws SessionException, SyncFailedException, SQLException{
+	public static String archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, XDATUser user, Set<StatusListenerI> listeners) throws SessionException, SyncFailedException, SQLException{
 		final PrearcSessionArchiver archiver;
 		try {
-			archiver = Archiver.buildArchiver(session, project, allowDataDeletion, overwrite, user);
+			archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite, user);
 		}catch (Exception e1) {
 			throw new IllegalStateException(e1);
 		}
 		
 		ListenerUtils.addListeners(listeners, archiver);
 		
-		final String prearcDIR=archiver.getSrcDIR().getName();
-		final String timestamp=archiver.getSrcDIR().getParentFile().getName();
+		final String prearcDIR=session.getFolderName();
+		final String timestamp=session.getTimestamp();
+		final String project=session.getProject();
 		
-		final SessionData sd = PrearcDatabase.getSession(prearcDIR, timestamp, project);
+		final SessionData sd = session.getSessionData();
 				
 		LockAndSync<String> l = new LockAndSync<String>(prearcDIR,timestamp,project,sd.getStatus()) {
 			String extSync() throws SyncFailedException {
@@ -477,7 +480,7 @@ public final class PrearcDatabase {
 			new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
 				java.lang.Void extSync() throws SyncFailedException {
 					try {
-						new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project).call();
+						new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project,true).call();
 					} catch (IOException e) {
 						throw new SyncFailedException(e.getMessage());
 					}
@@ -772,14 +775,17 @@ public final class PrearcDatabase {
 				return true;
 			}
 			catch (SQLException e) {
+				logger.error("",e);
 				PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
 				throw e;
 			} 
 			catch (SessionException e) {
+				logger.error("",e);
 				PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
 				throw e;
 			}
 			catch (java.io.SyncFailedException e) {
+				logger.error("",e);
 				PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
 				PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.ERROR);
 				throw e;

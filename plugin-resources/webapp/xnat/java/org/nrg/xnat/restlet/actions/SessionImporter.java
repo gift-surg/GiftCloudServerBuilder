@@ -18,11 +18,11 @@ import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
-import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
@@ -32,19 +32,14 @@ import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
 public class SessionImporter extends ImporterHandlerA implements Callable<List<String>> {
-	private static final String TRUE = "true";
-
-	public static final String AUTO_ARCHIVE = "auto-archive";
 
 	static Logger logger = Logger.getLogger(SessionImporter.class);
 
-	public static final String AA = "AA";
-	public static final String DEST = "dest";
 	public static final String RESPONSE_URL = "URL";
 	
 	private final Boolean allowDataDeletion;
@@ -59,15 +54,6 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	
 	final Map<String,Object> params;
 	
-	
-	
-	@SuppressWarnings("serial")
-	static List<String> prearc_variables=new ArrayList<String>(){{
-		add(AA);
-		add(AUTO_ARCHIVE);
-		add(PrearcUtils.PREARC_SESSION_FOLDER);
-		add(PrearcUtils.PREARC_TIMESTAMP);
-	}};
 	
 	/**
 	 * 
@@ -141,7 +127,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	@SuppressWarnings("serial")
 	public List<String> call() throws ClientException,ServerException{
 			try {
-			String dest =(String)params.get(DEST);
+			String dest =(String)params.get(RequestUtil.DEST);
 
 			XnatImagesessiondata expt=null;
 			
@@ -240,14 +226,12 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			}
 			
 			final PrearcSession session = sessions.get(0);
+			session.getAdditionalValues().putAll(params);
 				
 			try {
-				final XnatImagesessiondataI isd=PrearcTableBuilder.parseSession(session.getSessionXML());
-					
-				if(isAutoArchive(params,destination,isd)){
-						final String uri=ListenerUtils.addListeners(this, new PrearcSessionArchiver(session.getSessionDIR(), user, isd.getProject(), removePrearcVariables(params), allowDataDeletion,overwrite))
-							.call();
-						return new ArrayList<String>(){{add(uri);}};
+				final FinishImageUpload finisher=ListenerUtils.addListeners(this, new FinishImageUpload(this.uID, user, session,destination, allowDataDeletion,overwrite,true));
+				if(finisher.isAutoArchive()){
+					return new ArrayList<String>(){{add(finisher.call());}};
 				}else{
 					this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
 					resetStatus(sessions);
@@ -276,45 +260,6 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			logger.error("",e);
 			throw new ServerException(e.getMessage(),new Exception());
 		}
-	}
-	
-	public static boolean isAutoArchive(final Map<String,Object> params, final UriParserUtils.DataURIA destination,final XnatImagesessiondataI isd) throws ServerException, IOException, SAXException{
-		//determine auto-archive setting
-		String aa = (String)params.remove(AA);
-		
-		if(aa==null){
-			aa = (String)params.remove(AUTO_ARCHIVE);
-		}
-		
-		boolean autoarchive=false;
-		
-		if(destination !=null && destination instanceof UriParserUtils.ArchiveURI){
-			autoarchive=true;
-		}
-		
-		if(aa!=null && aa.toString().equalsIgnoreCase(TRUE)){
-			autoarchive=true;
-		}
-			
-		if(isd.getProject()==null){
-			return false;
-		}
-		
-		if(!autoarchive){
-			final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(isd.getProject());
-			if(code!=null && code.equals(4)){
-				autoarchive=true;
-			}
-		}
-		
-		return autoarchive;
-	}
-	
-	public static Map<String,Object> removePrearcVariables(final Map<String,Object> params){
-		for(String param: prearc_variables){
-			params.remove(param);
-		}
-		return params;
 	}
 	
 	public List<String> returnURLs(final List<PrearcSession> sessions)throws ActionException{

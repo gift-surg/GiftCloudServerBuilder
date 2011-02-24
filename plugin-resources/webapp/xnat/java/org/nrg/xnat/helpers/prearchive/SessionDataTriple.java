@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.nrg.xnat.restlet.XNATApplication;
+import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 
 public class SessionDataTriple {
 	private String folderName;
@@ -85,5 +86,10 @@ public class SessionDataTriple {
 	public static SessionDataTriple fromURI (final String uri) throws MalformedURLException {
 		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		return SessionDataTriple.fromMap(parser.readUri(uri));
+	}
+	public static SessionDataTriple fromPrearcSession (final PrearcSession session) {
+		return new SessionDataTriple().setFolderName(session.getFolderName())
+		                              .setProject(session.getProject())
+		                              .setTimestamp(session.getTimestamp());
 	}
 }

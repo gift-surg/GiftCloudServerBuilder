@@ -14,6 +14,11 @@ import org.restlet.resource.Representation;
 import com.noelios.restlet.ext.servlet.ServletCall;
 
 public class RequestUtil {
+	public static final String DEST = "dest";
+	public static final String AUTO_ARCHIVE = "auto-archive";
+	public static final String AA = "AA";
+	public static final String TRUE = "true";
+
 	public HttpServletRequest getHttpServletRequest(Request request) {
 		return ServletCall.getRequest(request);
 	}

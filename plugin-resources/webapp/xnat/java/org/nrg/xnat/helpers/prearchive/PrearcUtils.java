@@ -24,6 +24,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
+import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
@@ -322,6 +323,10 @@ public class PrearcUtils {
 		return UriParserUtils.parseURI(uri).getProps();
 	}
 
+	public static String buildURI(final String project, final String timestamp, final String folderName){
+		return StringUtils.join(new String[]{"/prearchive/projects/",(project==null)?PrearcUtils.COMMON:project,"/",timestamp,"/",folderName});
+	}
+	
 	public static XFTTable convertArrayLtoTable(ArrayList<ArrayList<Object>> rows){
 		XFTTable table = new XFTTable();
 		table.initTable(PrearcDatabase.getCols());
@@ -330,6 +335,15 @@ public class PrearcUtils {
 			table.insertRow(i.next().toArray());
 		}
 		return table;
+	}
+
+	public static String identifyProject(final Map<String,Object> params) throws MalformedURLException{
+		if(params.containsKey(UriParserUtils.PROJECT_ID)){
+			return (String)params.get(UriParserUtils.PROJECT_ID);
+		}else if(params.containsKey(RequestUtil.DEST)){
+			return (String)(parseURI((String)params.get(RequestUtil.DEST))).get(UriParserUtils.PROJECT_ID);
+		}
+		return null;
 	}
 
 

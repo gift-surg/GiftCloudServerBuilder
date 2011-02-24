@@ -1,9 +1,10 @@
 package org.nrg.xnat.restlet.actions;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +16,21 @@ import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusProducer;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.XFT;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.SessionData;
+import org.nrg.xnat.helpers.prearchive.SessionException;
+import org.nrg.xnat.helpers.uri.UriParserUtils;
+import org.nrg.xnat.helpers.uri.UriParserUtils.PrearchiveURI;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
-import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.xml.sax.SAXException;
 
 /**
  * @author tolsen01
@@ -36,12 +45,10 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
 public abstract class PrearcImporterA extends StatusProducer implements Callable<Iterable<PrearcSession>>{
 	@SuppressWarnings("serial")
 	public static class UnknownPrearcImporterException extends Exception {
-
 		public UnknownPrearcImporterException(String string,
 				IllegalArgumentException illegalArgumentException) {
 			super(string,illegalArgumentException);
 		}
-
 	}
 
 	static Logger logger = Logger.getLogger(PrearcImporterA.class);
@@ -95,7 +102,6 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		return PREARC_IMPORTERS;
 	}
 	
-	
 	public PrearcImporterA(Object control, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params, boolean overwrite, boolean allowDataDeletion) {
 		super(control);
 	}
@@ -103,26 +109,64 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 	public abstract List<PrearcSession> call() throws ActionException;
 	
 	public static class PrearcSession{
-		private final File sessionDIR;
-		private final File sessionXML;
-		private final URI url;
+		private final File sessionDir;
+		private final String project,timestamp,folderName;
+		private final Map<String,Object> additionalValues=new HashMap<String,Object>();
 		
-		public PrearcSession(final File dir, final File xml, final URI u){
-			sessionDIR=dir;
-			sessionXML=xml;
-			url=u;
+		public PrearcSession(final File sessionDir) throws InvalidPermissionException, Exception{
+			this.sessionDir=sessionDir;
+			final File sessionXML=new File(sessionDir.getAbsolutePath()+".xml");
+			
+			folderName=sessionDir.getName();
+			timestamp=sessionDir.getParentFile().getName();
+			
+			final XnatImagesessiondataBean isd=PrearcTableBuilder.parseSession(sessionXML);
+			project=isd.getProject();
 		}
 
-		public File getSessionDIR() {
-			return sessionDIR;
+		public PrearcSession(PrearchiveURI parsedURI,final Map<String,Object> additionalValues,final XDATUser user) throws InvalidPermissionException, Exception{
+			this((String)parsedURI.getProps().get(UriParserUtils.PROJECT_ID),
+					(String)parsedURI.getProps().get(PrearcUtils.PREARC_TIMESTAMP),
+					(String)parsedURI.getProps().get(PrearcUtils.PREARC_SESSION_FOLDER), additionalValues,user);
 		}
 
-		public File getSessionXML() {
-			return sessionXML;
+		public PrearcSession(final String project, final String timestamp, final String folderName,final Map<String,Object> props, final XDATUser user) throws InvalidPermissionException, Exception{
+			this.folderName=folderName;
+			this.project=project;
+			this.timestamp=timestamp;
+			if(folderName==null || timestamp==null){
+				throw new IllegalArgumentException();
+			}
+			this.additionalValues.putAll(props);
+			this.sessionDir=PrearcUtils.getPrearcSessionDir(user, project, timestamp, folderName, true);
 		}
 
-		public URI getUrl() {
-			return url;
+		public File getSessionDir() {
+			return sessionDir;
+		}
+
+		public String getProject() {
+			return project;
+		}
+
+		public String getTimestamp() {
+			return timestamp;
+		}
+
+		public String getFolderName() {
+			return folderName;
+		}
+
+		public Map<String, Object> getAdditionalValues() {
+			return additionalValues;
+		}
+
+		public String getUrl() {
+			return PrearcUtils.buildURI(project, timestamp, folderName);
+		}
+		
+		public SessionData getSessionData() throws SQLException, SessionException{
+			 return PrearcDatabase.getSession(folderName, timestamp, project);
 		}
 	}
 }

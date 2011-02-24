@@ -553,14 +553,14 @@ public class UserCacheResource extends SecureResource {
 			
     private String constructURI(String resource) {
     	
-    	String requestPart = this.getContextPath()+this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
+    	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
     	return requestPart + "/" + resource;
     	
     }
 			
     private String constructURI(File f) {
     	
-    	String requestPart = this.getContextPath()+this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
+    	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
     	if (requestPart.endsWith("/resources/files") || !requestPart.endsWith("/files")) {
     		requestPart+="/files";
     	}

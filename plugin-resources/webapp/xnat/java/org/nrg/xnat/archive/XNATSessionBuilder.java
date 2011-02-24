@@ -57,9 +57,9 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	
 	private static final Class[] PARAMETER_TYPES=new Class[]{File.class,Writer.class};
 	
-	private final File dir;
-	private final File xml;
+	private final File dir,xml;
 	private final String project;
+	private final boolean isInPrearchive;
 	
 	static{
 		builderClasses=new ArrayList<BuilderConfig>();
@@ -116,13 +116,14 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	 * @param xml
 	 * @param project
 	 */
-	public XNATSessionBuilder(final File dir, final File xml, final String project){
+	public XNATSessionBuilder(final File dir, final File xml, final String project, final boolean isInPrearchive){
 		if(dir==null)throw new NullPointerException();
 		if(xml==null)throw new NullPointerException();
 		
 		this.dir=dir;
 		this.xml=xml;
 		this.project=project;
+		this.isInPrearchive=isInPrearchive;
 	}
 	
 	/**
@@ -142,6 +143,11 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 					final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir,
 							fw,
 							new XnatAttrDef.Constant("project", project));
+
+					if(!isInPrearchive){
+						builder.setIsInPrearchive(isInPrearchive);
+					}
+					
 					try {
 						builder.run();
 					} finally {
@@ -157,13 +163,24 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				}
 			}else if(bc.getCode().equals(ECAT)){
 				//hard coded implementation for ECAT
-				new PETSessionBuilder(dir,fw,project).run();
+				PETSessionBuilder builder=new PETSessionBuilder(dir,fw,project);
+
+				if(!isInPrearchive){
+					builder.setIsInPrearchive(isInPrearchive);
+				}
+				
+				builder.run();
 			}else{
 				//this is currently unused... and probably should be re-written.  It was a first pass.
 				try {
 					Constructor con=bc.c.getConstructor(PARAMETER_TYPES);
 					try {
 						org.nrg.session.SessionBuilder builder=(org.nrg.session.SessionBuilder) con.newInstance(new Object[]{dir.getPath(),fw});
+
+						if(!isInPrearchive){
+							builder.setIsInPrearchive(isInPrearchive);
+						}
+						
 						builder.run();
 					} catch (IllegalArgumentException e) {
 						logger.error("",e);

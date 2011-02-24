@@ -1142,6 +1142,15 @@
 		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
+		<!-- BUILD SIM EXECUTABLES -->
+		<copy tofile="${basedir}/bin/XNATRestClient" file="${basedir}/plugin-resources/misc/template3.sh"/>
+		<ant:replace file="${basedir}/bin/XNATRestClient" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+		<ant:replace file="${basedir}/bin/XNATRestClient" token="%XNAT_HOME%" value="${basedir}"/>
+		<ant:replace file="${basedir}/bin/XNATRestClient" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
+		<copy tofile="${basedir}/bin/XNATRestClient.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%XNAT_HOME%" value="${basedir}"/>
+		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
 	</goal>
 	<goal name="xdat:testDB" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
 		<ant:taskdef name="TestDB" classname="TestDB" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
@@ -1261,7 +1270,7 @@
 	</goal>
 	<goal name="xdat:manageProjectXML" description="Updates Project xml with more recent dependencies">
 		<ant:taskdef name="ManageProjectXML" classname="ManageProjectXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
-		<ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml" projdepsrc="${basedir}/projects/${xdat.project.name}/project-dependencies/dependencies.xml" />
+		<ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml" projdepsrc="${basedir}/projects/${xdat.project.name}/project-dependencies/dependencies.xml"/>
 	</goal>
 	<goal name="xdat:manageInstanceSettings" description="Updates Project instance settings with new attributes">
 		<ant:taskdef name="ManageInstanceSettings" classname="ManageInstanceSettings" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
@@ -1326,6 +1335,7 @@
 				<ant:arg value="${cwd}\pipeline\setup.bat"/>
 				<ant:arg value="${xdat.admin_email}"/>
 				<ant:arg value="${xdat.smtp.server}"/>
+				<ant:arg value="${cwd}"/>
 				<env key="MAVEN_TERMINATE_CMD" value="on"/>
 			</ant:exec>
 		</j:if>
@@ -1338,6 +1348,7 @@
 			<ant:exec executable="${basedir}/pipeline/setup.sh" failonerror="true">
 				<ant:arg value="${xdat.admin_email}"/>
 				<ant:arg value="${xdat.smtp.server}"/>
+				<ant:arg value="${cwd}"/>
 			</ant:exec>
 		</j:if>
 	</goal>

@@ -116,7 +116,9 @@ public class XnatSecureGuard extends Filter {
 			final String password = new String(challengeResponse.getSecret());
 
 			user = getUser(username);
-			Authenticator.Authenticate(user, new Authenticator.Credentials(username, password));
+			if(!Authenticator.Authenticate(user, new Authenticator.Credentials(username, password))){
+				user=null;
+			}
 		} catch (Exception e) {
 			user = null;
 		}

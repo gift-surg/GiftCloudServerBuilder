@@ -36,12 +36,13 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 	
 	private final XnatImagescandata tempMR;
 	private final XDATUser user;
-	private boolean allowDataDeletion;
+	private final boolean allowDataDeletion,isInPrearchive;
 	
-	public PullScanDataFromHeaders(final XnatImagescandata scan, final XDATUser user, boolean allowDataDeletion){
+	public PullScanDataFromHeaders(final XnatImagescandata scan, final XDATUser user, boolean allowDataDeletion,boolean isInPrearchive){
 		this.tempMR=scan;
 		this.user=user;
 		this.allowDataDeletion=allowDataDeletion;
+		this.isInPrearchive=isInPrearchive;
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 		final File xml= new File(scanDir,tempMR.getId()+ "_"+ timestamp+".xml");
 		
 		//run DICOM builder
-		final XNATSessionBuilder builder= new XNATSessionBuilder(scanDir,xml,tempMR.getImageSessionData().getProject());
+		final XNATSessionBuilder builder= new XNATSessionBuilder(scanDir,xml,tempMR.getImageSessionData().getProject(),isInPrearchive);
 		builder.call();
 		
 	    if(!xml.exists() || xml.length()==0){

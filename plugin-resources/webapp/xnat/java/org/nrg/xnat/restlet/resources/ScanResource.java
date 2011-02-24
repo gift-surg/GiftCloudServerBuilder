@@ -234,7 +234,7 @@ public class ScanResource  extends ItemResource {
 					MaterializedView.DeleteByUser(user);
 				
 				if(this.isQueryVariableTrue(XNATRestConstants.PULL_DATA_FROM_HEADERS) || this.containsAction(XNATRestConstants.PULL_DATA_FROM_HEADERS)){
-					PullScanDataFromHeaders pull=new PullScanDataFromHeaders(scan, user, allowDataDeletion);
+					PullScanDataFromHeaders pull=new PullScanDataFromHeaders(scan, user, allowDataDeletion,false);
 					pull.call();
 				}
 				

@@ -252,20 +252,22 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 	public Map<String,Object> identifyFields(final Map<String,Object> params, final String TYPE,boolean readOnly){
 		final Map<String,Object> relevant=new HashMap<String,Object>();
 		
-		for(Map.Entry<String,Object> entry:params.entrySet()){
-			for(final String reg:REGEXP){
-				if((entry.getKey()).matches(reg)){
-				relevant.put(entry.getKey(),entry.getValue());
-					continue;
+		if(params!=null){
+			for(Map.Entry<String,Object> entry:params.entrySet()){
+				for(final String reg:REGEXP){
+					if((entry.getKey()).matches(reg)){
+					relevant.put(entry.getKey(),entry.getValue());
+						continue;
+					}
 				}
-			}
-			if(shortcuts.get(TYPE).containsKey(entry.getKey())){
-				relevant.put(shortcuts.get(TYPE).get(entry.getKey()),entry.getValue());
-			}
-			
-			if(readOnly){
-				if(readonly.get(TYPE).containsKey(entry.getKey())){
-					relevant.put(readonly.get(TYPE).get(entry.getKey()),entry.getValue());
+				if(shortcuts.get(TYPE).containsKey(entry.getKey())){
+					relevant.put(shortcuts.get(TYPE).get(entry.getKey()),entry.getValue());
+				}
+				
+				if(readOnly){
+					if(readonly.get(TYPE).containsKey(entry.getKey())){
+						relevant.put(readonly.get(TYPE).get(entry.getKey()),entry.getValue());
+					}
 				}
 			}
 		}

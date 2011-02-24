@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -208,14 +209,6 @@ public class GradualDicomImporter extends ImporterHandlerA {
         return defaultProject;
     }
 
-    private String buildURI(final XnatProjectdata project, final File timestampDir, final File sessionDir) {
-        final StringBuilder sb = new StringBuilder("/prearchive/projects/");
-        sb.append(null == project ? PrearcUtils.COMMON : project.getId());
-        sb.append("/").append(timestampDir.getName());
-        sb.append("/").append(sessionDir.getName());
-        return sb.toString();
-    }
-
     private File getSafeFile(File sessionDir, String scan, String name, DicomObject o) {
         final File safeFile = Files.getImageFile(sessionDir, scan, namer.makeFileName(o));
         final String valname = Files.toFileNameChars(name);
@@ -253,7 +246,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 return GradualDicomImporter.this.getProject(id, null);
             }
         };
-        final XnatProjectdata project = getProject(params.get(UriParserUtils.PROJECT_ID), id.getProject(o));
+        //TODO:This code would cause unnecessary SQL queries to be done.  If the params contain a valid project, then the Project identified by the DICOM should be ignored and doesn't need to be instantiated.
+        XnatProjectdata project;
+		try {
+			project = getProject(PrearcUtils.identifyProject(params), id.getProject(o));
+		} catch (MalformedURLException e1) {
+            logger.error("unable to parse supplied destination flag", e1);
+            throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e1);
+		}
         final String studyInstanceUID = o.getString(Tag.StudyInstanceUID);
         logger.trace("Looking for study {} in project {}", studyInstanceUID, project);
 
@@ -277,10 +277,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
 
         final File root;
+        final String project_id;
         if (null == project) {
             root = new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath());
+            project_id=null;
         } else {
             root = new File(project.getPrearchivePath());
+            project_id=project.getId();
         }
         final File tsdir, sessdir;
         final String uri;
@@ -289,16 +292,16 @@ public class GradualDicomImporter extends ImporterHandlerA {
             tsdir = PrearcUtils.makeTimestampDir(root);
             final String session = id.getSessionLabel(o);
             sessdir = new File(tsdir, session);
-            uri = buildURI(project, tsdir, sessdir);
+            uri = PrearcUtils.buildURI(project_id, tsdir.getName(), sessdir.getName());
             sess = new SessionData();
             sess.setFolderName(session);
             sess.setName(session);
-            sess.setProject(null == project ? null : project.getId());
+            sess.setProject(project_id);
             sess.setScan_date(o.getDate(Tag.StudyDate));
             sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
             sess.setTag(studyInstanceUID);
             sess.setTimestamp(tsdir.getName());
-            sess.setUrl(uri);
+            sess.setUrl(sessdir.getPath());
             try {
                 PrearcDatabase.addSession(sess);
             } catch (SQLException e) {
@@ -309,7 +312,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         } else {
             tsdir = new File(root, sess.getTimestamp());
             sessdir = new File(tsdir, sess.getFolderName());
-            uri = sess.getUrl();
+            uri = PrearcUtils.buildURI(project_id, tsdir.getName(), sessdir.getName());
             try {
                 PrearcDatabase.setStatus(sess.getFolderName(), sess.getTimestamp(),
                         null == project ? null : project.getId(),

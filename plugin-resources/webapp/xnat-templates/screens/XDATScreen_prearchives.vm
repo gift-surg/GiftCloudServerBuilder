@@ -36,17 +36,23 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <!-- 	</div> -->
 		
 <!-- </div> -->
+<script type="text/javascript>
+	window.XNAT.app.prearchive = {};
+	window.XNAT.app.prearchive.project="$!project";
+</script>
 
 <br>
 <div id="prearchive_table"></div>
 <div id="col_table"></div>
 <div id="prearcs" class="prearcs"></div>
 <div id="serverRoot" title="$content.getURI('')"></div>
+<div id="project" title="$!project"/>
+
 </br>
 
 <script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/build/script/prearchiveui.js')"></script>
 
-<!-- <div id="match-op" class="match-op"></div> -->
+<div id="match-op" class="match-op"></div>
 
 <!-- <script type="text/javascript"> -->
 <!-- ifloatX=floatX; -->
@@ -55,7 +61,6 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <!-- window.onresize=define; -->
 <!-- lastX=-1; -->
 <!-- lastY=-1; -->
-
 <!-- </script> -->
 
 <!-- <script type="text/javascript" src="$content.getURI('scripts/xstypes.js')"></script> -->

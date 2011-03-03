@@ -75,23 +75,23 @@ public final class PrearcSessionListResource extends SecureResource {
 		return true;
 	}
 	
-	public void handlePut () {
-		try {
-			PrearcDatabase.refresh();
-		} catch (SQLException e) {
-			logger.error("Unable to refresh sessions", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-		} catch (SessionException e) {
-			logger.error("Unable to refresh sessions", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-		} catch (IllegalStateException e) {
-			logger.error("Unable to refresh sessions", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-		} catch (IOException e) {
-			logger.error("Unable to refresh sessions", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-		}
-	}
+//	public void handlePut () {
+//		try {
+//			PrearcDatabase.refresh();
+//		} catch (SQLException e) {
+//			logger.error("Unable to refresh sessions", e);
+//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+//		} catch (SessionException e) {
+//			logger.error("Unable to refresh sessions", e);
+//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+//		} catch (IllegalStateException e) {
+//			logger.error("Unable to refresh sessions", e);
+//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+//		} catch (IOException e) {
+//			logger.error("Unable to refresh sessions", e);
+//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+//		}
+//	}
 	
 	/**
 		 * (non-Javadoc)
@@ -188,7 +188,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		return this.representTable(table, mt, new Hashtable<String,Object>());
 	}
 	
-	public XFTTable retrieveTable(ArrayList<String> projects) throws SQLException, SessionException {
+	public XFTTable retrieveTable(ArrayList<String> projects) throws Exception, SQLException, SessionException {
 		String [] _proj = new String[projects.size()];
 
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
@@ -196,7 +196,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		return table;
 	}
 	
-	public XFTTable retrieveTable(String tag) throws SQLException, SessionException {
+	public XFTTable retrieveTable(String tag) throws Exception, SQLException, SessionException {
 		final Collection<SessionData> matches=PrearcDatabase.getSessionByUID(tag);
 
 		final List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();

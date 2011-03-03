@@ -16,11 +16,11 @@ public abstract class BaseXDATTestCase{
 	public static XDATUser admin_user=null;
 	public static XDATUser user=null;
 	private static final String XNAT_INSTANCE_FOLDER = "deployments/xnat/";
-	private static final String USER = "tolsen";
-	private static final String PASS = "tolsen";
+	private static final String USER = "admin";
+	private static final String PASS = "admin";
 	
-	private static final String ADMIN_USER = "tolsen";
-	private static final String ADMIN_PASS = "tolsen";
+	private static final String ADMIN_USER = "admin";
+	private static final String ADMIN_PASS = "admin";
 
 	public BaseXDATTestCase() {
 		super();

@@ -274,6 +274,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
         } catch (SessionException e) {
             logger.error("unable to retrieve session by study UID", e);
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+        } catch (Exception e) {
+        	logger.error("unable to retrieve session by study UID", e);
+            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         }
 
         final File root;
@@ -308,6 +311,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
             } catch (SessionException e) {
                 throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+            } catch (Exception e) {
+                throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
             }
         } else {
             tsdir = new File(root, sess.getTimestamp());
@@ -320,6 +325,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
             } catch (SQLException e) {
                 logger.error("unable to update prearchive session status to RECEIVING", e);
             } catch (SessionException e) {
+                logger.error("unable to update prearchive session status to RECEIVING", e);
+            } catch (Exception e) {
                 logger.error("unable to update prearchive session status to RECEIVING", e);
             }
         }

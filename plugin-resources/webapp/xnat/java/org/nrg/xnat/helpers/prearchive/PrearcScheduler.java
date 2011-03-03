@@ -98,6 +98,8 @@ public class PrearcScheduler extends JobBuilderA {
 				logger.error("",e);
 			} catch (SQLException e) {
 				logger.error("",e);
+			} catch (Exception e) {
+				logger.error("",e);
 			}
 			int updated=0;
 			int total=0;

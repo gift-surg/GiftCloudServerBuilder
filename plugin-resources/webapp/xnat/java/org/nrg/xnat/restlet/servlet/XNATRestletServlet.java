@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import org.nrg.dcm.DicomSCP;
 import org.nrg.schedule.QuartzUtils;
 import org.nrg.xdat.om.ArcArchivespecification;
@@ -23,7 +24,7 @@ import com.noelios.restlet.ext.servlet.ServerServlet;
 
 public class XNATRestletServlet extends ServerServlet {
     private static final long serialVersionUID = 1035552647328611333L;
-
+    
     public static ServletConfig REST_CONFIG=null;
     @Override
     public void init() throws ServletException {
@@ -33,8 +34,9 @@ public class XNATRestletServlet extends ServerServlet {
 
         try {
             PrearcDatabase.initDatabase();
-        	QuartzUtils.init();
+        	// QuartzUtils.init();
         } catch (Exception e) {
+        	logger().error("Unable to initialize prearchive database : ", e);
         }
 
         startDicomSCP();

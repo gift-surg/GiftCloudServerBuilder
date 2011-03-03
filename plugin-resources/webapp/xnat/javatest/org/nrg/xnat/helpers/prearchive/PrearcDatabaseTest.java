@@ -22,9 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nrg.test.BaseXDATTestCase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
-public class PrearcDatabaseTest {
+public class PrearcDatabaseTest extends BaseXDATTestCase {
 
 	private static SessionDataDelegate sd;
 	private static int numSessions = 10;
@@ -179,6 +180,8 @@ public class PrearcDatabaseTest {
 			fail("IOException " + e);
 		} catch (SessionException e) {
 			fail("SessionException " + e);
+		} catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 	
@@ -194,14 +197,17 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		Iterator<SessionData> i = sessions.iterator();
 		while(i.hasNext()){
 			SessionData existing = i.next();
 			Iterator<SessionData> j = sds.iterator();
 			boolean found = false;
 			while(j.hasNext()) {
+				SessionData received = j.next(); 
 				if (!found) {
-					SessionData received = j.next(); 
 					found = (received.getFolderName().equals(existing.getFolderName()))
 				           && (received.getTimestamp().equals(existing.getTimestamp()))
 					       && (received.getProject().equals(existing.getProject()));
@@ -224,6 +230,9 @@ public class PrearcDatabaseTest {
 		}
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
 		}
 		int numUnassigned = 0;
 		Iterator<SessionData> i = PrearcDatabaseTest.sessions.iterator();
@@ -253,6 +262,9 @@ public class PrearcDatabaseTest {
 		} catch (SyncFailedException e) {
 			fail ("SyncFailedException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		
 		
 		try {	
@@ -260,7 +272,10 @@ public class PrearcDatabaseTest {
 			fail("Should have throws a SessionException");
 		}catch (SQLException e) {
 			fail ("SQLException" + e.getMessage());
-		} catch (SessionException e) {} 
+		} catch (SessionException e) {}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 	}
 
 
@@ -298,6 +313,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		
 		// map each project in the database to the number of sessions in that project
 		Map<String, Integer> cache = countSessions(projs);
@@ -334,6 +352,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException " + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		
 		Assert.assertEquals("proj_0", s.getProject());
 		Assert.assertEquals("1000", s.getTimestamp());
@@ -349,9 +370,12 @@ public class PrearcDatabaseTest {
 		}
 		catch (SQLException e) {
 			fail ("SQLException " + e.getMessage());
-		}
+		}		
 		catch (SessionException e) {
 		}
+		catch (Exception e) {
+			fail ("Exception " + e.getMessage());
+        }
 	}
 	
 
@@ -379,6 +403,9 @@ public class PrearcDatabaseTest {
 			catch (SessionException e) {
 				fail("Threw a SessionException " + e);
 			}
+			catch (Exception e) {
+				fail("Exception " + e);
+			}
 		}	
 	}
 	
@@ -402,6 +429,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SQLException " + e);
 		} catch (SessionException e) {
 			fail("Threw a SessionException " + e);
+		} catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 	
@@ -416,6 +445,9 @@ public class PrearcDatabaseTest {
 			fail("Threw a SQLException " + e);
 		} catch (SessionException e) {
 			fail("Threw a SessionException " + e);
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 	
@@ -449,6 +481,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail("Threw a SessionException : " + e);
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		assert(s.getProject() == "proj_newProj");
 		assert(s.getStatus().equals(PrearcUtils.PrearcStatus.READY));
 	}
@@ -465,6 +500,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SQLException " + e);
 		} catch (SessionException e) {
 			fail("Threw a SessionException " + e);
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 
 		try {
@@ -475,6 +512,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SessionException" + e);
 		} catch (SyncFailedException e) {
 			fail("Threw a SyncFailedException" + e);
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 	
@@ -488,6 +527,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SQLException " + e);
 		} catch (SessionException e) {
 			fail("Threw a SessionException " + e);
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 
 		try {
@@ -498,6 +539,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SessionException" + e);
 		} catch (SyncFailedException e) {
 			fail("Threw a SyncFailedException" + e);
+		} catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 		
@@ -518,6 +561,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail("Threw a SessionException " + e);
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		SessionData t = null;
 		Date _d = null;
 		try {
@@ -530,6 +576,8 @@ public class PrearcDatabaseTest {
 		}
 		catch (SessionException e) {
 			fail("Threw a SessionException " + e);
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 		Assert.assertEquals(PrearcUtils.PrearcStatus.ERROR, t.getStatus());
 	}
@@ -545,6 +593,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SQLException " + e);
 		} catch (SessionException e) {
 			fail("Threw a SessionException " + e);
+		} catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 
@@ -562,6 +612,8 @@ public class PrearcDatabaseTest {
 			fail("Threw a SessionException " + e);
 		} catch (SyncFailedException e) {
 			fail ("Threw a SyncFailedException" + e);
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 		try {
 			PrearcDatabase.getSession(uri);
@@ -569,6 +621,7 @@ public class PrearcDatabaseTest {
 		}
 		catch (SQLException e) {}
 		catch (SessionException e) {}
+		catch (Exception e) {}
 	}
 	
 	@Test
@@ -584,6 +637,8 @@ public class PrearcDatabaseTest {
 		} 
 		catch (SQLException e) {
 			fail("SQLException " + e.getMessage());
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 		
 		SessionData s = new SessionData().setProject("proj_test")
@@ -602,6 +657,8 @@ public class PrearcDatabaseTest {
 		} 
 		catch (SQLException e) {
 			fail("SQLException " + e.getMessage());
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
 		
 		Assert.assertEquals(s.getProject(), "proj_test");
@@ -622,7 +679,10 @@ public class PrearcDatabaseTest {
 		}
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
+		}catch (Exception e) {
+			fail("Exception " + e);
 		}
+		
 		Iterator<SessionData> di = projs.iterator();
 		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
 		while(di.hasNext()) {
@@ -643,6 +703,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		
 		// make sure each one fails to retrieve
 		// block for up to 3 seconds.
@@ -661,6 +724,9 @@ public class PrearcDatabaseTest {
 				}
 				catch (SessionException e) {
 					notFound = true;
+				}
+				catch (Exception e) {
+					fail("Exception " + e);
 				}
 				if (!notFound) {
 					try {
@@ -713,6 +779,12 @@ public class PrearcDatabaseTest {
 			catch (SessionException f) {
 				fail ("SessionException " + f.getMessage());
 			}
+			catch (Exception f) {
+				fail("Exception " + f);
+			}
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 	
@@ -752,6 +824,12 @@ public class PrearcDatabaseTest {
 			catch (SessionException f) {
 				fail ("SessionException " + f.getMessage());
 			}
+			catch (Exception f) {
+				fail("Exception " + f);
+			}
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
 		}
 	}
 	
@@ -768,6 +846,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		Iterator<SessionData> di = projs.iterator();
 		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
 		while(di.hasNext()) {
@@ -782,6 +863,9 @@ public class PrearcDatabaseTest {
 			fail ("SQLException" + e.getMessage());
 		} catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
 		}
 		
 		// make sure they queued
@@ -801,6 +885,9 @@ public class PrearcDatabaseTest {
 		}
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
 		}
 		
 		di = projs.iterator();
@@ -823,6 +910,9 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		Iterator<SessionData> di = projs.iterator();
 		List<SessionDataTriple> ls = new ArrayList<SessionDataTriple>();
 		while(di.hasNext()) {
@@ -843,11 +933,14 @@ public class PrearcDatabaseTest {
 		catch (SessionException e) {
 			fail ("SessionException" + e.getMessage());
 		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
 		
 		// make sure each one is renamed
-		// block for up to 3 seconds for each session.
+		// block for up to 5 seconds for each session.
 		Iterator<SessionDataTriple> li = ls.iterator();
-		int counter = 3;
+		int counter = 5;
 		boolean found = false;
 		while(li.hasNext()){
 			SessionDataTriple _s = li.next();
@@ -862,6 +955,9 @@ public class PrearcDatabaseTest {
 			}
 			catch (SessionException e) {
 					found = false;
+			}
+			catch (Exception e) {
+				fail("Exception " + e);
 			}
 				if (!found) {
 					try {

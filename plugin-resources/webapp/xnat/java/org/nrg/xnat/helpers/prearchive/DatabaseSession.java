@@ -148,7 +148,7 @@ public enum DatabaseSession {
 		}
 		@Override
 		public String updateSessionSql (String sess, String timestamp, String proj, Object newVal) {
-			String s =  "UPDATE " + PrearcDatabase.table + " SET " + 
+			String s =  "UPDATE " + PrearcDatabase.tableWithSchema + " SET " + 
 			       this.searchSql(newVal) +
 			       ", " + DatabaseSession.LASTMOD.searchSql(Calendar.getInstance().getTime()) + 
 			       " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
@@ -470,17 +470,17 @@ public enum DatabaseSession {
 	
 	
 	public String updateSessionSql (String sess, String timestamp, String proj, Object newVal) {
-		return "UPDATE " + PrearcDatabase.table + " SET " + 
+		return "UPDATE " + PrearcDatabase.tableWithSchema + " SET " + 
 		       this.searchSql(newVal) + " WHERE " +
 		       DatabaseSession.sessionSql(sess, timestamp, proj);
 	}
 	
 	public String findSql (String sess, String timestamp, String proj) {
-		return "SELECT " + this.columnName + " FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+		return "SELECT " + this.columnName + " FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
 	}
 	
 	public String findSql (final Object o) {
-		return "SELECT * FROM " + PrearcDatabase.table + " WHERE " + this.searchSql(o);
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + this.searchSql(o);
 	}
 	/**
 	 * Generate SQL to find a row that matches all the given Sessions' slots.
@@ -488,7 +488,7 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public static String findSessionSql (SessionData s) {
-		return "SELECT * FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.searchSql(s, " AND ");			
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.searchSql(s, " AND ");			
 	}
 	
 	/**
@@ -498,7 +498,7 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public static String findSessionSql (String sess, String timestamp, String proj) {
-		return "SELECT * FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
 	}
 		
 	/**
@@ -509,7 +509,7 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public static String countSessionSql (String sess, String timestamp, String proj) {
-		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
 		return s;
 	}
 	
@@ -526,7 +526,7 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public static String deleteSessionSql (String sess, String timestamp, String proj) {
-		return "DELETE FROM " + PrearcDatabase.table + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
+		return "DELETE FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
 	}
 	
 	/**
@@ -536,7 +536,7 @@ public enum DatabaseSession {
 	 * @return
 	 */
 	public String allMatchesSql (String[]names){
-		return "SELECT * FROM " + PrearcDatabase.table + " WHERE " + this.searchSql(names);
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + this.searchSql(names);
 	}
 	
 	/**
@@ -599,7 +599,7 @@ public enum DatabaseSession {
 	 */
 	public static String createTableSql () {
 		StringBuilder s = new StringBuilder();
-		s.append("CREATE TABLE IF NOT EXISTS " + PrearcDatabase.table + "(");
+		s.append("CREATE TABLE " + PrearcDatabase.tableWithSchema + "(");
 		List<String> values = new ArrayList<String>();
 		for (DatabaseSession d : DatabaseSession.values()) {
 			values.add(d.getColumnName() + " " + d.getColumnDefinition());
@@ -611,7 +611,7 @@ public enum DatabaseSession {
 	
 
 	public static String getAllRows() {
-		return "SELECT * FROM " + PrearcDatabase.table; 
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema; 
 	}
 	
 	/**

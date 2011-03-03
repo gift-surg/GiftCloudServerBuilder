@@ -36,7 +36,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <!-- 	</div> -->
 		
 <!-- </div> -->
-<script type="text/javascript>
+<script type="text/javascript">
 	window.XNAT.app.prearchive = {};
 	window.XNAT.app.prearchive.project="$!project";
 </script>

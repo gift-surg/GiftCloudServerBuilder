@@ -7,15 +7,16 @@
 package org.nrg.xdat.om.base;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatImageassessordata;
 import org.nrg.xft.ItemI;
@@ -191,4 +192,28 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
 	}
+
+	public String getResourceCatalogRootPathByLabel( String label) {
+		String rtn = super.getResourceCatalogRootPathByLabel(label);
+        if (rtn == null) {
+        	//Check if catalog is at the out file level
+        	Iterator misc = this.getOut_file().iterator();
+            while(misc.hasNext())          {
+                Object file = misc.next();
+           	    if (file instanceof XnatResourcecatalog) {
+           	    	String tag = ((XnatResourcecatalog)file).getLabel();
+           	    	if (tag != null && tag.equals(label)) {
+           	    		rtn =((XnatResourcecatalog)file).getUri();
+           	    		int index = rtn.lastIndexOf("/");
+           	    		if (index != -1)
+           	    			rtn = rtn.substring(0, index);
+           	    		break;
+           	    	}
+        	    }
+            }
+        }
+        return rtn;
+	}
+
+
 }

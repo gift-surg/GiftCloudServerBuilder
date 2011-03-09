@@ -630,13 +630,21 @@ public final class PrearcDatabase {
 	}
 	
 	/**
-	 * Set the status of a session, accept the status as a string and before setting it first check that the given status isn't one that can lock a session (i.e begins with '_')
+	 * Set the status of a session, accept the status 
+	 * as a string and before setting it first check that 
+	 * the given status isn't one that can lock a 
+	 * session (i.e begins with '_').
+	 * 
+	 * However a status of "_RECEIVING" is allowed because it 
+	 * allows the sys admin to lock a session directory if they 
+	 * need to mess with it manually.
+	 * 
 	 * @return
 	 */
 	public static boolean setStatus (final String sess, final String timestamp, final String proj, final String status) throws Exception, SQLException, SessionException {
 		PrearcUtils.PrearcStatus p = PrearcUtils.PrearcStatus.valueOf(status);
 		if (p != null){
-			if (PrearcUtils.inProcessStatusMap.containsValue(p)) {
+			if (PrearcUtils.inProcessStatusMap.containsValue(p) && p != PrearcUtils.PrearcStatus._RECEIVING) {
 				throw new SessionException("Cannot set session status to " + status);
 			}
 			else {

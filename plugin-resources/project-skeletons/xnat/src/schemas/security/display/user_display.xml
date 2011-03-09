@@ -14,7 +14,7 @@
 		</HTML-Link>
 	</DisplayField>
 	<DisplayField id="SU" header="" visible="true" image="true">
-		<Content type="sql">'/@WEBAPP/images/su.jpg'</Content>
+		<Content type="sql">'/@WEBAPP/images/su.jpg'::text</Content>
 		<HTML-Link>
 			<Property name="HREF" value="@WEBAPPapp/action/XDATSudoLogin/sudo_login/@Field1">
 				<InsertValue id="Field1" field="LOGIN"/>
@@ -22,7 +22,7 @@
 		</HTML-Link>
 	</DisplayField>
 	<DisplayField id="RPT" header="" visible="true" image="true">
-		<Content type="sql">'/@WEBAPP/images/r.gif'</Content>
+		<Content type="sql">'/@WEBAPP/images/r.gif'::text</Content>
 		<HTML-Link>
 			<Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/xdat:user/search_field/xdat:user.login">
 				<InsertValue id="Field1" field="LOGIN"/>

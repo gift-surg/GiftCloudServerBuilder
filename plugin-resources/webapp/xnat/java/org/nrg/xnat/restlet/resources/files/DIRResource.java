@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -153,7 +155,8 @@ public class DIRResource extends SecureResource {
 						final ZipRepresentation rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName());
 						if (mt.equals(APPLICATION_XAR)) {
 							try {
-								File outF = File.createTempFile("expt_","");
+								String userPath = ArcSpecManager.GetInstance().getGlobalCachePath() + "USERS" + File.separator + user.getXdatUserId();
+								File outF = new File(userPath,"expt_" + (new Date()).getTime());
 								outF.deleteOnExit();
 								FileOutputStream fos=new FileOutputStream(outF);
 								SAXWriter writer = new SAXWriter(fos,true);

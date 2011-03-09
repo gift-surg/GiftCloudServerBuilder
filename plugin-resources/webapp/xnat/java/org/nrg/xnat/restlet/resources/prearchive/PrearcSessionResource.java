@@ -46,7 +46,9 @@ public final class PrearcSessionResource extends SecureResource {
     private static final String PROJECT_ATTR = "PROJECT_ID";
     private static final String SESSION_TIMESTAMP = "SESSION_TIMESTAMP";
     private static final String SESSION_LABEL = "SESSION_LABEL";
-
+    
+    
+    public static final String POST_ACTION_SET = "set-status";
     public static final String POST_ACTION_RESET = "reset-status";
     public static final String POST_ACTION_BUILD = "build";
     public static final String POST_ACTION_MOVE = "move";
@@ -123,6 +125,8 @@ public final class PrearcSessionResource extends SecureResource {
             this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
             return;
         }
+        
+        
 
         if (POST_ACTION_BUILD.equals(action)) {
             try {
@@ -205,6 +209,13 @@ public final class PrearcSessionResource extends SecureResource {
                 logger.error("",e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
             }
+        }  else if (POST_ACTION_SET.equals(action)){
+        	try {
+        		PrearcDatabase.setStatus(session,timestamp,project,(String)this.params.get("status"));
+        	}
+        	catch (Exception e) {
+        		this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        	}
         } else {
             this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
                     "unsupported action on prearchive session: " + action);

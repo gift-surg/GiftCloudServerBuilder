@@ -600,7 +600,7 @@ public final class PrearcDatabase {
 	
 
 	/**
-	 * Set the status of an existing session. All arguments must be non-null and non-empty.
+	 * Set the status of an existing session. All arguments must be non-null and non-empty. Allows the user to set an inprocess status (i.e a status that begins with '_')
 	 * @param sess
 	 * @param timestamp
 	 * @param proj
@@ -613,7 +613,7 @@ public final class PrearcDatabase {
 	}
 	
 	/**
-	 * Set the status of an existing session. All arguments must be non-null and non-empty.
+	 * Set the status of an existing session. All arguments must be non-null and non-empty. Allows the user to set an inprocess status (i.e a status that begins with '_')
 	 * @param sess
 	 * @param timestamp
 	 * @param proj
@@ -629,6 +629,43 @@ public final class PrearcDatabase {
 		return true;
 	}
 	
+	/**
+	 * Set the status of a session, accept the status 
+	 * as a string and before setting it first check that 
+	 * the given status isn't one that can lock a 
+	 * session (i.e begins with '_').
+	 * 
+	 * However a status of "_RECEIVING" is allowed because it 
+	 * allows the sys admin to lock a session directory if they 
+	 * need to mess with it manually.
+	 * 
+	 * @return
+	 */
+	public static boolean setStatus (final String sess, final String timestamp, final String proj, final String status) throws Exception, SQLException, SessionException {
+		PrearcUtils.PrearcStatus p = PrearcUtils.PrearcStatus.valueOf(status);
+		if (p != null){
+			if (PrearcUtils.inProcessStatusMap.containsValue(p)) {
+				throw new SessionException("Cannot set session status to " + status);
+			}
+			else {
+				return PrearcDatabase.setStatus(sess,timestamp,proj,p);
+			}	
+		}
+		else {
+			throw new SessionException ("Status " + status.toString() + " is not a legitimate status");
+		}
+	}
+	
+	/**
+	 * Set the status of an existing session. No check is performed to see if the database is locked. Allows the user to set an inprocess status (i.e a status that begins with '_') 
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @param status
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
 	public static void unsafeSetStatus (final String sess, final String timestamp, final String proj, final PrearcUtils.PrearcStatus status) throws Exception, SQLException, SessionException {
 		if (null == status) {
 			throw new SessionException ("Status argument is null or empty");
@@ -640,10 +677,31 @@ public final class PrearcDatabase {
 			}
 		}); 
 	}
+	/**
+	 * Set the status given a uri specifying the project, timestamp and session and the new status. Allows the user to set an inprocess status (i.e a status that begins with '_')
+	 * @param uri
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
 	public static boolean setStatus(final String uri, final PrearcUtils.PrearcStatus status) throws Exception, SQLException, SessionException {
 		return setStatus(uri,status,false);
 	}
 	
+	/**
+	 * Set the status given the uri specifying the project,timestamp and session, and an 
+	 * override lock that will that will set status even if the session is locked. Allows 
+	 * the user to set an inprocess status (i.e a status that begins with '_')
+	 * @param uri
+	 * @param status
+	 * @param overrideLock
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
 	public static boolean setStatus(final String uri, final PrearcUtils.PrearcStatus status, boolean overrideLock) throws Exception, SQLException, SessionException {
 		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);

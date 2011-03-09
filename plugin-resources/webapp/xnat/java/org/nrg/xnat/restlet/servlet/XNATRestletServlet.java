@@ -34,7 +34,7 @@ public class XNATRestletServlet extends ServerServlet {
 
         try {
             PrearcDatabase.initDatabase();
-        	// QuartzUtils.init();
+        	QuartzUtils.init();
         } catch (Exception e) {
         	logger().error("Unable to initialize prearchive database : ", e);
         }

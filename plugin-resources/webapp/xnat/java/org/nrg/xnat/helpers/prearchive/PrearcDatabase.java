@@ -644,7 +644,7 @@ public final class PrearcDatabase {
 	public static boolean setStatus (final String sess, final String timestamp, final String proj, final String status) throws Exception, SQLException, SessionException {
 		PrearcUtils.PrearcStatus p = PrearcUtils.PrearcStatus.valueOf(status);
 		if (p != null){
-			if (PrearcUtils.inProcessStatusMap.containsValue(p) && p != PrearcUtils.PrearcStatus._RECEIVING) {
+			if (PrearcUtils.inProcessStatusMap.containsValue(p)) {
 				throw new SessionException("Cannot set session status to " + status);
 			}
 			else {

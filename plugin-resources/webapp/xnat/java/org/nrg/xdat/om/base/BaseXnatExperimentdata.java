@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.nrg.xdat.base.BaseElement;
@@ -34,6 +35,7 @@ import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatFielddefinitiongroup;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatExperimentdata;
 import org.nrg.xdat.schema.SchemaElement;
@@ -861,7 +863,29 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		}
 	}
 
+	
+	
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
 		return getExpectedSessionDir();
 	}
+	
+	public String getResourceCatalogRootPathByLabel( String label) {
+		String rtn = null;;
+		Iterator misc = getResources_resource().iterator();
+        while(misc.hasNext())          {
+            Object file = misc.next();
+       	    if (file instanceof XnatResourcecatalog) {
+       	    	String tag = ((XnatResourcecatalog)file).getLabel();
+       	    	if (tag != null && tag.equals(label)) {
+       	    		rtn =((XnatResourcecatalog)file).getUri();
+       	    		int index = rtn.lastIndexOf("/");
+       	    		if (index != -1)
+       	    			rtn = rtn.substring(0, index);
+       	    		break;
+       	    	}
+    	    }
+        }
+        return rtn;
+	}
+
 }

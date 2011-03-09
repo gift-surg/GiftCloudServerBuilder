@@ -158,8 +158,8 @@ public class ProjectPipelineListResource extends SecureResource  {
 								arcProject = PipelineRepositoryManager.GetInstance().getAdditionalPipelines(proj);
 								comment = "additional";
 							}else {
-								XFTItem hack = arcProject.getCurrentDBVersion(true);
-								arcProject.setItem(hack);
+								//XFTItem hack = arcProject.getCurrentDBVersion(true);
+								//arcProject.setItem(hack);
 							}
 						}
 						//xmldoc = arcProject.toXML();

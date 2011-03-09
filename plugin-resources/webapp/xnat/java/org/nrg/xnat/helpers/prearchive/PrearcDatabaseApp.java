@@ -16,7 +16,7 @@ public final class PrearcDatabaseApp {
 	 * @throws SQLException 
 	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws IllegalStateException, SQLException, SessionException, IOException {
+	public static void main(String[] args) throws IllegalStateException, Exception, SQLException, SessionException, IOException {
 		PrearcDatabase.initDatabase("/home/aditya/Java/PRE_ARCHIVE_NEW/");
 	    System.out.println(System.getenv("PWD"));
 	}

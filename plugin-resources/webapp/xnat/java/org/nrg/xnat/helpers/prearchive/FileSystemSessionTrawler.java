@@ -32,10 +32,21 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 
 	static List<String> hidden=new ArrayList(){{add(PrearcUtils.TEMP_UNPACK);}};
 	
-	static FileFilter hiddenFileFilter=new FileFilter(){
+	static FileFilter dbFiles = new FileFilter() {
+		public boolean accept(File pathname){
+			boolean dbExtension = false;
+			int index = pathname.getName().lastIndexOf('.');
+			if (index != -1) {
+				dbExtension = pathname.getName().substring(index).equals(".db");
+			}
+			return dbExtension;
+		}
+	};
+	static FileFilter hiddenAndDatabaseFileFilter=new FileFilter(){
 		public boolean accept(File pathname) {
-			return !hidden.contains(pathname.getName());
-		}};
+			return !hidden.contains(pathname.getName()) && !dbFiles.accept(pathname);
+		}
+	};
 
 	@Override
 	public Collection<SessionData> get() throws IllegalStateException {
@@ -44,7 +55,7 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 		long time = System.currentTimeMillis();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		for (final File tsdir : new File(this.prearcPath).listFiles(hiddenFileFilter)) {
+		for (final File tsdir : new File(this.prearcPath).listFiles(hiddenAndDatabaseFileFilter)) {
 			try {
 				sessions = new PrearcTableBuilder().getPrearcSessions(tsdir);
 			} catch (IOException e) {

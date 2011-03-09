@@ -90,6 +90,9 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			} catch (SQLException e) {
 				logger.error("",e);
 				throw new ServerException(e);
+			} catch (Exception e){
+				logger.error("",e);
+				throw new ServerException(e);
 			}
 		}else{
 			populateAdditionalFields(session.getSessionDir());

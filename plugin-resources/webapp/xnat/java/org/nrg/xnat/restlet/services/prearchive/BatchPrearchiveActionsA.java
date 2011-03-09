@@ -58,7 +58,7 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 		return SessionDataTriple.fromURI(uri);
 	}
 	
-	public Representation updatedStatusRepresentation(final Collection<SessionDataTriple> ss, final MediaType mt)	throws SQLException, SessionException {
+	public Representation updatedStatusRepresentation(final Collection<SessionDataTriple> ss, final MediaType mt)	throws Exception, SQLException, SessionException {
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(ss));
 		return this.representTable(table, mt, new Hashtable<String,Object>());
 	}

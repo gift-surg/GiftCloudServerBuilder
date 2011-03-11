@@ -30,6 +30,7 @@ import org.nrg.xnat.restlet.resources.SubjAssessmentResource;
 import org.nrg.xnat.restlet.resources.SubjectListResource;
 import org.nrg.xnat.restlet.resources.SubjectResource;
 import org.nrg.xnat.restlet.resources.UserCacheResource;
+import org.nrg.xnat.restlet.resources.VersionRepresentation;
 import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
@@ -223,6 +224,8 @@ public class XNATApplication extends Application {
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
         
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
+        
+        router.attach("/version",VersionRepresentation.class);
 	}
         
     @Override

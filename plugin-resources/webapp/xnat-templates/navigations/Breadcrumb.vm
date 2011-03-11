@@ -1,17 +1,20 @@
 <div id="breadcrumbs">
-  #if(! $project.getItem())
-    #if($om.getProject())
-      #if(! $project)
-        #set($project = $om.getProject())
-      #end
-      #else
-        #if($om)
-          $om.setProject($project)
-        #end
-    #end
-  #end
   #if($project)
     #if($om)
+      #if(! $project.getItem())
+        #if($om)
+          #if($om.getProject())
+            #if(! $project)
+              #set($project = $om.getProject())
+            #end
+          #else
+      	    #if($om)
+      	      $om.setProject($project)
+      	    #end
+          #end
+        #end
+      #end
+    
       ##HAS OM
       #if($om.getItem().instanceOf("xnat:mrAssessorData"))
         ##mrAssessorData

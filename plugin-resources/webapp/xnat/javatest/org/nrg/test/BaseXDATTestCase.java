@@ -16,8 +16,8 @@ public abstract class BaseXDATTestCase{
 	public static XDATUser admin_user=null;
 	public static XDATUser user=null;
 	private static final String XNAT_INSTANCE_FOLDER = "deployments/xnat/";
-	private static final String USER = "test1";
-	private static final String PASS = "test1";
+	private static final String USER = "testuser";
+	private static final String PASS = "testuser";
 	
 	private static final String ADMIN_USER = "admin";
 	private static final String ADMIN_PASS = "admin";

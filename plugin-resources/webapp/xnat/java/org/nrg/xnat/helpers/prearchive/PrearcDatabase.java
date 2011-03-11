@@ -1063,6 +1063,35 @@ public final class PrearcDatabase {
 			}
 		}.run();
 	}
+	
+	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s) throws SQLException, SessionException, Exception {
+		return new SessionOp<SessionData>(){
+			public SessionData op() throws SQLException, SessionException, Exception {
+				String [] constraints = {
+										  DatabaseSession.PROJECT.searchSql(project), 
+										  DatabaseSession.TAG.searchSql(suid) 		
+										};		
+				ResultSet rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
+				if (rs.next()) {
+					return DatabaseSession.fillSession(rs);
+				}
+				else {
+					int rowCount = PrearcDatabase.numDuplicateSessions(s.getFolderName(),s.getTimestamp(),s.getProject());
+					if (rowCount >= 1) {
+						throw new SessionException("Trying to add an existing session");
+					}
+					else {
+						PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
+						for (int i = 0; i < DatabaseSession.values().length; i++) {
+							DatabaseSession.values()[i].setInsertStatement(statement, s);
+						}
+						statement.executeUpdate();
+						return s;
+					}
+				}
+			}
+		}.run();
+	}
 
 	/**
 	 * Delete all the rows in the prearchive table.

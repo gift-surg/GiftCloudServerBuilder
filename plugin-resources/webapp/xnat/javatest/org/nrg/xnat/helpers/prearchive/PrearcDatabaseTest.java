@@ -665,6 +665,37 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		Assert.assertEquals(s.getTimestamp(), "1000");
 		Assert.assertEquals(s.getFolderName(), "sess_test");
 	}
+	
+	@Test 
+	public final void testGetOrCreateSession3() {
+		String timestamp = "testTimestamp";
+		String folderName = "testFolderName";
+		PrearcUtils.PrearcStatus status = PrearcUtils.PrearcStatus.RECEIVING;
+		String url = "testUrl";
+		String project = "testProject";
+		String suid = "testSuid";
+		SessionData tmp = new SessionData();
+		tmp.setTimestamp(timestamp);
+		tmp.setFolderName(folderName);
+		tmp.setStatus(status);
+		tmp.setUrl(url);
+		tmp.setProject(project);
+		tmp.setTag(suid);
+		
+		try {
+			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp);
+		}
+		catch (Exception e) {
+			fail("Threw an Exception");
+		}
+		
+		Assert.assertEquals(tmp.getFolderName(), folderName);
+		Assert.assertEquals(tmp.getTimestamp(), timestamp);
+		Assert.assertEquals(tmp.getUrl(), url);
+		Assert.assertEquals(tmp.getStatus(), status);
+		Assert.assertEquals(tmp.getTag(), suid);
+		Assert.assertEquals(tmp.getProject(), project);
+	}
 
 	@Test
 	public final void testGetOrCreateSession2() {

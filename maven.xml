@@ -6,190 +6,191 @@
 <!--                                                                          -->
 <!-- ======================================================================== -->
 <project xmlns:ant="jelly:ant" xmlns:u="jelly:util" xmlns:j="jelly:core" xmlns:maven="jelly:maven" xmlns:plugin="plugin">
-	<!-- ================================================================ -->
-	<!-- Generates a new deployment (and project if undefined)                                       -->
-	<!-- ================================================================ -->
-	<goal name="xdat:setup" description="Setup XDAT Structure">
-		<ant:echo>HOME: ${basedir}</ant:echo>
-		<maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-		<u:available file="${basedir}/deployments/${xdat.project.name}">
-			<fail>
+  <!-- ================================================================ -->
+  <!-- Generates a new deployment (and project if undefined)                                       -->
+  <!-- ================================================================ -->
+  <goal name="xdat:setup" description="Setup XDAT Structure">
+    <ant:echo>HOME: ${basedir}</ant:echo>
+    <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
+    <u:available file="${basedir}/deployments/${xdat.project.name}">
+      <fail>
 --------------------------------------------------------------------------
 | Duplicate Setup Exception                                                      |
 --------------------------------------------------------------------------
 
- This application has already been setup.  If you want to redo 
- the setup process, delete the ${basedir}/deployments/${xdat.project.name} 
+ This application has already been setup.  If you want to redo
+ the setup process, delete the ${basedir}/deployments/${xdat.project.name}
  directory and call setup again.
- 
- If you want to update your previously created deployment, 
+
+ If you want to update your previously created deployment,
  use the 'update' method rather then the 'setup' one.
- 
+
 --------------------------------------------------------------------------
-      			</fail>
-		</u:available>
-		<j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
-			<j:set var="xdat.project.includeXNAT" value="true"/>
-		</j:if>
-		<j:set var="build.db" value="true"/>
-		<j:if test="${context.getVariable('prevent.db.connection') == 'true'}">
-			<j:set var="build.db" value="false"/>
-		</j:if>
-		<j:if test="${context.getVariable('build.db') == 'true'}">
-			<attainGoal name="xdat:testDB"/>
-			<attainGoal name="xdat:verifyPLPGSQL"/>
-		</j:if>
-		<attainGoal name="xdat:copyMavenJars"/>
-		<!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
-		<u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
-			<copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
-		</u:available>-->
-		<ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
-		<maven:makeAbsolutePath var="xdat.root_schemas" path="schemas" basedir="${basedir}"/>
-		<ant:echo>ROOT SCHEMA: ${xdat.root_schemas}</ant:echo>
-		<attainGoal name="xdat:modifyTurbine"/>
-		<attainGoal name="xdat:setupLib"/>
-		<attainGoal name="xdat:setupProject"/>
-		<!-- AUTO GENERATE -->
-		<attainGoal name="xdat:auto-generate"/>
+            </fail>
+    </u:available>
+    <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
+      <j:set var="xdat.project.includeXNAT" value="true"/>
+    </j:if>
+    <j:set var="build.db" value="true"/>
+    <j:if test="${context.getVariable('prevent.db.connection') == 'true'}">
+      <j:set var="build.db" value="false"/>
+    </j:if>
+    <j:if test="${context.getVariable('build.db') == 'true'}">
+      <attainGoal name="xdat:testDB"/>
+      <attainGoal name="xdat:verifyPLPGSQL"/>
+    </j:if>
+    <attainGoal name="xdat:copyMavenJars"/>
+    <!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
+    <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
+      <copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
+    </u:available>-->
+    <ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
+    <maven:makeAbsolutePath var="xdat.root_schemas" path="schemas" basedir="${basedir}"/>
+    <ant:echo>ROOT SCHEMA: ${xdat.root_schemas}</ant:echo>
+    <attainGoal name="xdat:modifyTurbine"/>
+    <attainGoal name="xdat:setupLib"/>
+    <attainGoal name="xdat:setupProject"/>
+    <!-- AUTO GENERATE -->
+    <attainGoal name="xdat:auto-generate"/>
 		<attainGoal name="xdat:mergeProjectWebXML"/>
-		<attainGoal name="xdat:updateJS"/>
-		<attainGoal name="xdat:generateBeans"/>
-		<!-- CHMOD SH FILES -->
-		<attainGoal name="xdat:chmod"/>
-		<attainGoal name="xdat:copyConf"/>
-		<!-- BUILD DB -->
-		<!--<j:if test="${context.getVariable('build.db') == 'true'}">
-			<attainGoal name="xdat:buildDB"/>
-		</j:if>-->
-		<!-- DEPLOY OR WAR -->
-		<maven:makeAbsolutePath var="root.webapp" path="webapps/ROOT" basedir="${maven.appserver.home}"/>
-		<j:if test="${context.getVariable('deploy') == 'true'}">
-			<ant:echo>Deploying webapp.</ant:echo>
-			<attainGoal name="xdat:deployWebapp"/>
-		</j:if>
-		<j:if test="${context.getVariable('deploy') != 'true'}">
-			<ant:echo>Creating WAR File.</ant:echo>
-			<attainGoal name="xdat:buildWAR"/>
-		</j:if>
-		<!-- INVOKE PIPELINE SETUP -->
-		<attainGoal name="pipeline:init"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Copies core Maven jars to the user's repository                                                    -->
-	<!-- ================================================================ -->
-	<goal name="xdat:copyMavenJars" description="Copies Maven jars to user's home directory">
-		<ant:echo>HOME: ${basedir}</ant:echo>
-		<ant:echo>USER HOME: ${user.home}</ant:echo>
-		<mkdir dir="${user.home}/.maven"/>
-		<copy todir="${user.home}/.maven/repository" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/maven-1.0.2/temp"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Deletes pre-existing build directory (target) from deployment                                 -->
-	<!-- ================================================================ -->
-	<goal name="xdat:clean" description="Clean target">
-		<maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-		<maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
-		<!-- DELETE OLD TARGET DIR -->
-		<delete dir="${xdat.webapp.target}"/>
-	</goal>
-	<goal name="xdat:updateJS" description="Update JavaScript files">
-		<!--<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xdat.js"/>
-		<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
-		<copy todir="${basedir}/projects/${xdat.project.name}/src/scripts" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/scripts"/>
-		</copy>
-	</goal>
-	<goal name="xdat:updateCSS" description="Update CSS files">
-		<!--<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xdat.js"/>
-		<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
-		<copy todir="${basedir}/projects/${xdat.project.name}/src/style" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/style"/>
-		</copy>
-	</goal>
-	<goal name="xdat:updateFiles" description="Update XDAT Files">
-		<maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-		<j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
-			<j:set var="xdat.project.includeXNAT" value="true"/>
-		</j:if>
-		<!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
-		<u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
-			<copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
-		</u:available>-->
-		<ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
-		<maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
-		<!-- CLEAN TURBINE JAR -->
-		<maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-		<maven:makeAbsolutePath var="xdat.webapp.NEW" path="deployments/${xdat.project.name}/src" basedir="${basedir}"/>
-		<maven:makeAbsolutePath var="xdat.webapp.OLD.xdat" path="plugin-resources/webapp/xdat" basedir="${basedir}"/>
-		<maven:makeAbsolutePath var="xdat.webapp.OLD.xnat" path="plugin-resources/webapp/xnat" basedir="${basedir}"/>
-		<maven:makeAbsolutePath var="xdat.webapp.OLD.custom" path="plugin-resources/webapp/${xdat.project.name}" basedir="${basedir}"/>
-		<!-- COPY ANY NEW XDAT OR XNAT TEMPLATES TO PROJECT RESOURCE WEBAPPS -->
-		<attainGoal name="xdat:updateFilesFromXDAT"/>
-		<j:choose>
-			<j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
-				<ant:echo>USING XNAT TEMPLATE</ant:echo>
-				<attainGoal name="xdat:updateFilesFromXNAT"/>
-			</j:when>
-		</j:choose>
-		<attainGoal name="xdat:updateJS"/>
-		<attainGoal name="xdat:updateCSS"/>
-		<attainGoal name="xdat:updateApplet"/>
-		<attainGoal name="xdat:updateFilesFromCustom"/>
-		<attainGoal name="xdat:configureInstanceSettings"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Updates an existing deployment                               -->
-	<!-- ================================================================ -->
-	<goal name="xdat:update" description="Setup XDAT Structure">
-		<j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
-			<j:set var="xdat.project.includeXNAT" value="true"/>
-		</j:if>
-		<j:set var="build.db" value="true"/>
-		<j:if test="${context.getVariable('prevent.db.connection') == 'true'}">
-			<j:set var="build.db" value="false"/>
-		</j:if>
-		<j:if test="${context.getVariable('build.db') == 'true'}">
-			<attainGoal name="xdat:testDB"/>
-			<attainGoal name="xdat:verifyPLPGSQL"/>
-		</j:if>
-		<attainGoal name="xdat:manageProjectXML"/>
-		<attainGoal name="xdat:setupLib"/>
-		<attainGoal name="xdat:clean"/>
-		<attainGoal name="xdat:modifyTurbine"/>
-		<attainGoal name="xdat:updateFiles"/>
-		<!--LOGGER  SETTINGS -->
-		<attainGoal name="xdat:configureLog4j"/>
-		<!-- AUTO GENERATE -->
-		<attainGoal name="xdat:auto-update"/>
+    <attainGoal name="xdat:updateJS"/>
+    <attainGoal name="xdat:updateCSS"/>
+    <attainGoal name="xdat:generateBeans"/>
+    <!-- CHMOD SH FILES -->
+    <attainGoal name="xdat:chmod"/>
+    <attainGoal name="xdat:copyConf"/>
+    <!-- BUILD DB -->
+    <!--<j:if test="${context.getVariable('build.db') == 'true'}">
+      <attainGoal name="xdat:buildDB"/>
+    </j:if>-->
+    <!-- DEPLOY OR WAR -->
+    <maven:makeAbsolutePath var="root.webapp" path="webapps/ROOT" basedir="${maven.appserver.home}"/>
+    <j:if test="${context.getVariable('deploy') == 'true'}">
+      <ant:echo>Deploying webapp.</ant:echo>
+      <attainGoal name="xdat:deployWebapp"/>
+    </j:if>
+    <j:if test="${context.getVariable('deploy') != 'true'}">
+      <ant:echo>Creating WAR File.</ant:echo>
+      <attainGoal name="xdat:buildWAR"/>
+    </j:if>
+    <!-- INVOKE PIPELINE SETUP -->
+    <attainGoal name="pipeline:init"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Copies core Maven jars to the user's repository                                                    -->
+  <!-- ================================================================ -->
+  <goal name="xdat:copyMavenJars" description="Copies Maven jars to user's home directory">
+    <ant:echo>HOME: ${basedir}</ant:echo>
+    <ant:echo>USER HOME: ${user.home}</ant:echo>
+    <mkdir dir="${user.home}/.maven"/>
+    <copy todir="${user.home}/.maven/repository" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/maven-1.0.2/temp"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Deletes pre-existing build directory (target) from deployment                                 -->
+  <!-- ================================================================ -->
+  <goal name="xdat:clean" description="Clean target">
+    <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
+    <maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
+    <!-- DELETE OLD TARGET DIR -->
+    <delete dir="${xdat.webapp.target}"/>
+  </goal>
+  <goal name="xdat:updateJS" description="Update JavaScript files">
+    <!--<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xdat.js"/>
+    <copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
+    <copy todir="${basedir}/projects/${xdat.project.name}/src/scripts" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/scripts"/>
+    </copy>
+  </goal>
+  <goal name="xdat:updateCSS" description="Update CSS files">
+    <!--<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xdat.js"/>
+    <copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
+    <copy todir="${basedir}/projects/${xdat.project.name}/src/style" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/style"/>
+    </copy>
+  </goal>
+  <goal name="xdat:updateFiles" description="Update XDAT Files">
+    <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
+    <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
+      <j:set var="xdat.project.includeXNAT" value="true"/>
+    </j:if>
+    <!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
+    <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
+      <copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
+    </u:available>-->
+    <ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
+    <maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
+    <!-- CLEAN TURBINE JAR -->
+    <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
+    <maven:makeAbsolutePath var="xdat.webapp.NEW" path="deployments/${xdat.project.name}/src" basedir="${basedir}"/>
+    <maven:makeAbsolutePath var="xdat.webapp.OLD.xdat" path="plugin-resources/webapp/xdat" basedir="${basedir}"/>
+    <maven:makeAbsolutePath var="xdat.webapp.OLD.xnat" path="plugin-resources/webapp/xnat" basedir="${basedir}"/>
+    <maven:makeAbsolutePath var="xdat.webapp.OLD.custom" path="plugin-resources/webapp/${xdat.project.name}" basedir="${basedir}"/>
+    <!-- COPY ANY NEW XDAT OR XNAT TEMPLATES TO PROJECT RESOURCE WEBAPPS -->
+    <attainGoal name="xdat:updateFilesFromXDAT"/>
+    <j:choose>
+      <j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
+        <ant:echo>USING XNAT TEMPLATE</ant:echo>
+        <attainGoal name="xdat:updateFilesFromXNAT"/>
+      </j:when>
+    </j:choose>
+    <attainGoal name="xdat:updateJS"/>
+    <attainGoal name="xdat:updateCSS"/>
+    <attainGoal name="xdat:updateApplet"/>
+    <attainGoal name="xdat:updateFilesFromCustom"/>
+    <attainGoal name="xdat:configureInstanceSettings"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Updates an existing deployment                               -->
+  <!-- ================================================================ -->
+  <goal name="xdat:update" description="Setup XDAT Structure">
+    <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
+      <j:set var="xdat.project.includeXNAT" value="true"/>
+    </j:if>
+    <j:set var="build.db" value="true"/>
+    <j:if test="${context.getVariable('prevent.db.connection') == 'true'}">
+      <j:set var="build.db" value="false"/>
+    </j:if>
+    <j:if test="${context.getVariable('build.db') == 'true'}">
+      <attainGoal name="xdat:testDB"/>
+      <attainGoal name="xdat:verifyPLPGSQL"/>
+    </j:if>
+    <attainGoal name="xdat:manageProjectXML"/>
+    <attainGoal name="xdat:setupLib"/>
+    <attainGoal name="xdat:clean"/>
+    <attainGoal name="xdat:modifyTurbine"/>
+    <attainGoal name="xdat:updateFiles"/>
+    <!--LOGGER  SETTINGS -->
+    <attainGoal name="xdat:configureLog4j"/>
+    <!-- AUTO GENERATE -->
+    <attainGoal name="xdat:auto-update"/>
 		<attainGoal name="xdat:mergeProjectWebXML"/>
-		<attainGoal name="xdat:generateBeans"/>
-		<!-- CHMOD SH FILES -->
-		<attainGoal name="xdat:chmod"/>
-		<attainGoal name="xdat:copyConf"/>
-		<!-- BUILD DB -->
-		<!--<j:if test="${context.getVariable('build.db') == 'true'}">
-			<attainGoal name="xdat:updateDB"/>
-		</j:if>-->
-		<j:if test="${context.getVariable('deploy') == 'true'}">
-			<ant:echo>Deploying webapp.</ant:echo>
-			<attainGoal name="xdat:deployWebapp"/>
-		</j:if>
-		<j:if test="${context.getVariable('deploy') != 'true'}">
-			<ant:echo>Creating WAR File.</ant:echo>
-			<attainGoal name="xdat:buildWAR"/>
-		</j:if>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Creates a project conf directory if it doesn't exist already exist, copy files to deployment  -->
-	<!-- ================================================================ -->
-	<goal name="xdat:copyConf">
-		<maven:makeAbsolutePath var="xdat.project.resource.conf" path="projects/${xdat.project.name}/src/conf" basedir="${basedir}"/>
+    <attainGoal name="xdat:generateBeans"/>
+    <!-- CHMOD SH FILES -->
+    <attainGoal name="xdat:chmod"/>
+    <attainGoal name="xdat:copyConf"/>
+    <!-- BUILD DB -->
+    <!--<j:if test="${context.getVariable('build.db') == 'true'}">
+      <attainGoal name="xdat:updateDB"/>
+    </j:if>-->
+    <j:if test="${context.getVariable('deploy') == 'true'}">
+      <ant:echo>Deploying webapp.</ant:echo>
+      <attainGoal name="xdat:deployWebapp"/>
+    </j:if>
+    <j:if test="${context.getVariable('deploy') != 'true'}">
+      <ant:echo>Creating WAR File.</ant:echo>
+      <attainGoal name="xdat:buildWAR"/>
+    </j:if>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Creates a project conf directory if it doesn't exist already exist, copy files to deployment  -->
+  <!-- ================================================================ -->
+  <goal name="xdat:copyConf">
+    <maven:makeAbsolutePath var="xdat.project.resource.conf" path="projects/${xdat.project.name}/src/conf" basedir="${basedir}"/>
 		<maven:makeAbsolutePath var="xdat.plugins.resource.conf" path="plugin-resources/conf" basedir="${basedir}"/>
-		<ant:mkdir dir="${xdat.project.resource.conf}"/>
-		<copy file="${basedir}/VERSION" tofile="${basedir}/deployments/${xdat.project.name}/conf/VERSION" preservelastmodified="true"/>
+    <ant:mkdir dir="${xdat.project.resource.conf}"/>
+    <copy file="${basedir}/VERSION" tofile="${basedir}/deployments/${xdat.project.name}/conf/VERSION" preservelastmodified="true"/>
 		<!-- The plugin-resources copy needs to happen first so files can be superseded by files applied at the project level -->
 		<ant:copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true" overwrite="true">
 			<fileset dir="${xdat.plugins.resource.conf}">
@@ -203,945 +204,959 @@
 				<exclude name="README"/>
 			</fileset>
 		</ant:copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Calls the maven task for the deployment xdat:deploy                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:deployWebapp">
-		<maven:makeAbsolutePath var="xdat.deployment" path="deployments/${xdat.project.name}/" basedir="${basedir}"/>
-		<ant:echo>${xdat.deployment}</ant:echo>
-		<j:set var="xdat.os" value="UNIX"/>
-		<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
-			<j:set var="xdat.os" value="WINDOWS"/>
-			<ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven.bat" dir="${xdat.deployment}/">
-				<arg value="xdat:deploy"/>
-			</ant:exec>
-		</j:if>
-		<j:if test="${context.getVariable('xdat.os').equals('UNIX')}">
-			<ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven" dir="${xdat.deployment}/">
-				<arg value="xdat:deploy"/>
-			</ant:exec>
-		</j:if>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Calls the maven task for the deployment xdat:war                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:buildWAR">
-		<maven:makeAbsolutePath var="xdat.deployment" path="deployments/${xdat.project.name}/" basedir="${basedir}"/>
-		<ant:echo>${xdat.deployment}</ant:echo>
-		<j:set var="xdat.os" value="UNIX"/>
-		<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
-			<j:set var="xdat.os" value="WINDOWS"/>
-			<ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven.bat" dir="${xdat.deployment}/">
-				<arg value="xdat:war"/>
-			</ant:exec>
-		</j:if>
-		<j:if test="${context.getVariable('xdat.os').equals('UNIX')}">
-			<ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven" dir="${xdat.deployment}/">
-				<arg value="xdat:war"/>
-			</ant:exec>
-		</j:if>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Modifies the directory permissions for the deployments logs and work folder       -->
-	<!-- so that any user can modify them -->
-	<!-- ================================================================ -->
-	<goal name="xdat:chmod">
-		<maven:makeAbsolutePath var="xdat.bin.dir" path="bin" basedir="${basedir}"/>
-		<ant:chmod perm="ugo+rx">
-			<fileset dir="${xdat.bin.dir}">
-				<exclude name="*.bat"/>
-			</fileset>
-		</ant:chmod>
-		<mkdir dir="${basedir}/deployments/${xdat.project.name}/logs"/>
-		<mkdir dir="${basedir}/deployments/${xdat.project.name}/work"/>
-		<ant:chmod perm="ugo+rxw" dir="${basedir}/deployments/${xdat.project.name}/logs"/>
-		<ant:chmod perm="ugo+rxw" dir="${basedir}/deployments/${xdat.project.name}/work"/>
-		<ant:chmod perm="ugo+rxw" dir="${basedir}/plugin-resources/maven-1.0.2/bin/install_repo.sh"/>
-		<ant:chmod perm="ugo+rxw" dir="${basedir}/plugin-resources/maven-1.0.2/bin/maven"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Delete any pre-existing Turbine plugins and replace with the local copy.              -->
-	<!-- XDAT uses its own modified version of Turbine.  Replacement may be neccessary              -->
-	<!-- This prevents the use of a legacy version of Turbine.                                           -->
-	<!-- ================================================================ -->
-	<goal name="xdat:modifyTurbine" description="Setup XDAT Structure">
-		<plugin:uninstall name="maven-turbine-plugin"/>
-		<maven:uninstallPlugin artifactId="maven-turbine-plugin"/>
-		<!--install new -->
-		<maven:makeAbsolutePath var="modified.plugins.dir" path="plugin-resources/repository/turbine/plugins/maven-turbine-plugin-1.2.jar" basedir="${basedir}"/>
-		<maven:installPlugin file="${modified.plugins.dir}" cache="true"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Creates or updates the project directory                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:generateResourceDirectory">
-		<!--CREATE RESOURCE DIRECTORY-->
-		<maven:makeAbsolutePath var="xdat.project.resource" path="projects/${xdat.project.name}" basedir="${basedir}"/>
-		<j:set var="xdat.project.resource.exists" value="false"/>
-		<u:available file="${xdat.project.resource}">
-			<j:set var="xdat.project.resource.exists" value="true"/>
-		</u:available>
-		<j:choose>
-			<j:when test="${context.getVariable('xdat.project.resource.exists').equalsIgnoreCase('true')}">
-				<ant:echo>${xdat.project.resource} Exists.</ant:echo>
-				<ant:mkdir dir="${xdat.project.resource}/logs/inserts"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/templates/layouts"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/templates/macros"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/templates/navigations"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/templates/screens"/>
-				<ant:mkdir dir="${basedir}/projects/${xdat.project.name}/sql"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/base-templates/screens"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/actions"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/screens"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/utils"/>
-				<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/security/security.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/security/security.xsd"/>
-				<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/security/security.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/security/security.xsd"/>
-				<j:if test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
-					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/xnat/xnat.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/xnat/xnat.xsd"/>
-					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/birn/birnprov.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/birn/birnprov.xsd"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Calls the maven task for the deployment xdat:deploy                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:deployWebapp">
+    <maven:makeAbsolutePath var="xdat.deployment" path="deployments/${xdat.project.name}/" basedir="${basedir}"/>
+    <ant:echo>${xdat.deployment}</ant:echo>
+    <j:set var="xdat.os" value="UNIX"/>
+    <j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+      <j:set var="xdat.os" value="WINDOWS"/>
+      <ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven.bat" dir="${xdat.deployment}/">
+        <arg value="xdat:deploy"/>
+      </ant:exec>
+    </j:if>
+    <j:if test="${context.getVariable('xdat.os').equals('UNIX')}">
+      <ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven" dir="${xdat.deployment}/">
+        <arg value="xdat:deploy"/>
+      </ant:exec>
+    </j:if>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Calls the maven task for the deployment xdat:war                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:buildWAR">
+    <maven:makeAbsolutePath var="xdat.deployment" path="deployments/${xdat.project.name}/" basedir="${basedir}"/>
+    <ant:echo>${xdat.deployment}</ant:echo>
+    <j:set var="xdat.os" value="UNIX"/>
+    <j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+      <j:set var="xdat.os" value="WINDOWS"/>
+      <ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven.bat" dir="${xdat.deployment}/">
+        <arg value="xdat:war"/>
+      </ant:exec>
+    </j:if>
+    <j:if test="${context.getVariable('xdat.os').equals('UNIX')}">
+      <ant:exec executable="${basedir}/plugin-resources/maven-1.0.2/bin/maven" dir="${xdat.deployment}/">
+        <arg value="xdat:war"/>
+      </ant:exec>
+    </j:if>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Modifies the directory permissions for the deployments logs and work folder       -->
+  <!-- so that any user can modify them -->
+  <!-- ================================================================ -->
+  <goal name="xdat:chmod">
+    <maven:makeAbsolutePath var="xdat.bin.dir" path="bin" basedir="${basedir}"/>
+    <ant:chmod perm="ugo+rx">
+      <fileset dir="${xdat.bin.dir}">
+        <exclude name="*.bat"/>
+      </fileset>
+    </ant:chmod>
+    <mkdir dir="${basedir}/deployments/${xdat.project.name}/logs"/>
+    <mkdir dir="${basedir}/deployments/${xdat.project.name}/work"/>
+    <ant:chmod perm="ugo+rxw" dir="${basedir}/deployments/${xdat.project.name}/logs"/>
+    <ant:chmod perm="ugo+rxw" dir="${basedir}/deployments/${xdat.project.name}/work"/>
+    <ant:chmod perm="ugo+rxw" dir="${basedir}/plugin-resources/maven-1.0.2/bin/install_repo.sh"/>
+    <ant:chmod perm="ugo+rxw" dir="${basedir}/plugin-resources/maven-1.0.2/bin/maven"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Delete any pre-existing Turbine plugins and replace with the local copy.              -->
+  <!-- XDAT uses its own modified version of Turbine.  Replacement may be neccessary              -->
+  <!-- This prevents the use of a legacy version of Turbine.                                           -->
+  <!-- ================================================================ -->
+  <goal name="xdat:modifyTurbine" description="Setup XDAT Structure">
+    <plugin:uninstall name="maven-turbine-plugin"/>
+    <maven:uninstallPlugin artifactId="maven-turbine-plugin"/>
+    <!--install new -->
+    <maven:makeAbsolutePath var="modified.plugins.dir" path="plugin-resources/repository/turbine/plugins/maven-turbine-plugin-1.2.jar" basedir="${basedir}"/>
+    <maven:installPlugin file="${modified.plugins.dir}" cache="true"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Creates or updates the project directory                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:generateResourceDirectory">
+    <!--CREATE RESOURCE DIRECTORY-->
+    <maven:makeAbsolutePath var="xdat.project.resource" path="projects/${xdat.project.name}" basedir="${basedir}"/>
+    <j:set var="xdat.project.resource.exists" value="false"/>
+    <u:available file="${xdat.project.resource}">
+      <j:set var="xdat.project.resource.exists" value="true"/>
+    </u:available>
+    <j:choose>
+      <j:when test="${context.getVariable('xdat.project.resource.exists').equalsIgnoreCase('true')}">
+        <ant:echo>${xdat.project.resource} Exists.</ant:echo>
+        <ant:mkdir dir="${xdat.project.resource}/logs/inserts"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/templates/layouts"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/templates/macros"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/templates/navigations"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/templates/screens"/>
+        <ant:mkdir dir="${basedir}/projects/${xdat.project.name}/sql"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/base-templates/screens"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/actions"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/screens"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/utils"/>
+        <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/security/security.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/security/security.xsd"/>
+        <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/security/security.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/security/security.xsd"/>
+        <j:if test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
+          <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/xnat/xnat.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/xnat/xnat.xsd"/>
+          <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/birn/birnprov.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/birn/birnprov.xsd"/>
 					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/xnat/xnat.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/xnat/xnat.xsd"/>
-					<copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/birn/birnprov.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/birn/birnprov.xsd"/>
-					<copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
-						<fileset dir="${basedir}/plugin-resources/project-skeletons/xnat/sql"/>
-					</copy>
-				</j:if>
-			</j:when>
-			<j:otherwise>
-				<ant:echo>Creating ${xdat.project.resource}.</ant:echo>
-				<ant:mkdir dir="${xdat.project.resource}"/>
-				<ant:mkdir dir="${xdat.project.resource}/logs/inserts"/>
-				<j:choose>
-					<j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
-						<maven:makeAbsolutePath var="xdat.project.skeleton.xnat" path="plugin-resources/project-skeletons/xnat" basedir="${basedir}"/>
-						<copy todir="${xdat.project.resource}" preservelastmodified="true">
-							<fileset dir="${xdat.project.skeleton.xnat}"/>
-						</copy>
-						<maven:makeAbsolutePath var="xdat.webapp.skeleton.xnat" path="plugin-resources/webapp/xnat" basedir="${basedir}"/>
-						<copy todir="${xdat.project.resource}/src" preservelastmodified="true">
-							<fileset dir="${xdat.webapp.skeleton.xnat}">
-								<exclude name="java/**"/>
-							</fileset>
-						</copy>
-						<u:available file="${xdat.project.resource}/src/xdat-templates">
-							<delete dir="${xdat.project.resource}/src/xdat-templates" includeemptydirs="true"/>
-						</u:available>
-						<u:available file="${xdat.project.resource}/src/xnat-templates">
-							<delete dir="${xdat.project.resource}/src/xnat-templates" includeemptydirs="true"/>
-						</u:available>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/layouts"/>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/macros"/>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/navigations"/>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/screens"/>
-						<copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
-							<fileset dir="${basedir}/plugin-resources/webapp/xnat/images"/>
-						</copy>
-					</j:when>
-					<j:otherwise>
-						<maven:makeAbsolutePath var="xdat.project.skeleton.sample" path="plugin-resources/project-skeletons/sample" basedir="${basedir}"/>
-						<copy todir="${xdat.project.resource}" preservelastmodified="true">
-							<fileset dir="${xdat.project.skeleton.sample}"/>
-						</copy>
-						<maven:makeAbsolutePath var="xdat.webapp.skeleton.xdat" path="plugin-resources/webapp/xdat" basedir="${basedir}"/>
-						<copy todir="${xdat.project.resource}/src" preservelastmodified="true">
-							<fileset dir="${xdat.webapp.skeleton.xdat}">
-								<exclude name="java/**"/>
-							</fileset>
-						</copy>
-						<u:available file="${xdat.project.resource}/src/xdat-templates">
-							<delete dir="${xdat.project.resource}/src/xdat-templates" includeemptydirs="true"/>
-						</u:available>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/layouts"/>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/macros"/>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/navigations"/>
-						<ant:mkdir dir="${xdat.project.resource}/src/templates/screens"/>
-						<copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
-							<fileset dir="${basedir}/plugin-resources/webapp/xdat/images"/>
-						</copy>
-					</j:otherwise>
-				</j:choose>
-				<ant:mkdir dir="${basedir}/projects/${xdat.project.name}/sql"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/base-templates/screens"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/actions"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/screens"/>
-				<ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/utils"/>
-				<delete>
-					<fileset dir="${xdat.project.resource}" includes="**/CVS/"/>
-				</delete>
-				<delete dir="${xdat.project.resource}/pdf"/>
-				<ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.admin_email}"/>
-			</j:otherwise>
-		</j:choose>
-	</goal>
-	<!-- ================================================================ -->
-	<!--Copies pertinent XDAT files to the deployment                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:updateFilesFromXDAT">
-		<ant:mkdir dir="deployments/${xdat.project.name}/src/xdat-templates"/>
-		<copy todir="deployments/${xdat.project.name}/src/xdat-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xdat-templates"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!--Copies pertinent XNAT files to the deployment                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:updateFilesFromXNAT">
-		<ant:mkdir dir="deployments/${xdat.project.name}/src/xnat-templates"/>
-		<copy todir="deployments/${xdat.project.name}/src/xnat-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat-templates"/>
-		</copy>
-		<delete dir="${basedir}/deployments/${xdat.project.name}/src/java/org/nrg/xnat"/>
-		<copy todir="deployments/${xdat.project.name}/src/java" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/java"/>
-		</copy>
-		<copy todir="projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/" includes="**/*.xsd"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!--Copies pertinent project based files to the deployment                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:updateFilesFromCustom">
-		<u:available file="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml">
-			<copy file="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml" tofile="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml.bk"/>
-			<delete file="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml"/>
-		</u:available>
-		<u:available file="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml">
-			<copy file="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml" tofile="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml.bk"/>
-			<delete file="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml"/>
-		</u:available>
-		<u:available file="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml">
-			<copy file="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml" tofile="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml.bk"/>
-			<delete file="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml"/>
-		</u:available>
-		<u:available file="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml">
-			<copy file="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml" tofile="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml.bk"/>
-			<delete file="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml"/>
-		</u:available>
-		<attainGoal name="xdat:manageInstanceSettings"/>
-		<copy todir="deployments/${xdat.project.name}" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}">
-				<exclude name="log4j.properties"/>
-			</fileset>
-		</copy>
-		<copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/java/org/nrg/xdat/om">
-				<exclude name="base/*.java"/>
-			</fileset>
-		</copy>
-	</goal>
-	<!--Copies pertinent applet to the deployment                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:updateApplet">
-		<ant:mkdir dir="deployments/${xdat.project.name}/src/applet"/>
-		<copy todir="deployments/${xdat.project.name}/src/applet" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/applet"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Modifies the files defined used by Turbine; including  TurbineResources.properties, web.xml, and the deployment's build.properties     -->
-	<!-- ================================================================ -->
-	<goal name="xdat:modifyTurbineFiles">
-		<maven:makeAbsolutePath var="xdat.InstanceSettingsDir" path="webapps/${xdat.project.name}" basedir="${maven.appserver.home}"/>
-		<!-- EDIT WEB CONF FILES-->
-		<maven:makeAbsolutePath var="xdat.TurbineResources" path="deployments/${xdat.project.name}/conf/TurbineResources.properties" basedir="${basedir}"/>
-		<ant:echo>Edit file: ${xdat.TurbineResources}</ant:echo>
-		<j:choose>
-			<j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
-				<ant:replace file="${xdat.TurbineResources}" token="module.packages=org.apache.turbine.modules" value="module.packages = org.apache.turbine.app.${xdat.project.name}.modules,org.nrg.xnat.turbine.modules,org.nrg.xdat.turbine.modules"/>
-				<ant:replace file="${xdat.TurbineResources}" token="services.VelocityService.file.resource.loader.path = /templates" value="services.VelocityService.file.resource.loader.path = /templates,/xnat-templates,/xdat-templates,/base-templates"/>
-			</j:when>
-			<j:otherwise>
-				<ant:replace file="${xdat.TurbineResources}" token="module.packages=org.apache.turbine.modules" value="module.packages = org.apache.turbine.app.${xdat.project.name}.modules,org.nrg.xdat.turbine.modules"/>
-				<ant:replace file="${xdat.TurbineResources}" token="services.VelocityService.file.resource.loader.path = /templates" value="services.VelocityService.file.resource.loader.path = /templates,/xdat-templates"/>
-			</j:otherwise>
-		</j:choose>
-		<maven:makeAbsolutePath var="xdat.BuildProperties" path="deployments/${xdat.project.name}/build.properties" basedir="${basedir}"/>
-		<ant:echo>Edit file: ${xdat.BuildProperties}</ant:echo>
-		<maven:makeAbsolutePath var="xdat.local_repository" path="plugin-resources" basedir="${basedir}"/>
-		<ant:replace file="${xdat.BuildProperties}" token="@MAVEN_HOME_LOCAL@" value="${xdat.local_repository}"/>
-		<ant:replace file="${xdat.BuildProperties}" token="\" value="/"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!--Copies the instanceSettings.xml file to the deployment and its src folder and configures them                                     -->
-	<!-- ================================================================ -->
-	<goal name="xdat:configureInstanceSettings">
-		<maven:makeAbsolutePath var="xdat.instance.NEW" path="deployments/${xdat.project.name}/InstanceSettings.xml" basedir="${basedir}"/>
-		<maven:makeAbsolutePath var="xdat.project.xdat.NEW" path="deployments/${xdat.project.name}" basedir="${basedir}"/>
-		<maven:makeAbsolutePath var="xdat.project.xdat.OLD" path="projects/${xdat.project.name}" basedir="${basedir}"/>
-		<maven:makeAbsolutePath var="xdat.root.schemas" path="src/schemas" basedir="${basedir}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%XDAT_SCHEMAS%" value="${xdat.root.schemas}"/>
-		<maven:makeAbsolutePath var="xdat.project" path="deployments/${xdat.project.name}/src" basedir="${basedir}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%XDAT_PROJECT%" value="${xdat.project}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%SITE_URL%" value="${xdat.url}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%THUMBNAIL_LOCATION%" value="${xdat.project.image.thumbnail.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%LORES_LOCATION%" value="${xdat.project.image.lo_res.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%DB_NAME%" value="${xdat.project.db.name}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%DB_DRIVER%" value="${xdat.project.db.driver}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%USER%" value="${xdat.project.db.user}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%PASSWORD%" value="${xdat.project.db.password}"/>
-		<j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
-			<ant:echo>FIXING &amp; SSL</ant:echo>
-			<ant:replace file="${xdat.instance.NEW}" token="&amp;ssl=true" value="&amp;amp;ssl=true"/>
-		</j:if>
-		<!--WEBAPP VERSION OF SCHEMAS -->
-		<copy file="${xdat.project.xdat.OLD}/InstanceSettings.xml" tofile="${xdat.project.xdat.NEW}/src/InstanceSettings.xml"/>
-		<maven:makeAbsolutePath var="xdat.project" path="webapps/${xdat.project.name}" basedir="${maven.appserver.home}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%XDAT_PROJECT%/" value=""/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SITE_URL%" value="${xdat.url}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%THUMBNAIL_LOCATION%" value="${xdat.project.image.thumbnail.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%LORES_LOCATION%" value="${xdat.project.image.lo_res.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_NAME%" value="${xdat.project.db.name}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_DRIVER%" value="${xdat.project.db.driver}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER%" value="${xdat.project.db.user}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PASSWORD%" value="${xdat.project.db.password}"/>
-		<j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
-			<ant:echo>FIXING &amp; SSL</ant:echo>
-			<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="&amp;ssl=true" value="&amp;amp;ssl=true"/>
-		</j:if>
-		<!-- PLEXI VIEWER SETTINGS -->
-		<maven:makeAbsolutePath var="xdat.plexi.NEW" path="deployments/${xdat.project.name}/PlexiViewerSpec.xml" basedir="${basedir}"/>
-		<u:available file="${xdat.plexi.NEW}">
-			<ant:replace file="${xdat.plexi.NEW}" token="%XDAT_PROJECT%" value="${xdat.project}"/>
-			<ant:replace file="${xdat.plexi.NEW}" token="@THUMBNAIL_LOCATION@" value="${xdat.project.image.thumbnail.location}"/>
-			<ant:replace file="${xdat.plexi.NEW}" token="@LO_RES_LOCATION@" value="${xdat.project.image.lo_res.location}"/>
-			<ant:replace file="${xdat.plexi.NEW}" token="@CACHE_LOCATION@" value="${xdat.cache.location}"/>
-			<copy file="${xdat.plexi.NEW}" tofile="${xdat.project.xdat.NEW}/src/PlexiViewerSpec.xml"/>
-		</u:available>
-	</goal>
-	<goal name="xdat:setupProject" description="Setup the Jakarta Turbine Maven project for the XNAT project">
-		<maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-		<j:if test="${context.getVariable('xdat.project.includeXNAT') == null}">
-			<j:set var="xdat.project.includeXNAT" value="false"/>
-		</j:if>
-		<ant:echo>xdat.project.includeXNAT: ${context.getVariable('xdat.project.includeXNAT')}</ant:echo>
-		<maven:makeAbsolutePath var="turbine.plugin.root.dir" path="deployments/${xdat.project.name}" basedir="${basedir}"/>
-		<ant:echo>turbine.plugin.root.dir: ${turbine.plugin.root.dir}</ant:echo>
-		<j:set var="turbine.app.name" value="${xdat.project.name}"/>
-		<j:set var="turbine.app.om.layer" value="none"/>
-		<j:set var="turbine.app.setup.demo" value="false"/>
-		<ant:echo>Setup ${xdat.project.name} Project</ant:echo>
-		<attainGoal name="turbine:setup"/>
-		<attainGoal name="xdat:manageProjectXML"/>
-		<attainGoal name="xdat:modifyTurbineFiles"/>
-		<attainGoal name="xdat:generateResourceDirectory"/>
-		<attainGoal name="xdat:updateFilesFromXDAT"/>
-		<j:choose>
-			<j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
-				<ant:echo>USING XNAT TEMPLATE</ant:echo>
-				<attainGoal name="xdat:updateFilesFromXNAT"/>
-			</j:when>
-		</j:choose>
-		<attainGoal name="xdat:updateFilesFromCustom"/>
-		<!--INSTANCE SETTINGS -->
-		<attainGoal name="xdat:configureInstanceSettings"/>
-		<!--LOGGER  SETTINGS -->
-		<attainGoal name="xdat:configureLog4j"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!--Configures Log4j properties                                     -->
-	<!-- ================================================================ -->
-	<goal name="xdat:configureLog4j">
-		<!-- PROJECTS DIR -->
-		<maven:makeAbsolutePath var="xdat.project.logger.file" path="projects/${xdat.project.name}/log4j.properties" basedir="${basedir}"/>
-		<!-- DEPLOYMENTS DIR -->
-		<maven:makeAbsolutePath var="xdat.deployment.logger.file" path="deployments/${xdat.project.name}/log4j.properties" basedir="${basedir}"/>
-		<copy tofile="${xdat.deployment.logger.file}" file="${xdat.project.logger.file}"/>
-		<ant:replace file="${xdat.deployment.logger.file}" token="@LOG_DIR@" value="${basedir}/deployments/${xdat.project.name}/logs"/>
-		<ant:replace file="${xdat.deployment.logger.file}" token="\" value="/"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Auto generates Java and SQL files for use in XDAT                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:auto-generate">
-		<!-- <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om/base/auto"/>
-		<delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
-		<delete dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/> -->
-		<attainGoal name="xdat:createGeneratedFiles"/>
-		<!--<attainGoal name="xdat:generateAllFiles"/>
-		<attainGoal name="xdat:generateSQL"/>
-		<attainGoal name="xdat:generateJSFiles"/>-->
-		<copy todir="${basedir}/projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
-			<fileset dir="${basedir}/deployments/${xdat.project.name}/src/schemas">
-				<include name="**/*_display.xml"/>
-			</fileset>
-		</copy>
-		<delete dir="${basedir}/deployments/${xdat.project.name}/src/java/org/nrg/xdat"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/src/java" preservelastmodified="true" overwrite="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/java"/>
-		</copy>
-		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/src/base-templates"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/src/base-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/>
-		</copy>
-		<delete>
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om">
-				<include name="base/BaseXnat*.java"/>
-				<include name="base/BaseProv*.java"/>
-				<include name="base/BaseWrk*.java"/>
-				<include name="base/BasePipe*.java"/>
-				<include name="base/BaseArc*.java"/>
-				<include name="base/BaseVal*.java"/>
-			</fileset>
-		</delete>
-		<copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/java/org/nrg/xdat/om">
-				<include name="base/*.java"/>
-			</fileset>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Updates auto-generated files for XDAT                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:auto-update">
-		<delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om/base/auto"/>
-		<delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
-		<attainGoal name="xdat:updateGeneratedFiles"/>
-		<!--<attainGoal name="xdat:generateAllFiles"/>
-		<attainGoal name="xdat:generateUpdateSQL"/>
-		<attainGoal name="xdat:generateJSFiles"/>-->
-		<copy todir="${basedir}/projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
-			<fileset dir="${basedir}/deployments/${xdat.project.name}/src/schemas">
-				<include name="**/*_display.xml"/>
-			</fileset>
-		</copy>
-		<delete dir="${basedir}/deployments/${xdat.project.name}/src/java/org/nrg/xdat"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/src/java" preservelastmodified="true" overwrite="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/java"/>
-		</copy>
-		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/src/base-templates"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/src/base-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/>
-		</copy>
-		<delete>
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om">
-				<include name="base/BaseXnat*.java"/>
-				<include name="base/BaseProv*.java"/>
-				<include name="base/BaseWrk*.java"/>
-				<include name="base/BasePipe*.java"/>
-				<include name="base/BaseArc*.java"/>
-				<include name="base/BaseVal*.java"/>
-			</fileset>
-		</delete>
-		<copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat/java/org/nrg/xdat/om">
-				<include name="base/*.java"/>
-			</fileset>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Generates Java Files for use in XNAT                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:generateAllFiles" description="Generates xdat Java Files and Velocity Templates">
-		<java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-javaDir"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/src/java"/>
-			<arg value="-templateDir"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/src/base-templates/screens"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-e"/>
-			<arg value="ALL"/>
-			<arg value="-skipXDAT"/>
-			<arg value="true"/>
-			<arg value="-displayDocs"/>
-			<arg value="true"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-	</goal>
-	<goal name="xdat:generateXDATFiles" description="Generates xdat Java Files and Velocity Templates">
-		<ant:mkdir dir="${basedir}/work/java"/>
-		<ant:mkdir dir="${basedir}/work/templates/screens"/>
-		<java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-javaDir"/>
-			<arg value="${basedir}/work/java"/>
-			<arg value="-templateDir"/>
-			<arg value="${basedir}/work/templates/screens"/>
-			<arg value="-displayDocs"/>
-			<arg value="false"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-e"/>
-			<arg value="ALL"/>
-			<arg value="-skipXDAT"/>
-			<arg value="false"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Generates Update SQL                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:generateUpdateSQL" description="Generates sql for your schema">
-		<java classname="UpdateSQL" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-f"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Generates CREATE SQL                                     -->
-	<!-- ================================================================ -->
-	<goal name="xdat:generateSQL" description="Generates sql for your schema">
-		<java classname="CreateSQL" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-f"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Generates javascript Objects                                    -->
-	<!-- ================================================================ -->
-	<goal name="xdat:generateJSFiles" description="Generates javascript objects for your schema">
-		<java classname="GenerateJSFiles" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-javascriptDir"/>
-			<arg value="${basedir}/deployments/${xdat.project.name}/src/scripts"/>
-			<arg value="-e"/>
-			<arg value="ALL"/>
-			<arg value="-skipXDAT"/>
-			<arg value="true"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-	</goal>
-	<goal name="xdat:createGeneratedFiles" description="Generates files for your schema">
-		<ant:mkdir dir="${basedir}/work/java"/>
-		<ant:mkdir dir="${basedir}/work/templates/screens"/>
-		<java classname="GenerateAllCreateFiles" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-sqlfile"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
-			<arg value="-javascriptDir"/>
-			<arg value="${basedir}/deployments/${xdat.project.name}/src/scripts"/>
-			<arg value="-javadir"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/src/java"/>
-			<arg value="-templateDir"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/src/base-templates/screens"/>
-			<arg value="-displayDocs"/>
-			<arg value="true"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
-		</copy>
-	</goal>
-	<goal name="xdat:updateGeneratedFiles" description="Generates files for your schema">
-		<ant:mkdir dir="${basedir}/work/java"/>
-		<ant:mkdir dir="${basedir}/work/templates/screens"/>
-		<java classname="GenerateAllUpdateFiles" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-sqlfile"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
-			<arg value="-javascriptDir"/>
-			<arg value="${basedir}/deployments/${xdat.project.name}/src/scripts"/>
-			<arg value="-javadir"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/src/java"/>
-			<arg value="-templateDir"/>
-			<arg value="${basedir}/projects/${xdat.project.name}/src/base-templates/screens"/>
-			<arg value="-displayDocs"/>
-			<arg value="true"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-		<ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
-		<copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
-		</copy>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Generates Bean Objects                                    -->
-	<!-- ================================================================ -->
-	<goal name="xdat:generateBeans" description="Generates java bean objects for your schema">
-		<j:if test="${context.getVariable('beans.jar.name') ==null}">
-			<j:set var="beans.jar.name" value="beans"/>
-		</j:if>
-		<java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-javaDir"/>
-			<arg value="${basedir}/src"/>
-			<arg value="-e"/>
-			<arg value="ALL"/>
-			<arg value="-skipXDAT"/>
-			<arg value="false"/>
-			<arg value="-package"/>
-			<arg value="org.nrg.xdat"/>
-			<arg value="-allow1.5"/>
-			<arg value="true"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-		<javac srcdir="${basedir}/src" destdir="${basedir}/classes" source="1.5" target="1.5" debug="true">
-			<include name="org/**"/>
-			<classpath>
-				<pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
-				<pathelement location="${basedir}/plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
-				<pathelement location="${basedir}/plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
-				<pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
-			</classpath>
-		</javac>
-		<jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" basedir="${basedir}/classes">
-			<include name="org/**"/>
-		</jar>
-		<jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0-source.jar" basedir="${basedir}/src">
-			<include name="org/**"/>
-		</jar>
-		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
-		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
-		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-1.0.jar"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Populates the root level lib directory                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:setupLib" description="Setup the Lib directory">
-		<j:forEach var="dep" items="${pom.dependencies}">
-			<copy todir="${basedir}/lib" file="${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
-		</j:forEach>
-		<attainGoal name="xdat:buildGenericExecutables"/>
-		<attainGoal name="xdat:buildDefinedExecutables"/>
-		<attainGoal name="xdat:buildJarExecutables"/>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Builds bin executables                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:buildGenericExecutables" description="Generate SH and BAT files with classpath defined appropriately">
-		<!-- BUILD BAT TEMPLATE -->
-		<j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;"/>
-		<j:if test="${context.getVariable('xdat.url') != null}">
-			<j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
-		</j:if>
-		<j:if test="${context.getVariable('xdat.url') == null}">
-			<ant:echo>XDAT URL is not defined in build.properties.</ant:echo>
-			<j:set var="xdat.url.text" value=" "/>
-		</j:if>
-		<ant:property environment="env"/>
-		<j:forEach var="dep" items="${pom.dependencies}">
-			<j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
-		</j:forEach>
-		<delete file="${basedir}/plugin-resources/misc/template2.bat"/>
-		<copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%XNAT_HOME%" value="${basedir}  ${xdat.url.text}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="\" value="/"/>
-		<!-- BUILD SH TEMPLATE -->
-		<j:set var="absolute.lib.path" value="${basedir}/classes"/>
-		<j:forEach var="dep" items="${pom.dependencies}">
-			<j:set var="absolute.lib.path" value="${absolute.lib.path}:${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
-		</j:forEach>
-		<delete file="${basedir}/plugin-resources/misc/template2.sh"/>
-		<copy tofile="${basedir}/plugin-resources/misc/template2.sh" file="${basedir}/plugin-resources/misc/template.sh"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%XNAT_HOME%" value="${basedir} ${xdat.url.text}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="\" value="/"/>
-		<j:set var="ClassName" value="Browse"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="CreateSQL"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="FilePathUpdater"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="GenerateJavaFile"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="Search"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="StoreXML"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="GenerateDisplayFile"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="UpdateSQL"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="FieldValues"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="XMLSearch"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="VelocitySearch"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="XMLSync"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-		<j:set var="ClassName" value="CleanXML"/>
-		<attainGoal name="xdat:editGenericExecutable"/>
-	</goal>
-	<goal name="xdat:editGenericExecutable">
-		<maven:param-check value="${ClassName}" fail="true" message="'ClassName' must be specified"/>
-		<copy tofile="${basedir}/bin/${ClassName}" file="${basedir}/plugin-resources/misc/template2.sh"/>
-		<ant:replace file="${basedir}/bin/${ClassName}" token="%CLASS_NAME%" value="${ClassName}"/>
-		<copy tofile="${basedir}/bin/${ClassName}.bat" file="${basedir}/plugin-resources/misc/template2.bat"/>
-		<ant:replace file="${basedir}/bin/${ClassName}.bat" token="%CLASS_NAME%" value="${ClassName}"/>
-	</goal>
-	<goal name="xdat:buildDefinedExecutables" description="Generate SH and BAT files with classpath defined appropriately">
-		<ant:property environment="env"/>
-		<ant:echo>JAVA HOME: ${env.JAVA_HOME}</ant:echo>
-		<j:if test="${context.getVariable('xdat.url') != null}">
-			<j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
-		</j:if>
-		<!-- BUILD BAT TEMPLATE -->
-		<j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;;&quot;${basedir}/deployments/${xdat.project.name}/target/classes&quot;"/>
-		<j:forEach var="dep" items="${pom.dependencies}">
-			<j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
-		</j:forEach>
-		<delete file="${basedir}/plugin-resources/misc/template2.bat"/>
-		<copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%XNAT_HOME%" value="${basedir} -project ${xdat.project.name} ${xdat.url.text}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="\" value="/"/>
-		<!-- BUILD SH TEMPLATE -->
-		<j:set var="absolute.lib.path" value="${basedir}/classes:${basedir}/deployments/${xdat.project.name}/target/classes"/>
-		<j:forEach var="dep" items="${pom.dependencies}">
-			<j:set var="absolute.lib.path" value="${absolute.lib.path}:${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
-		</j:forEach>
-		<delete file="${basedir}/plugin-resources/misc/template2.sh"/>
-		<copy tofile="${basedir}/plugin-resources/misc/template2.sh" file="${basedir}/plugin-resources/misc/template.sh"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%XNAT_HOME%" value="${basedir} -project ${xdat.project.name} ${xdat.url.text}"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="\" value="/"/>
-		<j:set var="ClassName" value="Browse"/>
-		<attainGoal name="xdat:editDefinedExecutable"/>
-		<j:set var="ClassName" value="Search"/>
-		<attainGoal name="xdat:editDefinedExecutable"/>
-		<j:set var="ClassName" value="StoreXML"/>
-		<attainGoal name="xdat:editDefinedExecutable"/>
-		<j:set var="ClassName" value="VelocitySearch"/>
-		<attainGoal name="xdat:editDefinedExecutable"/>
-	</goal>
-	<goal name="xdat:editDefinedExecutable">
-		<maven:param-check value="${ClassName}" fail="true" message="'ClassName' must be specified"/>
-		<copy tofile="${basedir}/bin/${ClassName}_${xdat.project.name}" file="${basedir}/plugin-resources/misc/template2.sh"/>
-		<ant:replace file="${basedir}/bin/${ClassName}_${xdat.project.name}" token="%CLASS_NAME%" value="${ClassName}"/>
-		<copy tofile="${basedir}/bin/${ClassName}_${xdat.project.name}.bat" file="${basedir}/plugin-resources/misc/template2.bat"/>
-		<ant:replace file="${basedir}/bin/${ClassName}_${xdat.project.name}.bat" token="%CLASS_NAME%" value="${ClassName}"/>
-	</goal>
-	<goal name="xdat:buildJarExecutables" description="Builds exe wrappers for the executable jars">
-		<!-- BUILD SEARCH EXECUTABLES -->
-		<copy tofile="${basedir}/bin/SearchWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/SearchWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/SearchWS" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/SearchWS" token="%JAR_NAME%" value="xdat-search-1.jar"/>
-		<copy tofile="${basedir}/bin/SearchWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/SearchWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/SearchWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/SearchWS.bat" token="%JAR_NAME%" value="xdat-search-1.jar"/>
-		<!-- BUILD STORE EXECUTABLES -->
-		<copy tofile="${basedir}/bin/StoreXMLWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS" token="%JAR_NAME%" value="xdat-store-1.jar"/>
-		<copy tofile="${basedir}/bin/StoreXMLWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%JAR_NAME%" value="xdat-store-1.jar"/>
-		<!-- BUILD SEARCH EXECUTABLES -->
-		<copy tofile="${basedir}/bin/ArcGetWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS" token="%JAR_NAME%" value="xdat-arcget-1.jar"/>
-		<copy tofile="${basedir}/bin/ArcGetWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%JAR_NAME%" value="xdat-arcget-1.jar"/>
-		<!-- BUILD READ EXECUTABLES -->
-		<copy tofile="${basedir}/bin/ArcReadWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS" token="%JAR_NAME%" value="xdat-arcread-1.jar"/>
-		<copy tofile="${basedir}/bin/ArcReadWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%JAR_NAME%" value="xdat-arcread-1.jar"/>
-		<!-- BUILD SIM EXECUTABLES -->
-		<copy tofile="${basedir}/bin/ArcSimWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
-		<copy tofile="${basedir}/bin/ArcSimWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
+          <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/birn/birnprov.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/birn/birnprov.xsd"/>
+          <copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
+            <fileset dir="${basedir}/plugin-resources/project-skeletons/xnat/sql"/>
+          </copy>
+        </j:if>
+      </j:when>
+      <j:otherwise>
+        <ant:echo>Creating ${xdat.project.resource}.</ant:echo>
+        <ant:mkdir dir="${xdat.project.resource}"/>
+        <ant:mkdir dir="${xdat.project.resource}/logs/inserts"/>
+        <j:choose>
+          <j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
+            <maven:makeAbsolutePath var="xdat.project.skeleton.xnat" path="plugin-resources/project-skeletons/xnat" basedir="${basedir}"/>
+            <copy todir="${xdat.project.resource}" preservelastmodified="true">
+              <fileset dir="${xdat.project.skeleton.xnat}"/>
+            </copy>
+            <maven:makeAbsolutePath var="xdat.webapp.skeleton.xnat" path="plugin-resources/webapp/xnat" basedir="${basedir}"/>
+            <copy todir="${xdat.project.resource}/src" preservelastmodified="true">
+              <fileset dir="${xdat.webapp.skeleton.xnat}">
+                <exclude name="java/**"/>
+              </fileset>
+            </copy>
+            <u:available file="${xdat.project.resource}/src/xdat-templates">
+              <delete dir="${xdat.project.resource}/src/xdat-templates" includeemptydirs="true"/>
+            </u:available>
+            <u:available file="${xdat.project.resource}/src/xnat-templates">
+              <delete dir="${xdat.project.resource}/src/xnat-templates" includeemptydirs="true"/>
+            </u:available>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/layouts"/>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/macros"/>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/navigations"/>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/screens"/>
+            <copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
+              <fileset dir="${basedir}/plugin-resources/webapp/xnat/images"/>
+            </copy>
+          </j:when>
+          <j:otherwise>
+            <maven:makeAbsolutePath var="xdat.project.skeleton.sample" path="plugin-resources/project-skeletons/sample" basedir="${basedir}"/>
+            <copy todir="${xdat.project.resource}" preservelastmodified="true">
+              <fileset dir="${xdat.project.skeleton.sample}"/>
+            </copy>
+            <maven:makeAbsolutePath var="xdat.webapp.skeleton.xdat" path="plugin-resources/webapp/xdat" basedir="${basedir}"/>
+            <copy todir="${xdat.project.resource}/src" preservelastmodified="true">
+              <fileset dir="${xdat.webapp.skeleton.xdat}">
+                <exclude name="java/**"/>
+              </fileset>
+            </copy>
+            <u:available file="${xdat.project.resource}/src/xdat-templates">
+              <delete dir="${xdat.project.resource}/src/xdat-templates" includeemptydirs="true"/>
+            </u:available>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/layouts"/>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/macros"/>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/navigations"/>
+            <ant:mkdir dir="${xdat.project.resource}/src/templates/screens"/>
+            <copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
+              <fileset dir="${basedir}/plugin-resources/webapp/xdat/images"/>
+            </copy>
+          </j:otherwise>
+        </j:choose>
+        <ant:mkdir dir="${basedir}/projects/${xdat.project.name}/sql"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/base-templates/screens"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/actions"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/screens"/>
+        <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/utils"/>
+        <delete>
+          <fileset dir="${xdat.project.resource}" includes="**/CVS/"/>
+        </delete>
+        <delete dir="${xdat.project.resource}/pdf"/>
+        <ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.admin_email}"/>
+      </j:otherwise>
+    </j:choose>
+  </goal>
+  <!-- ================================================================ -->
+  <!--Copies pertinent XDAT files to the deployment                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:updateFilesFromXDAT">
+    <ant:mkdir dir="deployments/${xdat.project.name}/src/xdat-templates"/>
+    <copy todir="deployments/${xdat.project.name}/src/xdat-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xdat-templates"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!--Copies pertinent XNAT files to the deployment                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:updateFilesFromXNAT">
+    <ant:mkdir dir="deployments/${xdat.project.name}/src/xnat-templates"/>
+    <copy todir="deployments/${xdat.project.name}/src/xnat-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat-templates"/>
+    </copy>
+    <delete dir="${basedir}/deployments/${xdat.project.name}/src/java/org/nrg/xnat"/>
+    <copy todir="deployments/${xdat.project.name}/src/java" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/java"/>
+    </copy>
+    <copy todir="projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/" includes="**/*.xsd"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!--Copies pertinent project based files to the deployment                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:updateFilesFromCustom">
+    <u:available file="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml">
+      <copy file="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml" tofile="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml.bk"/>
+      <delete file="${basedir}/deployments/${xdat.project.name}/InstanceSettings.xml"/>
+    </u:available>
+    <u:available file="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml">
+      <copy file="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml" tofile="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml.bk"/>
+      <delete file="${basedir}/deployments/${xdat.project.name}/src/InstanceSettings.xml"/>
+    </u:available>
+    <u:available file="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml">
+      <copy file="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml" tofile="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml.bk"/>
+      <delete file="${basedir}/deployments/${xdat.project.name}/PlexiViewerSpec.xml"/>
+    </u:available>
+    <u:available file="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml">
+      <copy file="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml" tofile="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml.bk"/>
+      <delete file="${basedir}/deployments/${xdat.project.name}/src/PlexiViewerSpec.xml"/>
+    </u:available>
+    <attainGoal name="xdat:manageInstanceSettings"/>
+    <copy todir="deployments/${xdat.project.name}" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}">
+        <exclude name="log4j.properties"/>
+      </fileset>
+    </copy>
+    <copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/java/org/nrg/xdat/om">
+        <exclude name="base/*.java"/>
+      </fileset>
+    </copy>
+  </goal>
+  <!--Copies pertinent applet to the deployment                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:updateApplet">
+    <ant:mkdir dir="deployments/${xdat.project.name}/src/applet"/>
+    <copy todir="deployments/${xdat.project.name}/src/applet" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/applet"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Modifies the files defined used by Turbine; including  TurbineResources.properties, web.xml, and the deployment's build.properties     -->
+  <!-- ================================================================ -->
+  <goal name="xdat:modifyTurbineFiles">
+    <maven:makeAbsolutePath var="xdat.InstanceSettingsDir" path="webapps/${xdat.project.name}" basedir="${maven.appserver.home}"/>
+    <!-- EDIT WEB CONF FILES-->
+    <maven:makeAbsolutePath var="xdat.TurbineResources" path="deployments/${xdat.project.name}/conf/TurbineResources.properties" basedir="${basedir}"/>
+    <ant:echo>Edit file: ${xdat.TurbineResources}</ant:echo>
+    <j:choose>
+      <j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
+        <ant:replace file="${xdat.TurbineResources}" token="module.packages=org.apache.turbine.modules" value="module.packages = org.apache.turbine.app.${xdat.project.name}.modules,org.nrg.xnat.turbine.modules,org.nrg.xdat.turbine.modules"/>
+        <ant:replace file="${xdat.TurbineResources}" token="services.VelocityService.file.resource.loader.path = /templates" value="services.VelocityService.file.resource.loader.path = /templates,/xnat-templates,/xdat-templates,/base-templates"/>
+      </j:when>
+      <j:otherwise>
+        <ant:replace file="${xdat.TurbineResources}" token="module.packages=org.apache.turbine.modules" value="module.packages = org.apache.turbine.app.${xdat.project.name}.modules,org.nrg.xdat.turbine.modules"/>
+        <ant:replace file="${xdat.TurbineResources}" token="services.VelocityService.file.resource.loader.path = /templates" value="services.VelocityService.file.resource.loader.path = /templates,/xdat-templates"/>
+      </j:otherwise>
+    </j:choose>
+    <maven:makeAbsolutePath var="xdat.BuildProperties" path="deployments/${xdat.project.name}/build.properties" basedir="${basedir}"/>
+    <ant:echo>Edit file: ${xdat.BuildProperties}</ant:echo>
+    <maven:makeAbsolutePath var="xdat.local_repository" path="plugin-resources" basedir="${basedir}"/>
+    <ant:replace file="${xdat.BuildProperties}" token="@MAVEN_HOME_LOCAL@" value="${xdat.local_repository}"/>
+    <ant:replace file="${xdat.BuildProperties}" token="\" value="/"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!--Copies the instanceSettings.xml file to the deployment and its src folder and configures them                                     -->
+  <!-- ================================================================ -->
+  <goal name="xdat:configureInstanceSettings">
+    <maven:makeAbsolutePath var="xdat.instance.NEW" path="deployments/${xdat.project.name}/InstanceSettings.xml" basedir="${basedir}"/>
+    <maven:makeAbsolutePath var="xdat.project.xdat.NEW" path="deployments/${xdat.project.name}" basedir="${basedir}"/>
+    <maven:makeAbsolutePath var="xdat.project.xdat.OLD" path="projects/${xdat.project.name}" basedir="${basedir}"/>
+    <maven:makeAbsolutePath var="xdat.root.schemas" path="src/schemas" basedir="${basedir}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%XDAT_SCHEMAS%" value="${xdat.root.schemas}"/>
+    <maven:makeAbsolutePath var="xdat.project" path="deployments/${xdat.project.name}/src" basedir="${basedir}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%XDAT_PROJECT%" value="${xdat.project}"/>
+    <j:if test="${context.getVariable('xdat.pipeline.location') != null}">
+      <ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${xdat.pipeline.location}"/>
+    </j:if>
+    <j:if test="${context.getVariable('xdat.pipeline.location') == null}">
+      <ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
+    </j:if>
+    <ant:replace file="${xdat.instance.NEW}" token="%FTP_LOCATION%" value="${xdat.ftp.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%BUILD_LOCATION%" value="${xdat.build.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%SITE_URL%" value="${xdat.url}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%THUMBNAIL_LOCATION%" value="${xdat.project.image.thumbnail.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%LORES_LOCATION%" value="${xdat.project.image.lo_res.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%DB_NAME%" value="${xdat.project.db.name}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%DB_DRIVER%" value="${xdat.project.db.driver}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%USER%" value="${xdat.project.db.user}"/>
+    <ant:replace file="${xdat.instance.NEW}" token="%PASSWORD%" value="${xdat.project.db.password}"/>
+    <j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
+      <ant:echo>FIXING &amp; SSL</ant:echo>
+      <ant:replace file="${xdat.instance.NEW}" token="&amp;ssl=true" value="&amp;amp;ssl=true"/>
+    </j:if>
+    <!--WEBAPP VERSION OF SCHEMAS -->
+    <copy file="${xdat.project.xdat.OLD}/InstanceSettings.xml" tofile="${xdat.project.xdat.NEW}/src/InstanceSettings.xml"/>
+    <maven:makeAbsolutePath var="xdat.project" path="webapps/${xdat.project.name}" basedir="${maven.appserver.home}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%XDAT_PROJECT%/" value=""/>
+    <j:if test="${context.getVariable('xdat.pipeline.location') != null}">
+      <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PIPELINE_HOME%" value="${xdat.pipeline.location}"/>
+    </j:if>
+    <j:if test="${context.getVariable('xdat.pipeline.location') == null}">
+      <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
+    </j:if>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%FTP_LOCATION%" value="${xdat.ftp.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%BUILD_LOCATION%" value="${xdat.build.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SITE_URL%" value="${xdat.url}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%THUMBNAIL_LOCATION%" value="${xdat.project.image.thumbnail.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%LORES_LOCATION%" value="${xdat.project.image.lo_res.location}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_NAME%" value="${xdat.project.db.name}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_DRIVER%" value="${xdat.project.db.driver}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER%" value="${xdat.project.db.user}"/>
+    <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PASSWORD%" value="${xdat.project.db.password}"/>
+    <j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
+      <ant:echo>FIXING &amp; SSL</ant:echo>
+      <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="&amp;ssl=true" value="&amp;amp;ssl=true"/>
+    </j:if>
+    <!-- PLEXI VIEWER SETTINGS -->
+    <maven:makeAbsolutePath var="xdat.plexi.NEW" path="deployments/${xdat.project.name}/PlexiViewerSpec.xml" basedir="${basedir}"/>
+    <u:available file="${xdat.plexi.NEW}">
+      <ant:replace file="${xdat.plexi.NEW}" token="%XDAT_PROJECT%" value="${xdat.project}"/>
+      <ant:replace file="${xdat.plexi.NEW}" token="@THUMBNAIL_LOCATION@" value="${xdat.project.image.thumbnail.location}"/>
+      <ant:replace file="${xdat.plexi.NEW}" token="@LO_RES_LOCATION@" value="${xdat.project.image.lo_res.location}"/>
+      <ant:replace file="${xdat.plexi.NEW}" token="@CACHE_LOCATION@" value="${xdat.cache.location}"/>
+      <copy file="${xdat.plexi.NEW}" tofile="${xdat.project.xdat.NEW}/src/PlexiViewerSpec.xml"/>
+    </u:available>
+  </goal>
+  <goal name="xdat:setupProject" description="Setup the Jakarta Turbine Maven project for the XNAT project">
+    <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
+    <j:if test="${context.getVariable('xdat.project.includeXNAT') == null}">
+      <j:set var="xdat.project.includeXNAT" value="false"/>
+    </j:if>
+    <ant:echo>xdat.project.includeXNAT: ${context.getVariable('xdat.project.includeXNAT')}</ant:echo>
+    <maven:makeAbsolutePath var="turbine.plugin.root.dir" path="deployments/${xdat.project.name}" basedir="${basedir}"/>
+    <ant:echo>turbine.plugin.root.dir: ${turbine.plugin.root.dir}</ant:echo>
+    <j:set var="turbine.app.name" value="${xdat.project.name}"/>
+    <j:set var="turbine.app.om.layer" value="none"/>
+    <j:set var="turbine.app.setup.demo" value="false"/>
+    <ant:echo>Setup ${xdat.project.name} Project</ant:echo>
+    <attainGoal name="turbine:setup"/>
+    <attainGoal name="xdat:manageProjectXML"/>
+    <attainGoal name="xdat:modifyTurbineFiles"/>
+    <attainGoal name="xdat:generateResourceDirectory"/>
+    <attainGoal name="xdat:updateFilesFromXDAT"/>
+    <j:choose>
+      <j:when test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
+        <ant:echo>USING XNAT TEMPLATE</ant:echo>
+        <attainGoal name="xdat:updateFilesFromXNAT"/>
+      </j:when>
+    </j:choose>
+    <attainGoal name="xdat:updateFilesFromCustom"/>
+    <!--INSTANCE SETTINGS -->
+    <attainGoal name="xdat:configureInstanceSettings"/>
+    <!--LOGGER  SETTINGS -->
+    <attainGoal name="xdat:configureLog4j"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!--Configures Log4j properties                                     -->
+  <!-- ================================================================ -->
+  <goal name="xdat:configureLog4j">
+    <!-- PROJECTS DIR -->
+    <maven:makeAbsolutePath var="xdat.project.logger.file" path="projects/${xdat.project.name}/log4j.properties" basedir="${basedir}"/>
+    <!-- DEPLOYMENTS DIR -->
+    <maven:makeAbsolutePath var="xdat.deployment.logger.file" path="deployments/${xdat.project.name}/log4j.properties" basedir="${basedir}"/>
+    <copy tofile="${xdat.deployment.logger.file}" file="${xdat.project.logger.file}"/>
+    <ant:replace file="${xdat.deployment.logger.file}" token="@LOG_DIR@" value="${basedir}/deployments/${xdat.project.name}/logs"/>
+    <ant:replace file="${xdat.deployment.logger.file}" token="\" value="/"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Auto generates Java and SQL files for use in XDAT                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:auto-generate">
+    <!-- <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om/base/auto"/>
+    <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
+    <delete dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/> -->
+    <attainGoal name="xdat:createGeneratedFiles"/>
+    <!--<attainGoal name="xdat:generateAllFiles"/>
+    <attainGoal name="xdat:generateSQL"/>
+    <attainGoal name="xdat:generateJSFiles"/>-->
+    <copy todir="${basedir}/projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
+      <fileset dir="${basedir}/deployments/${xdat.project.name}/src/schemas">
+        <include name="**/*_display.xml"/>
+      </fileset>
+    </copy>
+    <delete dir="${basedir}/deployments/${xdat.project.name}/src/java/org/nrg/xdat"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/src/java" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/java"/>
+    </copy>
+    <ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/src/base-templates"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/src/base-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/>
+    </copy>
+    <delete>
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om">
+        <include name="base/BaseXnat*.java"/>
+        <include name="base/BaseProv*.java"/>
+        <include name="base/BaseWrk*.java"/>
+        <include name="base/BasePipe*.java"/>
+        <include name="base/BaseArc*.java"/>
+        <include name="base/BaseVal*.java"/>
+      </fileset>
+    </delete>
+    <copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/java/org/nrg/xdat/om">
+        <include name="base/*.java"/>
+      </fileset>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Updates auto-generated files for XDAT                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:auto-update">
+    <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om/base/auto"/>
+    <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
+    <attainGoal name="xdat:updateGeneratedFiles"/>
+    <!--<attainGoal name="xdat:generateAllFiles"/>
+    <attainGoal name="xdat:generateUpdateSQL"/>
+    <attainGoal name="xdat:generateJSFiles"/>-->
+    <copy todir="${basedir}/projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
+      <fileset dir="${basedir}/deployments/${xdat.project.name}/src/schemas">
+        <include name="**/*_display.xml"/>
+      </fileset>
+    </copy>
+    <delete dir="${basedir}/deployments/${xdat.project.name}/src/java/org/nrg/xdat"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/src/java" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/java"/>
+    </copy>
+    <ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/src/base-templates"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/src/base-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/>
+    </copy>
+    <delete>
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om">
+        <include name="base/BaseXnat*.java"/>
+        <include name="base/BaseProv*.java"/>
+        <include name="base/BaseWrk*.java"/>
+        <include name="base/BasePipe*.java"/>
+        <include name="base/BaseArc*.java"/>
+        <include name="base/BaseVal*.java"/>
+      </fileset>
+    </delete>
+    <copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat/java/org/nrg/xdat/om">
+        <include name="base/*.java"/>
+      </fileset>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Generates Java Files for use in XNAT                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:generateAllFiles" description="Generates xdat Java Files and Velocity Templates">
+    <java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-javaDir"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/src/java"/>
+      <arg value="-templateDir"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/src/base-templates/screens"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-e"/>
+      <arg value="ALL"/>
+      <arg value="-skipXDAT"/>
+      <arg value="true"/>
+      <arg value="-displayDocs"/>
+      <arg value="true"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+  </goal>
+  <goal name="xdat:generateXDATFiles" description="Generates xdat Java Files and Velocity Templates">
+    <ant:mkdir dir="${basedir}/work/java"/>
+    <ant:mkdir dir="${basedir}/work/templates/screens"/>
+    <java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-javaDir"/>
+      <arg value="${basedir}/work/java"/>
+      <arg value="-templateDir"/>
+      <arg value="${basedir}/work/templates/screens"/>
+      <arg value="-displayDocs"/>
+      <arg value="false"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-e"/>
+      <arg value="ALL"/>
+      <arg value="-skipXDAT"/>
+      <arg value="false"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Generates Update SQL                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:generateUpdateSQL" description="Generates sql for your schema">
+    <java classname="UpdateSQL" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-f"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+    <ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Generates CREATE SQL                                     -->
+  <!-- ================================================================ -->
+  <goal name="xdat:generateSQL" description="Generates sql for your schema">
+    <java classname="CreateSQL" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-f"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+    <ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Generates javascript Objects                                    -->
+  <!-- ================================================================ -->
+  <goal name="xdat:generateJSFiles" description="Generates javascript objects for your schema">
+    <java classname="GenerateJSFiles" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-javascriptDir"/>
+      <arg value="${basedir}/deployments/${xdat.project.name}/src/scripts"/>
+      <arg value="-e"/>
+      <arg value="ALL"/>
+      <arg value="-skipXDAT"/>
+      <arg value="true"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+  </goal>
+  <goal name="xdat:createGeneratedFiles" description="Generates files for your schema">
+    <ant:mkdir dir="${basedir}/work/java"/>
+    <ant:mkdir dir="${basedir}/work/templates/screens"/>
+    <java classname="GenerateAllCreateFiles" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-sqlfile"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
+      <arg value="-javascriptDir"/>
+      <arg value="${basedir}/deployments/${xdat.project.name}/src/scripts"/>
+      <arg value="-javadir"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/src/java"/>
+      <arg value="-templateDir"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/src/base-templates/screens"/>
+      <arg value="-displayDocs"/>
+      <arg value="true"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+    <ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
+    </copy>
+  </goal>
+  <goal name="xdat:updateGeneratedFiles" description="Generates files for your schema">
+    <ant:mkdir dir="${basedir}/work/java"/>
+    <ant:mkdir dir="${basedir}/work/templates/screens"/>
+    <java classname="GenerateAllUpdateFiles" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-sqlfile"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
+      <arg value="-javascriptDir"/>
+      <arg value="${basedir}/deployments/${xdat.project.name}/src/scripts"/>
+      <arg value="-javadir"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/src/java"/>
+      <arg value="-templateDir"/>
+      <arg value="${basedir}/projects/${xdat.project.name}/src/base-templates/screens"/>
+      <arg value="-displayDocs"/>
+      <arg value="true"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+    <ant:mkdir dir="${basedir}/deployments/${xdat.project.name}/sql"/>
+    <copy todir="${basedir}/deployments/${xdat.project.name}/sql" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/sql"/>
+    </copy>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Generates Bean Objects                                    -->
+  <!-- ================================================================ -->
+  <goal name="xdat:generateBeans" description="Generates java bean objects for your schema">
+    <j:if test="${context.getVariable('beans.jar.name') ==null}">
+      <j:set var="beans.jar.name" value="beans"/>
+    </j:if>
+    <java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-javaDir"/>
+      <arg value="${basedir}/src"/>
+      <arg value="-e"/>
+      <arg value="ALL"/>
+      <arg value="-skipXDAT"/>
+      <arg value="false"/>
+      <arg value="-package"/>
+      <arg value="org.nrg.xdat"/>
+      <arg value="-allow1.5"/>
+      <arg value="true"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+    <javac srcdir="${basedir}/src" destdir="${basedir}/classes" source="1.5" target="1.5" debug="true">
+      <include name="org/**"/>
+      <classpath>
+        <pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
+        <pathelement location="${basedir}/plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
+        <pathelement location="${basedir}/plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
+        <pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
+      </classpath>
+    </javac>
+    <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" basedir="${basedir}/classes">
+      <include name="org/**"/>
+    </jar>
+    <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0-source.jar" basedir="${basedir}/src">
+      <include name="org/**"/>
+    </jar>
+    <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
+    <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
+    <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-1.0.jar"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Populates the root level lib directory                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:setupLib" description="Setup the Lib directory">
+    <j:forEach var="dep" items="${pom.dependencies}">
+      <copy todir="${basedir}/lib" file="${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
+    </j:forEach>
+    <attainGoal name="xdat:buildGenericExecutables"/>
+    <attainGoal name="xdat:buildDefinedExecutables"/>
+    <attainGoal name="xdat:buildJarExecutables"/>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Builds bin executables                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:buildGenericExecutables" description="Generate SH and BAT files with classpath defined appropriately">
+    <!-- BUILD BAT TEMPLATE -->
+    <j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;"/>
+    <j:if test="${context.getVariable('xdat.url') != null}">
+      <j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
+    </j:if>
+    <j:if test="${context.getVariable('xdat.url') == null}">
+      <ant:echo>XDAT URL is not defined in build.properties.</ant:echo>
+      <j:set var="xdat.url.text" value=" "/>
+    </j:if>
+    <ant:property environment="env"/>
+    <j:forEach var="dep" items="${pom.dependencies}">
+      <j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
+    </j:forEach>
+    <delete file="${basedir}/plugin-resources/misc/template2.bat"/>
+    <copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%XNAT_HOME%" value="${basedir}  ${xdat.url.text}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="\" value="/"/>
+    <!-- BUILD SH TEMPLATE -->
+    <j:set var="absolute.lib.path" value="${basedir}/classes"/>
+    <j:forEach var="dep" items="${pom.dependencies}">
+      <j:set var="absolute.lib.path" value="${absolute.lib.path}:${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
+    </j:forEach>
+    <delete file="${basedir}/plugin-resources/misc/template2.sh"/>
+    <copy tofile="${basedir}/plugin-resources/misc/template2.sh" file="${basedir}/plugin-resources/misc/template.sh"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%XNAT_HOME%" value="${basedir} ${xdat.url.text}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="\" value="/"/>
+    <j:set var="ClassName" value="Browse"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="CreateSQL"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="FilePathUpdater"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="GenerateJavaFile"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="Search"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="StoreXML"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="GenerateDisplayFile"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="UpdateSQL"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="FieldValues"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="XMLSearch"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="VelocitySearch"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="XMLSync"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+    <j:set var="ClassName" value="CleanXML"/>
+    <attainGoal name="xdat:editGenericExecutable"/>
+  </goal>
+  <goal name="xdat:editGenericExecutable">
+    <maven:param-check value="${ClassName}" fail="true" message="'ClassName' must be specified"/>
+    <copy tofile="${basedir}/bin/${ClassName}" file="${basedir}/plugin-resources/misc/template2.sh"/>
+    <ant:replace file="${basedir}/bin/${ClassName}" token="%CLASS_NAME%" value="${ClassName}"/>
+    <copy tofile="${basedir}/bin/${ClassName}.bat" file="${basedir}/plugin-resources/misc/template2.bat"/>
+    <ant:replace file="${basedir}/bin/${ClassName}.bat" token="%CLASS_NAME%" value="${ClassName}"/>
+  </goal>
+  <goal name="xdat:buildDefinedExecutables" description="Generate SH and BAT files with classpath defined appropriately">
+    <ant:property environment="env"/>
+    <ant:echo>JAVA HOME: ${env.JAVA_HOME}</ant:echo>
+    <j:if test="${context.getVariable('xdat.url') != null}">
+      <j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
+    </j:if>
+    <!-- BUILD BAT TEMPLATE -->
+    <j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;;&quot;${basedir}/deployments/${xdat.project.name}/target/classes&quot;"/>
+    <j:forEach var="dep" items="${pom.dependencies}">
+      <j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
+    </j:forEach>
+    <delete file="${basedir}/plugin-resources/misc/template2.bat"/>
+    <copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%XNAT_HOME%" value="${basedir} -project ${xdat.project.name} ${xdat.url.text}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="\" value="/"/>
+    <!-- BUILD SH TEMPLATE -->
+    <j:set var="absolute.lib.path" value="${basedir}/classes:${basedir}/deployments/${xdat.project.name}/target/classes"/>
+    <j:forEach var="dep" items="${pom.dependencies}">
+      <j:set var="absolute.lib.path" value="${absolute.lib.path}:${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
+    </j:forEach>
+    <delete file="${basedir}/plugin-resources/misc/template2.sh"/>
+    <copy tofile="${basedir}/plugin-resources/misc/template2.sh" file="${basedir}/plugin-resources/misc/template.sh"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%XNAT_HOME%" value="${basedir} -project ${xdat.project.name} ${xdat.url.text}"/>
+    <ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="\" value="/"/>
+    <j:set var="ClassName" value="Browse"/>
+    <attainGoal name="xdat:editDefinedExecutable"/>
+    <j:set var="ClassName" value="Search"/>
+    <attainGoal name="xdat:editDefinedExecutable"/>
+    <j:set var="ClassName" value="StoreXML"/>
+    <attainGoal name="xdat:editDefinedExecutable"/>
+    <j:set var="ClassName" value="VelocitySearch"/>
+    <attainGoal name="xdat:editDefinedExecutable"/>
+  </goal>
+  <goal name="xdat:editDefinedExecutable">
+    <maven:param-check value="${ClassName}" fail="true" message="'ClassName' must be specified"/>
+    <copy tofile="${basedir}/bin/${ClassName}_${xdat.project.name}" file="${basedir}/plugin-resources/misc/template2.sh"/>
+    <ant:replace file="${basedir}/bin/${ClassName}_${xdat.project.name}" token="%CLASS_NAME%" value="${ClassName}"/>
+    <copy tofile="${basedir}/bin/${ClassName}_${xdat.project.name}.bat" file="${basedir}/plugin-resources/misc/template2.bat"/>
+    <ant:replace file="${basedir}/bin/${ClassName}_${xdat.project.name}.bat" token="%CLASS_NAME%" value="${ClassName}"/>
+  </goal>
+  <goal name="xdat:buildJarExecutables" description="Builds exe wrappers for the executable jars">
+    <!-- BUILD SEARCH EXECUTABLES -->
+    <copy tofile="${basedir}/bin/SearchWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
+    <ant:replace file="${basedir}/bin/SearchWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/SearchWS" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/SearchWS" token="%JAR_NAME%" value="xdat-search-1.jar"/>
+    <copy tofile="${basedir}/bin/SearchWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+    <ant:replace file="${basedir}/bin/SearchWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/SearchWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/SearchWS.bat" token="%JAR_NAME%" value="xdat-search-1.jar"/>
+    <!-- BUILD STORE EXECUTABLES -->
+    <copy tofile="${basedir}/bin/StoreXMLWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
+    <ant:replace file="${basedir}/bin/StoreXMLWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/StoreXMLWS" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/StoreXMLWS" token="%JAR_NAME%" value="xdat-store-1.jar"/>
+    <copy tofile="${basedir}/bin/StoreXMLWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+    <ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%JAR_NAME%" value="xdat-store-1.jar"/>
+    <!-- BUILD SEARCH EXECUTABLES -->
+    <copy tofile="${basedir}/bin/ArcGetWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
+    <ant:replace file="${basedir}/bin/ArcGetWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/ArcGetWS" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/ArcGetWS" token="%JAR_NAME%" value="xdat-arcget-1.jar"/>
+    <copy tofile="${basedir}/bin/ArcGetWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+    <ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%JAR_NAME%" value="xdat-arcget-1.jar"/>
+    <!-- BUILD READ EXECUTABLES -->
+    <copy tofile="${basedir}/bin/ArcReadWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
+    <ant:replace file="${basedir}/bin/ArcReadWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/ArcReadWS" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/ArcReadWS" token="%JAR_NAME%" value="xdat-arcread-1.jar"/>
+    <copy tofile="${basedir}/bin/ArcReadWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+    <ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%JAR_NAME%" value="xdat-arcread-1.jar"/>
+    <!-- BUILD SIM EXECUTABLES -->
+    <copy tofile="${basedir}/bin/ArcSimWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
+    <ant:replace file="${basedir}/bin/ArcSimWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/ArcSimWS" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/ArcSimWS" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
+    <copy tofile="${basedir}/bin/ArcSimWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+    <ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
+    <ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
+    <ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
 		<!-- BUILD SIM EXECUTABLES -->
 		<copy tofile="${basedir}/bin/XNATRestClient" file="${basedir}/plugin-resources/misc/template3.sh"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
@@ -1151,132 +1166,132 @@
 		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
-	</goal>
-	<goal name="xdat:testDB" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
-		<ant:taskdef name="TestDB" classname="TestDB" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
-		<ant:TestDB connectionstring="${xdat.project.db.connection.string}" driver="${xdat.project.db.driver}" user="${xdat.project.db.user}" password="${xdat.project.db.password}"/>
-	</goal>
-	<goal name="xdat:verifyPLPGSQL" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
-		<ant:taskdef name="VerifyPLPGSQLLanguage" classname="VerifyPLPGSQLLanguage" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
-		<ant:VerifyPLPGSQLLanguage connectionstring="${xdat.project.db.connection.string}" driver="${xdat.project.db.driver}" user="${xdat.project.db.user}" password="${xdat.project.db.password}"/>
-	</goal>
-	<goal name="xdat:executeSQL" description="">
-		<maven:param-check value="${sql_file}" fail="true" message="'sql_file' must be specified"/>
-		<ant:sql driver="${xdat.project.db.driver}" url="${xdat.project.db.connection.string}" userid="${xdat.project.db.user}" password="${xdat.project.db.password}" src="${sql_file}" autocommit="true">
-			<classpath>
-				<pathelement location="${basedir}/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
-			</classpath>
-		</ant:sql>
-	</goal>
-	<goal name="xdat:buildDB" description="Create the Database from generated sql">
-		<ant:sql driver="${xdat.project.db.driver}" url="${xdat.project.db.connection.string}" userid="${xdat.project.db.user}" password="${xdat.project.db.password}" src="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql" autocommit="true">
-			<classpath>
-				<pathelement location="${basedir}/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
-			</classpath>
-		</ant:sql>
-	</goal>
-	<goal name="xdat:updateDB" description="Create the Database from generated sql">
-		<ant:sql driver="${xdat.project.db.driver}" url="${xdat.project.db.connection.string}" userid="${xdat.project.db.user}" password="${xdat.project.db.password}" src="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql" delimiter="--BR" autocommit="true">
-			<classpath>
-				<pathelement location="${basedir}/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
-			</classpath>
-		</ant:sql>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Echos relevant variables (Used for testing)                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:echo-variables">
-		<ant:echo>maven.repo.local ${maven.repo.local}</ant:echo>
-		<ant:echo>maven.repo.remote ${maven.repo.remote}</ant:echo>
-		<ant:echo>maven.home ${maven.home}</ant:echo>
-		<ant:echo>maven.home.local ${maven.home.local}</ant:echo>
-		<ant:echo>os.name ${os.name}</ant:echo>
-		<j:set var="xdat.os" value="UNIX"/>
-		<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
-			<j:set var="xdat.os" value="WINDOWS"/>
-		</j:if>
-		<ant:echo>xdat.os ${xdat.os}</ant:echo>
-		<ant:echo>ant.java.version: ${ant.java.version}</ant:echo>
-		<ant:echo>java.version: ${java.version}</ant:echo>
-		<ant:echo>user.home: ${user.home}</ant:echo>
-		<j:if test="${context.getVariable('java.version').startsWith('1.5')}">
-			<ant:echo>JAVA: 1.5</ant:echo>
-		</j:if>
-		<j:if test="${context.getVariable('java.version').startsWith('1.4')}">
-			<ant:echo>JAVA: 1.4</ant:echo>
-		</j:if>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Location for test logic                                      -->
-	<!-- ================================================================ -->
-	<goal name="xdat:test">
-		<j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
-			<ant:echo>HAS SSL</ant:echo>
-		</j:if>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Quick deploy of key files for debugging                                     -->
-	<!-- ================================================================ -->
-	<goal name="xdat:quick-deploy">
-		<attainGoal name="xdat:quick-deploy-templates"/>
-		<attainGoal name="xdat:quick-deploy-classes"/>
-	</goal>
-	<goal name="xdat:quick-deploy-templates">
-		<attainGoal name="xdat:updateJS"/>
-		<attainGoal name="xdat:updateCSS"/>
-		<copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar"/>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/repository/PlexiViewer/jars/"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/repository/pipelineBuild/jars/"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/xdat-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xdat-templates"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/base-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/templates" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/templates"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/xnat-templates" preservelastmodified="true">
-			<fileset dir="${basedir}/plugin-resources/webapp/xnat-templates"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/schemas" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/schemas"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/scripts" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/scripts"/>
-		</copy>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/applet" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/applet"/>
-		</copy>
-		<copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/scripts/xdat.js" file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js"/>
-		<copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/scripts/xnat.js" file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js"/>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/style" preservelastmodified="true">
-			<fileset dir="${basedir}/projects/${xdat.project.name}/src/style"/>
-		</copy>
-		<copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/style/xdat.css" file="${basedir}/plugin-resources/webapp/xnat/style/xdat.css"/>
-	</goal>
-	<goal name="xdat:quick-deploy-classes">
-		<maven:param-check value="${class.dir}" fail="true" message="'class.dir' must be specified (location of compiled classes)"/>
-		<copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/org" preservelastmodified="true">
-			<fileset dir="${class.dir}/org"/>
-		</copy>
-	</goal>
-	<goal name="xdat:manageProjectXML" description="Updates Project xml with more recent dependencies">
-		<ant:taskdef name="ManageProjectXML" classname="ManageProjectXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
+  </goal>
+  <goal name="xdat:testDB" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
+    <ant:taskdef name="TestDB" classname="TestDB" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
+    <ant:TestDB connectionstring="${xdat.project.db.connection.string}" driver="${xdat.project.db.driver}" user="${xdat.project.db.user}" password="${xdat.project.db.password}"/>
+  </goal>
+  <goal name="xdat:verifyPLPGSQL" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
+    <ant:taskdef name="VerifyPLPGSQLLanguage" classname="VerifyPLPGSQLLanguage" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
+    <ant:VerifyPLPGSQLLanguage connectionstring="${xdat.project.db.connection.string}" driver="${xdat.project.db.driver}" user="${xdat.project.db.user}" password="${xdat.project.db.password}"/>
+  </goal>
+  <goal name="xdat:executeSQL" description="">
+    <maven:param-check value="${sql_file}" fail="true" message="'sql_file' must be specified"/>
+    <ant:sql driver="${xdat.project.db.driver}" url="${xdat.project.db.connection.string}" userid="${xdat.project.db.user}" password="${xdat.project.db.password}" src="${sql_file}" autocommit="true">
+      <classpath>
+        <pathelement location="${basedir}/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
+      </classpath>
+    </ant:sql>
+  </goal>
+  <goal name="xdat:buildDB" description="Create the Database from generated sql">
+    <ant:sql driver="${xdat.project.db.driver}" url="${xdat.project.db.connection.string}" userid="${xdat.project.db.user}" password="${xdat.project.db.password}" src="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql" autocommit="true">
+      <classpath>
+        <pathelement location="${basedir}/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
+      </classpath>
+    </ant:sql>
+  </goal>
+  <goal name="xdat:updateDB" description="Create the Database from generated sql">
+    <ant:sql driver="${xdat.project.db.driver}" url="${xdat.project.db.connection.string}" userid="${xdat.project.db.user}" password="${xdat.project.db.password}" src="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql" delimiter="--BR" autocommit="true">
+      <classpath>
+        <pathelement location="${basedir}/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar"/>
+      </classpath>
+    </ant:sql>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Echos relevant variables (Used for testing)                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:echo-variables">
+    <ant:echo>maven.repo.local ${maven.repo.local}</ant:echo>
+    <ant:echo>maven.repo.remote ${maven.repo.remote}</ant:echo>
+    <ant:echo>maven.home ${maven.home}</ant:echo>
+    <ant:echo>maven.home.local ${maven.home.local}</ant:echo>
+    <ant:echo>os.name ${os.name}</ant:echo>
+    <j:set var="xdat.os" value="UNIX"/>
+    <j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+      <j:set var="xdat.os" value="WINDOWS"/>
+    </j:if>
+    <ant:echo>xdat.os ${xdat.os}</ant:echo>
+    <ant:echo>ant.java.version: ${ant.java.version}</ant:echo>
+    <ant:echo>java.version: ${java.version}</ant:echo>
+    <ant:echo>user.home: ${user.home}</ant:echo>
+    <j:if test="${context.getVariable('java.version').startsWith('1.5')}">
+      <ant:echo>JAVA: 1.5</ant:echo>
+    </j:if>
+    <j:if test="${context.getVariable('java.version').startsWith('1.4')}">
+      <ant:echo>JAVA: 1.4</ant:echo>
+    </j:if>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Location for test logic                                      -->
+  <!-- ================================================================ -->
+  <goal name="xdat:test">
+    <j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
+      <ant:echo>HAS SSL</ant:echo>
+    </j:if>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Quick deploy of key files for debugging                                     -->
+  <!-- ================================================================ -->
+  <goal name="xdat:quick-deploy">
+    <attainGoal name="xdat:quick-deploy-templates"/>
+    <attainGoal name="xdat:quick-deploy-classes"/>
+  </goal>
+  <goal name="xdat:quick-deploy-templates">
+    <attainGoal name="xdat:updateJS"/>
+    <attainGoal name="xdat:updateCSS"/>
+    <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar"/>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/repository/PlexiViewer/jars/"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/repository/pipelineBuild/jars/"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/xdat-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xdat-templates"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/base-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/templates" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/templates"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/xnat-templates" preservelastmodified="true">
+      <fileset dir="${basedir}/plugin-resources/webapp/xnat-templates"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/schemas" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/schemas"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/scripts" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/scripts"/>
+    </copy>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/applet" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/applet"/>
+    </copy>
+    <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/scripts/xdat.js" file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js"/>
+    <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/scripts/xnat.js" file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js"/>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/style" preservelastmodified="true">
+      <fileset dir="${basedir}/projects/${xdat.project.name}/src/style"/>
+    </copy>
+    <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/style/xdat.css" file="${basedir}/plugin-resources/webapp/xnat/style/xdat.css"/>
+  </goal>
+  <goal name="xdat:quick-deploy-classes">
+    <maven:param-check value="${class.dir}" fail="true" message="'class.dir' must be specified (location of compiled classes)"/>
+    <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/org" preservelastmodified="true">
+      <fileset dir="${class.dir}/org"/>
+    </copy>
+  </goal>
+  <goal name="xdat:manageProjectXML" description="Updates Project xml with more recent dependencies">
+    <ant:taskdef name="ManageProjectXML" classname="ManageProjectXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
 		<ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml" projdepsrc="${basedir}/projects/${xdat.project.name}/project-dependencies/dependencies.xml"/>
-	</goal>
-	<goal name="xdat:manageInstanceSettings" description="Updates Project instance settings with new attributes">
-		<ant:taskdef name="ManageInstanceSettings" classname="ManageInstanceSettings" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
-		<ant:ManageInstanceSettings projectDir="${basedir}/projects/${xdat.project.name}" originalsDir="${basedir}/plugin-resources/originals"/>
-	</goal>
-	<goal name="xdat:mergeProjectWebXML" description="Merge projects web.xml with plugin-resources web.xml">
+  </goal>
+  <goal name="xdat:manageInstanceSettings" description="Updates Project instance settings with new attributes">
+    <ant:taskdef name="ManageInstanceSettings" classname="ManageInstanceSettings" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
+    <ant:ManageInstanceSettings projectDir="${basedir}/projects/${xdat.project.name}" originalsDir="${basedir}/plugin-resources/originals"/>
+  </goal>
+  <goal name="xdat:mergeProjectWebXML" description="Merge projects web.xml with plugin-resources web.xml">
 		<ant:path id="webxmlmerge.path">
 			<ant:pathelement location="classes"/>
 			<ant:pathelement location="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
@@ -1336,59 +1351,59 @@
 				<ant:arg value="${xdat.admin_email}"/>
 				<ant:arg value="${xdat.smtp.server}"/>
 				<ant:arg value="${cwd}"/>
-				<env key="MAVEN_TERMINATE_CMD" value="on"/>
-			</ant:exec>
-		</j:if>
-		<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
-			<ant:chmod perm="ugo+rx">
-				<fileset dir="${basedir}/pipeline">
-					<filename name="setup.sh"/>
-				</fileset>
-			</ant:chmod>
-			<ant:exec executable="${basedir}/pipeline/setup.sh" failonerror="true">
-				<ant:arg value="${xdat.admin_email}"/>
-				<ant:arg value="${xdat.smtp.server}"/>
+        <env key="MAVEN_TERMINATE_CMD" value="on"/>
+      </ant:exec>
+    </j:if>
+    <j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
+      <ant:chmod perm="ugo+rx">
+        <fileset dir="${basedir}/pipeline">
+          <filename name="setup.sh"/>
+        </fileset>
+      </ant:chmod>
+      <ant:exec executable="${basedir}/pipeline/setup.sh" failonerror="true">
+        <ant:arg value="${xdat.admin_email}"/>
+        <ant:arg value="${xdat.smtp.server}"/>
 				<ant:arg value="${cwd}"/>
-			</ant:exec>
-		</j:if>
-	</goal>
-	<!-- ================================================================ -->
-	<!-- Generates Bean Objects                                    -->
-	<!-- ================================================================ -->
-	<goal name="xdat:ManageProjectAccessories" description="Generates java bean objects for your schema">
-		<maven:param-check value="${xdat.user.login}" fail="true" message="'xdat.user.login' must be specified"/>
-		<maven:param-check value="${xdat.user.password}" fail="true" message="'xdat.user.password' must be specified"/>
-		<java classname="ManageProjectAccessories" maxmemory="1024m" fork="true" failonerror="true">
-			<arg value="-xdir"/>
-			<arg value="${basedir}"/>
-			<arg value="-project"/>
-			<arg value="${xdat.project.name}"/>
-			<arg value="-u"/>
-			<arg value="${xdat.user.login}"/>
-			<arg value="-p"/>
-			<arg value="${xdat.user.password}"/>
-			<classpath>
-				<pathelement location="./classes"/>
-				<pathelement location="./deployments/${xdat.project.name}/target/classes"/>
-				<pathelement location="./lib/xdat-1.jar"/>
-				<pathelement location="./lib/commons-collections-3.0.jar"/>
-				<pathelement location="./lib/commons-configuration-1.0.jar"/>
-				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
-				<pathelement location="./lib/commons-lang-2.5.jar"/>
-				<pathelement location="./lib/commons-pool-1.2.jar"/>
-				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-				<pathelement location="./lib/log4j-1.2.15.jar"/>
-				<pathelement location="./lib/parser-1.jar"/>
-				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
-				<pathelement location="./lib/stratum-1.0-b5.jar"/>
-				<pathelement location="./lib/xerces-J_1.4.0.jar"/>
-				<pathelement location="./lib/xalan-2.5.1.jar"/>
-				<pathelement location="./lib/velocity-1.3.1.jar"/>
-				<pathelement location="./lib/javamail-1.3.2.jar"/>
-				<pathelement location="./lib/activation-1.0.2.jar"/>
-				<pathelement location="./plugin-resources/repository/commons-email/jars/commons-email-20030310.165926.jar"/>
-				<pathelement location="./lib/json-20090211.jar"/>
-			</classpath>
-		</java>
-	</goal>
+      </ant:exec>
+    </j:if>
+  </goal>
+  <!-- ================================================================ -->
+  <!-- Generates Bean Objects                                    -->
+  <!-- ================================================================ -->
+  <goal name="xdat:ManageProjectAccessories" description="Generates java bean objects for your schema">
+    <maven:param-check value="${xdat.user.login}" fail="true" message="'xdat.user.login' must be specified"/>
+    <maven:param-check value="${xdat.user.password}" fail="true" message="'xdat.user.password' must be specified"/>
+    <java classname="ManageProjectAccessories" maxmemory="1024m" fork="true" failonerror="true">
+      <arg value="-xdir"/>
+      <arg value="${basedir}"/>
+      <arg value="-project"/>
+      <arg value="${xdat.project.name}"/>
+      <arg value="-u"/>
+      <arg value="${xdat.user.login}"/>
+      <arg value="-p"/>
+      <arg value="${xdat.user.password}"/>
+      <classpath>
+        <pathelement location="./classes"/>
+        <pathelement location="./deployments/${xdat.project.name}/target/classes"/>
+        <pathelement location="./lib/xdat-1.jar"/>
+        <pathelement location="./lib/commons-collections-3.0.jar"/>
+        <pathelement location="./lib/commons-configuration-1.0.jar"/>
+        <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+        <pathelement location="./lib/commons-lang-2.5.jar"/>
+        <pathelement location="./lib/commons-pool-1.2.jar"/>
+        <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
+        <pathelement location="./lib/log4j-1.2.15.jar"/>
+        <pathelement location="./lib/parser-1.jar"/>
+        <pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
+        <pathelement location="./lib/stratum-1.0-b5.jar"/>
+        <pathelement location="./lib/xerces-J_1.4.0.jar"/>
+        <pathelement location="./lib/xalan-2.5.1.jar"/>
+        <pathelement location="./lib/velocity-1.3.1.jar"/>
+        <pathelement location="./lib/javamail-1.3.2.jar"/>
+        <pathelement location="./lib/activation-1.0.2.jar"/>
+        <pathelement location="./plugin-resources/repository/commons-email/jars/commons-email-20030310.165926.jar"/>
+        <pathelement location="./lib/json-20090211.jar"/>
+      </classpath>
+    </java>
+  </goal>
 </project>

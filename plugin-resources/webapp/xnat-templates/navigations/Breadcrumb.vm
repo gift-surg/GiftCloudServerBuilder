@@ -1,194 +1,179 @@
-<div id="breadcrumbs"></div>
+<div id="breadcrumbs">
+  #if(! $project.getItem())
+    #if($om.getProject())
+      #if(! $project)
+        #set($project = $om.getProject())
+      #end
+      #else
+        #if($om)
+          $om.setProject($project)
+        #end
+    #end
+  #end
+  #if($project)
+    #if($om)
+      ##HAS OM
+      #if($om.getItem().instanceOf("xnat:mrAssessorData"))
+        ##mrAssessorData
+        #if(! $mr)
+          #if($mr.getMrSessionData())
+            #set($pet=$om.getMrSessionData())
+          #end
+        #end
+        #if(! $subject)
+            #if($mr.getSubjectData())
+              #set($subject= $mr.getSubjectData())
+            #else
+              #if($part)
+                #set($subject=$part)
+              #end
+            #end
+        #end
+        #if($om.getProject($project,false))
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>
+          &nbsp;>&nbsp;
+        #end
+        #if($subject)
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>
+          &nbsp;>&nbsp;
+        #end
+        #if($mr)
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:mrSessionData").addPathInfo("search_field","xnat:mrSessionData.ID").addPathInfo("search_value","$mr.getId()").addPathInfo("project","$project")'>MR:#if($!mr.getIdentifier($project,true))$!mr.getIdentifier($project,true)#elseif($mr.getLabel())$!mr.getLabel()#else$!mr.getId()#end</A>
+          &nbsp;>&nbsp;
+        #end
+        #if($page_name)
+          #if($om.Id)
+            <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>
+            &nbsp;>&nbsp;
+          #end
+          $pageName
+        #else
+          #if($om.Id)
+            #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end
+          #end
+        #end
+      #elseif($om.getItem().instanceOf("xnat:petAssessorData"))
+        ##petAssessorData
+        #if(! $pet)
+            #if($om.getPetSessionData())
+              #set($pet=$om.getPetSessionData())
+            #end
+        #end
+        #if(! $subject)
+          #if($pet.getSubjectData())
+            #set($subject= $pet.getSubjectData())
+          #else
+            #if($part)
+              #set($subject=$part)
+            #end
+          #end
+        #end
+        #if($om.getProject($project,false))
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>
+          &nbsp;>&nbsp;
+        #end
+        #if($subject)
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>
+          &nbsp;>&nbsp;
+        #end
+        #if($pet)
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:petSessionData").addPathInfo("search_field","xnat:petSessionData.ID").addPathInfo("search_value","$pet.getId()").addPathInfo("project","$project")'>PET:#if($!pet.getIdentifier($project,true))$!pet.getIdentifier($project,true)#elseif($pet.getLabel())$!pet.getLabel()#else$!pet.getId()#end</A>
+          &nbsp;>&nbsp;
+        #end
+        #if($page_name)
+          #if($om.Id)
+            <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>
+            &nbsp;>&nbsp;
+          #end
+          $pageName
+        #else
+          #if($om.Id)
+            #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end
+          #end
+        #end
+      #elseif($om.getItem().instanceOf("xnat:subjectAssessorData"))
+        ##subjectAssessorData
+        #if(!$subject)
+          #if($om.getSubjectData())
+            #set($subject= $om.getSubjectData())
+          #else
+            #if($part)
+              #set($subject=$part)
+            #end
+          #end
+        #end
+        #if($om.getProject($project,false))
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>
+          &nbsp;>&nbsp;
+        #end
+        #if($subject)
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>
+          &nbsp;>&nbsp;
+        #end
+        #if($page_name)
+          #if($om.Id)
+            <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>
+            &nbsp;>&nbsp;
+          #end
+          $pageName
+        #else
+          #if($om.Id)
+            #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end
+          #end
+        #end
+      #elseif($om.getItem().getGenericSchemaElement().getPrimaryElements().indexOf("xnat:experimentData")!=-1)
+        ##experimentData
+        #if($om.getProject($project,false))
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>
+          &nbsp;>&nbsp;
+        #end
+        #if($page_name)
+          #if($om.Id)
+            <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>
+            &nbsp;>&nbsp;
+          #end
+          $pageName
+        #else
+          #if($om.Id)
+            #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
+          #end
+        #end
+              ## #elseif($om.getItem().instanceOf("xnat:subjectData") != -1)
+      #elseif($om.getItem().instanceOf("xnat:subjectData"))
+        ##subjectData
+        #if($om.getProject($project,false))
+          <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>
+          &nbsp;>&nbsp;
+        #end
+        #if($pageName)
+          #if($om.Id)
+            <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>
+            &nbsp;>&nbsp;
+          #end
+          $pageName
+        #else
+          #if($om.Id)
+            #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end
+          #end
+        #end
+      #elseif($om.getItem().instanceOf("xnat:projectData"))
+        ##projectData
+      #else
+        ##UNKNOWN
+        <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!project</a>
+
+        #if($page_name)
+          &nbsp;>&nbsp;$pageName
+        #end
+      #end
+    #else
+      ##NO OM
+      <a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!project</a>
+
+      #if($page_name)
+        &nbsp;>&nbsp;$pageName
+      #end
+    #end
+  #end
+</div>
 <div>&nbsp;</div>
-<script language="javascript">
-  var breadcrumbs=document.getElementById('breadcrumbs');
-   
-  if (breadcrumbs!=null){
-   if (breadcrumbs.innerHTML==""){
-    var bread = "";
-
-#if($project.getItem())
-
-#else
-#if($om.getProject())
- #if($project)
- 
- #else
-  #set($project=$om.getProject())
- #end
-#else
-  #if ($om)
-  $!om.setProject($project)
-  #end
-#end
-#end
-
-#if($project)
-#if($om)
-//HAS OM
-#if($om.getItem().instanceOf("xnat:mrAssessorData"))
-//mrAssessorData
-#if($mr)
- 
-#else
-  #if($mr.getMrSessionData())
-    #set($pet=$om.getMrSessionData())
-  #end
-#end
-#if($subject)
-
-#else
-  #if($mr.getSubjectData())
-    #set($subject= $mr.getSubjectData())
-  #else
-    #if($part)
-      #set($subject=$part)
-    #end
-  #end
-#end
-	    #if($om.getProject($project,false))
-	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
-    #end
-    #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    #if($mr)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:mrSessionData").addPathInfo("search_field","xnat:mrSessionData.ID").addPathInfo("search_value","$mr.getId()").addPathInfo("project","$project")'>MR:#if($!mr.getIdentifier($project,true))$!mr.getIdentifier($project,true)#elseif($mr.getLabel())$!mr.getLabel()#else$!mr.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    #if($page_name)
-    #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    bread = bread + "$pageName";
-    #else
-    #if($om.Id)
-    bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
-    #end
-    #end
-    
-#elseif($om.getItem().instanceOf("xnat:petAssessorData"))
-//petAssessorData
-#if($pet)
- 
-#else
-  #if($om.getPetSessionData())
-    #set($pet=$om.getPetSessionData())
-  #end
-#end
-#if($subject)
-
-#else
-  #if($pet.getSubjectData())
-    #set($subject= $pet.getSubjectData())
-  #else
-    #if($part)
-      #set($subject=$part)
-    #end
-  #end
-#end
-	    #if($om.getProject($project,false))
-	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
-	    #end
-	    #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    #if($pet)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:petSessionData").addPathInfo("search_field","xnat:petSessionData.ID").addPathInfo("search_value","$pet.getId()").addPathInfo("project","$project")'>PET:#if($!pet.getIdentifier($project,true))$!pet.getIdentifier($project,true)#elseif($pet.getLabel())$!pet.getLabel()#else$!pet.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    #if($page_name)
-    #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    bread = bread + "$pageName";
-    #else
-    #if($om.Id)
-    bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
-    #end
-    #end
-    
-#elseif($om.getItem().instanceOf("xnat:subjectAssessorData"))
-//subjectAssessorData
-#if($subject)
-
-#else
-  #if($om.getSubjectData())
-    #set($subject= $om.getSubjectData())
-  #else
-    #if($part)
-      #set($subject=$part)
-    #end
-  #end
-#end
-	    #if($om.getProject($project,false))
-	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
-	    #end
-	    #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    #if($page_name)
-    #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    bread = bread + "$pageName";
-    #else
-    #if($om.Id)
-    bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
-    #end
-    #end
-    
-#elseif($om.getItem().getGenericSchemaElement().getPrimaryElements().indexOf("xnat:experimentData")!=-1)
-//experimentData
-	    #if($om.getProject($project,false))
-	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
-	    #end
-	    #if($page_name)
-    #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    bread = bread + "$pageName";
-    #else
-    #if($om.Id)
-    bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
-    #end
-    #end
-    
-## #elseif($om.getItem().instanceOf("xnat:subjectData") != -1)
-#elseif($om.getItem().instanceOf("xnat:subjectData"))
-//subjectData
-	    #if($om.getProject($project,false))
-	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
-	    #end
-	    #if($pageName)
-    #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
-    #end
-    bread = bread + "$pageName";
-    #else
-    #if($om.Id)
-    bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
-    #end
-    #end
-    
-#elseif($om.getItem().instanceOf("xnat:projectData"))
-//projectData
-    
-#else
-//UNKNOWN
-bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!project</a>";
-#if($page_name)
-    bread = bread + "&nbsp;>&nbsp;$pageName";
-#end
-#end
-#else
-//NO OM
-bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!project</a>";
-#if($page_name)
-    bread = bread + "&nbsp;>&nbsp;$pageName";
-#end
-#end
-#end
-    
-    breadcrumbs.innerHTML=bread;
-   }
-  }
-</script>

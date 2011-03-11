@@ -24,14 +24,15 @@ import org.xml.sax.SAXException;
 public class ArcSpecManager {
     static org.apache.log4j.Logger logger = Logger.getLogger(ArcSpecManager.class);
     private static ArcArchivespecification arcSpec = null;
-    
+
     public static String GetSiteID(){
-    	String site_id=GetInstance().getSiteId();
-    	if(site_id==null || site_id.equals(""))
-    		site_id="XNAT";
-    	return site_id;
+        String site_id=GetInstance().getSiteId();
+        if(site_id==null || site_id.equals("")) {
+            site_id="XNAT";
+        }
+        return site_id;
     }
-    
+
     public synchronized static  ArcArchivespecification GetInstance(){
     	return GetInstance(true);
     }
@@ -43,39 +44,39 @@ public class ArcSpecManager {
             if (allSpecs.size()>0) {
                 arcSpec = allSpecs.get(0);
             }
-            
+
             if (arcSpec!=null){
-     
+
                 if (arcSpec.getSiteAdminEmail()!=null && !arcSpec.getSiteAdminEmail().equals("")){
                     XFT.SetAdminEmail(arcSpec.getSiteAdminEmail());
                 }else{
                     arcSpec.setSiteAdminEmail(XFT.GetAdminEmail());
                 }
-                
+
                 if (arcSpec.getSiteUrl()!=null && !arcSpec.getSiteUrl().equals("")){
                     XFT.SetSiteURL(arcSpec.getSiteUrl());
                 }else{
                     arcSpec.setSiteUrl(XFT.GetSiteURL());
                 }
-                
+
                 if (arcSpec.getSiteId()!=null && !arcSpec.getSiteId().equals("")){
                     XFT.SetSiteID(arcSpec.getSiteId());
                 }else{
                     arcSpec.setSiteId("");
                 }
-                
+
                 if (arcSpec.getSmtpHost()!=null && !arcSpec.getSmtpHost().equals("")){
                     XFT.SetAdminEmailHost(arcSpec.getSmtpHost());
                 }else{
                     arcSpec.setSmtpHost(XFT.GetAdminEmailHost());
                 }
-                
+
                 if (arcSpec.getEnableNewRegistrations()!=null){
                     XFT.SetUserRegistration(arcSpec.getEnableNewRegistrations().toString());
                 }else{
                     arcSpec.setEnableNewRegistrations(XFT.GetUserRegistration());
                 }
-                
+
                 if (arcSpec.getRequireLogin()!=null){
                     XFT.SetRequireLogin(arcSpec.getRequireLogin().toString());
                 }else{
@@ -106,6 +107,22 @@ public class ArcSpecManager {
                     }
                 }
 
+                if (arcSpec.getGlobalpaths()!=null && arcSpec.getGlobalpaths().getFtppath()!=null){
+                    XFT.setFtpPath(arcSpec.getGlobalpaths().getFtppath());
+                }else{
+                    if (arcSpec.getGlobalpaths()!=null && XFT.getFtpPath()!=null){
+                        arcSpec.getGlobalpaths().setFtppath(XFT.getFtpPath());
+                    }
+                }
+
+                if (arcSpec.getGlobalpaths()!=null && arcSpec.getGlobalpaths().getBuildpath()!=null){
+                    XFT.setFtpPath(arcSpec.getGlobalpaths().getBuildpath());
+                }else{
+                    if (arcSpec.getGlobalpaths()!=null && XFT.getBuildPath()!=null){
+                        arcSpec.getGlobalpaths().setBuildpath(XFT.getBuildPath());
+                    }
+                }
+
                 if (arcSpec.getGlobalpaths()!=null && arcSpec.getGlobalpaths().getPrearchivepath()!=null){
                     XFT.SetPrearchivePath(arcSpec.getGlobalpaths().getPrearchivepath());
                 }else{
@@ -114,7 +131,7 @@ public class ArcSpecManager {
                     }
                 }
 
-                
+
                 //set email defaults
                 if (arcSpec.getEmailspecifications_newUserRegistration()==null){
                     arcSpec.setEmailspecifications_newUserRegistration(true);
@@ -141,7 +158,7 @@ public class ArcSpecManager {
                     AdminUtils.SetPageEmail(arcSpec.getEmailspecifications_pageEmail());
                 }
             }
-            
+
             try {
                 if (arcSpec!=null){
                     String cachePath = arcSpec.getGlobalCachePath();
@@ -149,7 +166,7 @@ public class ArcSpecManager {
                         File f = new File(cachePath,"archive_specification.xml");
                         f.getParentFile().mkdirs();
                         FileWriter fw = new FileWriter(f);
-                        
+
                         arcSpec.toXML(fw, true);
                         fw.flush();
                         fw.close();
@@ -179,9 +196,9 @@ public class ArcSpecManager {
     public synchronized static  void Reset(){
         arcSpec=null;
     }
-    
+
     public static boolean allowTransferEmail(){
-    	return GetInstance().getEmailspecifications_transfer();
+        return GetInstance().getEmailspecifications_transfer();
     }
-    
+
 }

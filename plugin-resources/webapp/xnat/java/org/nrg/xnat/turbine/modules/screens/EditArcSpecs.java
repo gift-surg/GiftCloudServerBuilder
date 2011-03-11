@@ -23,31 +23,47 @@ public class EditArcSpecs extends AdminScreen {
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
         ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
         if (arcSpec==null){
-        	arcSpec = new ArcArchivespecification((UserI)TurbineUtils.getUser(data));
-        	if (XFT.GetAdminEmail()!=null && !XFT.GetAdminEmail().equals(""))
-            	arcSpec.setSiteAdminEmail(XFT.GetAdminEmail());
-                
-        	if (XFT.GetSiteURL()!=null && !XFT.GetSiteURL().equals(""))
-                	arcSpec.setSiteUrl(XFT.GetSiteURL());
-                
-        	if (XFT.GetAdminEmailHost()!=null && !XFT.GetAdminEmailHost().equals(""))
-                	arcSpec.setSmtpHost(XFT.GetAdminEmailHost());
-                
-        	arcSpec.setEnableNewRegistrations(XFT.GetUserRegistration());
-            
+            arcSpec = new ArcArchivespecification((UserI)TurbineUtils.getUser(data));
+            if (XFT.GetAdminEmail()!=null && !XFT.GetAdminEmail().equals("")) {
+                arcSpec.setSiteAdminEmail(XFT.GetAdminEmail());
+            }
+
+            if (XFT.GetSiteURL()!=null && !XFT.GetSiteURL().equals("")) {
+                arcSpec.setSiteUrl(XFT.GetSiteURL());
+            }
+
+            if (XFT.GetAdminEmailHost()!=null && !XFT.GetAdminEmailHost().equals("")) {
+                arcSpec.setSmtpHost(XFT.GetAdminEmailHost());
+            }
+
+            arcSpec.setEnableNewRegistrations(XFT.GetUserRegistration());
+
             arcSpec.setRequireLogin(XFT.GetRequireLogin());
-            if (XFT.GetPipelinePath()!=null && !XFT.GetPipelinePath().equals(""))
-            	arcSpec.setProperty("globalPaths/pipelinePath", XFT.GetPipelinePath());
-            
-            if (XFT.GetArchiveRootPath()!=null && !XFT.GetArchiveRootPath().equals(""))
-            	arcSpec.setProperty("globalPaths/archivePath", XFT.GetArchiveRootPath());
-            
-            if (XFT.GetPrearchivePath()!=null && !XFT.GetPrearchivePath().equals(""))
-            	arcSpec.setProperty("globalPaths/prearchivePath", XFT.GetPrearchivePath());
-            
-            if (XFT.GetCachePath()!=null && !XFT.GetCachePath().equals(""))
-            	arcSpec.setProperty("globalPaths/cachePath", XFT.GetCachePath());
-            
+            if (XFT.GetPipelinePath()!=null && !XFT.GetPipelinePath().equals("")) {
+                arcSpec.setProperty("globalPaths/pipelinePath", XFT.GetPipelinePath());
+            }
+
+            if (XFT.GetArchiveRootPath()!=null && !XFT.GetArchiveRootPath().equals("")) {
+                arcSpec.setProperty("globalPaths/archivePath", XFT.GetArchiveRootPath());
+            }
+
+            if (XFT.GetPrearchivePath()!=null && !XFT.GetPrearchivePath().equals("")) {
+                arcSpec.setProperty("globalPaths/prearchivePath", XFT.GetPrearchivePath());
+            }
+
+            if (XFT.GetCachePath()!=null && !XFT.GetCachePath().equals("")) {
+                arcSpec.setProperty("globalPaths/cachePath", XFT.GetCachePath());
+            }
+
+            if (XFT.getFtpPath()!=null && !XFT.getFtpPath().equals("")) {
+                arcSpec.setProperty("globalPaths/ftpPath", XFT.getFtpPath());
+            }
+
+            if (XFT.getBuildPath()!=null && !XFT.getBuildPath().equals("")) {
+                arcSpec.setProperty("globalPaths/buildPath", XFT.getBuildPath());
+            }
+
+
         }
         context.put("arc", arcSpec);
     }

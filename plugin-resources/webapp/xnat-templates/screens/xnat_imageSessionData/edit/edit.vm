@@ -1,19 +1,19 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 
 
-					#parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
+          #parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
 <script type="text/javascript">
 var elementName="$!item.getXSIType()";
 window.currentID="$!om.getId()";
-	#if($om.getProject())
-	 #if($om.getProject().equals(""))
+  #if($om.getProject())
+   #if($om.getProject().equals(""))
 window.currentProject="$!project";
-	 #else
+   #else
 window.currentProject="$!om.getProject()";
-	 #end
-	#else
+   #end
+  #else
 window.currentProject="$!project";
-	#end
+  #end
 
 window.currentSubject="$!om.getSubjectId()";
 window.currentLabel="$!om.getLabel()";
@@ -30,9 +30,9 @@ window.currentLabel="$!om.getLabel()";
 
 </style>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/autocomplete/autocomplete-min.js")"></script>
-		
+
 $page.addAttribute("onLoad", "document.form1.month.focus();")
-	#set($datatype=$om.getXSIType())
+  #set($datatype=$om.getXSIType())
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
@@ -42,11 +42,10 @@ $page.setVlinkColor($ui.vlink)
 <BR><BR><DIV class="error">$data.message</DIV><br>
 #end
 #if ($data.getParameters().getString("popup"))
-	#set ($popup = $data.getParameters().getString("popup") )
+  #set ($popup = $data.getParameters().getString("popup") )
 #else
-	#set ($popup = "false")
+  #set ($popup = "false")
 #end
-
 #if($vr)
 <DIV class="error">Invalid parameters:<BR>$vr.toHTML()</DIV>
 <HR>
@@ -62,71 +61,71 @@ $page.setVlinkColor($ui.vlink)
 #else
   #set($allowDataDeletion=true)
 #end
-		   <DIV class="edit_title">Image Session #if($om.getId()) Modification Form #else Creation Form #end</DIV><br>
+       <DIV class="edit_title">Image Session #if($om.getId()) Modification Form #else Creation Form #end</DIV><br>
 <form method="post" action="$target" name="form1" id="form1" onsubmit="return validateForm();">
-		<input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
-		#if($om.getId())
-		  								#parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))
-		#else
-		 <table>
-		  								#parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
-		 </table>
-			#end		   
-		   
+    <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
+    #if($om.getId())
+                      #parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))
+    #else
+     <table>
+                      #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
+     </table>
+      #end
+
 #set($scanTypes = [])
-	#set($scanQualities = ["usable","unusable","questionable"])
+  #set($scanQualities = ["usable","unusable","questionable"])
 ##parse("/screens/xnat_edit_subjectAssessorData.vm")
 <hr/>
-<table border="0" cellpadding=5>		
-	<tr>
-     	<th align="left">Date</th>
-  		<td align="left">
-    		<font face="$ui.sansSerifFonts">		
-    			#set ($expt_date = $!item.getDateProperty("${om.getXSIType()}.date"))
-				<select id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month">
-					<option value="bad">(SELECT)</option>
-					#foreach ($month in $months)
-								#set ($monthCount = $velocityCount - 1)
-	            		<option value="$monthCount" #if ( $monthCount == $!expt_date.getMonth()) defaultSelected="true" selected="true" #end>
-							$month
-						</option>
-					#end
-				</select>
-    		</font>
-	
-    		<font face="$ui.sansSerifFonts">
-				<select id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date">
-					<option value="bad">(SELECT)</option>
-					#foreach ($day in $days)
-	            		<option value="$day" #if ( $day == $!expt_date.getDate() ) defaultSelected="true" selected="true" #end>$day</option>
-					#end
-				</select>
-    		</font>
-		
+<table border="0" cellpadding=5>
+  <tr>
+       <th align="left">Date</th>
+      <td align="left">
+        <font face="$ui.sansSerifFonts">
+          #set ($expt_date = $!item.getDateProperty("${om.getXSIType()}.date"))
+        <select id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month">
+          <option value="bad">(SELECT)</option>
+          #foreach ($month in $months)
+                #set ($monthCount = $velocityCount - 1)
+                  <option value="$monthCount" #if ( $monthCount == $!expt_date.getMonth()) defaultSelected="true" selected="true" #end>
+              $month
+            </option>
+          #end
+        </select>
+        </font>
+
+        <font face="$ui.sansSerifFonts">
+        <select id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date">
+          <option value="bad">(SELECT)</option>
+          #foreach ($day in $days)
+                  <option value="$day" #if ( $day == $!expt_date.getDate() ) defaultSelected="true" selected="true" #end>$day</option>
+          #end
+        </select>
+        </font>
+
 #set($years = [ $!turbineUtils.getYear()..1990])
-			#set ($currentYear = $date.Year + 1900)
-			<select id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year" >
-				<option value="bad">(SELECT)</option>
-				#foreach ($year in $years)
-            		<option value="$year" #if ( $year == $!expt_date.getYear() + 1900 ) defaultSelected="true" selected="true" #end>$year</option>
-				#end
-			</select>
-	</td></tr>
-					#parse($turbineUtils.getTemplateName("_fields",$om.getXSIType(),$project,"upload"))
+      #set ($currentYear = $date.Year + 1900)
+      <select id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year" >
+        <option value="bad">(SELECT)</option>
+        #foreach ($year in $years)
+                <option value="$year" #if ( $year == $!expt_date.getYear() + 1900 ) defaultSelected="true" selected="true" #end>$year</option>
+        #end
+      </select>
+  </td></tr>
+          #parse($turbineUtils.getTemplateName("_fields",$om.getXSIType(),$project,"upload"))
 </table>
 
-		#parse("/screens/EditProjectSpecificFields.vm")
-		<br>
-			<hr>
-								#parse($turbineUtils.getTemplateName("scans.vm",$om.getXSIType(),$project,"edit"))
+    #parse("/screens/EditProjectSpecificFields.vm")
+    <br>
+      <hr>
+                #parse($turbineUtils.getTemplateName("scans.vm",$om.getXSIType(),$project,"edit"))
 <br>
-			<hr>
-		   <DIV class="edit_header1">Additional Notes</DIV><BR>
+      <hr>
+       <DIV class="edit_header1">Additional Notes</DIV><BR>
 <TABLE>
-	<tr>
-		#formLabel("Notes")
-		<td><textarea name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
-	</tr>
+  <tr>
+    #formLabel("Notes")
+    <td><textarea name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
+  </tr>
 </TABLE><BR><BR><HR>
 <table>
 #xdatEditProps($item $edit_screen)
@@ -136,10 +135,10 @@ $page.setVlinkColor($ui.vlink)
 	<input type="hidden" name="src" value="$!src"/>
 	<input type="hidden" name="redirect" value="true"/>
 	#end
-    	<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
-    	<input type="submit" name="eventSubmit_doInsert" value="Submit"/>
-    	
-	</form>
+      <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
+      <input type="submit" name="eventSubmit_doInsert" value="Submit"/>
+
+  </form>
 </table>
 
-			
+

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================== -->
+<!--                                                                          -->
+<!-- maven Buildfile                                                          -->
+<!--                                                                          -->
+<!-- $Id: maven.xml,v 1.1 2005/07/18 20:47:23 big Exp $                   -->
+<!--                                                                          -->
+<!-- ======================================================================== -->
+<project default="java:compile" xmlns:j="jelly:core">
+	<!-- ================================================================== -->
+	<!--                                                                    -->
+	<!-- These are the hooks that tie the Turbine Plugin into the normal    -->
+	<!-- maven compile and build process. The various hooks are described   -->
+	<!-- in depth in the Turbine Plugin documentation, so this is not re-   -->
+	<!-- peated here. None of these hooks is really essential to the build  -->
+	<!-- process (so you could remove them, however then you might have to  -->
+	<!-- run the attached tasks manually.                                   -->
+	<!--                                                                    -->
+	<!-- ================================================================== -->
+	<preGoal name="java:compile">
+		<!-- Run the Turbine Plugin pre-java:compile Target -->
+		<attainGoal name="turbine:java-compile"/>
+	</preGoal>
+	<preGoal name="torque:init">
+		<!-- Run the Turbine Plugin pre-torque-init Target -->
+		<attainGoal name="turbine:torque-init"/>
+	</preGoal>
+	<preGoal name="torque:insert-sql">
+		<!-- Run the Turbine Plugin pre-torque:insert-sql Target -->
+		<attainGoal name="turbine:torque-insert-sql"/>
+	</preGoal>
+	<preGoal name="torque:datasql">
+		<!-- Run the Turbine Plugin pre-torque-datasql Target -->
+		<attainGoal name="turbine:torque-datasql"/>
+	</preGoal>
+	<preGoal name="torque:datadtd">
+		<!-- Run the Turbine Plugin pre-torque:datadtd Target -->
+		<attainGoal name="turbine:torque-datadtd"/>
+	</preGoal>
+	<postGoal name="war:webapp">
+		<!-- Run the Turbine Plugin post-war:webapp Target -->
+		<attainGoal name="turbine:war-webapp"/>
+	</postGoal>
+	<postGoal name="clean:clean">
+		<!-- Run the Turbine Plugin post-clean Target -->
+		<attainGoal name="turbine:clean-clean"/>
+	</postGoal>
+	<postGoal name="java:compile">
+		<!-- Install the libraries for inplace development -->
+		<attainGoal name="turbine:install-libs"/>
+	</postGoal>
+	<goal name="xdat:war">
+		<attainGoal name="turbine:war"/>
+	</goal>
+	<goal name="xdat:deploy">
+		<attainGoal name="turbine:deploy"/>
+		<j:set var="turbine.target.dir" scope="parent" value="${maven.appserver.home}/webapps/${pom.artifactId}"/>
+		<copy todir="${turbine.target.dir}/resources/java" flatten="false" includeEmptyDirs="no">
+			<fileset dir="${basedir}/src/java"/>
+		</copy>
+		<copy todir="${turbine.target.dir}/resources/sql" flatten="false" includeEmptyDirs="no">
+			<fileset dir="${basedir}/sql">
+				<exclude name="upgrade/**"/>
+			</fileset>
+		</copy>
+	</goal>
+</project>

@@ -4,6 +4,7 @@
 package org.nrg.xnat.turbine.utils;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -13,6 +14,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 import org.nrg.xft.XFT;
+import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
+
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 
 public class PropertiesHelper<T extends Object>  {
     static org.apache.log4j.Logger logger = Logger.getLogger(ImageUploadHelper.class);
@@ -60,18 +65,36 @@ public class PropertiesHelper<T extends Object>  {
 	
 	
 	
-	public static String GetProperty(final File props,final String identifier){
+	public static String GetStringProperty(final File props,final String identifier){
 		try {
 			if(props.exists()){
 				final Configuration config=new PropertiesConfiguration(props);
 				
 				return config.getString(identifier);
-}
+			}
 		} catch (ConfigurationException e) {
 			logger.error("",e);
 		}
 		
 		return null;
+	}
+	
+	public static Integer GetIntegerProperty(final String fileName,final String identifier, final Integer defaultValue){
+		return GetIntegerProperty(new File(XFT.GetConfDir(),fileName),identifier,defaultValue);
+	}
+	
+	public static Integer GetIntegerProperty(final File props,final String identifier, final Integer defaultValue){
+		try {
+			if(props.exists()){
+				final Configuration config=new PropertiesConfiguration(props);
+				
+				return config.getInteger(identifier,defaultValue);
+			}
+		} catch (ConfigurationException e) {
+			logger.error("",e);
+		}
+		
+		return defaultValue;
 	}
 	
 	@SuppressWarnings({ "rawtypes" })
@@ -130,5 +153,35 @@ public class PropertiesHelper<T extends Object>  {
 	    }
 	    
 	    return objs;
+	}
+		
+	public static class ImplLoader<T>{
+		final String fileName, identifier;
+		public ImplLoader(final String fileName,final String identifier){
+			this.fileName=fileName;
+			this.identifier=identifier;
+		}
+		
+		public Class<? extends T> getClazz() throws ConfigurationException{
+			Map<String,Class<? extends T>> impls=(new PropertiesHelper<T>()).buildClassesFromProps(fileName, identifier, new String[]{"className"}, "className");
+			if(impls.size()>0){
+				return Iterables.get(impls.values(), 0);
+			}else{
+				return null;
+			}
+		}
+		
+		public T buildNoArgs(final T _default) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ConfigurationException{
+			return build(new Class[]{},new Object[]{},_default);
+		}
+		
+		public T build(final Class[] contructorArgT, final Object[] contructorArgs, final T _default) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ConfigurationException{
+			Class<? extends T> clazz=this.getClazz();
+			if(clazz==null){
+				return _default;
+			}else{
+				return clazz.getConstructor(contructorArgT).newInstance(contructorArgs);
+			}
+		}
 	}
 }

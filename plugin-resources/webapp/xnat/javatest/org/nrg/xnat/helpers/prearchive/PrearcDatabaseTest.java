@@ -666,6 +666,83 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		Assert.assertEquals(s.getFolderName(), "sess_test");
 	}
 	
+	@Test 
+	public final void testGetOrCreateSession3() {
+		String timestamp = "testTimestamp";
+		String folderName = "testFolderName";
+		PrearcUtils.PrearcStatus status = PrearcUtils.PrearcStatus.RECEIVING;
+		String url = "testUrl";
+		String project = "testProject";
+		String suid = "testSuid";
+		SessionData tmp = new SessionData();
+		tmp.setTimestamp(timestamp);
+		tmp.setFolderName(folderName);
+		tmp.setStatus(status);
+		tmp.setUrl(url);
+		tmp.setProject(project);
+		tmp.setTag(suid);
+		
+		try {
+			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp);
+		}
+		catch (Exception e) {
+			fail("Threw an Exception");
+		}
+		
+		Assert.assertEquals(tmp.getFolderName(), folderName);
+		Assert.assertEquals(tmp.getTimestamp(), timestamp);
+		Assert.assertEquals(tmp.getUrl(), url);
+		Assert.assertEquals(tmp.getStatus(), status);
+		Assert.assertEquals(tmp.getTag(), suid);
+		Assert.assertEquals(tmp.getProject(), project);
+	}
+
+	@Test
+	public final void testGetOrCreateSession2() {
+		String timestamp = "testTimestamp";
+		String folderName = "testFolderName";
+		PrearcUtils.PrearcStatus status = PrearcUtils.PrearcStatus.RECEIVING;
+		String url = "testUrl";
+		String project = "testProject";
+		String suid = "testSuid";
+
+		try {
+			PrearcDatabase.getSession(folderName, timestamp, project);
+			fail("Should have thrown a SessionException");
+		}
+		catch (SessionException e) {}
+		catch (SQLException e) {
+			fail("Threw SQLException!");
+		}
+		catch (Exception e) {
+			fail("Threw Exception!");
+		}
+		SessionData tmp = null;
+		try {
+			tmp = PrearcDatabase.getOrCreateSession(project, suid, folderName, timestamp, status, url);
+		}
+		catch (SessionException e){
+			fail("SessionException " + e.getMessage());
+		} 
+		catch (IllegalFormatException e) {
+			fail("IllegalFormatException " + e.getMessage());
+		} 
+		catch (SQLException e) {
+			fail("SQLException " + e.getMessage());
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
+
+		Assert.assertEquals(tmp.getFolderName(), folderName);
+		Assert.assertEquals(tmp.getTimestamp(), timestamp);
+		Assert.assertEquals(tmp.getUrl(), url);
+		Assert.assertEquals(tmp.getStatus(), status);
+		Assert.assertEquals(tmp.getTag(), suid);
+		Assert.assertEquals(tmp.getProject(), project);
+	}
+	
+	
 	@Test
 	public final void multipleDeleteSession () {
 		// delete multiple sessions
@@ -964,6 +1041,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 						Thread.sleep(1500);
 					} catch (InterruptedException e) {}
 			
+					
 					counter--;
 				}
 				else {

@@ -258,27 +258,6 @@ public class GradualDicomImporter extends ImporterHandlerA {
         logger.trace("Looking for study {} in project {}", studyInstanceUID, project);
 
         SessionData sess = null;
-        try {
-            for (final SessionData s : PrearcDatabase.getSessionByUID(studyInstanceUID)) {
-                if (Objects.equal(null == project ? null : project.getId(), s.getProject())
-                        || (null == project && PrearcUtils.COMMON.equals(s.getProject()))) {
-                    logger.trace("{}/{} identified to session {}",
-                            new Object[] {project, studyInstanceUID, s.getUrl()});
-                    sess = s;
-                    break;
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("unable to retrieve session by study UID", e);
-            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-        } catch (SessionException e) {
-            logger.error("unable to retrieve session by study UID", e);
-            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-        } catch (Exception e) {
-        	logger.error("unable to retrieve session by study UID", e);
-            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-        }
-
         final File root;
         final String project_id;
         if (null == project) {
@@ -290,45 +269,28 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
         final File tsdir, sessdir;
         final String uri;
-        if (null == sess) {
-            logger.debug("No session found for {}/{}; creating a new one", project, studyInstanceUID);
-            tsdir = PrearcUtils.makeTimestampDir(root);
-            final String session = id.getSessionLabel(o);
-            sessdir = new File(tsdir, session);
-            uri = PrearcUtils.buildURI(project_id, tsdir.getName(), sessdir.getName());
-            sess = new SessionData();
-            sess.setFolderName(session);
-            sess.setName(session);
-            sess.setProject(project_id);
-            sess.setScan_date(o.getDate(Tag.StudyDate));
-            sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
-            sess.setTag(studyInstanceUID);
-            sess.setTimestamp(tsdir.getName());
-            sess.setUrl(sessdir.getPath());
-            try {
-                PrearcDatabase.addSession(sess);
-            } catch (SQLException e) {
-                throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-            } catch (SessionException e) {
-                throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-            } catch (Exception e) {
-                throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-            }
-        } else {
-            tsdir = new File(root, sess.getTimestamp());
-            sessdir = new File(tsdir, sess.getFolderName());
-            uri = PrearcUtils.buildURI(project_id, tsdir.getName(), sessdir.getName());
-            try {
-                PrearcDatabase.setStatus(sess.getFolderName(), sess.getTimestamp(),
-                        null == project ? null : project.getId(),
-                        PrearcUtils.PrearcStatus.RECEIVING);
-            } catch (SQLException e) {
-                logger.error("unable to update prearchive session status to RECEIVING", e);
-            } catch (SessionException e) {
-                logger.error("unable to update prearchive session status to RECEIVING", e);
-            } catch (Exception e) {
-                logger.error("unable to update prearchive session status to RECEIVING", e);
-            }
+        
+        tsdir = PrearcUtils.makeTimestampDir(root);
+        final String session = id.getSessionLabel(o);
+        sessdir = new File(tsdir, session);
+        uri = PrearcUtils.buildURI(project_id, tsdir.getName(), sessdir.getName());
+        sess = new SessionData();
+        sess.setFolderName(session);
+        sess.setName(session);
+        sess.setProject(project_id);
+        sess.setScan_date(o.getDate(Tag.StudyDate));
+        sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
+        sess.setTag(studyInstanceUID);
+        sess.setTimestamp(tsdir.getName());
+        sess.setUrl(sessdir.getPath());
+        try {
+        	sess = PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess);
+        } catch (SQLException e) {
+        	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+        } catch (SessionException e) {
+        	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+        } catch (Exception e) {
+        	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         }
 
         // Build the scan label

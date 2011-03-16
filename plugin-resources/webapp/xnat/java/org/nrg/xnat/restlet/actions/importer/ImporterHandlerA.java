@@ -44,7 +44,6 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 
 	private static final String PROP_OBJECT_IDENTIFIER = "org.nrg.import.handler.impl";
 	private static final String IMPORTER_PROPERTIES = "importer.properties";
-	private static final String ORG_NRG_IMPORTER_DEFAULT = "org.nrg.import.handler.default";
 	private static final String CLASS_NAME = "className";
 	private static final String[] PROP_OBJECT_FIELDS = new String[]{CLASS_NAME};
 	static{

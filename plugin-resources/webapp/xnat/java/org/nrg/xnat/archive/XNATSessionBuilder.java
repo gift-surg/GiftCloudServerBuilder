@@ -14,9 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.nrg.dcm.xnat.DICOMSessionBuilder;
 import org.nrg.dcm.xnat.XnatAttrDef;
@@ -34,23 +39,24 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
  */
 @SuppressWarnings("rawtypes")
 public class XNATSessionBuilder implements Callable<Boolean>{
+	static Logger logger = Logger.getLogger(XNATSessionBuilder.class);
+	
+	//config params for loading injecting a different executor for pooling the session builders.
+	private static final String exec_fileName = "session-builder.properties";
+	private static final String exec_identifier = "org.nrg.SessionBuilder.executor.impl";
+	
+	//config params for session builder specification
     private static final String SEQUENCE = "sequence";
-
 	private static final String CLASS_NAME = "className";
-
 	private static final String[] PROP_OBJECT_FIELDS = new String[]{CLASS_NAME,SEQUENCE};
-
 	private static final String PROP_OBJECT_IDENTIFIER = "org.nrg.SessionBuilder.impl";
-
 	private static final String SESSION_BUILDER_PROPERTIES = "session-builder.properties";
 
-	static Logger logger = Logger.getLogger(XNATSessionBuilder.class);
     
 	private static final String DICOM = "DICOM";
-
 	private static final BuilderConfig DICOM_BUILDER = new BuilderConfig(DICOM,DICOMSessionBuilder.class,0);
+	
 	private static final String ECAT = "ECAT";
-
 	private static final BuilderConfig ECAT_BUILDER = new BuilderConfig(ECAT,PETSessionBuilder.class,1);
 
 	private static List<BuilderConfig> builderClasses;
@@ -126,13 +132,32 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 		this.isInPrearchive=isInPrearchive;
 	}
 	
+	public Boolean call(){
+		final Callable<Boolean> wrap=new Callable<Boolean>(){
+			public Boolean call() throws IOException {
+				return execute();
+			}
+		};
+		
+		final ExecutorService executor=getExecutor();
+		try {
+			return executor.submit(wrap).get();
+		} catch (InterruptedException e) {
+			logger.error("",e);
+		} catch (ExecutionException e) {
+			logger.error("",e);
+		}
+		
+		return Boolean.FALSE;
+	}
+	
 	/**
 	 * Iterate over the available Builders to try to generate an xml for the files in this directory.
 	 * 
 	 * The iteration will stop once it successfully builds an xml (or runs out of builder configs).
 	 * @throws IOException
 	 */
-	public Boolean call() throws IOException {
+	public Boolean execute() throws IOException {
 		xml.getParentFile().mkdirs();
 		final FileWriter fw = new FileWriter(xml);
 		
@@ -140,9 +165,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 			if(bc.getCode().equals(DICOM)){
 				//hard coded implementation for DICOM. 
 				try {
-					final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir,
-							fw,
-							new XnatAttrDef.Constant("project", project));
+					final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir, fw, new XnatAttrDef.Constant("project", project));
 
 					if(!isInPrearchive){
 						builder.setIsInPrearchive(isInPrearchive);
@@ -206,7 +229,32 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 		
 		return Boolean.TRUE;
 	}
+	
+	private static ExecutorService exec=null;
+	public static ExecutorService getExecutor(){
+		if(exec==null){
+			PropertiesHelper.ImplLoader<ExecutorService> loader=new PropertiesHelper.ImplLoader<ExecutorService>(exec_fileName,exec_identifier);
+			try {
+				exec=loader.buildNoArgs(Executors.newFixedThreadPool(PropertiesHelper.GetIntegerProperty(exec_fileName,exec_identifier+".size",2)));
+			} catch (IllegalArgumentException e) {
+				logger.error("",e);
+			} catch (SecurityException e) {
+				logger.error("",e);
+			} catch (ConfigurationException e) {
+				logger.error("",e);
+			} catch (InstantiationException e) {
+				logger.error("",e);
+			} catch (IllegalAccessException e) {
+				logger.error("",e);
+			} catch (InvocationTargetException e) {
+				logger.error("",e);
+			} catch (NoSuchMethodException e) {
+				logger.error("",e);
+			}
+		}
 		
+		return exec;
+	}
 	
 	private static class BuilderConfig implements Comparable{
 		protected String code;

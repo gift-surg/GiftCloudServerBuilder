@@ -486,10 +486,11 @@ public final class PrearcDatabase {
 		try {
 			new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
 				java.lang.Void extSync() throws SyncFailedException {
-					try {
-						new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project,true).call();
-					} catch (IOException e) {
-						throw new SyncFailedException(e.getMessage());
+					
+					final Boolean r=new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project,true).call();
+					
+					if(!r){
+						throw new SyncFailedException("Error building session");
 					}
 					return null;
 				}

@@ -75,7 +75,10 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 						throw new ServerException("Unable to lock session for archiving.");
 					}
 				}
-			} catch (SyncFailedException e) {
+			} catch (ActionException e) {
+				logger.error("",e);
+				throw e;
+			}  catch (SyncFailedException e) {
 				logger.error("",e);
 				throw new ServerException(e);
 			} catch (IOException e) {

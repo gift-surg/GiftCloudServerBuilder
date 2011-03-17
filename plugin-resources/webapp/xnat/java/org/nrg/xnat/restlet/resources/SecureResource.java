@@ -398,24 +398,19 @@ public abstract class SecureResource extends Resource {
 					List<FileItem> items = upload.parseRequest(this							.getRequest());
 				
 					for (FileItem fi : items) {
-						String fileName = fi.getName();
-						if (fileName.indexOf("\\") > -1) {
-							fileName.substring(fileName.indexOf("\\") + 1);
-						}
-
 						if (fi.getName().endsWith(".xml")) {
-				SAXReader reader = new SAXReader(user);
+							SAXReader reader = new SAXReader(user);
 							if (item != null) {
 								reader.setTemplate(item);
 							}
 							try {
 								item = reader.parse(fi.getInputStream());
 
-				if(!reader.assertValid()){
-					throw reader.getErrors().get(0);
-				}
+								if(!reader.assertValid()){
+									throw reader.getErrors().get(0);
+								}
 								if (XFT.VERBOSE) {
-	                System.out.println("Loaded XML Item:" + item.getProperName());
+									System.out.println("Loaded XML Item:" + item.getProperName());
 								}
 								if (item != null) {
 									completeDocument = true;

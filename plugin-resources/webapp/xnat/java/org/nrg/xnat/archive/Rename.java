@@ -107,7 +107,7 @@ public class Rename  implements Callable<File>{
 			
 			//confirm if user has permission
 			if(!checkPermissions(i, user)){
-				throw new IllegalAccessException("Invalid Edit permissions for project: " + proj.getId());
+				throw new org.nrg.xdat.exceptions.IllegalAccessException("Invalid Edit permissions for project: " + proj.getId());
 			}
 
 			//confirm if new label is already in use
@@ -270,7 +270,7 @@ public class Rename  implements Callable<File>{
 								if(checkPermissions((XnatImageassessordata)assess, user)){
 									checkdPermissions=true;
 								}else{
-									throw new IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
+									throw new org.nrg.xdat.exceptions.IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
 								}
 							}
 						}
@@ -282,7 +282,7 @@ public class Rename  implements Callable<File>{
 								if(checkPermissions((XnatImageassessordata)assess, user)){
 									checkdPermissions=true;
 								}else{
-									throw new IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
+									throw new org.nrg.xdat.exceptions.IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
 								}
 							}
 						}
@@ -294,7 +294,7 @@ public class Rename  implements Callable<File>{
 								if(checkPermissions((XnatImageassessordata)assess, user)){
 									checkdPermissions=true;
 								}else{
-									throw new IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
+									throw new org.nrg.xdat.exceptions.IllegalAccessException("Invalid Edit permissions for assessor in project: " + assess.getProject());
 								}
 							}
 						}

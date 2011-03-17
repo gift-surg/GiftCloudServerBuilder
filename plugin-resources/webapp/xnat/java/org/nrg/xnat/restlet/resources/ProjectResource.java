@@ -3,6 +3,7 @@ package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
 
+import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -37,19 +38,20 @@ public class ProjectResource extends ItemResource {
 				proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
 			}
 			
-		if (proj == null) {
-			ArrayList<XnatProjectdata> matches = XnatProjectdata
-					.getXnatProjectdatasByField(
-							"xnat:projectData/aliases/alias/alias", pID, user,
-							false);
-			if (matches.size() > 0) {
-				proj = matches.get(0);
+			if (proj == null) {
+				ArrayList<XnatProjectdata> matches = XnatProjectdata
+						.getXnatProjectdatasByField(
+								"xnat:projectData/aliases/alias/alias", pID, user,
+								false);
+				if (matches.size() > 0) {
+					proj = matches.get(0);
+				}
 			}
-		}
+
 
 			if(proj!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
+				this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
 		
 			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA,false));

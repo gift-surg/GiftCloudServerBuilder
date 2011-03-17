@@ -30,7 +30,6 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -127,6 +126,14 @@ public class Importer extends SecureResource {
 //					return;
 //				}
 //			}
+			
+			if(handler==null && entity!=null){
+				if(APPLICATION_DICOM.equals(entity.getMediaType()) || 
+						APPLICATION_XMIRC.equals(entity.getMediaType()) || 
+						APPLICATION_XMIRC_DICOM.equals(entity.getMediaType())){
+					handler=ImporterHandlerA.GRADUAL_DICOM_IMPORTER;
+				}
+			}
 
 			ImporterHandlerA importer;
 			try {
@@ -167,6 +174,12 @@ public class Importer extends SecureResource {
 			}
 
 			response= importer.call();
+						
+			if(entity!=null && APPLICATION_XMIRC.equals(entity.getMediaType())){
+				returnString("OK", Status.SUCCESS_OK);
+				return;
+			}
+			
 			returnDefaultRepresentation();
 		} catch (ClientException e) {
 			respondToException(e,(e.status!=null)?e.status:Status.CLIENT_ERROR_BAD_REQUEST);

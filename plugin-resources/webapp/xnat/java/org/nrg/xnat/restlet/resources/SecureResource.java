@@ -96,6 +96,13 @@ public abstract class SecureResource extends Resource {
 	
 	public static final MediaType APPLICATION_DICOM = MediaType.register(
 	        "application/dicom", "Digital Imaging and Communications in Medicine");
+
+	
+	public static final MediaType APPLICATION_XMIRC = MediaType.register(
+	        "application/x-mirc", "MIRC");
+	
+	public static final MediaType APPLICATION_XMIRC_DICOM = MediaType.register(
+	        "application/x-mirc-dicom", "MIRC DICOM");
 	
 	protected List<String> actions=null;
 	protected String userName=null;

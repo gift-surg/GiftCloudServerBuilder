@@ -257,6 +257,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         final String studyInstanceUID = o.getString(Tag.StudyInstanceUID);
         logger.trace("Looking for study {} in project {}", studyInstanceUID, project);
 
+        
+        // Fill a SessionData object in case it is the first upload
         SessionData sess = null;
         final File root;
         final String project_id;
@@ -268,21 +270,21 @@ public class GradualDicomImporter extends ImporterHandlerA {
             project_id=project.getId();
         }
         final File tsdir, sessdir;
-        final String uri;
         
-        tsdir = PrearcUtils.makeTimestampDir(root);
+        tsdir = new File(root, PrearcUtils.makeTimestamp());
         final String session = id.getSessionLabel(o);
-        sessdir = new File(tsdir, session);
-        uri = PrearcUtils.buildURI(project_id, tsdir.getName(), sessdir.getName());
         sess = new SessionData();
         sess.setFolderName(session);
         sess.setName(session);
         sess.setProject(project_id);
         sess.setScan_date(o.getDate(Tag.StudyDate));
-        sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
         sess.setTag(studyInstanceUID);
         sess.setTimestamp(tsdir.getName());
-        sess.setUrl(sessdir.getPath());
+        sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
+        sess.setUrl(PrearcUtils.makeUri("/" + "prearchive/projects/" + sess.getProject(), sess.getTimestamp(), sess.getFolderName()));
+        
+        // query the cache for an existing session that has this Study Instance UID and project name,
+        // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
         	sess = PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess);
         } catch (SQLException e) {
@@ -292,6 +294,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         } catch (Exception e) {
         	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         }
+        
+        sessdir = new File(root, sess.getTimestamp() + "/" + sess.getFolderName());
 
         // Build the scan label
         final String seriesNum = o.getString(Tag.SeriesNumber);
@@ -325,7 +329,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
 
         logger.trace("Stored object {}/{}/{} as {}",
-                new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), uri});
-        return Collections.singletonList(uri.toString());
+                new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl()});
+        return Collections.singletonList(sess.getUrl());
     }
 }

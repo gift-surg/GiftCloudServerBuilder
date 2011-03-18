@@ -647,7 +647,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		                                 .setStatus(PrearcUtils.PrearcStatus.RECEIVING)
 		                                 .setUrl("test_url"); 
 		try {
-			s = PrearcDatabase.getOrCreateSession(s);
+			s = PrearcDatabase.getOrCreateSession("proj_test", "test_suid", s);
 		} 	
 		catch (SessionException e){
 			fail("SessionException " + e.getMessage());
@@ -696,52 +696,6 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		Assert.assertEquals(tmp.getTag(), suid);
 		Assert.assertEquals(tmp.getProject(), project);
 	}
-
-	@Test
-	public final void testGetOrCreateSession2() {
-		String timestamp = "testTimestamp";
-		String folderName = "testFolderName";
-		PrearcUtils.PrearcStatus status = PrearcUtils.PrearcStatus.RECEIVING;
-		String url = "testUrl";
-		String project = "testProject";
-		String suid = "testSuid";
-
-		try {
-			PrearcDatabase.getSession(folderName, timestamp, project);
-			fail("Should have thrown a SessionException");
-		}
-		catch (SessionException e) {}
-		catch (SQLException e) {
-			fail("Threw SQLException!");
-		}
-		catch (Exception e) {
-			fail("Threw Exception!");
-		}
-		SessionData tmp = null;
-		try {
-			tmp = PrearcDatabase.getOrCreateSession(project, suid, folderName, timestamp, status, url);
-		}
-		catch (SessionException e){
-			fail("SessionException " + e.getMessage());
-		} 
-		catch (IllegalFormatException e) {
-			fail("IllegalFormatException " + e.getMessage());
-		} 
-		catch (SQLException e) {
-			fail("SQLException " + e.getMessage());
-		}
-		catch (Exception e) {
-			fail("Exception " + e);
-		}
-
-		Assert.assertEquals(tmp.getFolderName(), folderName);
-		Assert.assertEquals(tmp.getTimestamp(), timestamp);
-		Assert.assertEquals(tmp.getUrl(), url);
-		Assert.assertEquals(tmp.getStatus(), status);
-		Assert.assertEquals(tmp.getTag(), suid);
-		Assert.assertEquals(tmp.getProject(), project);
-	}
-	
 	
 	@Test
 	public final void multipleDeleteSession () {
@@ -973,6 +927,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 			Assert.assertEquals(PrearcUtils.PrearcStatus.DELETING, _s.getStatus());
 		}
 	}
+
 	@Test
 	public final void multipleMoveToProject () {
 		// move multiple sessions to a new project

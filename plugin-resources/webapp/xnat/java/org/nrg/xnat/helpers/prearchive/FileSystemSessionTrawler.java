@@ -69,7 +69,6 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 				}
 			}
 		}
-		// TODO Auto-generated method stub
 		return sds;
 	}
 

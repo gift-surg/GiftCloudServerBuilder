@@ -281,7 +281,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setTag(studyInstanceUID);
         sess.setTimestamp(tsdir.getName());
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
-        sess.setUrl(PrearcUtils.makeUri("/" + "prearchive/projects/" + sess.getProject(), sess.getTimestamp(), sess.getFolderName()));
+        sess.setUrl(PrearcUtils.makeUri("/prearchive/projects/" + sess.getProject(), sess.getTimestamp(), sess.getFolderName()));
         
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
@@ -330,6 +330,6 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
         logger.trace("Stored object {}/{}/{} as {}",
                 new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl()});
-        return Collections.singletonList(sess.getUrl());
+        return Collections.singletonList(sess.getExternalUrl());
     }
 }

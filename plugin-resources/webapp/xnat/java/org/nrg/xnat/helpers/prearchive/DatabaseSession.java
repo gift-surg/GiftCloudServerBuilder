@@ -482,6 +482,7 @@ public enum DatabaseSession {
 	public String findSql (final Object o) {
 		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + this.searchSql(o);
 	}
+	
 	/**
 	 * Generate SQL to find a row that matches all the given Sessions' slots.
 	 * @param s
@@ -489,6 +490,28 @@ public enum DatabaseSession {
 	 */
 	public static String findSessionSql (SessionData s) {
 		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.searchSql(s, " AND ");			
+	}
+	
+	/**
+	 * Take a list of SQL (column = 'value') constraints and return SQL 
+	 * with an appended a "SELECT ... WHERE " statement.
+	 * 
+	 * If there are no constraints a SQL statement that gets all the rows
+	 * will be generated.
+	 * 
+	 * @param sql
+	 * @param operator
+	 * @return
+	 */
+	public static String findSessionSql (String[] sql) {
+		String selectAll = "SELECT * FROM " + PrearcDatabase.tableWithSchema; 
+		if (sql.length == 0) {
+			return selectAll;
+		}
+		else {
+			String combinedSql = StringUtils.join(sql, " AND ");
+			return selectAll + " WHERE " + combinedSql;
+		}
 	}
 	
 	/**
@@ -510,6 +533,12 @@ public enum DatabaseSession {
 	 */
 	public static String countSessionSql (String sess, String timestamp, String proj) {
 		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
+		return s;
+	}
+	
+	public static String countSessionSql (final String sess, final String timestamp, final String proj, final String suid) {
+		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.tableWithSchema + " WHERE "  + DatabaseSession.sessionSql(sess, timestamp,proj) 
+		           + " AND " + DatabaseSession.TAG.searchSql(suid);
 		return s;
 	}
 	

@@ -87,7 +87,8 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		final String old_session_folder=(String)params.get(PrearcUtils.PREARC_SESSION_FOLDER);
 		String old_timestamp=(String)params.get(PrearcUtils.PREARC_TIMESTAMP);
 			
-		final String new_timestamp=(new java.text.SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar.getInstance().getTime());
+		//TODO this should use PrearcUtils.makeTimes...
+		final String new_timestamp = PrearcUtils.makeTimestamp();
 		
 		final File cacheDIR=write_to_cache(user,fi,new_timestamp);
 		

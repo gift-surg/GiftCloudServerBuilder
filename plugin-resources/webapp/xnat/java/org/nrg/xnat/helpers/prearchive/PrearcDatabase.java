@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -254,17 +255,17 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
-	public static SessionData getOrCreateSession(final SessionData _s) throws java.util.IllegalFormatException, Exception, SQLException, SessionException{
-		SessionData s = _s;
-		try  {
-			PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
-		}
-		catch (SessionException e) {
-			PrearcDatabase.addSession(_s);
-			s = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
-		}
-		return s;
-	}
+//	public static synchronized SessionData getOrCreateSession(final SessionData _s) throws java.util.IllegalFormatException, Exception, SQLException, SessionException{
+//		SessionData s = _s;
+//		try  {
+//			PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
+//		}
+//		catch (SessionException e) {
+//			PrearcDatabase.addSession(_s);
+//			s = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
+//		}
+//		return s;
+//	}
 		
 	/**
 	 * Path to the project in the users prearchive directory
@@ -338,7 +339,7 @@ public final class PrearcDatabase {
 	 * @throws SQLException 
 	 * @throws Exception 
 	 */
-	private static boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception, SessionException, SyncFailedException, SQLException{
+	private static synchronized boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception, SessionException, SyncFailedException, SQLException{
 		if (null == newProj || newProj.isEmpty()) {
 			throw new SessionException("New project argument is null or empty");
 		}
@@ -545,7 +546,6 @@ public final class PrearcDatabase {
 									logger.error(e);
 									throw new IllegalStateException();
 								}
-					
 				}		
 			}
 		}.start();
@@ -972,6 +972,30 @@ public final class PrearcDatabase {
 		});
 	}
 	
+	/**
+	 * Return all sessions with the given session, timestamp and project. There should only be one row returned, but if not
+	 * this function will return all the duplicate rows. 
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
+	private static Collection<SessionData> unsafeGetSession (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException {
+		return new SessionOp<Collection<SessionData>>() {
+			public Collection<SessionData> op () throws SQLException, Exception {
+				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.findSessionSql(sess,timestamp,proj), null);
+				Collection<SessionData> ss = new ArrayList<SessionData>();
+				while (rs.next()){
+					ss.add(DatabaseSession.fillSession(rs));
+				}
+				return ss;
+			}
+		}.run();
+	}
+	
 	public static List<SessionData> getAllSessions () throws Exception, SessionException, SQLException {
 		final List<SessionData> sds = new ArrayList<SessionData>();
 		new SessionOp<Void>() {
@@ -992,7 +1016,7 @@ public final class PrearcDatabase {
 	 * @param uid
 	 * @return
 	 * @throws SQLException
-	 * @throws SessionException Throws if the given arguments match more than one session 
+	 * @throws SessionException Thrown if the given arguments match more than one session 
 	 */
 	public static Collection<SessionData> getSessionByUID(final String uid) throws Exception, SQLException, SessionException {
 		return new SessionOp<Collection<SessionData>>() {
@@ -1022,6 +1046,48 @@ public final class PrearcDatabase {
 				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.countSessionSql(sess,timestamp, proj), null);
 				rs.next();
 				return rs.getInt(1);
+			}
+		}.run();
+	}
+	
+
+	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s) throws SQLException, SessionException, Exception {
+		return new SessionOp<SessionData>(){
+			public SessionData op() throws SQLException, SessionException, Exception {
+				String [] constraints = {
+										  DatabaseSession.PROJECT.searchSql(project), 
+										  DatabaseSession.TAG.searchSql(suid) 		
+										};		
+				ResultSet rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
+				if (rs.next()) {
+					return DatabaseSession.fillSession(rs);
+				}
+				else {
+					int dups = PrearcDatabase.numDuplicateSessions(s.getFolderName(), s.getTimestamp(), s.getProject());
+					int suffix = 1;
+					String suffixString = "";
+					while (dups == 1) {
+						suffixString = "_" + suffix;
+						dups = PrearcDatabase.numDuplicateSessions(s.getFolderName() + suffixString, s.getTimestamp(), s.getProject());
+						if (dups > 1) {
+							throw new SessionException("Database is in a bad state, " + dups + "sessions (name : " + s.getFolderName() + " timestamp: " + s.getTimestamp() + " project : " + s.getProject());
+						}
+						suffix++;
+					}
+					
+					s.setFolderName(s.getFolderName() + suffixString);
+					s.setName(s.getName() + suffixString);
+					s.setUrl(PrearcUtils.makeUri("/" + "prearchive/projects/" + s.getProject(), s.getTimestamp(), s.getFolderName()));
+					
+					PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
+					for (int i = 0; i < DatabaseSession.values().length; i++) {
+						DatabaseSession.values()[i].setInsertStatement(statement, s);
+					}
+					statement.executeUpdate();
+					SessionData tmp = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+					return tmp;
+
+				}
 			}
 		}.run();
 	}
@@ -1231,10 +1297,8 @@ public final class PrearcDatabase {
 			try {
 				o = this.op();
 			}
-			catch (SQLException e) {
-				// all changes are rolled back so any SessionOp's that change the database should 
-				// run conn.commit() after they are done.
-				this.rollbackConnection();
+			catch (Exception e) {
+				System.out.println(e.getMessage());
 				throw e;
 			}
 			finally {

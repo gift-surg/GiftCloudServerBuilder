@@ -647,7 +647,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		                                 .setStatus(PrearcUtils.PrearcStatus.RECEIVING)
 		                                 .setUrl("test_url"); 
 		try {
-			s = PrearcDatabase.getOrCreateSession(s);
+			s = PrearcDatabase.getOrCreateSession("proj_test", "test_suid", s);
 		} 	
 		catch (SessionException e){
 			fail("SessionException " + e.getMessage());
@@ -664,6 +664,37 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		Assert.assertEquals(s.getProject(), "proj_test");
 		Assert.assertEquals(s.getTimestamp(), "1000");
 		Assert.assertEquals(s.getFolderName(), "sess_test");
+	}
+	
+	@Test 
+	public final void testGetOrCreateSession3() {
+		String timestamp = "testTimestamp";
+		String folderName = "testFolderName";
+		PrearcUtils.PrearcStatus status = PrearcUtils.PrearcStatus.RECEIVING;
+		String url = "testUrl";
+		String project = "testProject";
+		String suid = "testSuid";
+		SessionData tmp = new SessionData();
+		tmp.setTimestamp(timestamp);
+		tmp.setFolderName(folderName);
+		tmp.setStatus(status);
+		tmp.setUrl(url);
+		tmp.setProject(project);
+		tmp.setTag(suid);
+		
+		try {
+			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp);
+		}
+		catch (Exception e) {
+			fail("Threw an Exception");
+		}
+		
+		Assert.assertEquals(tmp.getFolderName(), folderName);
+		Assert.assertEquals(tmp.getTimestamp(), timestamp);
+		Assert.assertEquals(tmp.getUrl(), url);
+		Assert.assertEquals(tmp.getStatus(), status);
+		Assert.assertEquals(tmp.getTag(), suid);
+		Assert.assertEquals(tmp.getProject(), project);
 	}
 	
 	@Test
@@ -896,6 +927,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 			Assert.assertEquals(PrearcUtils.PrearcStatus.DELETING, _s.getStatus());
 		}
 	}
+
 	@Test
 	public final void multipleMoveToProject () {
 		// move multiple sessions to a new project
@@ -964,6 +996,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 						Thread.sleep(1500);
 					} catch (InterruptedException e) {}
 			
+					
 					counter--;
 				}
 				else {

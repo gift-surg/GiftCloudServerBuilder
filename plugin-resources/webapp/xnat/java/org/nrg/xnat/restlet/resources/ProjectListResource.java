@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.XdatStoredSearch;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -379,19 +380,21 @@ public class ProjectListResource extends QueryOrganizerResource {
 				{
 					table=(XFTTable)ds.execute(user.getLogin());
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (DBPoolException e) {
-				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				logger.error("",e);
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+				return null;
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				return null;
 			}
 		
-		Hashtable<String,Object> params=new Hashtable<String,Object>();
-		params.put("title", "Projects");
-		params.put("xdat_user_id", user.getXdatUserId());
-
-		MediaType mt = overrideVariant(variant);
+			Hashtable<String,Object> params=new Hashtable<String,Object>();
+			params.put("title", "Projects");
+			params.put("xdat_user_id", user.getXdatUserId());
+	
+			MediaType mt = overrideVariant(variant);
 
 			if(this.requested_format!=null && this.requested_format.equals("search_xml")){
 				
@@ -406,7 +409,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 				return new StringRepresentation("",MediaType.TEXT_XML);
 			}
 		}else{
-				if(table!=null)params.put("totalRecords", table.size());
+			if(table!=null)params.put("totalRecords", table.size());
 				return this.representTable(table, mt, params);
 			}
 		}else{
@@ -437,7 +440,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				table = formatHeaders(table, qo, re+"/ID","/data/projects/");
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}

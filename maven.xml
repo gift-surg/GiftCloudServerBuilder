@@ -175,7 +175,7 @@
 		<!--<j:if test="${context.getVariable('build.db') == 'true'}">
       <attainGoal name="xdat:updateDB"/>
     </j:if>-->
-    		<attainGoal name="xdat:updateDeploymentMavenXML"/>
+		<attainGoal name="xdat:updateDeploymentMavenXML"/>
 		<j:if test="${context.getVariable('deploy') == 'true'}">
 			<attainGoal name="xdat:generateSQL"/>
 			<ant:echo>Deploying webapp.</ant:echo>
@@ -469,7 +469,7 @@
 	<goal name="xdat:updateDeploymentMavenXML">
 		<maven:makeAbsolutePath var="xdat.deploy.mavenXML.DEST" path="deployments/${xdat.project.name}/maven.xml" basedir="${basedir}"/>
 		<maven:makeAbsolutePath var="xdat.deploy.mavenXML.SRC" path="plugin-resources/originals/deployment-maven.xml" basedir="${basedir}"/>
-		<copy file="${xdat.deploy.mavenXML.SRC}" tofile="${xdat.deploy.mavenXML.DEST}"/>
+		<copy file="${xdat.deploy.mavenXML.SRC}" tofile="${xdat.deploy.mavenXML.DEST}" overwrite="true"/>
 	</goal>
 	<!-- ================================================================ -->
 	<!--Copies the instanceSettings.xml file to the deployment and its src folder and configures them                                     -->

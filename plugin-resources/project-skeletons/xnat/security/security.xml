@@ -1028,6 +1028,30 @@
 				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit"/>
 			</xdat:element_actions>
 		</xdat:element_security>
+		<xdat:element_security element_name="xnat:qcAssessmentData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Auto QC" plural="Auto QCs" accessible="1" code="QC">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:qcAssessmentData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:qcAssessmentData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:qcManualAssessorData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Manual QC" plural="Manual QCs" accessible="1" code="MQC">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:qcManualAssessorData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:qcManualAssessorData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
 		<xdat:element_security element_name="xnat:projectData" secondary_password="0" secure_ip="0" secure="1" browse="0" searchable="1" sequence="0" quarantine="0" pre_load="0" singular="Project" plural="Projects" accessible="0">
 			<xdat:primary_security_fields>
 				<xdat:primary_security_field>xnat:projectData/ID</xdat:primary_security_field>

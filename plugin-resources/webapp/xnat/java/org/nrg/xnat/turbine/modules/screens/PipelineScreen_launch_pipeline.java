@@ -61,8 +61,8 @@ public class PipelineScreen_launch_pipeline extends SecureReport {
         		else	
         			pipelines = arcProject.getPipelinesForDescendant(schema_element_name );
         		context.put("pipelines", pipelines);
-        		ArrayList additionalPipelines = PipelineRepositoryManager.GetInstance().getAdditionalPipelinesForDatatype(project, schema_element_name);
-        		context.put("additional_pipelines", additionalPipelines);
+        	//	ArrayList additionalPipelines = PipelineRepositoryManager.GetInstance().getAdditionalPipelinesForDatatype(project, schema_element_name);
+        	//	context.put("additional_pipelines", additionalPipelines);
         		context.put("project", project.getId());
         	} else {
         		data.setMessage("Couldnt get the project id from the item");

@@ -166,7 +166,7 @@ public class PipelineRepositoryManager {
 			 String path = pipeline.getLocation() ;
 			 if (pipelinePath.equals(path)) {
 				 try {
-					 DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
+					 DBAction.DeleteItem(pipeline.getItem(), user);
 					 break;
 				 }catch(Exception e) {
 					 logger.error("Couldnt delete pipelines located at " + pipelinePath + " for project " + aProject.getId() );

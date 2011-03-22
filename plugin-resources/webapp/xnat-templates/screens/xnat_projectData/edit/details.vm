@@ -150,13 +150,14 @@ window.invest_manager.init();
 
 function stringCamelCaps(val)
 {
-        var temp = val.replace(/^\s*|\s*$/g,"");
-        temp = temp.replace(/[&]/," ");
-        temp = temp.replace(/[?]/," ");
-        temp = temp.replace(/[<]/," ");
-        temp = temp.replace(/[>]/," ");
-        temp = temp.replace(/[(]/," ");
-        temp = temp.replace(/[)]/," ");
+		if(val=="")return "";
+		
+        var temp = val;
+		var regex=/^[0-9A-Za-z_-]+$/g;
+        if(!(regex.test(temp))){
+			alert("No special characters allowed in project abbreviation.");
+			return "";
+		}
         var newVal = '';
         temp = temp.split(' ');
         for(var c=0; c < temp.length; c++) {

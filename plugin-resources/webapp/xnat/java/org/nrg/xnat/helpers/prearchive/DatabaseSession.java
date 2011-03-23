@@ -569,6 +569,14 @@ public enum DatabaseSession {
 	}
 	
 	/**
+	 * Return all rows from the database
+	 * @return
+	 */
+	public static String allMatchesSql () {
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema;
+	}
+	
+	/**
 	 * Single-quote all strings in the array
 	 * @param ss
 	 * @return

@@ -1206,6 +1206,26 @@ public final class PrearcDatabase {
 	}
 	
 	/**
+	 * Build a list of all sessions in the prearchive.
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
+	public static ArrayList<ArrayList<Object>> buildRows () throws Exception, SQLException, SessionException {
+		return new SessionOp<ArrayList<ArrayList<Object>>>(){
+			public ArrayList<ArrayList<Object>> op() throws SQLException, SessionException, Exception {
+				ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
+				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.allMatchesSql(), null);
+				ao=convertRStoList(rs);
+				return ao;
+			}
+		}.run();
+	}
+	
+	
+	
+	/**
 	 * Build a list of sessions in the given projects. 
 	 * @param projects
 	 * @return

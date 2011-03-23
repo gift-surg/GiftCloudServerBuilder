@@ -32,18 +32,14 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 
 	static List<String> hidden=new ArrayList(){{add(PrearcUtils.TEMP_UNPACK);}};
 	
-	static FileFilter dbFiles = new FileFilter() {
+	static FileFilter doesNotContainDot = new FileFilter() {
 		public boolean accept(File pathname){
-			boolean dbExtension = false;
-			if (pathname.getName().indexOf('.') != -1) {
-				return false;
-			}
-			return true;
+			return pathname.getName().indexOf('.') == -1; 
 		}
 	};
 	static FileFilter hiddenAndDatabaseFileFilter=new FileFilter(){
 		public boolean accept(File pathname) {
-			return !hidden.contains(pathname.getName()) && !dbFiles.accept(pathname) && pathname.isDirectory();
+			return !hidden.contains(pathname.getName()) && doesNotContainDot.accept(pathname) && pathname.isDirectory();
 		}
 	};
 

@@ -183,6 +183,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		String [] _proj = new String[projects.size()];
 
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
+		//final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows());
 		
 		return table;
 	}

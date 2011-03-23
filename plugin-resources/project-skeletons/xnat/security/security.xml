@@ -233,6 +233,30 @@
 					</xdat:allow_set>
 				</xdat:permissions>
 			</xdat:element_access>
+			<xdat:element_access element_name="xnat:qcAssessmentData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:qcAssessmentData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:qcAssessmentData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:qcManualAssessorData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:qcManualAssessorData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:qcManualAssessorData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="val:protocolData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="val:protocolData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="val:protocolData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
 		</xdat:group>
 		<xdat:group ID="ALL_DATA_ADMIN" displayName="All Data Administration">
 			<xdat:element_access element_name="xnat:projectData">
@@ -463,6 +487,30 @@
 					<xdat:allow_set method="OR">
 						<xdat:allow field="xnat:subjectData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
 						<xdat:allow field="xnat:subjectData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:qcAssessmentData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:qcAssessmentData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:qcAssessmentData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:qcManualAssessorData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:qcManualAssessorData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:qcManualAssessorData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="val:protocolData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="val:protocolData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="val:protocolData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
 					</xdat:allow_set>
 				</xdat:permissions>
 			</xdat:element_access>
@@ -1026,6 +1074,42 @@
 				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:qcAssessmentData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Auto QC" plural="Auto QCs" accessible="1" code="QC">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:qcAssessmentData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:qcAssessmentData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:qcManualAssessorData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Manual QC" plural="Manual QCs" accessible="1" code="MQC">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:qcManualAssessorData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:qcManualAssessorData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="val:protocolData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Protocol Validation" plural="Protocol Validations" accessible="1" code="PVAL">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>val:protocolData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>val:protocolData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:projectData" secondary_password="0" secure_ip="0" secure="1" browse="0" searchable="1" sequence="0" quarantine="0" pre_load="0" singular="Project" plural="Projects" accessible="0">

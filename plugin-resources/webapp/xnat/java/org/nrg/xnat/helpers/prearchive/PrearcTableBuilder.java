@@ -165,7 +165,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setName(PrearcTableBuilder.Session.pickSessionName(this));
 			data.setFolderName(this.getFolderName());
 			data.setTag(this.getTag());
-			data.setUrl(StringUtils.join(new String[]{urlBase,"/".intern(),data.getTimestamp(),"/".intern(),this.getFolderName()}));
+			data.setUrl(PrearcUtils.makeUri(urlBase, data.getTimestamp(), data.getFolderName()));
 			return this.data;
 		}
 		

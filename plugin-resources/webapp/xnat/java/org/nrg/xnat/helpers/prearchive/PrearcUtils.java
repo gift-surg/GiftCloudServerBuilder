@@ -222,12 +222,15 @@ public class PrearcUtils {
 		return d.list( DirectoryFileFilter.INSTANCE );
 	}
 
-	private static final Pattern TSDIR_PATTERN = Pattern.compile("[0-9]{8}_[0-9]{6}");
-	private static final String TSDIR_FORMAT = "yyyyMMdd_HHmmss";
+	private static final Pattern TSDIR_SECONDS_PATTERN = Pattern.compile("[0-9]{8}_[0-9]{6}");
+	private static final String TSDIR_SECONDS_FORMAT = "yyyyMMdd_HHmmss";
+	
+	private static final Pattern TSDIR_MILLISECONDS_PATTERN = Pattern.compile("[0-9]{8}_[0-9]{9}");
+	private static final String TSDIR_MILLISECONDS_FORMAT = "yyyyMMdd_HHmmssSSS"; 
 
 	public  static final FileFilter isTimestampDirectory = new FileFilter() {
 		public boolean accept(final File f) {
-			return f.isDirectory() && TSDIR_PATTERN.matcher(f.getName()).matches();
+			return f.isDirectory() && (TSDIR_SECONDS_PATTERN.matcher(f.getName()).matches() || TSDIR_MILLISECONDS_PATTERN.matcher(f.getName()).matches()); 
 		}
 	};
 
@@ -236,15 +239,15 @@ public class PrearcUtils {
 			return f.isDirectory();
 		}
 	};
-	
+
 	/**
 	 * Creates a new timestamp subdirectory of the given parent directory
 	 * @param parent directory that will contain the new timestamp subdirectory
 	 * @return timestamp directory
 	 */
-	public static File makeTimestampDir(final File parent) {
-	    final SimpleDateFormat formatter = new SimpleDateFormat(TSDIR_FORMAT, Locale.US);
-	    return new File(parent, formatter.format(new Date()));
+	public static String makeTimestamp() {
+	    final SimpleDateFormat formatter = new SimpleDateFormat(TSDIR_MILLISECONDS_FORMAT, Locale.US);
+	    return formatter.format(new Date());
 	}
 	
 
@@ -318,7 +321,13 @@ public class PrearcUtils {
 		if(StringUtils.isNotEmpty(uID))sd.setTag(uID);
 		PrearcDatabase.addSession(sd);
 	}
+
 	
+	public static String makeUri (final String urlBase, final String timestamp, final String folderName) {
+		return StringUtils.join(new String[]{urlBase,"/".intern(),timestamp,"/".intern(),folderName});
+	}
+	
+
 	public static Map<String,Object> parseURI(final String uri) throws MalformedURLException{
 		return UriParserUtils.parseURI(uri).getProps();
 	}

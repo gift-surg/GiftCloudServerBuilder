@@ -32,19 +32,14 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 
 	static List<String> hidden=new ArrayList(){{add(PrearcUtils.TEMP_UNPACK);}};
 	
-	static FileFilter dbFiles = new FileFilter() {
+	static FileFilter doesNotContainDot = new FileFilter() {
 		public boolean accept(File pathname){
-			boolean dbExtension = false;
-			int index = pathname.getName().lastIndexOf('.');
-			if (index != -1) {
-				dbExtension = pathname.getName().substring(index).equals(".db");
-			}
-			return dbExtension;
+			return pathname.getName().indexOf('.') == -1; 
 		}
 	};
 	static FileFilter hiddenAndDatabaseFileFilter=new FileFilter(){
 		public boolean accept(File pathname) {
-			return !hidden.contains(pathname.getName()) && !dbFiles.accept(pathname);
+			return !hidden.contains(pathname.getName()) && doesNotContainDot.accept(pathname) && pathname.isDirectory();
 		}
 	};
 
@@ -69,7 +64,6 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 				}
 			}
 		}
-		// TODO Auto-generated method stub
 		return sds;
 	}
 

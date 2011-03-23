@@ -536,6 +536,12 @@ public enum DatabaseSession {
 		return s;
 	}
 	
+	public static String countSessionSql (final String sess, final String timestamp, final String proj, final String suid) {
+		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.tableWithSchema + " WHERE "  + DatabaseSession.sessionSql(sess, timestamp,proj) 
+		           + " AND " + DatabaseSession.TAG.searchSql(suid);
+		return s;
+	}
+	
 	private static String sessionSql (String sess, String timestamp, String proj) {
 		return DatabaseSession.FOLDER_NAME.searchSql(sess) + " AND " + 
                DatabaseSession.TIMESTAMP.searchSql(timestamp) + " AND " +
@@ -560,6 +566,14 @@ public enum DatabaseSession {
 	 */
 	public String allMatchesSql (String[]names){
 		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + this.searchSql(names);
+	}
+	
+	/**
+	 * Return all rows from the database
+	 * @return
+	 */
+	public static String allMatchesSql () {
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema;
 	}
 	
 	/**

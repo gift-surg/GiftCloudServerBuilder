@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -254,17 +255,17 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
-	public static synchronized SessionData getOrCreateSession(final SessionData _s) throws java.util.IllegalFormatException, Exception, SQLException, SessionException{
-		SessionData s = _s;
-		try  {
-			PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
-		}
-		catch (SessionException e) {
-			PrearcDatabase.addSession(_s);
-			s = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
-		}
-		return s;
-	}
+//	public static synchronized SessionData getOrCreateSession(final SessionData _s) throws java.util.IllegalFormatException, Exception, SQLException, SessionException{
+//		SessionData s = _s;
+//		try  {
+//			PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
+//		}
+//		catch (SessionException e) {
+//			PrearcDatabase.addSession(_s);
+//			s = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
+//		}
+//		return s;
+//	}
 		
 	/**
 	 * Path to the project in the users prearchive directory
@@ -545,7 +546,6 @@ public final class PrearcDatabase {
 									logger.error(e);
 									throw new IllegalStateException();
 								}
-					
 				}		
 			}
 		}.start();
@@ -972,6 +972,30 @@ public final class PrearcDatabase {
 		});
 	}
 	
+	/**
+	 * Return all sessions with the given session, timestamp and project. There should only be one row returned, but if not
+	 * this function will return all the duplicate rows. 
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
+	private static Collection<SessionData> unsafeGetSession (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException {
+		return new SessionOp<Collection<SessionData>>() {
+			public Collection<SessionData> op () throws SQLException, Exception {
+				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.findSessionSql(sess,timestamp,proj), null);
+				Collection<SessionData> ss = new ArrayList<SessionData>();
+				while (rs.next()){
+					ss.add(DatabaseSession.fillSession(rs));
+				}
+				return ss;
+			}
+		}.run();
+	}
+	
 	public static List<SessionData> getAllSessions () throws Exception, SessionException, SQLException {
 		final List<SessionData> sds = new ArrayList<SessionData>();
 		new SessionOp<Void>() {
@@ -1026,45 +1050,7 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
-	/**
-	 * Either return an existing session with the given project and Study Instance UID or create one with the following parameters.
-	 * @param project Project to which this session belongs
-	 * @param suid Session's Study Instance UID
-	 * @param folderName 
-	 * @param timestamp  
-	 * @param status
-	 * @param url
-	 * @return
-	 * @throws SQLException
-	 * @throws SessionException
-	 * @throws Exception
-	 */
-	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final String folderName, final String timestamp, final PrearcUtils.PrearcStatus status, final String url) throws SQLException, SessionException, Exception {
-		return new SessionOp<SessionData>(){
-			public SessionData op() throws SQLException, SessionException, Exception {
-				String [] constraints = {
-										  DatabaseSession.PROJECT.searchSql(project), 
-										  DatabaseSession.TAG.searchSql(suid) 		
-										};		
-				ResultSet rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
-				if (rs.next()) {
-					return DatabaseSession.fillSession(rs);
-				}
-				else {
-					SessionData tmp = new SessionData();
-					tmp.setFolderName(folderName);
-					tmp.setTimestamp(timestamp);
-					tmp.setUrl(url);
-					tmp.setStatus(status);
-					tmp.setTag(suid);
-					tmp.setProject(project);
-					PrearcDatabase.addSession(tmp);
-					return tmp;
-				}
-			}
-		}.run();
-	}
-	
+
 	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s) throws SQLException, SessionException, Exception {
 		return new SessionOp<SessionData>(){
 			public SessionData op() throws SQLException, SessionException, Exception {
@@ -1077,18 +1063,30 @@ public final class PrearcDatabase {
 					return DatabaseSession.fillSession(rs);
 				}
 				else {
-					int rowCount = PrearcDatabase.numDuplicateSessions(s.getFolderName(),s.getTimestamp(),s.getProject());
-					if (rowCount >= 1) {
-						throw new SessionException("Trying to add an existing session");
-					}
-					else {
-						PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
-						for (int i = 0; i < DatabaseSession.values().length; i++) {
-							DatabaseSession.values()[i].setInsertStatement(statement, s);
+					int dups = PrearcDatabase.numDuplicateSessions(s.getFolderName(), s.getTimestamp(), s.getProject());
+					int suffix = 1;
+					String suffixString = "";
+					while (dups == 1) {
+						suffixString = "_" + suffix;
+						dups = PrearcDatabase.numDuplicateSessions(s.getFolderName() + suffixString, s.getTimestamp(), s.getProject());
+						if (dups > 1) {
+							throw new SessionException("Database is in a bad state, " + dups + "sessions (name : " + s.getFolderName() + " timestamp: " + s.getTimestamp() + " project : " + s.getProject());
 						}
-						statement.executeUpdate();
-						return s;
+						suffix++;
 					}
+					
+					s.setFolderName(s.getFolderName() + suffixString);
+					s.setName(s.getName() + suffixString);
+					s.setUrl(PrearcUtils.makeUri("/" + "prearchive/projects/" + s.getProject(), s.getTimestamp(), s.getFolderName()));
+					
+					PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
+					for (int i = 0; i < DatabaseSession.values().length; i++) {
+						DatabaseSession.values()[i].setInsertStatement(statement, s);
+					}
+					statement.executeUpdate();
+					SessionData tmp = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+					return tmp;
+
 				}
 			}
 		}.run();
@@ -1208,6 +1206,26 @@ public final class PrearcDatabase {
 	}
 	
 	/**
+	 * Build a list of all sessions in the prearchive.
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
+	public static ArrayList<ArrayList<Object>> buildRows () throws Exception, SQLException, SessionException {
+		return new SessionOp<ArrayList<ArrayList<Object>>>(){
+			public ArrayList<ArrayList<Object>> op() throws SQLException, SessionException, Exception {
+				ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
+				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.allMatchesSql(), null);
+				ao=convertRStoList(rs);
+				return ao;
+			}
+		}.run();
+	}
+	
+	
+	
+	/**
 	 * Build a list of sessions in the given projects. 
 	 * @param projects
 	 * @return
@@ -1298,6 +1316,10 @@ public final class PrearcDatabase {
 			Object o = null;
 			try {
 				o = this.op();
+			}
+			catch (Exception e) {
+				System.out.println(e.getMessage());
+				throw e;
 			}
 			finally {
 				closeConnection();

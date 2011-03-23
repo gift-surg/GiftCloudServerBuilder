@@ -75,23 +75,14 @@ public final class PrearcSessionListResource extends SecureResource {
 		return true;
 	}
 	
-//	public void handlePut () {
-//		try {
-//			PrearcDatabase.refresh();
-//		} catch (SQLException e) {
-//			logger.error("Unable to refresh sessions", e);
-//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-//		} catch (SessionException e) {
-//			logger.error("Unable to refresh sessions", e);
-//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-//		} catch (IllegalStateException e) {
-//			logger.error("Unable to refresh sessions", e);
-//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-//		} catch (IOException e) {
-//			logger.error("Unable to refresh sessions", e);
-//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-//		}
-//	}
+	public void handlePut () {
+		try {
+			PrearcDatabase.refresh();
+		} catch (Exception e) {
+			logger.error("Unable to refresh sessions", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+		}
+	}
 	
 	/**
 		 * (non-Javadoc)
@@ -192,6 +183,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		String [] _proj = new String[projects.size()];
 
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
+		//final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows());
 		
 		return table;
 	}

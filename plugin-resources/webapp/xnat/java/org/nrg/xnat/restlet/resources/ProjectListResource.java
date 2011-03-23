@@ -384,7 +384,11 @@ public class ProjectListResource extends QueryOrganizerResource {
 				logger.error("",e);
 				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;
-			} catch (Exception e) {
+			}  catch (java.lang.IllegalAccessException e) {
+				logger.error("",e);
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+				return null;
+			}catch (Exception e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
@@ -439,6 +443,14 @@ public class ProjectListResource extends QueryOrganizerResource {
 				table = XFTTable.Execute(query, user.getDBName(), userName);
 
 				table = formatHeaders(table, qo, re+"/ID","/data/projects/");
+			} catch (IllegalAccessException e) {
+				logger.error("",e);
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+				return null;
+			}  catch (java.lang.IllegalAccessException e) {
+				logger.error("",e);
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+				return null;
 			} catch (Exception e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

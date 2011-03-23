@@ -4,6 +4,7 @@
 package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -106,11 +107,15 @@ public final class PrearcSessionResource extends SecureResource {
         
         try {
 			loadParams(this.getBodyAsForm());
-			
 			loadParams(this.getQueryVariableForm());
+			String json = this.getRequest().getEntity().getText();
+			loadParams(json);
 		} catch (ClientException e1) {
 			logger.error("",e1);
 			this.getResponse().setStatus(e1.getStatus(), e1);
+		} catch (IOException e) {
+			logger.error("", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 		}
         
         final File sessionDir;

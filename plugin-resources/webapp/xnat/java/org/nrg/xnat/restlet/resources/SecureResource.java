@@ -20,6 +20,9 @@ import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xdat.security.XDATUser;
@@ -715,7 +718,19 @@ public abstract class SecureResource extends Resource {
 			}
 		}
 	}
-			
+	
+	public void loadParams (String _json) throws ClientException {
+		JSONObject json = null;
+		try {
+			json = new JSONObject(_json);
+			String[] keys = JSONObject.getNames(json);
+			for (int i = 0; i < keys.length; i++) {
+				handleParam(keys[i], json.get(keys[i]));
+			}
+		}
+		catch (JSONException e) {}
+	}
+					
 	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){

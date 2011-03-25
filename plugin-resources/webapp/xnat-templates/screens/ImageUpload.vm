@@ -403,7 +403,7 @@ progressPercent=document.getElementById("uploadPercent");
 	</script>
 			  </td>
  </tr>
-
+ 
 #if($arc && $arc.getDcm_httpUrl())
   <tr>
   <td>&nbsp;</h2></td>
@@ -422,6 +422,7 @@ progressPercent=document.getElementById("uploadPercent");
   </td>
  </tr>
 #end
+
 #if($arc && ($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() ))
  <tr>
   <td>&nbsp;</td>
@@ -446,6 +447,7 @@ progressPercent=document.getElementById("uploadPercent");
   </td>
  </tr>
 #end
+
 <script type="text/javascript">
 // Adapted from Sun Java Web Start Auto-Install Demo
 // http://java.sun.com/developer/technicalArticles/JavaLP/javawebstart/AutoInstallDemo.html

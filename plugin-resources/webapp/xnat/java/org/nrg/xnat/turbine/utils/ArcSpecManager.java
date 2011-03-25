@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -156,6 +157,23 @@ public class ArcSpecManager {
 
                 if (arcSpec.getEmailspecifications_pageEmail()!=null){
                     AdminUtils.SetPageEmail(arcSpec.getEmailspecifications_pageEmail());
+                }
+
+
+                if (StringUtils.isEmpty(arcSpec.getDcm_dcmAe())){
+                    arcSpec.setDcm_dcmAe("XNAT");
+                }
+
+                if (StringUtils.isEmpty(arcSpec.getDcm_dcmHost())){
+                    arcSpec.setDcm_dcmHost("localhost");
+                }
+
+                if (StringUtils.isEmpty(arcSpec.getDcm_dcmPort())){
+                    arcSpec.setDcm_dcmPort("8104");
+                }
+
+                if (arcSpec.getDcm_appletLink()==null){
+                    arcSpec.setDcm_appletLink(Boolean.TRUE);
                 }
             }
 

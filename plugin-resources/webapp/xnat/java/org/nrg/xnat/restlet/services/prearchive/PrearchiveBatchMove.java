@@ -49,6 +49,10 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 					}
 				}else if(key.equals(NEW_PROJECT)){
 					newProject=f.getFirstValue(NEW_PROJECT);
+				}else if(key.equals(ASYNC)) {
+					if (f.getFirstValue(ASYNC).equals("false")) {
+						async = false;
+					}
 				}
 			}				
 	}

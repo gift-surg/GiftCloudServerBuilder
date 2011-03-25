@@ -191,19 +191,6 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TABLE>
    <TR>
     <TD colspan="2"><h4>DICOM Server Configuration</h4></TD>
-   </TR>
-   <TR>
-    <TH colspan="2" align="left">This section is OPTIONAL, and should be left blank if you have not setup DICOM Server.</TH>
-   </TR>
-   <TR>
-    <TD colspan="2">The XNAT Team has developed an XNAT compliant DICOM C-Store Service Class Provider, called DICOM Server. It will receive any DICOM compliant data and store it in the prearchive or archive space dependent on project settings.  XNAT provides a built in JAVA applet which can send files directly to this client.  The XNAT Team has also built a java-based DICOM client tool (DICOM Browser) which will view, modify, anonymize and send DICOM data to any DICOM C-Store Provider (particularly DICOM Server).</TD>
-   </TR>
-   <TR>
-    <TD colspan="2">DICOM Server And DICOM Browser are available at <a href="http://nrg.wustl.edu/projects/DICOM/index.jsp">http://nrg.wustl.edu/projects/DICOM/index.jsp</a>.</TD>
-   </TR>
-   <TR>
-    <TD colspan="2">If you choose not to setup DICOM Server, you can leave these fields blank (you can always modify them at a later date).  If the DICOM host, port, and AE Title are configured, their values will be echoed to the user on the Upload Images tag with a link to DICOM Browser.  If the DICOM HTTP URL is configured, then the Applet will be available to the users (the applet uses this address to send out-of-band communications to DICOM browser, please verify that any applicable ports are open.</TD>
-   </TR>
  <TR>
    <TH align="left">DICOM host</TH>
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_host" VALUE="$!arc.getDcm_dcmHost()"/> </TD>
@@ -238,11 +225,6 @@ $!template.setLayoutTemplate("NoMenu.vm")
     <TD colspan="2" style="line-height:4px">&nbsp;</TD>
    </TR>
  <TR>
-   <TH align="left">DICOM Server HTTP URL</TH>
-   <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/http_url" VALUE="$!arc.getDcm_httpUrl()"/>
-   </TD>
- </TR>
-  <TR>
    <TD colspan="2">This is the url used by the applet to connect to DICOM Server's internal HTTP server. It should match the value you set when you configured DICOM Server as 'sessions_url'.
    </TD>
  </TR>

@@ -728,7 +728,8 @@ public abstract class SecureResource extends Resource {
 				handleParam(keys[i], json.get(keys[i]));
 			}
 		}
-		catch (JSONException e) {}
+		catch (JSONException e) {logger.error("",e);}
+		catch (NullPointerException e) {logger.error("",e);}
 	}
 					
 	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{

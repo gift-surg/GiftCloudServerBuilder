@@ -977,6 +977,16 @@
 										<xs:documentation>Reciprocal of the total sampling period, in Hz/pixel</xs:documentation>
 									</xs:annotation>
 								</xs:element>
+								<xs:element name="diffusion" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="bValues" minOccurs="0" type="xs:string"/>
+											<xs:element name="directionality" minOccurs="0" type="xs:string"/>
+											<xs:element name="orientations" minOccurs="0" type="xs:string"/>
+											<xs:element name="anisotropyType" minOccurs="0" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
 								<xs:element name="addParam" type="xnat:addField" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
 										<xs:appinfo>

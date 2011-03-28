@@ -155,7 +155,11 @@ public class XNATCatalogTemplate extends XNATTemplate {
 			final String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
             final File f=getFileOnLocalFileSystem(entryPath);
             row[0]=(f.getName());
-            row[1]=(f.length());
+            if(includeFile){
+            	row[1]=0;
+            }else{
+            	row[1]=(f.length());
+            }
             if(FileUtils.IsAbsolutePath(entry.getUri())){
                 row[2]=uriPath+"/" + entry.getId();
             }else{

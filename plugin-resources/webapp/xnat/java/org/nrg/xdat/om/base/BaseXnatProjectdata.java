@@ -2093,12 +2093,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, preLoad);
 		}
 
-		if (proj == null) {
-			ArrayList<XnatProjectdata> matches = XnatProjectdata
+		if (proj == null && pID!=null) {
+			final ArrayList<XnatProjectdata> matches = XnatProjectdata
 					.getXnatProjectdatasByField(
 							"xnat:projectData/aliases/alias/alias", pID,
 							user, preLoad);
-			if (matches.size() > 0) {
+			if (matches.size() == 1) {
 				proj = matches.get(0);
 			}
 		}

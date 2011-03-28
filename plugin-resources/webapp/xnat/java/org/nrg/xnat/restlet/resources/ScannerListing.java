@@ -24,17 +24,7 @@ public class ScannerListing  extends SecureResource {
 		
 		String pID = (String) request.getAttributes().get("PROJECT_ID");
 		if (pID != null) {
-			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
-
-			if (proj == null) {
-				ArrayList<XnatProjectdata> matches = XnatProjectdata
-						.getXnatProjectdatasByField(
-								"xnat:projectData/aliases/alias/alias", pID,
-								user, false);
-				if (matches.size() > 0) {
-					proj = matches.get(0);
-				}
-			}
+			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
 			if (proj == null) {
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);

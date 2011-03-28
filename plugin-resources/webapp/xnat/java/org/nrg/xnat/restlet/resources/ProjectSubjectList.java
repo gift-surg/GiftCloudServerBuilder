@@ -37,17 +37,8 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 		
 			String pID= (String)request.getAttributes().get("PROJECT_ID");
 			if(pID!=null){
-				proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
+				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 				
-			if (proj == null) {
-				ArrayList<XnatProjectdata> matches = XnatProjectdata
-						.getXnatProjectdatasByField(
-								"xnat:projectData/aliases/alias/alias", pID,
-								user, false);
-				if (matches.size() > 0) {
-					proj = matches.get(0);
-				}
-			}
 
 				if(proj!=null){
 					this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));

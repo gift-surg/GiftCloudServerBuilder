@@ -152,7 +152,7 @@ public class PrearcUtils {
 			XnatProjectdata projectData = AutoXnatProjectdata.getXnatProjectdatasById(project, user, false);
 			if (null == projectData) {
 				final List<XnatProjectdata> matches = AutoXnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias", project, user, false);
-				if (!matches.isEmpty()) {
+				if (matches.size()==1) {
 					projectData = matches.get(0);
 				}
 			}

@@ -43,17 +43,7 @@ public class ReconList extends QueryOrganizerResource {
 		
 			String pID= (String)request.getAttributes().get("PROJECT_ID");
 			if(pID!=null){
-				proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
-				
-			if (proj == null) {
-				ArrayList<XnatProjectdata> matches = XnatProjectdata
-						.getXnatProjectdatasByField(
-								"xnat:projectData/aliases/alias/alias", pID,
-								user, false);
-				if (matches.size() > 0) {
-					proj = matches.get(0);
-				}
-			}
+				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
 				String subID= (String)request.getAttributes().get("SUBJECT_ID");
 				if(subID!=null){

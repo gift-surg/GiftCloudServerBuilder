@@ -543,6 +543,44 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 			fail("Exception " + e);
 		}
 	}
+	
+	@Test
+	public final void testUpdateModificationTime () {
+		String uri = "/prearchive/projects/proj_0/1000/sess_0";
+		SessionData s = null;
+		Date d = null;
+		try {
+			s = PrearcDatabase.getSession(uri);
+			s.setLastBuiltDate(Calendar.getInstance().getTime());
+			d = s.getLastBuiltDate();
+			Assert.assertTrue(PrearcDatabase.setStatus(uri, PrearcUtils.PrearcStatus.ERROR));
+		}
+		catch (SQLException e) {
+			fail("Threw a SQLException " + e);
+		}
+		catch (SessionException e) {
+			fail("Threw a SessionException " + e);
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
+		SessionData t = null;
+		Date _d = null;
+		try {
+			t = PrearcDatabase.getSession(uri);
+			_d = t.getLastBuiltDate();
+			Assert.assertTrue(d.getTime() < _d.getTime());
+		}
+		catch (SQLException e) {
+			fail("Threw a SQLException " + e);
+		}
+		catch (SessionException e) {
+			fail("Threw a SessionException " + e);
+		}catch (Exception e) {
+			fail("Exception " + e);
+		}
+		Assert.assertEquals(PrearcUtils.PrearcStatus.ERROR, t.getStatus());
+	}
 		
 	@Test
 	public final void testSetStatus() {

@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -351,7 +352,7 @@ public final class PrearcDatabase {
 				return null;
 			}
 			void cacheSync() throws SQLException, SessionException, Exception {
-				PrearcDatabase.withSession(sess, timestamp, proj, new SessionOp<Void>(){
+				PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>(){
 					public Void op () throws SQLException, SessionException, Exception {
 						try {
 							PrearcDatabase._unsafeDeleteSession(sess, timestamp,proj);
@@ -455,7 +456,7 @@ public final class PrearcDatabase {
 				}
 			}
 			void cacheSync() throws SQLException, SessionException, Exception {
-				PrearcDatabase.withSession(sess, timestamp, proj, new SessionOp<Void>(){
+				PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>(){
 					public Void op () throws SQLException, SessionException, Exception {
 					    PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.deleteSessionSql(sess,timestamp,proj), null,null);
 						return null;
@@ -671,7 +672,7 @@ public final class PrearcDatabase {
 		if (null == status) {
 			throw new SessionException ("Status argument is null or empty");
 		}
-		PrearcDatabase.withSession(sess, timestamp, proj, new SessionOp<Void>() {
+		PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
 			public Void op () throws SQLException, SessionException, Exception {
 				PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.STATUS.updateSessionSql(sess, timestamp, proj, status), null, null);
 				return null;
@@ -731,7 +732,7 @@ public final class PrearcDatabase {
 				return null;
 			}
 			void cacheSync() throws Exception, SQLException, SessionException {
-				PrearcDatabase.withSession(sess,timestamp,proj, new SessionOp<Void>(){
+				PrearcDatabase.modifySession(sess,timestamp,proj, new SessionOp<Void>(){
 					public java.lang.Void op () throws SQLException, SessionException, Exception {
 						PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.deleteSessionSql(sess,timestamp,proj), null, null);
 						return null;
@@ -789,7 +790,7 @@ public final class PrearcDatabase {
 				return null;
 			}
 			void cacheSync() throws Exception, SQLException, SessionException {
-				PrearcDatabase.withSession(sess,timestamp,proj, new SessionOp<Void>(){
+				PrearcDatabase.modifySession(sess,timestamp,proj, new SessionOp<Void>(){
 					public java.lang.Void op () throws SQLException, SessionException, Exception{
 						PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.deleteSessionSql(sess,timestamp,proj), null, null);
 						return null;
@@ -927,7 +928,7 @@ public final class PrearcDatabase {
 		SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
 		if (PrearcUtils.inProcessStatusMap.containsKey(sd.getStatus())) {
 			final PrearcUtils.PrearcStatus inp = PrearcUtils.inProcessStatusMap.get(sd.getStatus());
-			PrearcDatabase.withSession(sess,timestamp,proj, new SessionOp<Void>(){
+			PrearcDatabase.modifySession(sess,timestamp,proj, new SessionOp<Void>(){
 				public java.lang.Void op () throws SQLException, SessionException , Exception {
 					PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.STATUS.updateSessionSql(sess,timestamp,proj,inp), null, null);
 					return null;
@@ -1086,7 +1087,6 @@ public final class PrearcDatabase {
 					statement.executeUpdate();
 					SessionData tmp = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
 					return tmp;
-
 				}
 			}
 		}.run();
@@ -1380,4 +1380,14 @@ public final class PrearcDatabase {
 		PrearcDatabase.checkSession(sess,timestamp,proj);
 		return op.run();
 	}
+    
+    private static <T extends Object> T modifySession (final String sess, final String timestamp, final String proj, SessionOp<T> op) throws Exception, SQLException, SessionException {
+    	withSession(sess,timestamp,proj,new SessionOp<java.lang.Void>() {
+    		public Void op() throws SQLException, Exception {
+    			PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.LASTMOD.updateSessionSql(sess, timestamp, proj, Calendar.getInstance().getTime()), null, null);
+				return null;
+			}
+    	});
+    	return op.run();
+    }
 }

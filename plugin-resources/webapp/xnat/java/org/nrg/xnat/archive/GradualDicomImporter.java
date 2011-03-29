@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -281,6 +282,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setTag(studyInstanceUID);
         sess.setTimestamp(tsdir.getName());
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
+        sess.setLastBuiltDate(Calendar.getInstance().getTime());
         sess.setUrl(PrearcUtils.makeUri("/prearchive/projects/" + sess.getProject(), sess.getTimestamp(), sess.getFolderName()));
         
         // query the cache for an existing session that has this Study Instance UID and project name,

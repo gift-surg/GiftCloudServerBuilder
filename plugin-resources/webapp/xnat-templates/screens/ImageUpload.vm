@@ -424,26 +424,29 @@ progressPercent=document.getElementById("uploadPercent");
 #end
 
 #if($arc && ($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() ))
+
  <tr>
   <td>&nbsp;</td>
  </tr>
  <tr>
-  <td><h3>Option #if($arc.getDcm_httpUrl() && !$arc.getDcm_httpUrl().equals("")) 3: #else 2: #end DICOM Browser (via DICOM Server)</h3></td>
+  <td><h3>Option #if($arc.getDcm_httpUrl() && !$arc.getDcm_httpUrl().equals("")) 3: #else 2: #end DICOM Browser (via internal DICOM receiver)</h3></td>
  </tr>
  <tr>
+<td> <b>Note to XNAT 1.4 users:</b> As of XNAT 1.5 Dicom Server has been replaced by an internal DICOM receiver and does not need to be installed and configured separately.</td>
+</tr>
+ <tr>
   <td valign="top" align="left">
-	    <div style="width:500px">Use a custom built DICOM application which supports easy anonymization, and can perform a DICOM SEND to a specified DICOM Server.</div>
+	    <div style="width:500px">Use a custom built DICOM application which supports easy anonymization, and can perform a DICOM SEND to a specified DICOM receiver.</div>
   </td>
  </tr>
  <tr id="option3">
   <td>
-   <br><b>DICOM SERVER Specifications</b>
+   <br><b>Internal DICOM Receiver Specifications</b>
    <ul>
     <li>Host Name: $!arc.getDcm_dcmHost()</li>
     <li>Port: $!arc.getDcm_dcmPort()</li>
     <li>AE Title: $!arc.getDcm_dcmAe()</li>
    </ul>
-   <BR><a id="launchDICOM" href="javascript:launchDicomBrowser()">Start DICOM Browser</a>
   </td>
  </tr>
 #end

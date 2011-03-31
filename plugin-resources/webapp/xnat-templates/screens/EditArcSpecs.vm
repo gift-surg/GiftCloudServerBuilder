@@ -190,13 +190,16 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <DIV class="withThinBorder withColor">
    <TABLE>
    <TR>
-    <TD colspan="2"><h4>DICOM Server Configuration</h4></TD>
+   <TD colspan="2"><div class="WARNING"><b>Note to XNAT 1.4 users:</b></br> As of XNAT 1.5 Dicom Server has been replaced by an internal DICOM receiver and does not need to be installed and configured separately.</div></TD>
+   </TR>
+   <TR>
+    <TD colspan="2"></br><h4>DICOM Receiver Configuration</h4></TD>
  <TR>
    <TH align="left">DICOM host</TH>
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_host" VALUE="$!arc.getDcm_dcmHost()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the host where the C-Store is accessible. It should match the value you set when you configured DICOM Server as 'public_host'.  This is not a URL and should not include a scheme (http or https).  It should just be the host name (the name of the machine on which it is running).
+   <TD colspan="2">This is the host where the C-Store is accessible. This is not a URL and should not include a scheme (http or https).  It should just be the host name (the name of the machine on which it is running).
    </TD>
  </TR>
    <TR>
@@ -207,7 +210,7 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_Port" VALUE="$!arc.getDcm_dcmPort()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the port where the C-Store is accessible. It should match the value you set when you configured DICOM Server as 'public_port'. DICOM Server's default value is 104.
+   <TD colspan="2">This is the port where the C-Store is accessible. The default value is 104.
    </TD>
  </TR>
    <TR>
@@ -218,16 +221,12 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_ae" VALUE="$!arc.getDcm_dcmAe()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the port where the C-Store is accessible. It should match the value you set when you configured DICOM Server as 'ae_title'. DICOM Server's default value is XNAT. 
+   <TD colspan="2">This is the port where the C-Store is accessible. The default value is XNAT. 
    </TD>
  </TR>
    <TR>
     <TD colspan="2" style="line-height:4px">&nbsp;</TD>
    </TR>
- <TR>
-   <TD colspan="2">This is the url used by the applet to connect to DICOM Server's internal HTTP server. It should match the value you set when you configured DICOM Server as 'sessions_url'.
-   </TD>
- </TR>
    <TR>
     <TD colspan="2" style="line-height:4px">&nbsp;</TD>
    </TR>

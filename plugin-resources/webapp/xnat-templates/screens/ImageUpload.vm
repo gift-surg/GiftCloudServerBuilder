@@ -319,7 +319,7 @@ function checkProgress(){
 <table border="0">
  <tr>
   <td><h3>
-  #if($arc && ($arc.getDcm_httpUrl() || ($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() )))
+  #if($arc && (($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() )))
   Option 1:
   #end
   Compressed upload</h3></td>
@@ -404,7 +404,7 @@ progressPercent=document.getElementById("uploadPercent");
 			  </td>
  </tr>
  
-#if($arc && $arc.getDcm_httpUrl())
+#if($arc)
   <tr>
   <td>&nbsp;</h2></td>
  </tr>
@@ -428,7 +428,7 @@ progressPercent=document.getElementById("uploadPercent");
   <td>&nbsp;</td>
  </tr>
  <tr>
-  <td><h3>Option #if($arc.getDcm_httpUrl() && !$arc.getDcm_httpUrl().equals("")) 3: #else 2: #end DICOM Browser (via internal DICOM receiver)</h3></td>
+  <td><h3>Option 3: DICOM Browser (via internal DICOM receiver)</h3></td>
  </tr>
  <tr>
 <td> <b>Note to XNAT 1.4 users:</b> As of XNAT 1.5 Dicom Server has been replaced by an internal DICOM receiver and does not need to be installed and configured separately.</td>

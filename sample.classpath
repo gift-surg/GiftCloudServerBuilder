@@ -119,11 +119,11 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.0.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.0.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ecat4xnat-1.5.0b2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.0.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.0b3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.0rc2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.0b2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.0b2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.0.0.jar"/>

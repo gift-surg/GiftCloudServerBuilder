@@ -424,7 +424,6 @@ progressPercent=document.getElementById("uploadPercent");
 #end
 
 #if($arc && ($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() ))
-
  <tr>
   <td>&nbsp;</td>
  </tr>
@@ -447,6 +446,7 @@ progressPercent=document.getElementById("uploadPercent");
     <li>Port: $!arc.getDcm_dcmPort()</li>
     <li>AE Title: $!arc.getDcm_dcmAe()</li>
    </ul>
+   <BR><a id="launchDICOM" href="javascript:launchDicomBrowser()">Start DICOM Browser</a>
   </td>
  </tr>
 #end

@@ -199,7 +199,7 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_host" VALUE="$!arc.getDcm_dcmHost()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the host where the C-Store is accessible. This is not a URL and should not include a scheme (http or https).  It should just be the host name (the name of the machine on which it is running).
+   <TD colspan="2">This is the host (machine name) where the XNAT's internal C-Store is accessible. This is not a URL and should not include a scheme (http or https).  It should just be the host name (the name of the machine on which XNAT is running... or accessible to external users).
    </TD>
  </TR>
    <TR>
@@ -210,7 +210,7 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_Port" VALUE="$!arc.getDcm_dcmPort()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the port where the C-Store is accessible. The default value is 104.
+   <TD colspan="2">This is the port where XNAT's internal C-Store should listen for DICOM traffic. The default value is 8104.
    </TD>
  </TR>
    <TR>
@@ -221,7 +221,7 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_ae" VALUE="$!arc.getDcm_dcmAe()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the port where the C-Store is accessible. The default value is XNAT. 
+   <TD colspan="2">This is the AE Title which should be used by XNAT's internal C-Store. The default value is XNAT. 
    </TD>
  </TR>
    <TR>

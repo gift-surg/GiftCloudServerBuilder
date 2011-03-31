@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://nrg.wustl.edu/xnat" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdat="http://nrg.wustl.edu/xdat" xmlns:prov="http://www.nbirn.net/prov" xmlns:xnat="http://nrg.wustl.edu/xnat" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema targetNamespace="http://nrg.wustl.edu/xnat" xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:prov="http://www.nbirn.net/prov" xmlns:xdat="http://nrg.wustl.edu/xdat" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://www.nbirn.net/prov" schemaLocation="../birn/birnprov.xsd"/>
 	<xs:element name="Project" type="xnat:projectData"/>
 	<xs:element name="Subject" type="xnat:subjectData"/>
@@ -30,6 +30,7 @@
 	<xs:element name="OPTSession" type="xnat:optSessionData"/>
 	<xs:element name="RTSession" type="xnat:rtSessionData"/>
 	<xs:element name="MEGSession" type="xnat:megSessionData"/>
+	<xs:element name="EEGSession" type="xnat:eegSessionData"/>
 	<xs:element name="OtherDicomSession" type="xnat:otherDicomSessionData"/>
 	<xs:element name="SubjectVariables" type="xnat:subjectVariablesData"/>
 	<xs:element name="PETSession" type="xnat:petSessionData"/>
@@ -63,6 +64,7 @@
 	<xs:element name="SegScan" type="xnat:segScanData"/>
 	<xs:element name="MRSScan" type="xnat:mrsScanData"/>
 	<xs:element name="MEGScan" type="xnat:megScanData"/>
+	<xs:element name="EEGScan" type="xnat:eegScanData"/>
 	<xs:element name="VoiceAudioScan" type="xnat:voiceAudioScanData"/>
 	<xs:element name="OtherDicomScan" type="xnat:otherDicomScanData"/>
 	<xs:element name="ImageRegionResource" type="xnat:regionResource"/>
@@ -3806,6 +3808,22 @@ rebinning, 6=FORE)</xs:documentation>
 	<xs:complexType name="megScanData">
 		<xs:annotation>
 			<xs:documentation>Magnetoencephalography Scan</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xnat:imageScanData"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="eegSessionData">
+		<xs:annotation>
+			<xs:documentation>Electroencephalography Session</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xnat:imageSessionData"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="eegScanData">
+		<xs:annotation>
+			<xs:documentation>Electroencephalography Scan</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="xnat:imageScanData"/>

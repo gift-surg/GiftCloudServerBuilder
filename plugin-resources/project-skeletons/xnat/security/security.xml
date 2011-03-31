@@ -209,6 +209,14 @@
 					</xdat:allow_set>
 				</xdat:permissions>
 			</xdat:element_access>
+			<xdat:element_access element_name="xnat:eegSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:eegSessionData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:eegSessionData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
 			<xdat:element_access element_name="xnat:otherDicomSessionData">
 				<xdat:permissions>
 					<xdat:allow_set method="OR">
@@ -463,6 +471,14 @@
 					<xdat:allow_set method="OR">
 						<xdat:allow field="xnat:megSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
 						<xdat:allow field="xnat:megSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:eegSessionData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:eegSessionData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:eegSessionData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
 					</xdat:allow_set>
 				</xdat:permissions>
 			</xdat:element_access>
@@ -1035,6 +1051,21 @@
 			<xdat:primary_security_fields>
 				<xdat:primary_security_field>xnat:megSessionData/sharing/share/project</xdat:primary_security_field>
 				<xdat:primary_security_field>xnat:megSessionData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:eegSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="EEG Session" plural="EEG Sessions" accessible="1" code="EEG">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:eegSessionData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:eegSessionData/project</xdat:primary_security_field>
 			</xdat:primary_security_fields>
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>

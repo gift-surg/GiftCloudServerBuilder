@@ -267,7 +267,8 @@ public enum DatabaseSession {
 			public void setInsertStatement(int columnIndex, PreparedStatement s, Object o) throws SQLException {
 				if (o != null) {
 					if (o instanceof java.util.Date) {
-						s.setTimestamp(columnIndex, new java.sql.Timestamp(((java.util.Date)o).getTime()));}
+						java.sql.Timestamp t = new java.sql.Timestamp(((java.util.Date)o).getTime());
+						s.setTimestamp(columnIndex, t);}
 					else {
 						s.setTimestamp(columnIndex, this.date2Timestamp(o));
 					}

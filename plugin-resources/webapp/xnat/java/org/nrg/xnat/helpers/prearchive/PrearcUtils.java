@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -273,6 +274,15 @@ public class PrearcUtils {
 	
 	public static java.util.Date timestamp2Date (java.sql.Timestamp t) {
 		return new java.util.Date(t.getTime());
+	}
+	
+	public static void deleteProject (String project) throws SQLException, SessionException, Exception {
+		ArrayList<SessionData> ss = PrearcDatabase.getSessionsInProject(project);
+		Iterator<SessionData> i = ss.iterator();
+		while (i.hasNext()) {
+			SessionData s = i.next();
+			PrearcDatabase.deleteSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+		}
 	}
 	
 	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session, final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception{

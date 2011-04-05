@@ -1205,6 +1205,20 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
+	public static ArrayList<SessionData> getSessionsInProject (final String project) throws Exception, SQLException, SessionException {
+		return new SessionOp<ArrayList<SessionData>>() {
+			public ArrayList<SessionData> op() throws SQLException, SessionException, Exception {
+				ArrayList<SessionData> ao = new ArrayList<SessionData>();
+				String [] sdr = {project};
+				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.PROJECT.allMatchesSql(sdr), null);
+				while (rs.next()) {
+					ao.add(DatabaseSession.fillSession(rs));
+				}
+				return ao;
+			}
+		}.run();
+	}
+	
 	/**
 	 * Build a list of all sessions in the prearchive.
 	 * @return

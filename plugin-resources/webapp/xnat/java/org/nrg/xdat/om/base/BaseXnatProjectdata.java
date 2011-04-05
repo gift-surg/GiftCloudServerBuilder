@@ -77,6 +77,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.restlet.data.Status;
@@ -1973,6 +1974,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			final File arc=new File(this.getRootArchivePath());
 			final File prearc=new File(this.getPrearchivePath());
 			
+			PrearcUtils.deleteProject(this.getId());
 	        DBAction.DeleteItem(getItem().getCurrentDBVersion(), user);
 
 	        //DELETE field mappings
@@ -2034,7 +2036,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	        
 	        try {
 				if(arc.exists() && removeFiles)FileUtils.MoveToCache(arc);
-				if(prearc.exists() && removeFiles)FileUtils.MoveToCache(prearc);
 			} catch (Exception e) {
 	            logger.error("",e);
 			}

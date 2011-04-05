@@ -217,6 +217,39 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		}
 	}
 	
+		
+	@Test 
+	public final void deleteSessionFromProject () {
+		String proj = "proj_1";
+		try {
+			PrearcUtils.deleteProject(proj);
+		}
+		catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException" + e.getMessage());
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
+		
+		ArrayList<SessionData> ss = new ArrayList<SessionData>();
+		try {
+			ss = PrearcDatabase.getSessionsInProject(proj);
+		}
+		catch (SQLException e) {
+			fail ("SQLException" + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException" + e.getMessage());
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
+		
+		Assert.assertTrue(ss.isEmpty());
+	}
 
 	@Test
 	public final void testGetUnassigned () {

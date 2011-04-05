@@ -108,8 +108,13 @@ public final class PrearcSessionResource extends SecureResource {
         try {
 			loadParams(this.getBodyAsForm());
 			loadParams(this.getQueryVariableForm());
-			String json = this.getRequest().getEntity().getText();
-			loadParams(json);
+			final Representation entity=this.getRequest().getEntity();
+			if(entity!=null){
+				final String json = entity.getText();
+				if(json!=null){
+					loadParams(json);
+				}
+			}
 		} catch (ClientException e1) {
 			logger.error("",e1);
 			this.getResponse().setStatus(e1.getStatus(), e1);

@@ -1198,8 +1198,10 @@ public final class PrearcDatabase {
 		return new SessionOp<ArrayList<ArrayList<Object>>>(){
 			public ArrayList<ArrayList<Object>> op() throws SQLException, SessionException, Exception {
 				ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
-				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.PROJECT.allMatchesSql(projects), null);
-				ao=convertRStoList(rs);
+				if (projects.length > 0) {
+					ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.PROJECT.allMatchesSql(projects), null);
+					ao=convertRStoList(rs);	
+				}
 				return ao;
 			}
 		}.run();

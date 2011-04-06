@@ -1,11 +1,16 @@
+/*
+ * Copyright (c) 2011 Washington University
+ */
 package org.nrg.xnat.archive;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -14,6 +19,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
@@ -26,9 +33,12 @@ import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
+import org.nrg.dcm.Extractor;
+import org.nrg.dcm.MatchedPatternExtractor;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFT;
 import org.nrg.xnat.AbstractDicomObjectIdentifier;
 import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.Files;
@@ -37,7 +47,6 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
-import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -55,6 +64,7 @@ import com.google.common.base.Strings;
  */
 public class GradualDicomImporter extends ImporterHandlerA {
     private static final String DEFAULT_TRANSFER_SYNTAX = TransferSyntax.ImplicitVRLittleEndian.uid();
+    private static final String DICOM_PROJECT_RULES = "dicom-project.rules";
     private static final DicomFileNamer namer = new SOPHashDicomFileNamer();
 
     private final Logger logger = LoggerFactory.getLogger(GradualDicomImporter.class);
@@ -79,6 +89,61 @@ public class GradualDicomImporter extends ImporterHandlerA {
         this.name = namer.makeFileName(o);
         this.params = params;
     }
+
+    private static final Pattern CUSTOM_RULE_PATTERN = Pattern.compile("\\((\\p{XDigit}{4})\\,(\\p{XDigit}{4})\\):(.+?)(?::(\\d+))?");
+
+    private final DicomObjectIdentifier<XnatProjectdata> projectIdentifier =
+        new AbstractDicomObjectIdentifier<XnatProjectdata>() {
+        {
+            final File config = new File(XFT.GetConfDir(), DICOM_PROJECT_RULES);
+            IOException ioexception = null;
+            if (config.isFile()) {
+                try {
+                    final BufferedReader reader = new BufferedReader(new FileReader(config));
+                    try {
+                        String line;
+                        while (null != (line = reader.readLine())) {
+                            final Extractor extractor = parseRule(line);
+                            if (null != extractor) {
+                                addProjectExtractors(extractor);
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw ioexception = e;
+                    } finally {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            throw ioexception = null == ioexception ? e : ioexception;
+                        }
+                    }
+                } catch (Throwable t) {
+                    logger.error("Unable to load project identification rules from " + DICOM_PROJECT_RULES, t);
+                }
+            } else {
+                logger.debug("custom project rules spec {} not found", DICOM_PROJECT_RULES);                
+            }
+        }
+
+        private final Extractor parseRule(final String rule) {
+            final Matcher matcher = CUSTOM_RULE_PATTERN.matcher(rule);
+            if (matcher.matches()) {
+                final StringBuilder tagsb = new StringBuilder("0x");
+                tagsb.append(matcher.group(1)).append(matcher.group(2));
+                final int tag = Integer.decode(tagsb.toString());
+                final String regexp = matcher.group(3);
+                final String groupIdx = matcher.group(4);
+                final int group = null == groupIdx ? 1 : Integer.parseInt(groupIdx);
+                return new MatchedPatternExtractor(tag, Pattern.compile(regexp), group);
+            } else {
+                return null;
+            }
+        }
+
+        public XnatProjectdata getProject(final String id) {
+            return GradualDicomImporter.this.getProject(id, null);
+        }
+    };
 
     private static DicomObject read(final InputStream in, final String name) throws ClientException {
         final BufferedInputStream bis = new BufferedInputStream(in);
@@ -219,6 +284,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         final File reqFile = Files.getImageFile(sessionDir, scan, valname);
         if (reqFile.exists()) {
             try {
+                Exception exception = null;
                 final FileInputStream fin = new FileInputStream(reqFile);
                 try {
                     final DicomObject o1 = read(fin, name);
@@ -228,8 +294,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
                     } else {
                         return safeFile;
                     }
+                } catch (ClientException e) {
+                    throw exception = e;
                 } finally {
-                    fin.close();
+                    try {
+                        fin.close();
+                    } catch (IOException e) {
+                        throw null == exception ? e : exception;
+                    }
                 }
             } catch (Throwable t) {
                 return safeFile;                    
@@ -241,24 +313,18 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
     @Override
     public List<String> call() throws ClientException, ServerException {
-        final DicomObjectIdentifier<XnatProjectdata> id =
-            new AbstractDicomObjectIdentifier<XnatProjectdata>() {
-            public XnatProjectdata getProject(final String id) {
-                return GradualDicomImporter.this.getProject(id, null);
-            }
-        };
         //TODO:This code would cause unnecessary SQL queries to be done.  If the params contain a valid project, then the Project identified by the DICOM should be ignored and doesn't need to be instantiated.
         XnatProjectdata project;
-		try {
-			project = getProject(PrearcUtils.identifyProject(params), id.getProject(o));
-		} catch (MalformedURLException e1) {
+        try {
+            project = getProject(PrearcUtils.identifyProject(params), projectIdentifier.getProject(o));
+        } catch (MalformedURLException e1) {
             logger.error("unable to parse supplied destination flag", e1);
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e1);
-		}
+        }
         final String studyInstanceUID = o.getString(Tag.StudyInstanceUID);
-        logger.trace("Looking for study {} in project {}", studyInstanceUID, project);
+        logger.trace("Looking for study {} in project {}", studyInstanceUID,
+                null == project ? null : project.getId());
 
-        
         // Fill a SessionData object in case it is the first upload
         SessionData sess = null;
         final File root;
@@ -271,9 +337,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
             project_id=project.getId();
         }
         final File tsdir, sessdir;
-        
+
         tsdir = new File(root, PrearcUtils.makeTimestamp());
-        final String session = id.getSessionLabel(o);
+        final String session = projectIdentifier.getSessionLabel(o);
         sess = new SessionData();
         sess.setFolderName(session);
         sess.setName(session);
@@ -284,19 +350,19 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
         sess.setLastBuiltDate(Calendar.getInstance().getTime());
         sess.setUrl(PrearcUtils.makeUri("/prearchive/projects/" + sess.getProject(), sess.getTimestamp(), sess.getFolderName()));
-        
+
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
-        	sess = PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess);
+            sess = PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess);
         } catch (SQLException e) {
-        	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {
-        	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (Exception e) {
-        	throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+            throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         }
-        
+
         sessdir = new File(root, sess.getTimestamp() + "/" + sess.getFolderName());
 
         // Build the scan label

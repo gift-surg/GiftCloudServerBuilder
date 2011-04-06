@@ -117,10 +117,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 				data.setLastBuiltDate(new Date());
 			}
 
-			final DateFormat format = new SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP);
 			Date t_uploadDate;
 			try {
-				t_uploadDate = format.parse(sessdir.getParentFile().getName());
+				t_uploadDate = PrearcUtils.parseTimestampDirectory(sessdir.getParentFile().getName());
 			} catch (final ParseException e) {
 				logger.error("Unable to parse upload date from session parent " + sessdir.getParentFile(), e);
 				t_uploadDate = null;

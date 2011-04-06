@@ -5,6 +5,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -235,6 +237,17 @@ public class PrearcUtils {
 		}
 	};
 
+	public static final Date parseTimestampDirectory(final String stamp) throws ParseException{
+		final DateFormat format;
+		if(stamp.length()==18){
+			format = new SimpleDateFormat(TSDIR_MILLISECONDS_FORMAT);
+		}else{
+			format = new SimpleDateFormat(TSDIR_SECONDS_FORMAT);
+		}
+
+		return format.parse(stamp);
+	}
+	
 	public  static final FileFilter isDirectory = new FileFilter() {
 		public boolean accept(final File f) {
 			return f.isDirectory();

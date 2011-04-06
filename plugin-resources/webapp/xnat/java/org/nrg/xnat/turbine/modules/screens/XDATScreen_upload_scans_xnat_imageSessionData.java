@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class XDATScreen_upload_scans_xnat_imageSessionData extends SecureReport {
 
@@ -20,6 +21,7 @@ public class XDATScreen_upload_scans_xnat_imageSessionData extends SecureReport 
         sb.append(formatter.format(d));
         context.put("uploadID", sb.toString());
 
+        context.put("session", om);
     }
 
 }

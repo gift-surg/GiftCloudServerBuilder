@@ -242,15 +242,11 @@ public class Importer extends SecureResource {
 				sb.append("The following sessions have been uploaded:<br>");
 				if (!preList.isEmpty()) {
 					try {
-						for (final String s : preList) {
-							final String[] sarray=s.split("/");
 							sb.append("<br>&nbsp;&nbsp;&nbsp;<a target='_parent' href='");
 							sb.append(TurbineUtils.GetRelativePath(this.getHttpServletRequest()));
 							sb.append("/app/template/XDATScreen_prearchives.vm'>");
-							sb.append(sarray[5]);
-							sb.append("</a> has been moved to the pre-archive for project ");
-							sb.append(sarray[3]);
-						}
+							sb.append(preList.size());
+							sb.append(" sessions(s)</a> has been moved to the pre-archive");
 					} catch (Exception e) {
 						sb.append("<br>A total of ");
 						sb.append(preList.size());
@@ -275,6 +271,9 @@ public class Importer extends SecureResource {
 						sb.append(" session(s) have archived.<br>");
 					}
 				}
+			sb.append("<script type='text/javascript'>");
+			sb.append("if(window.parent.proceed!=undefined){window.parent.proceed();}");
+			sb.append("</script>");
 				sb.append("</body></html>");
 			} else {
 				sb.append("ERROR: The process could not be completed due to exceptions - <br>");
@@ -283,7 +282,7 @@ public class Importer extends SecureResource {
 					sb.append(s);
 					sb.append("</span>");
 				}
-				sb.append("</body><script type='text/javascript'>");
+				sb.append("Your data may be available in the prearchive for your review.</body><script type='text/javascript'>");
 				sb.append("parent.document.getElementById('ex').style.display='none';");
 				sb.append("parent.toggleExtractSummary();");
 				sb.append("</script></html>");

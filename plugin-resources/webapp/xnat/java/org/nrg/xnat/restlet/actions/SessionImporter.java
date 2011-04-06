@@ -182,7 +182,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				}
 				
 				if(expt==null && !StringUtils.isEmpty(expt_label)){
-					expt=getExperimentByIdorLabel(project, expt_id,user);
+					expt=getExperimentByIdorLabel(project, expt_label,user);
 				}
 					
 				if(expt==null){
@@ -197,9 +197,10 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			//set properties to match existing session
 			if(expt!=null){
 				prearc_parameters.put("xnat:experimentData/project", expt.getProject());
+				if(!prearc_parameters.containsKey("xnat:subjectAssessorData/subject_ID")){
 				prearc_parameters.put("xnat:subjectAssessorData/subject_ID", expt.getSubjectId());
+				}
 				prearc_parameters.put("xnat:experimentData/label", expt.getLabel());
-				prearc_parameters.put("xnat:experimentData/ID", expt.getId());
 			}
 			
 			//import to prearchive

@@ -186,7 +186,12 @@ function renderProjects(selectBox,list,defaultValue){
 		}	
 	}
 	
+	if(window.projectPostLoadDisabled){
+		selectBox.disabled=window.projectPostLoadDisabled;
+	}else{
 	selectBox.disabled=false;
+}
+
 }
 
 function renderSubjects(selectBox,list,defaultValue,projectID){

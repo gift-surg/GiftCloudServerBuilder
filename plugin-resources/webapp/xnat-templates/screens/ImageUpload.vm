@@ -334,17 +334,39 @@ function checkProgress(){
 <form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="true"/>
 <INPUT TYPE="hidden" name="threshhold" value="51516279"/>
+
+#if($session)
+<INPUT TYPE="hidden" name="EXPT_LABEL" value="$!session.getLabel()"/>
+<INPUT TYPE="hidden" name="SUBJECT_ID" value="$!session.getSubjectData().getLabel()"/>
+#end
+
 <TABLE border=0>
-													<TR><TH align="left">Project</TH><TD>
+<TR>
+	<TH align="left">Project</TH>
+	<TD>
+#if(!$session)
 <select id="project" name="project" disabled=true></select>
-													</TD></TR>
+#else
+		<input type="hidden" name="project" id="project" value="$session.getProject()"/>$session.getProject()
+#end
+	</TD>
+</TR>
+													
+#if($session)
+	<TR><TH align="left">Session</TH><TD>$!session.getLabel()</TD></TR>
+#end
 			<TR>
 		<TH align="left">Destination</TH>
 		<TD>
-		<label><input id="pc_0" type='radio' name='prearchive_code' value='0' CHECKED onchange="evaluateDestination(this)"/> Prearchive</label>&nbsp;&nbsp;&nbsp;
+		<label><input id="pc_0" type='radio' name='prearchive_code' value='0' #if(!$session)CHECKED#end onchange="evaluateDestination(this)"/> Prearchive</label>&nbsp;&nbsp;&nbsp;
 		<label><input id="pc_1" type='radio' name='prearchive_code' value='2' onchange="evaluateDestination(this)"/> Archive in quarantine</label>&nbsp;&nbsp;&nbsp;
-		<label><input id="pc_2" type='radio' name='prearchive_code' value='1' onchange="evaluateDestination(this)"/> Archive no quarantine</label>
+		<label><input id="pc_2" type='radio' name='prearchive_code' value='1' #if($session)CHECKED#end onchange="evaluateDestination(this)"/> Archive no quarantine</label>
+#if($session)
+		<INPUT TYPE="hidden" name="overwrite" value="append"/>
+		<input type="hidden" id="auto-archive" name='auto-archive' value='TRUE'/>
+#else
 		<input type="hidden" id="auto-archive" name='auto-archive' value='FALSE'/>
+#end
 		<input type="hidden" id="quarantine" name='quarantine' value='FALSE'/>
 		</TD>
 	</TR>
@@ -479,15 +501,15 @@ function checkPlatform(string) {
    	    }
    	 }
 	  );
+  var directButton=new YAHOO.widget.Button("directButton",{type:"submit"});
 </script>
 </table>
 
+#if(!$session)
 <script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_tools.js')"></SCRIPT>
 
 <script type="text/javascript">
   //load projects
-  var directButton=new YAHOO.widget.Button("directButton",{type:"submit"});
-  
   window.defaultProject="$!project";
   
   window.projectLoader=new ProjectLoader();
@@ -533,3 +555,4 @@ function checkPlatform(string) {
   }
 
 </script>
+#end

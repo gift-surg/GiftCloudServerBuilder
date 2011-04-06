@@ -127,7 +127,7 @@ SET MAVEN_ENDORSED="%JAVA_HOME%\lib\endorsed;%MAVEN_HOME%\lib\endorsed"
 if not "%MAVEN_HOME_LOCAL%" == "" goto StartMHL
 
 @REM Start MAVEN without MAVEN_HOME_LOCAL override
-%MAVEN_JAVA_EXE% -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl "-Dmaven.home=%MAVEN_HOME%" "-Dtools.jar=%JAVA_HOME%\lib\tools.jar" "-Dforehead.conf.file=%MAVEN_HOME%\bin\forehead.conf" -Djava.endorsed.dirs=%MAVEN_ENDORSED% %MAVEN_OPTS% -classpath %MAVEN_CLASSPATH% %MAVEN_MAIN_CLASS% %MAVEN_CMD_LINE_ARGS%
+%MAVEN_JAVA_EXE% "-DJAVA_HOME=%JAVA_HOME%" -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl "-Dmaven.home=%MAVEN_HOME%" "-Dtools.jar=%JAVA_HOME%\lib\tools.jar" "-Dforehead.conf.file=%MAVEN_HOME%\bin\forehead.conf" -Djava.endorsed.dirs=%MAVEN_ENDORSED% %MAVEN_OPTS% -classpath %MAVEN_CLASSPATH% %MAVEN_MAIN_CLASS% %MAVEN_CMD_LINE_ARGS%
 @REM %MAVEN_JAVA_EXE% -Dorg.xml.sax.driver=org.apache.xerces.parsers.SAXParser -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl "-Dmaven.home=%MAVEN_HOME%" "-Dtools.jar=%JAVA_HOME%\lib\tools.jar" "-Dforehead.conf.file=%MAVEN_HOME%\bin\forehead.conf" -Djava.endorsed.dirs=%MAVEN_ENDORSED% %MAVEN_OPTS% -classpath %MAVEN_CLASSPATH% %MAVEN_MAIN_CLASS% %MAVEN_CMD_LINE_ARGS%
 
 IF ERRORLEVEL 1 goto error
@@ -136,7 +136,7 @@ goto end
 
 @REM Start MAVEN with MAVEN_HOME_LOCAL override
 :StartMHL
-%MAVEN_JAVA_EXE% -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl "-Dmaven.home=%MAVEN_HOME%" "-Dmaven.home.local=%MAVEN_HOME_LOCAL%" "-Dtools.jar=%JAVA_HOME%\lib\tools.jar" "-Dforehead.conf.file=%MAVEN_HOME%\bin\forehead.conf" -Djava.endorsed.dirs=%MAVEN_ENDORSED% %MAVEN_OPTS% -classpath %MAVEN_CLASSPATH% %MAVEN_MAIN_CLASS% %MAVEN_CMD_LINE_ARGS%
+%MAVEN_JAVA_EXE% "-DJAVA_HOME=%JAVA_HOME%" -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl "-Dmaven.home=%MAVEN_HOME%" "-Dmaven.home.local=%MAVEN_HOME_LOCAL%" "-Dtools.jar=%JAVA_HOME%\lib\tools.jar" "-Dforehead.conf.file=%MAVEN_HOME%\bin\forehead.conf" -Djava.endorsed.dirs=%MAVEN_ENDORSED% %MAVEN_OPTS% -classpath %MAVEN_CLASSPATH% %MAVEN_MAIN_CLASS% %MAVEN_CMD_LINE_ARGS%
 @REM %MAVEN_JAVA_EXE% -Dorg.xml.sax.driver=org.apache.xerces.parsers.SAXParser -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl "-Dmaven.home=%MAVEN_HOME%" "-Dmaven.home.local=%MAVEN_HOME_LOCAL%" "-Dtools.jar=%JAVA_HOME%\lib\tools.jar" "-Dforehead.conf.file=%MAVEN_HOME%\bin\forehead.conf" -Djava.endorsed.dirs=%MAVEN_ENDORSED% %MAVEN_OPTS% -classpath %MAVEN_CLASSPATH% %MAVEN_MAIN_CLASS% %MAVEN_CMD_LINE_ARGS%
 
 :error

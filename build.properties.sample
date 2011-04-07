@@ -1,4 +1,4 @@
-#WINDOWS postgresS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.  Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
+#WINDOWS USERS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.  Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
 
 maven.appserver.home = /Applications/apache-tomcat-6.0.29/
 

@@ -195,6 +195,7 @@ public class FileList extends XNATCatalogTemplate {
 						        
 						for(FileWriterWrapperI fw:files){
 							String fileName=fw.getName();
+							if (fileName != null) {
 						        if(fileName.indexOf('\\')>-1){
 						        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
 						        }
@@ -228,6 +229,7 @@ public class FileList extends XNATCatalogTemplate {
 						        if(filepath==null || filepath.equals("")){
 									this.returnSuccessfulCreateFromList(dest);
 						        }
+							}
 						}
 						     
 						 }catch(Exception e){

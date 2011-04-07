@@ -6,14 +6,10 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.xdat.model.ArcProjectDescendantI;
@@ -22,7 +18,6 @@ import org.nrg.xdat.model.ArcProjectPipelineI;
 import org.nrg.xdat.model.PipePipelinedetailsElementI;
 import org.nrg.xdat.model.PipePipelinedetailsI;
 import org.nrg.xdat.model.PipePipelinedetailsParameterI;
-import org.nrg.xdat.model.XnatAbstractprotocolI;
 import org.nrg.xdat.om.ArcPipelinedata;
 import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
@@ -30,19 +25,15 @@ import org.nrg.xdat.om.ArcProjectDescendant;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.PipePipelinedetails;
-import org.nrg.xdat.om.PipePipelinedetailsElement;
 import org.nrg.xdat.om.PipePipelinedetailsParameter;
-import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.auto.AutoPipePipelinerepository;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.security.UserI;
-import org.nrg.xnat.ajax.writer.ResponseWriterI;
-import org.nrg.xnat.ajax.writer.WriterFactory;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 /**
@@ -73,9 +64,6 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 	{
 		super(properties,user);
 	}
-
-
-
 
 	public XFTTable toTable(ArcProject arcProject) {
 		XFTTable table = new XFTTable();
@@ -156,9 +144,6 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		}
 		return rtn;
 	}
-
-
-			List<ArcProjectDescendantPipelineI> pipelines = descendantEle.getPipeline();
 
 
 	public  ArrayList<PipePipelinedetails> getAllPipelines(String dataType) {

@@ -303,7 +303,7 @@ function resetProgress(){
 
 function checkProgress(){
    //var url = "$content.getURI("/REST/status/$uploadID")?format=json";
-   var url = "$content.getURI("/REST/status/$uploadID")?format=json";
+   var url = "$content.getURI("/REST/status/$uploadID")?format=json&stamp="+ (new Date()).getTime();
    if (window.XMLHttpRequest) {
        req = new XMLHttpRequest();
    } else if (window.ActiveXObject) {

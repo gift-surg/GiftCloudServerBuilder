@@ -237,35 +237,37 @@ public class FileList extends XNATCatalogTemplate {
 						    int i = 0;
 						    for (FileItem fi:items) {    						         
 						        String fileName=fi.getName();
-						        if(fileName.indexOf('\\')>-1){
-						        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
-						        }
-						        
-						        String dest = null;
-						        if(filepath==null || filepath.equals("")){
-						        	dest=fileName;
-						        }else{			
-							        	if(items.size()>1 || filepath.endsWith("/")){
-						        		dest=filepath + "/" + fileName;
-						        	}else{
-						        		dest=filepath;
-						        	}
-						        }
-						        
-						        if(resource instanceof XnatResourcecatalog){
-							        if(!this.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, resource)){
-							        	break;
+						        if (fileName != null) {
+							        if(fileName.indexOf('\\')>-1){
+							        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
 							        }
-						        }else{
-							        if(!this.storeResourceFile(new FileWriterWrapper(fi,fileName), dest, resource)){
-							        	break;
+							        
+							        String dest = null;
+							        if(filepath==null || filepath.equals("")){
+							        	dest=fileName;
+							        }else{			
+								        	if(items.size()>1 || filepath.endsWith("/")){
+							        		dest=filepath + "/" + fileName;
+							        	}else{
+							        		dest=filepath;
+							        	}
 							        }
-						        }
-						          
-						        if(filepath==null || filepath.equals("")){
-									this.returnSuccessfulCreateFromList(dest);
-						        }
-						        i++;
+							        
+							        if(resource instanceof XnatResourcecatalog){
+								        if(!this.storeCatalogEntry(new FileWriterWrapper(fi,fileName), dest, resource)){
+								        	break;
+								        }
+							        }else{
+								        if(!this.storeResourceFile(new FileWriterWrapper(fi,fileName), dest, resource)){
+								        	break;
+								        }
+							        }
+							          
+							        if(filepath==null || filepath.equals("")){
+										this.returnSuccessfulCreateFromList(dest);
+							        }
+							        i++;
+						       }
 						    }
 						}
 						     

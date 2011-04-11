@@ -36,6 +36,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.restlet.representations.CSVTableRepresentation;
 import org.nrg.xnat.restlet.representations.HTMLTableRepresentation;
@@ -69,6 +70,8 @@ import com.noelios.restlet.http.HttpConstants;
 
 @SuppressWarnings("deprecation")
 public abstract class SecureResource extends Resource {
+	private static final String COMPRESSION = "compression";
+
 	public static class FileUploadException extends Exception {
 		private static final long serialVersionUID = 1L;
 
@@ -809,5 +812,21 @@ public abstract class SecureResource extends Resource {
 
 	public void setResponseStatus(final ActionException e){
 		this.getResponse().setStatus(e.getStatus(), e, e.getMessage());
+	}
+	
+	public Integer identifyCompression(Integer defaultCompression)throws ActionException{
+		try {
+			if(this.containsQueryVariable(COMPRESSION)){
+				return Integer.valueOf(this.getQueryVariable(COMPRESSION));
+			}
+		} catch (NumberFormatException e) {
+			throw new ClientException(e.getMessage());
+		}
+		
+		if(defaultCompression!=null){
+			return defaultCompression;
+		}else{
+			return ZipUtils.DEFAULT_COMPRESSION;
+		}
 	}
 }

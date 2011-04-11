@@ -15,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
@@ -571,7 +572,7 @@ public class UserCacheResource extends SecureResource {
     }
 	
 	@SuppressWarnings("unchecked")
-	private void returnZippedFiles(String userPath, String pXNAME, String pFILE) {
+	private void returnZippedFiles(String userPath, String pXNAME, String pFILE) throws ActionException {
 		ArrayList<File> fileList=new ArrayList<File>();
 		String zipFileName; 
 		String fileString = pFILE + getRequest().getResourceRef().getRemainingPart().replaceFirst("\\?.*$", "");
@@ -605,7 +606,7 @@ public class UserCacheResource extends SecureResource {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void returnZippedFiles(String userPath, String pXNAME) {
+	private void returnZippedFiles(String userPath, String pXNAME) throws ActionException {
 		
 		File dir = new File (userPath,pXNAME);
 		if (dir.exists() && dir.isDirectory()) {
@@ -618,14 +619,14 @@ public class UserCacheResource extends SecureResource {
 		
 	}
 	
-	private void sendZippedFiles(String userPath,String pXNAME,String fileName,ArrayList<File> fileList) {
+	private void sendZippedFiles(String userPath,String pXNAME,String fileName,ArrayList<File> fileList) throws ActionException {
 		
 		ZipRepresentation zRep;
        	if (getRequestedMediaType()==null || !getRequestedMediaType().equals(MediaType.APPLICATION_GNU_TAR)) {
-       		zRep = new ZipRepresentation(MediaType.APPLICATION_ZIP,userPath);
+       		zRep = new ZipRepresentation(MediaType.APPLICATION_ZIP,userPath,identifyCompression(null));
        		this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",fileName));
        	} else {
-       		zRep = new ZipRepresentation(MediaType.APPLICATION_GNU_TAR,userPath);
+       		zRep = new ZipRepresentation(MediaType.APPLICATION_GNU_TAR,userPath,identifyCompression(null));
        		this.setContentDisposition(String.format("attachment; filename=\"%s.tar.gz\";",fileName));
        	}
 		zRep.addAllAtRelativeDirectory(userPath + File.separator + pXNAME,fileList);

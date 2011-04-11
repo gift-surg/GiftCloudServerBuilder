@@ -15,6 +15,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -472,7 +473,14 @@ public class FileList extends XNATCatalogTemplate {
 			
 			return new CatalogRepresentation(cat, mt,false);
 		}else if(mt.equals(MediaType.APPLICATION_ZIP) || mt.equals(MediaType.APPLICATION_GNU_TAR)){
-			final ZipRepresentation rep=new ZipRepresentation(mt,this.getSessionIds());
+			ZipRepresentation rep;
+			try {
+				rep = new ZipRepresentation(mt,this.getSessionIds(),identifyCompression(null));
+			} catch (ActionException e) {
+				logger.error("",e);
+				this.setResponseStatus(e);
+				return null;
+			}
 			
 			final int uriIndex=table.getColumnIndex("URI"); 
 			final int fileIndex=table.getColumnIndex("file"); 
@@ -931,7 +939,14 @@ public class FileList extends XNATCatalogTemplate {
 						if(f!=null){
 				if(f!=null && f.exists()){
 					if((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip")) || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".gz") )){
-						ZipRepresentation rep=new ZipRepresentation(mt,((ArchivableItem)security).getArchiveDirectoryName());
+						final ZipRepresentation rep;
+						try{
+							rep=new ZipRepresentation(mt,((ArchivableItem)security).getArchiveDirectoryName(),identifyCompression(null));
+						} catch (ActionException e) {
+							logger.error("",e);
+							this.setResponseStatus(e);
+							return null;
+						}
 						rep.addEntry(f.getName(),f);
 						
 						this.setContentDisposition(String.format("filename=\"%s.zip\";",f.getName()));

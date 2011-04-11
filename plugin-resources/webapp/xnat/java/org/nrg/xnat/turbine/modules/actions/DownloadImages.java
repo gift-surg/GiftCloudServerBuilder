@@ -324,10 +324,10 @@ public class DownloadImages extends SecureAction {
                     if (tar)
                     {
                         zip = new TarUtils();
-                        zip.setOutputStream(outStream,ZipOutputStream.DEFLATED);
+                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }else{
                         zip = new ZipUtils();
-                        zip.setOutputStream(outStream,ZipOutputStream.DEFLATED);
+                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }
                                     
                     for(XNATDirectory sub : al){
@@ -384,10 +384,10 @@ public class DownloadImages extends SecureAction {
                     if (tar)
                     {
                         zip = new TarUtils();
-                        zip.setOutputStream(outStream,ZipOutputStream.DEFLATED);
+                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }else{
                         zip = new ZipUtils();
-                        zip.setOutputStream(outStream,ZipOutputStream.DEFLATED);
+                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }
                     
                     if (contentType=="application/xar"){

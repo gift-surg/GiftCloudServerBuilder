@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.GlobFilenameFilter;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
@@ -20,6 +21,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
+import org.nrg.xnat.restlet.resources.ScanDIRResource;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
@@ -31,6 +33,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
 public class DIRResource extends SecureResource {
+    final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DIRResource.class);
 	XnatProjectdata proj=null;
 
 	XnatExperimentdata expt = null;
@@ -114,7 +117,14 @@ public class DIRResource extends SecureResource {
 					final File f=src.get(0);
 					// TODO:  Need to add XAR output here?  (Probably not for single-file zipping)
 					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) )){
-						ZipRepresentation rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName());
+						final ZipRepresentation rep;
+						try{
+							rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName(),identifyCompression(null));
+						} catch (ActionException e) {
+							logger.error("",e);
+							this.setResponseStatus(e);
+							return null;
+						}
 						rep.addEntry(f);
 						this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",f.getName()));
 						return rep;
@@ -142,7 +152,14 @@ public class DIRResource extends SecureResource {
 					}
 			
 					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) || (mt.equals(APPLICATION_XAR)) )){
-						final ZipRepresentation rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName());
+						final ZipRepresentation rep;
+						try{
+							rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName(),identifyCompression(null));
+						} catch (ActionException e) {
+							logger.error("",e);
+							this.setResponseStatus(e);
+							return null;
+						}
 						if (mt.equals(APPLICATION_XAR)) {
 							try {
 								String userPath = ArcSpecManager.GetInstance().getGlobalCachePath() + "USERS" + File.separator + user.getXdatUserId();

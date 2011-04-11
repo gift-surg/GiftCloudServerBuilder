@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.TurbineException;
+import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
@@ -334,7 +335,14 @@ public final class PrearcSessionResource extends SecureResource {
             }
 
         } else if (MediaType.APPLICATION_GNU_ZIP.equals(mt) || MediaType.APPLICATION_ZIP.equals(mt)) {
-            ZipRepresentation zip = new ZipRepresentation(mt, sessionDir.getName());
+            final ZipRepresentation zip;
+        	try{
+	        	zip = new ZipRepresentation(mt, sessionDir.getName(),identifyCompression(null));
+			} catch (ActionException e) {
+				logger.error("",e);
+				this.setResponseStatus(e);
+				return null;
+			}
             zip.addFolder(sessionDir.getName(), sessionDir);
             return zip;
         } else {

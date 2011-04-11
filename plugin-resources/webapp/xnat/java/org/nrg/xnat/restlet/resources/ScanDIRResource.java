@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.nrg.action.ActionException;
 import org.nrg.dcm.DicomDir;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
@@ -71,8 +72,13 @@ public class ScanDIRResource extends ScanResource {
 	    session_ids.add(session.getArchiveDirectoryName());
 			
 	    Map<String,String> valuesToReplace=RestFileUtils.getReMaps(scans,null);
-
-	    rep = new ZipRepresentation(MediaType.APPLICATION_ZIP,session_ids);
+	    try{
+		    rep = new ZipRepresentation(MediaType.APPLICATION_ZIP,session_ids,identifyCompression(null));
+		} catch (ActionException e) {
+			logger.error("",e);
+			this.setResponseStatus(e);
+			return null;
+		}
 						
 	    //this is the expected path to the SESSION_DIR
 	    final String rootPath=session.getArchivePath();

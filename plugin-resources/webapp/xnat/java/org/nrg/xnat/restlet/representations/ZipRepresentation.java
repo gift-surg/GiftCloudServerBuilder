@@ -20,17 +20,28 @@ public class ZipRepresentation extends OutputRepresentation {
 	private ArrayList<ZipEntry> _entries=new ArrayList<ZipEntry>();
 	private ArrayList<String> _tokens=new ArrayList<String>();
 	private MediaType mt=null;
+	private final int compression;
 	
-	public ZipRepresentation(MediaType mt,String token) {
+	public ZipRepresentation(MediaType mt,String token, Integer compression) {
 		super(mt);
 		this.mt=mt;
 		_tokens.add(token);
+		this.compression=deriveCompression(compression);
 	}
 	
-	public ZipRepresentation(MediaType mt,ArrayList<String> token) {
+	public ZipRepresentation(MediaType mt,ArrayList<String> token, Integer compression) {
 		super(mt);
 		this.mt=mt;
 		_tokens=token;
+		this.compression=deriveCompression(compression);
+	}
+	
+	public int deriveCompression(Integer compression){
+		if(compression==null){
+			return ZipUtils.DEFAULT_COMPRESSION;
+		}else{
+			return compression;
+		}
 	}
 	
 	public void addEntry(String p, File f){
@@ -152,12 +163,12 @@ public class ZipRepresentation extends OutputRepresentation {
         if (this.mt.equals(MediaType.APPLICATION_GNU_TAR))
         {
             zip = new TarUtils();
-            zip.setOutputStream(os,ZipOutputStream.DEFLATED);
+            zip.setOutputStream(os,compression);
             this.setDownloadName(getTokenName()+".tar.gz");
             this.setDownloadable(true);
         }else{
             zip = new ZipUtils();
-            zip.setOutputStream(os,ZipOutputStream.DEFLATED);
+            zip.setOutputStream(os,compression);
             this.setDownloadName(getTokenName() +".zip");
             this.setDownloadable(true);
         }

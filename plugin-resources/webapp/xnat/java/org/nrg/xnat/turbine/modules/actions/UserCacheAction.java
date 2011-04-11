@@ -76,7 +76,7 @@ public class UserCacheAction extends SecureAction {
 	    						ZipI zip = null;
 		    					try {
 		    						 zip = new ZipUtils();
-		    						zip.setOutputStream(outStream,ZipOutputStream.DEFLATED);
+		    						zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
 				                	if (!folderFile.isDirectory())
 				                		zip.write(folderFile.getName(),folderFile);
 				                	else 

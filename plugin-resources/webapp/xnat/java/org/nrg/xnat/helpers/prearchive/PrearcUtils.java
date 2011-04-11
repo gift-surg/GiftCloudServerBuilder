@@ -169,7 +169,7 @@ public class PrearcUtils {
 					throw new InvalidPermissionException("user " + user.getUsername() + " does not have create permissions for project " + projectData.getId());
 				}
 			} catch (final Exception e) {
-				logger().error("Unable to check security for " + user.getUsername() + " on " + projectData.getId(), e);
+				logger().info("Unable to check security for " + user.getUsername() + " on " + projectData.getId(), e);
 				throw new Exception(e.getMessage());
 			}
 
@@ -344,12 +344,10 @@ public class PrearcUtils {
 		if(StringUtils.isNotEmpty(uID))sd.setTag(uID);
 		PrearcDatabase.addSession(sd);
 	}
-
 	
 	public static String makeUri (final String urlBase, final String timestamp, final String folderName) {
 		return StringUtils.join(new String[]{urlBase,"/".intern(),timestamp,"/".intern(),folderName});
 	}
-	
 
 	public static Map<String,Object> parseURI(final String uri) throws MalformedURLException{
 		return UriParserUtils.parseURI(uri).getProps();
@@ -377,7 +375,6 @@ public class PrearcUtils {
 		}
 		return null;
 	}
-
 
 	public static final String TEMP_UNPACK = "temp-unpack";
 }

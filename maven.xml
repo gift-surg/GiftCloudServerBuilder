@@ -1359,7 +1359,7 @@
 				<ant:arg value="${xdat.admin_email}"/>
 				<ant:arg value="${xdat.smtp.server}"/>
 				<ant:arg value="${cwd}"/>
-				<ant:arg value="${JAVA_HOME}"/>
+				<env key="JAVA_HOME" value="${JAVA_HOME}"/>
 				<env key="MAVEN_TERMINATE_CMD" value="on"/>
 			</ant:exec>
 		</j:if>

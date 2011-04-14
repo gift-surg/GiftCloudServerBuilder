@@ -1,7 +1,6 @@
 package org.nrg.xnat.restlet.actions;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -30,7 +29,6 @@ import org.nrg.xnat.helpers.uri.UriParserUtils.PrearchiveURI;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
-import org.xml.sax.SAXException;
 
 /**
  * @author tolsen01
@@ -137,7 +135,9 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 			if(folderName==null || timestamp==null){
 				throw new IllegalArgumentException();
 			}
-			this.additionalValues.putAll(props);
+			if (null != props) {
+			    this.additionalValues.putAll(props);
+			}
 			this.sessionDir=PrearcUtils.getPrearcSessionDir(user, project, timestamp, folderName, true);
 		}
 

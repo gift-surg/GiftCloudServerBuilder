@@ -47,8 +47,7 @@ The following parameters have been set for the protocol validation pipeline
 <td>notify</td>
 <input type="hidden"  id=${dblQts}param[5].name$dblQts name=${dblQts}param[5].name$dblQts value="notify"/>
 <input type="hidden"  id=${dblQts}param[5].name.rowcount$dblQts name=${dblQts}param[5].name.rowcount$dblQts value="1"/>
-<td><input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="1" checked/>Yes &nbsp;<input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="0"/>No</td>
-</tr>
+<TD><input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="0"> Do not notify &nbsp; <input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="1"checked>Do Notify <input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="2">Notify a list of people ONLY if validation fails</TD></tr>
 
 </table>
 

@@ -53,8 +53,8 @@ $newpipeline.getDescription()
    	    <input type="hidden" id=$dblQts${schemaType}.parameters.parameter[1].description$dblQts name=$dblQts${schemaType}.parameters.parameter[1].description$dblQts value="The catalog_content value is used to select among the many entries in the catalog file"/>
 	  </tr>
 	 <TR>
-	   <TD><input type="hidden"  id=$dblQts${schemaType}.parameters.parameter[5].name$dblQts name=$dblQts${schemaType}.parameters.parameter[5].name$dblQts value="notify"/><b>Should the pipeline send a completion notification email?</b></TD> 
-	   <TD><input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="1"checked>Yes &nbsp; <input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="0">No
+	   <TD><input type="hidden"  id=$dblQts${schemaType}.parameters.parameter[5].name$dblQts name=$dblQts${schemaType}.parameters.parameter[5].name$dblQts value="notify"/><b>Notification options:</b></TD> 
+	   <TD><input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="0"> Do not notify &nbsp; <input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="1"checked>Do Notify <input type="radio" id=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[5].csvValues$dblQts value="2">Notify a list of people ONLY if validation fails</TD>
    	    <input type="hidden" id=$dblQts${schemaType}.parameters.parameter[5].description$dblQts name=$dblQts${schemaType}.parameters.parameter[5].description$dblQts value="Notify parameter"/>
 	  </tr>
 

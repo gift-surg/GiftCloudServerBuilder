@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,6 +64,7 @@ import com.google.common.base.Strings;
  *
  */
 public class GradualDicomImporter extends ImporterHandlerA {
+    public static final String SENDER_ID_PARAM = "Sender-ID";
     private static final String DEFAULT_TRANSFER_SYNTAX = TransferSyntax.ImplicitVRLittleEndian.uid();
     private static final String DICOM_PROJECT_RULES = "dicom-project.rules";
     private static final DicomFileNamer namer = new SOPHashDicomFileNamer();
@@ -73,7 +75,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
     private final XDATUser user;
     final Map<String,Object> params;
 
-    public GradualDicomImporter(Object listenerControl, XDATUser u,	FileWriterWrapperI fw, Map<String, Object> params)
+    public GradualDicomImporter(Object listenerControl, XDATUser u,	FileWriterWrapperI fw, Map<String,Object> params)
     throws IOException,ClientException {
         super(listenerControl, u, fw, params);
         this.user = u;
@@ -186,7 +188,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
     private static Logger slog() { return LoggerFactory.getLogger(GradualDicomImporter.class); }
 
-    private static void write(final DicomObject fmi, final DicomObject dataset, final File f)
+    private static void write(final DicomObject fmi, final DicomObject dataset, final File f, final String source)
     throws IOException {
         IOException ioexception = null;
         final FileOutputStream fos = new FileOutputStream(f);
@@ -233,6 +235,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             } finally {
                 try {
                     dos.close();
+                    LoggerFactory.getLogger("org.nrg.xnat.received").info("{}:{}", source, f);
                 } catch (IOException e) {
                     throw null == ioexception ? e : ioexception;
                 }
@@ -257,7 +260,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
     }
 
-    public XnatProjectdata getProject(final Object alias, final XnatProjectdata defaultProject) {
+    public XnatProjectdata getProject(final Object alias, final Callable<XnatProjectdata> defaultProject) {
         if (null != alias) {
             final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
             if (null != p && canCreateIn(p)) {
@@ -272,7 +275,12 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 }
             }
         }
-        return defaultProject;
+        try {
+            return null == defaultProject ? null : defaultProject.call();
+        } catch (Exception e) {
+            logger.error("error in default project provider", e);
+            return null;
+        }
     }
 
     private File getSafeFile(File sessionDir, String scan, String name, DicomObject o) {
@@ -310,13 +318,27 @@ public class GradualDicomImporter extends ImporterHandlerA {
             return reqFile;
         }
     }
-
+    
+    private static <K,V> String getString(final Map<K,V> m, final K k, final V defaultValue) {
+        final V v = m.get(k);
+        if (null == v) {
+            return null == defaultValue ? null : defaultValue.toString();
+        } else {
+            return v.toString();
+        }
+    }
+    
     @Override
     public List<String> call() throws ClientException, ServerException {
-        //TODO:This code would cause unnecessary SQL queries to be done.  If the params contain a valid project, then the Project identified by the DICOM should be ignored and doesn't need to be instantiated.
-        XnatProjectdata project;
+        final XnatProjectdata project;
         try {
-            project = getProject(PrearcUtils.identifyProject(params), projectIdentifier.getProject(o));
+            // project identifier is a little expensive, so avoid if possible
+            project= getProject(PrearcUtils.identifyProject(params),
+                    new Callable<XnatProjectdata>() {
+                public XnatProjectdata call() {
+                    return projectIdentifier.getProject(o);
+                }
+            });
         } catch (MalformedURLException e1) {
             logger.error("unable to parse supplied destination flag", e1);
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e1);
@@ -388,16 +410,18 @@ public class GradualDicomImporter extends ImporterHandlerA {
             fmi.initFileMetaInformation(sopClassUID, sopInstanceUID, transferSyntaxUID);
         }
 
+        final String source = getString(params, SENDER_ID_PARAM, user.getLogin());
+        
         final File f = getSafeFile(sessdir, scan, name, o);
         f.getParentFile().mkdirs();
         try {
-            write(fmi, o, f);
+            write(fmi, o, f, source);
         } catch (IOException e) {
             throw new ServerException(Status.SERVER_ERROR_INSUFFICIENT_STORAGE, e);
         }
 
-        logger.trace("Stored object {}/{}/{} as {}",
-                new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl()});
+        logger.trace("Stored object {}/{}/{} as {} for {}",
+                new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl(), source});
         return Collections.singletonList(sess.getExternalUrl());
     }
 }

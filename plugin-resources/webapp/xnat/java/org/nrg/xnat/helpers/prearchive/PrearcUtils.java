@@ -298,9 +298,11 @@ public class PrearcUtils {
 		}
 	}
 	
-	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session, final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception{
-		if(user==null||timestamp==null||session==null){
-			throw new IllegalArgumentException();
+	public static final File getPrearcSessionDir(final XDATUser user, final String project, final String timestamp,final String session, final boolean allowUnassigned)
+	throws IOException, InvalidPermissionException, Exception{
+		if(user==null || timestamp==null || session==null){
+			throw new IllegalArgumentException(String.format("Invalid prearchive session: user %s; timestamp %s; session %s",
+			        user, timestamp, session));
 		}
 		return new File(new File(getPrearcDir(user, project,allowUnassigned),timestamp),session);
 	}

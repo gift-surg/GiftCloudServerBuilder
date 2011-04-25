@@ -722,17 +722,17 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-	public void loadParams (String _json) throws ClientException {
-		JSONObject json = null;
-		try {
-			json = new JSONObject(_json);
-			String[] keys = JSONObject.getNames(json);
-			for (int i = 0; i < keys.length; i++) {
-				handleParam(keys[i], json.get(keys[i]));
-			}
-		}
-		catch (JSONException e) {logger.error("",e);}
-		catch (NullPointerException e) {logger.error("",e);}
+	public void loadParams (final String _json) throws ClientException {
+	    try {
+	        final JSONObject json = new JSONObject(_json);
+	        for (final String key: JSONObject.getNames(json)) {
+	            handleParam(key, json.get(key));
+	        }
+	    } catch (JSONException e) {
+	        logger.error("invalid JSON message " + _json, e);
+	    } catch (NullPointerException e) {
+	        logger.error("",e);
+	    }
 	}
 					
 	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{

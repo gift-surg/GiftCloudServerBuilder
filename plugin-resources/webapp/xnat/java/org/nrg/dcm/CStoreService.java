@@ -6,7 +6,6 @@ package org.nrg.dcm;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -119,10 +118,8 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         UID.RTTreatmentSummaryRecordStorage,
         UID.RTIonPlanStorage,
         UID.RTIonBeamsTreatmentRecordStorage,
-        UID.SiemensCSANonImageStorage, // Siemens proprietary; we get this
-        // sometimes
-        PhilipsPrivateCXImageStorage, // Philips proprietary. Thanks,
-        // Philips.
+        UID.SiemensCSANonImageStorage, // Siemens proprietary; we get this sometimes
+        PhilipsPrivateCXImageStorage, // Philips proprietary. Thanks, Philips.
         PhilipsPrivateVolumeStorage, PhilipsPrivate3DObjectStorage,
         PhilipsPrivate3DObject2Storage, PhilipsPrivateSurfaceStorage,
         PhilipsPrivateSurface2Storage,
@@ -147,7 +144,6 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
     private final Logger logger = LoggerFactory.getLogger(CStoreService.class);
     private final NetworkApplicationEntity ae;
     private final XDATUser user;
-    private final Map<String, Object> params = Collections.emptyMap();
 
     public CStoreService(final NetworkApplicationEntity ae, final XDATUser user)
     throws IOException {
@@ -200,6 +196,12 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         CommandUtils.setIncludeUIDinRSP(includeUIDs);
     }
 
+    private final Object identifySender(final Association association) {
+            return new StringBuilder()
+            .append(association.getRemoteAET()).append("@")
+            .append(association.getSocket().getRemoteSocketAddress());
+    }
+    
     private void doCStore(final Association as, final int pcid,
             final DicomObject rq, final PDVInputStream dataStream,
             final String tsuid, final DicomObject rsp)
@@ -215,7 +217,9 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
             }
             dataset.putString(Tag.TransferSyntaxUID, VR.UI, tsuid);
             try {
-                new GradualDicomImporter(this, user, dataset, params).call();
+                new GradualDicomImporter(this, user, dataset,
+                        Collections.singletonMap(GradualDicomImporter.SENDER_ID_PARAM,
+                                identifySender(as))).call();
             } catch (final ClientException e) {
                 logger.error("C-STORE operation failed", e);
                 throw new DicomServiceException(rq, ERROR_CANNOT_UNDERSTAND,

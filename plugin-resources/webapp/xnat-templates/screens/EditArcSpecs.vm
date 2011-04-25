@@ -190,28 +190,20 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <DIV class="withThinBorder withColor">
    <TABLE>
    <TR>
-   <TD colspan="2"><div class="WARNING"><b>Note to XNAT 1.4 users:</b></br> As of XNAT 1.5 Dicom Server has been replaced by an internal DICOM receiver and does not need to be installed and configured separately.</div></TD>
+   <TD colspan="2"><div class="WARNING"><b>Note to XNAT 1.4 users:</b></br> As of XNAT 1.5, DicomServer has been replaced by an internal DICOM receiver and does not need to be installed and configured separately.</div></TD>
    </TR>
    <TR>
-    <TD colspan="2"></br><h4>DICOM Receiver Configuration</h4></TD>
- <TR>
-   <TH align="left">DICOM host</TH>
-   <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_host" VALUE="$!arc.getDcm_dcmHost()"/> </TD>
- </TR>
-  <TR>
-   <TD colspan="2">This is the host (machine name) where the XNAT's internal C-Store is accessible. This is not a URL and should not include a scheme (http or https).  It should just be the host name (the name of the machine on which XNAT is running... or accessible to external users).
-   </TD>
- </TR>
+    <TD colspan="2"></br><h4>DICOM Receiver (C-STORE SCP) Configuration</h4></TD>
    <TR>
     <TD colspan="2" style="line-height:4px">&nbsp;</TD>
    </TR>
  <TR>
-   <TH align="left">DICOM port</TH>
+   <TH align="left">Port number</TH>
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_Port" VALUE="$!arc.getDcm_dcmPort()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the port where XNAT's internal C-Store should listen for DICOM traffic. The default value is 8104.
-   </TD>
+    <TD colspan="2">This is the port number to which C-STORE SCUs (scanners and other clients sending data) should connect. It is also the port that the SCP listens to, unless a different port has been configured using the <code>DICOM.port</code> property in WEB-INF/conf/DICOM-SCP.properties. See the <a href="http://www.xnat.org/DICOM+C-STORE+SCP">XNAT documentation</a> for detailed information about advanced configuration of the DICOM SCP.
+    </TD>
  </TR>
    <TR>
     <TD colspan="2" style="line-height:4px">&nbsp;</TD>
@@ -221,7 +213,7 @@ $!template.setLayoutTemplate("NoMenu.vm")
    <TD><INPUT size="30" TYPE="text" NAME="arc:ArchiveSpecification/dcm/dcm_ae" VALUE="$!arc.getDcm_dcmAe()"/> </TD>
  </TR>
   <TR>
-   <TD colspan="2">This is the AE Title which should be used by XNAT's internal C-Store. The default value is XNAT. 
+   <TD colspan="2">This is the SCP Application Entity (AE) title.
    </TD>
  </TR>
    <TR>

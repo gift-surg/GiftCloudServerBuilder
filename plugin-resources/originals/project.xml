@@ -642,7 +642,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>SessionBuilders</artifactId>
-			<version>1.5.0b3</version>
+			<version>1.5.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -660,7 +660,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-mx</artifactId>
-			<version>1.5.0rc2</version>
+			<version>1.5.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -669,7 +669,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-sop</artifactId>
-			<version>1.5.0b2</version>
+			<version>1.5.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -678,7 +678,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-util</artifactId>
-			<version>1.5.0b3</version>
+			<version>1.5.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -687,7 +687,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>ecat4xnat</artifactId>
-			<version>1.5.0b2</version>
+			<version>1.5.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -696,7 +696,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>PrearcImporter</artifactId>
-			<version>1.5.0b2</version>
+			<version>1.5.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1063,15 +1063,6 @@
 			<groupId>guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>r08</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>r06</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

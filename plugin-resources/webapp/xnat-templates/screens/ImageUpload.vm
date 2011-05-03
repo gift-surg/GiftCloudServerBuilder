@@ -319,7 +319,7 @@ function checkProgress(){
 <table border="0">
  <tr>
   <td><h3>
-  #if($arc && (($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() )))
+  #if($arc && (($arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() )))
   Option 1:
   #end
   Compressed upload</h3></td>
@@ -445,26 +445,26 @@ progressPercent=document.getElementById("uploadPercent");
  </tr>
 #end
 
-#if($arc && ($arc.getDcm_dcmHost() && $arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() ))
+#if($arc && ($arc.getDcm_dcmPort() && $arc.getDcm_dcmAe() ))
  <tr>
   <td>&nbsp;</td>
  </tr>
  <tr>
-  <td><h3>Option 3: DICOM Browser (via internal DICOM receiver)</h3></td>
+  <td><h3>Option 3: DICOM C-STORE Service Class User</h3></td>
  </tr>
  <tr>
-<td> <b>Note to XNAT 1.4 users:</b> As of XNAT 1.5 Dicom Server has been replaced by an internal DICOM receiver and does not need to be installed and configured separately.</td>
-</tr>
- <tr>
   <td valign="top" align="left">
-	    <div style="width:500px">Use a custom built DICOM application which supports easy anonymization, and can perform a DICOM SEND to a specified DICOM receiver.</div>
-  </td>
+  <div style="width:500px">Any DICOM C-STORE SCU, including scanner consoles
+or DICOM applications like
+<a href="http://www.osirix-viewer.com">OsiriX</a> or
+<a href="http://nrg.wustl.edu/software/dicom-browser">DicomBrowser</a>,
+can send files directly to this server.</div>
  </tr>
  <tr id="option3">
   <td>
-   <br><b>Internal DICOM Receiver Specifications</b>
+   <br><b>DICOM C-STORE receiver (SCP) Specifications</b>
    <ul>
-    <li>Host Name: $!arc.getDcm_dcmHost()</li>
+    <li>Host Name: $!hostname</li>
     <li>Port: $!arc.getDcm_dcmPort()</li>
     <li>AE Title: $!arc.getDcm_dcmAe()</li>
    </ul>

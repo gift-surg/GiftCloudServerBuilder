@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nrg.dcm.DicomSCP;
 import org.nrg.schedule.JobBuilderA;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
@@ -20,7 +21,6 @@ import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
-import org.nrg.xnat.utils.UserUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -74,7 +74,7 @@ public class PrearcScheduler extends JobBuilderA {
 			JobDataMap map = arg0.getMergedJobDataMap();
 			XDATUser user = null;
 			try {
-				user = UserUtils.getDICOMStoreUser();
+				user = DicomSCP.getUser();
 			} catch (UserNotFoundException e1) {
 				logger.error("",e1);
 			} catch (XFTInitException e1) {

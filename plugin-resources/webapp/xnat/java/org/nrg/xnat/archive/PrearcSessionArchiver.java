@@ -330,11 +330,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		if(cleaned.size()>0){
 		try {
 			src.getItem().setProperties(cleaned, true);
+			src.getItem().removeEmptyItems();
 		} catch (Exception e) {
 			failed("unable to map parameters to valid xml path: " + e.getMessage());
 			throw new ClientException("unable to map parameters to valid xml path: ", e);
 			}
 		}
+		
+		
 		src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(src.getItem());
 	}
 

@@ -497,8 +497,6 @@
 		<ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%THUMBNAIL_LOCATION%" value="${xdat.project.image.thumbnail.location}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%LORES_LOCATION%" value="${xdat.project.image.lo_res.location}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%DB_NAME%" value="${xdat.project.db.name}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%DB_DRIVER%" value="${xdat.project.db.driver}"/>
@@ -529,8 +527,6 @@
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%THUMBNAIL_LOCATION%" value="${xdat.project.image.thumbnail.location}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%LORES_LOCATION%" value="${xdat.project.image.lo_res.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_NAME%" value="${xdat.project.db.name}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_DRIVER%" value="${xdat.project.db.driver}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
@@ -544,8 +540,6 @@
 		<maven:makeAbsolutePath var="xdat.plexi.NEW" path="deployments/${xdat.project.name}/PlexiViewerSpec.xml" basedir="${basedir}"/>
 		<u:available file="${xdat.plexi.NEW}">
 			<ant:replace file="${xdat.plexi.NEW}" token="%XDAT_PROJECT%" value="${xdat.project}"/>
-			<ant:replace file="${xdat.plexi.NEW}" token="@THUMBNAIL_LOCATION@" value="${xdat.project.image.thumbnail.location}"/>
-			<ant:replace file="${xdat.plexi.NEW}" token="@LO_RES_LOCATION@" value="${xdat.project.image.lo_res.location}"/>
 			<ant:replace file="${xdat.plexi.NEW}" token="@CACHE_LOCATION@" value="${xdat.cache.location}"/>
 			<copy file="${xdat.plexi.NEW}" tofile="${xdat.project.xdat.NEW}/src/PlexiViewerSpec.xml"/>
 		</u:available>

@@ -2,8 +2,6 @@
 <Viewer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%XDAT_PROJECT%/schemas/xdat/PlexiViewer.xsd">
 	<PlexiViewer sessionType="PLEXI_DEFAULT">
 		<DefaultLoResType>8bit</DefaultLoResType>
-		<ThumbnailArchiveLocation>@THUMBNAIL_LOCATION@</ThumbnailArchiveLocation>
-		<LoResArchiveLocation>@LO_RES_LOCATION@</LoResArchiveLocation>
 		<CacheLocation>@CACHE_LOCATION@</CacheLocation>
 		<Layout name="tal_111" voxelSize="1">
 			<Coordinates originX="88" originY="84" originZ="75"/>

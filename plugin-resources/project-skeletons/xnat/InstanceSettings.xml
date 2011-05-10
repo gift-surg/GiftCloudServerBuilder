@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) -->
-<Instance_Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%XDAT_PROJECT%/schemas/xdat/instance.xsd" site_url="%SITE_URL%" admin_email="%ADMIN_EMAIL%" archive_root_path="%ARCHIVE_LOCATION%" prearchive_path="%PREARC_LOCATION%" cache_path="%CACHE_LOCATION%" smtp_server="%SMTP_SERVER%" thumbnail_path="%THUMBNAIL_LOCATION%" lores_path="%LORES_LOCATION%" pipeline_path="%PIPELINE_HOME%" require_login="%REQUIRE_LOGIN%" user_registration="%USER_REGISTRATION%">
+<Instance_Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%XDAT_PROJECT%/schemas/xdat/instance.xsd" site_url="%SITE_URL%" admin_email="%ADMIN_EMAIL%" archive_root_path="%ARCHIVE_LOCATION%" prearchive_path="%PREARC_LOCATION%" cache_path="%CACHE_LOCATION%" smtp_server="%SMTP_SERVER%" ftp_path="%FTP_LOCATION%" build_path="%BUILD_LOCATION%" pipeline_path="%PIPELINE_HOME%" require_login="%REQUIRE_LOGIN%" user_registration="%USER_REGISTRATION%">
 	<Databases>
 		<Database Type="POSTGRESQL" Id="%DB_NAME%" Driver="%DB_DRIVER%" Url="%DB_URL%" User="%USER%" Pass="%PASSWORD%" MaxConnections="10"/>
 	</Databases>

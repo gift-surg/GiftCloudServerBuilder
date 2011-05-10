@@ -30,12 +30,7 @@ xdat.build.location=/Library/XNAT/build
 #If you have pipeline installed outside of xnat, un-comment this property to set it automatically.
 #xdat.pipeline.location=/Library/XNAT/PIPELINE
 
-#Location where thumbnails should be cached
-xdat.project.image.thumbnail.location=/Library/XNAT/CACHE/Thumbnails
-
-#Location where Lo-Res images should be cached
-xdat.project.image.lo_res.location=/Library/XNAT/CACHE/LoRes
-
+# Mail server
 xdat.smtp.server=smtp.server
 
 #email address of administrator.

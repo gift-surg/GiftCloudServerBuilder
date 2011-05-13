@@ -23,6 +23,11 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.config.CacheConfiguration;
+
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -43,7 +48,6 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.AbstractDicomObjectIdentifier;
-import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
@@ -73,6 +77,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
     public static final String TSUID_PARAM = "Transfer-Syntax-UID";
     private static final String DEFAULT_TRANSFER_SYNTAX = TransferSyntax.ImplicitVRLittleEndian.uid();
     private static final String DICOM_PROJECT_RULES = "dicom-project.rules";
+    private static final long PROJECT_CACHE_EXPIRY_SECONDS = 120;
     private static final boolean canDecompress = Decompress.isSupported();
     private static final DicomFileNamer namer = new SOPHashDicomFileNamer();
 
@@ -81,7 +86,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
     private final XDATUser user;
     private final Map<String,Object> params;
     private TransferSyntax ts = null;
-  
+    private Cache projectCache = null;
+    private final RuleBasedIdentifier projectIdentifier = new RuleBasedIdentifier(this);
 
     public GradualDicomImporter(Object listenerControl, XDATUser u,	FileWriterWrapperI fw, Map<String,Object> params)
     throws IOException,ClientException {
@@ -95,59 +101,6 @@ public class GradualDicomImporter extends ImporterHandlerA {
     }
 
     private static final Pattern CUSTOM_RULE_PATTERN = Pattern.compile("\\((\\p{XDigit}{4})\\,(\\p{XDigit}{4})\\):(.+?)(?::(\\d+))?");
-
-    private final DicomObjectIdentifier<XnatProjectdata> projectIdentifier =
-        new AbstractDicomObjectIdentifier<XnatProjectdata>() {
-        {
-            final File config = new File(XFT.GetConfDir(), DICOM_PROJECT_RULES);
-            IOException ioexception = null;
-            if (config.isFile()) {
-                try {
-                    final BufferedReader reader = new BufferedReader(new FileReader(config));
-                    try {
-                        String line;
-                        while (null != (line = reader.readLine())) {
-                            final Extractor extractor = parseRule(line);
-                            if (null != extractor) {
-                                addProjectExtractors(extractor);
-                            }
-                        }
-                    } catch (IOException e) {
-                        throw ioexception = e;
-                    } finally {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            throw ioexception = null == ioexception ? e : ioexception;
-                        }
-                    }
-                } catch (Throwable t) {
-                    logger.error("Unable to load project identification rules from " + DICOM_PROJECT_RULES, t);
-                }
-            } else {
-                logger.debug("custom project rules spec {} not found", DICOM_PROJECT_RULES);                
-            }
-        }
-
-        private final Extractor parseRule(final String rule) {
-            final Matcher matcher = CUSTOM_RULE_PATTERN.matcher(rule);
-            if (matcher.matches()) {
-                final StringBuilder tagsb = new StringBuilder("0x");
-                tagsb.append(matcher.group(1)).append(matcher.group(2));
-                final int tag = Integer.decode(tagsb.toString());
-                final String regexp = matcher.group(3);
-                final String groupIdx = matcher.group(4);
-                final int group = null == groupIdx ? 1 : Integer.parseInt(groupIdx);
-                return new MatchedPatternExtractor(tag, Pattern.compile(regexp), group);
-            } else {
-                return null;
-            }
-        }
-
-        public XnatProjectdata getProject(final String id) {
-            return GradualDicomImporter.this.getProject(id, null);
-        }
-    };
 
     private static DicomObject read(final InputStream in, final String name) throws ClientException {
         final BufferedInputStream bis = new BufferedInputStream(in);
@@ -291,23 +244,38 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
     public XnatProjectdata getProject(final Object alias, final Callable<XnatProjectdata> defaultProject) {
         if (null != alias) {
-            final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
-            if (null != p && canCreateIn(p)) {
-                return p;
+            if (null == projectCache) {
+                setCacheManager(CacheManager.getInstance());
+            }
+            final Element pe = projectCache.get(alias);
+            if (null != pe) {
+                return (XnatProjectdata)pe.getValue();
             } else {
-                for (final XnatProjectdata pa :
-                    XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias",
-                            alias, user, false)) {
-                    if (canCreateIn(pa)) {
-                        return pa;
+                final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
+                if (null != p && canCreateIn(p)) {
+                    projectCache.put(new Element(alias, p));
+                    return p;
+                } else {
+                    for (final XnatProjectdata pa :
+                        XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias",
+                                alias, user, false)) {
+                        if (canCreateIn(pa)) {
+                            projectCache.put(new Element(alias, pa));
+                            return pa;
+                        }
                     }
                 }
             }
         }
+        // Couldn't find anything. Use the default project.
         try {
-            return null == defaultProject ? null : defaultProject.call();
-        } catch (Exception e) {
-            logger.error("error in default project provider", e);
+            final XnatProjectdata dp = null == defaultProject ? null : defaultProject.call();
+            if (null != alias) {
+                projectCache.put(new Element(alias, dp));
+            }
+            return dp;
+        } catch (Throwable t) {
+            logger.error("error in default project provider", t);
             return null;
         }
     }
@@ -395,10 +363,10 @@ public class GradualDicomImporter extends ImporterHandlerA {
         } catch (Throwable t) {
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, "unable to read DICOM object " + name, t);
         }
- 
+
         final XnatProjectdata project;
         try {
-            // project identifier is a little expensive, so avoid if possible
+            // project identifier is expensive, so avoid if possible
             project = getProject(PrearcUtils.identifyProject(params),
                     new Callable<XnatProjectdata>() {
                 public XnatProjectdata call() {
@@ -511,5 +479,77 @@ public class GradualDicomImporter extends ImporterHandlerA {
         logger.trace("Stored object {}/{}/{} as {} for {}",
                 new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl(), source});
         return Collections.singletonList(sess.getExternalUrl());
+    }
+
+    public void setCacheManager(final CacheManager cacheManager) {
+        final String cacheName = user.getLogin() + "-projects";
+        if (!cacheManager.cacheExists(cacheName)) {
+            final CacheConfiguration config = new CacheConfiguration(cacheName, 0)
+            .copyOnRead(false).copyOnWrite(false)
+            .eternal(false)
+            .overflowToDisk(false)
+            .timeToLiveSeconds(PROJECT_CACHE_EXPIRY_SECONDS);
+            final Cache cache = new Cache(config);
+            cacheManager.addCache(cache);
+            projectCache = cache;
+        } else {
+            projectCache = cacheManager.getCache(cacheName);
+        }
+    }
+
+    private static final class RuleBasedIdentifier
+    extends AbstractDicomObjectIdentifier<XnatProjectdata> {
+        private final GradualDicomImporter importer;
+
+        RuleBasedIdentifier(final GradualDicomImporter importer) {
+            this.importer = importer;
+            final File config = new File(XFT.GetConfDir(), DICOM_PROJECT_RULES);
+            IOException ioexception = null;
+            if (config.isFile()) {
+                try {
+                    final BufferedReader reader = new BufferedReader(new FileReader(config));
+                    try {
+                        String line;
+                        while (null != (line = reader.readLine())) {
+                            final Extractor extractor = parseRule(line);
+                            if (null != extractor) {
+                                addProjectExtractors(extractor);
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw ioexception = e;
+                    } finally {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            throw ioexception = null == ioexception ? e : ioexception;
+                        }
+                    }
+                } catch (Throwable t) {
+                    slog().error("Unable to load project identification rules from " + DICOM_PROJECT_RULES, t);
+                }
+            } else {
+                slog().debug("custom project rules spec {} not found", DICOM_PROJECT_RULES);                
+            }
+        }
+
+        private final Extractor parseRule(final String rule) {
+            final Matcher matcher = CUSTOM_RULE_PATTERN.matcher(rule);
+            if (matcher.matches()) {
+                final StringBuilder tagsb = new StringBuilder("0x");
+                tagsb.append(matcher.group(1)).append(matcher.group(2));
+                final int tag = Integer.decode(tagsb.toString());
+                final String regexp = matcher.group(3);
+                final String groupIdx = matcher.group(4);
+                final int group = null == groupIdx ? 1 : Integer.parseInt(groupIdx);
+                return new MatchedPatternExtractor(tag, Pattern.compile(regexp), group);
+            } else {
+                return null;
+            }
+        }
+
+        public XnatProjectdata getProject(final String id) {
+            return importer.getProject(id, null);
+        }
     }
 }

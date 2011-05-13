@@ -4,8 +4,9 @@
 package org.nrg.dcm;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.io.InputStream;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -22,8 +23,11 @@ import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.archive.GradualDicomImporter;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -197,29 +201,22 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
     }
 
     private final Object identifySender(final Association association) {
-            return new StringBuilder()
-            .append(association.getRemoteAET()).append("@")
-            .append(association.getSocket().getRemoteSocketAddress());
+        return new StringBuilder()
+        .append(association.getRemoteAET()).append("@")
+        .append(association.getSocket().getRemoteSocketAddress());
     }
-    
+
     private void doCStore(final Association as, final int pcid,
             final DicomObject rq, final PDVInputStream dataStream,
             final String tsuid, final DicomObject rsp)
     throws DicomServiceException {
+        final FileWriterWrapperI fw = new StreamWrapper(dataStream);
         try {
-            final DicomObject dataset;
             try {
-                dataset = dataStream.readDataset();
-            } catch (final IOException e) {
-                logger.error("C-STORE operation failed", e);
-                throw new DicomServiceException(rq, ERROR_CANNOT_UNDERSTAND,
-                        e.getMessage());
-            }
-            dataset.putString(Tag.TransferSyntaxUID, VR.UI, tsuid);
-            try {
-                new GradualDicomImporter(this, user, dataset,
-                        Collections.singletonMap(GradualDicomImporter.SENDER_ID_PARAM,
-                                identifySender(as))).call();
+                new GradualDicomImporter(this, user, fw,
+                        ImmutableMap.of(GradualDicomImporter.SENDER_ID_PARAM, identifySender(as),
+                                GradualDicomImporter.TSUID_PARAM, tsuid,
+                                GradualDicomImporter.SENDER_AE_TITLE_PARAM, as.getRemoteAET())).call();
             } catch (final ClientException e) {
                 logger.error("C-STORE operation failed", e);
                 throw new DicomServiceException(rq, ERROR_CANNOT_UNDERSTAND,
@@ -236,6 +233,31 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
             logger.error("C-STORE operation failed", e);
             throw new DicomServiceException(rq, REFUSED_OUT_OF_RESOURCES,
                     e.getMessage());
+        }
+    }
+    
+    private static final class StreamWrapper implements FileWriterWrapperI {
+        private final InputStream in;
+
+        StreamWrapper(final InputStream in) { this.in = in; }
+
+        @Override
+        public void write(File f) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public UPLOAD_TYPE getType() { return UPLOAD_TYPE.INBODY; }
+
+        @Override
+        public String getName() { return null; }
+
+        @Override
+        public InputStream getInputStream() { return in; }
+
+        @Override
+        public void delete() {
+            throw new UnsupportedOperationException();
         }
     }
 }

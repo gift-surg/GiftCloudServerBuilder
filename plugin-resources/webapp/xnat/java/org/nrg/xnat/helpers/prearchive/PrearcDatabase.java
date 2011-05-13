@@ -346,7 +346,7 @@ public final class PrearcDatabase {
 		}
 		final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
 				
-		new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()) {
+		LockAndSync<java.lang.Void> l =  new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()) {
 			java.lang.Void extSync() throws SyncFailedException {
 				PrearcDatabase.sessionDelegate.move(sd, newProj);
 				return null;
@@ -372,7 +372,21 @@ public final class PrearcDatabase {
 			boolean checkStatus() {
 				return sd.getStatus().equals(PrearcStatus.MOVING);
 			}
-		}.run();
+		};
+		boolean ran = true;
+		Exception e = null;
+		try {
+			ran = l.run();
+		}
+		catch (Exception _e) {
+			logger.error("",_e);
+			e =  _e;
+			ran = false;
+		}
+		
+		if(!ran){
+			throw new SyncFailedException("Operation Failed: " + e.getMessage());
+		}		
 		return true;
 	}
 	
@@ -415,7 +429,6 @@ public final class PrearcDatabase {
 							PrearcDatabase.archive(_s,allowDataDeletion,overwrite,user,listeners);
 						} catch (SyncFailedException e) {
 							logger.error("",e);
-							throw new IllegalStateException();
 						}
 				}		
 			}
@@ -469,16 +482,19 @@ public final class PrearcDatabase {
 			}
 		};
 		boolean ran = true;
+		Exception e = null;
 		try {
 			ran = l.run();
 				
 		}
-		catch (Exception e) {	
-			throw new IllegalStateException(e);
+		catch (Exception _e) {
+			logger.error("",_e);
+			e =  _e;
+			ran = false;
 		}
 		
 		if(!ran){
-			throw new SyncFailedException("Operation failed");
+			throw new SyncFailedException("Operation Failed: " + e.getMessage());
 		}		
 		return l.s;
 	}
@@ -542,10 +558,8 @@ public final class PrearcDatabase {
 									PrearcDatabase._moveToProject(_s.getFolderName(),_s.getTimestamp(),_s.getProject(),newProj);
 								} catch (SyncFailedException e) {
 									logger.error(e);
-									throw new IllegalStateException();
 								} catch (Exception e) {
 									logger.error(e);
-									throw new IllegalStateException();
 								}
 				}		
 			}
@@ -575,10 +589,8 @@ public final class PrearcDatabase {
 						PrearcDatabase._deleteSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
 					} catch (SyncFailedException e) {
 						logger.error(e);
-						throw new IllegalStateException();
 					} catch (Exception e) {
 						logger.error(e);
-						throw new IllegalStateException();
 					} 
 				}
 			}
@@ -757,7 +769,7 @@ public final class PrearcDatabase {
 	 */
 	private static boolean _deleteSession (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException, SyncFailedException {
 		final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
-		new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()){
+		LockAndSync<java.lang.Void> l = new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()){
 			protected boolean checkStatus (){
 				return PrearcStatus.DELETING.equals(this.status);
 			}			
@@ -774,7 +786,23 @@ public final class PrearcDatabase {
 					}
 				});
 			}
-		}.run();
+		};
+		
+		boolean ran = true;
+		Exception e = null;
+		try {
+			ran = l.run();
+				
+		}
+		catch (Exception _e) {
+			logger.error("",_e);
+			e =  _e;
+			ran = false;
+		}
+		
+		if(!ran){
+			throw new SyncFailedException("Operation Failed: " + e.getMessage());
+		}		
 		return true;
 	}
 	

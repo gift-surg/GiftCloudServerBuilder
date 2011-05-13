@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -251,6 +252,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             if (null != pe) {
                 return (XnatProjectdata)pe.getValue();
             } else {
+                logger.debug("cache miss for project alias {}, trying database", alias);
                 final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
                 if (null != p && canCreateIn(p)) {
                     projectCache.put(new Element(alias, p));
@@ -483,26 +485,27 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
     public void setCacheManager(final CacheManager cacheManager) {
         final String cacheName = user.getLogin() + "-projects";
-        if (!cacheManager.cacheExists(cacheName)) {
-            final CacheConfiguration config = new CacheConfiguration(cacheName, 0)
-            .copyOnRead(false).copyOnWrite(false)
-            .eternal(false)
-            .overflowToDisk(false)
-            .timeToLiveSeconds(PROJECT_CACHE_EXPIRY_SECONDS);
-            final Cache cache = new Cache(config);
-            cacheManager.addCache(cache);
-            projectCache = cache;
-        } else {
-            projectCache = cacheManager.getCache(cacheName);
+        synchronized (cacheManager) {
+            if (!cacheManager.cacheExists(cacheName)) {
+                final CacheConfiguration config = new CacheConfiguration(cacheName, 0)
+                .copyOnRead(false).copyOnWrite(false)
+                .eternal(false)
+                .overflowToDisk(false)
+                .timeToLiveSeconds(PROJECT_CACHE_EXPIRY_SECONDS);
+                final Cache cache = new Cache(config);
+                cacheManager.addCache(cache);
+                projectCache = cache;
+            } else {
+                projectCache = cacheManager.getCache(cacheName);
+            }
         }
     }
 
     private static final class RuleBasedIdentifier
     extends AbstractDicomObjectIdentifier<XnatProjectdata> {
-        private final GradualDicomImporter importer;
-
-        RuleBasedIdentifier(final GradualDicomImporter importer) {
-            this.importer = importer;
+        private static final Extractor[] exts;
+        static {
+            final List<Extractor> es = Lists.newArrayList();
             final File config = new File(XFT.GetConfDir(), DICOM_PROJECT_RULES);
             IOException ioexception = null;
             if (config.isFile()) {
@@ -513,7 +516,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                         while (null != (line = reader.readLine())) {
                             final Extractor extractor = parseRule(line);
                             if (null != extractor) {
-                                addProjectExtractors(extractor);
+                                es.add(extractor);
                             }
                         }
                     } catch (IOException e) {
@@ -531,9 +534,17 @@ public class GradualDicomImporter extends ImporterHandlerA {
             } else {
                 slog().debug("custom project rules spec {} not found", DICOM_PROJECT_RULES);                
             }
+            exts = es.toArray(new Extractor[0]);
         }
 
-        private final Extractor parseRule(final String rule) {
+        private final GradualDicomImporter importer;
+
+        RuleBasedIdentifier(final GradualDicomImporter importer) {
+            this.importer = importer;
+            addProjectExtractors(exts);
+        }
+
+        private static final Extractor parseRule(final String rule) {
             final Matcher matcher = CUSTOM_RULE_PATTERN.matcher(rule);
             if (matcher.matches()) {
                 final StringBuilder tagsb = new StringBuilder("0x");

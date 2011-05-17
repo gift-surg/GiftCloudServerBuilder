@@ -25,6 +25,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -326,19 +327,18 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private void populateAdditionalFields() throws ClientException{
 		//prepare params by removing non xml path names
 		final Map<String,Object> cleaned=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA,false);
-
+		XFTItem i = src.getItem();
+		
 		if(cleaned.size()>0){
 		try {
-			src.getItem().setProperties(cleaned, true);
-			src.getItem().removeEmptyItems();
+			i.setProperties(cleaned,true);
+			i.removeEmptyItems();
 		} catch (Exception e) {
 			failed("unable to map parameters to valid xml path: " + e.getMessage());
 			throw new ClientException("unable to map parameters to valid xml path: ", e);
 			}
 		}
-		
-		
-		src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(src.getItem());
+		src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(i);
 	}
 
 	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{

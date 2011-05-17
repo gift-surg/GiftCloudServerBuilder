@@ -1,55 +1,55 @@
-	#WINDOWS USERS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.  Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
+#WINDOWS USERS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.  Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
 
-	maven.appserver.home = TOMCAT_HOME
+maven.appserver.home = TOMCAT_HOME
 
-	xdat.project.name=xnat
-	xdat.project.template=xnat
-	xdat.project.db.name=xnat
-	xdat.project.db.driver=org.postgresql.Driver
-	xdat.project.db.connection.string=jdbc:postgresql://localhost/xnat
-	xdat.project.db.user=USERNAME
-	xdat.project.db.password=PASSWORD
+xdat.project.name=xnat
+xdat.project.template=xnat
+xdat.project.db.name=xnat
+xdat.project.db.driver=org.postgresql.Driver
+xdat.project.db.connection.string=jdbc:postgresql://localhost/xnat
+xdat.project.db.user=USERNAME
+xdat.project.db.password=PASSWORD
 
-	#IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
-	#Location where image data will be stored.
-        # eg. /tmp/ARCHIVE
-	xdat.archive.location=ARCHIVE
+#IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
+#Location where image data will be stored.
+# eg. /tmp/ARCHIVE
+xdat.archive.location=ARCHIVE
 
-	#Location where image data may be stored temporarily before it is stored into the archive.
-        # eg. /tmp/PREARCHIVE
-	xdat.prearchive.location=PREARCHIVE
+#Location where image data may be stored temporarily before it is stored into the archive.
+# eg. /tmp/PREARCHIVE
+xdat.prearchive.location=PREARCHIVE
 
-	#Location where cached image data should be stored
-        # eg. /tmp/CACHE
-	xdat.cache.location=CACHE
+#Location where cached image data should be stored
+# eg. /tmp/CACHE
+xdat.cache.location=CACHE
 
-	#Location for ftp data
-	xdat.ftp.location=FTP
+#Location for ftp data
+xdat.ftp.location=FTP
 
-	#Location for build data.
-	xdat.build.location=BUILD
+#Location for build data.
+xdat.build.location=BUILD
 
-	#Location of pipeline.
-	#If you have pipeline installed outside of xnat, un-comment this property to set it automatically.
-	#xdat.pipeline.location=/Library/XNAT/PIPELINE
+#Location of pipeline.
+#If you have pipeline installed outside of xnat, un-comment this property to set it automatically.
+#xdat.pipeline.location=/Library/XNAT/PIPELINE
 
-	# Mail server
-	xdat.smtp.server=smtp.server
+# Mail server
+xdat.smtp.server=smtp.server
 
-	#email address of administrator.
-	xdat.admin_email=administrator@xnat.org
-        # eg. http://localhost:8080.xnat
-	xdat.url=URL
+#email address of administrator.
+xdat.admin_email=administrator@xnat.org
+# eg. http://localhost:8080.xnat
+xdat.url=URL
 
-	#  'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be
-	#  prompted to login when visiting the site.  If true, users will be required to login.  If false,
-	#  users will be automatically logged in using an XNAT guest account.
-	xdat.require_login=true
+#  'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be
+#  prompted to login when visiting the site.  If true, users will be required to login.  If false,
+#  users will be automatically logged in using an XNAT guest account.
+xdat.require_login=true
 
 
-	#  'xdat.enable_new_registrations' must be set to 'true' or 'false'.  Users are provided with a
-	#  link on the Login.vm page to register for a new account.  If this variable is true, that newly
-	#  registered account will be automatically enabled and the user will be allowed to immediately login.
-	#  If this is false, then an email will be sent to the admin (xdat.admin_email) requesting that the
-	#  account be enabled, and the user will be unable to login until the account is enabled.
-	xdat.enable_new_registrations=false
+#  'xdat.enable_new_registrations' must be set to 'true' or 'false'.  Users are provided with a
+#  link on the Login.vm page to register for a new account.  If this variable is true, that newly
+#  registered account will be automatically enabled and the user will be allowed to immediately login.
+#  If this is false, then an email will be sent to the admin (xdat.admin_email) requesting that the
+#  account be enabled, and the user will be unable to login until the account is enabled.
+xdat.enable_new_registrations=false

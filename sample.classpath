@@ -127,8 +127,8 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.0r1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.0.0.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-1.0.0.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.0r1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>

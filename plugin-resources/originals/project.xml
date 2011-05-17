@@ -696,7 +696,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>PrearcImporter</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.0r1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -723,7 +723,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-status</artifactId>
-			<version>1.0.0</version>
+			<version>2.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

@@ -1330,6 +1330,25 @@ public final class PrearcDatabase {
 		return StringUtils.join(as.toArray(new String[as.size()]), ",");
 	}
 	
+	/**
+	 * Update the last modified time of the session to the current time.
+	 * @param sess Session label
+	 * @param timestamp Timestamp directory
+	 * @param proj Project name
+	 * @throws SQLException
+	 * @throws SessionException
+	 * @throws Exception
+	 */
+	
+	public static void setLastModifiedTime(String sess,String timestamp, String proj) throws SQLException, SessionException, Exception {
+		int i = 4;
+		modifySession(sess,timestamp ,proj,new SessionOp<java.lang.Void>() {
+    		public Void op() throws SQLException, Exception {
+				return null;
+			}
+    	});
+	}
+	
 
 	
 	/**

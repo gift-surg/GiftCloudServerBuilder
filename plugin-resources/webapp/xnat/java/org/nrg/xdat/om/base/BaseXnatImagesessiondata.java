@@ -2625,7 +2625,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                             catalog.addEntries_entry(entry);
                         }
                     }
-
                 }
             }
         }else{
@@ -2726,7 +2725,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "_", "");
                     formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "-", "");
                     formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "*", "");
-                                        
+                    
                 	if (thisProject.containsKey(formatted_series_description)){
                         scan.setType(thisProject.get(formatted_series_description).match(series_description, scan.getFrames()));
                 	}

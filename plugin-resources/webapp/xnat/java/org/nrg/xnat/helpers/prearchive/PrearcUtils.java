@@ -379,4 +379,12 @@ public class PrearcUtils {
 	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";
+	
+	public static boolean isUnassigned(final SessionData sd){
+		if(StringUtils.isEmpty(sd.getProject()) || sd.getProject().equals(COMMON)){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

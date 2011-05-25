@@ -371,8 +371,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setTimestamp(tsdir.getName());
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
         sess.setLastBuiltDate(Calendar.getInstance().getTime());
-        sess.setUrl(PrearcUtils.makeUri("/prearchive/projects/" + sess.getProject(), sess.getTimestamp(), sess.getFolderName()));
-
+        
+        sess.setUrl((new File(tsdir,session)).getAbsolutePath());
+        
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
@@ -385,7 +386,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         }
 
-        sessdir = new File(root, sess.getTimestamp() + "/" + sess.getFolderName());
+        sessdir = new File(new File(root, sess.getTimestamp()),sess.getFolderName());
 
         // Build the scan label
         final String seriesNum = o.getString(Tag.SeriesNumber);

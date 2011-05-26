@@ -40,10 +40,11 @@ import org.dcm4che2.net.service.DicomService;
 import org.dcm4che2.net.service.VerificationService;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
+import org.nrg.xnat.utils.CachedUserFactory;
+import org.nrg.xnat.utils.UserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
@@ -73,6 +74,8 @@ public class DicomSCP {
         JPEG2000, JPEG2000Part2MulticomponentLosslessOnly,
         JPEG2000Part2Multicomponent, JPIPReferenced, JPIPReferencedDeflate,
         MPEG2, RLELossless, RFC2557MIMEencapsulation, XMLEncoding };
+
+    private static final UserFactory userFactory = new CachedUserFactory();
 
     private final Logger logger = LoggerFactory.getLogger(DicomSCP.class);
 
@@ -106,7 +109,7 @@ public class DicomSCP {
     }
     
     public static XDATUser getUser(final Properties properties) throws Exception {
-        return new XDATUser(properties.getProperty(DicomSCP.DICOM_SCP_USER, DicomSCP.DICOM_SCP_DEFAULT_USER));
+        return userFactory.getUser(properties.getProperty(DicomSCP.DICOM_SCP_USER, DicomSCP.DICOM_SCP_DEFAULT_USER));
     }
     
     public static XDATUser getUser() throws Exception {

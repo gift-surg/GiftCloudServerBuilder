@@ -17,6 +17,7 @@ public class RestFileUtils {
 		int i=-1;
 		String _token=null;
 		
+		//replace by id
 		for(Map.Entry<String,String> token:_tokens.entrySet()){
 			_token=token.getKey();
 			i=p.indexOf('/'+ _token + '/');
@@ -36,6 +37,18 @@ public class RestFileUtils {
 			}else{
 				i++;
 				break;
+			}
+		}
+		
+		//replace by label, only looks for exact matches.
+		if(i==-1){
+			for(Map.Entry<String,String> token:_tokens.entrySet()){
+				_token=token.getValue();
+				i=p.indexOf('/'+ _token + '/');
+				if(i>-1){
+					i++;
+					break;
+				}
 			}
 		}
 		

@@ -45,7 +45,7 @@ public class SampleBuild extends SecureAction
                 String[] emails = emailsStr.trim().split(",");
                 for (int i = 0 ; i < emails.length; i++)
                      pipelineLauncher.notify(emails[i]);
-                boolean success = pipelineLauncher.launch(null);
+                boolean success = pipelineLauncher.launch();
                 if (success) {
                     data.setMessage("Build was launched successfully");
                     data.setScreenTemplate("ClosePage.vm");

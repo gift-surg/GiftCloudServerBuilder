@@ -31,14 +31,14 @@ public class TriggerPipelines implements Callable<Boolean> {
 	private final boolean clearExistingWorkflows;
 	private final boolean supressEmail;
 	private final XDATUser user;
-	
+
 	public TriggerPipelines(XnatExperimentdata expt, boolean clearExistingWorkflows,boolean supressEmail,XDATUser user){
 		this.expt=expt;
 		this.clearExistingWorkflows=clearExistingWorkflows;
 		this.supressEmail=supressEmail;
 		this.user=user;
 	}
-	
+
 	public Boolean call() {
 		XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher((XDATUser)user);
         xnatPipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
@@ -61,12 +61,12 @@ public class TriggerPipelines implements Callable<Boolean> {
         xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
         xnatPipelineLauncher.setParameter("sessionType", expt.getXSIType());
         xnatPipelineLauncher.setParameter("xnat_project", expt.getProject());
-        
+
         if (clearExistingWorkflows)
         {
             try {
 				ArrayList<WrkWorkflowdata> workflows = WrkWorkflowdata.getWrkWorkflowdatasByField("wrk:workFlowData.ID", expt.getId(), user, false);
-				
+
 				for (WrkWorkflowdata wrk : workflows){
 				    DBAction.DeleteItem(wrk.getItem(),user);
 				}
@@ -76,8 +76,8 @@ public class TriggerPipelines implements Callable<Boolean> {
 				logger.error("",e);
 			}
         }
-   
+
         return xnatPipelineLauncher.launch(null);
-    
-	}	
+
+	}
 }

@@ -271,7 +271,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			return data.getStatus();
 		}
 		
-		
+		public File getSessionXML(){
+			return this.sessionXML;
+		}
 		
 		
 		

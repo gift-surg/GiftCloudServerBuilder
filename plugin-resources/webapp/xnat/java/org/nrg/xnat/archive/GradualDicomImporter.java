@@ -419,7 +419,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
-            sess =  PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess);
+        	sess = PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess,tsdir);
             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());        
         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);

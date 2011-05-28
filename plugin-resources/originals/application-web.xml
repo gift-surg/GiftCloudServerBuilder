@@ -77,6 +77,14 @@
         </init-param>
 	</servlet>
 	<!-- ======================================================================== -->
+	<!-- INSERTED FOR ArchiveServlet -->
+	<!-- ======================================================================== -->
+	<servlet>
+		<servlet-name>ArchiveServlet</servlet-name>
+		<servlet-class>org.nrg.xnat.servlet.ArchiveServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<!-- ======================================================================== -->
 	<!-- INSERTED FOR Ajax -->
 	<!-- ======================================================================== -->
 	<servlet>
@@ -231,6 +239,13 @@
 	<servlet-mapping>
 		<servlet-name>PublisherServlet</servlet-name>
 		<url-pattern>/servlet/PublisherServlet</url-pattern>
+	</servlet-mapping>
+	<!-- ======================================================================== -->
+	<!-- INSERTED FOR ArchiveServlet -->
+	<!-- ======================================================================== -->
+	<servlet-mapping>
+		<servlet-name>ArchiveServlet</servlet-name>
+		<url-pattern>/archive/*</url-pattern>
 	</servlet-mapping>
 	<session-config>
 		<!-- Default to 5 minute session timeouts -->

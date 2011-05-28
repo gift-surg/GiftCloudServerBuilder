@@ -2,6 +2,7 @@ package org.nrg.xnat.helpers.prearchive;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.SyncFailedException;
 import java.sql.SQLException;
@@ -718,7 +719,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		                                 .setStatus(PrearcUtils.PrearcStatus.RECEIVING)
 		                                 .setUrl("test_url"); 
 		try {
-			s = PrearcDatabase.getOrCreateSession("proj_test", "test_suid", s);
+			s = PrearcDatabase.getOrCreateSession("proj_test", "test_suid", s, new File("."));
 		} 	
 		catch (SessionException e){
 			fail("SessionException " + e.getMessage());
@@ -754,7 +755,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		tmp.setTag(suid);
 		
 		try {
-			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp);
+			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp, new File("."));
 		}
 		catch (Exception e) {
 			fail("Threw an Exception");

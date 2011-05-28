@@ -122,7 +122,7 @@ public class PrearcScheduler extends JobBuilderA {
 					double interval = (double) map.getIntValue("interval");
 					double diff = PrearcScheduler.diffInMinutes(then, now);
 					if (diff >= interval) {
-						logger.debug("commiting " +s.getExternalUrl());
+						logger.error("commiting " +s.getExternalUrl());
 						try {
 							updated++;
 							if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
@@ -141,7 +141,7 @@ public class PrearcScheduler extends JobBuilderA {
 						} catch (IOException e) {
 							logger.error("",e);
 						} catch (InvalidPermissionException e) {
-							logger.error("",e);
+ 							logger.error("",e);
 						} catch (Exception e) {
 							logger.error("",e);
 						} 

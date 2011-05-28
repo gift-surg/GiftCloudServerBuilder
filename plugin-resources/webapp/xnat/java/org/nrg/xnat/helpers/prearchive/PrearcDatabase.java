@@ -359,6 +359,12 @@ public final class PrearcDatabase {
 							SessionData newSd = sd;
 							newSd.setProject(newProj);
 							newSd.setStatus(PrearcUtils.PrearcStatus.READY);
+							
+							final File projectF=new File(PrearcDatabase.getPrearcPath(),newProj);
+							final File tsdir=new File(projectF, timestamp);
+							final File session=new File(tsdir, sess);
+							newSd.setUrl(session.getAbsolutePath());
+							
 							PrearcDatabase.addSession(newSd);
 						} catch (SyncFailedException e) {
 							logger.error(e);
@@ -504,8 +510,7 @@ public final class PrearcDatabase {
 		try {
 			new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
 				java.lang.Void extSync() throws SyncFailedException {
-					
-					final Boolean r=new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),project,true).call();
+					final Boolean r=new XNATSessionBuilder(sessionDir,new File(sessionDir.getPath() + ".xml"),(PrearcUtils.COMMON.equals(project))?"":project,true).call();
 					
 					if(!r){
 						throw new SyncFailedException("Error building session");
@@ -1080,7 +1085,7 @@ public final class PrearcDatabase {
 	}
 	
 
-	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s) throws SQLException, SessionException, Exception {
+	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile) throws SQLException, SessionException, Exception {
 		return new SessionOp<SessionData>(){
 			public SessionData op() throws SQLException, SessionException, Exception {
 				String [] constraints = {
@@ -1106,7 +1111,8 @@ public final class PrearcDatabase {
 					
 					s.setFolderName(s.getFolderName() + suffixString);
 					s.setName(s.getName() + suffixString);
-					s.setUrl(PrearcUtils.makeUri("/" + "prearchive/projects/" + s.getProject(), s.getTimestamp(), s.getFolderName()));
+										
+					s.setUrl((new File(tsFile,s.getFolderName()).getAbsolutePath()));
 					
 					PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
 					for (int i = 0; i < DatabaseSession.values().length; i++) {
@@ -1330,6 +1336,25 @@ public final class PrearcDatabase {
 		return StringUtils.join(as.toArray(new String[as.size()]), ",");
 	}
 	
+	/**
+	 * Update the last modified time of the session to the current time.
+	 * @param sess Session label
+	 * @param timestamp Timestamp directory
+	 * @param proj Project name
+	 * @throws SQLException
+	 * @throws SessionException
+	 * @throws Exception
+	 */
+	
+	public static void setLastModifiedTime(String sess,String timestamp, String proj) throws SQLException, SessionException, Exception {
+		int i = 4;
+		modifySession(sess,timestamp ,proj,new SessionOp<java.lang.Void>() {
+    		public Void op() throws SQLException, Exception {
+				return null;
+			}
+    	});
+	}
+	
 
 	
 	/**
@@ -1362,7 +1387,7 @@ public final class PrearcDatabase {
 				o = this.op();
 			}
 			catch (Exception e) {
-				System.out.println(e.getMessage());
+				logger.error("",e);
 				throw e;
 			}
 			finally {

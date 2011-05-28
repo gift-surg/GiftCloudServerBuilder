@@ -678,7 +678,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-util</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.0r1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -696,7 +696,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>PrearcImporter</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.0r1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -714,15 +714,24 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomImageUtils</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>dcm</groupId>
+			<groupId>nrg</groupId>
 			<artifactId>nrg-status</artifactId>
+			<version>2.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrgutil</artifactId>
 			<version>1.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -1035,7 +1044,7 @@
 		<dependency>
 			<groupId>ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
-			<version>2.0.0</version>
+			<version>2.4.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

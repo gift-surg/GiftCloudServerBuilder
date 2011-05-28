@@ -98,6 +98,7 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 				}
 				ss.add(s);
 			} catch (Exception e) {
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 				return;
 			}

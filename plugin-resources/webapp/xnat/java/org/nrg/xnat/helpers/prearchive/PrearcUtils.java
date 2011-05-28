@@ -343,6 +343,9 @@ public class PrearcUtils {
 	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session, final String uID,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
 		final Session s=PrearcTableBuilder.buildSessionObject(PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,allowUnassigned), timestamp,project);
 		final SessionData sd=s.getSessionData(PrearcDatabase.projectPath(project));
+		if(s.getSessionXML()!=null){
+			sd.setUrl((new File(s.getSessionXML().getParentFile(),s.getFolderName()).getAbsolutePath()));
+		}
 		if(StringUtils.isNotEmpty(uID))sd.setTag(uID);
 		PrearcDatabase.addSession(sd);
 	}
@@ -379,4 +382,12 @@ public class PrearcUtils {
 	}
 
 	public static final String TEMP_UNPACK = "temp-unpack";
+	
+	public static boolean isUnassigned(final SessionData sd){
+		if(StringUtils.isEmpty(sd.getProject()) || sd.getProject().equals(COMMON)){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

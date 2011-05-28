@@ -252,8 +252,12 @@ public abstract class SecureResource extends Resource {
 			return rmt;
 		}
 
-		return v.getMediaType();
+		if(v!=null){
+			return v.getMediaType();
+		}else{
+			return MediaType.TEXT_XML;
 		}
+	}
 	
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params){
 		return representTable(table,mt,params,null);

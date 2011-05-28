@@ -72,6 +72,8 @@ public final class PrearcUriParserUtils {
 		 * project an error is thrown.
 		 */
 		public Map<String,String> readUri (String uri) throws MissingFormatArgumentException{
+			if(uri.startsWith("/data"))uri=uri.substring(5);
+			
 			Map <String,Object> so = i.readUri(uri);
 			if (null == so.get("PROJECT_ID")) {
 				throw new java.util.MissingFormatArgumentException("Unable to parse PROJECT_ID using template from uri: " + uri);

@@ -135,6 +135,44 @@
     bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
     #end
     #end
+#elseif($om.getItem().instanceOf("xnat:imageAssessorData"))
+//imageAssessorData
+  #if($om.getImageSessionData())
+    #set($imageSession=$om.getImageSessionData())
+  #end
+
+
+#if($subject)
+
+#else
+  #if($imageSession.getSubjectData())
+    #set($subject= $imageSession.getSubjectData())
+  #else
+    #if($part)
+      #set($subject=$part)
+    #end
+  #end
+#end
+
+	    #if($om.getProject($project,false))
+	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
+	    #end
+	    #if($subject)
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
+    #end
+    #if($imageSession)
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$imageSession.getXSIType()").addPathInfo("search_field","$imageSession.getXSIType().ID").addPathInfo("search_value","$imageSession.getId()").addPathInfo("project","$project")'>SESSION:#if($!imageSession.getIdentifier($project,true))$!imageSession.getIdentifier($project,true)#elseif($imageSession.getLabel())$!imageSession.getLabel()#else$!imageSession.getId()#end</A>&nbsp;>&nbsp;";
+    #end
+    #if($page_name)
+    #if($om.Id)
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    #end
+    bread = bread + "$pageName";
+    #else
+    #if($om.Id)
+    bread = bread + "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end";
+    #end
+    #end
     
 #elseif($om.getItem().getGenericSchemaElement().getPrimaryElements().indexOf("xnat:experimentData")!=-1)
 //experimentData
@@ -187,8 +225,7 @@ bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("sear
 #end
 #end
 #end
-    
-    breadcrumbs.innerHTML=bread;
+ breadcrumbs.innerHTML=bread;
    }
   }
 </script>

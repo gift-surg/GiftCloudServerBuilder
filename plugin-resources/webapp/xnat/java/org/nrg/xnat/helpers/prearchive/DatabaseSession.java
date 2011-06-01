@@ -166,6 +166,17 @@ public enum DatabaseSession {
 			s.setUrl(o);
 		}
 	}
+	,
+	AUTOARCHIVE ("autoarchive", ColType.BOOL, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getAutoArchive();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setAutoArchive(o);
+		}
+	}
 	;
 	
 	/**
@@ -315,7 +326,13 @@ public enum DatabaseSession {
 			@SuppressWarnings("unchecked")
 			public <T> T getFromResult(int columnIndex, ResultSet r)
 					throws SQLException {
-				return (T) (Boolean) r.getBoolean(columnIndex);
+				Boolean res = (Boolean) r.getBoolean(columnIndex);
+				if (r.wasNull()) {
+					return null;
+				} 
+				else {
+					return (T) res;	
+				}
 			}
 
 			@Override

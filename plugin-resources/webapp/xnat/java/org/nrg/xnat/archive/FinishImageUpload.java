@@ -62,8 +62,8 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 	
 	@Override
 	public String call() throws ActionException {
-		if(isAutoArchive(session,destination)){
-			try {
+		try {
+			if(isAutoArchive(session,destination)){
 				if(inline){
 					//This is being done as part of a parent transaction and should not manage prearc cache state.
 					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session, user, removePrearcVariables(session.getAdditionalValues()), allowDataDeletion,overwrite))
@@ -74,32 +74,33 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 					}else{
 						throw new ServerException("Unable to lock session for archiving.");
 					}
-				}
-			} catch (ActionException e) {
-				logger.error("",e);
-				throw e;
-			}  catch (SyncFailedException e) {
-				logger.error("",e);
-				throw new ServerException(e);
-			} catch (IOException e) {
-				logger.error("",e);
-				throw new ServerException(e);
-			} catch (SAXException e) {
-				logger.error("",e);
-				throw new ServerException(e);
-			} catch (SessionException e) {
-				logger.error("",e);
-				throw new ServerException(e);
-			} catch (SQLException e) {
-				logger.error("",e);
-				throw new ServerException(e);
-			} catch (Exception e){
-				logger.error("",e);
-				throw new ServerException(e);
+				}}
+			else{
+				populateAdditionalFields(session.getSessionDir());
+				return session.getUrl().toString();
 			}
-		}else{
-			populateAdditionalFields(session.getSessionDir());
-			return session.getUrl().toString();
+
+		} catch (ActionException e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		} catch (SQLException e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		} catch (SessionException e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		} catch (SyncFailedException e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		} catch (IOException e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		} catch (SAXException e) {
+			logger.error("",e);
+			throw new ServerException(e);
+		}  catch (Exception e){
+			logger.error("",e);
+			throw new ServerException(e);
 		}
 	}
 
@@ -164,16 +165,19 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		}
 	}
 	
-	public boolean isAutoArchive() throws IOException, SAXException{
+	public boolean isAutoArchive() throws SQLException, SessionException, Exception{
 		return isAutoArchive(session,destination);
 	}
 	
-	private static boolean isAutoArchive(final PrearcSession session, final UriParserUtils.DataURIA destination){
+	private static boolean isAutoArchive(final PrearcSession session, final UriParserUtils.DataURIA destination) throws SQLException, SessionException, Exception{
 		//determine auto-archive setting
 		if(session.getProject()==null){
 			return false;
 		}
-				
+		if (session.getSessionData() != null && session.getSessionData().getAutoArchive() != null) {
+			return session.getSessionData().getAutoArchive(); 
+		}
+						
 		if(destination !=null && destination instanceof UriParserUtils.ArchiveURI){
 			return true;
 		}

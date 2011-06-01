@@ -256,18 +256,7 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
-//	public static synchronized SessionData getOrCreateSession(final SessionData _s) throws java.util.IllegalFormatException, Exception, SQLException, SessionException{
-//		SessionData s = _s;
-//		try  {
-//			PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
-//		}
-//		catch (SessionException e) {
-//			PrearcDatabase.addSession(_s);
-//			s = PrearcDatabase.getSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
-//		}
-//		return s;
-//	}
-		
+
 	/**
 	 * Path to the project in the users prearchive directory
 	 * @param s
@@ -1006,6 +995,15 @@ public final class PrearcDatabase {
 		});
 	}
 	
+	public static void setAutoArchive(final String sess, final String timestamp, final String proj, final Boolean autoArchive) throws Exception, SQLException, SessionException {
+		PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
+			public Void op () throws SQLException, SessionException, Exception {
+				PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.AUTOARCHIVE.updateSessionSql(sess, timestamp, proj, autoArchive), null, null);
+				return null;
+			}
+		}); 
+	}
+	
 	/**
 	 * Return all sessions with the given session, timestamp and project. There should only be one row returned, but if not
 	 * this function will return all the duplicate rows. 
@@ -1084,8 +1082,11 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
+	
+	
+	
 
-	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile) throws SQLException, SessionException, Exception {
+	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
 		return new SessionOp<SessionData>(){
 			public SessionData op() throws SQLException, SessionException, Exception {
 				String [] constraints = {
@@ -1111,8 +1112,8 @@ public final class PrearcDatabase {
 					
 					s.setFolderName(s.getFolderName() + suffixString);
 					s.setName(s.getName() + suffixString);
-										
 					s.setUrl((new File(tsFile,s.getFolderName()).getAbsolutePath()));
+					s.setAutoArchive((Object) autoArchive);
 					
 					PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
 					for (int i = 0; i < DatabaseSession.values().length; i++) {
@@ -1347,7 +1348,6 @@ public final class PrearcDatabase {
 	 */
 	
 	public static void setLastModifiedTime(String sess,String timestamp, String proj) throws SQLException, SessionException, Exception {
-		int i = 4;
 		modifySession(sess,timestamp ,proj,new SessionOp<java.lang.Void>() {
     		public Void op() throws SQLException, Exception {
 				return null;

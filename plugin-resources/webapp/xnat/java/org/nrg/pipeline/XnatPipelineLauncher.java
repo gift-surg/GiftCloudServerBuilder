@@ -151,11 +151,18 @@ public class XnatPipelineLauncher {
         notify(AdminUtils.getAdminEmailId());
     }
 
-
+	/* Use this method when you want the job to be executed after schedule command gets
+	 * hold of the command string. Schedule could log the string into a file and/or submit to a GRID
+	 * 
+	 */
 
     public boolean launch() {
     	return launch(XFT.GetPipelinePath() + "bin" + File.separator + SCHEDULE);
     }
+
+	/* Setting cmdPrefix to null will launch the job directly.
+	 * 
+	 */
 
     public boolean launch (String cmdPrefix) {
         String command = " ";

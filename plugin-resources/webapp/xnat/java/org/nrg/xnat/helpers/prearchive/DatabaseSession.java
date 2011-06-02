@@ -166,6 +166,17 @@ public enum DatabaseSession {
 			s.setUrl(o);
 		}
 	}
+	,
+	AUTOARCHIVE ("autoarchive", ColType.BOOL, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getAutoArchive();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setAutoArchive(o);
+		}
+	}
 	;
 	
 	/**
@@ -315,7 +326,13 @@ public enum DatabaseSession {
 			@SuppressWarnings("unchecked")
 			public <T> T getFromResult(int columnIndex, ResultSet r)
 					throws SQLException {
-				return (T) (Boolean) r.getBoolean(columnIndex);
+				Boolean res = (Boolean) r.getBoolean(columnIndex);
+				if (r.wasNull()) {
+					return null;
+				} 
+				else {
+					return (T) res;	
+				}
 			}
 
 			@Override
@@ -402,6 +419,14 @@ public enum DatabaseSession {
 	}
 	
 	/**
+	 * In Postgres setting a column to NULL uses "=". Hope this is somewhat portable.
+	 * @return
+	 */
+	public String updateToNull() {
+		return this.eqSql("NULL");
+	}
+	
+	/**
 	 * Generate the <column selection> SQL in eg. "SELECT ... FROM ... WHERE <column selection>.
 	 * The value to select on is pulled directly from the given Session object. 
 	 * @param s
@@ -421,6 +446,16 @@ public enum DatabaseSession {
 		String obj = this.columnType.typeToString(value);
 		if (null == obj || obj.isEmpty()) {
 			return this.nullSql();
+		}
+		else {
+			return this.eqSql(obj);
+		}
+	}
+	
+	public String updateSql (Object value) {
+		String obj = this.columnType.typeToString(value);
+		if (null == obj || obj.isEmpty()){
+			return this.updateToNull();
 		}
 		else {
 			return this.eqSql(obj);
@@ -472,7 +507,7 @@ public enum DatabaseSession {
 	
 	public String updateSessionSql (String sess, String timestamp, String proj, Object newVal) {
 		return "UPDATE " + PrearcDatabase.tableWithSchema + " SET " + 
-		       this.searchSql(newVal) + " WHERE " +
+		       this.updateSql(newVal) + " WHERE " +
 		       DatabaseSession.sessionSql(sess, timestamp, proj);
 	}
 	

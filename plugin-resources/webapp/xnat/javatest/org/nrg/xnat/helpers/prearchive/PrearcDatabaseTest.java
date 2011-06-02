@@ -719,7 +719,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		                                 .setStatus(PrearcUtils.PrearcStatus.RECEIVING)
 		                                 .setUrl("test_url"); 
 		try {
-			s = PrearcDatabase.getOrCreateSession("proj_test", "test_suid", s, new File("."));
+			s = PrearcDatabase.getOrCreateSession("proj_test", "test_suid", s, new File("."),null);
 		} 	
 		catch (SessionException e){
 			fail("SessionException " + e.getMessage());
@@ -755,7 +755,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		tmp.setTag(suid);
 		
 		try {
-			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp, new File("."));
+			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp, new File("."),null);
 		}
 		catch (Exception e) {
 			fail("Threw an Exception");

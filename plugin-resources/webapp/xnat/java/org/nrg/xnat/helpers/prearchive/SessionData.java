@@ -27,6 +27,7 @@ public final class SessionData {
 	private SessionDataTriple sessionTriple = new SessionDataTriple();
 	private Date scan_date;
 	private String scan_time,subject,url,session,tag;
+	private Boolean autoArchive;
 	public SessionData() {
 	}
 	public String getFolderName() {
@@ -43,6 +44,9 @@ public final class SessionData {
 	public String getName() {
 		return session;
 	}
+	public Boolean getAutoArchive() {
+		return autoArchive;
+	}
 	public SessionData setName(String name) {
 		this.session=name;
 		return this;
@@ -53,6 +57,22 @@ public final class SessionData {
 		}
 		return this;
 	}
+	
+	public SessionData setAutoArchive(Boolean b){
+		this.autoArchive = b;
+		return this;
+	}
+	
+	public SessionData setAutoArchive(Object o) {
+		if (null != o) {
+			this.setAutoArchive((Boolean) o);
+		}
+		else {
+			this.autoArchive = null;
+		}
+		return this;
+	}
+	
 	public String getTag() {
 		return tag;
 	}

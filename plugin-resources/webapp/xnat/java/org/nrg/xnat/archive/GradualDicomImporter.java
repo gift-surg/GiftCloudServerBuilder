@@ -419,7 +419,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
-        	sess = PrearcDatabase.getOrCreateSession(sess.getProject(),sess.getTag(), sess,tsdir);
+        	sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());        
         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
@@ -503,6 +503,33 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
     }
 
+    private static final Pattern aaPattern = Pattern.compile("\\A(?:.*\\W)?AA:([a-zA-Z]+)(?:\\W.*)?\\Z");
+    
+    /**
+     * Looks for AA:true|false in the given DICOM object. The AA: portion is case-sensitive,
+     * but the true/false is case-insensitive. Patient Comments is searched first, then
+     * Study Comments.
+     * @param o
+     * @return true if AA:true is found, false if AA:false is found, null otherwise.
+     */
+    private static Boolean shouldAutoArchive(final DicomObject o) {
+        for (final int tag : new int[]{Tag.PatientComments, Tag.StudyComments}) {
+            final String s = o.getString(tag);
+            if (null != s) {
+                final Matcher m = aaPattern.matcher(s);
+                if (m.matches()) {
+                    final String arg = m.group(1);
+                    if ("true".equalsIgnoreCase(arg)) {
+                        return true;
+                    } else if ("false".equalsIgnoreCase(arg)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
     private static final class RuleBasedIdentifier
     extends AbstractDicomObjectIdentifier<XnatProjectdata> {
         private static final Extractor[] exts;

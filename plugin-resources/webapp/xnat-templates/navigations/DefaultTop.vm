@@ -155,13 +155,13 @@ $navigation.setTemplate("XNATQuickSearch.vm")
          <DIV class="bd">
           <ul class="first-of-type">
 				           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="http://xnat15.wikispaces.com/XNAT+Desktop">XNAT Desktop (XND)</a>
+            <a class="yuimenuitemlabel" href="http://docs.xnat.org/XNAT+Desktop">XNAT Desktop (XND)</a>
            </li>
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="http://nrg.wustl.edu/projects/DICOM/DicomBrowser.jsp">DICOM Browser</a>
            </li>
            <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="http://xnat15.wikispaces.com/XNAT+Tools#XNAT%20Client%20Tools-Developed%20by%20NRG-XNAT%20web%20services%20client%20tools%20%28NRG%29">Command Prompt Tools</a>
+            <a class="yuimenuitemlabel" href="http://docs.xnat.org/XNAT+Tools#XNAT%20Client%20Tools-Developed%20by%20NRG-XNAT%20web%20services%20client%20tools%20%28NRG%29">Command Prompt Tools</a>
            </li>
           </ul>
          </DIV>

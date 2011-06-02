@@ -50,7 +50,7 @@ public class PipelineActions extends SecureAction{
             ItemI data_item = TurbineUtils.GetItemBySearch(data);
             XnatPipelineLauncher xnatPipelineLauncher = getGenericCommonParameters(data,context, project, step, data_item);
             LinkedHashMap<ArcPipelineparameterdataI,ArrayList> paramHash = null;
-            String launcherPrefix = data.getParameters().get("launcherPrefix");
+           // String launcherPrefix = data.getParameters().get("launcherPrefix");
             org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
             cc.addClause("wrk:workflowData.ID",data_item.getProperty("ID"));
             cc.addClause("wrk:workflowData.data_type",data_item.getXSIType());
@@ -101,7 +101,7 @@ public class PipelineActions extends SecureAction{
                     DBAction.DeleteItem(wrk.getItem(),TurbineUtils.getUser(data));
                 }
             }
-            xnatPipelineLauncher.launch(launcherPrefix);
+            xnatPipelineLauncher.launch();
             data.setMessage("<p><b>The build process was successfully launched.  Status email will be sent upon its completion.</b></p>");
             data.setScreenTemplate("ClosePage.vm");
     }
@@ -163,7 +163,7 @@ public class PipelineActions extends SecureAction{
                     selectedCountLast++;
                     if (selectedCountLast==selectedCount) xnatPipelineLauncher.setParameter("isLast","1");
                     xnatPipelineLauncher.setParameter("projectId",projectId);
-                    xnatPipelineLauncher.launch("arc-qadd ");
+                    xnatPipelineLauncher.launch();
                 }
             }
             String destinationPage = data.getParameters().get("destinationpage");

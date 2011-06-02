@@ -823,25 +823,75 @@ public final class PrearcDatabase {
 		return true;
 	}
 	
+	/**
+	 * Delete the prearchive row with the given session, timestamp,project triple
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 * @throws SyncFailedException
+	 */
 	public static boolean deleteSession(final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException, SyncFailedException {
-		final SessionData sd = PrearcDatabase.getSession(sess,timestamp,proj);
-		if (!sd.getStatus().equals(PrearcStatus.DELETING) && markSession(sd.getSessionDataTriple(), PrearcStatus.DELETING)) {
-		return PrearcDatabase._deleteSession(sess, timestamp, proj);}
-		else {
-			return false;
-		}
+		Either <Void,Void> result = new PredicatedOp<Void,Void>() {
+			SessionData sd;
+			@Override
+			boolean predicate() throws SQLException, SessionException,
+					Exception {
+				sd = PrearcDatabase.getSessionIfExists(sess, timestamp, proj);
+				return (sd != null && 
+						!sd.getStatus().equals(PrearcStatus.DELETING) && 
+						markSession(sd.getSessionDataTriple(), PrearcStatus.DELETING));
+			}
+
+			@Override
+			Either<Void, Void> trueOp() throws SQLException, SessionException,
+					Exception {
+				PrearcDatabase._deleteSession(sess, timestamp, proj);
+				return new Either<Void,Void>(){}.setRight(null);
+			}
+
+			@Override
+			Either<Void, Void> falseOp() throws SQLException, SessionException,
+					Exception {
+				return new Either<Void,Void>(){}.setLeft(null);
+			}
+			
+		}.run();
+		
+		if (result.isLeft()) {return false;}
+		else {return true;}
 	}
 	
+	/**
+	 * Abstract holding results of a binary choice. Inspired by Haskell's Either datatype
+	 * the Left branch is typically used to store the results of an error and the Right branch 
+	 * stores the results of a successful operation.
+	 * 
+	 * The user of this class needs to make sure that only one of the branches is set.
+	 * @author aditya
+	 *
+	 * @param <Left> Return type if the left branch of tree is taken.
+	 * @param <Right> Return type if the right branch of the tree is taken.
+	 */
 	static abstract class Either<Left,Right> {
+		// typically the result of an error
 		Left l;
+		// typically the result of a successful operation
 		Right r;
+		// true if Right is not null, false if Left is not null. 
 		boolean set;
-		void setLeft(Left l) {
+		Either<Left,Right> setLeft(Left l) {
+			this.set = false;
 			this.l = l;
+			return this;
 		}
-		void setRight(Right r) {
+		Either<Left,Right> setRight(Right r) {
 			this.set = true;
 			this.r = r;
+			return this;
 		}
 		Left getLeft(){
 			this.set = false;
@@ -858,10 +908,23 @@ public final class PrearcDatabase {
 		}
 	}
 	
+	/**
+	 * Abstract running a operation depending on the value of a predicate. Testing the predicate and 
+	 * running the operation are done atomically and are thus thread-safe.
+	 *  
+	 * @author aditya
+	 *
+	 * @param <X> Return type if the predicate holds
+	 * @param <Y> Return type if the predicate fails
+	 */
 	static abstract class PredicatedOp<X,Y> {
+		// the predicate
 		abstract boolean predicate() throws SQLException, SessionException, Exception;
+		// run if predicate holds
 		abstract Either<X,Y> trueOp() throws SQLException, SessionException, Exception;
+		// run if predicate fails
 		abstract Either<X,Y> falseOp() throws SQLException, SessionException, Exception;
+		// thread-safe driver
 		synchronized Either<X,Y> run() throws SQLException, SessionException, Exception {
 			if (predicate()) {
 				return trueOp();
@@ -872,22 +935,38 @@ public final class PrearcDatabase {
 		}
 	}
 	
+	/**
+	 * Retrieve a session if it exists or null.
+	 * @param session
+	 * @param timestamp
+	 * @param project
+	 * @return
+	 * @throws SQLException
+	 * @throws SessionException
+	 * @throws Exception
+	 */
 	public static SessionData getSessionIfExists(final String session, final String timestamp, final String project) throws SQLException, SessionException, Exception {
 	  Either<java.lang.Void, SessionData> result = new PredicatedOp<java.lang.Void, SessionData>(){
+		  /**
+		   * Retrieve the session for prearchive table
+		   */
 		  Either<java.lang.Void,SessionData> trueOp () throws SQLException, SessionException, Exception {
-			  Either<java.lang.Void,SessionData> ret = new Either<java.lang.Void,SessionData>(){};
-			  ret.setRight(PrearcDatabase.getSession(session,timestamp,project));
-			  return ret;
+			  return new Either<java.lang.Void,SessionData>(){}.setRight(PrearcDatabase.getSession(session,timestamp,project));
 		  }
+		  /**
+		   * Set the result to null
+		   */
 		  Either<java.lang.Void,SessionData> falseOp ()throws SQLException, SessionException, Exception {
-			  Either<java.lang.Void,SessionData> ret = new Either<java.lang.Void,SessionData>(){};
-			  ret.setLeft(null);
-			  return ret;
+			  return new Either<java.lang.Void,SessionData>(){}.setLeft(null);
 		  }
+		  /**
+		   * Test whether the session exists
+		   */
 		  boolean predicate() throws SQLException, SessionException, Exception {
 			  return PrearcDatabase.exists(session,timestamp,project);
 		  }
 	  }.run();
+	  
 	  if (result.isLeft()) {
 		  return null;
 	  }
@@ -896,10 +975,25 @@ public final class PrearcDatabase {
 	  }
 	}
 	
+	/**
+	 * A class that abstracts synching of the prearchive table and the filesystem. It ensures that a session is 
+	 * locked before any operation and any error that occurs on the filesystem side leaves the session with 
+	 * a status of ERROR. 
+	 * @author aditya
+	 *
+	 * @param <T>
+	 */
 	static abstract class LockAndSync<T>{
 		final String sess,timestamp,proj;
 		final PrearcStatus status;
 		T s;
+		/**
+		 * The session, timestamp, proj triple on which to run this operation
+		 * @param sess
+		 * @param timestamp
+		 * @param proj
+		 * @param status
+		 */
 		LockAndSync(String sess, String timestamp, String proj,PrearcStatus status){
 			this.sess = sess;
 			this.timestamp = timestamp;
@@ -972,6 +1066,13 @@ public final class PrearcDatabase {
 		return PrearcUtils.inProcessStatusMap.containsValue(sd.getStatus());
 	}
 	
+	/**
+	 * Reset the session status to READY
+	 * @param uri
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
 	public static void unLockSession(String uri) throws Exception, SQLException, SessionException {
 		final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
 		final Map<String,String> sess = parser.readUri(uri);
@@ -1059,6 +1160,17 @@ public final class PrearcDatabase {
 		});
 	}
 	
+	/**
+	 * Set the prearchive row that corresponds to the given session, timestamp, project triple to the given
+	 * autoArchive setting.
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @param autoArchive
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
 	public static void setAutoArchive(final String sess, final String timestamp, final String proj, final Boolean autoArchive) throws Exception, SQLException, SessionException {
 		PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
 			public Void op () throws SQLException, SessionException, Exception {
@@ -1092,6 +1204,13 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
+	/**
+	 * Return all sessions in the prearchive table
+	 * @return
+	 * @throws Exception
+	 * @throws SessionException
+	 * @throws SQLException
+	 */
 	public static List<SessionData> getAllSessions () throws Exception, SessionException, SQLException {
 		final List<SessionData> sds = new ArrayList<SessionData>();
 		new SessionOp<Void>() {
@@ -1146,14 +1265,32 @@ public final class PrearcDatabase {
 		}.run();
 	}
 
+	/**
+	 * Either retrieve and existing session or create a new one.
+	 * @param project
+	 * @param suid
+	 * @param s
+	 * @param tsFile
+	 * @param autoArchive
+	 * @return
+	 * @throws SQLException
+	 * @throws SessionException
+	 * @throws Exception
+	 */
 	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
 		Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
 			ResultSet rs;
+			/**
+			 * Return the found session
+			 * (non-Javadoc)
+			 * @see org.nrg.xnat.helpers.prearchive.PrearcDatabase.PredicatedOp#trueOp()
+			 */
 			Either<SessionData,SessionData> trueOp() throws SQLException, SessionException, Exception {
-				Either<SessionData,SessionData> result = new Either<SessionData,SessionData>(){};
-				result.setRight(DatabaseSession.fillSession(rs));
-				return result;
+				return new Either<SessionData,SessionData>(){}.setRight(DatabaseSession.fillSession(rs));
 			}
+			/**
+			 * Create and return a new session
+			 */
 			Either<SessionData,SessionData> falseOp() throws SQLException, SessionException, Exception {
 				Either<SessionData,SessionData> result = new Either<SessionData,SessionData>(){};
 				
@@ -1188,6 +1325,9 @@ public final class PrearcDatabase {
 				result.setLeft(resultSession);
 				return result;
 			}
+			/**
+			 * Test whether session exists
+			 */
 			boolean predicate() throws SQLException, SessionException, Exception {
 				return new SessionOp<Boolean>(){
 					public Boolean op() throws SQLException, SessionException, Exception {
@@ -1201,6 +1341,7 @@ public final class PrearcDatabase {
 				}.run();
 			}
 		}.run();
+		
 		if (result.isLeft()) {
 			return result.getLeft();
 		}
@@ -1324,6 +1465,14 @@ public final class PrearcDatabase {
 		}.run();
 	}
 	
+	/**
+	 * Retrieve all sessions in the prearchive table that are part of the given project
+	 * @param project
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
 	public static ArrayList<SessionData> getSessionsInProject (final String project) throws Exception, SQLException, SessionException {
 		return new SessionOp<ArrayList<SessionData>>() {
 			public ArrayList<SessionData> op() throws SQLException, SessionException, Exception {
@@ -1355,8 +1504,6 @@ public final class PrearcDatabase {
 			}
 		}.run();
 	}
-	
-	
 	
 	/**
 	 * Build a list of sessions in the given projects. 
@@ -1409,7 +1556,12 @@ public final class PrearcDatabase {
 		}
 		return s;
 	}
-	
+
+	/**
+	 * Debug method that outputs the columns in the prearchive table
+	 * @return
+	 * @throws SQLException
+	 */
 	public static String printCols() throws SQLException {
 		ResultSet rs = PrearcDatabase.conn.createStatement().executeQuery("SHOW COLUMNS FROM " + PrearcDatabase.tableWithSchema);
 		ArrayList<String> as = new ArrayList<String>();
@@ -1436,9 +1588,6 @@ public final class PrearcDatabase {
 			}
     	});
 	}
-	
-	
-
 	
 	/**
 	 * A generic class that stores a database operation on a session. 

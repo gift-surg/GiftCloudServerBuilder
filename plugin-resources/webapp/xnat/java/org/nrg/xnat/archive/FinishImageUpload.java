@@ -82,7 +82,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 
 		} catch (ActionException e) {
 			logger.error("",e);
-			throw new ServerException(e);
+			throw e;
 		} catch (SQLException e) {
 			logger.error("",e);
 			throw new ServerException(e);

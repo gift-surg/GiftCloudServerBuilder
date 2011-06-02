@@ -191,7 +191,7 @@ public final class PrearcDatabase {
 		PrearcDatabase.checkArgs(s);
 		new SessionOp<Void>(){
 			public java.lang.Void op() throws Exception, SQLException, SessionException {
-				int rowCount = PrearcDatabase.numDuplicateSessions(s.getFolderName(),s.getTimestamp(),s.getProject());
+				int rowCount = PrearcDatabase.countOf(s.getFolderName(),s.getTimestamp(),s.getProject());
 				if (rowCount >= 1) {
 					throw new SessionException("Trying to add an existing session");
 				}
@@ -832,6 +832,70 @@ public final class PrearcDatabase {
 		}
 	}
 	
+	static abstract class Either<Left,Right> {
+		Left l;
+		Right r;
+		boolean set;
+		void setLeft(Left l) {
+			this.l = l;
+		}
+		void setRight(Right r) {
+			this.set = true;
+			this.r = r;
+		}
+		Left getLeft(){
+			this.set = false;
+			return this.l;
+		}
+		Right getRight() {
+			return this.r;
+		}
+		boolean isLeft() {
+			return this.set == false;
+		}
+		boolean isRight() {
+			return this.set == true;
+		}
+	}
+	
+	static abstract class PredicatedOp<X,Y> {
+		abstract boolean predicate() throws SQLException, SessionException, Exception;
+		abstract Either<X,Y> trueOp() throws SQLException, SessionException, Exception;
+		abstract Either<X,Y> falseOp() throws SQLException, SessionException, Exception;
+		synchronized Either<X,Y> run() throws SQLException, SessionException, Exception {
+			if (predicate()) {
+				return trueOp();
+			}
+			else {
+				return falseOp();
+			}
+		}
+	}
+	
+	public static SessionData getSessionIfExists(final String session, final String timestamp, final String project) throws SQLException, SessionException, Exception {
+	  Either<java.lang.Void, SessionData> result = new PredicatedOp<java.lang.Void, SessionData>(){
+		  Either<java.lang.Void,SessionData> trueOp () throws SQLException, SessionException, Exception {
+			  Either<java.lang.Void,SessionData> ret = new Either<java.lang.Void,SessionData>(){};
+			  ret.setRight(PrearcDatabase.getSession(session,timestamp,project));
+			  return ret;
+		  }
+		  Either<java.lang.Void,SessionData> falseOp ()throws SQLException, SessionException, Exception {
+			  Either<java.lang.Void,SessionData> ret = new Either<java.lang.Void,SessionData>(){};
+			  ret.setLeft(null);
+			  return ret;
+		  }
+		  boolean predicate() throws SQLException, SessionException, Exception {
+			  return PrearcDatabase.exists(session,timestamp,project);
+		  }
+	  }.run();
+	  if (result.isLeft()) {
+		  return null;
+	  }
+	  else {
+		  return result.getRight();
+	  }
+	}
+	
 	static abstract class LockAndSync<T>{
 		final String sess,timestamp,proj;
 		final PrearcStatus status;
@@ -1072,7 +1136,7 @@ public final class PrearcDatabase {
 	 * @throws SQLException
 	 * @throws SessionException 
 	 */
-	public static int numDuplicateSessions(final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException {
+	public static int countOf(final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException {
 		return new SessionOp<Integer>() {
 			public Integer op() throws SQLException, SessionException, Exception {
 				ResultSet rs = this.pdb.executeQuery(null, DatabaseSession.countSessionSql(sess,timestamp, proj), null);
@@ -1081,50 +1145,68 @@ public final class PrearcDatabase {
 			}
 		}.run();
 	}
-	
-	
-	
-	
 
 	public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
-		return new SessionOp<SessionData>(){
-			public SessionData op() throws SQLException, SessionException, Exception {
-				String [] constraints = {
-										  DatabaseSession.PROJECT.searchSql(project), 
-										  DatabaseSession.TAG.searchSql(suid) 		
-										};		
-				ResultSet rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
-				if (rs.next()) {
-					return DatabaseSession.fillSession(rs);
-				}
-				else {
-					int dups = PrearcDatabase.numDuplicateSessions(s.getFolderName(), s.getTimestamp(), s.getProject());
-					int suffix = 1;
-					String suffixString = "";
-					while (dups == 1) {
-						suffixString = "_" + suffix;
-						dups = PrearcDatabase.numDuplicateSessions(s.getFolderName() + suffixString, s.getTimestamp(), s.getProject());
-						if (dups > 1) {
-							throw new SessionException("Database is in a bad state, " + dups + "sessions (name : " + s.getFolderName() + " timestamp: " + s.getTimestamp() + " project : " + s.getProject());
+		Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
+			ResultSet rs;
+			Either<SessionData,SessionData> trueOp() throws SQLException, SessionException, Exception {
+				Either<SessionData,SessionData> result = new Either<SessionData,SessionData>(){};
+				result.setRight(DatabaseSession.fillSession(rs));
+				return result;
+			}
+			Either<SessionData,SessionData> falseOp() throws SQLException, SessionException, Exception {
+				Either<SessionData,SessionData> result = new Either<SessionData,SessionData>(){};
+				
+				SessionData resultSession = new SessionOp<SessionData>() {
+					public SessionData op()  throws SQLException, SessionException, Exception {
+						int dups = PrearcDatabase.countOf(s.getFolderName(), s.getTimestamp(), s.getProject());
+						int suffix = 1;
+						String suffixString = "";
+						while (dups == 1) {
+							suffixString = "_" + suffix;
+							dups = PrearcDatabase.countOf(s.getFolderName() + suffixString, s.getTimestamp(), s.getProject());
+							if (dups > 1) {
+								throw new SessionException("Database is in a bad state, " + dups + "sessions (name : " + s.getFolderName() + " timestamp: " + s.getTimestamp() + " project : " + s.getProject());
+							}
+							suffix++;
 						}
-						suffix++;
+						
+						s.setFolderName(s.getFolderName() + suffixString);
+						s.setName(s.getName() + suffixString);
+						s.setUrl((new File(tsFile,s.getFolderName()).getAbsolutePath()));
+						s.setAutoArchive((Object) autoArchive);
+						
+						PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
+						for (int i = 0; i < DatabaseSession.values().length; i++) {
+							DatabaseSession.values()[i].setInsertStatement(statement, s);
+						}
+						statement.executeUpdate();
+						SessionData tmp = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());	
+						return tmp;
 					}
-					
-					s.setFolderName(s.getFolderName() + suffixString);
-					s.setName(s.getName() + suffixString);
-					s.setUrl((new File(tsFile,s.getFolderName()).getAbsolutePath()));
-					s.setAutoArchive((Object) autoArchive);
-					
-					PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
-					for (int i = 0; i < DatabaseSession.values().length; i++) {
-						DatabaseSession.values()[i].setInsertStatement(statement, s);
+				}.run();
+				result.setLeft(resultSession);
+				return result;
+			}
+			boolean predicate() throws SQLException, SessionException, Exception {
+				return new SessionOp<Boolean>(){
+					public Boolean op() throws SQLException, SessionException, Exception {
+						String [] constraints = {
+								  DatabaseSession.PROJECT.searchSql(project), 
+								  DatabaseSession.TAG.searchSql(suid) 		
+								};		
+						rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
+						return rs.next();
 					}
-					statement.executeUpdate();
-					SessionData tmp = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
-					return tmp;
-				}
+				}.run();
 			}
 		}.run();
+		if (result.isLeft()) {
+			return result.getLeft();
+		}
+		else{
+			return result.getRight();
+		}
 	}
 
 	/**
@@ -1355,6 +1437,7 @@ public final class PrearcDatabase {
     	});
 	}
 	
+	
 
 	
 	/**
@@ -1424,7 +1507,7 @@ public final class PrearcDatabase {
 	}
 	
 	private static void checkUniqueRow (String sess, String timestamp, String proj) throws Exception, SQLException, SessionException {
-		int rowCount = PrearcDatabase.numDuplicateSessions(sess,timestamp,proj);
+		int rowCount = PrearcDatabase.countOf(sess,timestamp,proj);
 		if (rowCount == 0) {
 			throw new SessionException("A record with session " + sess + ", timestamp " + timestamp + " and project " + proj + " could not be found.");
 		}
@@ -1432,6 +1515,30 @@ public final class PrearcDatabase {
 			throw new SessionException("Multiple records with session " + sess + ", timestamp " + timestamp + " and project " + proj + " were found.");
 		}
 	}
+	
+	/**
+	 * Check that a session exists in the prearchive table. 
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @return
+	 * @throws Exception
+	 * @throws SQLException
+	 * @throws SessionException
+	 */
+	public static boolean exists (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException {
+		int rowCount = PrearcDatabase.countOf(sess,timestamp,proj);
+		boolean b = false;
+		if (rowCount == 0){
+			b = false;
+		}
+		if (rowCount == 1){
+			b = true;
+		}
+		return b;
+	}
+	
+	
 	
 	/**
 	 * Check session parameters and run the operation

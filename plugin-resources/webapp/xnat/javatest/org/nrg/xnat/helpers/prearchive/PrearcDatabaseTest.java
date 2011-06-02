@@ -743,16 +743,17 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		String timestamp = "testTimestamp";
 		String folderName = "testFolderName";
 		PrearcUtils.PrearcStatus status = PrearcUtils.PrearcStatus.RECEIVING;
-		String url = "testUrl";
+
 		String project = "testProject";
 		String suid = "testSuid";
 		SessionData tmp = new SessionData();
 		tmp.setTimestamp(timestamp);
 		tmp.setFolderName(folderName);
 		tmp.setStatus(status);
-		tmp.setUrl(url);
 		tmp.setProject(project);
 		tmp.setTag(suid);
+		String url = (new File(".",tmp.getFolderName()).getAbsolutePath());
+		tmp.setUrl(url);
 		
 		try {
 			tmp = PrearcDatabase.getOrCreateSession(project, suid, tmp, new File("."),null);

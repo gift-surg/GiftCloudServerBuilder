@@ -166,7 +166,7 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		}
 		
 		public SessionData getSessionData() throws Exception, SQLException, SessionException{
-			 return PrearcDatabase.getSession(folderName, timestamp, project);
+			return PrearcDatabase.getSessionIfExists(folderName, timestamp, project);		
 		}
 	}
 }

@@ -286,8 +286,36 @@ public final class PrearcSessionResource extends SecureResource {
             return null;
         }
 
+        String screen=this.getQueryVariable("screen");
+        
         final MediaType mt = overrideVariant(variant);
-        if (MediaType.TEXT_XML.equals(mt)) {
+        if (MediaType.TEXT_HTML.equals(mt) || StringUtils.isNotEmpty(screen)) 
+        {
+            // Return the session XML, if it exists
+
+            if(StringUtils.isEmpty(screen)){
+                screen="XDATScreen_brief_xnat_imageSessionData.vm";
+            }else if (screen.equals("XDATScreen_uploaded_xnat_imageSessionData.vm")){
+                if(project==null){
+                    this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Projects in the unassigned folder cannot be archived.");
+                    return null;
+                }
+                getResponse().redirectSeeOther(getContextPath()+String.format("/app/action/LoadImageData/project/%s/timestamp/%s/folder/%s/popup/false",project,timestamp,session));
+                return null;
+            }
+
+            try {
+                return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, screen, new HashMap<String,String>(){{
+                    put("project",project);
+                    put("timestamp",timestamp);
+                    put("folder",session);
+                }});
+            } catch (TurbineException e) {
+                this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+                return null;
+            }
+
+        }else if (MediaType.TEXT_XML.equals(mt)) {
             // Return the session XML, if it exists
             final File sessionXML = new File(sessionDir.getPath() + ".xml");
             if (!sessionXML.isFile()) {
@@ -306,33 +334,7 @@ public final class PrearcSessionResource extends SecureResource {
             } 
             return this.representTable(table, MediaType.APPLICATION_JSON, new Hashtable<String,Object>());
         } 
-        else if (MediaType.TEXT_HTML.equals(mt)) {
-            // Return the session XML, if it exists
-
-            String screen=this.getQueryVariable("screen");
-            if(StringUtils.isEmpty(screen)){
-                screen="XDATScreen_brief_xnat_imageSessionData.vm";
-            }else if (screen.equals("XDATScreen_uploaded_xnat_imageSessionData.vm")){
-                if(project==null){
-                    this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Projects in the unassigned folder cannot be archived.");
-                    return null;
-                }
-                getResponse().redirectSeeOther(getContextPath()+String.format("/app/action/LoadImageData/project/%s/timestamp/%s/folder/%s/popup/false",project,timestamp,session));
-                return null;
-            }
-
-            try {
-                return new StandardTurbineScreen(mt, getRequest(), user, screen, new HashMap<String,String>(){{
-                    put("project",project);
-                    put("timestamp",timestamp);
-                    put("folder",session);
-                }});
-            } catch (TurbineException e) {
-                this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-                return null;
-            }
-
-        } else if (MediaType.APPLICATION_GNU_ZIP.equals(mt) || MediaType.APPLICATION_ZIP.equals(mt)) {
+        else if (MediaType.APPLICATION_GNU_ZIP.equals(mt) || MediaType.APPLICATION_ZIP.equals(mt)) {
             final ZipRepresentation zip;
         	try{
 	        	zip = new ZipRepresentation(mt, sessionDir.getName(),identifyCompression(null));

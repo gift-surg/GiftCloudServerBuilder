@@ -268,7 +268,7 @@ public abstract class SecureResource extends Resource {
 			if(this.getQueryVariable("sortBy")!=null){
 				final String sortBy=this.getQueryVariable("sortBy");
 				table.sort(Arrays.asList(StringUtils.split(sortBy, ',')));
-				if(this.isQueryVariable("sortOrder","DESC",false)){
+				if(this.isQueryVariable("sortOrder","DESC",false) && !mt.equals(APPLICATION_XLIST)){
 					table.reverse();
 				}
 			}

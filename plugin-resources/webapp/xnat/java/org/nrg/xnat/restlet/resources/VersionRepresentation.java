@@ -1,15 +1,11 @@
 package org.nrg.xnat.restlet.resources;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
 
-import javax.servlet.ServletContext;
-
-import org.apache.commons.lang.StringUtils;
 import org.nrg.xft.XFT;
-import org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource;
+import org.nrg.xnat.utils.FileUtils;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
@@ -20,38 +16,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VersionRepresentation extends Resource {
-     private final Logger logger = LoggerFactory.getLogger(VersionRepresentation.class);
-    
-	 public VersionRepresentation(Context context, Request request,
-	            Response response) {
-	        super(context, request, response);
-	 }
-	 
-	 public Representation getRepresentation(final Variant variant){
-		 return new StringRepresentation(getXNATVersion());
-	 }
+	private final Logger logger = LoggerFactory.getLogger(VersionRepresentation.class);
 
-		private String getXNATVersion() {
-			final String path = location(XFT.GetConfDir(), "VERSION");
-			FileReader fr = null;
-			try {
-				fr = new FileReader(path);
-				return (new BufferedReader(fr)).readLine();
-			} catch (Exception e) {
-				logger.warn("Issue reading VERSION file", e);
-				return "could not retrieve";
-			} finally {
-				if (fr != null) {
-					try {
-						fr.close();
-					} catch (Exception e) {
-						// ignore it
-					}
-				}
-			}
-		}
+	public VersionRepresentation(Context context, Request request, Response response) {
+		super(context, request, response);
+		this.getVariants().add(new Variant(MediaType.ALL));
+	}
 
-		private String location(String... pathParts) {
-			return StringUtils.join(pathParts, File.separator);
+	@Override
+	public Representation represent(Variant variant) {
+		final String location = XFT.GetConfDir();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Getting XNAT version from the configuration folder: " + location);
 		}
+		try {
+			return new StringRepresentation(FileUtils.getXNATVersion(location));
+		} catch (IOException exception) {
+			return new StringRepresentation("Unknown version");
+		}
+	}
 }

@@ -5,9 +5,8 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,6 +29,7 @@ import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.email.EmailUtils;
 import org.nrg.xft.email.EmailerI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.FileUtils;
 
 public class ReportIssue extends SecureAction {
 	private static final Logger logger = Logger.getLogger(ReportIssue.class);
@@ -111,24 +111,12 @@ public class ReportIssue extends SecureAction {
 		return sw.toString();
 	}
 
-	private String getXNATVersion(ServletContext servletContext) {
-		final String path = servletContext.getRealPath(location("WEB-INF", "conf", "VERSION"));
-		FileReader fr = null;
-		try {
-			fr = new FileReader(path);
-			return (new BufferedReader(fr)).readLine();
-		} catch (Exception e) {
-			logger.warn("Issue reading VERSION file", e);
-			return "could not retrieve";
-		} finally {
-			if (fr != null) {
-				try {
-					fr.close();
-				} catch (Exception e) {
-					// ignore it
-				}
-			}
+	private String getXNATVersion(ServletContext servletContext) throws IOException {
+		final String location = servletContext.getRealPath(location("WEB-INF", "conf", "VERSION"));
+		if (logger.isDebugEnabled()) {
+			logger.debug("Getting XNAT version from the configuration folder: " + location);
 		}
+		return FileUtils.getXNATVersion(location);
 	}
 
 	private void checkFolder(String path) {

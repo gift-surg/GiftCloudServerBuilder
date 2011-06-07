@@ -194,6 +194,13 @@
 		<maven:makeAbsolutePath var="xdat.plugins.resource.conf" path="plugin-resources/conf" basedir="${basedir}"/>
 		<ant:mkdir dir="${xdat.project.resource.conf}"/>
 		<copy file="${basedir}/VERSION" tofile="${basedir}/deployments/${xdat.project.name}/conf/VERSION" preservelastmodified="true"/>
+		<j:set var="xdat.project.hgtags.exists" value="false"/>
+		<u:available file="${basedir}/.hgtags">
+			<j:set var="xdat.project.hgtags.exists" value="true"/>
+		</u:available>
+		<j:if test="${xdat.project.hgtags.exists}">
+		    <copy file="${basedir}/.hgtags" tofile="${basedir}/deployments/${xdat.project.name}/conf/tags" preservelastmodified="true"/>
+        </j:if>
 		<!-- The plugin-resources copy needs to happen first so files can be superseded by files applied at the project level -->
 		<ant:copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true" overwrite="true">
 			<fileset dir="${xdat.plugins.resource.conf}">

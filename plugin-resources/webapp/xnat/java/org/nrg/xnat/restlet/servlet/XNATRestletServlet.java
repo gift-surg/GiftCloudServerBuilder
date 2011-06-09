@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import org.nrg.dcm.DicomSCP;
-import org.nrg.schedule.QuartzUtils;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
@@ -34,7 +33,6 @@ public class XNATRestletServlet extends ServerServlet {
 
         try {
             PrearcDatabase.initDatabase();
-        	QuartzUtils.init();
         } catch (Exception e) {
         	logger().error("Unable to initialize prearchive database : ", e);
         }

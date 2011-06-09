@@ -31,9 +31,18 @@
             <param-name>org.restlet.autoWire</param-name>
             <param-value>true</param-value>
     </context-param>
+    <!-- Specifies the location of Spring application context files -->
+    <context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/conf/root-spring-config.xml</param-value>
+    </context-param>
 	<listener>
 		<listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
 	</listener>
+    <!-- Creates the Spring Container shared by all Servlets and Filters -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
 	<servlet>
 		<servlet-name>@TURBINE_APP_NAME@</servlet-name>
 		<servlet-class>org.apache.turbine.Turbine</servlet-class>
@@ -97,24 +106,18 @@
 	<servlet>
 		<servlet-name>AxisServlet</servlet-name>
 		<display-name>Apache-Axis Servlet</display-name>
-		<servlet-class>
-        org.apache.axis.transport.http.AxisServlet
-    </servlet-class>
+		<servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AdminServlet</servlet-name>
 		<display-name>Axis Admin Servlet</display-name>
-		<servlet-class>
-        org.apache.axis.transport.http.AdminServlet
-    </servlet-class>
+		<servlet-class>org.apache.axis.transport.http.AdminServlet</servlet-class>
 		<load-on-startup>100</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>SOAPMonitorService</servlet-name>
 		<display-name>SOAPMonitorService</display-name>
-		<servlet-class>
-        org.apache.axis.monitor.SOAPMonitorService
-    </servlet-class>
+		<servlet-class>org.apache.axis.monitor.SOAPMonitorService</servlet-class>
 		<init-param>
 			<param-name>SOAPMonitorPort</param-name>
 			<param-value>5001</param-value>
@@ -152,6 +155,24 @@
 		<servlet-name>PublisherServlet</servlet-name>
 		<servlet-class>org.nrg.plexiViewer.Servlet.PublisherServlet</servlet-class>
 	</servlet>
+    <!-- ======================================================================== -->
+    <!-- INSERTED FOR Spring Framework -->
+    <!-- ======================================================================== -->
+    <servlet>
+        <servlet-name>springServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/conf/*-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+        
+    <servlet-mapping>
+        <servlet-name>springServlet</servlet-name>
+        <url-pattern>/spring</url-pattern>
+    </servlet-mapping>
+    
 	<!-- END XNAT CUSTOMIZATIONS -->
 	<servlet-mapping>
 		<servlet-name>@TURBINE_APP_NAME@</servlet-name>

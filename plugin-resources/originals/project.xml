@@ -1145,6 +1145,56 @@
 			<type>jar</type>
 		</dependency>
 		<!-- END XDAT Dependencies -->
+		<!-- Begin Spring Framework dependencies -->
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>com.springsource.org.aopalliance</artifactId>
+			<version>1.0.0</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.aop</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.asm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.beans</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.context</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.context.support</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.core</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.expression</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<!-- End Spring Framework dependencies -->
 	</dependencies>
 	<build>
 		<!-- This setting is important. The source tree will be merged -->

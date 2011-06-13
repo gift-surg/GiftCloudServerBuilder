@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,10 +78,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
     public static final String SENDER_ID_PARAM = "Sender-ID";
     public static final String TSUID_PARAM = "Transfer-Syntax-UID";
     private static final String DEFAULT_TRANSFER_SYNTAX = TransferSyntax.ImplicitVRLittleEndian.uid();
+    private static final String DICOM_IMPORTER_PROPS = "dicom-importer.properties";
     private static final String DICOM_PROJECT_RULES = "dicom-project.rules";
+    private static final String NAMER_PROPERTY = "dicom.file.namer";
+    private static final String NAMER_DEFAULT = SOPHashDicomFileNamer.class.getName();
+    private static final String RENAME_PARAM = "rename";
     private static final long PROJECT_CACHE_EXPIRY_SECONDS = 120;
     private static final boolean canDecompress = Decompress.isSupported();
-    private static final DicomFileNamer namer = new SOPHashDicomFileNamer();
+    private static final DicomFileNamer namer = getDicomFileNamer();
 
     private final Logger logger = LoggerFactory.getLogger(GradualDicomImporter.class);
     private final FileWriterWrapperI fw;
@@ -282,8 +287,11 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
     }
 
-    private File getSafeFile(File sessionDir, String scan, String name, DicomObject o) {
+    private File getSafeFile(File sessionDir, String scan, String name, DicomObject o, boolean forceRename) {
         final File safeFile = Files.getImageFile(sessionDir, scan, namer.makeFileName(o));
+        if (forceRename) {
+            return safeFile;
+        }
         final String valname = Files.toFileNameChars(name);
         if (!Files.isValidFilename(valname)) {
             return safeFile;
@@ -413,13 +421,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setTimestamp(tsdir.getName());
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
         sess.setLastBuiltDate(Calendar.getInstance().getTime());
-        
+
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
-        
+
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
-        	sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
+            sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());        
         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
@@ -465,7 +473,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 }
             }
 
-            final File f = getSafeFile(sessdir, scan, name, o);
+            final File f = getSafeFile(sessdir, scan, name, o, Boolean.valueOf((String)params.get(RENAME_PARAM)));
             f.getParentFile().mkdirs();
             try {
                 write(fmi, o, bis, f, source);
@@ -504,7 +512,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
     }
 
     private static final Pattern aaPattern = Pattern.compile("\\A(?:.*\\W)?AA:([a-zA-Z]+)(?:\\W.*)?\\Z");
-    
+
     /**
      * Looks for AA:true|false in the given DICOM object. The AA: portion is case-sensitive,
      * but the true/false is case-insensitive. Patient Comments is searched first, then
@@ -529,7 +537,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
         return null;
     }
-    
+
     private static final class RuleBasedIdentifier
     extends AbstractDicomObjectIdentifier<XnatProjectdata> {
         private static final Extractor[] exts;
@@ -591,5 +599,27 @@ public class GradualDicomImporter extends ImporterHandlerA {
         public XnatProjectdata getProject(final String id) {
             return importer.getProject(id, null);
         }
+    }
+
+    private static DicomFileNamer getDicomFileNamer() {
+        try {
+            final Properties properties = getProperties();
+            final String namerClass = properties.getProperty(NAMER_PROPERTY, NAMER_DEFAULT);
+            return Class.forName(namerClass).asSubclass(DicomFileNamer.class).newInstance();
+        } catch (Throwable t) {
+            slog().warn("unable to load custom DICOM file namer", t);
+            return new SOPHashDicomFileNamer();
+        }
+    }
+
+    private static Properties getProperties() {
+        final File propsfile = new File(XFT.GetConfDir(), DICOM_IMPORTER_PROPS);
+        final Properties properties = new Properties();
+        try {
+            properties.load(new FileReader(propsfile));
+        } catch (IOException e) {
+            slog().debug("no DICOM SCP properties file " + propsfile + " found", e);
+        }
+        return properties;
     }
 }

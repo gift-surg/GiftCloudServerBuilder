@@ -43,6 +43,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 
 <br>
 <div id="prearchive_table"></div>
+<div id="progress-bar"></div>
 <div id="col_table"></div>
 <div id="prearcs" class="prearcs"></div>
 <div id="serverRoot" title="$content.getURI('')"></div>
@@ -50,7 +51,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 
 </br>
 
-<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/build/script/prearchiveui.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/source/script/prearchiveui.js')"></script>
 
 <div id="match-op" class="match-op"></div>
 

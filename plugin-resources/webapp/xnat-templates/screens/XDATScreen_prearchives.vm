@@ -51,7 +51,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 
 </br>
 
-<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/source/script/prearchiveui.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/prearchiveui/build/script/prearchiveui.js')"></script>
 
 <div id="match-op" class="match-op"></div>
 

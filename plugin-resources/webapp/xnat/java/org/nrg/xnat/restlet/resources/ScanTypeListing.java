@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -41,8 +43,14 @@ public class ScanTypeListing  extends SecureResource {
 		String scan_table = this.getQueryVariable("table");
 		if (scan_table == null) {
 			scan_table = "xnat_mrScanData";
+		}else{
+			if(!(scan_table.equalsIgnoreCase("xnat_mrScanData") || scan_table.equalsIgnoreCase("xnat_petScanData"))){
+				AdminUtils.sendAdminEmail(user,"Possible SQL Injection attempt.", "User passed "+ scan_table+" as a table name.");
+				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        		return null;
+            }
 		}
-
+		
 		try {
 			String query = "SELECT xs_a_concat(series_description || ',') AS series_descriptions, scan.type FROM "
 					+ scan_table
@@ -56,7 +64,7 @@ public class ScanTypeListing  extends SecureResource {
 			table = (XFTTable) XFTTable.Execute(query, user.getDBName(), user
 					.getLogin());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		
 		Hashtable<String,Object> params=new Hashtable<String,Object>();

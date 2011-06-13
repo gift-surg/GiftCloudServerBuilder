@@ -11,13 +11,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -29,6 +29,11 @@ import org.nrg.ecat.xnat.PETSessionBuilder;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 
 
 /**
@@ -37,7 +42,6 @@ import org.nrg.xnat.turbine.utils.PropertiesHelper;
  * Helper class to execute all of the available SessionBuilders. 
  * Initially this only supports DICOM and ECAT.  But, it is a step towards allowing other implementations.
  */
-@SuppressWarnings("rawtypes")
 public class XNATSessionBuilder implements Callable<Boolean>{
 	static Logger logger = Logger.getLogger(XNATSessionBuilder.class);
 	
@@ -51,6 +55,8 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	private static final String[] PROP_OBJECT_FIELDS = new String[]{CLASS_NAME,SEQUENCE};
 	private static final String PROP_OBJECT_IDENTIFIER = "org.nrg.SessionBuilder.impl";
 	private static final String SESSION_BUILDER_PROPERTIES = "session-builder.properties";
+	
+	private static final String PROJECT_PARAM = "project";
 
     
 	private static final String DICOM = "DICOM";
@@ -61,11 +67,11 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 
 	private static List<BuilderConfig> builderClasses;
 	
-	private static final Class[] PARAMETER_TYPES=new Class[]{File.class,Writer.class};
+	private static final Class<?>[] PARAMETER_TYPES=new Class[]{File.class,Writer.class};
 	
 	private final File dir,xml;
-	private final String project;
 	private final boolean isInPrearchive;
+	private final Map<String,String> params;
 	
 	static{
 		builderClasses=new ArrayList<BuilderConfig>();
@@ -83,7 +89,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				
 				if(className!=null){
 					try {
-						final Class c=Class.forName(className);
+						final Class<?> c=Class.forName(className);
 						Integer seq=3;//default
 						if(seqS!=null){
 							seq=Integer.valueOf(seqS);
@@ -120,35 +126,39 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	/**
 	 * @param dir
 	 * @param xml
-	 * @param project
+	 * @param isInPrearchive
+	 * @param params
 	 */
-	public XNATSessionBuilder(final File dir, final File xml, final String project, final boolean isInPrearchive){
-		if(dir==null)throw new NullPointerException();
-		if(xml==null)throw new NullPointerException();
-		
-		this.dir=dir;
-		this.xml=xml;
-		this.project=project;
-		this.isInPrearchive=isInPrearchive;
+	public XNATSessionBuilder(final File dir, final File xml, final boolean isInPrearchive, final Map<String,String> params) {
+	    if (null == dir || null == xml) {
+	        throw new NullPointerException();
+	    }
+	    this.dir = dir;
+	    this.xml = xml;
+	    this.isInPrearchive = isInPrearchive;
+	    this.params = ImmutableMap.copyOf(params);
 	}
 	
-	public Boolean call(){
-		final Callable<Boolean> wrap=new Callable<Boolean>(){
-			public Boolean call() throws IOException {
-				return execute();
-			}
-		};
-		
-		final ExecutorService executor=getExecutor();
+	/**
+	 * @param dir
+	 * @param xml
+	 * @param project
+	 */
+	public XNATSessionBuilder(final File dir, final File xml, final String project, final boolean isInPrearchive) {
+	    this(dir, xml, isInPrearchive, Collections.singletonMap(PROJECT_PARAM, project));
+	}
+	
+	public Boolean execute(){
+		final ExecutorService executor = getExecutor();
 		try {
-			return executor.submit(wrap).get();
+			return executor.submit(this).get();
 		} catch (InterruptedException e) {
-			logger.error("",e);
+			logger.error("session build interrupted",e);
+			return false;
 		} catch (ExecutionException e) {
-			logger.error("",e);
-		}
-		
-		return Boolean.FALSE;
+			logger.error("session build failed",e);
+			return false;
+		}	
 	}
 	
 	/**
@@ -157,7 +167,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	 * The iteration will stop once it successfully builds an xml (or runs out of builder configs).
 	 * @throws IOException
 	 */
-	public Boolean execute() throws IOException {
+	public Boolean call() throws IOException {
 		xml.getParentFile().mkdirs();
 		final FileWriter fw = new FileWriter(xml);
 		
@@ -165,7 +175,14 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 			if(bc.getCode().equals(DICOM)){
 				//hard coded implementation for DICOM. 
 				try {
-					final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir, fw, new XnatAttrDef.Constant("project", project));
+				    // Turn the parameters into an array of XnatAttrDef.Constant attribute definitions
+				    final XnatAttrDef attrdefs[] = Lists.newArrayList(Iterables.transform(params.entrySet(),
+				            new Function<Map.Entry<String,String>, XnatAttrDef>() {
+				        public XnatAttrDef apply(final Map.Entry<String,String> me) {
+				            return new XnatAttrDef.Constant(me.getKey(), me.getValue());
+				        }
+				    })).toArray(new XnatAttrDef[0]);
+				    final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir, fw, attrdefs);
 
 					if(!isInPrearchive){
 						builder.setIsInPrearchive(isInPrearchive);
@@ -186,7 +203,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				}
 			}else if(bc.getCode().equals(ECAT)){
 				//hard coded implementation for ECAT
-				PETSessionBuilder builder=new PETSessionBuilder(dir,fw,project);
+				PETSessionBuilder builder=new PETSessionBuilder(dir,fw,params.get(PROJECT_PARAM));
 
 				if(!isInPrearchive){
 					builder.setIsInPrearchive(isInPrearchive);

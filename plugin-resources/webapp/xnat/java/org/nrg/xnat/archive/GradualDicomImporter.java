@@ -412,6 +412,12 @@ public class GradualDicomImporter extends ImporterHandlerA {
         } else {
             session = projectIdentifier.getSessionLabel(o);
         }
+        final String subject;
+        if (params.containsKey(UriParserUtils.SUBJECT_ID)) {
+        	subject = (String)params.get(UriParserUtils.SUBJECT_ID);
+        } else {
+        	subject = projectIdentifier.getSubjectLabel(o);
+        }
         sess = new SessionData();
         sess.setFolderName(session);
         sess.setName(session);
@@ -421,6 +427,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setTimestamp(tsdir.getName());
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
         sess.setLastBuiltDate(Calendar.getInstance().getTime());
+        sess.setSubject(subject);
 
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
 
@@ -618,7 +625,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         try {
             properties.load(new FileReader(propsfile));
         } catch (IOException e) {
-            slog().debug("no DICOM SCP properties file " + propsfile + " found", e);
+            slog().debug("couldn't read DICOM importer properties file " + propsfile, e);
         }
         return properties;
     }

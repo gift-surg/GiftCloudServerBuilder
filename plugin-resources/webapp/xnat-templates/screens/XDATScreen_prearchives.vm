@@ -43,6 +43,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 
 <br>
 <div id="prearchive_table"></div>
+<div id="progress-bar"></div>
 <div id="col_table"></div>
 <div id="prearcs" class="prearcs"></div>
 <div id="serverRoot" title="$content.getURI('')"></div>

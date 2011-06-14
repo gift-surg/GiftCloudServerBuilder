@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean name="sessionXmlRebuilderJob" class="org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJob" />
+
+    <bean name="sessionXmlRebuilderJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="org.nrg.schedule.DelegatingJobBean" />
+        <property name="name" value="session-rebuilder"/>
+        <property name="group" value="prearchive-jobs"/>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="job.bean.name" value="sessionXmlRebuilderJob" />
+                <entry key="interval" value="5" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="sessionXmlRebuilderTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobName" value="session-rebuilder-trigger" />
+        <property name="jobGroup" value="prearchive-triggers"/>
+        <property name="jobDetail" ref="sessionXmlRebuilderJobBean" />
+        <property name="repeatInterval" value="60000" />
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="sessionXmlRebuilderTrigger" />
+            </list>
+        </property>
+        <property name="applicationContextSchedulerContextKey">
+            <value>applicationContext</value>
+        </property>
+    </bean>
+
+</beans>

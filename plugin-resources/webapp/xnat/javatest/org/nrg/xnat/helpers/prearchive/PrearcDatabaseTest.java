@@ -27,7 +27,6 @@ import org.nrg.test.BaseXDATTestCase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
 public class PrearcDatabaseTest extends BaseXDATTestCase {
-
 	private static SessionDataDelegate sd;
 	private static int numSessions = 10;
 	private static ArrayList<String> test_projects = new ArrayList<String>(Arrays.asList(new String[]{"proj_0", "proj_1", "proj_2", "proj_3", PrearcUtils.COMMON}));

@@ -357,6 +357,7 @@
 			<version>1.2</version>
 			<type>jar</type>
 		</dependency>
+		<!-- End Spring Framework dependencies -->
 	</dependencies>
 	<build>
 		<!-- This is only required if you have Java code -->

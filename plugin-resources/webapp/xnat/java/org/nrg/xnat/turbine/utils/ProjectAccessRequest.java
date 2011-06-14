@@ -97,6 +97,7 @@ public class ProjectAccessRequest {
 		return email;
 	}
 	public void setEmail(String email) {
+		PoolDBUtils.CheckSpecialSQLChars(email);
 		this.email = email;
 	}
 	/**
@@ -133,6 +134,7 @@ public class ProjectAccessRequest {
      * @param level the level to set
      */
     public void setLevel(String level) {
+		PoolDBUtils.CheckSpecialSQLChars(level);
         this.level = level;
     }
     /**
@@ -145,6 +147,7 @@ public class ProjectAccessRequest {
      * @param projectID the projectID to set
      */
     public void setProjectID(String projectID) {
+		PoolDBUtils.CheckSpecialSQLChars(projectID);
         this.projectID = projectID;
     }
     /**

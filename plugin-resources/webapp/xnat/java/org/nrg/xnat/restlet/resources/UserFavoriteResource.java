@@ -19,7 +19,7 @@ public class UserFavoriteResource extends SecureResource {
 	String dataType=null;
 	String pID=null;
 	
-	public UserFavoriteResource(Context context, Request request, Response response) {
+	public UserFavoriteResource(Context context, Request request, Response response) throws Exception {
 		super(context, request, response);
 		
 			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
@@ -28,6 +28,15 @@ public class UserFavoriteResource extends SecureResource {
 			
 			dataType= (String)request.getAttributes().get("DATA_TYPE");
 			pID= (String)request.getAttributes().get("PROJECT_ID");
+
+			
+			if(dataType.contains("'")){
+				throw new Exception("Unexpected ' in data type name.");
+			}
+			
+			if(pID.contains("'")){
+				throw new Exception("Unexpected ' in project id.");
+			}
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.FileUtils;
@@ -588,9 +589,27 @@ public class XNATTemplate extends SecureResource {
 		}
 		return true;
 	}
+	
+	public void checkResourceIDs(ArrayList<String> resourceIDs) throws Exception{
+		if(resourceIDs!=null){
+			for (String resourceID : resourceIDs) {
+				if(resourceID!=null){
+					if(resourceID.contains("'")){
+						throw new Exception("Possible SQL Injection attempt. ' is not allowed in resource labels: " + resourceID);
+					}else{
+						if(PoolDBUtils.HackCheck(resourceID)){
+							throw new Exception("Possible SQL Injection attempt: " + resourceID);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public XFTTable loadCatalogs(ArrayList<String> resourceIDs,
 			boolean includeURI,boolean allowAll) throws Exception {
+		checkResourceIDs(resourceIDs);
+		
 		StringBuffer query = new StringBuffer();
 		String starterFields = "SELECT xnat_abstractresource_id,abst.label,xme.element_name ";
 

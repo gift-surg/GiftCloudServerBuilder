@@ -3,24 +3,43 @@ package org.nrg.xnat.restlet.resources.search;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.db.DBAction;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
+import com.google.common.collect.Lists;
+
 public class SavedSearchListResource extends SecureResource {
+	static org.apache.log4j.Logger logger = Logger.getLogger(SavedSearchListResource.class);
 
 	public SavedSearchListResource(Context context, Request request, Response response) {
 		super(context, request, response);
 			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
+	}
+	
+	public List<String> retrieveAllTags(){
+		try {
+			return (List<String>)(XFTTable.Execute("SELECT tag from xdat_stored_search", user.getDBName(), user.getLogin()).convertColumnToArrayList("tag"));
+		} catch (SQLException e) {
+			logger.error("",e);
+		} catch (DBPoolException e) {
+			logger.error("",e);
+		}
+		
+		return Lists.newArrayList();
 	}
 
 	@Override
@@ -34,16 +53,26 @@ public class SavedSearchListResource extends SecureResource {
 				if(includeTagged.equals("true")){
 					query +=" AND xss.tag IS NOT NULL";
 				}else{
-					query +=" AND xss.tag='" + includeTagged +"'";
+					if(retrieveAllTags().contains(includeTagged)){
+						query +=" AND xss.tag='" + includeTagged +"'";
+					}else{
+						logger.error("",new Exception("Unknown tag: "+ includeTagged));
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+						return null;
+					}
 				}
 			}else{
 				query +=" AND xss.tag IS NULL";
 			}
 			table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("",e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			return null;
 		} catch (DBPoolException e) {
-			e.printStackTrace();
+			logger.error("",e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			return null;
 		}
 		
 		Hashtable<String,Object> params=new Hashtable<String,Object>();

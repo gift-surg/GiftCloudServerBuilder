@@ -12,7 +12,9 @@ import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
 
+import org.apache.jcs.access.exception.InvalidArgumentException;
 import org.apache.log4j.Logger;
+import org.apache.plexus.util.StringUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -21,6 +23,7 @@ import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -41,6 +44,11 @@ public class ProcessAccessRequest extends SecureAction {
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
         String p = data.getParameters().getString("project");
+        
+        if(p==null || p.contains("'")){
+        	error(new InvalidArgumentException(p),data);
+        }
+        
         XDATUser user = TurbineUtils.getUser(data);
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
@@ -122,7 +130,20 @@ public class ProcessAccessRequest extends SecureAction {
 
         String p = data.getParameters().getString("project");
         String access_level = data.getParameters().getString("access_level");
-        if (access_level==null)access_level="member";
+        if (StringUtils.isEmpty(access_level)){
+        	access_level="member";
+        }else{
+        	if(!(access_level.equalsIgnoreCase(BaseXnatProjectdata.MEMBER_GROUP) 
+        			|| access_level.equalsIgnoreCase(BaseXnatProjectdata.OWNER_GROUP)
+        			|| access_level.equalsIgnoreCase(BaseXnatProjectdata.COLLABORATOR_GROUP))){
+        		error(new Exception("Unknown Access level:"+access_level), data);
+        	}
+        }
+        
+        if(p==null || p.contains("'")){
+        	error(new InvalidArgumentException(p),data);
+        }
+        
         XDATUser user = TurbineUtils.getUser(data);
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
         

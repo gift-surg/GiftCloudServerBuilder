@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
 import org.restlet.Context;
@@ -43,6 +44,12 @@ public class ScannerListing  extends SecureResource {
 		String scan_table=this.getQueryVariable("table");
 		if(scan_table==null){
 			scan_table="xnat_mrSessionData";
+		}else{
+			if(!(scan_table.equalsIgnoreCase("xnat_mrSessionData") || scan_table.equalsIgnoreCase("xnat_petSessionData") || scan_table.equalsIgnoreCase("xnat_ctSessionData"))){
+				AdminUtils.sendAdminEmail(user,"Possible SQL Injection attempt.", "User passed "+ scan_table+" as a table name.");
+				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        		return null;
+            }
 		}
 		
 		try {

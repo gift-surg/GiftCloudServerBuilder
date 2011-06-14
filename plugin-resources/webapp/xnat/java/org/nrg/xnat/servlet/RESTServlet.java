@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -47,6 +48,8 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.Lists;
 
 public class RESTServlet extends HttpServlet {
 	static org.apache.log4j.Logger logger = Logger.getLogger(RESTServlet.class);
@@ -150,8 +153,28 @@ public class RESTServlet extends HttpServlet {
 		}
 	}
 	
+
+	
+	public List<String> retrieveAllTags(final XDATUser user){
+		try {
+			return (List<String>)(XFTTable.Execute("SELECT DISTINCT tag from xdat_userGroup", user.getDBName(), user.getLogin()).convertColumnToArrayList("tag"));
+		} catch (SQLException e) {
+			logger.error("",e);
+		} catch (DBPoolException e) {
+			logger.error("",e);
+		}
+		
+		return Lists.newArrayList();
+	}
+	
 	private void returnProjectUsers(HttpServletRequest request, HttpServletResponse response,XDATUser user,String pID) throws IOException,SQLException,DBPoolException{
         response.setHeader("Cache-Control", "no-cache");
+        
+        if(!retrieveAllTags(user).contains(pID)){
+        	logger.error("Unknown Project ID: " + pID,new Exception());
+        	return;
+        }
+        
 		String query = "SELECT g.id AS \"GROUP_ID\", displayname,login,firstname,lastname,email FROM xdat_userGroup g RIGHT JOIN xdat_user_Groupid map ON g.id=map.groupid RIGHT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE tag='" + pID + "' ORDER BY g.id DESC;";
 		XFTTable table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
 

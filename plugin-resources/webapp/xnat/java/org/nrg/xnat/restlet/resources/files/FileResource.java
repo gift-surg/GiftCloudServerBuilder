@@ -16,6 +16,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.ElementNotFoundException;
@@ -112,6 +113,14 @@ public class FileResource extends ItemResource {
 			}
 			
 			String resourceID= (String)request.getAttributes().get("RESOURCE_ID");
+			try {
+				Integer.parseInt(resourceID);
+			} catch (NumberFormatException e1) {
+				//This should be a number, if not something shady is going on.
+				AdminUtils.sendAdminEmail(user,"Possible SQL Injection attempt.", "User passed "+ resourceID+" as a resource identifier.");
+				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        		return;
+			}
 			
 			index= (String)request.getAttributes().get("INDEX");
 			filename= (String)request.getAttributes().get("FILENAME");

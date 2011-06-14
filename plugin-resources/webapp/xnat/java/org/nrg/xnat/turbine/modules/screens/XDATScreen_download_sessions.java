@@ -5,16 +5,21 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.security.ElementSecurity;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.utils.StringUtils;
+
+import com.google.common.collect.Lists;
 
 public class XDATScreen_download_sessions extends SecureScreen {
 
@@ -56,6 +61,13 @@ public class XDATScreen_download_sessions extends SecureScreen {
             	" WHERE isd.ID IN (" + sessionString +") " +
             	                    ";";
             }else{
+            	if(!retrieveAllTags(TurbineUtils.getUser(data)).contains(project)){
+                	Exception e=new Exception("Unknown project: "+ project);
+                	logger.error("",e);
+                	this.error(e, data);
+                	return;
+                }
+            	
             	query= "SELECT expt.id,COALESCE(pp.label,expt.label,expt.id) AS IDS,modality"+
             	" FROM xnat_imageSessionData isd"+
             	" LEFT JOIN xnat_experimentData expt ON expt.id=isd.id"+
@@ -135,5 +147,16 @@ public class XDATScreen_download_sessions extends SecureScreen {
             context.put("resources", resources);
         }
     }
+	public List<String> retrieveAllTags(final XDATUser user){
+		try {
+			return (List<String>)(XFTTable.Execute("SELECT DISTINCT id from xnat_projectData;", user.getDBName(), user.getLogin()).convertColumnToArrayList("id"));
+		} catch (SQLException e) {
+			logger.error("",e);
+		} catch (DBPoolException e) {
+			logger.error("",e);
+		}
+		
+		return Lists.newArrayList();
+	}
 
 }

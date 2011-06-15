@@ -2,7 +2,6 @@ package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.SyncFailedException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -335,7 +334,7 @@ public final class PrearcDatabase {
         final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
 
         LockAndSync<java.lang.Void> l =  new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()) {
-            java.lang.Void extSync() throws SyncFailedException {
+            java.lang.Void extSync() throws PrearcDatabase.SyncFailedException {
                 PrearcDatabase.sessionDelegate.move(sd, newProj);
                 return null;
             }
@@ -379,7 +378,7 @@ public final class PrearcDatabase {
         }
 
         if(!ran){
-            throw new SyncFailedException("Operation Failed: " + e.getMessage());
+            wrapException(e);
         }		
         return true;
     }
@@ -459,7 +458,7 @@ public final class PrearcDatabase {
                 try {
                     return archiver.call();
                 } catch (Exception e) {
-                    throw new SyncFailedException(e.getMessage());
+                    throw new SyncFailedException(e.getMessage(),e);
                 }
             }
             void cacheSync() throws SQLException, SessionException, Exception {
@@ -488,9 +487,17 @@ public final class PrearcDatabase {
         }
 
         if(!ran){
-            throw new SyncFailedException("Operation Failed: " + e.getMessage());
+            wrapException(e);
         }		
         return l.s;
+    }
+    
+    public static void wrapException(Exception e) throws SyncFailedException{
+    	if((e instanceof SyncFailedException && e.getCause()!=null)){
+        	throw new SyncFailedException("Operation Failed: " + e.getCause().getMessage(),e.getCause());
+    	}else{
+        	throw new SyncFailedException("Operation Failed: " + e.getMessage(),e);
+    	}
     }
 
     public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project) throws Exception {
@@ -808,7 +815,7 @@ public final class PrearcDatabase {
         }
 
         if(!ran){
-            throw new SyncFailedException("Operation Failed: " + e.getMessage());
+            wrapException(e);
         }		
         return true;
     }
@@ -1037,7 +1044,7 @@ public final class PrearcDatabase {
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
                 throw e;
             }
-            catch (java.io.SyncFailedException e) {
+            catch (SyncFailedException e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
                 PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.ERROR);
@@ -1727,5 +1734,26 @@ public final class PrearcDatabase {
             }
         });
         return op.run();
+    }
+    
+    @SuppressWarnings("serial")
+	public static class SyncFailedException extends IOException{
+
+		public SyncFailedException() {
+			super();
+}
+
+		public SyncFailedException(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public SyncFailedException(String message) {
+			super(message);
+		}
+
+		public SyncFailedException(Throwable cause) {
+			super(cause);
+		}
+    	
     }
 }

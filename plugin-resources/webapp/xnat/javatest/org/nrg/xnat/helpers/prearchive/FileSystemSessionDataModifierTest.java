@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.SyncFailedException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xnat.helpers.prearchive.FileSystemSessionDataModifier.Move;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;

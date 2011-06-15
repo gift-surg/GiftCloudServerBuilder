@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +23,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nrg.test.BaseXDATTestCase;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
 public class PrearcDatabaseTest extends BaseXDATTestCase {

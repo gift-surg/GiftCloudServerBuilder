@@ -3,6 +3,7 @@ package org.nrg.xnat.helpers.prearchive;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
 /**
@@ -28,10 +29,10 @@ public abstract class SessionDataDelegate implements SessionDataProducerI, Sessi
 	public Collection<SessionData> get() throws IOException {
 		return this.sp.get();
 	}
-	public void move(SessionData s, String newProj) throws java.io.SyncFailedException {
+	public void move(SessionData s, String newProj) throws SyncFailedException {
 		this.sm.move(s, newProj);		
 	}
-	public void delete(SessionData sd) throws java.io.SyncFailedException {
+	public void delete(SessionData sd) throws SyncFailedException {
 		this.sm.delete(sd);
 	}
 	public void setStatus(SessionData sd, PrearcStatus status) {

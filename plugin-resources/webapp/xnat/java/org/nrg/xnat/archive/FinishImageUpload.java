@@ -6,7 +6,6 @@ package org.nrg.xnat.archive;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -90,8 +90,12 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			logger.error("",e);
 			throw new ServerException(e);
 		} catch (SyncFailedException e) {
-			logger.error("",e);
-			throw new ServerException(e);
+			if(e.getCause()!=null && e.getCause() instanceof ActionException){
+				throw (ActionException)e.getCause();
+			}else{
+				logger.error("",e);
+				throw new ServerException(e);
+			}
 		} catch (IOException e) {
 			logger.error("",e);
 			throw new ServerException(e);

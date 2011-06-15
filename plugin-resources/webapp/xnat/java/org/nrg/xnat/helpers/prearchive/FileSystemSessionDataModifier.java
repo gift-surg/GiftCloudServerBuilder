@@ -3,11 +3,11 @@ package org.nrg.xnat.helpers.prearchive;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.SyncFailedException;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.xml.sax.SAXException;
 /**

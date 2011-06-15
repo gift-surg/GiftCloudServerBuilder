@@ -5,7 +5,6 @@ package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
@@ -214,9 +214,19 @@ public final class PrearcSessionResource extends SecureResource {
                 } else {
                     this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "session document locked");
                 }
+            } catch (ActionException e) {
+                logger.error("",e);
+                setResponseStatus(e);
             } catch (InvalidPermissionException e) {
                 logger.error("",e);
                 this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+            } catch (SyncFailedException e) {
+                logger.error("",e);
+            	if(e.getCause()!=null && e.getCause() instanceof ActionException){
+            		setResponseStatus((ActionException)e.getCause());
+            	}else{
+                    this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+            	}
             } catch (Exception e) {
                 logger.error("",e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);

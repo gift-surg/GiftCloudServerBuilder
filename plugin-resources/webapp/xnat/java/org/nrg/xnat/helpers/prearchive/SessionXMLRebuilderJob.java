@@ -2,7 +2,6 @@ package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.SyncFailedException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -19,6 +18,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xnat.archive.FinishImageUpload;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

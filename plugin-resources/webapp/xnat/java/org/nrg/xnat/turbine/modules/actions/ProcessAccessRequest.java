@@ -12,9 +12,9 @@ import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jcs.access.exception.InvalidArgumentException;
 import org.apache.log4j.Logger;
-import org.apache.plexus.util.StringUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;

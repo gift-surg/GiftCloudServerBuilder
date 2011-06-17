@@ -172,18 +172,37 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   }
 
   this.getPage=function(page){
-    this.initCallback={
+    var that = this;
+    var initFailure =  function (o) {
+      if(o.status==401){
+	alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+	window.location=serverRoot+"/app/template/Login.vm";
+      }
+      /**
+       * If the returnes status is 500, one of the sortBy settings in the cookie was incorrect. In this case 
+       * just ignore the cookie and re-run the request.
+       */
+      else if (o.status == 500) {
+	var url = that.searchURI+"?format=xList&offset="+ ((page-1)*that.config.rowsPerPage) + "&limit="+that.config.rowsPerPage;
+	YAHOO.util.Connect.asyncRequest('GET', url, initCallback,null,that);
+      }
+      else{
+	document.getElementById(this.div_table_id).innerHTML="Failed to create search results.";}
+    };
+    this.onInit.fire();
+    var initCallback={
       success:this.showPage,
-      failure:this.initFailure,
+      failure:initFailure,
       scope:this
-    }
+    };
+
     openModalPanel("load_data","Loading data...");
     this.purge();
 
     document.getElementById(this.div_table_id).innerHTML = "";
-
-    YAHOO.util.Connect.asyncRequest('GET',this.searchURI+"?format=xList"+this.generateRequest(page),this.initCallback,null,this);
-  }
+    
+    YAHOO.util.Connect.asyncRequest('GET',this.searchURI+"?format=xList"+this.generateRequest(page),initCallback,null,this);
+  };
 
   this.generateRequest=function(page){
     var request="&offset=" + ((page-1)*this.config.rowsPerPage) + "&limit="+this.config.rowsPerPage;

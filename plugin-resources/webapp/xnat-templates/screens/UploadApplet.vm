@@ -24,7 +24,7 @@
 
 <APPLET CODE="org.nrg.upload.ui.UploadAssistantApplet"
   CODEBASE="$content.getURI("applet/")"
-  ARCHIVE="UploadAssistant-1.5.2.jar,wizard-0.998.2b1.jar,json-20080701.jar,DicomUtils-1.1.0.jar,DicomEdit-1.5.0.jar,dcm4che-core-2.0.24.jar,log4j-1.2.15.jar,slf4j-api-1.6.1.jar,slf4j-log4j12-1.6.1.jar,antlr-runtime-3.2.jar,stringtemplate-3.2.jar,ecat-io-0.1.0.jar,ecat-edit-0.1.2.jar,guava-r08.jar,dicom-xnat-sop-1.5.1.jar,dicom-xnat-util-1.5.1.jar"
+  ARCHIVE="UploadAssistant-1.5.2.jar,wizard-1.0.0.jar,json-20080701.jar,DicomUtils-1.1.0.jar,DicomEdit-1.5.0.jar,dcm4che-core-2.0.24.jar,log4j-1.2.15.jar,slf4j-api-1.6.1.jar,slf4j-log4j12-1.6.1.jar,antlr-runtime-3.2.jar,stringtemplate-3.2.jar,ecat-io-0.1.0.jar,ecat-edit-0.1.2.jar,guava-r08.jar,dicom-xnat-sop-1.5.1.jar,dicom-xnat-util-1.5.1.jar"
   width="800"
   height="500"
   MAYSCRIPT>

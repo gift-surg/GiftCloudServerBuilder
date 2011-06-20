@@ -1,4 +1,4 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+// Copyright 2010,2011 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.servlet;
 
 import java.io.IOException;
@@ -22,8 +22,10 @@ import com.google.common.base.Strings;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
 public class XNATRestletServlet extends ServerServlet {
-    private static final long serialVersionUID = 1035552647328611333L;
-    
+    private static final long serialVersionUID = 1592366035839385170L;
+
+    private DicomSCP dicomSCP = null;
+
     public static ServletConfig REST_CONFIG=null;
     @Override
     public void init() throws ServletException {
@@ -34,18 +36,27 @@ public class XNATRestletServlet extends ServerServlet {
         try {
             PrearcDatabase.initDatabase();
         } catch (Exception e) {
-        	logger().error("Unable to initialize prearchive database : ", e);
+            logger().error("Unable to initialize prearchive database", e);
         }
 
-        startDicomSCP();
+        dicomSCP = startDicomSCP();
     }
-    
+
+    @Override
+    public void destroy() {
+        if (null != dicomSCP) {
+            dicomSCP.stop();
+            dicomSCP = null;
+        }
+        super.destroy();
+    }
+
     private static Logger logger() { return LoggerFactory.getLogger(XNATRestletServlet.class); }
-    
+
     /**
      * Create and start a DICOM SCP
      */
-    public static void startDicomSCP() {
+    public static DicomSCP startDicomSCP() {
         try {
             final ArcArchivespecification arcspec = ArcSpecManager.GetInstance();
 
@@ -55,26 +66,31 @@ public class XNATRestletServlet extends ServerServlet {
                 user = DicomSCP.getUser(properties); 
             } catch (Throwable t) {
                 logger().error("Not starting DICOM C-STORE SCP: unable to get user", t);
-                return;
+                return null;
             }
             final int port;
             try {
                 port = DicomSCP.getPort(properties, arcspec.getDcm_dcmPort());
             } catch (Throwable t) {
                 logger().error("Not starting DICOM C-STORE SCP: unable to get port", t);
-                return;
+                return null;
             }
 
             final String aetitle = arcspec.getDcm_dcmAe();
             if (Strings.isNullOrEmpty(aetitle)) {
                 logger().info("Not starting DICOM C-STORE SCP: no DICOM AE title defined");
+                return null;
             } else {
-                DicomSCP.makeSCP(user, aetitle, port).start();
+                final DicomSCP scp = DicomSCP.makeSCP(user, aetitle, port);
+                scp.start();
+                return scp;
             }
         } catch (IOException e) {
             logger().error("error starting DICOM SCP", e);
+            return null;
         } catch (Throwable t) {
             logger().error("unexpected error starting DICOM SCP", t);
+            return null;
         }
     }
 

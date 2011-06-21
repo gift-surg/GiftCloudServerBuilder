@@ -465,6 +465,25 @@ public class XnatPipelineLauncher {
 	       return xnatPipelineLauncher;
 	   }
 
+    public static  XnatPipelineLauncher GetBareLauncherForExperiment(RunData data, Context context, XnatExperimentdata imageSession) throws Exception  {
+	       XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(data,context);
+	       xnatPipelineLauncher.setSupressNotification(true);
+	       UserI user = TurbineUtils.getUser(data);
+	       xnatPipelineLauncher.setParameter("useremail", user.getEmail());
+	       xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
+	       xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
+	       xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
+		    xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
+
+		    xnatPipelineLauncher.setId(imageSession.getId());
+			xnatPipelineLauncher.setLabel(imageSession.getLabel());
+			xnatPipelineLauncher.setDataType(imageSession.getXSIType());
+			xnatPipelineLauncher.setExternalId(imageSession.getProject());
+
+	       //xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
+
+	       return xnatPipelineLauncher;
+	   }
     
     public static  XnatPipelineLauncher GetLauncher(RunData data, Context context, XnatImagesessiondata imageSession) throws Exception  {
 	       XnatPipelineLauncher xnatPipelineLauncher = GetLauncherForExperiment(data,context, imageSession);

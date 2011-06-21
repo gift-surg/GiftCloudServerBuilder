@@ -161,7 +161,7 @@
     bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>SUBJECT:#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
     #end
     #if($imageSession)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$imageSession.getXSIType()").addPathInfo("search_field","${imageSession.getXSIType()}.ID").addPathInfo("search_value","$imageSession.getId()").addPathInfo("project","$project")'>SESSION:#if($!imageSession.getIdentifier($project,true))$!imageSession.getIdentifier($project,true)#elseif($imageSession.getLabel())$!imageSession.getLabel()#else$!imageSession.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$imageSession.getXSIType()").addPathInfo("search_field","$imageSession.getXSIType().ID").addPathInfo("search_value","$imageSession.getId()").addPathInfo("project","$project")'>SESSION:#if($!imageSession.getIdentifier($project,true))$!imageSession.getIdentifier($project,true)#elseif($imageSession.getLabel())$!imageSession.getLabel()#else$!imageSession.getId()#end</A>&nbsp;>&nbsp;";
     #end
     #if($page_name)
     #if($om.Id)

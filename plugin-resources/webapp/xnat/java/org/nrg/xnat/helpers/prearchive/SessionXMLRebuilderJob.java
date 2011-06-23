@@ -83,7 +83,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
 				double interval = (double) _map.getIntValue("interval");
 				double diff = diffInMinutes(then, now);
 				if (diff >= interval) {
-					logger.error("commiting " + s.getExternalUrl());
+					logger.info("commiting " + s.getExternalUrl());
 					try {
 						updated++;
 						if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {

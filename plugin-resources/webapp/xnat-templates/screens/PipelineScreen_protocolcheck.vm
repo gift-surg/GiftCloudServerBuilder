@@ -43,12 +43,12 @@ The following parameters have been set for the protocol validation pipeline
 <input type="hidden"  id=${dblQts}param[1].name.rowcount$dblQts name=${dblQts}param[1].name.rowcount$dblQts value="1"/>
 <td><input type="text" id=${dblQts}param[1][0].value$dblQts  name=${dblQts}param[1][0].value$dblQts value="$projectSettings.get("catalog_content").getCsvvalues()"/></td>
 </tr>
+#set ($notification_option=$projectSettings.get("notify").getCsvvalues())
 <tr>
 <td>notify</td>
 <input type="hidden"  id=${dblQts}param[5].name$dblQts name=${dblQts}param[5].name$dblQts value="notify"/>
 <input type="hidden"  id=${dblQts}param[5].name.rowcount$dblQts name=${dblQts}param[5].name.rowcount$dblQts value="1"/>
-<td><input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="1" checked/>Yes &nbsp;<input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="0"/>No</td>
-</tr>
+<TD><input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="0" #if ($notification_option.equals("0")) checked #end> Do not notify &nbsp; <input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="1"#if ($notification_option.equals("1")) checked #end>Do Notify <input type="radio" id=${dblQts}param[5][0].value$dblQts  name=${dblQts}param[5][0].value$dblQts value="2"#if ($notification_option.equals("2")) checked #end>Notify a list of people ONLY if validation fails</TD></tr>
 
 </table>
 

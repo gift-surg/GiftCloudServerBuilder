@@ -1739,10 +1739,10 @@ xdat_criteria_set.prototype.getFieldCount=function(){
 
 /*
  * 08/31/2010 (Aditya Siram) :  Some utility routines to be used
- * in this file are put into the Local namespace so as not to pollute
+ * in this file are put into the LocalSM namespace so as not to pollute
  * the global one.
  */
-var Local = {
+var LocalSM = {
   /*
    * The given substring is removed the given string
    * eg. "filter_string("h","helloworld") => "elloworld"
@@ -1751,7 +1751,7 @@ var Local = {
    * string : string to operate on.
    */
   filter_string : function (chars, string) {
-    return Local._filter_string(chars,"",string);
+    return LocalSM._filter_string(chars,"",string);
   },
   /* A private function of this namespace used by filter_string.
    * Do not call directly.
@@ -1764,7 +1764,7 @@ var Local = {
     else {
       var end_of_chars = pos + chars.length;
       accum = accum + string.substring(0,pos);
-      return Local._filter_string(chars,accum,string.substring(end_of_chars));
+      return LocalSM._filter_string(chars,accum,string.substring(end_of_chars));
     }
   }
 }
@@ -1784,9 +1784,9 @@ xdat_stored_search.prototype.renderFilterDisplay=function(){
 			   * returns these values - but until that is answered the following seems to work. Hopefully
 			   * the tokens I am removing are never a valid part of the value.
 			   */
-			  var step_1 = Local.filter_string("%<", this.SearchWhere[0].toString(this.RootElementName,this));
-			  var step_2 = Local.filter_string(">%", step_1);
-			  var step_3 = Local.filter_string("%", step_2);
+			  var step_1 = LocalSM.filter_string("%<", this.SearchWhere[0].toString(this.RootElementName,this));
+			  var step_2 = LocalSM.filter_string(">%", step_1);
+			  var step_3 = LocalSM.filter_string("%", step_2);
    			  return "Filter(s):&nbsp;" + step_3;
    			}else{
    				var rfdswT="";

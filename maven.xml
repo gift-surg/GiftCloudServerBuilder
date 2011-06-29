@@ -584,6 +584,7 @@
 	<!--Configures Log4j properties                                     -->
 	<!-- ================================================================ -->
 	<goal name="xdat:configureLog4j">
+                <!-- Deployment/Tools log4j.properties -->
 		<!-- PROJECTS DIR -->
 		<maven:makeAbsolutePath var="xdat.project.logger.file" path="projects/${xdat.project.name}/log4j.properties" basedir="${basedir}"/>
 		<!-- DEPLOYMENTS DIR -->
@@ -591,6 +592,13 @@
 		<copy tofile="${xdat.deployment.logger.file}" file="${xdat.project.logger.file}"/>
 		<ant:replace file="${xdat.deployment.logger.file}" token="@LOG_DIR@" value="${basedir}/deployments/${xdat.project.name}/logs"/>
 		<ant:replace file="${xdat.deployment.logger.file}" token="\" value="/"/>
+
+                <!-- Web Application log4j.properties -->
+                <taskdef name="mergeProperty" classname="MergePropertiesTask" classpath="classes"/>
+                <ant:mergeProperty baseFile="${basedir}/plugin-resources/originals/log4j.properties" 
+                                overrideFile="${basedir}/projects/${xdat.project.name}/src/web-conf/log4j.merge.properties" 
+                                destFile="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties"/>
+                <ant:replace file="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties" token="@TURBINE_APP_PACKAGE@" value="org.apache.turbine.app.${xdat.project.name}"/>
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Auto generates Java and SQL files for use in XDAT                                      -->

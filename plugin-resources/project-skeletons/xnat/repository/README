@@ -1,0 +1,12 @@
+
+NOTE:  When under the projects directory, this is the location to put jar dependencies that are specified
+in "projects/[project]/project-dependencies/dependencies.xml", but are not available in a central Maven repository.
+Files and directories placed here will be copied into the plugin-resources/repository directory (the local 
+maven repository) that contains XNAT-supplied dependency files and any dependencies downloaded from a remote
+maven repository.  These dependency files will be made available for program compilation during the build phase 
+as well as for deployment with the web application.
+
+Jar files should not be placed at the top level of this directory.  Rather, dependencies placed here should
+be organized as expected in a Maven repository, in accordance with their specification in "dependencies.xml",
+so they can located by Maven.  For information regarding this, please consult Maven project documentation.
+

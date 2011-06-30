@@ -39,6 +39,7 @@
 			<attainGoal name="xdat:testDB"/>
 			<attainGoal name="xdat:verifyPLPGSQL"/>
 		</j:if>
+		<attainGoal name="xdat:copyProjectRepositoryFiles"/>
 		<attainGoal name="xdat:copyMavenJars"/>
 		<!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
     <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
@@ -76,6 +77,18 @@
 		</j:if>
 		<!-- INVOKE PIPELINE SETUP -->
 		<attainGoal name="pipeline:init"/>
+	</goal>
+	<!-- ================================================================ -->
+	<!-- Copies project level jar files to local maven repository (plugin-resources/repository)             -->
+	<!-- ================================================================ -->
+	<goal name="xdat:copyProjectRepositoryFiles" description="Copies project level jar files to plugin-resources repository">
+		<u:available file="${basedir}/projects/${xdat.project.name}/repository">
+			<copy todir="${basedir}/plugin-resources/repository" preservelastmodified="true" overwrite="true">
+				<fileset dir="${basedir}/projects/${xdat.project.name}/repository">
+				   <exclude name="README"/>
+	                        </fileset>
+			</copy>
+		</u:available>
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Copies core Maven jars to the user's repository                                                    -->
@@ -157,6 +170,7 @@
 			<attainGoal name="xdat:testDB"/>
 			<attainGoal name="xdat:verifyPLPGSQL"/>
 		</j:if>
+		<attainGoal name="xdat:copyProjectRepositoryFiles"/>
 		<attainGoal name="xdat:manageProjectXML"/>
 		<attainGoal name="xdat:setupLib"/>
 		<attainGoal name="xdat:clean"/>
@@ -433,6 +447,7 @@
 		<copy todir="deployments/${xdat.project.name}" preservelastmodified="true">
 			<fileset dir="${basedir}/projects/${xdat.project.name}">
 				<exclude name="log4j.properties"/>
+				<exclude name="**/repository/**"/>
 			</fileset>
 		</copy>
 		<copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">

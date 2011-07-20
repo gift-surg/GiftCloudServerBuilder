@@ -201,10 +201,12 @@ public class UserCacheResource extends SecureResource {
         columns.add("URI");
         XFTTable table=new XFTTable();
         table.initTable(columns);
+        if(fileArray!=null){
         for (File f : fileArray) {
         	String fn=f.getName();
         	Object[] oarray = new Object[] { fn, constructURI(fn) };
         	table.insertRow(oarray);
+        }
         }
         
         sendTableRepresentation(table,true);

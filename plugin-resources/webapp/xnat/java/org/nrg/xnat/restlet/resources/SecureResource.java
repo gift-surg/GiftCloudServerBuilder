@@ -560,11 +560,11 @@ public abstract class SecureResource extends Resource {
 				item= populater.getItem();
 			
 		} catch (XFTInitException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		} catch (ElementNotFoundException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		} catch (FieldNotFoundException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		return item;
 	}

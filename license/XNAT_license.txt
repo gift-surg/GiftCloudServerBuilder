@@ -1,52 +1,15 @@
-XNAT Software License Agreement
-Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+License
+Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) / Washington University
+All rights reserved.
 
-This license is between the user (you) and the copyright holders.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+·	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+·	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+·	Neither the names of Washington University, Harvard University and HHMI nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-The license granted in this Agreement includes without limitation the right to (i) incorporate 
-the software ("XNAT") into other proprietary programs (subject to any restrictions applicable 
-to such programs), (ii) add your own copyright statement to your modifications of the software, 
-and (iii) provide additional or different license terms and conditions in your sublicenses of 
-modifications of the software; provided that your use, reproduction and distribution of such 
-modifications otherwise complies with the conditions stated in this Agreement.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-   1. Redistribution and use, with or without modification, must retain the author's(s') copyright 
-	notice(s) as documented in the source code. Redistributions in binary code must reproduce 
-	the author's(s') copyright notice(s) as documented in the source code. This list of conditions,
-	the disclaimer in the documentation and/or other materials provided with the distribution must
-	also be retained or reproduced.
-   2. None of the names, logos, or trademarks of Harvard and HHMI, any Licensor or any of Licensor's
-	affiliates or any of the Contributors may be used to endorse or promote products produced
-	in whole or in part by operation of the software or derived from or based on the software 
-	without specific prior written permission from the applicable party.
-   3. The acknowledgment "This product includes XNAT, developed by Randy Buckner at Harvard University
-	and the Neuroinformatics Research Group at Washington University School of Medicine" shall 
-	apply to all copies of complete or substantial portions of the software, including without 
-	limitation all source and executable forms, and on any user documentation.
-   4. The software has been designed for research purposes only and has not been approved for 
-	clinical use. It has not been reviewed or approved by the Food and Drug Administration or
-	by any other agency. You acknowledge and agree that clinical applications are neither 
-	recommended nor advised.
-   5. You are responsible for purchasing any external software that may be required for the proper 
-	running of this software. You also agree that you are solely responsible for informing your 
-	sublicensees, including without limitation your end-users, of their obligations to secure any
-	such required permissions. You further agree that you are solely responsible for determining 
-	and divulging the viral nature of any code included in the software.
-   6. We request that you acknowledge the support of XNAT in publications that utilize the software 
-	such as by "This product includes XNAT, developed by Randy Buckner at Harvard University and 
-	the Neuroinformatics Research Group at Washington University School of Medicine" and/or by 
-	direct citation.
+Acknowledgements 
+XNAT is developed by Randy Buckner at Harvard University and the Neuroinformatics Research Group at Washington University School of Medicine with contributions from developers around the world. We request that you acknowledge the support of XNAT in publications that utilize the software such as by "This product includes XNAT, developed by Randy Buckner at Harvard University and the Neuroinformatics Research Group at Washington University School of Medicine” and/or by citing:
 
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESSED OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT, ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNERS OR 
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
-OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. ANY USE, REPRODUCTION OR DISTRIBUTION OF THE
-SOFTWARE WHICH IS NOT IN ACCORDANCE WITH THIS AGREEMENT SHALL AUTOMATICALLY REVOKE ALL RIGHTS GRANTED TO 
-YOU UNDER THIS AGREEMENT AND RENDER THIS AGREEMENT NULL AND VOID. THIS AGREEMENT DOES NOT GRANT ANY RIGHTS
-IN OR TO ANY INTELLECTUAL PROPERTY OWNED BY LICENSOR OR ANY CONTRIBUTOR EXCEPT THOSE RIGHTS EXPRESSLY 
-GRANTED HEREUNDER.
+Marcus, D.S., Olsen T., Ramaratnam M., and Buckner, R.L. (2007)The Extensible Neuroimaging Archive Toolkit (XNAT): An informatics platform for managing, exploring, and sharing neuroimaging data. Neuroinformatics 5(1): 11-34.

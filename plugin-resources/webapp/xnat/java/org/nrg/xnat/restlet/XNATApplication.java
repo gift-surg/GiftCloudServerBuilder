@@ -37,6 +37,7 @@ import org.nrg.xnat.restlet.resources.files.DIRResource;
 import org.nrg.xnat.restlet.resources.files.FileList;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.restlet.services.Importer;
+import org.nrg.xnat.restlet.services.MoveFiles;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchDelete;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchMove;
 import org.nrg.xnat.restlet.transaction.monitor.SQListenerRepresentation;
@@ -222,6 +223,7 @@ public class XNATApplication extends Application {
         router.attach("/services/archive",Archiver.class);
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
+        router.attach("/services/move-files",MoveFiles.class);
         
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
         

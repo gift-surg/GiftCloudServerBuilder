@@ -23,4 +23,8 @@ public class UserUtils {
 	public static File getUserCacheFile(final XDATUser user, final String directory, final String file){
 		return new File(new File(getUserCacheUploadsPath(user),directory),file);
 	}
+	
+	public static File getUserCacheFile(final XDATUser user, final String directory){
+		return new File(getUserCacheUploadsPath(user),directory);
+	}
 }

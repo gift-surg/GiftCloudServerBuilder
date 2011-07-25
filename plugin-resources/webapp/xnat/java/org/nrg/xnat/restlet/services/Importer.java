@@ -1,9 +1,6 @@
 package org.nrg.xnat.restlet.services;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -11,17 +8,18 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusList;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.helpers.file.StoredFile;
 import org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue;
 import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
+import org.nrg.xnat.helpers.uri.URIManager;
+import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
-import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.actions.importer.ImporterNotFoundException;
@@ -211,10 +209,10 @@ public class Importer extends SecureResource {
 			sb.append("</head><body class='yui-skin-sam'>");
 			
 			for(final String s: response){
-				final DataURIA obj;
+				final URIManager.DataURIA obj;
 				try {
 					obj = UriParserUtils.parseURI(s);
-					if(obj instanceof UriParserUtils.ArchiveURI){
+					if(obj instanceof URIManager.ArchiveURI){
 						//is an archive session
 						archList.add(s);
 					}else{
@@ -289,39 +287,11 @@ public class Importer extends SecureResource {
 		File f=UserUtils.getUserCacheFile(user, (String)map.get("XNAME"), (String)map.get("FILE"));
 
 		if(f.exists()){
-			return new UserCacheFile(f);
+			return new StoredFile(f,true);
 		}else{
 			throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown src file.",new Exception());
 		}
 	}
-
-	class UserCacheFile implements FileWriterWrapperI{
-		final File stored;
-
-		public UserCacheFile(final File f){
-			stored=f;
-		}
-
-		public void write(File f) throws IOException {
-			FileUtils.moveFile(stored, f);
-		}
-
-		public String getName() {
-			return stored.getName();
-		}
-
-		public InputStream getInputStream() throws IOException {
-			return new FileInputStream(stored);
-		}
-
-		public void delete() {
-			if(stored.exists())FileUtils.deleteQuietly(stored);
-		}
-
-		@Override
-		public UPLOAD_TYPE getType() {
-			return UPLOAD_TYPE.OTHER;
-		}};
 
 	public String convertListURItoString(final List<String> response){
 		StringBuffer sb = new StringBuffer();

@@ -28,6 +28,7 @@ import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
@@ -131,7 +132,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 
 			XnatImagesessiondata expt=null;
 			
-			final UriParserUtils.DataURIA destination=(!StringUtils.isEmpty(dest))?UriParserUtils.parseURI(dest):null;
+			final URIManager.DataURIA destination=(!StringUtils.isEmpty(dest))?UriParserUtils.parseURI(dest):null;
 			
 			String project=null;
 			
@@ -140,7 +141,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			
 			//check for existing session by URI
 			if(destination!=null){
-				if(destination instanceof UriParserUtils.PrearchiveURI){
+				if(destination instanceof URIManager.PrearchiveURI){
 					prearc_parameters.putAll(destination.getProps());
 				}else{
 					project=PrearcImporterHelper.identifyProject(destination.getProps());
@@ -148,11 +149,11 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 						prearc_parameters.put("project", project);
 					}
 			
-					if(destination.getProps().containsKey(UriParserUtils.SUBJECT_ID)){
-						prearc_parameters.put("subject_ID", destination.getProps().get(UriParserUtils.SUBJECT_ID));
+					if(destination.getProps().containsKey(URIManager.SUBJECT_ID)){
+						prearc_parameters.put("subject_ID", destination.getProps().get(URIManager.SUBJECT_ID));
 					}
 			
-					String expt_id=(String)destination.getProps().get(UriParserUtils.EXPT_ID);
+					String expt_id=(String)destination.getProps().get(URIManager.EXPT_ID);
 					if(!StringUtils.isEmpty(expt_id)){
 						expt=getExperimentByIdorLabel(project, expt_id,user);
 					}
@@ -171,12 +172,12 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				}
 				
 				//check for existing experiment by params
-				if(prearc_parameters.containsKey(UriParserUtils.SUBJECT_ID)){
-					prearc_parameters.put("xnat:subjectAssessorData/subject_ID", prearc_parameters.get(UriParserUtils.SUBJECT_ID));
+				if(prearc_parameters.containsKey(URIManager.SUBJECT_ID)){
+					prearc_parameters.put("xnat:subjectAssessorData/subject_ID", prearc_parameters.get(URIManager.SUBJECT_ID));
 				}
 									
-				String expt_id=(String)prearc_parameters.get(UriParserUtils.EXPT_ID);
-				String expt_label=(String)prearc_parameters.get(UriParserUtils.EXPT_LABEL);
+				String expt_id=(String)prearc_parameters.get(URIManager.EXPT_ID);
+				String expt_label=(String)prearc_parameters.get(URIManager.EXPT_LABEL);
 				if(!StringUtils.isEmpty(expt_id)){
 					expt=getExperimentByIdorLabel(project, expt_id,user);
 				}
@@ -211,7 +212,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			}
 			
 			//if prearc=destination, then return
-			if(destination!=null && destination instanceof UriParserUtils.PrearchiveURI){
+			if(destination!=null && destination instanceof URIManager.PrearchiveURI){
 				this.completed("Successfully uploaded " + sessions.size() +" sessions to the prearchive.");
 				resetStatus(sessions);
 				return returnURLs(sessions);
@@ -276,9 +277,9 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			try {
 				Map<String,Object> sess=PrearcUtils.parseURI(ps.getUrl().toString());
 				try {
-					PrearcUtils.addSession(user, (String) sess.get(UriParserUtils.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.addSession(user, (String) sess.get(URIManager.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				} catch (SessionException e) {
-					PrearcUtils.resetStatus(user, (String) sess.get(UriParserUtils.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.resetStatus(user, (String) sess.get(URIManager.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				}
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);

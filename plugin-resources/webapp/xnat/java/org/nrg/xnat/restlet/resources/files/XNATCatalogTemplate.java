@@ -2,9 +2,7 @@
 package org.nrg.xnat.restlet.resources.files;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -12,17 +10,17 @@ import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xdat.om.XnatResource;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
 import org.nrg.xnat.helpers.resource.direct.DirectAssessResourceImpl;
 import org.nrg.xnat.helpers.resource.direct.DirectExptResourceImpl;
 import org.nrg.xnat.helpers.resource.direct.DirectProjResourceImpl;
 import org.nrg.xnat.helpers.resource.direct.DirectReconResourceImpl;
-import org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA;
+import org.nrg.xnat.helpers.resource.direct.DirectResourceModifierBuilder;
+import org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI;
+import org.nrg.xnat.helpers.resource.direct.ResourceModifierA;
 import org.nrg.xnat.helpers.resource.direct.DirectScanResourceImpl;
 import org.nrg.xnat.helpers.resource.direct.DirectSubjResourceImpl;
 import org.restlet.Context;
@@ -147,63 +145,52 @@ public class XNATCatalogTemplate extends XNATTemplate {
 	
     public XnatResourceInfo buildResourceInfo(){
 		XnatResourceInfo info = new XnatResourceInfo();
-        
+        		
+		final String description;
 	    if(this.getQueryVariable("description")!=null){
-	    	info.setDescription(this.getQueryVariable("description"));
-	    }
-	    if(this.getQueryVariable("format")!=null){
-	    	info.setFormat(this.getQueryVariable("format"));
-	    }
-	    if(this.getQueryVariable("content")!=null){
-	    	info.setContent(this.getQueryVariable("content"));
+	    	description=this.getQueryVariable("description");
+	    }else{
+	    	description=null;
 	    }
 	    
-	    if(this.getQueryVariables("tags")!=null){
-	    	String[] tags = this.getQueryVariables("tags");
-	    	for(String tag: tags){
-	    		tag = tag.trim();
-	    		if(!tag.equals("")){
-	    			for(String s:StringUtils.CommaDelimitedStringToArrayList(tag)){
-	    				s=s.trim();
-	    				if(!s.equals("")){
-	    		    		if(s.indexOf("=")>-1){
-	    		    			info.addMeta(s.substring(0,s.indexOf("=")),s.substring(s.indexOf("=")+1));
-	    		    		}else{
-	    		    			if(s.indexOf(":")>-1){
-		    		    			info.addMeta(s.substring(0,s.indexOf(":")),s.substring(s.indexOf(":")+1));
-		    		    		}else{
-		    		    			info.addTag(s);
-		    		    		}
-	    		    		}
-	    				}
-	    			}
-	    			
-	    		}
-	    	}
+	    final String format;
+	    if(this.getQueryVariable("format")!=null){
+	    	format=this.getQueryVariable("format");
+	    }else{
+	    	format=null;
 	    }
-		
-		return info;
+	    
+	    final String content;
+	    if(this.getQueryVariable("content")!=null){
+	    	content=this.getQueryVariable("content");
+	    }else{
+	    	content=null;
+	    }
+	    
+	    String[] tags;
+	    if(this.getQueryVariables("tags")!=null){
+	    	tags = this.getQueryVariables("tags");
+	    }else{
+	    	tags=null;
+	    }
+	    		
+		return XnatResourceInfo.buildResourceInfo(description, format, content, tags);
 	}
 	
-	protected DirectResourceModifierA buildResourceModifier() throws Exception{
+	protected ResourceModifierA buildResourceModifier(final boolean overwrite) throws Exception{
 		XnatImagesessiondata assessed=null;
 		
 		if(this.assesseds.size()==1)assessed=(XnatImagesessiondata)assesseds.get(0);
         
+		//this should allow dependency injection - TO
+		final ResourceModifierBuilderI builder=new DirectResourceModifierBuilder();
+		
 		if(recons.size()>0){
-			//reconstruction			
-			if(assessed==null){
-				throw new Exception("Invalid session id");
-			}
-			
-			return new DirectReconResourceImpl(recons.get(0), assessed, type);
+			//reconstruction						
+			builder.setRecon(assessed,recons.get(0), type);
 		}else if(scans.size()>0){
 			//scan
-			if(assessed==null){
-				throw new Exception("Invalid session id");
-			}
-			
-			return new DirectScanResourceImpl(scans.get(0), assessed);
+			builder.setScan(assessed, scans.get(0));
 		}else if(expts.size()>0){
 			final XnatExperimentdata expt=this.expts.get(0);
 //			experiment
@@ -211,19 +198,20 @@ public class XNATCatalogTemplate extends XNATTemplate {
 			if(expt.getItem().instanceOf("xnat:imageAssessorData")){
 				if(assessed==null){
 					throw new Exception("Invalid session id");
-			}
+				}
 			
-				return new DirectAssessResourceImpl((XnatImageassessordata)expt,(XnatImagesessiondata)assessed,type);
+				builder.setAssess((XnatImagesessiondata)assessed, (XnatImageassessordata)expt, type);
 			}else{
-				return new DirectExptResourceImpl(proj,expt);
+				builder.setExpt(proj, expt);
 			}
-			
 		}else if(sub!=null){
-			return new DirectSubjResourceImpl(proj, sub);
+			builder.setSubject(proj, sub);
 		}else if(proj!=null){
-			return new DirectProjResourceImpl(proj);
+			builder.setProject(proj);
 		}else{
 			throw new Exception("Unknown resource");
-				}
-				}
-			}
+		}
+		
+		return builder.buildResourceModifier(overwrite,user);
+	}
+}

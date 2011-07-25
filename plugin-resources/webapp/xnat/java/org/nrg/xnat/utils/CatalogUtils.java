@@ -362,7 +362,7 @@ public class CatalogUtils {
 	public final static String[] FILE_HEADERS = {"Name","Size","URI","collection","file_tags","file_format","file_content","cat_ID"};
 	public final static String[] FILE_HEADERS_W_FILE = {"Name","Size","URI","collection","file_tags","file_format","file_content","cat_ID","file"};
 
-	public static boolean storeCatalogEntry(final FileWriterWrapperI fi, final String dest, final XnatResourcecatalog catResource, final XnatProjectdata proj, final boolean extract, final XnatResourceInfo info) throws IOException, Exception {
+	public static boolean storeCatalogEntry(final FileWriterWrapperI fi, String dest, final XnatResourcecatalog catResource, final XnatProjectdata proj, final boolean extract, final XnatResourceInfo info,final boolean overwrite) throws IOException, Exception {
 		final File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
 		final String parentPath = catFile.getParent();
 		final CatCatalogBean cat = catResource.getCleanCatalog(proj.getRootArchivePath(), false);
@@ -372,9 +372,14 @@ public class CatalogUtils {
 		int index = filename.lastIndexOf('\\');
 		if (index < filename.lastIndexOf('/')) {
 			index = filename.lastIndexOf('/');
-}
+		}
+		
 		if (index > 0) {
 			filename = filename.substring(index + 1);
+		}
+		
+		if(dest==null){
+			dest=filename;
 		}
 	
 		String compression_method = ".zip";
@@ -383,7 +388,10 @@ public class CatalogUtils {
 		}
 	
 		if (extract && (compression_method.equalsIgnoreCase(".tar") || compression_method.equalsIgnoreCase(".gz") || compression_method.equalsIgnoreCase(".zip") || compression_method.equalsIgnoreCase(".zar"))) {
-			final File destinationDir = catFile.getParentFile();
+			File destinationDir = catFile.getParentFile();
+			if(dest!=null){
+				destinationDir=new File(destinationDir,dest);
+			}
 			final InputStream is = fi.getInputStream();
 	
 			ZipI zipper = null;
@@ -397,7 +405,7 @@ public class CatalogUtils {
 			}
 	
 			@SuppressWarnings("unchecked")
-			final List<File> files = zipper.extract(is, destinationDir.getAbsolutePath());
+			final List<File> files = zipper.extract(is, destinationDir.getAbsolutePath(),overwrite);
 	
 			for (final File f : files) {
 				if (!f.isDirectory()) {
@@ -417,8 +425,12 @@ public class CatalogUtils {
 				}
 			}
 		} else {
-			final File saveTo = new File(parentPath, dest);
-	
+			final File saveTo = new File(parentPath, (dest!=null)?dest:filename);
+
+            if(saveTo.exists() && !overwrite){
+            	throw new IOException("File already exists"+saveTo.getCanonicalPath());
+            }
+            
 			saveTo.getParentFile().mkdirs();
 			fi.write(saveTo);
 	
@@ -435,13 +447,19 @@ public class CatalogUtils {
 			}
 		}
 	
-		final FileOutputStream fos = new FileOutputStream(catFile);
+		writeCatalogToFile(cat,catFile);
+	
+		return true;
+	}
+	
+	public static void writeCatalogToFile(CatCatalogI xml, File dest) throws Exception{
+		final FileOutputStream fos = new FileOutputStream(dest);
 		OutputStreamWriter fw;
 		try {
 			final FileLock fl = fos.getChannel().lock();
 			try {
 				fw = new OutputStreamWriter(fos);
-				cat.toXML(fw, true);
+				xml.toXML(fw);
 				fw.flush();
 			} finally {
 				fl.release();
@@ -449,14 +467,6 @@ public class CatalogUtils {
 		} finally {
 			fos.close();
 		}
-	
-		return true;
-	}
-	
-	public static void writeCatalogToFile(CatCatalogI xml, File dest) throws Exception{
-		FileWriter fw = new FileWriter(dest);
-		xml.toXML(fw);
-		fw.close();
 	}
 
 	

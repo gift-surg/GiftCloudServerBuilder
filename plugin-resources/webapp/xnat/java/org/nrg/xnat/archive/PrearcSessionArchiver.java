@@ -34,7 +34,7 @@ import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
-import org.nrg.xnat.helpers.uri.UriParserUtils;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
@@ -144,7 +144,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		String label = (String)params.get(PARAM_SESSION);
 
 		if(StringUtils.isEmpty(label)){
-			label = (String)params.get(UriParserUtils.EXPT_LABEL);
+			label = (String)params.get(URIManager.EXPT_LABEL);
 			}
 
 		if(StringUtils.isEmpty(label)){
@@ -187,7 +187,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		String subjectID =  (String)params.get(PARAM_SUBJECT);
 
 		if(!XNATUtils.hasValue(subjectID)){
-			subjectID = (String)params.get(UriParserUtils.SUBJECT_ID);
+			subjectID = (String)params.get(URIManager.SUBJECT_ID);
 			}
 
 		if(!XNATUtils.hasValue(subjectID)){

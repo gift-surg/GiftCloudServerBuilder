@@ -41,18 +41,18 @@ public class FileUtils {
 	}
 
 	/**
-	 * This attempts to retrieve the XNAT version from the tags file. Failing
-	 * that, it will use the previous VERSION file. The tags file is copied in
-	 * from the .hgtags file in the Mercurial repository and works for
-	 * installations that are built from source in a connected HG repository.
+         * This attempts to retrieve the XNAT version from the tags file in the {@link
+         * XFT#GetConfDir() default configuration folder}. Failing that, it will use
+         * the VERSION file. The tags file is copied in from the .hgtags file in the
+         * Mercurial repository and works for installations that are built from source
+         * in a connected HG repository.
 	 * 
-	 * @param location
-	 *            The location of the tags and VERSION files. This is usually
-	 *            the WEB-INF/conf folder in your web application installation.
 	 * @return The current version of XNAT as a String.
 	 */
-	public static String getXNATVersion(final String location) throws IOException {
-		if (org.apache.commons.lang.StringUtils.isEmpty(location)) {
+        public static String getXNATVersion() throws IOException {
+                final String location = XFT.GetConfDir();
+
+                if (StringUtils.isEmpty(location)) {
 			throw new IOException("Can't look for version in empty location.");
 		}
 

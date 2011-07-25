@@ -21,10 +21,11 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
+import org.nrg.xnat.helpers.uri.URIManager;
+import org.nrg.xnat.helpers.uri.URIManager.ArchiveURI;
+import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
+import org.nrg.xnat.helpers.uri.URIManager.PrearchiveURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
-import org.nrg.xnat.helpers.uri.UriParserUtils.ArchiveURI;
-import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
-import org.nrg.xnat.helpers.uri.UriParserUtils.PrearchiveURI;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.prearchive.BatchPrearchiveActionsA;
 import org.nrg.xnat.restlet.util.RequestUtil;
@@ -130,20 +131,20 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				return;
 			}else if(srcs!=null){
 				for(final String src: srcs){
-					DataURIA data;
+					URIManager.DataURIA data;
 					try {
 						data = UriParserUtils.parseURI(src);
 					} catch (MalformedURLException e) {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 						return;
 					}
-					if(data instanceof ArchiveURI){
+					if(data instanceof URIManager.ArchiveURI){
 						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid src URI (" + src +")");
 						return;
 					}
 					
 					try {
-						sessions.add(new PrearcSession((PrearchiveURI)data,additionalValues,user));
+						sessions.add(new PrearcSession((URIManager.PrearchiveURI)data,additionalValues,user));
 					} catch (InvalidPermissionException e) {
 						throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, data.getUri());
 					} catch (Exception e) {
@@ -151,14 +152,14 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					}
 				}
 			}else if(dest!=null){
-				DataURIA data;
+				URIManager.DataURIA data;
 				try {
 					data = UriParserUtils.parseURI(dest);
 				} catch (MalformedURLException e) {
 					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 					return;
 				}
-				if(data instanceof PrearchiveURI){
+				if(data instanceof URIManager.PrearchiveURI){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid dest URI (" + dest +")");
 					return;
 				}

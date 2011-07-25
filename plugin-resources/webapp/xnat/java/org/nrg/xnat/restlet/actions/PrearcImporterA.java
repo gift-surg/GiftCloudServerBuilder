@@ -24,8 +24,8 @@ import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
-import org.nrg.xnat.helpers.uri.UriParserUtils;
-import org.nrg.xnat.helpers.uri.UriParserUtils.PrearchiveURI;
+import org.nrg.xnat.helpers.uri.URIManager;
+import org.nrg.xnat.helpers.uri.URIManager.PrearchiveURI;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
@@ -122,8 +122,8 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 			project=isd.getProject();
 		}
 
-		public PrearcSession(PrearchiveURI parsedURI,final Map<String,Object> additionalValues,final XDATUser user) throws InvalidPermissionException, Exception{
-			this((String)parsedURI.getProps().get(UriParserUtils.PROJECT_ID),
+		public PrearcSession(URIManager.PrearchiveURI parsedURI,final Map<String,Object> additionalValues,final XDATUser user) throws InvalidPermissionException, Exception{
+			this((String)parsedURI.getProps().get(URIManager.PROJECT_ID),
 					(String)parsedURI.getProps().get(PrearcUtils.PREARC_TIMESTAMP),
 					(String)parsedURI.getProps().get(PrearcUtils.PREARC_SESSION_FOLDER), additionalValues,user);
 		}

@@ -126,39 +126,9 @@ public final class PrearcSessionListResource extends SecureResource {
 			if(requestedProject!=null){
 				path = StringUtils.join(new String[]{path,"/",requestedProject});
 			}
-		
-			ArrayList<String> validProjects = new ArrayList<String>();
-			ArrayList<String> invalidProjects =new ArrayList<String>();
-	
-			for(final String project:projects){
-				try {
-					if (PrearcUtils.validUser(user, project,false)) {
-						validProjects.add(project);
-			}
-					else {
-						invalidProjects.add(project);
-				}
-						} catch (Exception e) {
-							logger.error("Unable to check project permissions : ", e);
-							if(projects.size()==1){
-								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-						return null;
-					}
-				}
-			}
-	
-			if (invalidProjects.size() > 0) {
-				Iterator<String> i = invalidProjects.iterator();
-				if (projects.size()==1) {
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, 
-							                            "user " + user.getUsername() + " does not have create permissions " +
-							                     		"for the following projects : " + StringUtils.join(i, ','));
-				}
-				return null;
-			}
 						
 			try {
-				table = this.retrieveTable(validProjects);
+				table = this.retrieveTable(projects);
 			}
 			catch (SQLException e) {
 				logger.error("Unable to query prearchive table : ", e);
@@ -181,10 +151,7 @@ public final class PrearcSessionListResource extends SecureResource {
 	
 	public XFTTable retrieveTable(ArrayList<String> projects) throws Exception, SQLException, SessionException {
 		String [] _proj = new String[projects.size()];
-
 		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
-		//final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows());
-		
 		return table;
 	}
 	

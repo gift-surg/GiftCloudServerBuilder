@@ -25,12 +25,11 @@ public class VersionRepresentation extends Resource {
 
 	@Override
 	public Representation represent(Variant variant) {
-		final String location = XFT.GetConfDir();
 		if (logger.isDebugEnabled()) {
-			logger.debug("Getting XNAT version from the configuration folder: " + location);
+			logger.debug("Getting XNAT version from the default configuration folder");
 		}
 		try {
-			return new StringRepresentation(FileUtils.getXNATVersion(location));
+			return new StringRepresentation(FileUtils.getXNATVersion());
 		} catch (IOException exception) {
 			return new StringRepresentation("Unknown version");
 		}

@@ -100,23 +100,14 @@ public class ReportIssue extends SecureAction {
 		context.put("java_version", System.getProperty(JAVA_VERSION));
 		context.put("java_vendor", System.getProperty(JAVA_VENDOR));
 
-		context.put("xnat_version", getXNATVersion(data.getServletContext()));
+		context.put("xnat_version", FileUtils.getXNATVersion());
 
 		context.put("user", user);
-		context.put("postgres_version", (String) PoolDBUtils.ReturnStatisticQuery("SELECT version();", "version", user.getDBName(), user
-				.getLogin()));
+		context.put("postgres_version", (String) PoolDBUtils.ReturnStatisticQuery("SELECT version();", "version", user.getDBName(), user.getLogin()));
 
 		final StringWriter sw = new StringWriter();
 		Velocity.getTemplate("/screens/email/issue_report.vm").merge(context, sw);
 		return sw.toString();
-	}
-
-	private String getXNATVersion(ServletContext servletContext) throws IOException {
-		final String location = servletContext.getRealPath(location("WEB-INF", "conf", "VERSION"));
-		if (logger.isDebugEnabled()) {
-			logger.debug("Getting XNAT version from the configuration folder: " + location);
-		}
-		return FileUtils.getXNATVersion(location);
 	}
 
 	private void checkFolder(String path) {

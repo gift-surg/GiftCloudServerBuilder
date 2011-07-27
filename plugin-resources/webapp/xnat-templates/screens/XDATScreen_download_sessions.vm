@@ -71,6 +71,29 @@ function validateForm(){
      return true;
 
          
+	 
+	 
+   var allSessions = document.getElementsByName("resources");
+
+   for (var i=0;i<allSessions.length;i++){
+
+      if (allSessions[i].checked){
+
+        typeSelected=true;
+
+      }
+
+   }
+
+   
+
+   if (typeSelected)
+
+     return true;
+	 
+	 
+	 	 
+	 
 
    var allSessions = document.getElementsByName("recon");
 
@@ -108,11 +131,13 @@ function validateForm(){
 
    
 
-   if (typeSelected)
-
-     return true;
-
-   else{
+   if (typeSelected){
+   
+      return true;
+	  
+   }
+   
+   else {
 
      alert("Please select at least one format of imaging data to download from section 2.");
 
@@ -222,7 +247,7 @@ document.getElementById("dataTable").style.display="block";
 
  <TR>
 
-  <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['scan_type','scan_format','recon','assessors']);" ID="toggleAllSessions"/></TD>
+  <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['scan_type','scan_format','resources','recon','assessors']);" ID="toggleAllSessions"/></TD>
 
   <TD>Toggle All</TD>
 

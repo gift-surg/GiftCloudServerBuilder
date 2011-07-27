@@ -33,3 +33,8 @@ glob:work/templates/*
 glob:plugin-resources/repository/commons-lang/jars/commons-lang-2.0.jar*
 glob:target*
 build.properties.sample
+
+cache
+archive
+prearchive
+.hgignore

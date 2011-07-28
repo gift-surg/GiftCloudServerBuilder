@@ -995,7 +995,6 @@
 		</jar>
 		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
 		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
-		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-1.0.jar"/>
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Populates the root level lib directory                                      -->
@@ -1380,27 +1379,41 @@
 			</j:if>
 			<j:if test="${context.getVariable('pipeline.setup.exists') == 'true'}">
 				<ant:echo>Setting up pipeline engine in folder: ${pipeline.dir}</ant:echo>
-				<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
-					<ant:exec executable="cmd" failonerror="true">
-						<ant:arg value="/c"/>
-						<ant:arg value="${pipeline.dir}\setup.bat"/>
-						<ant:arg value="${xdat.admin_email}"/>
-						<ant:arg value="${xdat.smtp.server}"/>
-						<env key="JAVA_HOME" value="${JAVA_HOME}"/>
-						<env key="MAVEN_TERMINATE_CMD" value="on"/>
-					</ant:exec>
+				<j:if test="${context.getVariable('beans.jar.name') == null}">
+					<j:set var="beans.jar.name" value="beans"/>
 				</j:if>
-				<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
-					<ant:chmod perm="ugo+rx">
-						<fileset dir="${pipeline.dir}">
-							<filename name="setup.sh"/>
-						</fileset>
-					</ant:chmod>
-					<ant:echo>Launching setup.sh script</ant:echo>
-					<ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
-						<ant:arg value="${xdat.admin_email}"/>
-						<ant:arg value="${xdat.smtp.server}"/>
-					</ant:exec>
+				<j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar"/>
+				<j:set var="beans.jar.exists" value="false"/>
+				<u:available file="${beans.jar}">
+					<j:set var="beans.jar.exists" value="true"/>
+				</u:available>
+				<j:if test="${!context.getVariable('beans.jar.exists') == 'true'}">
+					<ant:echo>Couldn't locate the beans jar ${beans.jar}. This is required for pipeline initialization.</ant:echo>
+				</j:if>
+				<j:if test="${context.getVariable('beans.jar.exists') == 'true'}">
+					<copy file="${beans.jar}" tofile="${pipeline.dir}/lib/xdat-${beans.jar.name}-1.0.jar"/>
+					<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+						<ant:exec executable="cmd" failonerror="true">
+							<ant:arg value="/c"/>
+							<ant:arg value="${pipeline.dir}\setup.bat"/>
+							<ant:arg value="${xdat.admin_email}"/>
+							<ant:arg value="${xdat.smtp.server}"/>
+							<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+							<env key="MAVEN_TERMINATE_CMD" value="on"/>
+						</ant:exec>
+					</j:if>
+					<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
+						<ant:chmod perm="ugo+rx">
+							<fileset dir="${pipeline.dir}">
+								<filename name="setup.sh"/>
+							</fileset>
+						</ant:chmod>
+						<ant:echo>Launching setup.sh script</ant:echo>
+						<ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
+							<ant:arg value="${xdat.admin_email}"/>
+							<ant:arg value="${xdat.smtp.server}"/>
+						</ant:exec>
+					</j:if>
 				</j:if>
 			</j:if>
 		</j:if>

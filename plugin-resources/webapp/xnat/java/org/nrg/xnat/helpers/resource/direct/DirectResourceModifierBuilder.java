@@ -121,7 +121,7 @@ public class DirectResourceModifierBuilder implements ResourceModifierBuilderI {
 				throw new Exception("Invalid session id");
 			}
 		
-			return new DirectAssessResourceImpl((XnatImageassessordata)expt,(XnatImagesessiondata)assessed,type,overwrite,user);
+			return new DirectAssessResourceImpl((XnatImageassessordata)assess,(XnatImagesessiondata)assessed,type,overwrite,user);
 		}else if(expt!=null){
 			return new DirectExptResourceImpl(project, expt,overwrite,user);
 		}else if(subject!=null){

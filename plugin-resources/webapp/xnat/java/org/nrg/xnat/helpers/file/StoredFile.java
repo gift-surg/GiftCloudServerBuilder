@@ -19,7 +19,7 @@ public class StoredFile implements FileWriterWrapperI{
 	}
 	
 	public void write(File f) throws IOException {
-		if(f.isDirectory()){
+		if(f.isDirectory()||stored.isDirectory()){
 			org.nrg.xft.utils.FileUtils.MoveDir(stored, f, overwrite);
 		}else{
 			org.nrg.xft.utils.FileUtils.MoveFile(stored, f, overwrite);

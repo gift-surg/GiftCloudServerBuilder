@@ -137,22 +137,27 @@ public class FileList extends XNATCatalogTemplate {
 					final Object resourceIdentifier;
 					
 					if(resource==null){
-						if(catalogs.size()>0){
+						if(catalogs.rows().size()>0){
 							resourceIdentifier=catalogs.getFirstObject();
+						}else{
+							if(resource_ids.size()>0){
+								resourceIdentifier=resource_ids.get(0);
+							}else{
+								resourceIdentifier=null;
+							}
 						}
-							if (fileName != null) {
 					}else{
 						resourceIdentifier=resource.getXnatAbstractresourceId();
 					}
 
 					final boolean overwrite=this.isQueryVariableTrue("overwrite");
-							}
-						}
 					
-					this.buildResourceModifier(overwrite).addFile(getFileWriters(),resource.getLabel(),type, filepath, this.buildResourceInfo(),overwrite);
+					this.buildResourceModifier(overwrite).addFile(getFileWriters(),resourceIdentifier,type, filepath, this.buildResourceInfo(),overwrite);
+				
 				}
 			} catch (Exception e) {
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				logger.error("",e);
 				return;
 			}
 		}

@@ -79,16 +79,18 @@ public abstract class ResourceModifierA {
 		return true;
 	}
 	
-	public boolean addFile(final List<FileWriterWrapperI> fws, final Object resourceIdentifier, final String type, final String filepath, final XnatResourceInfo info, final boolean extract) throws Exception{
-		final XnatAbstractresourceI abst=getResourceByIdentifier(resourceIdentifier,type);
+	public boolean addFile(final List<? extends FileWriterWrapperI> fws, final Object resourceIdentifier, final String type, final String filepath, final XnatResourceInfo info, final boolean extract) throws Exception{
+		XnatAbstractresourceI abst=getResourceByIdentifier(resourceIdentifier,type);
 		
 		if(abst==null){
 			//new resource
-			final XnatResourcecatalog catRes=new XnatResourcecatalog((UserI)user);
+			abst=new XnatResourcecatalog((UserI)user);
 			
-			createCatalog(catRes, info);
+			if(resourceIdentifier!=null)abst.setLabel(resourceIdentifier.toString());
 			
-			addResource(catRes, type, user);
+			createCatalog((XnatResourcecatalog)abst, info);
+			
+			addResource((XnatResourcecatalog)abst, type, user);
 		}else{
 			if(!(abst instanceof XnatResourcecatalog)){
 				throw new Exception("Conflict:Non-catalog resource already exits.");
@@ -106,6 +108,8 @@ public abstract class ResourceModifierA {
 	
 	public XnatAbstractresourceI getResourceByIdentifier(final Object resourceIdentifier,final String type){
 		XnatAbstractresourceI abst=null;
+		
+		if(resourceIdentifier==null)return abst;
 		
 		if(resourceIdentifier instanceof Integer){
 			abst=getResourceById((Integer)resourceIdentifier,type);

@@ -175,7 +175,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 	    }
         
 		return XnatResourceInfo.buildResourceInfo(description, format, content, tags);
-			}
+	}
 			
 	protected ResourceModifierA buildResourceModifier(final boolean overwrite) throws Exception{
 		XnatImagesessiondata assessed=null;

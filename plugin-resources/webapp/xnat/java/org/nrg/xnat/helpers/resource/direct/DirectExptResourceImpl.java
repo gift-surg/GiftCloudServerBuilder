@@ -35,7 +35,7 @@ public class DirectExptResourceImpl extends ResourceModifierA {
 	 */
 	@Override
 	public String buildDestinationPath() throws InvalidArchiveStructure {
-		return FileUtils.AppendRootPath(proj.getRootArchivePath(), expt.getId() + "/RESOURCES/");
+		return FileUtils.AppendRootPath(expt.getCurrentSessionFolder(true),"/RESOURCES/");
 	}
 
 	/* (non-Javadoc)

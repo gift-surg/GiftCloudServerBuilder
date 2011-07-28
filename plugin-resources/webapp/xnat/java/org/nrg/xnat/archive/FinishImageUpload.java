@@ -173,7 +173,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		return isAutoArchive(session,destination);
 	}
 	
-	private static boolean isAutoArchive(final PrearcSession session, final UriParserUtils.DataURIA destination) throws SQLException, SessionException, Exception{
+	private static boolean isAutoArchive(final PrearcSession session, final URIManager.DataURIA destination) throws SQLException, SessionException, Exception{
 		//determine auto-archive setting
 		if(session.getProject()==null){
 			return false;

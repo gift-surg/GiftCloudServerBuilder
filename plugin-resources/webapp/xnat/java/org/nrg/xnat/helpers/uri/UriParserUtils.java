@@ -1,20 +1,12 @@
 package org.nrg.xnat.helpers.uri;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public final class UriParserUtils {
 	public static final String _REMAINDER = "_REMAINDER";
@@ -54,7 +46,7 @@ public final class UriParserUtils {
 		}else if(s.startsWith("/user")){
 			if(s.equals("/user")){
 				final Map<String,Object> t=Collections.emptyMap();
-				return new URIManager.ArchiveURI(t,s);
+				return new URIManager.UserCacheURI(t,s);
 			}
 			
 			for(final URIManager.TemplateInfo template: URIManager.getTemplates(URIManager.TEMPLATE_TYPE.CACHE)){
@@ -93,9 +85,9 @@ public final class UriParserUtils {
 			final Template t = new Template(template, mode, Variable.TYPE_URI_SEGMENT, "", true, false);
 			final Map<String,Object> so = new HashMap<String,Object>();
 			final int matched=t.parse(uri,so);
-			if(matched>uri.length())
+			if(matched>-1 && matched<uri.length())
 			{
-				so.put(_REMAINDER, uri.substring(matched+1));
+				so.put(_REMAINDER, uri.substring(matched));
 			}
 			return so;
 		}

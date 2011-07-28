@@ -3,7 +3,7 @@
  */
 package org.nrg.xnat.helpers.resource.direct;
 
-import org.apache.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;

@@ -55,6 +55,7 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -406,15 +407,15 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
         tsdir = new File(root, PrearcUtils.makeTimestamp());
         final String session;
-        if (params.containsKey(UriParserUtils.EXPT_LABEL)) {
-            session = (String)params.get(UriParserUtils.EXPT_LABEL);
-            logger.trace("using provided experiment label {}", params.get(UriParserUtils.EXPT_LABEL));
+        if (params.containsKey(URIManager.EXPT_LABEL)) {
+            session = (String)params.get(URIManager.EXPT_LABEL);
+            logger.trace("using provided experiment label {}", params.get(URIManager.EXPT_LABEL));
         } else {
             session = projectIdentifier.getSessionLabel(o);
         }
         final String subject;
-        if (params.containsKey(UriParserUtils.SUBJECT_ID)) {
-        	subject = (String)params.get(UriParserUtils.SUBJECT_ID);
+        if (params.containsKey(URIManager.SUBJECT_ID)) {
+        	subject = (String)params.get(URIManager.SUBJECT_ID);
         } else {
         	subject = projectIdentifier.getSubjectLabel(o);
         }

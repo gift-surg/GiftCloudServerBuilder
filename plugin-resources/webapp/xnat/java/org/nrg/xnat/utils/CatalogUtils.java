@@ -438,16 +438,41 @@ public class CatalogUtils {
 			saveTo.getParentFile().mkdirs();
 			fi.write(saveTo);
 	
-			final CatEntryI e = getEntryByURI(cat, dest);
-	
-			if (e == null) {
-				final CatEntryBean newEntry = new CatEntryBean();
-				newEntry.setUri(dest);
-				newEntry.setName(saveTo.getName());
+			if(saveTo.isDirectory()){
+				final Iterator<File> iter=org.apache.commons.io.FileUtils.iterateFiles(saveTo,null,true);
+				while(iter.hasNext()){
+					final File movedF=iter.next();
+					
+					String relativePath=FileUtils.RelativizePath(saveTo, movedF).replace('\\', '/');
+					if(dest!=null){
+						relativePath=dest+"/"+relativePath;
+					}
+					
+					final CatEntryI e = getEntryByURI(cat, relativePath);
+					
+					if (e == null) {
+						final CatEntryBean newEntry = new CatEntryBean();
+						newEntry.setUri(relativePath);
+						newEntry.setName(movedF.getName());
+						
+						configureEntry(newEntry, info);
+			
+						cat.addEntries_entry(newEntry);
+					}
+				}
 				
-				configureEntry(newEntry, info);
-	
-				cat.addEntries_entry(newEntry);
+			}else{
+				final CatEntryI e = getEntryByURI(cat, dest);
+				
+				if (e == null) {
+					final CatEntryBean newEntry = new CatEntryBean();
+					newEntry.setUri(dest);
+					newEntry.setName(saveTo.getName());
+					
+					configureEntry(newEntry, info);
+		
+					cat.addEntries_entry(newEntry);
+				}
 			}
 		}
 	

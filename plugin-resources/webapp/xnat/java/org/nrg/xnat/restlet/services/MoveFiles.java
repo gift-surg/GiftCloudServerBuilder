@@ -1,40 +1,42 @@
 package org.nrg.xnat.restlet.services;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Map;
 
-import org.apache.jcs.engine.CacheUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xnat.helpers.move.FileMover;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.uri.URIManager;
-import org.nrg.xnat.helpers.uri.URIManager.ArchiveURI;
-import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
-import org.nrg.xnat.helpers.uri.URIManager.UserCacheURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
-import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
+import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.restlet.resources.SecureResource;
-import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
-import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.util.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
+/**
+ * @author Timothy R Olsen -- WUSTL
+ * 
+ * Allows files moved using src,dest pairs or by specifying the actual paths /src=/path.
+ */
 public class MoveFiles extends SecureResource {
 
 	
 	private static final String OVERWRITE = "overwrite";
+	private static final String SRC = "src";
+	private static final String DEST = "dest";
+	
 	private final static Logger logger = LoggerFactory.getLogger(MoveFiles.class);
 	
 	public MoveFiles(Context context, Request request, Response response) {
@@ -47,15 +49,25 @@ public class MoveFiles extends SecureResource {
 		return true;
 	}
 
-	Map<URIManager.UserCacheURI,URIManager.ArchiveURI> moves=Maps.newHashMap();
+	Map<URIManager.UserCacheURI,ResourceURII> moves=Maps.newHashMap();
 	Boolean overwrite=null;
+		
+	String src=null,dest=null;
+	
+	ListMultimap<String,Object> otherParams=ArrayListMultimap.create();
 
 	public void handleParam(final String key,final Object value) throws ClientException{
 		if(value!=null){
 			if(key.contains("/")){
 				moves.put(convertKey(key), convertValue((String)value));
+			}else if(key.equals(SRC)){
+				src=(String)value;
+			}else if(key.equals(DEST)){
+				dest=(String)value;
 			}else if(key.equals(OVERWRITE)){
 				overwrite=Boolean.valueOf((String)value);
+			}else{
+				otherParams.put(key, value);
 			}
 		}
 	}
@@ -74,12 +86,12 @@ public class MoveFiles extends SecureResource {
 		}
 	}
 	
-	public URIManager.ArchiveURI convertValue(final String key) throws ClientException{
+	public ResourceURII convertValue(final String key) throws ClientException{
 		try {
 			URIManager.DataURIA uri=UriParserUtils.parseURI(key);
 			
-			if(uri instanceof URIManager.ArchiveURI){
-				return (URIManager.ArchiveURI)uri;
+			if(uri instanceof ResourceURII){
+				return (ResourceURII)uri;
 			}else{
 				throw new ClientException("Invalid Destination:"+ key);
 			}
@@ -100,17 +112,33 @@ public class MoveFiles extends SecureResource {
 			
 			loadParams(getQueryVariableForm());			
 			
-			//this should allow injection of a different implementation- TO
-			final FileMover mover =new FileMover(overwrite,user);
+			if(StringUtils.isNotEmpty(src)){
+				if(StringUtils.isEmpty(dest)){
+					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing dest path");
+					return;
+				}
+
+				moves.put(convertKey(src), convertValue(dest));
+			}
 			
-			for(Map.Entry<URIManager.UserCacheURI,URIManager.ArchiveURI> entry: moves.entrySet()){
+			if(moves.size()==0){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing src and dest path");
+				return;
+			}
+			
+			//this should allow injection of a different implementation- TO
+			final FileMover mover =new FileMover(overwrite,user,otherParams);
+			
+			for(Map.Entry<URIManager.UserCacheURI,ResourceURII> entry: moves.entrySet()){
 				mover.call(entry.getKey(),entry.getValue());
 			}
 		} catch (ActionException e) {
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
+			logger.error("",e);
 			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+			logger.error("",e);
 			return;
 		}
 	}

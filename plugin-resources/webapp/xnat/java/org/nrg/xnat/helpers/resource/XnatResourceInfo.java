@@ -11,8 +11,8 @@ import java.util.Map;
 import org.nrg.xft.utils.StringUtils;
 
 /**
- * @author timo
- *
+ * @author Timothy R Olsen -- WUSTL
+ * Used to encapsulate the data typically associated with the resource and file elements in XNAT.
  */
 public class XnatResourceInfo {
 	private String description,format,content=null;

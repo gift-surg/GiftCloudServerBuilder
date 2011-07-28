@@ -384,6 +384,8 @@ public class CatalogUtils {
 		
 		if(dest==null){
 			dest=filename;
+		}else if(dest.startsWith("/")){
+			dest=dest.substring(1);
 		}
 	
 		String compression_method = ".zip";

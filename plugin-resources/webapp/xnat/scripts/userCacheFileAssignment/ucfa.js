@@ -91,7 +91,29 @@ XNAT.app.uca.DDApp = {
 
     	var n2=XNAT.app.uca.tree2.getRoot();
 		this.defineSrcAndTargets(n2);
+    },
+    buildResultArray: function(_parent,_ResultsArray) {
+		if(_parent.data.dest!=undefined){
+			var _path=_parent.data.dest;
+		}
+		
+	    for(var _rmci=0;_rmci<_parent.children.length;_rmci++){
+			var _child=_parent.children[_rmci];
+									
+			if(_child.data.fpath!=undefined){
+				_ResultsArray.push({"dest":_path,"fpath":_child.data.fpath});
+			}else if(_child.hasChildren()){
+				this.buildResultArray(_child,_ResultsArray);
+			}
+		}
+	    
+	    return _ResultsArray;
+    },
+    retrieveResults:function(){
+    	var n1=XNAT.app.uca.tree2.getRoot();
+	    return this.buildResultArray(n1,new Array());
     }
+    
 };
 
 XNAT.app.uca.DDTree = function(id, sGroup, config) {
@@ -107,6 +129,7 @@ XNAT.app.uca.DDTree = function(id, sGroup, config) {
 };
 
 
+//this implements the drag and drop... need to get the multi-select working
 YAHOO.extend(XNAT.app.uca.DDTree, YAHOO.util.DDProxy, {
     startDrag: function(x, y) {
         this.logger.log(this.id + " startDrag");
@@ -220,3 +243,51 @@ YAHOO.extend(XNAT.app.uca.DDTree, YAHOO.util.DDProxy, {
 Event.onDOMReady(XNAT.app.uca.DDApp.init, XNAT.app.uca.DDApp, true);
 
 })();
+
+XNAT.app.uca.moveSelected=function(){
+	XNAT.app.uca.arrayToMove=XNAT.app.uca.DDApp.retrieveResults();
+	
+	openModalPanel("moving_files","Moving files...")
+	
+	XNAT.app.uca.moveNext();
+}
+
+XNAT.app.uca.moveNext=function(){
+	if(XNAT.app.uca.arrayToMove!=undefined)
+	{
+		if(XNAT.app.uca.arrayToMove.length==0){
+			XNAT.app.uca.moveFinished();
+		}else{
+			var entry=XNAT.app.uca.arrayToMove.pop();
+			
+			var params="src=" + XNAT.app.uca.userURI + entry.fpath + "&dest=" + entry.dest;
+
+			openModalPanel("moving_files","Moving "+entry.fpath);
+			
+			YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/services/move-files',XNAT.app.uca.moveCallback,params,this);
+		}
+	}else{
+		XNAT.app.uca.moveFinished();
+	}
+}
+
+XNAT.app.uca.moveFinished=function(){
+	closeModalPanel("moving_files");
+	
+	//route to some page.
+}
+
+//need better failure handling here.
+XNAT.app.uca.moveCallback={
+		success:function(){XNAT.app.uca.moveNext();},
+		failure:function(){closeModalPanel("moving_files");alert("Failed to move files.");},
+		scope:this
+}
+
+
+
+var move_button=new YAHOO.widget.Button("move_files_button");
+move_button.on("click", XNAT.app.uca.moveSelected); 
+
+var reset_button=new YAHOO.widget.Button("reset_button");
+reset_button.on("click", window.location.reload); 

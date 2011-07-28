@@ -67,7 +67,11 @@ public class FileMover {
 		}
 		
 		final String label = dest.getResourceLabel();
-		final String filepath=dest.getResourceFilePath();
+		
+		String filepath=dest.getResourceFilePath();
+		if(filepath!=null && filepath.equals("/")){
+			filepath=null;
+		}
 		
 		final String type=(String)dest.getProps().get(URIManager.TYPE);
 						

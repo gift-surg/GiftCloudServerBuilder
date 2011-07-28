@@ -8,7 +8,6 @@ import org.apache.velocity.context.Context;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -19,6 +18,18 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.utils.UserUtils;
 
+/**
+ * @author Timothy R Olsen -- WUSTL
+ *
+ * This class prepares data for use in the corresponding VM.
+ * 
+ * The src files represent the files which have been placed in this user's cache space.  They
+ *  will be passed into the context as a json object.
+ *  
+ * The dest represent the available locations in his session's hierarchy.
+ * 
+ * The JSON objects created correspond to the structure that YUI's Treeview wanted.
+ */
 public class UserCacheFileAssignment extends SecureReport {
 
 	@Override
@@ -46,6 +57,8 @@ public class UserCacheFileAssignment extends SecureReport {
 		} catch (JSONException e) {
 			logger.error("",e);
 		}
+		
+		context.put("user_path", String.format("/data/user/cache/resources/%s/files",expt.getId()));
 		
 //		List<PathInfo> paths=Lists.newArrayList();
 //		

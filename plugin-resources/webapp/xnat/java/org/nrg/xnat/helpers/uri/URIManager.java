@@ -77,18 +77,18 @@ public class URIManager {
 		add(TEMPLATE_TYPE.ARC,"/archive/subjects/{SUBJECT_ID}",Template.MODE_EQUALS,SubjURI.class);
 		
 		//resources
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/experiments/{" + URIManager.EXPT_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjExptURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.EXPT_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjExptURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/assessors/{" + URIManager.EXPT_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjAssExptURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/scans/{" + URIManager.SCAN_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjAssScanURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/reconstructions/{" + URIManager.RECON_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjAssReconURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesProjURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.EXPT_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesExptURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.ASSESSED_ID + "}/scans/{" + URIManager.SCAN_ID + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesExptScanURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.ASSESSED_ID + "}/reconstructions/{" + URIManager.RECON_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesExptReconURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.ASSESSED_ID + "}/assessors/{" + URIManager.EXPT_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files/".intern(),Template.MODE_STARTS_WITH,ResourcesExptAssessorURI.class);
-		add(TEMPLATE_TYPE.ARC,"/archive/subjects/{SUBJECT_ID}/resources/{" + XNAME + "}/files/",Template.MODE_STARTS_WITH,ResourcesSubjURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/experiments/{" + URIManager.EXPT_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjExptURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.EXPT_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjExptURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/assessors/{" + URIManager.EXPT_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjAssExptURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/scans/{" + URIManager.SCAN_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjAssScanURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/reconstructions/{" + URIManager.RECON_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjSubjAssReconURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesProjURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.EXPT_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesExptURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.ASSESSED_ID + "}/scans/{" + URIManager.SCAN_ID + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesExptScanURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.ASSESSED_ID + "}/reconstructions/{" + URIManager.RECON_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesExptReconURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/experiments/{" + URIManager.ASSESSED_ID + "}/assessors/{" + URIManager.EXPT_ID + "}/{" + URIManager.TYPE + "}/resources/{" + XNAME + "}/files".intern(),Template.MODE_STARTS_WITH,ResourcesExptAssessorURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/subjects/{SUBJECT_ID}/resources/{" + XNAME + "}/files",Template.MODE_STARTS_WITH,ResourcesSubjURI.class);
 		
 		add(TEMPLATE_TYPE.ARC,"/archive".intern(),Template.MODE_EQUALS,URIManager.ArchiveURI.class);
 		

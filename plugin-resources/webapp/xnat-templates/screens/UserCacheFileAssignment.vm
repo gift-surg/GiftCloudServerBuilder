@@ -41,12 +41,13 @@
 	</div>
 
 	<div id="actionBar">
-		<input type="button" value="Reset" ONCLICK="window.location.reload()"/>
+		<input id="move_files_button" type="button" value="Move Files" ONCLICK="XNAT.app.uca.moveSelected();"/>
+		<input id="reset_button" type="button" value="Reset" ONCLICK="window.location.reload()"/>
 	</div>
 </div>
 
 
-##load data
+##load data into javascript
 <script type="text/javascript">
 if(XNAT.app==undefined){
 	XNAT.app=new Object();
@@ -54,6 +55,8 @@ if(XNAT.app==undefined){
 if(XNAT.app.uca==undefined){
 	XNAT.app.uca=new Object();
 }
+
+XNAT.app.uca.userURI="$user_path"
 
 XNAT.app.uca.src=$srcFiles.toString();
 

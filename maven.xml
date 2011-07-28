@@ -26,7 +26,7 @@
  use the 'update' method rather then the 'setup' one.
 
 --------------------------------------------------------------------------
-            </fail>
+			</fail>
 		</u:available>
 		<j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
 			<j:set var="xdat.project.includeXNAT" value="true"/>
@@ -41,9 +41,9 @@
 		</j:if>
 		<attainGoal name="xdat:copyMavenJars"/>
 		<!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
-    <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
-      <copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
-    </u:available>-->
+		<u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
+			<copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
+		</u:available>-->
 		<ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
 		<maven:makeAbsolutePath var="xdat.root_schemas" path="schemas" basedir="${basedir}"/>
 		<ant:echo>ROOT SCHEMA: ${xdat.root_schemas}</ant:echo>
@@ -61,8 +61,8 @@
 		<attainGoal name="xdat:copyConf"/>
 		<!-- BUILD DB -->
 		<!--<j:if test="${context.getVariable('build.db') == 'true'}">
-      <attainGoal name="xdat:buildDB"/>
-    </j:if>-->
+			<attainGoal name="xdat:buildDB"/>
+		</j:if>-->
 		<!-- DEPLOY OR WAR -->
 		<attainGoal name="xdat:updateDeploymentMavenXML"/>
 		<maven:makeAbsolutePath var="root.webapp" path="webapps/ROOT" basedir="${maven.appserver.home}"/>
@@ -99,14 +99,14 @@
 	</goal>
 	<goal name="xdat:updateJS" description="Update JavaScript files">
 		<!--<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xdat.js"/>
-    <copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
+		<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
 		<copy todir="${basedir}/projects/${xdat.project.name}/src/scripts" preservelastmodified="true">
 			<fileset dir="${basedir}/plugin-resources/webapp/xnat/scripts"/>
 		</copy>
 	</goal>
 	<goal name="xdat:updateCSS" description="Update CSS files">
 		<!--<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xdat.js"/>
-    <copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
+		<copy file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js" tofile="${basedir}/projects/${xdat.project.name}/src/scripts/xnat.js"/>-->
 		<copy todir="${basedir}/projects/${xdat.project.name}/src/style" preservelastmodified="true">
 			<fileset dir="${basedir}/plugin-resources/webapp/xnat/style"/>
 		</copy>
@@ -117,9 +117,9 @@
 			<j:set var="xdat.project.includeXNAT" value="true"/>
 		</j:if>
 		<!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
-    <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
-      <copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
-    </u:available>-->
+		<u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
+			<copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
+		</u:available>-->
 		<ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
 		<maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
 		<!-- CLEAN TURBINE JAR -->
@@ -173,8 +173,8 @@
 		<attainGoal name="xdat:copyConf"/>
 		<!-- BUILD DB -->
 		<!--<j:if test="${context.getVariable('build.db') == 'true'}">
-      <attainGoal name="xdat:updateDB"/>
-    </j:if>-->
+			<attainGoal name="xdat:updateDB"/>
+		</j:if>-->
 		<attainGoal name="xdat:updateDeploymentMavenXML"/>
 		<j:if test="${context.getVariable('deploy') == 'true'}">
 			<attainGoal name="xdat:generateSQL"/>
@@ -199,8 +199,8 @@
 			<j:set var="xdat.project.hgtags.exists" value="true"/>
 		</u:available>
 		<j:if test="${xdat.project.hgtags.exists}">
-		    <copy file="${basedir}/.hgtags" tofile="${basedir}/deployments/${xdat.project.name}/conf/tags" preservelastmodified="true"/>
-        </j:if>
+			<copy file="${basedir}/.hgtags" tofile="${basedir}/deployments/${xdat.project.name}/conf/tags" preservelastmodified="true"/>
+		</j:if>
 		<!-- The plugin-resources copy needs to happen first so files can be superseded by files applied at the project level -->
 		<ant:copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true" overwrite="true">
 			<fileset dir="${xdat.plugins.resource.conf}">
@@ -597,12 +597,12 @@
 	<!-- ================================================================ -->
 	<goal name="xdat:auto-generate">
 		<!-- <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/om/base/auto"/>
-    <delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
-    <delete dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/> -->
+		<delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
+		<delete dir="${basedir}/projects/${xdat.project.name}/src/base-templates"/> -->
 		<attainGoal name="xdat:createGeneratedFiles"/>
 		<!--<attainGoal name="xdat:generateAllFiles"/>
-    <attainGoal name="xdat:generateSQL"/>
-    <attainGoal name="xdat:generateJSFiles"/>-->
+		<attainGoal name="xdat:generateSQL"/>
+		<attainGoal name="xdat:generateJSFiles"/>-->
 		<copy todir="${basedir}/projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
 			<fileset dir="${basedir}/deployments/${xdat.project.name}/src/schemas">
 				<include name="**/*_display.xml"/>
@@ -640,8 +640,8 @@
 		<delete dir="${basedir}/projects/${xdat.project.name}/src/java/org/nrg/xdat/turbine/modules/screens"/>
 		<attainGoal name="xdat:updateGeneratedFiles"/>
 		<!--<attainGoal name="xdat:generateAllFiles"/>
-    <attainGoal name="xdat:generateUpdateSQL"/>
-    <attainGoal name="xdat:generateJSFiles"/>-->
+		<attainGoal name="xdat:generateUpdateSQL"/>
+		<attainGoal name="xdat:generateJSFiles"/>-->
 		<copy todir="${basedir}/projects/${xdat.project.name}/src/schemas" preservelastmodified="true">
 			<fileset dir="${basedir}/deployments/${xdat.project.name}/src/schemas">
 				<include name="**/*_display.xml"/>
@@ -1347,34 +1347,62 @@
 		</java>
 	</goal>
 	<!-- ================================================================ -->
-	<!-- Launch PIpeline Build from default path                                                    -->
+	<!-- Launch pipeline build from default path                          -->
 	<!-- ================================================================ -->
 	<goal name="pipeline:init" description="Invoke Pipeline Setup">
-		<ant:echo>Setting up Pipeline Engine</ant:echo>
-		<j:set var="cwd" value="${basedir}"/>
-		<ant:echo>PIPELINE FOLDER: ${cwd}/pipeline </ant:echo>
-		<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
-			<ant:exec executable="cmd" failonerror="true">
-				<ant:arg value="/c"/>
-				<ant:arg value="${cwd}\pipeline\setup.bat"/>
-				<ant:arg value="${xdat.admin_email}"/>
-				<ant:arg value="${xdat.smtp.server}"/>
-			<!--	<ant:arg value="${cwd}"/> -->
-				<env key="JAVA_HOME" value="${JAVA_HOME}"/>
-				<env key="MAVEN_TERMINATE_CMD" value="on"/>
-			</ant:exec>
+		<j:if test="${context.getVariable('xdat.pipeline.location') != null}">
+			<j:set var="pipeline.dir" value="${xdat.pipeline.location}"/>
 		</j:if>
-		<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
-			<ant:chmod perm="ugo+rx">
-				<fileset dir="${basedir}/pipeline">
-					<filename name="setup.sh"/>
-				</fileset>
-			</ant:chmod>
-			<ant:exec executable="${basedir}/pipeline/setup.sh" failonerror="true">
-				<ant:arg value="${xdat.admin_email}"/>
-				<ant:arg value="${xdat.smtp.server}"/>
-				<ant:arg value="${cwd}"/>
-			</ant:exec>
+		<j:if test="${context.getVariable('xdat.pipeline.location') == null}">
+			<j:set var="pipeline.dir" value="${basedir}/pipeline"/>
+		</j:if>
+		<j:set var="pipeline.dir.exists" value="false"/>
+		<u:available file="${pipeline.dir}">
+			<j:set var="pipeline.dir.exists" value="true"/>
+		</u:available>
+		<j:if test="${context.getVariable('pipeline.dir.exists') == 'false'}">
+			<ant:echo>Didn't find the pipeline folder at the location ${pipeline.dir}, skipping pipeline initialization.</ant:echo>
+		</j:if>
+		<j:if test="${context.getVariable('pipeline.dir.exists') == 'true'}">
+			<j:set var="pipeline.setup.exists" value="false"/>
+			<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+				<u:available file="${pipeline.dir}/setup.bat">
+					<j:set var="pipeline.setup.exists" value="true"/>
+				</u:available>
+			</j:if>
+			<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
+				<u:available file="${pipeline.dir}/setup.sh">
+					<j:set var="pipeline.setup.exists" value="true"/>
+				</u:available>
+			</j:if>
+			<j:if test="${context.getVariable('pipeline.setup.exists') == 'false'}">
+				<ant:echo>Found the pipeline folder at the location ${pipeline.dir}, but not the setup script, skipping pipeline initialization.</ant:echo>
+			</j:if>
+			<j:if test="${context.getVariable('pipeline.setup.exists') == 'true'}">
+				<ant:echo>Setting up pipeline engine in folder: ${pipeline.dir}</ant:echo>
+				<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+					<ant:exec executable="cmd" failonerror="true">
+						<ant:arg value="/c"/>
+						<ant:arg value="${pipeline.dir}\setup.bat"/>
+						<ant:arg value="${xdat.admin_email}"/>
+						<ant:arg value="${xdat.smtp.server}"/>
+						<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+						<env key="MAVEN_TERMINATE_CMD" value="on"/>
+					</ant:exec>
+				</j:if>
+				<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
+					<ant:chmod perm="ugo+rx">
+						<fileset dir="${pipeline.dir}">
+							<filename name="setup.sh"/>
+						</fileset>
+					</ant:chmod>
+					<ant:echo>Launching setup.sh script</ant:echo>
+					<ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
+						<ant:arg value="${xdat.admin_email}"/>
+						<ant:arg value="${xdat.smtp.server}"/>
+					</ant:exec>
+				</j:if>
+			</j:if>
 		</j:if>
 	</goal>
 	<!-- ================================================================ -->

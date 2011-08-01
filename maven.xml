@@ -1393,6 +1393,7 @@
 				<j:if test="${context.getVariable('beans.jar.exists') == 'true'}">
 					<copy file="${beans.jar}" tofile="${pipeline.dir}/lib/xdat-${beans.jar.name}-1.0.jar"/>
 					<j:if test="${context.getVariable('os.name').startsWith('Windows')}">
+						<ant:echo>Launching ${pipeline.dir}/setup.bat script</ant:echo>
 						<ant:exec executable="cmd" failonerror="true">
 							<ant:arg value="/c"/>
 							<ant:arg value="${pipeline.dir}\setup.bat"/>
@@ -1408,7 +1409,7 @@
 								<filename name="setup.sh"/>
 							</fileset>
 						</ant:chmod>
-						<ant:echo>Launching setup.sh script</ant:echo>
+						<ant:echo>Launching ${pipeline.dir}/setup.sh script</ant:echo>
 						<ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
 							<ant:arg value="${xdat.admin_email}"/>
 							<ant:arg value="${xdat.smtp.server}"/>

@@ -321,6 +321,8 @@ public class SavedSearchResource extends ItemResource {
 						}else{
 							DBAction.DeleteItem(search.getItem(), user);
 						}
+					}else if(user.getGroup("ALL_DATA_ADMIN")!=null){
+						DBAction.DeleteItem(search.getItem(), user);
 					}else{						
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 						return;

@@ -653,7 +653,7 @@ public class XNATTemplate extends SecureResource {
 								query.append(resourceID);
 								query.append("')");
 							} else if(resourceID.equalsIgnoreCase("NULL")){
-								query.append(" abst.label=NULL");
+								query.append(" abst.label IS NULL");
 							}
 							else{
 								query.append(" abst.label='");
@@ -702,7 +702,7 @@ public class XNATTemplate extends SecureResource {
 								query.append(resourceID);
 								query.append("')");
 							} else if(resourceID.equalsIgnoreCase("NULL")){
-								query.append(" abst.label=NULL");
+								query.append(" abst.label IS NULL");
 							}
 							else{
 								query.append(" abst.label='");
@@ -749,7 +749,7 @@ public class XNATTemplate extends SecureResource {
 						query.append(resourceID);
 						query.append("')");
 					} else if(resourceID.equalsIgnoreCase("NULL")){
-						query.append(" abst.label=NULL");
+						query.append(" abst.label IS NULL");
 					}
 					else{
 						query.append(" abst.label='");
@@ -807,7 +807,7 @@ public class XNATTemplate extends SecureResource {
 								query.append(resourceID);
 								query.append("')");
 							} else if(resourceID.equalsIgnoreCase("NULL")){
-								query.append(" abst.label=NULL");
+								query.append(" abst.label IS NULL");
 							}
 							else{
 								query.append(" abst.label='");
@@ -860,7 +860,7 @@ public class XNATTemplate extends SecureResource {
 								query.append(resourceID);
 								query.append("')");
 							} else if(resourceID.equalsIgnoreCase("NULL")){
-								query.append(" abst.label=NULL");
+								query.append(" abst.label IS NULL");
 							}
 							else{
 								query.append(" abst.label='");
@@ -997,7 +997,7 @@ public class XNATTemplate extends SecureResource {
 							query.append(resourceID);
 							query.append("')");
 						} else if(resourceID.equalsIgnoreCase("NULL")){
-							query.append(" abst.label=NULL");
+							query.append(" label IS NULL");
 						}
 						else{
 							query.append(" label='");
@@ -1044,7 +1044,7 @@ public class XNATTemplate extends SecureResource {
 							query.append(resourceID);
 							query.append("')");
 						} else if(resourceID.equalsIgnoreCase("NULL")){
-							query.append(" abst.label=NULL");
+							query.append(" abst.label IS NULL");
 						}
 						else{
 							query.append(" abst.label='");
@@ -1091,7 +1091,7 @@ public class XNATTemplate extends SecureResource {
 						query.append(resourceID);
 						query.append("')");
 					} else if(resourceID.equalsIgnoreCase("NULL")){
-						query.append(" abst.label=NULL");
+						query.append(" abst.label IS NULL");
 					}
 					else{
 						query.append(" abst.label='");
@@ -1135,7 +1135,7 @@ public class XNATTemplate extends SecureResource {
 						query.append(resourceID);
 						query.append("')");
 					} else if(resourceID.equalsIgnoreCase("NULL")){
-						query.append(" abst.label=NULL");
+						query.append(" abst.label IS NULL");
 					}
 					else{
 						query.append(" abst.label='");

@@ -568,6 +568,15 @@
 		</dependency>
 		<dependency>
 			<groupId>dcm</groupId>
+			<artifactId>dcm4che-iod</artifactId>
+			<version>2.0.25</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
 			<artifactId>dcm4che-net</artifactId>
 			<version>2.0.25</version>
 			<properties>
@@ -712,6 +721,33 @@
 		</dependency>
 		<dependency>
 			<groupId>nrg</groupId>
+			<artifactId>nrg-anonymize</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>DicomEdit</artifactId>
+			<version>1.5.2</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr-runtime</artifactId>
+			<version>3.2</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
 			<artifactId>nrg-status</artifactId>
 			<version>2.0.0</version>
 			<properties>
@@ -723,6 +759,15 @@
 			<groupId>nrg</groupId>
 			<artifactId>nrgutil</artifactId>
 			<version>1.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-transaction</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1248,6 +1293,15 @@
 			<groupId>org.jasypt</groupId>
 			<artifactId>jasypt</artifactId>
 			<version>1.7.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+		  	<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

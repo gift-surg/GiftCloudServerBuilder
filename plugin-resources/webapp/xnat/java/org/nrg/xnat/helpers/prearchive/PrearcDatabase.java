@@ -899,35 +899,35 @@ public final class PrearcDatabase {
      * @param <Left> Return type if the left branch of tree is taken.
      * @param <Right> Return type if the right branch of the tree is taken.
      */
-    static abstract class Either<Left,Right> {
+    public static abstract class Either<Left,Right> {
+    	enum Eithers {LEFT,RIGHT};
         // typically the result of an error
         Left l;
         // typically the result of a successful operation
         Right r;
         // true if Right is not null, false if Left is not null. 
-        boolean set;
+        Eithers set;
         Either<Left,Right> setLeft(Left l) {
-            this.set = false;
+            this.set = Eithers.LEFT;
             this.l = l;
             return this;
         }
         Either<Left,Right> setRight(Right r) {
-            this.set = true;
+            this.set = Eithers.RIGHT;
             this.r = r;
             return this;
         }
-        Left getLeft(){
-            this.set = false;
+        public Left getLeft(){
             return this.l;
         }
-        Right getRight() {
+        public Right getRight() {
             return this.r;
         }
-        boolean isLeft() {
-            return this.set == false;
+        public boolean isLeft() {
+            return this.set == Eithers.LEFT;
         }
-        boolean isRight() {
-            return this.set == true;
+        public boolean isRight() {
+            return this.set == Eithers.RIGHT;
         }
     }
 
@@ -937,8 +937,8 @@ public final class PrearcDatabase {
      *  
      * @author aditya
      *
-     * @param <X> Return type if the predicate holds
-     * @param <Y> Return type if the predicate fails
+     * @param <X> Return type if the predicate fails
+     * @param <Y> Return type if the predicate holds
      */
     static abstract class PredicatedOp<X,Y> {
         // the predicate
@@ -1287,9 +1287,12 @@ public final class PrearcDatabase {
             }
         }.run();
     }
-
+    
     /**
-     * Either retrieve and existing session or create a new one.
+     * Either retrieve and existing session or create a new one and return it.
+     * 
+     * This function is useful if the caller does not care which operation was performed.
+     * 
      * @param project
      * @param suid
      * @param s
@@ -1300,7 +1303,38 @@ public final class PrearcDatabase {
      * @throws SessionException
      * @throws Exception
      */
-    public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
+    public static SessionData getOrCreateSession(final String project,
+    				     					     final String suid,
+    				     					     final SessionData s,
+    				     					     final File tsFile,
+    				     					     final Boolean autoArchive)
+    throws SQLException, SessionException, Exception {
+    	Either<SessionData, SessionData> result = PrearcDatabase.eitherGetOrCreateSession(project, suid, s, tsFile, autoArchive);
+        if (result.isLeft()) {
+            return result.getLeft();
+        }
+        else{
+            return result.getRight();
+        }
+    }
+
+    /**
+     * Either retrieve and existing session or create a new one. If a session is created an Either
+     * object with the "Right" branch set is returned. If we just retrieve one that is already in the
+     * prearchive table an Either object with the "Left" branch set is returned.
+     * 
+     * This is useful in case the caller needs to know which operation was performed.
+     * @param project
+     * @param suid
+     * @param s
+     * @param tsFile
+     * @param autoArchive
+     * @return
+     * @throws SQLException
+     * @throws SessionException
+     * @throws Exception
+     */
+    public static synchronized Either<SessionData,SessionData> eitherGetOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
         Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
             SessionData ss;
             /**
@@ -1375,13 +1409,9 @@ public final class PrearcDatabase {
                 }.run();
             }
         }.run();
+        
+        return result;
 
-        if (result.isLeft()) {
-            return result.getLeft();
-        }
-        else{
-            return result.getRight();
-        }
     }
 
     /**

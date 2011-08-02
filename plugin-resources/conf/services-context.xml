@@ -52,7 +52,7 @@
     <bean id="rendererProvider" class="org.nrg.notify.entities.ChannelRendererProvider">
         <property name="renderers" ref="renderers" />
     </bean -->
-
+    <import resource="anon-script-config.xml" />
     <!-- import resource="notify-services-config.xml" / -->
     <!-- Used the prefixed table naming strategy, class FooBar gives you prefix_foo_bar instead of FooBar. -->
     <bean id="namingStrategy" class="org.nrg.framework.orm.hibernate.PrefixedTableNamingStrategy" p:prefix="xhbm" />
@@ -76,6 +76,6 @@
 
     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" p:sessionFactory-ref="sessionFactory" />
 
-    <tx:annotation-driven />
+    <tx:annotation-driven proxy-target-class="true"/>
 
 </beans>

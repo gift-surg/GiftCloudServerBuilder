@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet;
 
+import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
 import org.nrg.xnat.restlet.resources.ExperimentListResource;
 import org.nrg.xnat.restlet.resources.ExperimentResource;
@@ -71,7 +72,9 @@ public class XNATApplication extends Application {
         attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines",ProjectPipelineListResource.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines/{STEP_ID}/experiments/{EXPT_ID}",ProjtExptPipelineResource.class);
         //END ---- Pipelines section
-
+        attachArchiveURI(router,"/config/edit/image/dicom/{RESOURCE}", DicomEdit.class);
+        attachArchiveURI(router,"/config/edit/projects/{PROJECT_ID}/image/dicom/{RESOURCE}", DicomEdit.class);
+        attachArchiveURI(router,"/config/{PROJECT_ID}/archive_spec",ProjectArchive.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/archive_spec",ProjectArchive.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments",ProjSubExptList.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments/{EXPT_ID}",ExperimentResource.class);

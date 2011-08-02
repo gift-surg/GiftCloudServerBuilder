@@ -59,7 +59,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 	 * @param uID2
 	 * @param u
 	 * @param fi
-	 * @param project
+	 * @param project_id
 	 * @param additionalValues
 	 */
 	public PrearcImporterHelper(final Object uID2, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params,boolean overwrite,boolean allowDataDeletion){

@@ -1,7 +1,10 @@
 // Copyright 2010,2011 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -10,10 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
+import org.apache.commons.io.FileUtils;
 import org.nrg.dcm.DicomSCP;
+import org.nrg.dcm.xnat.ScriptTable;
+import org.nrg.dcm.xnat.ScriptTableDAO;
+import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +34,54 @@ public class XNATRestletServlet extends ServerServlet {
     private static final long serialVersionUID = 1592366035839385170L;
 
     private DicomSCP dicomSCP = null;
-
+    private ScriptTableDAO _st;
     public static ServletConfig REST_CONFIG=null;
+    
+    /**
+     * Get the username of the site administrator. If there are multiple 
+     * site admins, just get the first one. If none are found, return null.
+     * @return
+     */
+    private String getAdminUser() throws Exception {
+    	String admin = null;
+    	Iterator<String> logins = XDATUser.getAllLogins().iterator();
+    	while(logins.hasNext()) {
+    		String l = logins.next();
+    		XDATUser u = new XDATUser(l);
+    		if (u.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
+    			admin = l;
+    		}
+    	}
+    	return admin;
+    }
     @Override
     public void init() throws ServletException {
         super.init();
 
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
+        
+        try {
+        	ContextService _c = ContextService.getInstance();
+        	this._st = _c.getBean(ScriptTableDAO.class);
+        	if (_st.get(null) == null) {
+        		logger().info("Creating Script Table.");
+        		// the default site-wide anon script has not been stored so do that now.
+        		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
+        		String adminUser = this.getAdminUser();
+        		if (adminUser != null) {
+        			_st.insertScript(null, site_wide, adminUser);
+        		}
+        		else {
+        			throw new Exception("Site administrator not found.");
+        		}
+        	}
+        	else {
+        		// there is a default site-wide script, nothing to do here.
+        	}
+        }
+        catch (Throwable e){
+        	logger().error("Unable to either find or initialize script database: " + e.getMessage());
+        }
 
         try {
             PrearcDatabase.initDatabase();

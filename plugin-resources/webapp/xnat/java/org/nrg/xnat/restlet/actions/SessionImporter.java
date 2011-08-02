@@ -25,6 +25,7 @@ import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
+import org.nrg.xnat.helpers.merge.SiteWideAnonymizer;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
@@ -33,6 +34,7 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
+import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
@@ -217,7 +219,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				resetStatus(sessions);
 				return returnURLs(sessions);
 			}
-
+			
 			
 			//if unknown destination, only one session supported
 			if(sessions.size()>1){
@@ -230,7 +232,21 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			session.getAdditionalValues().putAll(params);
 				
 			try {
-				final FinishImageUpload finisher=ListenerUtils.addListeners(this, new FinishImageUpload(this.uID, user, session,destination, allowDataDeletion,overwrite,true));
+				final FinishImageUpload finisher=ListenerUtils.addListeners(this, 
+																			new FinishImageUpload(this.uID, 
+																								  user, 
+																								  session,
+																								  destination, 
+																								  allowDataDeletion,
+																								  overwrite,
+																								  true));
+				XnatImagesessiondata s = new XNATSessionPopulater(user, 
+						   				 						  session.getSessionDir(),  
+						   				 						  session.getProject(), 
+						   				 						  false).populate();
+				SiteWideAnonymizer site_wide = new SiteWideAnonymizer(s, true);
+				site_wide.call();
+				
 				if(finisher.isAutoArchive()){
 					return new ArrayList<String>(){{add(finisher.call());}};
 				}else{

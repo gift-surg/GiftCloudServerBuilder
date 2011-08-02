@@ -12,6 +12,8 @@ import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourceI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.model.XnatResourceseriesI;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.base.BaseXnatImagesessiondata;
 import org.restlet.data.Status;
 
 
@@ -19,11 +21,10 @@ public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondata
 
 	public MergePrearchiveSessions(Object control,final File srcDIR, final XnatImagesessiondataBean src, final String srcRootPath, final File destDIR, final XnatImagesessiondataBean existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion, SaveHandlerI<XnatImagesessiondataBean> saver) {
 		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion, saver);
+		super.setAnonymizer(new SiteWideAnonymizer(src, true));
 	}
 
-
-
-	public String getCacheBKDirName() {
+	public String getCacheBKDirName() { 
 		return "prearc_merge";
 	}
 	

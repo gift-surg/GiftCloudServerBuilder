@@ -14,15 +14,25 @@ import org.nrg.xdat.model.XnatResourceseriesI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.restlet.data.Status;
 
 
 public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesessiondata> {
-	public MergePrearcToArchiveSession(Object control,final File srcDIR, final XnatImagesessiondata src, final String srcRootPath, final File destDIR, final XnatImagesessiondata existing, final String destRootPath, boolean addFilesToExisting, boolean overwrite_files,SaveHandlerI<XnatImagesessiondata> saver) {
-		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, addFilesToExisting, overwrite_files,saver);
+	public MergePrearcToArchiveSession(Object control,
+									   final File prearcPath, 
+									   final XnatImagesessiondata src, 
+									   final String srcRootPath, 
+									   final File destDIR, 
+									   final XnatImagesessiondata existing, 
+									   final String destRootPath, 
+									   boolean addFilesToExisting, 
+									   boolean overwrite_files,
+									   SaveHandlerI<XnatImagesessiondata> saver) {
+		super(control, prearcPath, src, srcRootPath, destDIR, existing, destRootPath, addFilesToExisting, overwrite_files,saver);
+		super.setAnonymizer(new PrearcSessionAnonymizer(src, src.getProject(), prearcPath.getAbsolutePath()));
 	}
-
 
 	public String getCacheBKDirName() {
 		return "merge";

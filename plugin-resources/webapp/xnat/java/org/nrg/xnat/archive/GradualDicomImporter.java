@@ -40,18 +40,22 @@ import org.dcm4che2.io.StopTagInputHandler;
 import org.dcm4che2.util.TagUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
 import org.nrg.dcm.Extractor;
 import org.nrg.dcm.MatchedPatternExtractor;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
+import org.nrg.dcm.xnat.ScriptTable;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.AbstractDicomObjectIdentifier;
 import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
+import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionData;
@@ -388,6 +392,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             logger.error("unable to parse supplied destination flag", e1);
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e1);
         }
+        			
         final String studyInstanceUID = o.getString(Tag.StudyInstanceUID);
         logger.trace("Looking for study {} in project {}", studyInstanceUID,
                 null == project ? null : project.getId());
@@ -400,7 +405,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
             root = new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath());
             project_id=null;
         } else {
-            root = new File(project.getPrearchivePath());
+            //root = new File(project.getPrearchivePath());
+        	root = new File (ArcSpecManager.GetInstance().getGlobalPrearchivePath() + "/" + project.getId());
             project_id = project.getId();
         }
         final File tsdir, sessdir;
@@ -431,14 +437,25 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setSubject(subject);
 
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
-
-        // query the cache for an existing session that has this Study Instance UID and project name,
-        // if found the SessionData object we just created is over-ridden with the values from the cache
+        Either<SessionData,SessionData> getOrCreate;
+	// Query the cache for an existing session that has this Study Instance UID and project name.
+        // If found the SessionData object we just created is over-ridden with the values from the cache.
+        // Additionally a record of which operation was performed is contained in the Either<SessionData,SessionData>
+        // object returned. 
+        //
+        // This record is necessary so that, if this row was created by this call, it can be deleted if anonymization
+        // goes wrong. In case of any other error the file is left on the filesystem.
+        // 
         try {
-            sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
-            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
-            PrearcDatabase.setStatus(sess.getName(), sess.getTimestamp(), sess.getProject(), PrearcStatus.RECEIVING);
-        } catch (SQLException e) {
+                       getOrCreate = PrearcDatabase.eitherGetOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
+           if (getOrCreate.isLeft()) {
+           	sess = getOrCreate.getLeft();
+           }
+           else { 
+           	sess = getOrCreate.getRight();
+           }
+             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
+         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
@@ -484,11 +501,45 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
             final File f = getSafeFile(sessdir, scan, name, o, Boolean.valueOf((String)params.get(RENAME_PARAM)));
             f.getParentFile().mkdirs();
+            
             try {
                 write(fmi, o, bis, f, source);
+                    
             } catch (IOException e) {
                 throw new ServerException(Status.SERVER_ERROR_INSUFFICIENT_STORAGE, e);
             }
+            try {
+            	ScriptTable s = AnonUtils.getInstance().getScript(null);
+            	boolean enabled = AnonUtils.getInstance().isEnabled(null);
+            	if (enabled) {
+            		if (s == null) {
+            			throw new Exception ("Unable to retrieve the site-wide script.");
+            		}
+            		else {
+            			Anonymize.anonymize(f, sess.getProject(), sess.getSubject(), sess.getFolderName(), true, s.getId(), s.getScript());
+            		}
+            	} else {
+            		// site-wide anonymization is disabled.
+            	}
+            } catch (Throwable e) {
+            	logger.debug("Dicom anonymization failed: " + f, e);
+        		try {
+        			// if we created a row in the database table for this session
+        			// delete it.
+        			if (getOrCreate.isRight()) {
+        					PrearcDatabase.deleteSession(sess.getFolderName(), sess.getTimestamp(), sess.getProject());
+        			}
+        			else {
+        				f.delete();
+        			}
+        		}
+        		catch (Throwable t) {
+        			logger.debug("Unable to delete relevant file :" + f, e);
+        			throw new ServerException(Status.SERVER_ERROR_INTERNAL, t);
+            	}
+        		throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+            }
+
         } finally {
             if (null != dis) try {
                 dis.close();
@@ -501,8 +552,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl(), source});
         return Collections.singletonList(sess.getExternalUrl());
     }
-
-    public void setCacheManager(final CacheManager cacheManager) {
+    
+	public void setCacheManager(final CacheManager cacheManager) {
         final String cacheName = user.getLogin() + "-projects";
         synchronized (cacheManager) {
             if (!cacheManager.cacheExists(cacheName)) {
@@ -546,7 +597,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
         return null;
     }
-
+    
     private static final class RuleBasedIdentifier
     extends AbstractDicomObjectIdentifier<XnatProjectdata> {
         private static final Extractor[] exts;

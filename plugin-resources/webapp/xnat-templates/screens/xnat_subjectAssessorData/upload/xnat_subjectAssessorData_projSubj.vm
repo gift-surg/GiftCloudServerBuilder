@@ -1,10 +1,10 @@
  <tr>
   <th align="left">Project</th>
   <td>
-  	#if($!item.getProperty("project") == "")
+  	#if(! $!item.getProperty("project"))
   		<select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select>
   	#else
-  		$om.getProject($project,false).getDisplayID()
+  		$!om.getProject($project,false).getDisplayID()
   		<div style="display:none">
 	  		<select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select>
   		</div>	

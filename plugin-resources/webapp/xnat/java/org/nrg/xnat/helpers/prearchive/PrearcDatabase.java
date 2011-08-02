@@ -1299,14 +1299,14 @@ public final class PrearcDatabase {
      */
     public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
         Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
-            ResultSet rs;
+            SessionData ss;
             /**
              * Return the found session
              * (non-Javadoc)
              * @see org.nrg.xnat.helpers.prearchive.PrearcDatabase.PredicatedOp#trueOp()
              */
             Either<SessionData,SessionData> trueOp() throws SQLException, SessionException, Exception {
-                return new Either<SessionData,SessionData>(){}.setRight(DatabaseSession.fillSession(rs));
+                return new Either<SessionData,SessionData>(){}.setRight(ss);
             }
             /**
              * Create and return a new session
@@ -1346,7 +1346,13 @@ public final class PrearcDatabase {
                 return result;
             }
             /**
-             * Test whether session exists
+             * Test whether session exists. If it find the session the instance variable "SessionData ss" 
+             * is initialized here.
+             * 
+             * Originally this function initialized a "ResultSet r" instance variable and the "trueOp()" above
+             * read that into a SessionData, but I kept running into "ResultSet Is Closed" errors when "trueOp()"
+             * was called so I'm doing it here. 
+             * 
              */
             boolean predicate() throws SQLException, SessionException, Exception {
                 return new SessionOp<Boolean>(){
@@ -1355,8 +1361,13 @@ public final class PrearcDatabase {
                                 DatabaseSession.PROJECT.searchSql(project), 
                                 DatabaseSession.TAG.searchSql(suid) 		
                         };		
-                        rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
-                        return rs.next();
+                        ResultSet rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
+                        boolean found = false;
+                        found = rs.next();
+                        if (found) {
+                        	ss = DatabaseSession.fillSession(rs);
+                        }
+                        return found;
                     }
                 }.run();
             }

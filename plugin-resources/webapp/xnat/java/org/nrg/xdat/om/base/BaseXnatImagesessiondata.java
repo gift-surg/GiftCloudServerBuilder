@@ -2702,7 +2702,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 }
             }
             
-            String[] types = new String[]{"FLASH5","FLASH20","FLASH30","FLASH3","BDYMAP100","BDYMAP","BOLD","DTI","FLAIR","FLASH","FST_MEF","HDMAP100","HDMAP","LO_RES","MEF30","MEF5","MPRAGE","MTC5","TSE","LOCALIZER","AASCOUT","3DT2"};
+//            String[] types = new String[]{"FLASH5","FLASH20","FLASH30","FLASH3","BDYMAP100","BDYMAP","BOLD","DTI","FLAIR","FLASH","FST_MEF","HDMAP100","HDMAP","LO_RES","MEF30","MEF5","MPRAGE","MTC5","TSE","LOCALIZER","AASCOUT","3DT2"};
             List al = this.getScans_scan();
             if (al != null) {
                 for (int i = 0; i < al.size(); i++) {
@@ -2733,27 +2733,28 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 //                        scan.setType(allProjects.get(formatted_series_description).match(series_description, scan.getFrames()));
 //                  }
                 	else{
-                        try {
-                            boolean matched = false;
-                            for(int j=0;j<types.length;j++)
-                            {
-                                if (series_description.indexOf(types[j])!=-1)
-                                {
-                                     scan.setType(types[j]);
-                                     matched=true;
-                                     break;
-                                }
-                            }
-
-                            if (!matched){
-                                if (series_description.indexOf("MPR")!=-1)
-                                {
-                                     scan.setType("MPRAGE");
-                                }
-                            }
-                        } catch (Throwable e) {
-                            logger.error("",e);
-                        }
+//            REMOVED 08/08/11 TO- left it here unless we need to reintroduce it.
+//                        try {
+//                            boolean matched = false;
+//                            for(int j=0;j<types.length;j++)
+//                            {
+//                                if (series_description.indexOf(types[j])!=-1)
+//                                {
+//                                     scan.setType(types[j]);
+//                                     matched=true;
+//                                     break;
+//                                }
+//                            }
+//
+//                            if (!matched){
+//                                if (series_description.indexOf("MPR")!=-1)
+//                                {
+//                                     scan.setType("MPRAGE");
+//                                }
+//                            }
+//                        } catch (Throwable e) {
+//                            logger.error("",e);
+//                        }
                     }
                 	
                 	if(scan.getType()==null){

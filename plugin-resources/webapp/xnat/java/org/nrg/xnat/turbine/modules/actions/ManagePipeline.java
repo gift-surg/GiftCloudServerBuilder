@@ -83,12 +83,12 @@ public class ManagePipeline extends SecureAction {
 
 	}
 
-	
+
 	public void doAddpipeline(RunData data, Context context) throws Exception {
 		PipelineAdder pipelineAdder = new PipelineAdder();
 		pipelineAdder.prepareScreen(data, context);
 	}
-	
+
 	private void doDeletefromproject(RunData data, Context context) {
 		XDATUser user = TurbineUtils.getUser(data);
 		String projectId = data.getParameters().get("project");
@@ -166,13 +166,13 @@ public class ManagePipeline extends SecureAction {
 			if (launchedAtAutoArchive) {
 				if (templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
 					rtn = templateSuppliedStepId;
-				}else 
+				}else
 					rtn = nextStepId;
 			}else if (!templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE))
 				rtn = templateSuppliedStepId;
 			else
 				rtn = displayText;
-		}else { 
+		}else {
 			if (launchedAtAutoArchive) {
 				rtn = nextStepId;
 			}else {
@@ -181,7 +181,7 @@ public class ManagePipeline extends SecureAction {
 		}
 		return rtn;
 	}
-	
+
 	public void doAddprojectpipeline(RunData data, Context context) throws Exception {
 		XDATUser user = TurbineUtils.getUser(data);
         XFTItem found = null;
@@ -205,7 +205,7 @@ public class ManagePipeline extends SecureAction {
             boolean launchedAtAutoArchive = data.getParameters().getBoolean("auto_archive");
 			String templateSuppliedStepId = found.getStringProperty("stepid");
 	   		boolean saved = false;
-	   	 
+
             //A set of pipelines can be launched on auto archive.This set will have
             //AUTO_ARCHIVE_<SEQUENTIAL NUMBER> unless site wants to setup the stepid at the template level
             //If the step is provided at the template level, it must be of the kind AUTO_<SOMETHING>
@@ -225,7 +225,7 @@ public class ManagePipeline extends SecureAction {
     				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(arcProject), newPipeline.getDisplaytext() );
     				newPipeline.setStepid(stepId);
     			}
-    				arcProject.setPipelines_pipeline(newPipeline.getItem());	
+    				arcProject.setPipelines_pipeline(newPipeline.getItem());
     		}else {
     			ArcProjectDescendant existingDesc = arcProject.getDescendant(dataType);
     			ArcProjectDescendant newDesc = new ArcProjectDescendant();
@@ -382,6 +382,7 @@ public class ManagePipeline extends SecureAction {
 		    String s = formatter.format(date);
 			String paramFileName = exptLabel + "_params_" + s + ".xml";
 			String buildDir = FileUtils.getBuildDir(project, true);
+		    xnatPipelineLauncher.setParameter("builddir", buildDir);
 			xnatPipelineLauncher.setBuildDir(buildDir);
 			String paramFilePath = saveParameters(buildDir+File.separator + exptLabel,paramFileName,parameters);
 		    xnatPipelineLauncher.setParameterFile(paramFilePath);

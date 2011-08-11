@@ -365,7 +365,7 @@ public class ManagePipeline extends SecureAction {
 			boolean launch_now = false;
 			String launch_nowStr = data.getParameters().get("launch_now");
 			if (launch_nowStr != null){
-				launch_now = launch_nowStr.equals("true")?true:false;
+				launch_now = launch_nowStr.equalsIgnoreCase("true");
 			}
 
 			XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);

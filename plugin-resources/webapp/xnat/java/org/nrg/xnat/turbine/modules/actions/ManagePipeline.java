@@ -388,7 +388,6 @@ public class ManagePipeline extends SecureAction {
 		    String s = formatter.format(date);
 			String paramFileName = exptLabel + "_params_" + s + ".xml";
 			String buildDir = FileUtils.getBuildDir(project, true);
-		    xnatPipelineLauncher.setParameter("builddir", buildDir);
 			xnatPipelineLauncher.setBuildDir(buildDir);
 			String paramFilePath = saveParameters(buildDir+File.separator + exptLabel,paramFileName,parameters);
 		    xnatPipelineLauncher.setParameterFile(paramFilePath);

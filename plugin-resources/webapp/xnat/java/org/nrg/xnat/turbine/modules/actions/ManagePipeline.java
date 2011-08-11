@@ -362,6 +362,12 @@ public class ManagePipeline extends SecureAction {
 			XDATUser user = TurbineUtils.getUser(data);
 			XFTItem item = TurbineUtils.GetItemBySearch(data);
 			String pipeline_path = data.getParameters().get("pipeline_path");
+			boolean launch_now = false;
+			String launch_nowStr = data.getParameters().get("launch_now");
+			if (launch_nowStr != null){
+				launch_now = launch_nowStr.equals("true")?true:false;
+			}
+
 			XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);
 			xnatPipelineLauncher.setSupressNotification(true);
 	        xnatPipelineLauncher.setParameter("useremail", user.getEmail());
@@ -386,7 +392,11 @@ public class ManagePipeline extends SecureAction {
 			xnatPipelineLauncher.setBuildDir(buildDir);
 			String paramFilePath = saveParameters(buildDir+File.separator + exptLabel,paramFileName,parameters);
 		    xnatPipelineLauncher.setParameterFile(paramFilePath);
-		    xnatPipelineLauncher.launch();
+		    if (launch_now)
+		    	xnatPipelineLauncher.launch(null);
+		    else
+		    	xnatPipelineLauncher.launch();
+
 
 		    data.setMessage("<p><b>The pipeline has been scheduled.  Status email will be sent upon its completion.</b></p>");
 	        data.setScreenTemplate("ClosePage.vm");

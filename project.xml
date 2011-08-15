@@ -354,7 +354,7 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.2</version>
+			<version>1.5</version>
 			<type>jar</type>
 		</dependency>
 		<!-- End Spring Framework dependencies -->

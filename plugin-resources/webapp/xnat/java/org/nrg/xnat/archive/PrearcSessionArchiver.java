@@ -85,6 +85,8 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	public static final String LABEL_MOD = "Invalid modification of session label via archive process.";
 
+	public static final String UID_MOD = "Invalid modification of session UID via archive process.";
+
 	public static final String LABEL2 = "label";
 
 	public static final String PARAM_SESSION = "session";
@@ -348,20 +350,30 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
 			}
 
-		if(!src.getLabel().equals(existing.getLabel())){
-			this.failed(LABEL_MOD);
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
-		}
-
-		if(!existing.getProject().equals(src.getProject())){
-			failed(PROJ_MOD);
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
-		}
-
-		if(!existing.getSubjectId().equals(existing.getSubjectId())){
-			failed(SUBJECT_MOD);
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
-		}
+			if(!StringUtils.equals(src.getLabel(),existing.getLabel())){
+				this.failed(LABEL_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
+			}
+	
+			if(!StringUtils.equals(existing.getProject(),src.getProject())){
+				failed(PROJ_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
+			}
+	
+			if(!StringUtils.equals(existing.getSubjectId(),src.getSubjectId())){
+				failed(SUBJECT_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
+			}
+			
+			//auto-archiving of pre-existing files?
+			if(!allowDataDeletion){
+				if(StringUtils.isNotEmpty(existing.getUid()) && StringUtils.isNotEmpty(src.getUid())){
+					if(!StringUtils.equals(existing.getUid(), src.getUid())){
+						failed(UID_MOD);
+						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,UID_MOD, new Exception());
+					}
+				}
+			}
 		}
 	}
 

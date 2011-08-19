@@ -100,8 +100,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
+	private final boolean waitFor;
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
@@ -110,11 +111,12 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
 		this.overwrite=(overwrite==null)?false:overwrite;
 		this.srcDIR=srcDIR;
+		this.waitFor=waitFor;
 	}
 
-	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
+	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite, final boolean waitFor)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite);
+		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite, waitFor);
 	}
 
 	public File getSrcDIR(){
@@ -470,7 +472,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 
 			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
-				TriggerPipelines tp=new TriggerPipelines(src,false,false,user);
+				TriggerPipelines tp=new TriggerPipelines(src,false,false,user,waitFor);
 			tp.call();
 			}
 		} catch (ServerException e) {

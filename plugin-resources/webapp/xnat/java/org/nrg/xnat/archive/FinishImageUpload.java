@@ -66,7 +66,12 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			if(isAutoArchive(session,destination)){
 				if(inline){
 					//This is being done as part of a parent transaction and should not manage prearc cache state.
-					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session, user, removePrearcVariables(session.getAdditionalValues()), allowDataDeletion,overwrite))
+					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session, 
+							                                                            user, 
+							                                                            removePrearcVariables(session.getAdditionalValues()), 
+							                                                            allowDataDeletion,
+							                                                            overwrite,
+							                                                            false))
 					.call();
 				}else{
 					if (PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.ARCHIVING)) {

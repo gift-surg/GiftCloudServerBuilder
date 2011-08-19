@@ -255,9 +255,9 @@ public class Archiver extends BatchPrearchiveActionsA  {
 		return (File)params.get(FOLDER);
 	}
 		
-	public static PrearcSessionArchiver buildArchiver(final PrearcSession session, final Boolean allowDataDeletion,final Boolean overwrite,final XDATUser user) throws IOException, SAXException {
+	public static PrearcSessionArchiver buildArchiver(final PrearcSession session, final Boolean allowDataDeletion,final Boolean overwrite,final XDATUser user, final boolean waitFor) throws IOException, SAXException {
 		final PrearcSessionArchiver archiver;
-		archiver = new PrearcSessionArchiver(session, user, session.getAdditionalValues(), allowDataDeletion,overwrite);
+		archiver = new PrearcSessionArchiver(session, user, session.getAdditionalValues(), allowDataDeletion,overwrite, waitFor);
 			
 		return archiver;
 	}

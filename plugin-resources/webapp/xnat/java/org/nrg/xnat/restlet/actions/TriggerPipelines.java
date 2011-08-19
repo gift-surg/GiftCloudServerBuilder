@@ -31,12 +31,18 @@ public class TriggerPipelines implements Callable<Boolean> {
 	private final boolean clearExistingWorkflows;
 	private final boolean supressEmail;
 	private final XDATUser user;
+	private final boolean waitFor;
 
 	public TriggerPipelines(XnatExperimentdata expt, boolean clearExistingWorkflows,boolean supressEmail,XDATUser user){
+		this(expt,clearExistingWorkflows,supressEmail,user,false);
+	}
+	
+	public TriggerPipelines(XnatExperimentdata expt, boolean clearExistingWorkflows,boolean supressEmail,XDATUser user, boolean waitFor){
 		this.expt=expt;
 		this.clearExistingWorkflows=clearExistingWorkflows;
 		this.supressEmail=supressEmail;
 		this.user=user;
+		this.waitFor=waitFor;
 	}
 
 	public Boolean call() {
@@ -51,6 +57,7 @@ public class TriggerPipelines implements Callable<Boolean> {
         xnatPipelineLauncher.setLabel(expt.getLabel());
         xnatPipelineLauncher.setDataType(expt.getXSIType());
         xnatPipelineLauncher.setExternalId(expt.getProject());
+        xnatPipelineLauncher.setWaitFor(this.waitFor);
         xnatPipelineLauncher.setParameter(XNATRestConstants.SUPRESS_EMAIL, (new Boolean(supressEmail)).toString());
         xnatPipelineLauncher.setParameter("session", expt.getId());
         xnatPipelineLauncher.setParameter("sessionLabel", expt.getLabel());

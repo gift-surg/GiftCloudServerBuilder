@@ -91,7 +91,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setLabel("TEST2");
 		newMR.setSubjectId(TEST_SUB_1);
 		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 
@@ -113,7 +113,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setSubjectId(TEST_SUB_1);
 		newMR.setUid(MR+"x");
 		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 
@@ -134,7 +134,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setLabel(MR);
 		newMR.setSubjectId(TEST_SUB_1);
 		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 
@@ -154,7 +154,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setProject(PROJECT);
 		newMR.setLabel(MR);
 		newMR.setSubjectId(TEST_SUB_1);
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, false);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, false,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 		
@@ -174,7 +174,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setProject(PROJECT);
 		newMR.setLabel(MR);
 		newMR.setSubjectId(TEST_SUB_1);
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true,false);
 		
 		XnatImagesessiondata existing=test.retrieveExistingExpt();
 

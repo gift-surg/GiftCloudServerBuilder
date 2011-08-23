@@ -102,8 +102,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
+	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
@@ -111,12 +112,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.params = params;
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
 		this.overwrite=(overwrite==null)?false:overwrite;
+		this.overwrite_files=(overwrite_files==null)?false:overwrite_files;
 		this.srcDIR=srcDIR;
 	}
 
-	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
+	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite, final Boolean overwrite_files)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite);
+		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite,overwrite_files);
 	}
 
 	public File getSrcDIR(){
@@ -365,7 +367,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
 			}
 			
-			//auto-archiving of pre-existing files?
 			if(!allowDataDeletion){
 				if(StringUtils.isNotEmpty(existing.getUid()) && StringUtils.isNotEmpty(src.getUid())){
 					if(!StringUtils.equals(existing.getUid(), src.getUid())){
@@ -444,13 +445,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				public void save(XnatImagesessiondata merged) throws Exception {
 					if(merged.save(user,false,false)){
 						user.clearLocalCache();
-		try {
+						try {
 							MaterializedView.DeleteByUser(user);
-		} catch (Exception e) {
+						} catch (Exception e) {
 							logger.error("",e);
-		}
-
-		try {
+						}
+						
+						try {
 							if (shouldForceQuarantine) {
 								src.quarantine(user);
 							} else {
@@ -467,7 +468,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				}
 			};
 
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, allowDataDeletion,saveImpl))
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, (allowDataDeletion)?allowDataDeletion:overwrite_files,saveImpl))
 				.call();
 
 			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
@@ -483,7 +484,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
 				TriggerPipelines tp=new TriggerPipelines(src,false,false,user);
-			tp.call();
+				tp.call();
 			}
 		} catch (ServerException e) {
 			try {

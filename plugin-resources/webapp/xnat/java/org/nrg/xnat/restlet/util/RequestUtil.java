@@ -17,6 +17,7 @@ public class RequestUtil {
 	public static final String DEST = "dest";
 	public static final String AUTO_ARCHIVE = "auto-archive";
 	public static final String AA = "AA";
+	public static final String OVERWRITE_FILES = "overwrite_files";
 	public static final String TRUE = "true";
 
 	public HttpServletRequest getHttpServletRequest(Request request) {

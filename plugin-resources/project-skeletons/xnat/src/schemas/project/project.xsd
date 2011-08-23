@@ -210,7 +210,7 @@
 		</xs:attribute>
 		<xs:attribute name="prearchive_code" type="xs:integer" use="optional">
 			<xs:annotation>
-				<xs:documentation>0: all data placed in prearchive (default); 1: sessions which match precreated project, subject, and session id are auto-archived; 2: sessions which match precreated project and subject will be auto-archived; 3: sessions which match precreated projects will be auto-archived; 4: all sessions will be auto-archived</xs:documentation>
+				<xs:documentation>0: all data placed in prearchive (default); 1: sessions which match precreated project, subject, and session id are auto-archived; 2: sessions which match precreated project and subject will be auto-archived; 3: sessions which match precreated projects will be auto-archived; 4: all sessions will be auto-archived; 5: all sessions will be auto-archived and overwrite existing files</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>

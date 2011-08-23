@@ -66,11 +66,11 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			if(isAutoArchive(session,destination)){
 				if(inline){
 					//This is being done as part of a parent transaction and should not manage prearc cache state.
-					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session, user, removePrearcVariables(session.getAdditionalValues()), allowDataDeletion,overwrite))
+					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session, user, removePrearcVariables(session.getAdditionalValues()), allowDataDeletion,overwrite,isOverwriteFiles(session,destination)))
 					.call();
 				}else{
 					if (PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.ARCHIVING)) {
-						return PrearcDatabase.archive(session, allowDataDeletion, overwrite, user, getListeners());
+						return PrearcDatabase.archive(session, allowDataDeletion, overwrite,isOverwriteFiles(session,destination), user, getListeners());
 					}else{
 						throw new ServerException("Unable to lock session for archiving.");
 					}
@@ -191,7 +191,35 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		}
 						
 		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());
-		if(code!=null && code.equals(4)){
+		if(code!=null && code>=4){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private static boolean isOverwriteFiles(final Map<String,Object> params){
+		String of = (String)params.get(RequestUtil.OVERWRITE_FILES);
+						
+		if(of!=null && of.toString().equalsIgnoreCase(RequestUtil.TRUE)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private static boolean isOverwriteFiles(final PrearcSession session, final UriParserUtils.DataURIA destination) throws SQLException, SessionException, Exception{
+		//determine overwrite_files setting
+		if(session.getProject()==null){
+			return false;
+		}
+		
+		if(isOverwriteFiles(session.getAdditionalValues())){
+			return true;
+		}
+						
+		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());
+		if(code!=null && code.equals(5)){
 			return true;
 		}
 		

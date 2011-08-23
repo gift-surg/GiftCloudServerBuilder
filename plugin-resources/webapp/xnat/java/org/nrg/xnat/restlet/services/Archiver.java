@@ -44,6 +44,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 	private static final String REDIRECT2 = "redirect";
 	private static final String FOLDER = "folder";
 	private static final String OVERWRITE = "overwrite";
+	private static final String OVERWRITE_FILES = "overwrite_files";
 	private static final String PROJECT = "project";
 	private static final String CRLF = "\r\n";
 	private static final String DEST = "dest";
@@ -59,6 +60,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 	
 	String project_id=null;
 	String overwriteV=null;
+	String overwriteFILES=null;
 	String timestamp=null;
 	String[] sessionFolder=null;
 	String dest=null;
@@ -74,6 +76,8 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					timestamp=f.getFirstValue(PrearcUtils.PREARC_TIMESTAMP);
 				}else if(key.equals(PrearcUtils.PREARC_SESSION_FOLDER)){
 					sessionFolder=f.getValuesArray(PrearcUtils.PREARC_SESSION_FOLDER);
+				}else if(key.equals(OVERWRITE_FILES)){
+					overwriteFILES=f.getFirstValue(OVERWRITE_FILES);
 				}else if(key.equals(OVERWRITE)){
 					overwriteV=f.getFirstValue(OVERWRITE);
 				}else if(key.equals(DEST)){
@@ -119,6 +123,14 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					allowDataDeletion=false;
 					overwrite=false;
 				}
+			}
+			
+			final boolean overwrite_files;
+			
+			if(overwriteFILES!=null && overwriteFILES.toString().equalsIgnoreCase(RequestUtil.TRUE)){
+				overwrite_files=true;
+			}else{
+				overwrite_files=false;
 			}
 			
 			final List<PrearcSession> sessions=new ArrayList<PrearcSession>();
@@ -200,7 +212,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					}
 					
 					if(PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcStatus.ARCHIVING)){
-						_return = "/data" +PrearcDatabase.archive(session, allowDataDeletion, overwrite, user, listeners);
+						_return = "/data" +PrearcDatabase.archive(session, allowDataDeletion, overwrite,overwrite_files, user, listeners);
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
 						return;
@@ -227,7 +239,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 						return;
 					}
 					
-					m=PrearcDatabase.archive(sessions, allowDataDeletion, overwrite, user, listeners);
+					m=PrearcDatabase.archive(sessions, allowDataDeletion, overwrite,overwrite_files, user, listeners);
 				} catch (Exception e) {
 					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
@@ -255,9 +267,9 @@ public class Archiver extends BatchPrearchiveActionsA  {
 		return (File)params.get(FOLDER);
 	}
 		
-	public static PrearcSessionArchiver buildArchiver(final PrearcSession session, final Boolean allowDataDeletion,final Boolean overwrite,final XDATUser user) throws IOException, SAXException {
+	public static PrearcSessionArchiver buildArchiver(final PrearcSession session, final Boolean allowDataDeletion,final Boolean overwrite,final Boolean overwrite_files,final XDATUser user) throws IOException, SAXException {
 		final PrearcSessionArchiver archiver;
-		archiver = new PrearcSessionArchiver(session, user, session.getAdditionalValues(), allowDataDeletion,overwrite);
+		archiver = new PrearcSessionArchiver(session, user, session.getAdditionalValues(), allowDataDeletion,overwrite,overwrite_files);
 			
 		return archiver;
 	}

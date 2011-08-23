@@ -405,7 +405,7 @@ public final class PrearcDatabase {
      * @throws SQLException 
      * @throws Exception 
      */
-    public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final boolean allowDataDeletion, final boolean overwrite, final XDATUser user, final Set<StatusListenerI> listeners) throws Exception, SQLException, SessionException, SyncFailedException, IllegalStateException {
+    public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final boolean allowDataDeletion, final boolean overwrite, final boolean overwriteFiles, final XDATUser user, final Set<StatusListenerI> listeners) throws Exception, SQLException, SessionException, SyncFailedException, IllegalStateException {
         List<SessionDataTriple> ss= new ArrayList<SessionDataTriple>();
 
         for(PrearcSession map:sessions){
@@ -419,7 +419,7 @@ public final class PrearcDatabase {
                 while(i.hasNext()){
                     PrearcSession _s = i.next();
                     try {
-                        PrearcDatabase.archive(_s,allowDataDeletion,overwrite,user,listeners);
+                        PrearcDatabase.archive(_s,allowDataDeletion,overwrite,overwriteFiles,user,listeners);
                     } catch (SyncFailedException e) {
                         logger.error("",e);
                     }
@@ -430,10 +430,10 @@ public final class PrearcDatabase {
     }
 
 
-    public static String archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, XDATUser user, Set<StatusListenerI> listeners) throws SyncFailedException {
+    public static String archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, boolean overwrite_files, XDATUser user, Set<StatusListenerI> listeners) throws SyncFailedException {
         final PrearcSessionArchiver archiver;
         try {
-            archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite, user);
+            archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite,overwrite_files, user);
         }catch (Exception e1) {
             throw new IllegalStateException(e1);
         }

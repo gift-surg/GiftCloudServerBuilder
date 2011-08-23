@@ -19,8 +19,8 @@ import org.restlet.data.Status;
 
 
 public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesessiondata> {
-	public MergePrearcToArchiveSession(Object control,final File srcDIR, final XnatImagesessiondata src, final String srcRootPath, final File destDIR, final XnatImagesessiondata existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion,SaveHandlerI<XnatImagesessiondata> saver) {
-		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion,saver);
+	public MergePrearcToArchiveSession(Object control,final File srcDIR, final XnatImagesessiondata src, final String srcRootPath, final File destDIR, final XnatImagesessiondata existing, final String destRootPath, boolean addFilesToExisting, boolean overwrite_files,SaveHandlerI<XnatImagesessiondata> saver) {
+		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, addFilesToExisting, overwrite_files,saver);
 	}
 
 

@@ -53,6 +53,7 @@ import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -435,7 +436,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
             sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
-            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());        
+            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
+            PrearcDatabase.setStatus(sess.getName(), sess.getTimestamp(), sess.getProject(), PrearcStatus.RECEIVING);
         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {

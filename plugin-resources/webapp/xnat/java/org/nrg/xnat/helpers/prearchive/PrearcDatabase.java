@@ -419,7 +419,7 @@ public final class PrearcDatabase {
                 while(i.hasNext()){
                     PrearcSession _s = i.next();
                     try {
-                        PrearcDatabase.archive(_s,allowDataDeletion,overwrite,overwriteFiles,user,listeners);
+                        PrearcDatabase._archive(_s,allowDataDeletion,overwrite,overwriteFiles,user,listeners,true);
                     } catch (SyncFailedException e) {
                         logger.error("",e);
                     }
@@ -429,11 +429,14 @@ public final class PrearcDatabase {
         return ret;
     }
 
-
     public static String archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, boolean overwrite_files, XDATUser user, Set<StatusListenerI> listeners) throws SyncFailedException {
+    	return PrearcDatabase._archive(session, allowDataDeletion, overwrite,overwrite_files, user, listeners,false);
+    }
+
+    private static String _archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, boolean overwrite_files, XDATUser user, Set<StatusListenerI> listeners, boolean waitFor) throws SyncFailedException {
         final PrearcSessionArchiver archiver;
         try {
-            archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite,overwrite_files, user);
+            archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite,overwrite_files, user, waitFor);
         }catch (Exception e1) {
             throw new IllegalStateException(e1);
         }

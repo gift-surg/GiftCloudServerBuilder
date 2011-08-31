@@ -146,10 +146,23 @@ public class CatalogResourceList extends XNATTemplate {
 				if(proj==null){
 					if(parent.getItem().instanceOf("xnat:experimentData")){
 						proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+						// Per FogBugz 4746, prevent NPE when user doesn't have access to resource (MRH)
+						// Check access through shared project when user doesn't have access to primary project
+						if (proj == null) {
+							proj = (XnatProjectdata)((XnatExperimentdata)parent).getFirstProject();
+						}
 					}else if(security.getItem().instanceOf("xnat:experimentData")){
 						proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+						// Per FogBugz 4746, ....
+						if (proj == null) {
+							proj = (XnatProjectdata)((XnatExperimentdata)security).getFirstProject();
+						}
 					}else if(security.getItem().instanceOf("xnat:subjectData")){
 						proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+						// Per FogBugz 4746, ....
+						if (proj == null) {
+							proj = (XnatProjectdata)((XnatSubjectdata)security).getFirstProject();
+						}
 					}else if(security.getItem().instanceOf("xnat:projectData")){
 						proj = (XnatProjectdata)security;
 					}
@@ -170,9 +183,17 @@ public class CatalogResourceList extends XNATTemplate {
 					_new[5]=old[5];
 					
 					XnatAbstractresource res= XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(old[0], user, false);
-					_new[6]=res.getCount(proj.getRootArchivePath());
-					_new[7]=res.getSize(proj.getRootArchivePath());
-
+					// Per FogBugz 4746, prevent NPE when user doesn't have access to resource (MRH)
+					// Just in case project is still inaccessable....
+					// NOTE: Accessing getCount() and getSize() through shared project returns correct results, however it would not be 
+					// expected to if there were ever separate archives for each project
+					if (proj!=null) {
+						_new[6]=res.getCount(proj.getRootArchivePath());
+						_new[7]=res.getSize(proj.getRootArchivePath());
+					} else {
+						_new[6]="UNKNOWN";
+						_new[7]="UNKNOWN";
+					} 
 					_new[8]=res.getTagString();
 					_new[9]=res.getContent();
 					_new[10]=res.getFormat();

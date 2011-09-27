@@ -172,13 +172,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
                                 throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,
                                         "error parsing DICOM object", e);
                             }
-                            final ByteArrayInputStream bis = new ByteArrayInputStream(Decompress.dicomObject2Bytes(dataset));
+                            final ByteArrayInputStream bis = new ByteArrayInputStream(Decompress.dicomObject2Bytes(dataset,tsuid));
                             final DicomObject d = Decompress.decompress_image(bis, tsuid);
                             final String dtsdui = Decompress.getTsuid(d);
                             try {
                                 fmi.putString(Tag.TransferSyntaxUID, VR.UI, dtsdui);
                                 dos.writeFileMetaInformation(fmi);
-                                dos.writeDataset(dataset, dtsdui);
+                                dos.writeDataset(d.dataset(), dtsdui);
                             } catch (Throwable t) {
                                 if (t instanceof IOException) {
                                     ioexception = (IOException)t;

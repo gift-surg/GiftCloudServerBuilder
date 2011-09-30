@@ -51,8 +51,16 @@ $page.setVlinkColor($ui.vlink)
 	#end
 
 </TABLE>
+<br/>
 
-
+<TABLE>
+<TR>
+<TD><input type="checkbox" name="run_pipeline_in_process" /> <b>Run pipeline in-process?</b></TD>
+</TR>
+<TR>
+<TD><input type="checkbox" name="suppress_workflow_entries" /> <b>Suppress workflow entries for pipeline execution?</b></TD>
+</TR>
+</table>
 
 <br/>
 <table>

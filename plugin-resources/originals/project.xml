@@ -1248,7 +1248,16 @@
 		<!-- End Spring Framework dependencies -->
 		<!-- Begin Pipeline Client dependencies -->
 		<dependency>
-			<groupId>pipelineClient</groupId>
+			<groupId>pipeline</groupId>
+			<artifactId>Pipeline</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
 			<artifactId>pipelineClient</artifactId>
 			<version>1.0</version>
 			<properties>
@@ -1257,7 +1266,16 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>pipelineClient</groupId>
+			<groupId>pipeline</groupId>
+			<artifactId>PipelineTools</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
 			<artifactId>pipelineWorkflow</artifactId>
 			<version>1.0</version>
 			<properties>
@@ -1266,8 +1284,17 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>pipelineClient</groupId>
+			<groupId>pipeline</groupId>
 			<artifactId>pipelineXNAT</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>XNATTools</artifactId>
 			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -1283,7 +1310,7 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>com.springsource.org.apache.xmlbeans</artifactId>
 			<version>2.4.0</version>
@@ -1291,7 +1318,7 @@
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
-		</dependency>
+		</dependency -->
 		<dependency>
 			<groupId>org.ostermiller</groupId>
 			<artifactId>utils</artifactId>

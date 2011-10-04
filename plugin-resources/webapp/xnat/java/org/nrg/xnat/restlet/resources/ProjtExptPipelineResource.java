@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
@@ -201,7 +201,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 		xnatPipelineLauncher.setExternalId(expt.getProject());
 		xnatPipelineLauncher.setDataType(expt.getXSIType());
 
-		String buildDir = FileUtils.getBuildDir(expt.getProject(), true);
+		String buildDir = PipelineFileUtils.getBuildDir(expt.getProject(), true);
 		buildDir +=   "archive_trigger"  ;
 		xnatPipelineLauncher.setBuildDir(buildDir);
 		xnatPipelineLauncher.setNeedsBuildDir(false);

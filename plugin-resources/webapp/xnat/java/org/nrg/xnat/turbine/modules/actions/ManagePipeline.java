@@ -17,7 +17,7 @@ import org.apache.velocity.context.Context;
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.utils.PipelineAdder;
 import org.nrg.pipeline.utils.PipelineUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
@@ -373,13 +373,14 @@ public class ManagePipeline extends SecureAction {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
             String s = formatter.format(date);
             String paramFileName = exptLabel + "_params_" + s + ".xml";
-            String buildDir = FileUtils.getBuildDir(project, true);
+            String buildDir = PipelineFileUtils.getBuildDir(project, true);
             xnatPipelineLauncher.setBuildDir(buildDir);
             String paramFilePath = saveParameters(buildDir + File.separator + exptLabel, paramFileName, parameters);
             xnatPipelineLauncher.setParameterFile(paramFilePath);
             xnatPipelineLauncher.launch();
 
-            data.setMessage("<p><b>The pipeline has been scheduled.  Status email will be sent upon its completion.</b></p>");
+            // TODO: We need to get status back for in-process pipeline launching and use that for when runPipelineInProcess is true.
+            data.setMessage(runPipelineInProcess ? "<p><b>The requested pipeline has completed.</b></p>" : "<p><b>The pipeline has been scheduled.  Status email will be sent upon its completion.</b></p>");
             data.setScreenTemplate("ClosePage.vm");
         } catch (Exception e) {
             e.printStackTrace();

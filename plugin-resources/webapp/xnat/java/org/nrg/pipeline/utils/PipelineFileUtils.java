@@ -21,7 +21,7 @@ import org.nrg.xdat.om.ArcProject;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
-public class FileUtils {
+public class PipelineFileUtils {
 
 	public static PipelineDocument GetDocument(String pathToPipelineXmlFile) throws Exception {
         if (!pathToPipelineXmlFile.endsWith(".xml")) pathToPipelineXmlFile += ".xml";

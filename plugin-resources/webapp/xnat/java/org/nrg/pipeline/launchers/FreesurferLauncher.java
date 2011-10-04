@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
@@ -43,7 +43,7 @@ public class FreesurferLauncher extends PipelineLauncher{
 		    String cmdPrefix = data.getParameters().get("cmdprefix");
 		    xnatPipelineLauncher.setPipelineName(pipelineName);
 		    xnatPipelineLauncher.setSupressNotification(true);
-		    String buildDir = FileUtils.getBuildDir(mr.getProject(), true);
+		    String buildDir = PipelineFileUtils.getBuildDir(mr.getProject(), true);
 		    buildDir +=  "fsrfer"  ;
 		    xnatPipelineLauncher.setBuildDir(buildDir);
 		    xnatPipelineLauncher.setNeedsBuildDir(false);

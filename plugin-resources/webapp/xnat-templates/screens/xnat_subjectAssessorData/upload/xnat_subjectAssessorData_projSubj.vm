@@ -34,7 +34,7 @@
 	  #end	  
   #else
 	<td>
-	$subject.getIdentifier($project,true)
+	$subject.getIdentifier($project,false)
   	<div style="display:none">
   	<select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select>
   	</div>

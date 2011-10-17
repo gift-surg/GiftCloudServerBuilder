@@ -521,10 +521,7 @@ public class FileList extends XNATCatalogTemplate {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 				return null;
 			}
-			
-			this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
-			
-			
+						
 			return rep;
 		}else{
 			return super.representTable(table, mt, params,cp);

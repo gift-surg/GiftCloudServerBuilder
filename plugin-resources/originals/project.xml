@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>7.4.214.jdbc2</version>
+			<version>9.0-801.jdbc4</version>
 			<type>jar</type>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -340,16 +340,6 @@
 			<artifactId>commons-pool</artifactId>
 			<version>1.2</version>
 			<url>http://jakarta.apache.org/commons/pool/</url>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>jdbc</groupId>
-			<artifactId>jdbc</artifactId>
-			<version>2.0</version>
-			<url>http://java.sun.com/products/jdbc/</url>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -876,8 +866,8 @@
 		</dependency>
 		<!-- END 4.10.07 additions -->
 		<!-- BEGIN 2007-08-23 additions:
-			multischema validation support
-		(used by prearchive Ajax code when at debug log level)
+		  	multischema validation support
+        (used by prearchive Ajax code when at debug log level)
 		  -->
 		<dependency>
 			<groupId>msv</groupId>
@@ -1080,60 +1070,60 @@
 		<!-- END XNATFS additions -->
 		<!-- Use APA reverse proxy to feed DicomServer-->
 		<dependency>
-			<groupId>apa-webcontent</groupId>
-			<artifactId>apa-webcontent</artifactId>
-			<version>1.1</version>
-			<url>http://portals.apache.org/applications/index.html</url>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
+		  <groupId>apa-webcontent</groupId>
+		  <artifactId>apa-webcontent</artifactId>
+		  <version>1.1</version>
+		  <url>http://portals.apache.org/applications/index.html</url>
+		  <properties>
+		    <war.bundle>true</war.bundle>
+		  </properties>
 		</dependency>
 		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>1.6</version>
-			<url>http://commons.apache.org/configuration/index.html</url>
-			<type>jar</type>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
+		  <groupId>commons-configuration</groupId>
+		  <artifactId>commons-configuration</artifactId>
+		  <version>1.6</version>
+		  <url>http://commons.apache.org/configuration/index.html</url>
+		  <type>jar</type>
+		  <properties>
+		    <war.bundle>true</war.bundle>
+		  </properties>
 		</dependency>
 		<!-- BEGIN web.xml 1.5 additions 12/09/10 MRH -->
-		<dependency>
-			<groupId>org.codehaus.cargo</groupId>
-			<artifactId>cargo-core-api-module</artifactId>
-			<version>1.0.5</version>
-			<properties>
-				<war.bundle>false</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.cargo</groupId>
-			<artifactId>cargo-core-api-util</artifactId>
-			<version>1.0.5</version>
-			<properties>
-				<war.bundle>false</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<version>1.1.1</version>
-			<properties>
-				<war.bundle>false</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
+	<dependency>
+	    	<groupId>org.codehaus.cargo</groupId>
+	       	<artifactId>cargo-core-api-module</artifactId>
+		<version>1.0.5</version>
+		<properties>
+			<war.bundle>false</war.bundle>
+		</properties>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+	    	<groupId>org.codehaus.cargo</groupId>
+	       	<artifactId>cargo-core-api-util</artifactId>
+		<version>1.0.5</version>
+		<properties>
+			<war.bundle>false</war.bundle>
+		</properties>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+	    	<groupId>jaxen</groupId>
+	       	<artifactId>jaxen</artifactId>
+		<version>1.1.1</version>
+		<properties>
+			<war.bundle>false</war.bundle>
+		</properties>
+		<type>jar</type>
+	</dependency>
 		<!-- END web.xml 1.5 additions 12/09/10 MRH -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.2.147</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
+	      <dependency>
+		  <groupId>com.h2database</groupId>
+		  <artifactId>h2</artifactId>
+		  <version>1.2.147</version>
+		   <properties>
+		    <war.bundle>true</war.bundle>
+		  </properties>
 		</dependency>
 		<dependency>
 			<groupId>quartz</groupId>
@@ -1220,6 +1210,15 @@
 		</dependency>
 		<dependency>
 			<groupId>spring</groupId>
+			<artifactId>org.springframework.oxm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
 			<artifactId>org.springframework.transaction</artifactId>
 			<version>3.0.5.RELEASE</version>
 			<properties>
@@ -1245,12 +1244,166 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>1.7.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<!-- End Spring Framework dependencies -->
-		<!-- Begin Pipeline Client dependencies -->
+		<!-- Begin NRG framework and service additions -->
 		<dependency>
-			<groupId>pipeline</groupId>
-			<artifactId>Pipeline</artifactId>
-			<version>1.0</version>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-mail</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-notify</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.jdbc</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.orm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>2.7.6</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-commons-annotations</artifactId>
+			<version>3.2.0.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.6.3.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jta</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>com.springsource.net.sf.cglib</artifactId>
+			<version>2.2.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>inject</groupId>
+			<artifactId>com.springsource.javax.inject</artifactId>
+			<version>1.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.8.5</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.8.5</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>javassist</groupId>
+			<artifactId>com.springsource.javassist</artifactId>
+			<version>3.10.0.GA</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>slf4j</groupId>
+			<artifactId>slf4j-jcl</artifactId>
+			<version>1.5.8</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<!-- End NRG framework and service additions -->
+		<dependency>
+			<groupId>gnu</groupId>
+			<artifactId>java-getopt</artifactId>
+			<version>1.0.13</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1258,25 +1411,7 @@
 		</dependency>
 		<dependency>
 			<groupId>pipeline</groupId>
-			<artifactId>pipelineClient</artifactId>
-			<version>1.0</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>pipeline</groupId>
-			<artifactId>PipelineTools</artifactId>
-			<version>1.0</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>pipeline</groupId>
-			<artifactId>pipelineWorkflow</artifactId>
+			<artifactId>XNATTools</artifactId>
 			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -1294,7 +1429,7 @@
 		</dependency>
 		<dependency>
 			<groupId>pipeline</groupId>
-			<artifactId>XNATTools</artifactId>
+			<artifactId>pipelineWorkFlow</artifactId>
 			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -1302,23 +1437,32 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>gnu</groupId>
-			<artifactId>java-getopt</artifactId>
-			<version>1.0.13</version>
+			<groupId>pipeline</groupId>
+			<artifactId>PipelineTools</artifactId>
+			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<!-- dependency>
-			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>com.springsource.org.apache.xmlbeans</artifactId>
-			<version>2.4.0</version>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>pipelineClient</artifactId>
+			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
-		</dependency -->
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>Pipeline</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<dependency>
 			<groupId>org.ostermiller</groupId>
 			<artifactId>utils</artifactId>
@@ -1328,7 +1472,15 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<!-- End Pipeline Client dependencies -->
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>com.springsource.org.apache.xmlbeans</artifactId>
+			<version>2.4.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<!-- This setting is important. The source tree will be merged -->

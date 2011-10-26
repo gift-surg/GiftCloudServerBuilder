@@ -33,19 +33,28 @@ xdat.build.location=BUILD
 #If you have pipeline installed outside of xnat, un-comment this property to set it automatically.
 #xdat.pipeline.location=/Library/XNAT/PIPELINE
 
-# Mail server
-xdat.smtp.server=smtp.server
+# Mail server, port, and protocol. Standard SMTP port is 25 or 587, Google SMTPS port is 465
+xdat.mail.server=mail.server
+xdat.mail.port=25
+xdat.mail.protocol=smtp
+
+# Mail server credentials, values are only required for servers with authentication turned on.
+xdat.mail.username=
+xdat.mail.password=
 
 #email address of administrator.
-xdat.admin_email=administrator@xnat.org
-# eg. http://localhost:8080.xnat
+xdat.mail.admin=administrator@xnat.org
+
+# Prefix to the subject line for system emails.
+xdat.mail.prefix=XNAT
+
+# e.g. http://localhost:8080.xnat
 xdat.url=URL
 
 #  'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be
 #  prompted to login when visiting the site.  If true, users will be required to login.  If false,
 #  users will be automatically logged in using an XNAT guest account.
 xdat.require_login=true
-
 
 #  'xdat.enable_new_registrations' must be set to 'true' or 'false'.  Users are provided with a
 #  link on the Login.vm page to register for a new account.  If this variable is true, that newly

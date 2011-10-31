@@ -513,7 +513,10 @@ public final class PrearcDatabase {
                         params.put("project", project);
                     }
                     params.put("label", session);
-                    params.put("subject_ID", sd.getSubject());
+                    final String subject = sd.getSubject();
+                    if (!Strings.isNullOrEmpty(subject)) {
+                        params.put("subject_ID", sd.getSubject());
+                    }
 
                     try {
                         final Boolean r = new XNATSessionBuilder(sessionDir, new File(sessionDir.getPath() + ".xml"), true, params).call();	        

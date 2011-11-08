@@ -739,6 +739,15 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1</version>
@@ -1329,6 +1338,26 @@
 			<type>jar</type>
 		</dependency>
 		<!-- End Pipeline Client dependencies -->
+		<!-- Begin Jackson JSON processing dependencies -->
+		<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.8.5</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.8.5</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<!-- End Jackson JSON processing dependencies -->
 	</dependencies>
 	<build>
 		<!-- This setting is important. The source tree will be merged -->

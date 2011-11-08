@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -104,7 +105,8 @@ public class ArcGet extends CommandPromptTool {
         String pass = (String)variables.get("password");
 
         try {
-	        ArrayList sessions = (ArrayList)variables.get("session_id");
+	        @SuppressWarnings("unchecked")
+			List<String> sessions = (ArrayList)variables.get("session_id");
 	        if (sessions == null || sessions.size()==0)
 	        {
 	            String file = (String)variables.get("f");

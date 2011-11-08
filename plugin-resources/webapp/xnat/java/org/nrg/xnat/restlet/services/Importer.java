@@ -192,17 +192,6 @@ public class Importer extends SecureResource {
 		}
 	}
 
-		private void respondToException(Exception e, Status status) {
-			logger.error("",e);
-			if (this.requested_format!=null && this.requested_format.equalsIgnoreCase("HTML")){
-				response = new ArrayList<String>();
-				response.add(e.getMessage());
-				returnDefaultRepresentation();
-			}else{
-				this.getResponse().setStatus(status, e.getMessage());
-			}
-		}
-
 		@Override
 		public Representation represent(Variant variant) throws ResourceException {
 			final MediaType mt=overrideVariant(variant);

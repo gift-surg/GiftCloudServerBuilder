@@ -34,6 +34,9 @@ IMG{
                         <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>
                         <li><a href="#registration"><em>Registration<span class="spacer"></span></em></a></li>
                         <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
+                        #foreach($tab in $tabs)
+                            <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+                        #end
                     </ul>
                     <div class="yui-content">   
                         <div id="siteInfo">
@@ -48,6 +51,12 @@ IMG{
                         <div id="dicomReceiver">
                             <p>#parse('screens/configuration/dicomReceiver.vm')</p>
                         </div>
+                        #foreach($tab in $tabs)
+                            <div id="$tab.getProperty("divName")">
+                                #set($path = "screens/configuration/${tab.getProperty('fileName')}")
+                                <p>#parse($path)</p>
+                            </div>
+                        #end
                     </div>
                 </div>
             </div>

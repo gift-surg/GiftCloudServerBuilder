@@ -229,6 +229,20 @@
                 <exclude name="README"/>
             </fileset>
         </ant:copy>
+    <ant:replace file="${basedir}/deployments/${xdat.project.name}/conf/services.properties" value="" propertyFile="build.properties">
+            <replacefilter token="@XDAT_MAIL_SERVER@"   property="xdat.mail.server"/> 
+            <replacefilter token="@XDAT_MAIL_PORT@"     property="xdat.mail.port"/>
+            <replacefilter token="@XDAT_MAIL_PROTOCOL@" property="xdat.mail.protocol"/>
+            <replacefilter token="@XDAT_MAIL_USERNAME@" property="xdat.mail.username"/>
+            <replacefilter token="@XDAT_MAIL_PASSWORD@" property="xdat.mail.password"/>
+            <replacefilter token="@XDAT_MAIL_ADMIN@"    property="xdat.mail.admin"/>
+            <replacefilter token="@XDAT_MAIL_PREFIX@"   property="xdat.mail.prefix"/>
+			<replacefilter token="@XDAT_DB_NAME@"       property="xdat.project.db.name"/>
+			<replacefilter token="@XDAT_DB_DRIVER@"     property="xdat.project.db.driver"/>
+			<replacefilter token="@XDAT_DB_URL@"        property="xdat.project.db.connection.string"/>
+			<replacefilter token="@XDAT_DB_USERNAME@"   property="xdat.project.db.user"/>
+			<replacefilter token="@XDAT_DB_PASSWORD@"   property="xdat.project.db.password"/>
+        </ant:replace>
     </goal>
     <!-- ================================================================ -->
     <!-- Calls the maven task for the deployment xdat:deploy                                      -->
@@ -395,7 +409,7 @@
                     <fileset dir="${xdat.project.resource}" includes="**/CVS/"/>
                 </delete>
                 <delete dir="${xdat.project.resource}/pdf"/>
-                <ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.admin_email}"/>
+                <ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.mail.admin}"/>
             </j:otherwise>
         </j:choose>
     </goal>
@@ -602,13 +616,19 @@
         <ant:replace file="${xdat.instance.NEW}" token="%XDAT_SCHEMAS%" value="${xdat.root.schemas}"/>
         <maven:makeAbsolutePath var="xdat.project" path="deployments/${xdat.project.name}/src" basedir="${basedir}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%XDAT_PROJECT%" value="${xdat.project}"/>
+        <j:if test="${context.getVariable('xdat.pipeline.location') != null}">
+			<ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${xdat.pipeline.location}"/>
+		</j:if>
+		<j:if test="${context.getVariable('xdat.pipeline.location') == null}">
+			<ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
+		</j:if>
         <ant:replace file="${xdat.instance.NEW}" token="%FTP_LOCATION%" value="${xdat.ftp.location}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%BUILD_LOCATION%" value="${xdat.build.location}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
-        <ant:replace file="${xdat.instance.NEW}" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
+        <ant:replace file="${xdat.instance.NEW}" token="%ADMIN_EMAIL%" value="${xdat.mail.admin}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%SITE_URL%" value="${xdat.url}"/>
-        <ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
+        <ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.mail.server}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
@@ -639,9 +659,9 @@
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%BUILD_LOCATION%" value="${xdat.build.location}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
-        <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
+        <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ADMIN_EMAIL%" value="${xdat.mail.admin}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SITE_URL%" value="${xdat.url}"/>
-        <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
+        <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SMTP_SERVER%" value="${xdat.mail.server}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
@@ -820,6 +840,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -858,6 +879,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -889,6 +911,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -924,6 +947,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -963,6 +987,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1001,6 +1026,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1043,6 +1069,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1089,6 +1116,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1462,6 +1490,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1538,8 +1567,8 @@
             </ant:chmod>
                         <ant:echo>Launching ${pipeline.dir}/setup.sh script</ant:echo>
                         <ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
-                <ant:arg value="${xdat.admin_email}"/>
-                <ant:arg value="${xdat.smtp.server}"/>
+                <ant:arg value="${xdat.mail.admin}"/>
+                <ant:arg value="${xdat.mail.server}"/>
             </ant:exec>
         </j:if>
                 </j:if>
@@ -1572,6 +1601,7 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/stratum-1.0-b5.jar"/>

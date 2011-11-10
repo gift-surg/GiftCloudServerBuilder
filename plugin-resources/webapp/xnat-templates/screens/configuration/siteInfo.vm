@@ -1,3 +1,5 @@
+<!-- title: Site Information -->
+<!-- divName: siteInfo -->
 <script type="text/javascript" src="$content.getURI("scripts/project/settingsTabMgmt.js")"></script>
 <table id="mgmt_container">
     <tr>

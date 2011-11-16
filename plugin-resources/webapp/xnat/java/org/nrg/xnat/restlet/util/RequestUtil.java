@@ -27,6 +27,8 @@ public class RequestUtil {
 	private static Map<MediaType,String> supported_upload_types=new Hashtable<MediaType,String>();
 	
 	static{
+		supported_upload_types.put(MediaType.TEXT_ALL,".txt");
+		supported_upload_types.put(MediaType.TEXT_PLAIN,".txt");
 		supported_upload_types.put(MediaType.APPLICATION_ALL,"");
 		supported_upload_types.put(SecureResource.APPLICATION_DICOM, ".dcm");
 		supported_upload_types.put(MediaType.APPLICATION_ZIP,".zip");

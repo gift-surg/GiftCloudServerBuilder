@@ -23,10 +23,13 @@
     <context:component-scan base-package="org.nrg.notify.daos" / -->
     <context:component-scan base-package="org.nrg.xft.services" />
     <context:component-scan base-package="org.nrg.xft.daos" />
+    <context:component-scan base-package="org.nrg.config.services" />
+    <context:component-scan base-package="org.nrg.config.daos" />
 
     <util:list id="xnatEntityPackages">
         <!--  value>org.nrg.notify.entities</value -->
         <value>org.nrg.xft.entities</value>
+        <value>org.nrg.config.entities</value>
     </util:list>
 
     <!-- import resource="datasource-config.xml" / -->

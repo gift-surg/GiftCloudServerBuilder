@@ -23,15 +23,7 @@
 <tr>
 		  	  <td colspan="5" NOWRAP>
 	<span ID="span$!scanCounter" style="position:relative; display:none;">
-			  	  	  #parse($turbineUtils.getTemplateName("_details",$scan.getXSIType(),$project))
-				  	  	  	  <table>
-		 <tr> 
-						  	  	  	  	  	  <td>    </td>
-						  	  	  	  	  	  <th valign="top">Files</th>
-						  	  	  	  	  	  <td align="left" style="border:1px solid grey"><table><tbody id="FILES_scan$scanID"></tbody></table></td>
-		 </tr> 
-	  </table>
-
+		#parse($turbineUtils.getTemplateName("_details",$scan.getXSIType(),$project))
 	</span>	
 	</td>
 </tr>

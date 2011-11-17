@@ -41,8 +41,10 @@ IMG{
 <script type="text/javascript" src="$content.getURI("scripts/search/dataTableSearch.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/search/dataTableStoredSearch.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
+<!-- BEGIN SET AND PARSE SUMMARY TABS -->
 #set($summary_tabs=$turbineUtils.getTemplateName("_summary_tabs","xnat:projectData",$project.getId()))
 #parse($summary_tabs)
+<!-- END SET AND PARSE SUMMARY TABS -->
 	   </TD>
 	   <TD valign="top" width="120" align="left">
 #parse($turbineUtils.getTemplateName("_actions_box","xnat:projectData",$project.getId()))

@@ -8,6 +8,6 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 public class Configuration extends SecureScreen {
 	@Override
 	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-		// doesn't currently need any context, just needed to subclass SecureScreen
+        cacheTabs(context, "configuration");
 	}
 }

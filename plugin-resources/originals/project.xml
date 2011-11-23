@@ -1245,6 +1245,15 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<!-- End Spring Framework dependencies -->
 	</dependencies>
 	<build>

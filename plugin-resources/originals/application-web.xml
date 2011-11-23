@@ -53,6 +53,18 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<!-- BEGIN XNAT CUSTOMIZATIONS -->
+	<!-- ======================================================================== -->
+    <!-- INSERTED FOR Spring Framework -->
+    <!-- ======================================================================== -->
+    <servlet>
+        <servlet-name>springServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/conf/*-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 	<servlet>
 		<servlet-name>xdat</servlet-name>
 		<servlet-class>org.nrg.xdat.servlet.XDATServlet</servlet-class>
@@ -155,19 +167,6 @@
 		<servlet-name>PublisherServlet</servlet-name>
 		<servlet-class>org.nrg.plexiViewer.Servlet.PublisherServlet</servlet-class>
 	</servlet>
-    <!-- ======================================================================== -->
-    <!-- INSERTED FOR Spring Framework -->
-    <!-- ======================================================================== -->
-    <servlet>
-        <servlet-name>springServlet</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>/WEB-INF/conf/*-context.xml</param-value>
-        </init-param>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
-        
     <servlet-mapping>
         <servlet-name>springServlet</servlet-name>
         <url-pattern>/spring</url-pattern>

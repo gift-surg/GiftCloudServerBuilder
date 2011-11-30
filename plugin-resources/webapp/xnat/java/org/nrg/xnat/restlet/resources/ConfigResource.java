@@ -6,15 +6,18 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.ConfigService;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTTable;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
+
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -25,8 +28,11 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 /**********************************************************************************************************************************************************************
- * 
+ *  
+ *  
  *  ConfigResource - a restlet for nrg_config to get and put text files 
+ * 
+ *  Full Specs:  https://xnatdev.wikispaces.com/nrg_config
  * 
  *		GET       /config								format=json/xml/html      Return a list of all tools that have a configuration
  *		GET       /config/{TOOL_NAME} 					format=json/xml/html      Return all configurations for this tool (all paths)
@@ -53,7 +59,7 @@ import org.restlet.resource.Variant;
  */
 
 public class ConfigResource extends SecureResource {
-
+	
 	private static final String PROJECT_ID = "PROJECT_ID";
 	private static final String TOOL_NAME = "TOOL_NAME";
 	private static final String PATH_TO_FILE = "PATH_TO_FILE";
@@ -61,7 +67,7 @@ public class ConfigResource extends SecureResource {
 	private final String[] configColumns = {"tool","path","project","user","create_date","reason","contents", "version", "status"};
 	private final String[] listColumns = {"tool"};
 	
-	private final String project;
+	private final String projectName;
 	private final String toolName;
 	private final String reason;
 	private final String path;
@@ -81,13 +87,10 @@ public class ConfigResource extends SecureResource {
 		configService = XDAT.getConfigService();
 
 		//handle url here
-		project = (String) getRequest().getAttributes().get(PROJECT_ID);
+		projectName = (String) getRequest().getAttributes().get(PROJECT_ID);
 		toolName = (String) getRequest().getAttributes().get(TOOL_NAME);
 		reason = (String) getRequest().getAttributes().get(REASON);
 		path = getFullConfigPath();
-		//TODO: if we start using projectdata_info instead of id in configservice:
-		//XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(this.project, null, false);
-        //projectid = Long.valueOf(((Integer)p.getItem().getProps().get("projectdata_info")));
 	}
 
 	@Override
@@ -98,44 +101,67 @@ public class ConfigResource extends SecureResource {
 			
 			//handle query variables
 			final boolean getHistory = "getHistory".equalsIgnoreCase(this.getQueryVariable("action")) ? true : false;
-			final String version = this.getQueryVariable("version");
-			final boolean meta =  "true".equalsIgnoreCase(this.getQueryVariable("meta")) ? true : false;
-			final boolean contents =  "true".equalsIgnoreCase(this.getQueryVariable("contents")) ? true : false;
+			Integer version = null;
+			final boolean meta = "true".equalsIgnoreCase(this.getQueryVariable("meta")) ? true : false;
+			final boolean contents = "true".equalsIgnoreCase(this.getQueryVariable("contents")) ? true : false;
+			
+			try{
+				version = Integer.parseInt(this.getQueryVariable("version"));
+			} catch (Exception e){}
 			
 			XFTTable table = new XFTTable();
-
-			//check access
-			if(project != null && !hasAccessTo(project)){
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
-				return null;
+			
+			Callable<Long> getProjectId = null;
+			//check access, almost copy-paste code in the PUT method.
+			if(projectName != null){
+				final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
+				if(!user.canRead(("xnat:subjectData/project").intern(), p.getId())){
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
+					return null;
+				}
+				getProjectId = new Callable<Long>() { public Long call() { return new Long((Integer)p.getItem().getProps().get("projectdata_info"));}};
+			} else {
+				getProjectId = new Callable<Long>() { public Long call() { return null; }};
 			}
 			
 			List<Configuration> confs  = new ArrayList<Configuration>();
 			List<String> list = new ArrayList<String>();
 			
-			if(toolName == null && path == null && project == null) {
+			if(toolName == null && path == null && projectName == null) {
 				//  /REST/config
-				list.addAll(configService.getTools());
+				List<String> tools = configService.getTools();
+				if(tools != null){
+					list.addAll(tools);  //addAll is not null safe!
+				}
 			} else if(toolName == null && path == null) {
 				//  /REST/projects/{PROJECT_ID}/config
-				list.addAll(configService.getTools(project));
+				List<String> tools = configService.getTools(getProjectId);
+	                
+				if(tools != null){
+					list.addAll(tools);  //addAll is not null safe!
+				}
 			} else if (path == null) {
 				//  /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}  or    /REST/config/{TOOL_NAME} 
-				confs.addAll(configService.getConfigsByTool(toolName, project));
+				List<Configuration> l = configService.getConfigsByTool(toolName, getProjectId);
+				if(l != null){
+					confs.addAll(l);  //addAll is not null safe.
+				}
 			} else {
 				if(getHistory){ 
 					//   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}&action=getHistory  or  /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}&action=getHistory
-					confs.addAll(configService.getHistory(toolName, path, project));
+					List<Configuration> l = configService.getHistory(toolName, path, getProjectId);
+					if(l != null){
+						confs.addAll(l);  //addAll is not null safe.
+					}
 				} else {
 					if(version == null) {
 						//   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}  or  /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}
-						confs.add(configService.getConfig(toolName, path, project));						
+						confs.add(configService.getConfig(toolName, path, getProjectId));						
 					} else {
 						//   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}&version={version}  or  /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}&version={version}
-						confs.add(configService.getConfigById(toolName, path, version, project));
+						confs.add(configService.getConfigByVersion(toolName, path, version, getProjectId));
 					}
-					
-					// we now react to the meta and contents parameters. if we're here, there is only 1 configuration added to the array.
+					// we now react to the meta and contents parameters. if we're here, there is zero or 1 configuration added to the array.
 					// if contents=true, just send the contents as a string.
 					// if meta=true, zero out contents and just send the configuration meta data.
 					// if meta=true && contents==true, send teh configuration as-is.
@@ -143,7 +169,8 @@ public class ConfigResource extends SecureResource {
 					if(contents && !meta){
 						Configuration c = confs.get(0);
 						if(c == null){
-							return new StringRepresentation(null);
+							this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+							return null;
 						} else {
 							return new StringRepresentation(c.getContents());
 						}
@@ -156,6 +183,8 @@ public class ConfigResource extends SecureResource {
 				}
 			}
 			
+			//This is a little weird. Above this line, we populate one of 2 lists (either tools (strings) or confs) 
+			//Below this line we render the one list that got created. if no list got created, we render a 404 
 			
 			if(list.size()>0){ //"tool"
 				//if we generated a listing of tools, represent those.
@@ -168,32 +197,33 @@ public class ConfigResource extends SecureResource {
 				}
 				return this.representTable(table, mt, new Hashtable<String,Object>());
 				
-			} else if (confs.size() > 0) {
+			} else if (confs.size() > 0 && confs.get(0) != null) {
 			    //we generated a list of configurations, so represent those.
 				table.initTable(configColumns);  //"tool","path","project","user","create_date","reason","contents", "version", "status"};
 				for(Configuration c : confs){
 					if(c != null){
 						
-						//TODO: if you are really passing the projectdata_info instead of the string for id to ConfigService, then you have to convert back to a project name string, here.
-						// something like this:
-//						String projectName;
-//						List<XnatProjectdata> projects = XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/projectdata_info", new Long(c.getProject()), this.user,false);
-//						if(projects.size() < 1){
-//							projectName = "DELETED";
-//						} else {
-//							XnatProjectdata match = projects.get(0);
-//							projectName = match.getId();
-//						}
+						//TODO: Since ConfigService is using projectdata_info Long instead of the Project Name String, then we may have to convert 
+						//the long id back to a project name string. Luckily, here we already have the project name (passed in)
+						//If you ever have to do that, it would look something like this:
+						//	String projectName;
+						//	List<XnatProjectdata> projects = XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/projectdata_info", new Long(c.getProject()), this.user,false);
+						//	if(projects.size() < 1){
+						//		projectName = "DELETED";
+						//	} else {
+						//		XnatProjectdata match = projects.get(0);
+						//		projectName = match.getId();
+						//	}
 
 						String[] scriptArray = {
 								c.getTool(),
 								c.getPath(),
-								c.getProject(), 
+								projectName, 
 								c.getXnatUser(), 
 								c.getCreated().toString(),
 								c.getReason(),
 								c.getContents(), 
-								((Long)c.getId()).toString(),
+								Integer.toString(c.getVersion()),
 								c.getStatus()
 						};
 						table.insertRow(scriptArray);
@@ -201,11 +231,12 @@ public class ConfigResource extends SecureResource {
 				}
 				return this.representTable(table, mt, new Hashtable<String,Object>());
 			} else {
-				return new StringRepresentation("we fell through the if... what should we do in this case?");
+				//if we fell through to here, nothing existed at the supplied URI
+				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				return null;
 			}		
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-			//TODO: is return null the right thing to do? probably not...
 			return null;
 		}
 	}
@@ -223,20 +254,28 @@ public class ConfigResource extends SecureResource {
 		 * same effect as sending once.
 		 */
 		try{
-			//check access
-			if(project != null && !hasAccessTo(project)) {
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
-				return;
+			
+			Callable<Long> getProjectId = null;
+			//check access, almost copy-paste code in the GET method.
+			if(projectName != null){
+				final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
+				if(!user.canRead(("xnat:subjectData/project").intern(), p.getId())){
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
+					return;
+				}
+				getProjectId = new Callable<Long>() { public Long call() { return new Long((Integer)p.getItem().getProps().get("projectdata_info"));}};
+			} else {
+				getProjectId = new Callable<Long>() { public Long call() { return null; }};
 			}
-
+			
 			//if this is a status update, do it and return
 			if(this.getQueryVariable("status") != null ) {
 				//   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}&status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}&status={enabled, disabled} 
 				final boolean enable = "enabled".equals(this.getQueryVariable("status")) ? true : false;
 				if(enable){
-					configService.enable(user.getUsername(), reason, toolName, path, project);
+					configService.enable(user.getUsername(), reason, toolName, path, getProjectId);
 				} else {
-					configService.disable(user.getUsername(), reason, toolName, path, project);
+					configService.disable(user.getUsername(), reason, toolName, path, getProjectId);
 				}
 				getResponse().setStatus(Status.SUCCESS_OK);
 				return;
@@ -272,12 +311,12 @@ public class ConfigResource extends SecureResource {
 			
 		    //if there is a previous configuration check to see if its contents equals the new contents, if so, just return success.
 			//do not update the configuration for puts are idempotent
-		    Configuration prevConfig = configService.getConfig(toolName, path, project);
+		    Configuration prevConfig = configService.getConfig(toolName, path, getProjectId);
 			if(prevConfig != null && contents.equals(prevConfig.getContents())) {	
 				getResponse().setStatus(Status.SUCCESS_OK);
 			} else {
 				//save/update the configuration
-				configService.replaceConfig(user.getUsername(), reason, toolName, path, contents, project);
+				configService.replaceConfig(user.getUsername(), reason, toolName, path, contents, getProjectId);
 				getResponse().setStatus(Status.SUCCESS_CREATED);
 			}
 		}
@@ -290,8 +329,8 @@ public class ConfigResource extends SecureResource {
 		return;
 	}
 	
+	//This method parses the URI and returns the "path" used for Configurations.
 	private String getFullConfigPath() {
-
 		String path = (String) getRequest().getAttributes().get(PATH_TO_FILE);
 
 		//restlet matches the first part of the path and ignores the rest.
@@ -306,11 +345,5 @@ public class ConfigResource extends SecureResource {
 			}
 		}
 		return path;
-	}
-	
-	//this is DEECH's from his DicomEdit code, I would use it directly, but I don't want to be dependent on anonymize.
-	boolean hasAccessTo(String project) throws Exception {
-		ArrayList<String> projects = PrearcUtils.getProjects(this.user, project);
-		return projects.contains(project);
 	}
 }

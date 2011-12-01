@@ -182,11 +182,11 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
 
      
-    public String getArchivePath(){
+    public String getArchivePath() throws UnknownPrimaryProjectException {
         return getArchivePath(getArchiveRootPath());
     }
 
-    public String getArchivePath(String rootPath) {
+    public String getArchivePath(String rootPath) throws UnknownPrimaryProjectException {
         
         String path = "";
         for(XnatImagescandataI scan :  this.getScans_scan()){
@@ -238,7 +238,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
         return path;
     }
-    public String getRelativeArchivePath() {
+    public String getRelativeArchivePath() throws UnknownPrimaryProjectException {
         String path = "";
         for(XnatImagescandataI scan :  this.getScans_scan()){
             List files = scan.getFile();
@@ -1160,7 +1160,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     {
         if (_files.getSize()==0)
         {
-            loadDefinedFiles(this.getArchiveRootPath());
+        	String s;
+			try {
+				s = this.getArchiveRootPath();
+			} catch (UnknownPrimaryProjectException e) {
+				s=null;
+			}
+        	
+            loadDefinedFiles(s);
 
             if (loadMISCFiles)
             {
@@ -1183,7 +1190,13 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     {
         if (_files.getSize()==0)
         {
-            loadDefinedFiles(this.getArchiveRootPath());
+        	String s;
+			try {
+				s = this.getArchiveRootPath();
+			} catch (UnknownPrimaryProjectException e) {
+				s=null;
+			}
+            loadDefinedFiles(s);
 
             String rawdir = this.deriveRawDir();
             if (rawdir!=null){
@@ -1240,7 +1253,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
     public String listArchiveToHTML(String server)
     {
-        String rootPath = this.getArchiveRootPath();
+        String rootPath;
+		try {
+			rootPath = this.getArchiveRootPath();
+		} catch (UnknownPrimaryProjectException e2) {
+			rootPath=null;
+		}
         String miscDir = null;
         File achive = new File(rootPath);
         StringBuffer sb = new StringBuffer();
@@ -2184,7 +2202,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
 
     public boolean hasSRBData(){
-        String rootPath =getArchiveRootPath();
+        String rootPath;
+		try {
+			rootPath = getArchiveRootPath();
+		} catch (UnknownPrimaryProjectException e) {
+			rootPath=null;
+		}
         for(XnatImagescandataI scan : this.getSortedScans()){
             List scanFiles= scan.getFile();
             Iterator files = scanFiles.iterator();
@@ -2217,7 +2240,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public String deriveRawDir(){
         if (raw_dir==null)
         {
-            final String rootPath =getArchiveRootPath();
+            String rootPath;
+			try {
+				rootPath = getArchiveRootPath();
+			} catch (UnknownPrimaryProjectException e) {
+				rootPath=null;
+			}
             String last_dir = null;
             for(XnatImagescandataI scan : this.getSortedScans()){
             	for (XnatAbstractresourceI xnatFile:scan.getFile())
@@ -2297,7 +2325,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     public String deriveSessionDir(){
         if (session_dir==null)
         {
-            String rootPath =getArchiveRootPath();
+            String rootPath;
+			try {
+				rootPath = getArchiveRootPath();
+			} catch (UnknownPrimaryProjectException e) {
+				rootPath=null;
+			}
             for(XnatImagescandataI scan : this.getSortedScans()){
             	logger.debug("CHECKING SCAN: "+scan.getId());
                 List scanFiles= scan.getFile();
@@ -2991,13 +3024,13 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
     
     
-    public void correctArchivePaths() throws InvalidArchiveStructure{
+    public void correctArchivePaths() throws InvalidArchiveStructure, UnknownPrimaryProjectException{
         this.correctArchivePaths(true);
     }
      
     
     public void correctArchivePaths(boolean relativePaths)
-    throws InvalidArchiveStructure {
+    throws InvalidArchiveStructure, UnknownPrimaryProjectException {
 	final String session_path = getCurrentSessionFolder(false);
 	for (final XnatImagescandataI scan : scans) {
 		final List<XnatAbstractresource> files=scan.getFile();

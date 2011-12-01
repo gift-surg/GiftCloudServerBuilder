@@ -12,7 +12,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
@@ -25,6 +24,7 @@ import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -33,7 +33,6 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.FileUtils;
-import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
@@ -382,12 +381,32 @@ public class FileList extends XNATCatalogTemplate {
 		MediaType mt = overrideVariant(variant);
 			try {
 				if(proj==null){
-				if(parent!=null && parent.getItem().instanceOf("xnat:experimentData")){
-						proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
-				}else if(security!=null && security.getItem().instanceOf("xnat:experimentData")){
-						proj = ((XnatExperimentdata)security).getPrimaryProject(false);
-					}
+					//setting project as primary project, or shared project
+					//this only works because the absolute paths are stored in the database for each resource, so the actual project path isn't used.
+                    if(parent!=null && parent.getItem().instanceOf("xnat:experimentData")){
+                    	proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+                            // Per FogBugz 4746, prevent NPE when user doesn't have access to resource (MRH)
+                            // Check access through shared project when user doesn't have access to primary project
+                            if (proj == null) {
+                                    proj = (XnatProjectdata)((XnatExperimentdata)parent).getFirstProject();
+                            }
+                    }else if(security!=null && security.getItem().instanceOf("xnat:experimentData")){
+                            proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+                            // Per FogBugz 4746, ....
+                            if (proj == null) {
+                                    proj = (XnatProjectdata)((XnatExperimentdata)security).getFirstProject();
+                            }
+                    }else if(security!=null && security.getItem().instanceOf("xnat:subjectData")){
+                            proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+                            // Per FogBugz 4746, ....
+                            if (proj == null) {
+                                    proj = (XnatProjectdata)((XnatSubjectdata)security).getFirstProject();
+                            }
+                    }else if(security!=null && security.getItem().instanceOf("xnat:projectData")){
+                            proj = (XnatProjectdata)security;
+                    }
 				}
+				
 			if(resources.size()==1 && !(mt.equals(MediaType.APPLICATION_ZIP) || mt.equals(MediaType.APPLICATION_GNU_TAR))){
 				//one catalog
 				return handleSingleCatalog(mt);

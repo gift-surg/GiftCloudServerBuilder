@@ -3,10 +3,11 @@ package org.nrg.xnat.turbine.utils;
 
 import java.io.File;
 
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xft.ItemI;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 public interface ArchivableItem extends ItemI{
 	public String getArchiveDirectoryName();
-	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure;
+	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure, UnknownPrimaryProjectException;
 }

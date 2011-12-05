@@ -8,12 +8,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.nrg.dcm.ScriptTableException;
-import org.nrg.dcm.xnat.EditTable;
-import org.nrg.dcm.xnat.EditTableDAO;
-import org.nrg.dcm.xnat.ScriptTable;
-import org.nrg.dcm.xnat.ScriptTableDAO;
-import org.nrg.framework.services.ContextService;
+import org.nrg.config.entities.Configuration;
+import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.config.services.ConfigService;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
@@ -41,6 +39,8 @@ public final class DicomEdit extends SecureResource {
 	private static final String PROJECT_ID = "PROJECT_ID";
 	private static final String RESOURCE = "RESOURCE";
 	
+	public static final String ToolName = "anon";
+	
 	/**
 	 * Query string parameters
 	 */
@@ -56,10 +56,9 @@ public final class DicomEdit extends SecureResource {
 	private final XnatProjectdata project;
 	
 	/**
-	 * Hibernate entities
+	 * Config service
 	 */
-	private final ScriptTableDAO st;
-	private final EditTableDAO et;
+	private final ConfigService configService = XDAT.getConfigService();
 	
 	/**
 	 * Datatypes
@@ -67,7 +66,7 @@ public final class DicomEdit extends SecureResource {
 	private final ResourceScope scope;     
 	private final ResourceType rType;
 	private final Access access;
-	private final boolean expectingUpload;
+	// private final boolean expectingUpload
 	
 	/**
 	 * SCRIPT - A script is being uploaded or requested
@@ -88,7 +87,7 @@ public final class DicomEdit extends SecureResource {
 	 * @author aditya
 	 *
 	 */
-	private enum ResourceScope {
+	public enum ResourceScope {
 		SITE_WIDE,
 		PROJECT
 	}
@@ -166,19 +165,50 @@ public final class DicomEdit extends SecureResource {
 		}
 	}
 	
+	/**
+	 * Return a path unique to the given scope (either project-specific or site-wide) and project.
+	 * 
+	 * The reason I pass in an Object instead of a better type is as follows:
+	 * Originally I needed to have the two overloaded methods, that differ on the type of the project variable, 
+	 * with one responding to an XnatProjectdata object and the other a String holding the project_id. 
+	 * 
+	 * Unfortunately I also need to pass in null for the project for the site-wide case but I can't
+	 * do that if there are two overloaded methods because the compiler gets confused. 
+	 * 
+	 * So I do the weird looking thing below which uses reflection to determine if the project is 
+	 * XnatProjectdata or String. This breaks all readability but allows me to pass in a null project. 
+	 * 
+	 * @param scope
+	 * @param project Must be String, XnatProjectdata or null
+	 * @return
+	 */
+	public static String buildScriptPath(ResourceScope scope, Object project) {
+		String ret = null;
+		String project_id = null;
+		if (project != null) {
+			if (project.getClass() == XnatProjectdata.class) {
+				project_id = ((XnatProjectdata)project).getId();
+			}
+			else if (project.getClass() == String.class) {
+				project_id = (String)project;
+			}
+		}
+		switch (scope) {
+		case PROJECT :   ret = "/projects/" + project_id; break; 
+		case SITE_WIDE : ret = "/"; break;
+		default :        ret = ""; break;
+		}
+		return ret;
+	}
+	
 	public DicomEdit(Context context, Request request, Response response) {
 		super(context, request, response);
 		this.projectPassedIn = (String) request.getAttributes().get(DicomEdit.PROJECT_ID);
 		this.project = XnatProjectdata.getXnatProjectdatasById(this.projectPassedIn, null, false);
-		
-		ContextService _c = ContextService.getInstance();
-		this.st = _c.getBean(ScriptTableDAO.class);
-		this.et = _c.getBean(EditTableDAO.class);
 
 		this.scope =  this.determineResourceScope(request);
 		this.rType =  this.determineResourceType(request);
 		this.access = this.determineAccess(this.rType, this.scope, request.getMethod());
-		this.expectingUpload = this.determineUpload(this.rType, request.getMethod());
 		
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -214,46 +244,47 @@ public final class DicomEdit extends SecureResource {
 					public XFTTable call() throws Exception {
 						XFTTable table = new XFTTable();
 						Long project_id = project == null ? null : DicomEdit.getDBId(project);
-						String project_name = project == null ? "null" : project.getId();
+						String project_name = project == null ? null : project.getId();
 						if (rType == ResourceType.SCRIPT) { 
-							List<ScriptTable> sts = new ArrayList<ScriptTable>();
+							List<Configuration> cs = new ArrayList<Configuration>();
 							if (all) {
-								sts.addAll(st.getByProject(project_id));
+								cs.addAll(configService.getConfigsByTool(DicomEdit.ToolName, project_id));
+								// sts.addAll(st.getByProject(project_id));
 							}
 							else {
-								sts.add(st.get(project_id));
+								cs.add(configService.getConfig(DicomEdit.ToolName, DicomEdit.buildScriptPath(scope, project), project_id));
 							}
 							table.initTable(scriptColumns);
-							for (ScriptTable s : sts) {
-								if (s != null) {
+							for (Configuration c : cs) {
+								if (c != null) {
 									String[] scriptArray = {
-											project_name,
-											s.getXnatUser(), 
-											s.getTimestamp().toString(),
-											s.getScript(), 
-											((Long)s.getId()).toString()
+											c.getProject() == null ? "-1" : c.getProject().toString(),
+											c.getXnatUser(),
+											c.getCreated().toString(),
+											c.getContents(),
+											((Long)c.getId()).toString()
 									};
 									table.insertRow(scriptArray);
 								}
 							}
 						}
 						else if (rType == ResourceType.STATUS){
-							List<EditTable> ets = new ArrayList<EditTable>();
+							List<Configuration> cs = new ArrayList<Configuration>();
 							if (all) {
-								ets.addAll(et.getByProject(project_id));
+								cs.addAll(configService.getConfigsByTool(DicomEdit.ToolName, project_id));
 							}
 							else {
-								ets.add(et.get(project_id));
+								cs.add(configService.getConfig(DicomEdit.ToolName, DicomEdit.buildScriptPath(scope, project), project_id));
 							}
 							table.initTable(editColumns);
-							for (EditTable e : ets) {
-								if(e != null) {
+							for (Configuration c : cs) {
+								if(c != null) {
 									String [] editArray = {
-											project_name,
-											((Boolean)e.getEdit()).toString(),
-											e.getTimestamp().toString(),
-											e.getXnatUser(),
-											((Long)e.getId()).toString()
+											c.getProject() == null ? "-1" : c.getProject().toString(),
+											((Boolean) c.getStatus().equals(Configuration.ENABLED_STRING)).toString(),
+											c.getCreated().toString(),
+											c.getXnatUser(),
+											((Long)c.getId()).toString()
 									};
 									table.insertRow(editArray);
 								}
@@ -334,10 +365,19 @@ public final class DicomEdit extends SecureResource {
 							String script = getFile().call();
 							if (script != null) {
 								if (scope == ResourceScope.SITE_WIDE) {
-									st.insertScript(null, script, user.getUsername());		
+									configService.replaceConfig(user.getLogin(), 
+																"", 
+																DicomEdit.ToolName, 
+																DicomEdit.buildScriptPath(scope, project), 
+																script);
 								}
 								else { // project specific 
-									st.insertScript(DicomEdit.getDBId(project), script, user.getUsername());
+									configService.replaceConfig(user.getLogin(), 
+																"", 
+																DicomEdit.ToolName, 
+																DicomEdit.buildScriptPath(scope, project), 
+																script, 
+																DicomEdit.getDBId(project));
 								}
 							}
 							else {
@@ -351,10 +391,34 @@ public final class DicomEdit extends SecureResource {
 								if (qActivate.equals("true") || qActivate.equals("false")) {
 									Boolean activate = Boolean.parseBoolean(qActivate);
 									if (scope == ResourceScope.SITE_WIDE) {
-										et.setEdit(null, user.getUsername(), activate);
+										if (activate) {
+											configService.enable(user.getLogin(), 
+													             "", 
+													             DicomEdit.ToolName, 
+													             DicomEdit.buildScriptPath(scope, project));
+										} 
+										else {
+											configService.disable(user.getLogin(), 
+										             			  "", 
+										             			  DicomEdit.ToolName, 
+										             			  DicomEdit.buildScriptPath(scope, project));
+										}
 									}
 									else { // project -specific
-										et.setEdit(DicomEdit.getDBId(project), user.getUsername(), activate);	
+										if (activate) {
+											configService.enable(user.getLogin(), 
+													                  "", 
+													                  DicomEdit.ToolName, 
+													                  DicomEdit.buildScriptPath(scope, project), 
+													                  DicomEdit.getDBId(project));
+										}
+										else {
+											configService.disable(user.getLogin(), 
+													 			  "", 
+													 			  DicomEdit.ToolName, 
+													 			  DicomEdit.buildScriptPath(scope, project), 
+													 			  DicomEdit.getDBId(project));
+										}
 									}
 								}
 								else {
@@ -369,7 +433,7 @@ public final class DicomEdit extends SecureResource {
 							throw new Exception("Unknown resource type.");
 						}
 					}
-					catch (ScriptTableException e){
+					catch (ConfigServiceException e){
 						throw new Exception(e);
 					}
 					return null;

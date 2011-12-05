@@ -14,12 +14,16 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import org.apache.commons.io.FileUtils;
+import org.nrg.config.entities.Configuration;
+import org.nrg.config.services.ConfigService;
 import org.nrg.dcm.DicomSCP;
 import org.nrg.dcm.xnat.ScriptTable;
 import org.nrg.dcm.xnat.ScriptTableDAO;
 import org.nrg.framework.services.ContextService;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
@@ -34,7 +38,6 @@ public class XNATRestletServlet extends ServerServlet {
     private static final long serialVersionUID = 1592366035839385170L;
 
     private DicomSCP dicomSCP = null;
-    private ScriptTableDAO _st;
     public static ServletConfig REST_CONFIG=null;
     
     /**
@@ -61,15 +64,19 @@ public class XNATRestletServlet extends ServerServlet {
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
         
         try {
-        	ContextService _c = ContextService.getInstance();
-        	this._st = _c.getBean(ScriptTableDAO.class);
-        	if (_st.get(null) == null) {
+        	ConfigService configService = XDAT.getConfigService();
+        	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
+        	Configuration init_config = configService.getConfig(DicomEdit.ToolName,path);
+        	if (init_config == null) {
         		logger().info("Creating Script Table.");
-        		// the default site-wide anon script has not been stored so do that now.
         		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
         		String adminUser = this.getAdminUser();
         		if (adminUser != null) {
-        			_st.insertScript(null, site_wide, adminUser);
+        			configService.replaceConfig(adminUser, 
+        										"", 
+        										DicomEdit.ToolName, 
+        										path,
+        										site_wide);
         		}
         		else {
         			throw new Exception("Site administrator not found.");

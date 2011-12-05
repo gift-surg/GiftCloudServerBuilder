@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.AnonymizerI;
 import org.nrg.dcm.edit.AttributeException;
@@ -19,6 +20,11 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.base.BaseXnatImagesessiondata;
 
+/**
+ * Base class that actually does the work of applying the edit scripts to files.
+ * @author aditya
+ *
+ */
 public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	AnonymizerA next = null;
 	abstract String getSubjectId();
@@ -32,7 +38,7 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	                                     ScriptEvaluationException, 
 	                                     FileNotFoundException, 
 	                                     IOException {
-		ScriptTable script = this.getScript();
+		Configuration script = this.getScript();
 		if (script != null) {
 			if (this.isEnabled()) {
 				Anonymize.anonymize(f,
@@ -41,7 +47,7 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 									this.getLabel(),
 									true,
 									script.getId(),
-									script.getScript());
+									script.getContents());
 				if (this.next != null) {
 					this.next.anonymize(f);
 				}
@@ -59,7 +65,7 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	 * Get the appropriate edit script. 
 	 * @return
 	 */
-	abstract ScriptTable getScript();
+	abstract Configuration getScript();
 	/**
 	 * Check if editing is enabled.
 	 * @return
@@ -74,7 +80,12 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	 */
 	abstract String getProjectName();
 	
-	abstract List<File> getFilesToAnonymize();
+	/**
+	 * Get the list of files that need to be anonymized.
+	 * @return
+	 * @throws IOException
+	 */
+	abstract List<File> getFilesToAnonymize() throws IOException;
 	
 	public java.lang.Void call() throws Exception {
 		List<File> fs = this.getFilesToAnonymize();

@@ -138,7 +138,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			  overwrite, 
 			  waitFor,
 			  overwrite_files);
-		
 	}
 
 	public File getSrcDIR(){

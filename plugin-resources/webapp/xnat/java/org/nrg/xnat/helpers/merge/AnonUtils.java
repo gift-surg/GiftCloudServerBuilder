@@ -3,12 +3,17 @@ package org.nrg.xnat.helpers.merge;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.nrg.config.entities.Configuration;
+import org.nrg.config.services.ConfigService;
+import org.nrg.config.services.impl.DefaultConfigService;
 import org.nrg.dcm.xnat.EditTable;
 import org.nrg.dcm.xnat.EditTableDAO;
 import org.nrg.dcm.xnat.ScriptTable;
 import org.nrg.dcm.xnat.ScriptTableDAO;
 import org.nrg.framework.services.ContextService;
+import org.nrg.xdat.XDAT;
 import org.nrg.xft.XFT;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +22,13 @@ public class AnonUtils {
 	private static final Logger logger = LoggerFactory.getLogger(AnonUtils.class);
 	
 	private static final String DEFAULT_ANON_SCRIPT = "id.das";
-	private final ScriptTableDAO st;
-	private final EditTableDAO et;
+	private static ConfigService c;
 	
 	public AnonUtils() throws Exception {
         if (_instance != null) {
             throw new Exception("The ContextService is already initialized, try calling getInstance() instead.");
         }
-        ContextService _c = ContextService.getInstance();
-        this.st = _c.getBean(ScriptTableDAO.class);
-        this.et = _c.getBean(EditTableDAO.class);
+        this.c = XDAT.getConfigService();
         _instance = this;
     }
 	
@@ -41,14 +43,18 @@ public class AnonUtils {
         }
         return _instance;
 	}
-	public ScriptTable getScript(Long project) {
-		ScriptTable s = this.st.get(project);
-		return s == null? null : s;
+	public Configuration getScript(String path, Long project) {
+		Configuration config = this.c.getConfig(DicomEdit.ToolName, 
+												path,
+												project);
+		return config == null? null : config;
 	}
 	
-	public boolean isEnabled(Long project) {
-		EditTable e = this.et.get(project);
-		return e.getEdit();
+	public boolean isEnabled(String path, Long project) {
+		Configuration config = this.c.getConfig(DicomEdit.ToolName, 
+												path,
+												project);
+		return config.getStatus().equals(Configuration.ENABLED_STRING);
 	}
 	
 	public static File getDefaultScript () throws FileNotFoundException {

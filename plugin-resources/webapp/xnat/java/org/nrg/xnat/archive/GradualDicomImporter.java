@@ -40,6 +40,7 @@ import org.dcm4che2.io.StopTagInputHandler;
 import org.dcm4che2.util.TagUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
@@ -53,6 +54,7 @@ import org.nrg.xft.XFT;
 import org.nrg.xnat.AbstractDicomObjectIdentifier;
 import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
@@ -62,6 +64,7 @@ import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
+import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.data.Status;
@@ -509,17 +512,32 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 throw new ServerException(Status.SERVER_ERROR_INSUFFICIENT_STORAGE, e);
             }
             try {
-            	ScriptTable s = AnonUtils.getInstance().getScript(null);
-            	boolean enabled = AnonUtils.getInstance().isEnabled(null);
-            	if (enabled) {
-            		if (s == null) {
-            			throw new Exception ("Unable to retrieve the site-wide script.");
-            		}
-            		else {
-            			Anonymize.anonymize(f, sess.getProject(), sess.getSubject(), sess.getFolderName(), true, s.getId(), s.getScript());
-            		}
-            	} else {
-            		// site-wide anonymization is disabled.
+            	// check to see of this session came in through the upload applet
+            	Boolean uploadedViaApplet = Importer.getUploadFlag(this.params);
+            	if (!uploadedViaApplet) {
+            		// I can't use the SiteWideAnonymizer here because it expects an XnatImagesessionI
+            		String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, null);
+            		Configuration c = AnonUtils.getInstance().getScript(path,null);
+            		boolean enabled = AnonUtils.getInstance().isEnabled(path,null);
+            		if (enabled) {
+            			if (c == null) {
+            				throw new Exception ("Unable to retrieve the site-wide script.");
+            			}
+            			else {
+            				Anonymize.anonymize(f, 
+            									sess.getProject(), 
+            									sess.getSubject(), 
+            									sess.getFolderName(), 
+            									true, 
+            									c.getId(), 
+            									c.getContents());
+            			}
+            		} else {
+            			// site-wide anonymization is disabled.
+            		}		
+            	}
+            	else {
+            		// the upload applet has already anonymized this session.
             	}
             } catch (Throwable e) {
             	logger.debug("Dicom anonymization failed: " + f, e);

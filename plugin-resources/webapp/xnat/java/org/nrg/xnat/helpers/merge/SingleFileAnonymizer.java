@@ -4,9 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dcm4che2.iod.module.macro.Code;
-import org.nrg.dcm.Anonymize;
-import org.nrg.dcm.xnat.ScriptTable;
+import org.nrg.config.entities.Configuration;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
 
 public class SingleFileAnonymizer extends AnonymizerA {
 	public final File f;
@@ -15,6 +14,7 @@ public class SingleFileAnonymizer extends AnonymizerA {
 	public final String label;
 	public final String anonProject;
 	private final boolean reanonymize;
+	final String path;
 	
 	public SingleFileAnonymizer(File f, String project, String subject, String label, String anonProject, boolean reanonymize) {
 		this.f = f;
@@ -23,6 +23,13 @@ public class SingleFileAnonymizer extends AnonymizerA {
 		this.label = label;
 		this.anonProject = anonProject;
 		this.reanonymize = reanonymize;
+		if (anonProject != null) {
+			this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, anonProject);	
+		}
+		else {
+			this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, null);	
+		}
+		
 	}
 	
 	@Override
@@ -36,13 +43,13 @@ public class SingleFileAnonymizer extends AnonymizerA {
 	}
 
 	@Override
-	ScriptTable getScript() {
-		return AnonUtils.getInstance().getScript(ProjectAnonymizer.getDBId(anonProject));
+	Configuration getScript() {
+		return AnonUtils.getInstance().getScript(this.path, ProjectAnonymizer.getDBId(anonProject));
 	}
 
 	@Override
 	boolean isEnabled() {
-		return AnonUtils.getInstance().isEnabled(ProjectAnonymizer.getDBId(anonProject));
+		return AnonUtils.getInstance().isEnabled(this.path, ProjectAnonymizer.getDBId(anonProject));
 	}
 
 	@Override
@@ -67,7 +74,7 @@ public class SingleFileAnonymizer extends AnonymizerA {
 			super.call();
 		}
 		else {
-			
+			// do nothing
 		}
 		return null;
 	}

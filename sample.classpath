@@ -152,6 +152,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.0.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/gnu/jars/java-getopt-1.0.13.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/XNATTools-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>

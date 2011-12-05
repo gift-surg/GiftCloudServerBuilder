@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xdat.security.XDATUser;
@@ -739,7 +738,33 @@ public abstract class SecureResource extends Resource {
 	    }
 	}
 					
+	/**
+	 * Gets file writers and load parameters from the request entity. By default this uses the filename as the name
+	 * of the {@link FileWriterWrapperI} parameter. When form fields are encountered, the {@link #handleParam(String, Object)}
+	 * method is called to cache all of the standard form fields.
+	 * @param entity The request entity.
+	 * @return A list of any {@link FileWriterWrapperI} objects found in the request.
+	 * @throws FileUploadException
+	 * @throws ClientException
+	 * @see #getFileWritersAndLoadParams(Representation, boolean)
+	 */
 	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{
+		return getFileWritersAndLoadParams(entity, false);
+	}
+
+	/**
+	 * Gets file writers and load parameters from the request entity. When <b>useFileFieldName</b> is <b>true</b>, this uses the
+	 * field name in the form as the name in the {@link FileWriterWrapperI} object. Otherwise, it uses the filename as the name
+	 * of the {@link FileWriterWrapperI} parameter. When form fields are encountered, the {@link #handleParam(String, Object)}
+	 * method is called to cache all of the standard form fields.
+	 * @param entity The request entity.
+	 * @param useFileFieldName Indicates whether the form field name should be used to identify the extracted files.
+	 * @return A list of any {@link FileWriterWrapperI} objects found in the request.
+	 * @throws FileUploadException
+	 * @throws ClientException
+	 * @see #getFileWritersAndLoadParams(Representation)
+	 */
+	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity, boolean useFileFieldName) throws FileUploadException,ClientException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
 			
@@ -788,7 +813,8 @@ public abstract class SecureResource extends Resource {
 				    if(fileName.indexOf('\\')>-1){
 				    	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
 				    }
-				    wrappers.add(new FileWriterWrapper(fi,fileName));
+
+				    wrappers.add(new FileWriterWrapper(fi, useFileFieldName ? fi.getFieldName() : fileName));
 				}
 			}
 			
@@ -833,4 +859,19 @@ public abstract class SecureResource extends Resource {
 			return ZipUtils.DEFAULT_COMPRESSION;
 		}
 	}
+
+	protected String formatErrorMessage(List<String> errors) {
+        StringBuilder message = new StringBuilder("The following problems were found with your submission:\n\n");
+        for (String error : errors) {
+            message.append(String.format(FORMAT_ISSUE, error));
+}
+        return message.toString();
+    }
+
+    protected void respondToException(Exception exception, Status status) {
+        logger.error("Transaction got a status: " + status, exception);
+        getResponse().setStatus(status, exception.getMessage());
+    }
+
+    private static final String FORMAT_ISSUE = " * %s\n";
 }

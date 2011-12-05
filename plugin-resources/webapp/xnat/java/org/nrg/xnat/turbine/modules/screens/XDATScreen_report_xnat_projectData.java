@@ -23,7 +23,6 @@ import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 /**
  * @author XDAT
- *
  */
 public class XDATScreen_report_xnat_projectData extends SecureReport {
 	public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(XDATScreen_report_xnat_projectData.class);
@@ -69,6 +68,8 @@ public class XDATScreen_report_xnat_projectData extends SecureReport {
            if(data.getParameters().get("bottomTab")!=null){
         	   context.put("bottomTab", data.getParameters().get("bottomTab"));
            }
+
+            cacheTabs(context, "xnat_projectData");
         } catch (XFTInitException e) {
             logger.error("",e);
         } catch (ElementNotFoundException e) {

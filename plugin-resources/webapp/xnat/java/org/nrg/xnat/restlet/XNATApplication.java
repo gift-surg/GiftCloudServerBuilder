@@ -23,6 +23,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.resource.Resource;
+import org.restlet.util.Template;
 
 import java.util.List;
 
@@ -213,6 +214,14 @@ public class XNATApplication extends Application {
         router.attach("/user/cache/resources/{XNAME}/files",UserCacheResource.class);
         router.attach("/user/cache/resources/{XNAME}/files/{FILE}",UserCacheResource.class);
 
+        // Configuration Service
+        router.attach("/config",ConfigResource.class);
+        router.attach("/config/{TOOL_NAME}",ConfigResource.class);
+        router.attach("/config/{TOOL_NAME}/{PATH_TO_FILE}",ConfigResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
+        router.attach("/projects/{PROJECT_ID}/config",ConfigResource.class);
+        router.attach("/projects/{PROJECT_ID}/config/{TOOL_NAME}",ConfigResource.class);
+        router.attach("/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}",ConfigResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
+        
         // System services
         router.attach("/services/import",Importer.class);
         router.attach("/services/archive",Archiver.class);

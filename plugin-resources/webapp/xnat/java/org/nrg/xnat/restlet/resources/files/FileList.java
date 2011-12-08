@@ -646,29 +646,7 @@ public class FileList extends XNATCatalogTemplate {
 							fName=zipEntry.toLowerCase();
 						}
 							
-						if(fName.endsWith(".gif")){
-							mt = MediaType.IMAGE_GIF;
-						}else if(fName.endsWith(".jpeg")){
-							mt = MediaType.IMAGE_JPEG;
-						}else if(fName.endsWith(".xml")){
-							mt = MediaType.TEXT_XML;
-						}else if(fName.endsWith(".jpg")){
-							mt = MediaType.IMAGE_JPEG;
-						}else if(fName.endsWith(".png")){
-							mt = MediaType.IMAGE_PNG;
-						}else if(fName.endsWith(".bmp")){
-							mt = MediaType.IMAGE_BMP;
-						}else if(fName.endsWith(".tiff")){
-							mt = MediaType.IMAGE_TIFF;
-						}else if(fName.endsWith(".html")){
-							mt = MediaType.TEXT_HTML;
-						}else{
-							if(mt.equals(MediaType.TEXT_XML) && !fName.endsWith(".xml")){
-								mt=MediaType.ALL;
-							}else{
-								mt=MediaType.APPLICATION_OCTET_STREAM;
-							}
-						}
+						mt=buildMediaType(fName);
 						
 						if(zipEntry!=null){
 							try {

@@ -77,6 +77,8 @@ public class PrearcSessionAnonymizer extends AnonymizerA {
 	 * A DICOM file doesn't need anonymization if this project's script 
 	 * was the last thing applied to it. 
 	 * 
+	 * Make sure this is only called if this project has a script or it will
+	 * throw a NullPointerException
 	 * @param f
 	 * @return
 	 * @throws IOException

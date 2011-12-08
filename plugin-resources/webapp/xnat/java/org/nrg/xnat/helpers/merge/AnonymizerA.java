@@ -88,9 +88,14 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	abstract List<File> getFilesToAnonymize() throws IOException;
 	
 	public java.lang.Void call() throws Exception {
-		List<File> fs = this.getFilesToAnonymize();
-		for (File f : fs) {
-			this.anonymize(f);
+		if (this.getScript() != null) {
+			List<File> fs = this.getFilesToAnonymize();
+			for (File f : fs) {
+				this.anonymize(f);
+			}
+		}
+		else {
+			// there is no anon script
 		}
 		return null;
 	}

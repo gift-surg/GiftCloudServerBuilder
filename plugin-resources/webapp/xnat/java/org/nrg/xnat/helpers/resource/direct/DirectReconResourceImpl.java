@@ -6,6 +6,7 @@ package org.nrg.xnat.helpers.resource.direct;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
@@ -32,7 +33,7 @@ public class DirectReconResourceImpl extends DirectResourceModifierA {
 	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#buildDestinationPath()
 	 */
 	@Override
-	public String buildDestinationPath() throws InvalidArchiveStructure {
+	public String buildDestinationPath() throws InvalidArchiveStructure, UnknownPrimaryProjectException {
 		return FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "PROCESSED/" + recon.getId() +"/");
 	}
 

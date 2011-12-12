@@ -150,7 +150,7 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
     }
 
 
-	public File getExpectedSessionDir() throws InvalidArchiveStructure{
+	public File getExpectedSessionDir() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
 		return this.getImageSessionData().getExpectedSessionDir();
 	}
 

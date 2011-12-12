@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.files;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.nrg.xdat.base.BaseElement;
@@ -23,6 +24,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import com.google.common.collect.Lists;
 
 public class CatalogResourceList extends XNATTemplate {
 	final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanList.class);
@@ -204,7 +207,7 @@ public class CatalogResourceList extends XNATTemplate {
 				table=null;
 				table=t;
 			} catch (ElementNotFoundException e) {
-				e.printStackTrace();
+				logger.error("",e);
 			}
 		}
 		

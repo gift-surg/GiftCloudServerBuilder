@@ -575,7 +575,12 @@ public final class PrearcDatabase {
                 while(i.hasNext()){
                     SessionDataTriple _s = i.next();
                     try {
-                        PrearcDatabase._moveToProject(_s.getFolderName(),_s.getTimestamp(),_s.getProject(),newProj);
+                    	if (!_s.getProject().equals(newProj)) {
+                    		PrearcDatabase._moveToProject(_s.getFolderName(),_s.getTimestamp(),_s.getProject(),newProj);
+                    	}
+                    	else {
+                    		// cannot move a session back on itself.
+                    	}
                     } catch (SyncFailedException e) {
                         logger.error(e);
                     } catch (Exception e) {

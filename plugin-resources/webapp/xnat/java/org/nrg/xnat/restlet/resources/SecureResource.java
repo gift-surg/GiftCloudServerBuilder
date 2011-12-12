@@ -336,20 +336,36 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-	public FileRepresentation representFile(File f,MediaType mt){
-		if(f.getName().toLowerCase().endsWith(".gif")){
+	public MediaType buildMediaType(String fName){
+		MediaType mt=null;
+		if(fName.endsWith(".gif")){
 			mt = MediaType.IMAGE_GIF;
-		}else if(f.getName().toLowerCase().endsWith(".jpeg")){
+		}else if(fName.endsWith(".jpeg")){
 			mt = MediaType.IMAGE_JPEG;
-		}else if(f.getName().toLowerCase().endsWith(".xml")){
+		}else if(fName.endsWith(".xml")){
 			mt = MediaType.TEXT_XML;
+		}else if(fName.endsWith(".jpg")){
+			mt = MediaType.IMAGE_JPEG;
+		}else if(fName.endsWith(".png")){
+			mt = MediaType.IMAGE_PNG;
+		}else if(fName.endsWith(".bmp")){
+			mt = MediaType.IMAGE_BMP;
+		}else if(fName.endsWith(".tiff")){
+			mt = MediaType.IMAGE_TIFF;
+		}else if(fName.endsWith(".html")){
+			mt = MediaType.TEXT_HTML;
 		}else{
-			if(mt.equals(MediaType.TEXT_XML) && !f.getName().toLowerCase().endsWith(".xml")){
+			if(mt.equals(MediaType.TEXT_XML) && !fName.endsWith(".xml")){
 				mt=MediaType.ALL;
 			}else{
 				mt=MediaType.APPLICATION_OCTET_STREAM;
 			}
 		}
+		return mt;
+	}
+	
+	public FileRepresentation representFile(File f,MediaType mt){
+		mt=buildMediaType(f.getName());
 
 		this.setContentDisposition(String.format("attachment; filename=\"%s\";",f.getName()));
 		

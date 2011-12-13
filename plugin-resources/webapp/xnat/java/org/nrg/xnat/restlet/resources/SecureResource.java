@@ -167,6 +167,8 @@ public abstract class SecureResource extends Resource {
 				return MediaType.APPLICATION_ZIP;
 			} else if (this.requested_format.equals("tar.gz")) {
 				return MediaType.APPLICATION_GNU_TAR;
+			} else if (this.requested_format.equals("tar")) {
+				return MediaType.APPLICATION_TAR;
 			}else if(this.requested_format.equals("xList")){
 				return APPLICATION_XLIST;
 			}else if(this.requested_format.equalsIgnoreCase("xcat")){
@@ -176,6 +178,21 @@ public abstract class SecureResource extends Resource {
 			}
 		}
 		return null;
+	}
+	
+	public boolean isZIPRequest(){
+		return isZIPRequest(getRequestedMediaType());
+	}
+	
+	public static boolean isZIPRequest(MediaType mt){
+		if (mt==null ||  
+				!(mt.equals(MediaType.APPLICATION_ZIP) 
+					|| mt.equals(MediaType.APPLICATION_TAR) 
+					|| mt.equals(MediaType.APPLICATION_GNU_TAR))) {
+    		return false;
+    	}else{
+    		return true;
+    	}
 	}
 
 	public boolean isHTMLRequest() {

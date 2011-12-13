@@ -377,7 +377,8 @@ function FileViewer(_obj){
 				var dType=document.createElement("select");
 				dType.id="download_type_select";
 				dType.options[0]=new Option("zip","zip",true,true);
-				dType.options[1]=new Option("tar.gz","tar.gz");
+				dType.options[1]=new Option("tar","tar");
+				dType.options[2]=new Option("tar.gz","tar.gz");
 				dType.style.marginRight="10px";
 				fTd2.appendChild(dType);
 				

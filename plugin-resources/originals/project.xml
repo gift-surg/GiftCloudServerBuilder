@@ -1071,7 +1071,7 @@
 		<dependency>
 			<groupId>guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r08</version>
+			<version>10.0.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1220,6 +1220,15 @@
 		</dependency>
 		<dependency>
 			<groupId>spring</groupId>
+			<artifactId>org.springframework.oxm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
 			<artifactId>org.springframework.transaction</artifactId>
 			<version>3.0.5.RELEASE</version>
 			<properties>
@@ -1253,6 +1262,15 @@
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+		  <groupId>javax</groupId>
+		  <artifactId>javax.inject</artifactId>
+		  <version>1</version>
+		  <properties>
+		    <war.bundle>true</war.bundle>
+		  </properties>
+		  <type>jar</type>
 		</dependency>
 		<!-- End Spring Framework dependencies -->
 	</dependencies>

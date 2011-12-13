@@ -18,6 +18,7 @@ import org.nrg.xft.exception.DBPoolException;
  * @author Kevin A. Archie <karchie@wustl.edu>
  *
  */
+@Deprecated
 public class CachedUserFactory implements UserFactory {
     private static final String CACHE_NAME = "XDATUser";
     private static final long EXPIRY_SECONDS = 120;

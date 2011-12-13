@@ -7,22 +7,19 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.nrg.dcm.DicomSCP;
+import javax.inject.Provider;
+
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.security.XDATUser.UserNotFoundException;
-import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SessionXMLRebuilderJob implements JobInterface {
 	@Override
@@ -32,25 +29,9 @@ public class SessionXMLRebuilderJob implements JobInterface {
 
 	@Override
 	public void execute() throws JobExecutionException {
-		logger.debug("Running prearc job");
-		XDATUser user = null;
-		try {
-			user = DicomSCP.getUser();
-		} catch (UserNotFoundException e1) {
-			logger.error("", e1);
-		} catch (XFTInitException e1) {
-			logger.error("", e1);
-		} catch (ElementNotFoundException e1) {
-			logger.error("", e1);
-		} catch (DBPoolException e1) {
-			logger.error("", e1);
-		} catch (SQLException e1) {
-			logger.error("", e1);
-		} catch (FieldNotFoundException e1) {
-			logger.error("", e1);
-		} catch (Exception e1) {
-			logger.error("", e1);
-		}
+		final Provider<XDATUser> provider = (Provider<XDATUser>)_map.get("user");
+		XDATUser user = provider.get();
+        logger.trace("Running prearc job as {}", user.getLogin());
 		List<SessionData> sds = null;
 		long now = Calendar.getInstance().getTimeInMillis();
 		try {
@@ -83,7 +64,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
 				double interval = (double) _map.getIntValue("interval");
 				double diff = diffInMinutes(then, now);
 				if (diff >= interval) {
-					logger.info("commiting " + s.getExternalUrl());
+					logger.info("commiting {}", s.getExternalUrl());
 					try {
 						updated++;
 						if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
@@ -109,7 +90,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
 				}
 			}
 		}
-		logger.info(String.format("Built %d of %d", updated, total));
+		logger.info("Built {} of {}", updated, total);
 	}
 
 	@Override
@@ -122,6 +103,6 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		return Math.floor(seconds / 60);
 	}
 
-	private static Logger logger = Logger.getLogger(SessionXMLRebuilderJob.class);
+	private Logger logger = LoggerFactory.getLogger(SessionXMLRebuilderJob.class);
 	private JobDataMap _map;
 }

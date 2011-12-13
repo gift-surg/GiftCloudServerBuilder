@@ -21,7 +21,9 @@ import org.dcm4che2.net.service.CStoreSCP;
 import org.dcm4che2.net.service.DicomService;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.archive.GradualDicomImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.slf4j.Logger;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableMap;
 
 /**
+ * DicomService implementing C-STORE SCP for XNAT
  * @author Kevin A. Archie <karchie@wustl.edu>
  */
 public class CStoreService extends DicomService implements CStoreSCP, Closeable {
@@ -148,12 +151,19 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
     private final Logger logger = LoggerFactory.getLogger(CStoreService.class);
     private final NetworkApplicationEntity ae;
     private final XDATUser user;
+    
+    private final DicomObjectIdentifier<XnatProjectdata> identifier;
+    private DicomFileNamer namer = null;
 
-    public CStoreService(final NetworkApplicationEntity ae, final XDATUser user)
+
+    public CStoreService(final NetworkApplicationEntity ae,
+            final DicomObjectIdentifier<XnatProjectdata> identifier,
+            final XDATUser user)
     throws IOException {
         super(CUIDS);
         this.ae = ae;
         ae.register(this);
+        this.identifier = identifier;
         this.user = user;
 
         logger.info("Starting C-STORE service {} for user {} on port {}",
@@ -161,11 +171,9 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
                 ae.getNetworkConnection()[0].getPort() });
     }
 
-    /**
-     * Release resources held by this object and clear the class singleton
-     * handle. A subsequent call to getInstance() will create a new object.
-     * 
-     * @throws IOException
+    /*
+     * (non-Javadoc)
+     * @see java.io.Closeable#close()
      */
     @Override
     public void close() {
@@ -199,6 +207,16 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         as.writeDimseRSP(pcid, rsp);
         CommandUtils.setIncludeUIDinRSP(includeUIDs);
     }
+    
+    /**
+     * Set the DicomFileNamer to be used for naming stored DICOM files.
+     * @param namer
+     * @return this
+     */
+    public CStoreService setNamer(final DicomFileNamer namer) {
+        this.namer = namer;
+        return this;
+    }
 
     private final Object identifySender(final Association association) {
         return new StringBuilder()
@@ -213,10 +231,15 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         final FileWriterWrapperI fw = new StreamWrapper(dataStream);
         try {
             try {
-                new GradualDicomImporter(this, user, fw,
+                final GradualDicomImporter importer = new GradualDicomImporter(this, user, fw,
                         ImmutableMap.of(GradualDicomImporter.SENDER_ID_PARAM, identifySender(as),
                                 GradualDicomImporter.TSUID_PARAM, tsuid,
-                                GradualDicomImporter.SENDER_AE_TITLE_PARAM, as.getRemoteAET())).call();
+                                GradualDicomImporter.SENDER_AE_TITLE_PARAM, as.getRemoteAET()));
+                importer.setIdentifier(identifier);
+                if (null != namer) {
+                    importer.setNamer(namer);
+                }
+                importer.call();
             } catch (final ClientException e) {
                 logger.error("C-STORE operation failed", e);
                 throw new DicomServiceException(rq, ERROR_CANNOT_UNDERSTAND,

@@ -11,8 +11,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.dcm.DicomFileNamer;
+import org.nrg.framework.services.ContextService;
 import org.nrg.status.StatusProducer;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.archive.DicomZipImporter;
 import org.nrg.xnat.archive.GradualDicomImporter;
 import org.nrg.xnat.restlet.actions.SessionImporter;
@@ -74,7 +78,28 @@ public abstract class ImporterHandlerA  extends StatusProducer implements Callab
 		}
 		
 		final Constructor con=importerImpl.getConstructor(Object.class, XDATUser.class, FileWriterWrapperI.class, Map.class);
-		return (ImporterHandlerA)con.newInstance(uID, u, fi, params);
+		final ImporterHandlerA handler = (ImporterHandlerA)con.newInstance(uID, u, fi, params);
+		
+		/* Abuse Spring to inject some additional parameters. Please fix this. */
+		if (GradualDicomImporter.class.equals(importerImpl)) {
+		    final ContextService context = XDAT.getContextService();
+		    final GradualDicomImporter gdi = (GradualDicomImporter)handler;
+		    gdi.setIdentifier(context.getBean("dicomObjectIdentifier", DicomObjectIdentifier.class));
+		    final DicomFileNamer namer = context.getBean("dicomFileNamer", DicomFileNamer.class);
+		    if (null != namer) {
+		        gdi.setNamer(namer);
+		    }
+		} else if (DicomZipImporter.class.equals(importerImpl)) {
+		    final ContextService context = XDAT.getContextService();
+		    final DicomZipImporter dzi = (DicomZipImporter)handler;
+		    dzi.setIdentifier(context.getBean("dicomObjectIdentifier", DicomObjectIdentifier.class));
+		    final DicomFileNamer namer = context.getBean("dicomFileNamer", DicomFileNamer.class);
+		    if (null != namer) {
+		        dzi.setNamer(namer);
+		    }
+		}
+		
+		return handler;
 	
 	}
 	

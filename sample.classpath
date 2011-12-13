@@ -111,7 +111,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-r08.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-10.0.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-image-2.0.25.jar"/>

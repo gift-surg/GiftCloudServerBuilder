@@ -486,7 +486,38 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 	
 	@Test
 	public final void testMoveToProject() {
+		// ensure that moving a project to itself is a no-op
+		
+		String uri1 = "/prearchive/projects/proj_0/1000/sess_0?dest=proj_0";
+		try {
+			Assert.assertTrue(PrearcDatabase.moveToProject(uri1));
+		}
+		catch (SQLException e) {
+			fail ("SQLException " + e.getMessage());
+		}
+		catch (SessionException e) {
+			fail ("SessionException " + e.getMessage());
+		} catch (Exception e) {
+			fail ("Exception " + e.getMessage());
+		}
 
+		// retrieve the session and make sure that the project name hasn't changed
+		String newUri1 = "/prearchive/projects/proj_0/1000/sess_0";
+		SessionData s1 = null;
+		try {
+			s1 = PrearcDatabase.getSession(newUri1);
+		}
+		catch (SQLException e) {
+			fail("Threw a SQLException");
+		}
+		catch (SessionException e) {
+			fail("Threw a SessionException : " + e);
+		}
+		catch (Exception e) {
+			fail("Exception " + e);
+		}
+		assert(s1.getProject() == "proj_0");
+		assert(s1.getStatus().equals(PrearcUtils.PrearcStatus.READY));
 		
 		// move a session to a new project
 		String uri = "/prearchive/projects/proj_0/1000/sess_0?dest=proj_newProj";

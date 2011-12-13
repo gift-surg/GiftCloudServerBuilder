@@ -17,6 +17,7 @@ import org.nrg.xdat.om.XnatMrassessordata;
 import org.nrg.xdat.om.XnatMrscandata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.turbine.modules.screens.FileScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
@@ -31,23 +32,31 @@ public class SessionFile extends FileScreen {
         
         
         XnatMrsessiondata mr = (XnatMrsessiondata)XnatMrsessiondata.getXnatMrsessiondatasById(mrID, TurbineUtils.getUser(data), false);
-        
+
+
+        String rootPath;
+		try {
+			rootPath = mr.getArchiveRootPath();
+		} catch (UnknownPrimaryProjectException e) {
+			rootPath=null;
+		}
+		
         ArrayList<File> files = new ArrayList<File>();
         
         if (data.getParameters().get("scan")!=null){
             String scanId = data.getParameters().get("scan");
             XnatMrscandata scan = (XnatMrscandata)mr.getScanById(scanId);
             List<XnatAbstractresourceI> resources= scan.getFile();
-
+            
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
                 for(XnatAbstractresourceI resource : resources){
-                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(rootPath));
                 }
             }else{
                 for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(rootPath);
                     }
                 }
             }
@@ -61,12 +70,12 @@ public class SessionFile extends FileScreen {
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
                 for(XnatAbstractresourceI resource : resources){
-                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(rootPath));
                 }
             }else{
                 for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(rootPath);
                     }
                 }
             }
@@ -80,12 +89,12 @@ public class SessionFile extends FileScreen {
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
                 for(XnatAbstractresourceI resource : resources){
-                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(rootPath));
                 }
             }else{
                 for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(rootPath);
                     }
                 }
             }
@@ -98,12 +107,12 @@ public class SessionFile extends FileScreen {
             String resourceID= data.getParameters().get("resourceID");
             if (resourceID==null){
                 for(XnatAbstractresourceI resource : resources){
-                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath()));
+                    files.addAll(((XnatAbstractresource)resource).getCorrespondingFiles(rootPath));
                 }
             }else{
                 for (XnatAbstractresourceI resource : resources){
                     if (resource.getXnatAbstractresourceId().toString().equals(resourceID)){
-                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(mr.getArchivePath());
+                        files= ((XnatAbstractresource)resource).getCorrespondingFiles(rootPath);
                     }
                 }
             }

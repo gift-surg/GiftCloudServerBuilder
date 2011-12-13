@@ -16,6 +16,7 @@ import org.nrg.xdat.om.XnatComputationdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.om.base.auto.AutoXnatReconstructedimagedata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
@@ -126,7 +127,7 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
     }
 
 
-	public File getExpectedSessionDir() throws InvalidArchiveStructure{
+	public File getExpectedSessionDir() throws InvalidArchiveStructure, UnknownPrimaryProjectException{
 		return this.getImageSessionData().getExpectedSessionDir();
 	}
 	@Override

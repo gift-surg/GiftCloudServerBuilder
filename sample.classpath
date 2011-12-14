@@ -60,6 +60,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/jdom/jars/jdom-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jndi/jars/jndi-1.2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jsr173_1.0_api/jars/jsr173_1.0_api-1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/javax/jars/javax.inject-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/junit/jars/junit-4.3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jython/jars/jython-2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/logkit/jars/logkit-1.0.1.jar"/>
@@ -127,6 +128,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.4-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.4-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.0.jar"/>

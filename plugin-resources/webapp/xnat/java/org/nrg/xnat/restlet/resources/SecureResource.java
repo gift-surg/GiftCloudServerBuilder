@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xdat.security.XDATUser;
@@ -353,8 +352,7 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-	public MediaType buildMediaType(String fName){
-		MediaType mt=null;
+	public MediaType buildMediaType(MediaType mt, String fName){
 		if(fName.endsWith(".gif")){
 			mt = MediaType.IMAGE_GIF;
 		}else if(fName.endsWith(".jpeg")){
@@ -372,7 +370,7 @@ public abstract class SecureResource extends Resource {
 		}else if(fName.endsWith(".html")){
 			mt = MediaType.TEXT_HTML;
 		}else{
-			if(mt.equals(MediaType.TEXT_XML) && !fName.endsWith(".xml")){
+			if((mt!=null && mt.equals(MediaType.TEXT_XML)) && !fName.endsWith(".xml")){
 				mt=MediaType.ALL;
 			}else{
 				mt=MediaType.APPLICATION_OCTET_STREAM;
@@ -382,7 +380,7 @@ public abstract class SecureResource extends Resource {
 	}
 	
 	public FileRepresentation representFile(File f,MediaType mt){
-		mt=buildMediaType(f.getName());
+		mt=buildMediaType(mt,f.getName());
 
 		this.setContentDisposition(String.format("attachment; filename=\"%s\";",f.getName()));
 		

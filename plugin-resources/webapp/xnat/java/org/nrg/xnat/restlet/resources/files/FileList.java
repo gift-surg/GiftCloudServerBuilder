@@ -646,7 +646,7 @@ public class FileList extends XNATCatalogTemplate {
 							fName=zipEntry.toLowerCase();
 						}
 							
-						mt=buildMediaType(fName);
+						mt=buildMediaType(mt,fName);
 						
 						if(zipEntry!=null){
 							try {

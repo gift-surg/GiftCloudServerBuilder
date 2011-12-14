@@ -537,31 +537,4 @@ public class GradualDicomImporter extends ImporterHandlerA {
             }
         }
     }
-
-
-    private static final String NAMER_PROPERTY = "dicom.file.namer";
-    private static final String NAMER_DEFAULT = SOPHashDicomFileNamer.class.getName();
-    private static final String DICOM_IMPORTER_PROPS = "dicom-importer.properties";
-
-    private static DicomFileNamer getDicomFileNamer() {
-        try {
-            final Properties properties = getProperties();
-            final String namerClass = properties.getProperty(NAMER_PROPERTY, NAMER_DEFAULT);
-            return Class.forName(namerClass).asSubclass(DicomFileNamer.class).newInstance();
-        } catch (Throwable t) {
-            slog().warn("unable to load custom DICOM file namer", t);
-            return new SOPHashDicomFileNamer();
-        }
-    }
-
-    private static Properties getProperties() {
-        final File propsfile = new File(XFT.GetConfDir(), DICOM_IMPORTER_PROPS);
-        final Properties properties = new Properties();
-        try {
-            properties.load(new FileReader(propsfile));
-        } catch (IOException e) {
-            slog().debug("couldn't read DICOM importer properties file " + propsfile, e);
-        }
-        return properties;
-    }
 }

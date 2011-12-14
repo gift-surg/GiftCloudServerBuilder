@@ -58,7 +58,6 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidPermissionException;
@@ -70,6 +69,7 @@ import org.nrg.xft.utils.FileTracker;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 import org.nrg.xnat.srb.XNATDirectory;
 import org.nrg.xnat.srb.XNATMetaData;
 import org.nrg.xnat.srb.XNATSrbSearch;
@@ -2699,118 +2699,38 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
         return new CatalogSet(catalog,fileMap);
     }
+    
 
 
     public void fixScanTypes(){
-        try {
-//        	String query = "SELECT DISTINCT REPLACE(REPLACE(REPLACE(REPLACE(UPPER(scan.series_description),' ',''),'_',''),'-',''),'*','') AS series_description,scan.type,frames FROM xnat_imagescandata scan WHERE scan.series_description IS NOT NULL;";
-//            XFTTable t = XFTTable.Execute(query, this.getDBName(), "system");
-//            Hashtable<String,ScanTypeMapping> allProjects= new Hashtable<String,ScanTypeMapping>();
-//            t.resetRowCursor();
-//            while(t.hasMoreRows()){
-//            	Hashtable rowHash=t.nextRowHash();
-//            	String sd=(String)rowHash.get("series_description");
-//            	if(!allProjects.containsKey(sd)){
-//            		allProjects.put(sd,new ScanTypeMapping());
-//            	}
-//            	
-//            	allProjects.get(sd).add((String)rowHash.get("type"),(Integer)rowHash.get("frames"));
-//            	
-//            }
-            
-            Map<String,ScanTypeMapping> thisProject =new Hashtable<String,ScanTypeMapping>();
-            
-            if(this.getProject()!=null){
-            	String query = "SELECT DISTINCT REPLACE(REPLACE(REPLACE(REPLACE(UPPER(scan.series_description),' ',''),'_',''),'-',''),'*','') AS series_description,scan.type,frames FROM xnat_imagescandata scan LEFT JOIN xnat_experimentData isd ON scan.image_session_id=isd.id WHERE scan.series_description IS NOT NULL AND isd.project='" + this.getProject() + "';";
-            	XFTTable t = XFTTable.Execute(query, this.getDBName(), "system");
-                t.resetRowCursor();
-                while(t.hasMoreRows()){
-                	Hashtable rowHash=t.nextRowHash();
-                	String sd=(String)rowHash.get("series_description");
-                	if(!thisProject.containsKey(sd)){
-                		thisProject.put(sd,new ScanTypeMapping());
-                	}
-                	
-                	thisProject.get(sd).add((String)rowHash.get("type"),(Integer)rowHash.get("frames"));
+        Map<String,ScanTypeMappingI> mappers = new Hashtable<String,ScanTypeMappingI>();
+
+        String project=this.getProject();
+        
+        List al = this.getScans_scan();
+        if (al != null) {
+            for (int i = 0; i < al.size(); i++) {
+                XnatImagescandata scan = (XnatImagescandata) al.get(i);
+                
+                if(!mappers.containsKey(scan.getXSIType())){
+                	mappers.put(scan.getXSIType(), scan.getScanTypeMapping(project, this.getDBName()));
                 }
-            }
-            
-//            String[] types = new String[]{"FLASH5","FLASH20","FLASH30","FLASH3","BDYMAP100","BDYMAP","BOLD","DTI","FLAIR","FLASH","FST_MEF","HDMAP100","HDMAP","LO_RES","MEF30","MEF5","MPRAGE","MTC5","TSE","LOCALIZER","AASCOUT","3DT2"};
-            List al = this.getScans_scan();
-            if (al != null) {
-                for (int i = 0; i < al.size(); i++) {
-                    XnatImagescandata scan = (XnatImagescandata) al.get(i);
-                    
-                    String series_description=scan.getSeriesDescription();
-                    String type=scan.getType();
-                    
-                    if ((type !=null && !type.equals("")) || (series_description==null || series_description.equals(""))){
-                        continue;
-                    }
-                    
-                    if (series_description.startsWith("INVALID: "))
-                    {
-                        series_description = series_description.substring(9);
-                    }
-                    
-                    String formatted_series_description =series_description.toUpperCase();
-                    formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, " ", "");
-                    formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "_", "");
-                    formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "-", "");
-                    formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "*", "");
-                    
-                	if (thisProject.containsKey(formatted_series_description)){
-                        scan.setType(thisProject.get(formatted_series_description).match(series_description, scan.getFrames()));
-                	}
-//                	else if (allProjects.containsKey(formatted_series_description)){
-//                        scan.setType(allProjects.get(formatted_series_description).match(series_description, scan.getFrames()));
-//                  }
-                	else{
-//            REMOVED 08/08/11 TO- left it here unless we need to reintroduce it.
-//                        try {
-//                            boolean matched = false;
-//                            for(int j=0;j<types.length;j++)
-//                            {
-//                                if (series_description.indexOf(types[j])!=-1)
-//                                {
-//                                     scan.setType(types[j]);
-//                                     matched=true;
-//                                     break;
-//                                }
-//                            }
-//
-//                            if (!matched){
-//                                if (series_description.indexOf("MPR")!=-1)
-//                                {
-//                                     scan.setType("MPRAGE");
-//                                }
-//                            }
-//                        } catch (Throwable e) {
-//                            logger.error("",e);
-//                        }
-                    }
-                	
-                	if(scan.getType()==null){
-                		scan.setType(series_description);
-                	}
-                	
-                	if(scan.getFile().size()>0){
-            			XnatAbstractresourceI abstRes=scan.getFile().get(0);
-                		if(abstRes instanceof XnatResource){
-                			if(((XnatResource)abstRes).getContent()==null || ((XnatResource)abstRes).getContent().equals("")){
-                				((XnatResource)abstRes).setContent("RAW");
-                			}
-                			if(abstRes.getLabel()!=null && ((XnatResource)abstRes).getFormat()==null){
-                				((XnatResource)abstRes).setFormat(abstRes.getLabel());
-                			}
-                		}
+                
+                
+                mappers.get(scan.getXSIType()).setType(scan);
+            	
+            	if(scan.getFile().size()>0){
+        			XnatAbstractresourceI abstRes=scan.getFile().get(0);
+            		if(abstRes instanceof XnatResource){
+            			if(((XnatResource)abstRes).getContent()==null || ((XnatResource)abstRes).getContent().equals("")){
+            				((XnatResource)abstRes).setContent("RAW");
+            			}
+            			if(abstRes.getLabel()!=null && ((XnatResource)abstRes).getFormat()==null){
+            				((XnatResource)abstRes).setFormat(abstRes.getLabel());
+            			}
             		}
-                }
+        		}
             }
-        } catch (SQLException e) {
-            logger.error("",e);
-        } catch (DBPoolException e) {
-            logger.error("",e);
         }
     }
     
@@ -3244,64 +3164,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		
 		return t.rowHashs();
     }
-    public class ScanTypeMapping{
-	    private List<ScanType> types=new ArrayList<ScanType>();
-		
-	    public void add(ScanType st){
-	    	types.add(st);
-	    }
-	    
-	    public void add(String t, Integer f){
-	    	types.add(new ScanType(t,f));
-	    }
-	    
-		public String match(String desc,Integer frames){
-			if(types.size()==1){
-				return types.get(0).getType();
-			}
-			
-			//match by frames
-			if(frames!=null){
-				for(ScanType st: types){
-					if(frames.equals(st.getFrames())){
-						return st.getType();
-					}
-				}
-			}
-			
-			if(frames==null){
-				for(ScanType st: types){
-					if(st.getFrames()==null){
-						return st.getType();
-					}
-				}
-			}
-			
-			return types.get(0).getType();
-		}
-	}
-    public class ScanType{
-	    private String _type=null;
-	    private Integer _frames=null;
-		
-	    public ScanType(String t, Integer f){
-	    	_type=t;
-	    	_frames=f;
-	    }
-	    
-		public Integer getFrames() {
-			return _frames;
-		}
-		public void setFrames(Integer frames) {
-			this._frames = frames;
-		}
-		public String getType() {
-			return _type;
-		}
-		public void setType(String type) {
-			this._type = type;
-		}
-	}
+    
+
     
     public String canDelete(XnatProjectdata proj, XDATUser user){
 

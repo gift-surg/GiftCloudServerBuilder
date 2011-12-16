@@ -170,7 +170,8 @@ public class Rename  implements Callable<File>{
 				
 				if(i instanceof XnatImagesessiondata){
 					this.updateStep(workflow, setStep(STEP.ANONYMIZE));
-					new ProjectAnonymizer((XnatImagesessiondata) i, 
+					new ProjectAnonymizer(newLabel,
+										 (XnatImagesessiondata) i, 
 										  proj.getId(), 
 										  ((XnatImagesessiondata) i).getArchivePath(((XnatImagesessiondata) i).getArchiveRootPath())
 										  ).call();

@@ -25,6 +25,7 @@ import org.nrg.xnat.helpers.editscript.DicomEdit;
 public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang.Void>{
 	final String projectId;
 	final String sessionPath;
+	final String label;
 	final XnatImagesessiondataI s;
 	final String path;
 	/**
@@ -37,8 +38,17 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 		this.s = s;
 		this.projectId= projectId;
 		this.sessionPath = sessionPath;
+		this.label = s.getLabel();
 		this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, projectId);
 	}
+	
+	public ProjectAnonymizer(String label, XnatImagesessiondataI s, String projectId, String sessionPath) {
+		this.s = s;
+		this.projectId = projectId;
+		this.sessionPath = sessionPath;
+		this.label = label;
+		this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, projectId);
+	} 
 	
 	@Override
 	String getSubjectId() {
@@ -47,7 +57,7 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 	
 	@Override
 	String getLabel() {
-		return s.getLabel();
+		return this.label;
 	}
 	
 	@Override

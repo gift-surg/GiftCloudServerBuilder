@@ -27,6 +27,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 /**
@@ -34,7 +35,7 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordata {
+public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordata{
 
 	public BaseXnatImageassessordata(ItemI item)
 	{
@@ -215,6 +216,5 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
         }
         return rtn;
 	}
-
 
 }

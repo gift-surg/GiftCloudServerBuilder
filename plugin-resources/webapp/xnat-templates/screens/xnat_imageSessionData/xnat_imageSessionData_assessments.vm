@@ -14,13 +14,11 @@
 										#if($assessor.canRead($user))
 											#set ( $assessorID = $!assessor.getProperty("ID"))
 											#set ( $assessorField = "${assessor.getXSIType()}.ID")
-											<A name="LINK_assess$assessor.getId()" HREF="#LINK_assess$assessor.getId()" onClick="return blocking('_assess$assessor.getId()');">
-				  	  	  <img ID="IMG_assess$assessor.getId()" src="$content.getURI("images/plus.jpg")" border=0>
-				</A>
+
 											#set ( $url = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!assessor.getXSIType()).addPathInfo('search_field',$assessorField).addPathInfo('search_value',$assessorID).addPathInfo('popup',$popup).addPathInfo('project',$!project)" )
-												<a href="$url" title="$assessor.getIdentifier($project)">$user.getDisplayManager().getDisplayNameForElement($assessor.getXSIType())</A>
+												<a href="$url" title="$assessor.getIdentifier($project)">$!assessor.getHeader()</A>
 										#else
-												<A  title="$assessor.getIdentifier($project)">$user.getDisplayManager().getDisplayNameForElement($assessor.getXSIType())</A>
+												<A  title="$assessor.getIdentifier($project)">$!assessor.getHeader()</A>
 										#end
 										</TD>
 										<TD NOWRAP>$!assessor.getProperty("date")</TD>

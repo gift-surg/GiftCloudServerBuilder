@@ -174,4 +174,22 @@
 		  	  	  	  	  	  <td align="left">$!addP.getAddfield()</td>
 		          </tr>
 			#end
-  		      </table>
+		
+            #foreach($scanAssessor in $scanAssessors)
+            <tr><td></td>
+            	<td>
+            		#if($scanAssessor.canRead($user))
+            			#set ( $assessorID = $!scanAssessor.getProperty("ID"))
+            			#set ( $assessorField = "${scanAssessor.getXSIType()}.ID")
+            			#set ( $url = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!scanAssessor.getXSIType()).addPathInfo('search_field',$assessorField).addPathInfo('search_value',$assessorID).addPathInfo('popup',$popup).addPathInfo('project',$!project)" )
+            			<a href="$url" title="$scanAssessor.getIdentifier($project)">$!scanAssessor.getHeader():</A>
+            		#else
+            			<A  title="$scanAssessor.getIdentifier($project)">$!scanAssessor.getHeader():</A>
+            		#end
+            		</td>
+            		<td border=0 style="font-weight:bold; text-align:left;"  NOWRAP>	
+            		$!scanAssessor.getScanById($scanID).getSummary()
+            		</td>
+            </td></tr>
+            #end
+     </table>

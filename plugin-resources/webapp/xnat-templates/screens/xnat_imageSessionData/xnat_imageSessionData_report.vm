@@ -38,6 +38,7 @@ document.title = "Session: $!item.getProperty('label')";
 			#parse("/screens/ReportProjectSpecificFields.vm")
 	  </td>
 	 </tr>
+	 #parse("/screens/qc_summary.vm")
  	<tr>
 					  <td align=left colspan=2 valign=top>
 					<BR/><BR/>

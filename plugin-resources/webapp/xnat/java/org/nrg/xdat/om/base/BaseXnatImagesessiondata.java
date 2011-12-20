@@ -23,6 +23,8 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
+import org.nrg.xdat.model.ScrScreeningassessmentI;
+import org.nrg.xdat.model.ValProtocoldataI;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatAbstractresourceTagI;
 import org.nrg.xdat.model.XnatExperimentdataFieldI;
@@ -32,6 +34,7 @@ import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatQcassessmentdataI;
 import org.nrg.xdat.model.XnatQcmanualassessordataI;
 import org.nrg.xdat.model.XnatReconstructedimagedataI;
+import org.nrg.xdat.om.ScrScreeningassessment;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatDicomseries;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -47,7 +50,10 @@ import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.base.auto.AutoScrScreeningassessment;
+import org.nrg.xdat.om.base.auto.AutoValProtocoldata;
 import org.nrg.xdat.om.base.auto.AutoXnatImagesessiondata;
+import org.nrg.xdat.om.base.auto.AutoXnatQcassessmentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
@@ -70,6 +76,8 @@ import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
+import org.nrg.xnat.scanAssessors.AssessorComparator;
+import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.srb.XNATDirectory;
 import org.nrg.xnat.srb.XNATMetaData;
 import org.nrg.xnat.srb.XNATSrbSearch;
@@ -123,7 +131,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     private String _Prearchivepath=null;
 	protected  XnatQcmanualassessordata manQC;
 	protected  XnatQcassessmentdata qc;
-
+	protected  ScrScreeningassessment scr;
+	
     /**
      * @return Returns the prearchivePath.
      */
@@ -760,6 +769,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                       al.add(assessor);
                  }
              }
+             
+              
+             
         } catch (XFTInitException e) {
             logger.error("",e);
         } catch (ElementNotFoundException e) {
@@ -783,6 +795,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 try {
                     XFTTable table = TableSearch.Execute("SELECT ex.id,ex.date,ex.project,me.element_name AS type,me.element_name,ex.note AS note,i.lastname, investigator_xnat_investigatorData_id AS invest_id,projects FROM xnat_imageAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xnat_investigatorData i ON i.xnat_investigatorData_id=ex.investigator_xnat_investigatorData_id LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.imagesession_id='" + this.getId() +"' ORDER BY ex.date ASC",getDBName(),null);
                     table.resetRowCursor();
+                    
                     while (table.hasMoreRows())
                     {
                         Hashtable row = table.nextRowHash();
@@ -796,7 +809,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                             Object invest_id = row.get("invest_id");
                             Object lastname = row.get("lastname");
                             Object project = row.get("project");
-
+                            
                             if (date!=null)
                             {
                                 try {
@@ -883,8 +896,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                     logger.error("",e);
                                 }
                             }
-
-
+                            
                             String projects = (String)row.get("projects");
                             if (projects!=null)
                             {
@@ -896,6 +908,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                 }
                             }
 
+                            XnatImageassessordata assessor= (XnatImageassessordata)BaseElement.GetGeneratedItem(child);
+                            
                             if (element.equalsIgnoreCase(XnatQcmanualassessordata.SCHEMA_ELEMENT_NAME))
                             {
                                 if (this.manQC == null)
@@ -908,7 +922,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                         minLoadAssessors.add(new XnatQcmanualassessordata(child));
                                     }
                                 }else{
-                                    minLoadAssessors.add(new XnatQcmanualassessordata(child));
+                                	this.manQC = new XnatQcmanualassessordata(child.getCurrentDBVersion(false));
+                                    minLoadAssessors.add(this.manQC);
                                 }
                             }else if (element.equalsIgnoreCase(XnatQcassessmentdata.SCHEMA_ELEMENT_NAME))
                             {
@@ -922,10 +937,13 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                         minLoadAssessors.add(new XnatQcassessmentdata(child));
                                     }
                                 }else{
-                                    minLoadAssessors.add(new XnatQcassessmentdata(child));
+                                	 this.qc = new XnatQcassessmentdata(child.getCurrentDBVersion(false));
+                                     minLoadAssessors.add(this.qc);
                                 }
+                            }else if(assessor instanceof ScanAssessorI){
+                            	minLoadAssessors.add( (XnatImageassessordata)BaseElement.GetGeneratedItem(child.getCurrentDBVersion(false)));
                             }else{
-                                minLoadAssessors.add((XnatImageassessordata)BaseElement.GetGeneratedItem(child));
+                                minLoadAssessors.add(assessor);
                             }
 
                         } catch (XFTInitException e) {
@@ -2702,7 +2720,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     
 
 
-    public void fixScanTypes(){
+ public void fixScanTypes(){
         Map<String,ScanTypeMappingI> mappers = new Hashtable<String,ScanTypeMappingI>();
 
         String project=this.getProject();
@@ -3322,6 +3340,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     	return count;
     }
 
+    
 	public XnatQcmanualassessordataI getManualQC() {
 		final List<XnatImageassessordata> assessors = getMinimalLoadAssessors(XnatQcmanualassessordata.SCHEMA_ELEMENT_NAME);
 		if (assessors != null && assessors.size() > 0) {
@@ -3334,7 +3353,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		final List<XnatImageassessordata> assessors = getMinimalLoadAssessors(XnatQcassessmentdata.SCHEMA_ELEMENT_NAME);
 		final List<XnatImageassessordata> qcassessorOfType = new ArrayList<XnatImageassessordata>();
 		for (int i = 0; i < assessors.size(); i++) {
-			if (((XnatQcassessmentdata)assessors.get(i)).getType().equals(type)) {
+			if (((AutoXnatQcassessmentdata)assessors.get(i)).getType().equals(type)) {
 				qcassessorOfType.add(assessors.get(i));
 			}
 		}
@@ -3343,7 +3362,37 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		}
 		return null;
 	}
-
+	
+	public ValProtocoldataI getProtocolValidation() {
+		final List<XnatImageassessordata> protocolData = getMinimalLoadAssessors(AutoValProtocoldata.SCHEMA_ELEMENT_NAME);
+		if (protocolData != null && protocolData.size() > 0) {
+			return (ValProtocoldataI) protocolData.get(protocolData.size()-1);
+		}
+		return null;
+	}
+	
+	public ScrScreeningassessmentI getScreeningAssessment() {
+		final List<XnatImageassessordata> screeningAssessment = getMinimalLoadAssessors(AutoScrScreeningassessment.SCHEMA_ELEMENT_NAME);
+		if (screeningAssessment != null && screeningAssessment.size() > 0) {
+			return (ScrScreeningassessmentI) screeningAssessment.get(screeningAssessment.size()-1);
+		}
+		return null;
+	}
+	
+	public List<ScanAssessorI> getScanAssessors(){
+		List al = new ArrayList();
+         Iterator min = this.getMinimalLoadAssessors().iterator();
+         while (min.hasNext())
+         {
+             ItemI assessor = (ItemI)min.next();
+             if (assessor instanceof ScanAssessorI)
+             {
+                  al.add(assessor);
+             }
+         }
+         Collections.sort(al, new AssessorComparator());
+         return al;
+	}
 	
 	@Override
 	public void preSave() throws Exception{
@@ -3366,7 +3415,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 			}
 		}
 		
-
+		
 		for(final XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
 			for(final XnatAbstractresourceI res: recon.getOut_file()){
 				final String uri;

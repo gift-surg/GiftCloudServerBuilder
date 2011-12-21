@@ -16,9 +16,18 @@
 											#set ( $assessorField = "${assessor.getXSIType()}.ID")
 
 											#set ( $url = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!assessor.getXSIType()).addPathInfo('search_field',$assessorField).addPathInfo('search_value',$assessorID).addPathInfo('popup',$popup).addPathInfo('project',$!project)" )
+											#if($assessor.getHeader())
 												<a href="$url" title="$assessor.getIdentifier($project)">$!assessor.getHeader()</A>
+											#else
+												<a href="$url" title="$assessor.getIdentifier($project)">$user.getDisplayManager().getDisplayNameForElement($assessor.getXSIType())</A>
+											#end
+											
 										#else
-												<A  title="$assessor.getIdentifier($project)">$!assessor.getHeader()</A>
+											#if($assessor.getHeader())
+												<a title="$assessor.getIdentifier($project)">$!assessor.getHeader()</A>
+											#else
+												<a title="$assessor.getIdentifier($project)">$user.getDisplayManager().getDisplayNameForElement($assessor.getXSIType())</A>
+											#end
 										#end
 										</TD>
 										<TD NOWRAP>$!assessor.getProperty("date")</TD>

@@ -3,22 +3,13 @@ package org.nrg.xnat.helpers.merge;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
-import org.nrg.dcm.AnonymizerI;
 import org.nrg.dcm.edit.AttributeException;
 import org.nrg.dcm.edit.ScriptEvaluationException;
-import org.nrg.dcm.xnat.ScriptTable;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatImagesessiondataI;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.base.BaseXnatImagesessiondata;
 
 /**
  * Base class that actually does the work of applying the edit scripts to files.

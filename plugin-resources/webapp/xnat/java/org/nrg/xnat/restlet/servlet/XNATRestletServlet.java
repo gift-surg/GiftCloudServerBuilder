@@ -1,10 +1,8 @@
 // Copyright 2010,2011 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.servlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -12,15 +10,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
-import org.nrg.config.services.ConfigService;
 import org.nrg.dcm.DicomSCP;
-import org.nrg.dcm.xnat.ScriptTable;
-import org.nrg.dcm.xnat.ScriptTableDAO;
-import org.nrg.framework.services.ContextService;
-import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
@@ -60,23 +52,16 @@ public class XNATRestletServlet extends ServerServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
-        
         try {
-        	ConfigService configService = XDAT.getConfigService();
         	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
-        	Configuration init_config = configService.getConfig(DicomEdit.ToolName,path);
+        	Configuration init_config = AnonUtils.getInstance().getScript(path, null); 
         	if (init_config == null) {
         		logger().info("Creating Script Table.");
         		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
         		String adminUser = this.getAdminUser();
         		if (adminUser != null) {
-        			configService.replaceConfig(adminUser, 
-        										"", 
-        										DicomEdit.ToolName, 
-        										path,
-        										site_wide);
+        			AnonUtils.getInstance().setSiteWideScript(adminUser, path,site_wide);
         		}
         		else {
         			throw new Exception("Site administrator not found.");

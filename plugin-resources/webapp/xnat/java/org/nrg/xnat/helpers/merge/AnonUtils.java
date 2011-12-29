@@ -2,8 +2,10 @@ package org.nrg.xnat.helpers.merge;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import org.nrg.config.entities.Configuration;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.ConfigService;
 import org.nrg.config.services.impl.DefaultConfigService;
 import org.nrg.dcm.xnat.EditTable;
@@ -28,7 +30,7 @@ public class AnonUtils {
         if (_instance != null) {
             throw new Exception("The ContextService is already initialized, try calling getInstance() instead.");
         }
-        this.c = XDAT.getConfigService();
+        AnonUtils.c = XDAT.getConfigService();
         _instance = this;
     }
 	
@@ -44,17 +46,55 @@ public class AnonUtils {
         return _instance;
 	}
 	public Configuration getScript(String path, Long project) {
-		Configuration config = this.c.getConfig(DicomEdit.ToolName, 
-												path,
-												project);
+		Configuration config = AnonUtils.c.getConfig(DicomEdit.ToolName, 
+													 path,
+												     project);
 		return config == null? null : config;
 	}
 	
 	public boolean isEnabled(String path, Long project) {
-		Configuration config = this.c.getConfig(DicomEdit.ToolName, 
-												path,
-												project);
+		Configuration config = AnonUtils.c.getConfig(DicomEdit.ToolName, 
+													 path,
+													 project);
 		return config.getStatus().equals(Configuration.ENABLED_STRING);
+	}
+	
+	public List<Configuration> getAllScripts (Long project) {
+		List<Configuration> scripts = AnonUtils.c.getConfigsByTool(DicomEdit.ToolName, project);
+		return scripts;
+	}
+	
+	public void setProjectScript (String login, String path, String script, Long project) throws ConfigServiceException {
+		AnonUtils.c.replaceConfig(login, 
+							 	  "", 	
+							 	  DicomEdit.ToolName, 
+							 	  path, 
+							 	  script, 
+							 	  project);
+	}
+	
+	public void setSiteWideScript(String login, String path, String script) throws ConfigServiceException {
+		AnonUtils.c.replaceConfig(login, 
+			 	  				  "", 	
+			 	  				  DicomEdit.ToolName, 
+			 	  				  path, 
+			 	  				  script);
+	}
+	
+	public void enableSiteWide (String login, String path ) {
+		AnonUtils.c.enable(login, "", DicomEdit.ToolName, path);
+	}
+	
+	public void enableProjectSpecific(String login, String path, Long project) {
+		AnonUtils.c.enable(login, "", DicomEdit.ToolName, path, project);
+	}
+	
+	public void disableSiteWide(String login, String path) {
+		AnonUtils.c.disable(login, "", DicomEdit.ToolName, path);
+	}
+	
+	public void disableProjectSpecific(String login, String path, Long project){
+		AnonUtils.c.disable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public static File getDefaultScript () throws FileNotFoundException {

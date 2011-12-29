@@ -10,11 +10,10 @@ import java.util.concurrent.Callable;
 
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
-import org.nrg.config.services.ConfigService;
-import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
+import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -54,11 +53,6 @@ public final class DicomEdit extends SecureResource {
 	
 	private final String projectPassedIn;
 	private final XnatProjectdata project;
-	
-	/**
-	 * Config service
-	 */
-	private final ConfigService configService = XDAT.getConfigService();
 	
 	/**
 	 * Datatypes
@@ -244,15 +238,13 @@ public final class DicomEdit extends SecureResource {
 					public XFTTable call() throws Exception {
 						XFTTable table = new XFTTable();
 						Long project_id = project == null ? null : DicomEdit.getDBId(project);
-						String project_name = project == null ? null : project.getId();
 						if (rType == ResourceType.SCRIPT) { 
 							List<Configuration> cs = new ArrayList<Configuration>();
 							if (all) {
-								cs.addAll(configService.getConfigsByTool(DicomEdit.ToolName, project_id));
-								// sts.addAll(st.getByProject(project_id));
+								cs.addAll(AnonUtils.getInstance().getAllScripts(project_id));
 							}
 							else {
-								cs.add(configService.getConfig(DicomEdit.ToolName, DicomEdit.buildScriptPath(scope, project), project_id));
+								cs.add(AnonUtils.getInstance().getScript(DicomEdit.buildScriptPath(scope, project), project_id));
 							}
 							table.initTable(scriptColumns);
 							for (Configuration c : cs) {
@@ -271,10 +263,10 @@ public final class DicomEdit extends SecureResource {
 						else if (rType == ResourceType.STATUS){
 							List<Configuration> cs = new ArrayList<Configuration>();
 							if (all) {
-								cs.addAll(configService.getConfigsByTool(DicomEdit.ToolName, project_id));
+								cs.addAll(AnonUtils.getInstance().getAllScripts(project_id));
 							}
 							else {
-								cs.add(configService.getConfig(DicomEdit.ToolName, DicomEdit.buildScriptPath(scope, project), project_id));
+								cs.add(AnonUtils.getInstance().getScript(DicomEdit.buildScriptPath(scope, project), project_id));
 							}
 							table.initTable(editColumns);
 							for (Configuration c : cs) {
@@ -365,19 +357,15 @@ public final class DicomEdit extends SecureResource {
 							String script = getFile().call();
 							if (script != null) {
 								if (scope == ResourceScope.SITE_WIDE) {
-									configService.replaceConfig(user.getLogin(), 
-																"", 
-																DicomEdit.ToolName, 
-																DicomEdit.buildScriptPath(scope, project), 
-																script);
+									AnonUtils.getInstance().setSiteWideScript(user.getLogin(), 
+																	  DicomEdit.buildScriptPath(scope, project), 
+																	  script); 
 								}
 								else { // project specific 
-									configService.replaceConfig(user.getLogin(), 
-																"", 
-																DicomEdit.ToolName, 
-																DicomEdit.buildScriptPath(scope, project), 
-																script, 
-																DicomEdit.getDBId(project));
+									AnonUtils.getInstance().setProjectScript(user.getLogin(), 
+																	  		 DicomEdit.buildScriptPath(scope, project), 
+																	  		 script, 
+																	  		 DicomEdit.getDBId(project));
 								}
 							}
 							else {
@@ -392,32 +380,24 @@ public final class DicomEdit extends SecureResource {
 									Boolean activate = Boolean.parseBoolean(qActivate);
 									if (scope == ResourceScope.SITE_WIDE) {
 										if (activate) {
-											configService.enable(user.getLogin(), 
-													             "", 
-													             DicomEdit.ToolName, 
-													             DicomEdit.buildScriptPath(scope, project));
+											AnonUtils.getInstance().enableSiteWide(user.getLogin(),
+																		   	       DicomEdit.buildScriptPath(scope, project));
 										} 
 										else {
-											configService.disable(user.getLogin(), 
-										             			  "", 
-										             			  DicomEdit.ToolName, 
-										             			  DicomEdit.buildScriptPath(scope, project));
+											AnonUtils.getInstance().disableSiteWide(user.getLogin(), 
+										             			  					DicomEdit.buildScriptPath(scope, project));
 										}
 									}
 									else { // project -specific
 										if (activate) {
-											configService.enable(user.getLogin(), 
-													                  "", 
-													                  DicomEdit.ToolName, 
-													                  DicomEdit.buildScriptPath(scope, project), 
-													                  DicomEdit.getDBId(project));
+											AnonUtils.getInstance().enableProjectSpecific(user.getLogin(), 
+																		   				  DicomEdit.buildScriptPath(scope, project), 
+																		   				  DicomEdit.getDBId(project));
 										}
 										else {
-											configService.disable(user.getLogin(), 
-													 			  "", 
-													 			  DicomEdit.ToolName, 
-													 			  DicomEdit.buildScriptPath(scope, project), 
-													 			  DicomEdit.getDBId(project));
+											AnonUtils.getInstance().disableProjectSpecific(user.getLogin(), 
+																				 		   DicomEdit.buildScriptPath(scope, project), 
+																				 		   DicomEdit.getDBId(project));
 										}
 									}
 								}

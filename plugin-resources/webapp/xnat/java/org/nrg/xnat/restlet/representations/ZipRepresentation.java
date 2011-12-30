@@ -149,6 +149,9 @@ public class ZipRepresentation extends OutputRepresentation {
 		if (this.mt.equals(MediaType.APPLICATION_GNU_TAR))
         {
             return getTokenName()+".tar.gz";
+        }else if (this.mt.equals(MediaType.APPLICATION_TAR))
+        {
+            return getTokenName()+".tar";
         }else if (this.mt.equals(SecureResource.APPLICATION_XAR))
         {
             return getTokenName()+".xar";
@@ -163,8 +166,13 @@ public class ZipRepresentation extends OutputRepresentation {
         if (this.mt.equals(MediaType.APPLICATION_GNU_TAR))
         {
             zip = new TarUtils();
-            zip.setOutputStream(os,compression);
+            zip.setOutputStream(os,ZipOutputStream.DEFLATED);
             this.setDownloadName(getTokenName()+".tar.gz");
+            this.setDownloadable(true);
+        }else if (this.mt.equals(MediaType.APPLICATION_TAR)){
+        	zip = new TarUtils();
+            zip.setOutputStream(os,ZipOutputStream.STORED);
+            this.setDownloadName(getTokenName()+".tar");
             this.setDownloadable(true);
         }else{
             zip = new ZipUtils();

@@ -75,6 +75,7 @@ public class DownloadImages extends SecureAction {
             String contentType = "application/zip";
             
             boolean tar = false;
+            int COMPRESSION = ZipUtils.DEFAULT_COMPRESSION;
             boolean cat = false;
             
             if (TurbineUtils.HasPassedParameter("download_type",data))
@@ -86,6 +87,13 @@ public class DownloadImages extends SecureAction {
                 }else if (TurbineUtils.GetPassedParameter("download_type",data).equals("tar"))
                 {
                     tar= true;
+                    COMPRESSION=ZipOutputStream.STORED;
+                    contentType = "application/tar";
+                    fileName=mr.getArchiveDirectoryName() + "_" + (today.getMonth() + 1) + "_" + today.getDate() + "_" + (today.getYear() + 1900) + "_" + today.getHours() + "_" + today.getMinutes() + "_" + today.getSeconds() + ".tar";
+                }else if (TurbineUtils.GetPassedParameter("download_type",data).equals("tar.gz"))
+                {
+                    tar= true;
+                    COMPRESSION=ZipOutputStream.DEFLATED;
                     contentType = "application/tar.gz";
                     fileName=mr.getArchiveDirectoryName() + "_" + (today.getMonth() + 1) + "_" + today.getDate() + "_" + (today.getYear() + 1900) + "_" + today.getHours() + "_" + today.getMinutes() + "_" + today.getSeconds() + ".tar.gz";
                 }else if (TurbineUtils.GetPassedParameter("download_type",data).equals("xcat"))
@@ -324,11 +332,11 @@ public class DownloadImages extends SecureAction {
                     if (tar)
                     {
                         zip = new TarUtils();
-                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }else{
                         zip = new ZipUtils();
-                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }
+                    
+                    zip.setOutputStream(outStream,COMPRESSION);
                                     
                     for(XNATDirectory sub : al){
                         try {
@@ -384,11 +392,11 @@ public class DownloadImages extends SecureAction {
                     if (tar)
                     {
                         zip = new TarUtils();
-                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }else{
                         zip = new ZipUtils();
-                        zip.setOutputStream(outStream,ZipUtils.DEFAULT_COMPRESSION);
                     }
+                    
+                    zip.setOutputStream(outStream,COMPRESSION);
                     
                     if (contentType=="application/xar"){
                         File f = TurbineUtils.getUser(data).getCachedFile("xar_sessions/" + mr.getId() + ".xml");

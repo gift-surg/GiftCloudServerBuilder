@@ -407,7 +407,7 @@ public class FileList extends XNATCatalogTemplate {
                     }
 				}
 				
-			if(resources.size()==1 && !(mt.equals(MediaType.APPLICATION_ZIP) || mt.equals(MediaType.APPLICATION_GNU_TAR))){
+			if(resources.size()==1 && !(isZIPRequest(mt))){
 				//one catalog
 				return handleSingleCatalog(mt);
 			}else if(resources.size()>0){
@@ -489,7 +489,7 @@ public class FileList extends XNATCatalogTemplate {
 			this.setResponseHeader("Content-Disposition","inline;filename=files.xcat");
 			
 			return new CatalogRepresentation(cat, mt,false);
-		}else if(mt.equals(MediaType.APPLICATION_ZIP) || mt.equals(MediaType.APPLICATION_GNU_TAR)){
+		}else if(isZIPRequest(mt)){
 			ZipRepresentation rep;
 			try {
 				rep = new ZipRepresentation(mt,this.getSessionIds(),identifyCompression(null));
@@ -646,7 +646,7 @@ public class FileList extends XNATCatalogTemplate {
 							fName=zipEntry.toLowerCase();
 						}
 							
-						mt=buildMediaType(fName);
+						mt=buildMediaType(mt,fName);
 						
 						if(zipEntry!=null){
 							try {
@@ -810,7 +810,7 @@ public class FileList extends XNATCatalogTemplate {
 	}
 	
 	protected Representation handleMultipleCatalogs(MediaType mt) throws ElementNotFoundException{
-		final boolean isZip=(mt.equals(MediaType.APPLICATION_ZIP) || mt.equals(MediaType.APPLICATION_GNU_TAR));
+		final boolean isZip=isZIPRequest(mt);
     	
 			    	File f = null;
 		final XFTTable table = new XFTTable();
@@ -911,7 +911,9 @@ public class FileList extends XNATCatalogTemplate {
 		if(mt.equals(MediaType.APPLICATION_ZIP)){
 			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".zip");
 		}else if(mt.equals(MediaType.APPLICATION_GNU_TAR)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".gz");
+			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".tar.gz");
+		}else if(mt.equals(MediaType.APPLICATION_TAR)){
+			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".tar");
 		}
 					
 		if(StringUtils.isEmpty(filepath) && index==null){
@@ -938,7 +940,9 @@ public class FileList extends XNATCatalogTemplate {
 			//return file
 			if(f!=null){
 				if(f!=null && f.exists()){
-					if((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip")) || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".gz") )){
+					if((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip")) 
+							|| (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".tar.gz") )
+							|| (mt.equals(MediaType.APPLICATION_TAR) && !f.getName().toLowerCase().endsWith(".tar"))){
 						final ZipRepresentation rep;
 						try{
 							rep=new ZipRepresentation(mt,((ArchivableItem)security).getArchiveDirectoryName(),identifyCompression(null));

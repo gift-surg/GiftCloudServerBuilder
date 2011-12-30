@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xdat.security.XDATUser;
@@ -167,6 +166,8 @@ public abstract class SecureResource extends Resource {
 				return MediaType.APPLICATION_ZIP;
 			} else if (this.requested_format.equals("tar.gz")) {
 				return MediaType.APPLICATION_GNU_TAR;
+			} else if (this.requested_format.equals("tar")) {
+				return MediaType.APPLICATION_TAR;
 			}else if(this.requested_format.equals("xList")){
 				return APPLICATION_XLIST;
 			}else if(this.requested_format.equalsIgnoreCase("xcat")){
@@ -176,6 +177,21 @@ public abstract class SecureResource extends Resource {
 			}
 		}
 		return null;
+	}
+	
+	public boolean isZIPRequest(){
+		return isZIPRequest(getRequestedMediaType());
+	}
+	
+	public static boolean isZIPRequest(MediaType mt){
+		if (mt==null ||  
+				!(mt.equals(MediaType.APPLICATION_ZIP) 
+					|| mt.equals(MediaType.APPLICATION_TAR) 
+					|| mt.equals(MediaType.APPLICATION_GNU_TAR))) {
+    		return false;
+    	}else{
+    		return true;
+    	}
 	}
 
 	public boolean isHTMLRequest() {
@@ -336,8 +352,7 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-	public MediaType buildMediaType(String fName){
-		MediaType mt=null;
+	public MediaType buildMediaType(MediaType mt, String fName){
 		if(fName.endsWith(".gif")){
 			mt = MediaType.IMAGE_GIF;
 		}else if(fName.endsWith(".jpeg")){
@@ -355,7 +370,7 @@ public abstract class SecureResource extends Resource {
 		}else if(fName.endsWith(".html")){
 			mt = MediaType.TEXT_HTML;
 		}else{
-			if(mt.equals(MediaType.TEXT_XML) && !fName.endsWith(".xml")){
+			if((mt!=null && mt.equals(MediaType.TEXT_XML)) && !fName.endsWith(".xml")){
 				mt=MediaType.ALL;
 			}else{
 				mt=MediaType.APPLICATION_OCTET_STREAM;
@@ -365,7 +380,7 @@ public abstract class SecureResource extends Resource {
 	}
 	
 	public FileRepresentation representFile(File f,MediaType mt){
-		mt=buildMediaType(f.getName());
+		mt=buildMediaType(mt,f.getName());
 
 		this.setContentDisposition(String.format("attachment; filename=\"%s\";",f.getName()));
 		

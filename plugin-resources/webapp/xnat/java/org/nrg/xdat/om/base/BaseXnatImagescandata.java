@@ -32,6 +32,8 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.scanType.ScanTypeMapping;
+import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 
 /**
  * @author XDAT
@@ -504,5 +506,9 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 		return XnatImagescandata.getXnatImagescandatasByField(cc, user,
 				preLoad);
+	}
+	
+	public ScanTypeMappingI getScanTypeMapping(String project, String dbName){
+		return new ScanTypeMapping(project, dbName);
 	}
 }

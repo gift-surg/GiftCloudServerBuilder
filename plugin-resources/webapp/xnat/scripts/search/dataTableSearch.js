@@ -273,14 +273,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       th.style.lineHeight="13px";
       th.style.cursor="pointer";
 
+      var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:cMenuItems});
+      th.contextMenu=_th_menu;
+      _th_menu.render(this.div_table_id);
+      _th_menu.cfg.subscribeToConfigEvent("x", onXChange, this);
+      _th_menu.cfg.subscribeToConfigEvent("y", onYChange, this);
 
-      th.contextMenu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:cMenuItems});
-      th.contextMenu.render(this.div_table_id);
-      th.contextMenu.cfg.subscribeToConfigEvent("x", onXChange, this);
-      th.contextMenu.cfg.subscribeToConfigEvent("y", onYChange, this);
-
-      th.contextMenu.clickEvent.subscribe(onContextMenuClick,{field:th,dt:this}, this);
-      YAHOO.util.Event.addListener(th, "click", th.contextMenu.show,null,th.contextMenu);
+      _th_menu.clickEvent.subscribe(onContextMenuClick,{field:th,dt:this}, this);
+      YAHOO.util.Event.addListener(th, "click", _th_menu.show,null,_th_menu);
     }
     //alert(out_txt);
 

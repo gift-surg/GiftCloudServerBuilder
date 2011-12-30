@@ -34,7 +34,12 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class DeleteProjectData extends SecureAction {
     static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeleteProjectData.class);
@@ -46,188 +51,199 @@ public class DeleteProjectData extends SecureAction {
         final XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(projectID, user, false);
         boolean preventProjectDelete=false;
         boolean preventProjectDeleteByP=false;
-        
+                
         if(user.canDelete(project)){
-            for (XnatSubjectdata subject : project.getParticipants_participant()){            
-                if (subject!=null){
-                	boolean preventSubjectDelete=false;
-                	boolean preventSubjectDeleteByP=false;
-                   final  List<XnatSubjectassessordataI> expts = subject.getExperiments_experiment();
-                   
-                   if(!(preventSubjectDelete || preventSubjectDeleteByP) && expts.size()!=subject.getSubjectAssessorCount()){
-                   	preventSubjectDelete=true;
-                   }
-                   
-                    for (XnatSubjectassessordataI exptI : expts){
-                        	if (TurbineUtils.HasPassedParameter("expt_" + exptI.getId().toLowerCase(), data)){
-                                final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
+            
+            final PersistentWorkflowI workflow=WorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME, project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.getDeleteAction(project.getXSIType())));
+    		final EventMetaI ci=workflow.buildEvent();
+            PersistentWorkflowUtils.save(workflow,ci);
+    	    
+            try {
+				for (XnatSubjectdata subject : project.getParticipants_participant()){            
+				    if (subject!=null){
+				    	boolean preventSubjectDelete=false;
+				    	boolean preventSubjectDeleteByP=false;
+				       final  List<XnatSubjectassessordataI> expts = subject.getExperiments_experiment();
+				       
+				       if(!(preventSubjectDelete || preventSubjectDeleteByP) && expts.size()!=subject.getSubjectAssessorCount()){
+				       	preventSubjectDelete=true;
+				       }
+				       
+				        for (XnatSubjectassessordataI exptI : expts){
+				            	if (TurbineUtils.HasPassedParameter("expt_" + exptI.getId().toLowerCase(), data)){
+				                    final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 
-                                if(expt.getProject().equals(project.getId())){
-                                    if(user.canDelete(expt)){
-	                                    if (TurbineUtils.HasPassedParameter("removeFiles", data)){
-	                                    	final List<XFTItem> hash = expt.getItem().getChildrenOfType("xnat:abstractResource");
-	                                        
-	                                        for (XFTItem resource : hash){
-	                                            ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
-	                                            if (om instanceof XnatAbstractresource){
-	                                                XnatAbstractresource resourceA = (XnatAbstractresource)om;
-	                                                resourceA.deleteFromFileSystem(project.getRootArchivePath());
-	                                            }
-	                                        }
-	                                    }
+				                    if(expt.getProject().equals(project.getId())){
+				                        if(user.canDelete(expt)){
+				                            if (TurbineUtils.HasPassedParameter("removeFiles", data)){
+				                            	final List<XFTItem> hash = expt.getItem().getChildrenOfType("xnat:abstractResource");
+				                                
+				                                for (XFTItem resource : hash){
+				                                    ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
+				                                    if (om instanceof XnatAbstractresource){
+				                                        XnatAbstractresource resourceA = (XnatAbstractresource)om;
+				                						
+				                						resourceA.deleteWithBackup(project.getRootArchivePath(), user, ci);
+				                                    }
+				                                }
+				                            }
 
-                                    	DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
-                                    }else{
-                                    	preventSubjectDeleteByP=true;
-                                    }
-                                }else{
-                                	preventSubjectDelete=true;
-                                	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
-                                		if(pp.getProject().equals(project.getId())){
-                                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
-                                		}
-                                	}
-                                }
-                            }else{
-                                if (exptI instanceof XnatImagesessiondata){
-                                    for (XnatImageassessordataI expt: ((XnatImagesessiondata)exptI).getAssessors_assessor()){
-                                        if (TurbineUtils.HasPassedParameter("expt_" + expt.getId().toLowerCase(), data)){
+				                        	DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,ci);
+				                        }else{
+				                        	preventSubjectDeleteByP=true;
+				                        }
+				                    }else{
+				                    	preventSubjectDelete=true;
+				                    	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
+				                    		if(pp.getProject().equals(project.getId())){
+				                    			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user,ci);
+				                    		}
+				                    	}
+				                    }
+				                }else{
+				                    if (exptI instanceof XnatImagesessiondata){
+				                        for (XnatImageassessordataI expt: ((XnatImagesessiondata)exptI).getAssessors_assessor()){
+				                            if (TurbineUtils.HasPassedParameter("expt_" + expt.getId().toLowerCase(), data)){
 
-                                            if(expt.getProject().equals(project.getId())){
-                                                if(user.canDelete((XnatImageassessordata)expt)){
-		                                        	if (TurbineUtils.HasPassedParameter("removeFiles", data)){
-		                                            	final List<XFTItem> hash = ((XnatImageassessordata)expt).getItem().getChildrenOfType("xnat:abstractResource");
-		                                                
-		                                                for (XFTItem resource : hash){
-		                                                    ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
-		                                                    if (om instanceof XnatAbstractresource){
-		                                                        XnatAbstractresource resourceA = (XnatAbstractresource)om;
-		                                                        resourceA.deleteFromFileSystem(project.getRootArchivePath());
-		                                                    }
-		                                                }
-		                                            }
-		                                            DBAction.DeleteItem(((XnatImageassessordata)expt).getItem().getCurrentDBVersion(), user);
-                                                }else{
-                                                	preventSubjectDeleteByP=true;
-                                                }
-                                            }else{
-                                            	preventSubjectDelete=true;
-                                            	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
-                                            		if(pp.getProject().equals(project.getId())){
-                                            			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
-                                            		}
-                                            	}
-                                            }
-                                        }
-                                    }
-                                }else{
-                                	preventSubjectDelete=true;
-                                }
-                            }
-                        
-                    }
-                    
-                    
-                    if (TurbineUtils.HasPassedParameter("subject_" + subject.getId().toLowerCase(), data)){
-                    	if(!subject.getProject().equals(project.getId())){
-                    		for(XnatProjectparticipantI pp : subject.getSharing_share()){
-                        		if(pp.getProject().equals(project.getId())){
-                        			DBAction.DeleteItem(((XnatProjectparticipant)pp).getItem(),user);
-                        		}
-                        	}
-                    	}else{
-                        	if(preventSubjectDelete){
-                        		preventProjectDelete=true;
-                        	}else if(preventSubjectDeleteByP){
-                        		preventProjectDeleteByP=true;
-                        	}else{
-                        		if(user.canDelete(subject)){
-                            		DBAction.DeleteItem(subject.getItem().getCurrentDBVersion(), user);
-                        		}else{
-                        			preventProjectDeleteByP=true;
-                        		}
-                        	}
-                    	}
-                    }
-                }
-            }
+				                                if(expt.getProject().equals(project.getId())){
+				                                    if(user.canDelete((XnatImageassessordata)expt)){
+				                                    	if (TurbineUtils.HasPassedParameter("removeFiles", data)){
+				                                        	final List<XFTItem> hash = ((XnatImageassessordata)expt).getItem().getChildrenOfType("xnat:abstractResource");
+				                                            
+				                                            for (XFTItem resource : hash){
+				                                                ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
+				                                                if (om instanceof XnatAbstractresource){
+				                                                    XnatAbstractresource resourceA = (XnatAbstractresource)om;
+				                                                    resourceA.deleteWithBackup(project.getRootArchivePath(), user, ci);
+				                                                }
+				                                            }
+				                                        }
+				                                        DBAction.DeleteItem(((XnatImageassessordata)expt).getItem().getCurrentDBVersion(), user,ci);
+				                                    }else{
+				                                    	preventSubjectDeleteByP=true;
+				                                    }
+				                                }else{
+				                                	preventSubjectDelete=true;
+				                                	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
+				                                		if(pp.getProject().equals(project.getId())){
+				                                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user,ci);
+				                                		}
+				                                	}
+				                                }
+				                            }
+				                        }
+				                    }else{
+				                    	preventSubjectDelete=true;
+				                    }
+				                }
+				            
+				        }
+				        
+				        
+				        if (TurbineUtils.HasPassedParameter("subject_" + subject.getId().toLowerCase(), data)){
+				        	if(!subject.getProject().equals(project.getId())){
+				        		for(XnatProjectparticipantI pp : subject.getSharing_share()){
+				            		if(pp.getProject().equals(project.getId())){
+				            			DBAction.DeleteItem(((XnatProjectparticipant)pp).getItem(),user,ci);
+				            		}
+				            	}
+				        	}else{
+				            	if(preventSubjectDelete){
+				            		preventProjectDelete=true;
+				            	}else if(preventSubjectDeleteByP){
+				            		preventProjectDeleteByP=true;
+				            	}else{
+				            		if(user.canDelete(subject)){
+				                		DBAction.DeleteItem(subject.getItem().getCurrentDBVersion(), user,ci);
+				            		}else{
+				            			preventProjectDeleteByP=true;
+				            		}
+				            	}
+				        	}
+				        }
+				    }
+				}
 
-    	    user.clearLocalCache();
-    		MaterializedView.DeleteByUser(user);
-    		
-            if (TurbineUtils.HasPassedParameter("delete_project", data) && !preventProjectDelete && !preventProjectDeleteByP){
-                DBAction.DeleteItem(project.getItem().getCurrentDBVersion(), user);
-                
-                //DELETE field mappings
-                ItemSearch is = ItemSearch.GetItemSearch("xdat:field_mapping", user);
-                is.addCriteria("xdat:field_mapping.field_value", project.getId());
-                Iterator items = is.exec(false).iterator();
-                while (items.hasNext())
-                {
-                    XFTItem item = (XFTItem)items.next();
-                    DBAction.DeleteItem(item, user);
-                }
-                
-                //DELETE user.groupId
-                CriteriaCollection col = new CriteriaCollection("AND");
-                col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," LIKE ", project.getId() + "\\_%");
-                Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
-                
-                while(groups.hasNext()){
-                    XdatUserGroupid g = (XdatUserGroupid)groups.next();
-                    try {
-                        DBAction.DeleteItem(g.getItem(), user);
-                    } catch (Throwable e) {
-                        logger.error("",e);
-                    }
-                }
-                
-                //DELETE user groups
-                col = new CriteriaCollection("AND");
-                col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," LIKE ", project.getId() + "\\_%");
-                groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
-                
-                while(groups.hasNext()){
-                    XdatUsergroup g = (XdatUsergroup)groups.next();
-                    try {
-                        DBAction.DeleteItem(g.getItem(), user);
-                    } catch (Throwable e) {
-                        logger.error("",e);
-                    }
-                }
-                
-                //DELETE storedSearches
-                Iterator bundles=project.getBundles().iterator();
-                while (bundles.hasNext())
-                {
-                    ItemI bundle = (ItemI)bundles.next();
-                    try {
-                        DBAction.DeleteItem(bundle.getItem(), user);
-                    } catch (Throwable e) {
-                        logger.error("",e);
-                    }
-                }
-                
-                ArcProject p =project.getArcSpecification();
-                try {
-                    if (p!=null)DBAction.DeleteItem(p.getItem(), user);
-                } catch (Throwable e) {
-                    logger.error("",e);
-                }
-                
-                data.setMessage(project.getId() + " Project Deleted.");
+				user.clearLocalCache();
+				MaterializedView.DeleteByUser(user);
+				
+				if (TurbineUtils.HasPassedParameter("delete_project", data) && !preventProjectDelete && !preventProjectDeleteByP){
+				    DBAction.DeleteItem(project.getItem().getCurrentDBVersion(), user,ci);
+				    
+				    //DELETE field mappings
+				    ItemSearch is = ItemSearch.GetItemSearch("xdat:field_mapping", user);
+				    is.addCriteria("xdat:field_mapping.field_value", project.getId());
+				    Iterator items = is.exec(false).iterator();
+				    while (items.hasNext())
+				    {
+				        XFTItem item = (XFTItem)items.next();
+				        DBAction.DeleteItem(item, user,ci);
+				    }
+				    
+				    //DELETE user.groupId
+				    CriteriaCollection col = new CriteriaCollection("AND");
+				    col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," LIKE ", project.getId() + "\\_%");
+				    Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
+				    
+				    while(groups.hasNext()){
+				        XdatUserGroupid g = (XdatUserGroupid)groups.next();
+				        try {
+				            DBAction.DeleteItem(g.getItem(), user,ci);
+				        } catch (Throwable e) {
+				            logger.error("",e);
+				        }
+				    }
+				    
+				    //DELETE user groups
+				    col = new CriteriaCollection("AND");
+				    col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," LIKE ", project.getId() + "\\_%");
+				    groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
+				    
+				    while(groups.hasNext()){
+				        XdatUsergroup g = (XdatUsergroup)groups.next();
+				        try {
+				            DBAction.DeleteItem(g.getItem(), user,ci);
+				        } catch (Throwable e) {
+				            logger.error("",e);
+				        }
+				    }
+				    
+				    //DELETE storedSearches
+				    Iterator bundles=project.getBundles().iterator();
+				    while (bundles.hasNext())
+				    {
+				        ItemI bundle = (ItemI)bundles.next();
+				        try {
+				            DBAction.DeleteItem(bundle.getItem(), user,ci);
+				        } catch (Throwable e) {
+				            logger.error("",e);
+				        }
+				    }
+				    
+				    ArcProject p =project.getArcSpecification();
+				    try {
+				        if (p!=null)DBAction.DeleteItem(p.getItem(), user,ci);
+				    } catch (Throwable e) {
+				        logger.error("",e);
+				    }
+				    
+				    data.setMessage(project.getId() + " Project Deleted.");
 
-                data.setScreenTemplate("Index.vm");
-            }else if(preventProjectDeleteByP && TurbineUtils.HasPassedParameter("delete_project", data)){
-                data.setMessage(project.getId() + " Failed to delete subject or experiments owned by other projects.  Please modify the ownership of those items and retry the project deletion.");
-                this.redirectToReportScreen(project, data);
-            }else if(preventProjectDelete && TurbineUtils.HasPassedParameter("delete_project", data)){
-            	 data.setMessage(project.getId() + " Failed to delete subject or experiments owned by other projects.  Please modify the ownership of those items and retry the project deletion.");
-                 this.redirectToReportScreen(project, data);
-            }else{
-                data.setMessage(project.getId() + " Items Deleted.");
-                this.redirectToReportScreen(project, data);
-            }
+				    data.setScreenTemplate("Index.vm");
+				}else if(preventProjectDeleteByP && TurbineUtils.HasPassedParameter("delete_project", data)){
+				    data.setMessage(project.getId() + " Failed to delete subject or experiments owned by other projects.  Please modify the ownership of those items and retry the project deletion.");
+				    this.redirectToReportScreen(project, data);
+				}else if(preventProjectDelete && TurbineUtils.HasPassedParameter("delete_project", data)){
+					 data.setMessage(project.getId() + " Failed to delete subject or experiments owned by other projects.  Please modify the ownership of those items and retry the project deletion.");
+				     this.redirectToReportScreen(project, data);
+				}else{
+				    data.setMessage(project.getId() + " Items Deleted.");
+				    this.redirectToReportScreen(project, data);
+				}
+			} catch (Exception e) {
+				logger.error("",e);
+				
+			}
         }else{
 
             data.setMessage(project.getId() + " Invalid permissions.");

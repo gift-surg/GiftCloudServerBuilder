@@ -32,9 +32,14 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.email.EmailUtils;
 import org.nrg.xft.email.EmailerI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ProcessAccessRequest extends SecureAction {
     static Logger logger = Logger.getLogger(ProcessAccessRequest.class);
@@ -49,72 +54,83 @@ public class ProcessAccessRequest extends SecureAction {
         	error(new InvalidArgumentException(p),data);
         }
         
+        
         XDATUser user = TurbineUtils.getUser(data);
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
-        if (other!=null && project !=null){
-            XDATUser otherU = new XDATUser(other);
-            
-            for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
-                if (entry.getValue().getTag().equals(project.getId())){
-                    for(XdatUserGroupid map:otherU.getGroups_groupid()){
-                        if (map.getGroupid().equals(entry.getValue().getId())){   
-                            DBAction.DeleteItem(map.getItem(), user);
-                        }
-                    }
-                }
-            }
-            
-            ProjectAccessRequest par = ProjectAccessRequest.RequestPARByUserProject(otherU.getXdatUserId(),project.getId(), user);
-            par.setApproved(false);
-            par.save(user);
-            
-            context.put("user",user);
-            context.put("server",TurbineUtils.GetFullServerPath());
-            context.put("system",TurbineUtils.GetSystemName());
-            context.put("admin_email",AdminUtils.getAdminEmailId());
-            context.put("projectOM",project);
-            StringWriter sw = new StringWriter();
-            Template template =Velocity.getTemplate("/screens/RequestProjectAccessDenialEmail.vm");
-            template.merge(context,sw);
-            String message= sw.toString();
+        final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.REJECT_PROJECT_REQUEST));
+    	EventMetaI c=wrk.buildEvent();
+    	WorkflowUtils.save(wrk, c);
+        
+		if (other!=null && project !=null){
+		    XDATUser otherU = new XDATUser(other);
+	        try {
+			    
+			    for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
+			        if (entry.getValue().getTag().equals(project.getId())){
+			            for(XdatUserGroupid map:otherU.getGroups_groupid()){
+			                if (map.getGroupid().equals(entry.getValue().getId())){   
+			                    DBAction.DeleteItem(map.getItem(), user,c);
+			                }
+			            }
+			        }
+			    }
+			    
+			    ProjectAccessRequest par = ProjectAccessRequest.RequestPARByUserProject(otherU.getXdatUserId(),project.getId(), user);
+			    par.setApproved(false);
+			    par.save(user);
+				
+		        WorkflowUtils.complete(wrk, c);
+			} catch (Exception e) {
+				WorkflowUtils.fail(wrk, c);
+			}
+			    
+		    context.put("user",user);
+		    context.put("server",TurbineUtils.GetFullServerPath());
+		    context.put("system",TurbineUtils.GetSystemName());
+		    context.put("admin_email",AdminUtils.getAdminEmailId());
+		    context.put("projectOM",project);
+		    StringWriter sw = new StringWriter();
+		    Template template =Velocity.getTemplate("/screens/RequestProjectAccessDenialEmail.vm");
+		    template.merge(context,sw);
+		    String message= sw.toString();
 
-            ArrayList<InternetAddress> to = new ArrayList();
-            InternetAddress ia = new InternetAddress();
-            ia.setAddress(otherU.getEmail());
-            to.add(ia);
+		    ArrayList<InternetAddress> to = new ArrayList();
+		    InternetAddress ia = new InternetAddress();
+		    ia.setAddress(otherU.getEmail());
+		    to.add(ia);
 
-            ArrayList<InternetAddress> bcc = new ArrayList();
-            if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
-                ia = new InternetAddress();
-                ia.setAddress(AdminUtils.getAdminEmailId());
-                bcc.add(ia);
-            }
-            
-            ArrayList<InternetAddress> cc = new ArrayList();
-            ia = new InternetAddress();
-            ia.setAddress(user.getEmail());
-            cc.add(ia);
-            
-            String from = AdminUtils.getAdminEmailId();
-            String subject = TurbineUtils.GetSystemName() + " Access Request for " + project.getName() + " Denied";
+		    ArrayList<InternetAddress> bcc = new ArrayList();
+		    if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
+		        ia = new InternetAddress();
+		        ia.setAddress(AdminUtils.getAdminEmailId());
+		        bcc.add(ia);
+		    }
+		    
+		    ArrayList<InternetAddress> cc = new ArrayList();
+		    ia = new InternetAddress();
+		    ia.setAddress(user.getEmail());
+		    cc.add(ia);
+		    
+		    String from = AdminUtils.getAdminEmailId();
+		    String subject = TurbineUtils.GetSystemName() + " Access Request for " + project.getName() + " Denied";
 
-            try {
-                EmailerI sm = EmailUtils.getEmailer();
-                sm.setFrom(from);
-                sm.setTo(to);
-                sm.setCc(cc);
-                sm.setBcc(bcc);
-                sm.setSubject(subject);
-                sm.setMsg(message);
-                
-                sm.send();
-            } catch (Exception e) {
-                logger.error("Unable to send mail",e);
-                System.out.println("Error sending Email");
-                throw e;
-            }
-        }
+		    try {
+		        EmailerI sm = EmailUtils.getEmailer();
+		        sm.setFrom(from);
+		        sm.setTo(to);
+		        sm.setCc(cc);
+		        sm.setBcc(bcc);
+		        sm.setSubject(subject);
+		        sm.setMsg(message);
+		        
+		        sm.send();
+		    } catch (Exception e) {
+		        logger.error("Unable to send mail",e);
+		        System.out.println("Error sending Email");
+		        throw e;
+		    }
+		}
 
         //data.setScreenTemplate("XDATScreen_manage_xnat_projectData.vm");
         //data.setScreenTemplate("/xnat_projectData/xnat_projectData_summary_management.vm");        
@@ -147,43 +163,38 @@ public class ProcessAccessRequest extends SecureAction {
         XDATUser user = TurbineUtils.getUser(data);
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
-        if (other!=null && project !=null){
-            XDATUser otherU = new XDATUser(other);
-                        
-            boolean deletedOldPermission = false;
-            
-            for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
-                if (entry.getValue().getTag().equals(project.getId())){
-                    for(XdatUserGroupid map:otherU.getGroups_groupid()){
-                        if (map.getGroupid().equals(entry.getValue().getId())){   
-                            DBAction.DeleteItem(map.getItem(), user);
-                            deletedOldPermission=true;
-                        }
-                    }
-                }
-            }
-            
-            project.addGroupMember(project.getId() + "_" + access_level.toLowerCase(), otherU, user);
-            
-            ProjectAccessRequest par = ProjectAccessRequest.RequestPARByUserProject(otherU.getXdatUserId(),project.getId(), user);
-            par.setApproved(true);
-            par.save(user);
-            
 
-	        
-	        try {
-				WrkWorkflowdata workflow = new WrkWorkflowdata((UserI)user);
-				workflow.setDataType("xnat:projectData");
-				workflow.setExternalid(project.getId());
-				workflow.setId(project.getId());
-				workflow.setPipelineName("New " + par.getLevel() + ": " + otherU.getFirstname() + " " + otherU.getLastname());
-				workflow.setStatus("Complete");
-				workflow.setLaunchTime(Calendar.getInstance().getTime());
-				workflow.save(user, false, false);
-			} catch (Throwable e) {
-				logger.error("",e);
+        
+        final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.APPROVE_PROJECT_REQUEST));
+    	EventMetaI c=wrk.buildEvent();
+    	WorkflowUtils.save(wrk, c);
+        
+        if (other!=null && project !=null){
+            XDATUser otherU;
+			try {
+				otherU = new XDATUser(other);
+				
+				for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
+				    if (entry.getValue().getTag().equals(project.getId())){
+				        for(XdatUserGroupid map:otherU.getGroups_groupid()){
+				            if (map.getGroupid().equals(entry.getValue().getId())){   
+				                DBAction.DeleteItem(map.getItem(), user,c);
+				            }
+				        }
+				    }
+				}
+				
+				project.addGroupMember(project.getId() + "_" + access_level.toLowerCase(), otherU, user,c);
+				
+				ProjectAccessRequest par = ProjectAccessRequest.RequestPARByUserProject(otherU.getXdatUserId(),project.getId(), user);
+				par.setApproved(true);
+				par.save(user);
+				WorkflowUtils.complete(wrk, c);
+			} catch (Exception e) {
+				WorkflowUtils.fail(wrk, c);
+				throw e;
 			}
-            
+                        
             context.put("user",user);
             context.put("server",TurbineUtils.GetFullServerPath());
             context.put("process","Transfer to the archive.");

@@ -1,6 +1,7 @@
 package org.nrg.xnat.helpers.move;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import org.nrg.action.ActionException;
@@ -10,6 +11,8 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xnat.helpers.file.StoredFile;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
 import org.nrg.xnat.helpers.resource.direct.DirectResourceModifierBuilder;
@@ -58,13 +61,15 @@ public class FileMover {
 		this.params=params;
 	}
 	
-	public Boolean call(org.nrg.xnat.helpers.uri.URIManager.UserCacheURI src,ResourceURII dest) throws Exception {
+	public Boolean call(org.nrg.xnat.helpers.uri.URIManager.UserCacheURI src,ResourceURII dest,EventMetaI ci) throws Exception {
 		File srcF;		
 		if(src.getProps().containsKey(UriParserUtils._REMAINDER)){
 			srcF=UserUtils.getUserCacheFile(user, (String)src.getProps().get(URIManager.XNAME), (String)src.getProps().get(UriParserUtils._REMAINDER));
 		}else{
 			srcF=UserUtils.getUserCacheFile(user, (String)src.getProps().get(URIManager.XNAME));
 		}
+		
+		
 		
 		final String label = dest.getResourceLabel();
 		
@@ -75,20 +80,18 @@ public class FileMover {
 		
 		final String type=(String)dest.getProps().get(URIManager.TYPE);
 						
-		this.buildResourceModifier(dest,overwrite,type).addFile(
+		this.buildResourceModifier(dest,overwrite,type,ci).addFile(
 				(List<? extends FileWriterWrapperI>)Lists.newArrayList(new StoredFile(srcF,overwrite)),
 				label,
 				type, 
 				filepath, 
-				this.buildResourceInfo(),
+				this.buildResourceInfo(ci),
 				overwrite);
 		
 		return Boolean.TRUE;
 	}
 	
-    public XnatResourceInfo buildResourceInfo(){
-		XnatResourceInfo info = new XnatResourceInfo();
-        		
+    public XnatResourceInfo buildResourceInfo(EventMetaI ci){        		
 		final String description;
 	    if(!CollectionUtils.isEmpty(params.get("description"))){
 	    	description=(String)(this.params.get("description").get(0));
@@ -117,10 +120,11 @@ public class FileMover {
 	    	tags=null;
 	    }
         
-		return XnatResourceInfo.buildResourceInfo(description, format, content, tags);
+	    Date now=EventUtils.getEventDate(ci, false);
+		return XnatResourceInfo.buildResourceInfo(description, format, content, tags,user,now,now,EventUtils.getEventId(ci));
 	}
 
-	protected ResourceModifierA buildResourceModifier(final ResourceURII arcURI,final boolean overwrite, final String type) throws ActionException{
+	protected ResourceModifierA buildResourceModifier(final ResourceURII arcURI,final boolean overwrite, final String type, final EventMetaI ci) throws ActionException{
 		XnatImagesessiondata assessed=null;
 			
 		
@@ -161,7 +165,7 @@ public class FileMover {
 		}
 		
 		try {
-			return builder.buildResourceModifier(overwrite,user);
+			return builder.buildResourceModifier(overwrite,user,ci);
 		} catch (Exception e) {
 			throw new ServerException(e);
 		}

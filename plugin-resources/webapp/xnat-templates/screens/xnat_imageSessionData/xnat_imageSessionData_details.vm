@@ -44,9 +44,26 @@ function summaryIndexChanged(){
    var activeIndex=this.get("activeIndex");
    YAHOO.util.Cookie.set("${project.getId()}.summary.index",activeIndex);
 }
+function toggleLI(_name){
+	var elements = document.getElementsByName("li_"+_name);
+	for(var trI=0;trI<elements.length;trI++){
+		if(elements[trI].style.display=="none"){
+			elements[trI].style.display="block";
+		}else{
+			elements[trI].style.display="none";
+		}
+	}	
+}
    
 function summaryTabManagerInit(){
     window.summaryTabView = new YAHOO.widget.TabView('exptSummary');   
+	
+window.summaryTabView.addTab( new YAHOO.widget.Tab({   
+    label: 'History',   
+    dataSrc: serverRoot+'/REST/experiments/$om.getId()?format=html&requested_screen=WorkflowHistorySummary&includeFiles=false',   
+    cacheData: false
+}));   
+
     window.expt_summary_module = new YAHOO.widget.Module("expt_summary_module",{visible:false,zIndex:5});
     
     window.expt_summary_module.show(); 		    

@@ -1,9 +1,12 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.files;
 
+import java.util.Collection;
 import java.util.Hashtable;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -12,10 +15,16 @@ import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.restlet.resources.ScanList;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -114,19 +123,44 @@ public class CatalogResourceList extends XNATTemplate {
 			    		}
 			    	}
 			    }
-				
-					this.insertCatalag(catResource);
-					
-				
-				this.returnSuccessfulCreateFromList(catResource.getXnatAbstractresourceId() + "");
-				}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only ResourceCatalog documents can be PUT to this address.");
+			    
+			    PersistentWorkflowI wrk=PersistentWorkflowUtils.getWorkflowByEventId(user,getEventId());
+				if(wrk==null && "SNAPSHOTS".equals(catResource.getLabel())){
+					if(getSecurityItem() instanceof XnatExperimentdata){
+						Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user,((ArchivableItem)getSecurityItem()).getId());
+						if(wrks!=null && wrks.size()==1){
+							wrk=(WrkWorkflowdata)CollectionUtils.get(wrks, 0);
+							if(!"xnat_tools/AutoRun.xml".equals(wrk.getPipelineName())){
+								wrk=null;
+							}
+						}
+					}
 				}
-			} catch (Exception e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-	            logger.error("",e);
+
+				
+				boolean isNew=false;
+				if(wrk==null){
+					isNew=true;
+					wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, getSecurityItem().getItem(), newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.CREATE_RESOURCE));
+				}
+
+				EventMetaI ci=wrk.buildEvent();
+				
+				this.insertCatalag(catResource,ci);
+
+				if(isNew){
+					WorkflowUtils.complete(wrk, ci);
+				}
+			
+				this.returnSuccessfulCreateFromList(catResource.getXnatAbstractresourceId() + "");
+			}else{
+				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only ResourceCatalog documents can be PUT to this address.");
 			}
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+            logger.error("",e);
 		}
+	}
 
 
 	@Override

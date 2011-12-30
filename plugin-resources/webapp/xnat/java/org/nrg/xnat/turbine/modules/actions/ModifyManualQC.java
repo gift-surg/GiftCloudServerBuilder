@@ -1,8 +1,7 @@
 package org.nrg.xnat.turbine.modules.actions;
 
-import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 
-public class ModifyManualQC extends ModifyItem {
+public class ModifyManualQC extends ModifyImageAssessorData {
 
 	@Override
 	public boolean allowDataDeletion() {

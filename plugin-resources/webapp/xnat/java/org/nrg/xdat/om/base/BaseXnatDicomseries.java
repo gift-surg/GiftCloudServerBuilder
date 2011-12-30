@@ -15,6 +15,8 @@ import org.nrg.xdat.om.XnatDicomseriesImage;
 import org.nrg.xdat.om.base.auto.AutoXnatDicomseries;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
@@ -158,10 +160,10 @@ public class BaseXnatDicomseries extends AutoXnatDicomseries {
             return this.getDescription();
     }
     
-    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception{
+    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user,EventMetaI ci) throws IOException,Exception{
     	for(XnatDicomseriesImageI img : this.getImageset_image()){
-    		((XnatDicomseriesImage)img).moveTo(newSessionDir, existingSessionDir, rootPath, user);
+    		((XnatDicomseriesImage)img).moveTo(newSessionDir, existingSessionDir, rootPath, user,ci);
     	}
-    	this.save(user, true, false);
+    	this.save(user, true, false,ci);
     }
 }

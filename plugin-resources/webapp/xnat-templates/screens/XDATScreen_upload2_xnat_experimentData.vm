@@ -95,7 +95,10 @@ Image files should be zipped (.zip or .tar.gz) and uploaded using the form below
 	<TR>
 		<TD colspan="3" align="right">&nbsp;</TD>
 	</TR>
-	
+		#auditBoxes("3" "" "" "Uploaded additional files")
+	<TR>
+		<TD colspan="3" align="right">&nbsp;</TD>
+	</TR>
 	<TR>
 		<TD colspan="3" align="right"><input type="submit" name="eventSubmit_doPerform" value="Upload"/></TD>
 	</TR>

@@ -6,7 +6,6 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -46,6 +45,11 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventDetails;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -60,6 +64,7 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 /**
  * @author XDAT
@@ -430,7 +435,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	return generator.generateIdentifier();
     }
     
-    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user) throws Exception{
+    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
     		if(!user.canEdit(this)){
@@ -484,16 +489,16 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         				//don't attempt to move sessions which are outside of the Session Directory.
         				throw new Exception("Non-standard file location for file(s):" + uri);
         			}
-        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,ci);
     			}else{
-    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
+    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,ci);
     			}
     		}
     		
     		XFTItem current=this.getCurrentDBVersion(false);
     		current.setProperty("project", newProject.getId());
     		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false); 
+    		current.save(user, true, false,ci); 
     		
     		this.setProject(newProject.getId());
     		this.setLabel(newLabel);
@@ -555,7 +560,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	return null;
     }
     
-    public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles){
+    public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles,EventMetaI c){
     	BaseXnatExperimentdata expt=this;
     	if(this.getItem().getUser()!=null){
     		expt=new XnatExperimentdata(this.getCurrentDBVersion(true));
@@ -582,7 +587,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -608,16 +613,13 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				}
 							
 				if(removeFiles){
-					this.deleteFiles();
+					this.deleteFiles(user,c);
 				}
-				
-				String id=expt.getId();
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,c);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
-				deleteWorkflowEntries(id, user);
 				
 			} catch (SQLException e) {
 				logger.error("",e);
@@ -628,22 +630,6 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			}
 		}
     	return null;
-    }
-    
-    public void deleteWorkflowEntries(String id, XDATUser user){
-    	try {
-			ArrayList<WrkWorkflowdata> workflows = WrkWorkflowdata.getWrkWorkflowdatasByField("wrk:workFlowData.ID", id, user, false);
-			
-			for (WrkWorkflowdata wrk : workflows){
-			    try {
-					DBAction.DeleteItem(wrk.getItem(),user);
-				} catch (Exception e) {
-					logger.error("",e);
-				}
-			}
-		} catch (Throwable e) {
-			logger.error("",e);
-		}
     }
     
     /**
@@ -668,14 +654,14 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     }
 
     
-    public void deleteFiles() throws IOException{
+    public void deleteFiles(UserI u, EventMetaI ci) throws Exception{
+    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
+    		((XnatAbstractresource)abstRes).deleteWithBackup(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()), u,ci);
+    	}
+    	
     	File dir=this.getSessionDir();
     	if(dir!=null){
     		FileUtils.MoveToCache(dir);
-    	}
-    	
-    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
     	}
     }
     
@@ -888,4 +874,35 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         return rtn;
 	}
 
+	public static void SaveSharedProject(XnatExperimentdataShare pp, XnatExperimentdata expt,XDATUser user,final EventDetails event) throws Exception{
+		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, expt.getItem(),event);
+		EventMetaI c=wrk.buildEvent();
+		PersistentWorkflowUtils.save(wrk, c);
+		try {
+			((XnatExperimentdataShare)pp).save(user,false,false,c);
+			PersistentWorkflowUtils.complete(wrk, c);
+		} catch (Exception e) {
+			logger.error("",e);
+			PersistentWorkflowUtils.fail(wrk, c);
+			throw e;
+		}
+	}
+	
+	public static EventMetaI ChangePrimaryProject(XDATUser user, XnatExperimentdata assessor, XnatProjectdata newProject, String newLabel, final EventDetails event) throws Exception{
+		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, assessor.getXSIType(), assessor.getId(),assessor.getProject(),event);
+		EventMetaI c=wrk.buildEvent();
+		PersistentWorkflowUtils.save(wrk, c);
+
+		try {
+			assessor.moveToProject(newProject,newLabel,user,c);
+
+			PersistentWorkflowUtils.complete(wrk, c);
+		} catch (Exception e) {
+			logger.error("",e);
+			PersistentWorkflowUtils.fail(wrk,c);
+			throw e;
+		}
+		
+		return c;
+	}
 }

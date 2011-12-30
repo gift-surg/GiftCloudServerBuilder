@@ -10,22 +10,28 @@ import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.BaseXnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.xml.sax.SAXParseException;
 
@@ -112,7 +118,7 @@ public class SubjectResource extends ItemResource {
 										}
 										
 										((XnatProjectparticipant)pp).setLabel(newLabel);
-										((XnatProjectparticipant)pp).save(user,false,false);
+										BaseXnatSubjectdata.SaveSharedProject((XnatProjectparticipant)pp, sub, user,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.CONFIGURED_PROJECT_SHARING));
 										
 										if(!this.isQueryVariableTrue(PRIMARY)){
 											this.returnDefaultRepresentation();
@@ -137,10 +143,10 @@ public class SubjectResource extends ItemResource {
 									return;
 								}
 								
-								sub.moveToProject(newProject,newLabel,user); 
+								EventMetaI c=BaseXnatSubjectdata.ChangePrimaryProject(user, sub, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.MODIFY_PROJECT));
 								
 								if(matched!=null){
-									DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", matched.getItem(), user);
+									DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", matched.getItem(), user,c);
 									sub.removeSharing_share(index);
 								}
 							}else{
@@ -157,7 +163,7 @@ public class SubjectResource extends ItemResource {
 											pp.setProject(newProject.getId());
 											if(newLabel!=null)pp.setLabel(newLabel);
 											pp.setSubjectId(sub.getId());
-											pp.save(user, false, false);
+											BaseXnatSubjectdata.SaveSharedProject(pp, sub, user, newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.CONFIGURED_PROJECT_SHARING));
 										}else{
 											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in the " + newProject.getId() + " project.");
 											return;
@@ -236,6 +242,7 @@ public class SubjectResource extends ItemResource {
 					}
 					}
 					
+					PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, sub.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(sub.getXSIType(), (existing==null))));
 					if(existing==null){
 						if(!user.canCreate(sub)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in this project.");
@@ -245,6 +252,8 @@ public class SubjectResource extends ItemResource {
 						if(sub.getId()==null || sub.getId().equals("")){
 							sub.setId(XnatSubjectdata.CreateNewID());
 						}
+						
+						
 					}else{
 						if(!existing.getProject().equals(sub.getProject())){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through seperate URI.");
@@ -278,21 +287,21 @@ public class SubjectResource extends ItemResource {
 		            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
 		            }
+		            
+		            EventMetaI c=wrk.buildEvent();
 											
-					if(sub.save(user,false,this.isQueryVariableTrue("allowDataDeletion"))){
-						user.clearLocalCache();
-					MaterializedView.DeleteByUser(user);
+					try {
+						if(sub.save(user,false,this.isQueryVariableTrue("allowDataDeletion"),c)){
+							WorkflowUtils.complete(wrk, c);
+							user.clearLocalCache();
+							MaterializedView.DeleteByUser(user);
+						}
+					} catch (Exception e) {
+						WorkflowUtils.fail(wrk, c);
+						throw e;
 					}
 
-					if(this.getQueryVariable("activate")!=null && this.getQueryVariable("activate").equals("true")){
-						if(user.canActivate(sub.getItem()))sub.activate(user);
-						else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-					}
-
-					if(this.getQueryVariable("quarantine")!=null && this.getQueryVariable("quarantine").equals("true")){
-						if(user.canActivate(sub.getItem()))sub.quarantine(user);
-						else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-					}
+					postSaveManageStatus(sub);
 					
 					this.returnString(sub.getId(),(existing==null)?Status.SUCCESS_CREATED:Status.SUCCESS_OK);
 				}
@@ -317,40 +326,64 @@ public class SubjectResource extends ItemResource {
 
 	@Override
 	public void handleDelete(){
-			if(sub==null&& subID!=null){
-				sub=XnatSubjectdata.getXnatSubjectdatasById(subID, user, false);
-				
-				if(sub==null && proj!=null){
-					sub=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);
-				}
+		if(sub==null&& subID!=null){
+			sub=XnatSubjectdata.getXnatSubjectdatasById(subID, user, false);
+
+			if(sub==null && proj!=null){
+				sub=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);
 			}
-			if(sub==null){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified subject.");
+		}
+		if(sub==null){
+			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified subject.");
+			return;
+		}
+
+		XnatProjectdata newProject=null;
+
+		if(filepath!=null && !filepath.equals("")){
+			if(filepath.startsWith("projects/")){
+				String newProjectS= filepath.substring(9);
+				newProject=XnatProjectdata.getXnatProjectdatasById(newProjectS, user, false);
+				if(newProject==null){
+					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify project: " + newProjectS);
 					return;
 				}
-			
-			XnatProjectdata newProject=null;
-				                
-			if(filepath!=null && !filepath.equals("")){
-				if(filepath.startsWith("projects/")){
-					String newProjectS= filepath.substring(9);
-					newProject=XnatProjectdata.getXnatProjectdatasById(newProjectS, user, false);
-					if(newProject==null){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify project: " + newProjectS);
-						return;
-				                }
-				}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-					return;
-				            }
-			}else if(!sub.getProject().equals(proj.getId())){
-				newProject=proj;
-				        }
-				        
-			String msg=sub.delete((newProject!=null)?newProject:proj, user, this.isQueryVariableTrue("removeFiles"));
-			if(msg!=null){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);
+			}else{
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 				return;
+			}
+		}else if(!sub.getProject().equals(proj.getId())){
+			newProject=proj;
+		}
+
+		PersistentWorkflowI wrk;
+		try {
+			wrk = WorkflowUtils.buildOpenWorkflow(user, sub.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.getDeleteAction(sub.getXSIType())));
+			EventMetaI c=wrk.buildEvent();
+			
+			try {
+				String msg=sub.delete((newProject!=null)?newProject:proj, user, this.isQueryVariableTrue("removeFiles"),c);
+				if(msg!=null){
+					WorkflowUtils.fail(wrk, c);
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);
+					return;
+				}else{
+					WorkflowUtils.complete(wrk, c);
+				}
+			} catch (Exception e) {
+				try {
+					WorkflowUtils.fail(wrk, c);
+				} catch (Exception e1) {
+					logger.error("",e1);
+				}
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return;
+			}
+		} catch (EventRequirementAbsent e1) {
+			logger.error("",e1);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,e1.getMessage());
+			return;
 		}
 	}
 
@@ -376,15 +409,7 @@ public class SubjectResource extends ItemResource {
 				filepath=filepath.substring(1);
 			}
 			if(filepath!=null && filepath.equals("status")){
-				try {
-					if(sub.needsActivation()){
-					    return new StringRepresentation("quarantine",mt);
-		}else{
-					    return new StringRepresentation("active",mt);
-					}
-				} catch (Exception e) {
-				    return new StringRepresentation("active",mt);
-				}
+				return returnStatus(sub,mt);
 			}else if(filepath!=null && filepath.startsWith("projects")){
 				XFTTable t = new XFTTable();
 				ArrayList al = new ArrayList();

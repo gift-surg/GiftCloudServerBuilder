@@ -21,6 +21,8 @@ import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 
 public class ManageProjectPermissions extends SecureAction {
@@ -33,6 +35,8 @@ public class ManageProjectPermissions extends SecureAction {
         UserI user = TurbineUtils.getUser(data);
         
         XFTTable users = XFTTable.Execute("SELECT login, xdat_user_id FROM xdat_user ORDER BY lastname || ', ' || firstname;", project.getDBName(), null);
+        
+        EventMetaI ci=EventUtils.ADMIN_EVENT(user);
         
         users.resetRowCursor();
         while (users.hasMoreRows())
@@ -122,7 +126,7 @@ public class ManageProjectPermissions extends SecureAction {
                             fm.setProperty("xdat_field_mapping_set_xdat_field_mapping_set_id", fieldMappingSetID);
 
                             fm.setComparisonType("equals");
-                            fm.save(user, false, false, true, false);
+                            fm.save(user, false, false, true, false,ci);
                         }else if (fieldMappingSetID!=null){
                             XdatFieldMapping fm = new XdatFieldMapping((UserI)user);
                             
@@ -154,7 +158,7 @@ public class ManageProjectPermissions extends SecureAction {
                                 fm.setActiveElement(new Integer(1));
                             fm.setComparisonType("equals");
                             fm.setProperty("xdat_field_mapping_set_xdat_field_mapping_set_id", fieldMappingSetID);
-                            fm.save(user, false, false, true, false);
+                            fm.save(user, false, false, true, false,ci);
                         }else{
                             XdatElementAccess ea = new XdatElementAccess((UserI)user);
                             XdatFieldMappingSet fms = new XdatFieldMappingSet((UserI)user);
@@ -194,7 +198,7 @@ public class ManageProjectPermissions extends SecureAction {
                             fm.setComparisonType("equals");
                             fms.setAllow(fm);
                             
-                            ea.save(user, false, false, true, false);
+                            ea.save(user, false, false, true, false,ci);
                         }
                     }
                     

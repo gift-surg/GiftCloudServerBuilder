@@ -1,7 +1,6 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -9,23 +8,20 @@ import java.util.List;
 
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.XdatStoredSearch;
-import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.search.DisplayCriteria;
 import org.nrg.xdat.search.DisplaySearch;
-import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.ViewManager;
-import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.restlet.Context;
@@ -63,30 +59,30 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 	@Override
 	public void handlePost() {
-	        XFTItem item = null;
-	        try {
+		XFTItem item = null;
+		try {
 			item=this.loadItem("xnat:projectData",true);
-			
-				if(item==null){
-					String xsiType=this.getQueryVariable("xsiType");
-					if(xsiType!=null){
-						item=XFTItem.NewItem(xsiType, user);
-					}
+
+			if(item==null){
+				String xsiType=this.getQueryVariable("xsiType");
+				if(xsiType!=null){
+					item=XFTItem.NewItem(xsiType, user);
 				}
-				
-				if(item==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
-					return;
-				}
-			
-				boolean allowDataDeletion =false;
-				if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equalsIgnoreCase("true")){
-					allowDataDeletion =true;
-				}
-				
-				if(item.instanceOf("xnat:projectData")){
-						XnatProjectdata project = new XnatProjectdata(item);
-				
+			}
+
+			if(item==null){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
+				return;
+			}
+
+			boolean allowDataDeletion =false;
+			if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equalsIgnoreCase("true")){
+				allowDataDeletion =true;
+			}
+
+			if(item.instanceOf("xnat:projectData")){
+				XnatProjectdata project = new XnatProjectdata(item);
+
 				if(StringUtils.IsEmpty(project.getId())){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Requires XNAT ProjectData ID");
 					return;
@@ -96,62 +92,22 @@ public class ProjectListResource extends QueryOrganizerResource {
 					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Invalid character in project ID.");
 					return;
 				}
-				
+
 				if(item.getCurrentDBVersion()==null){
-					
-						try {
-						project.initNewProject(user,allowDataDeletion,false);
-						} catch (Exception e) {
-							e.printStackTrace();
-							this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-						}
-						
-					final ValidationResults vr = project.validate();
-		            
-		            if (vr != null && !vr.isValid())
-		            {
-		            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
-						return;
-		            }
-					
-						project.save(user,true,false);
-						item =project.getItem().getCurrentDBVersion(false);
-						
-						XnatProjectdata postSave = new XnatProjectdata(item);
-		                postSave.getItem().setUser(user);
 
-		                postSave.initGroups();
-		                
-		                //postSave.initBundles(user);
-		                
-		                String accessibility=getQueryVariable("accessibility");
-		                if (accessibility==null){
-		                    accessibility="protected";
-		                }
-		                
-		                if (!accessibility.equals("private"))
-		                    project.initAccessibility(accessibility, true);
-		                
-		                user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
+					this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
+				}else{
+					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
 
-		                postSave.initArcProject(null, user);
-
-		                user.clearLocalCache();
-		                ElementSecurity.refresh();
-	                
-	                this.returnSuccessfulCreateFromList(postSave.getId());
-					}else{
-						this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
-					
-					}
 				}
-			} catch (Exception e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-				e.printStackTrace();
 			}
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			e.printStackTrace();
 		}
+	}
 
-	
+
 	@Override
 	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
 		ArrayList<String> al=new ArrayList<String>();

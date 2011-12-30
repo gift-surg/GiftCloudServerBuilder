@@ -11,6 +11,7 @@ import org.nrg.xdat.om.XdatStoredSearchAllowedUser;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
@@ -129,7 +130,7 @@ public class ProjectSearchResource extends ItemResource {
 				}
 				
 				try {
-					search.save(user, false, true);
+					search.save(user, false, true,EventUtils.ADMIN_EVENT(user));
 				} catch (DBPoolException e) {
 					e.printStackTrace();
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -180,23 +181,23 @@ public class ProjectSearchResource extends ItemResource {
 					
 					if(mine!=null){
 						if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
-							DBAction.DeleteItem(mine.getItem(), user);
+							DBAction.DeleteItem(mine.getItem(), user,EventUtils.ADMIN_EVENT(user));
 						}else{
-							DBAction.DeleteItem(search.getItem(), user);
+							DBAction.DeleteItem(search.getItem(), user,EventUtils.ADMIN_EVENT(user));
 						}
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (SAXException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 			} catch (ElementNotFoundException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} 
 		}

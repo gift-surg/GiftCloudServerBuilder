@@ -32,6 +32,10 @@ import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.zip.TarUtils;
@@ -39,16 +43,14 @@ import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.xml.sax.SAXException;
 
 public class ExptFileUpload extends SecureAction {
     static org.apache.log4j.Logger logger = Logger.getLogger(ExptFileUpload.class);
 
     @Override
-    public void doPerform(RunData data, Context context) throws Exception{
-        ItemI temp = TurbineUtils.GetItemBySearch(data,false);
-        XnatImagesessiondata pet = (XnatImagesessiondata) org.nrg.xdat.base.BaseElement.GetGeneratedItem(temp);
-        
+    public void doPerform(RunData data, Context context) throws Exception{        
         ParameterParser params = data.getParameters();
         HttpSession session = data.getSession();
         String uploadID= null;
@@ -378,14 +380,19 @@ public class ExptFileUpload extends SecureAction {
             }
             
             if (counter>0){
-                File dest = new File(FileUtils.AppendRootPath(tempMR.getArchiveRootPath(),destinationPath));
-                FileUtils.MoveDir(dir, dest, true);
-                FileUtils.DeleteFile(dir);
-                
+            	PersistentWorkflowI wrk=WorkflowUtils.buildOpenWorkflow(TurbineUtils.getUser(data), tempMR.getItem(), newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.ADDED_MISC_FILES));
+				EventMetaI c=wrk.buildEvent();
+
                 try {
-                    tempMR.save(TurbineUtils.getUser(data),false,false);
+	                File dest = new File(FileUtils.AppendRootPath(tempMR.getArchiveRootPath(),destinationPath));
+	                FileUtils.MoveDir(dir, dest, true);
+	                FileUtils.DeleteFile(dir);
+                
+                    tempMR.save(TurbineUtils.getUser(data),false,false,c);
+                    PersistentWorkflowUtils.complete(wrk, c);
                     data.setMessage("Files successfully uploaded.");
                 } catch (Exception e) {
+                    PersistentWorkflowUtils.fail(wrk, c);
                     error(e,data);
                 }
                 

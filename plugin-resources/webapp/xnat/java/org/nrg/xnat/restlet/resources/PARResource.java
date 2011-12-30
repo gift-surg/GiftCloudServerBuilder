@@ -51,9 +51,9 @@ public class PARResource extends SecureResource {
 			}else{
 				try {
 					if(this.getQueryVariable("accept")!=null){
-						par.process(user,true);
+						par.process(user,true, getEventType(), getReason(), getComment());
 					}else if(this.getQueryVariable("decline")!=null){
-						par.process(user,false);
+						par.process(user,false, getEventType(), getReason(), getComment());
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

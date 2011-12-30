@@ -289,7 +289,7 @@ function checkProgress(){
    req.send(null);
 }
 </script>
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$link.setAction("ExptFileUpload")" onSubmit="return prog(this);">
+<form ID="uploadFORM" class="noHide" target="iframe" enctype="multipart/form-data" method="POST" action="$link.setAction("ExptFileUpload")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="$!popup"/>
 <INPUT TYPE="hidden" name="ID" value="$uploadID"/>
 <INPUT TYPE="hidden" name="threshhold" value="151516279"/>
@@ -322,6 +322,10 @@ Image files should be zipped (.zip or .tar.gz) and uploaded using the form below
 	<TR>
 		<TH align="left">File</TH><TD colspan="2"><input id="image_archive" type="file" name="image_archive" size="75"/></TD>
 	</TR>
+	<TR>
+		<TD colspan="3" align="right">&nbsp;</TD>
+	</TR>
+		#auditBoxes("3" "" "" "Uploaded Additional Files")
 	<TR>
 		<TD colspan="3" align="right">&nbsp;</TD>
 	</TR>

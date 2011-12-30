@@ -12,9 +12,9 @@ import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
@@ -231,10 +231,8 @@ public class ReconList extends QueryOrganizerResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 	            }
-				
-					recon.save(user,false,allowDataDeletion);
-					
-					MaterializedView.DeleteByUser(user);
+
+	            create(session,recon,false,allowDataDeletion,newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(recon.getXSIType(), recon==null)));
 				
 				this.returnSuccessfulCreateFromList(recon.getId());
 				}else{

@@ -24,9 +24,14 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ModifySubjectAssessorData extends ModifyItem{
     static Logger logger = Logger.getLogger(ModifySubjectAssessorData.class);
@@ -51,36 +56,40 @@ public class ModifySubjectAssessorData extends ModifyItem{
                 handleException(data,(XFTItem)found,populater.getError());
                 return;
             }
+
+            XFTItem dbVersion = found.getCurrentDBVersion();
             
+            final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), found,newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(found.getXSIType(), dbVersion==null)));
+	    	EventMetaI c=wrk.buildEvent();
             
-            XFTItem dbVersion = null;
             boolean removedReference = false;
             Object[] keysArray = data.getParameters().getKeys();
-            for (int i=0;i<keysArray.length;i++)
-            {
-                String key = (String)keysArray[i];
-                if (key.toLowerCase().startsWith("remove_"))
-                {
-                    if (dbVersion ==null)
-                    {
-                        dbVersion = found.getCurrentDBVersion();
-                    }
-                    int index = key.indexOf("=");
-                    String field = key.substring(index+1);
-                    Object value = data.getParameters().getObject(key);
-                    logger.debug("FOUND REMOVE: " + field + " " + value);
-                    ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
-                    if (items.size() > 0)
-                    {
-                        ItemI toRemove = items.getFirst();
-                        DBAction.RemoveItemReference(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
-                        found.removeItem(toRemove);
-                        removedReference = true;
-                    }else{
-                        logger.debug("ITEM NOT FOUND:" + key + "="+ value);
-                    }
-                }
-            }
+            try {
+				for (int i=0;i<keysArray.length;i++)
+				{
+				    String key = (String)keysArray[i];
+				    if (key.toLowerCase().startsWith("remove_"))
+				    {
+				        int index = key.indexOf("=");
+				        String field = key.substring(index+1);
+				        Object value = data.getParameters().getObject(key);
+				        logger.debug("FOUND REMOVE: " + field + " " + value);
+				        ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
+				        if (items.size() > 0)
+				        {
+				            ItemI toRemove = items.getFirst();
+				            DBAction.RemoveItemReference(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data),c);
+				            found.removeItem(toRemove);
+				            removedReference = true;
+				        }else{
+				            logger.debug("ITEM NOT FOUND:" + key + "="+ value);
+				        }
+				    }
+				}
+			} catch (Exception e1) {
+				WorkflowUtils.fail(wrk, c);
+				throw e1;
+			}
 
             if (removedReference)
             {
@@ -89,6 +98,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
                 {
                     data.setScreenTemplate(data.getParameters().getString("edit_screen"));
                 }
+                WorkflowUtils.complete(wrk, c);
                 return;
             }
             
@@ -109,7 +119,14 @@ public class ModifySubjectAssessorData extends ModifyItem{
             {
                 try {
                     
-                    found.save(TurbineUtils.getUser(data),false,false);
+                    try {
+						found.save(TurbineUtils.getUser(data),false,false,c);
+					} catch (Exception e1) {
+						WorkflowUtils.fail(wrk, c);
+						throw e1;
+					}
+                    
+                    WorkflowUtils.complete(wrk, c);
                     
 					MaterializedView.DeleteByUser(TurbineUtils.getUser(data));
 

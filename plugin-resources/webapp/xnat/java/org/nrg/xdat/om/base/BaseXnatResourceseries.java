@@ -6,6 +6,7 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,9 +17,12 @@ import java.util.regex.Pattern;
 import org.nrg.xdat.om.base.auto.AutoXnatResourceseries;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xft.utils.FileUtils.OldFileHandlerI;
 
 /**
  * @author XDAT
@@ -226,7 +230,7 @@ public class BaseXnatResourceseries extends AutoXnatResourceseries {
     }
 
 
-    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception{
+    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user,final EventMetaI ci) throws IOException,Exception{
     	String uri = this.getPath();
     	
     	String relativePath=null;
@@ -251,11 +255,24 @@ public class BaseXnatResourceseries extends AutoXnatResourceseries {
     	}
     	
     	for(File f: this.getCorrespondingFiles(rootPath)){
-    		FileUtils.MoveFile(f, new File(newFile,f.getName()), true, true);
+    		FileUtils.MoveFile(f, new File(newFile,f.getName()), true, true,new OldFileHandlerI(){
+				@Override
+				public boolean handle(File f) {
+					try {
+						FileUtils.MoveToHistory(f, EventUtils.getTimestamp(ci));
+					} catch (FileNotFoundException e) {
+						logger.error("",e);
+						return false;
+					} catch (IOException e) {
+						logger.error("",e);
+						return false;
+					}
+					return true;
+				}});
     	}
     	
     	this.setPath(newFile.getAbsolutePath());
-    	this.save(user, true, false);
+    	this.save(user, true, false,ci);
     }
 
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 $data.setLayoutTemplate("Popup.vm")
-$page.setTitle("Delete Pipeline")
+$page.setTitle("Remove Pipeline")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 #if ($data.message)

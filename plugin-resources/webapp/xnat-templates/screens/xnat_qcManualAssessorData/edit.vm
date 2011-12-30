@@ -129,6 +129,7 @@ $page.setVlinkColor($ui.vlink)
 <!-- END xnat:qcManualAssessorData -->
 		</td>
 	</tr>
+	#auditBoxes("3" "" "" "Manual QC Modification")
 	<tr>
 		<td>
 		#xdatEditProps($item $edit_screen)

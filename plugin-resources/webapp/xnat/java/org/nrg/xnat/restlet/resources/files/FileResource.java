@@ -265,7 +265,7 @@ public class FileResource extends ItemResource {
 						
 						String parentPath=catFile.getParent();
 						
-						CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
+						CatCatalogBean cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false,null,null);
 						
 						CatEntryI entry = retrieveEntry(cat, index + "/" + filename);
 						
@@ -358,7 +358,7 @@ public class FileResource extends ItemResource {
 				
 				String parentPath=catFile.getParent();
 				
-				CatCatalogI cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false);
+				CatCatalogI cat=catResource.getCleanCatalog(proj.getRootArchivePath(), false,null,null);
 				
 				CatEntryI entry = retrieveEntry(cat, index + "/" + filename);
 				

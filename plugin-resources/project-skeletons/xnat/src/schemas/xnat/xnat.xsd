@@ -190,6 +190,9 @@
 	</xs:complexType>
 	<xs:complexType name="subjectData">
 		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="label"/>
+			</xs:appinfo>
 			<xs:documentation>An individual person involved in experimental research</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -365,6 +368,9 @@
 	</xs:complexType>
 	<xs:complexType name="experimentData">
 		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="label"/>
+			</xs:appinfo>
 			<xs:documentation>A specific individual event in which primary data is obtained</xs:documentation>
 		</xs:annotation>
 		<xs:sequence minOccurs="0">
@@ -1056,7 +1062,7 @@
 						<xs:element name="file" type="xnat:abstractResource" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
-									<xdat:field>
+									<xdat:field displayName="in resource">
 										<xdat:relation relationType="multi" relationName="recon_in_resource"/>
 									</xdat:field>
 								</xs:appinfo>
@@ -1071,7 +1077,7 @@
 						<xs:element name="file" type="xnat:abstractResource" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
-									<xdat:field>
+									<xdat:field displayName="out resource">
 										<xdat:relation relationType="multi" relationName="recon_out_resource"/>
 									</xdat:field>
 								</xs:appinfo>
@@ -1237,6 +1243,11 @@
 		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="addField">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="name"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="name" type="xs:string">
@@ -1271,7 +1282,7 @@
 	<xs:complexType name="abstractResource">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true" abstract="true"/>
+				<xdat:element ignoreWarnings="true" abstract="true" displayIdentifiers="label"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence minOccurs="0">
@@ -1306,6 +1317,8 @@
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="label" type="xs:string" use="optional"/>
+		<xs:attribute name="file_count" type="xs:integer" use="optional"/>
+		<xs:attribute name="file_size" type="xs:long" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="resource">
 		<xs:complexContent>
@@ -2742,7 +2755,7 @@ rebinning, 6=FORE)</xs:documentation>
 								<xs:element name="file" type="xnat:abstractResource" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
 										<xs:appinfo>
-											<xdat:field>
+											<xdat:field displayName="in resource">
 												<xdat:relation relationType="multi" relationName="img_assessor_in_resource"/>
 											</xdat:field>
 										</xs:appinfo>
@@ -2757,7 +2770,7 @@ rebinning, 6=FORE)</xs:documentation>
 								<xs:element name="file" type="xnat:abstractResource" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
 										<xs:appinfo>
-											<xdat:field>
+											<xdat:field displayName="out resource">
 												<xdat:relation relationType="multi" relationName="img_assessor_out_resource"/>
 											</xdat:field>
 										</xs:appinfo>
@@ -2794,6 +2807,9 @@ rebinning, 6=FORE)</xs:documentation>
 	</xs:complexType>
 	<xs:complexType name="imageScanData">
 		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="ID"/>
+			</xs:appinfo>
 			<xs:documentation>Information about an individual image scan sequence</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -2869,7 +2885,13 @@ rebinning, 6=FORE)</xs:documentation>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="file" type="xnat:abstractResource" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="file" type="xnat:abstractResource" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field displayName="resource"/>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="validation" type="xnat:validationData" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="ID" type="xs:string" use="required">

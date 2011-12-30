@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
@@ -26,11 +25,12 @@ import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.om.base.auto.AutoXnatResourcecatalog;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.utils.CatalogUtils;
-import org.xml.sax.SAXException;
 
 /**
  * @author XDAT
@@ -68,50 +68,18 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     {
         if (files==null)
         {
-            String fullPath = getFullPath(rootPath);
-            if (fullPath.endsWith("\\")) {
-                fullPath = fullPath.substring(0,fullPath.length() -1);
-            }
-            if (fullPath.endsWith("/")) {
-                fullPath = fullPath.substring(0,fullPath.length() -1);
-            }
+        	files = new ArrayList<File>();
+        	
+        	final File catFile = this.getCatalogFile(rootPath);
+			final String parentPath=catFile.getParent();
+			final CatCatalogBean cat=CatalogUtils.getCatalog(rootPath, this);
 
-            files = new ArrayList();
-
-            File f =  new File(fullPath);
-            if (!f.exists())
-            {
-                f = new File(fullPath + ".gz");
-            }
-
-
-
-            if (f.exists()){
-
-
-                try {
-                    InputStream fis = new FileInputStream(f);
-                    if (f.getName().endsWith(".gz"))
-                    {
-                        fis = new GZIPInputStream(fis);
-                    }
-                    XDATXMLReader reader = new XDATXMLReader();
-                    BaseElement base = reader.parse(fis);
-
-                    String parentPath = f.getParent();
-
-                    if (base instanceof CatCatalogBean){
-                        for(CatEntryI entry: ((CatCatalogI)base).getEntries_entry()){
-                            String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
-                            File temp=getFileOnLocalFileSystem(entryPath);
-                            if(temp!=null)
-                            	files.add(temp);
-                        }
-                    }
-                } catch (IOException e) {
-                    logger.error("",e);
-                } catch (SAXException e) {
-                    logger.error("",e);
+            if (cat!=null){
+                for(CatEntryI entry: cat.getEntries_entry()){
+                    String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(parentPath,entry.getUri()),"\\","/");
+                    File temp=getFileOnLocalFileSystem(entryPath);
+                    if(temp!=null)
+                    	files.add(temp);
                 }
             }
 
@@ -156,52 +124,74 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
         return CatalogUtils.getCatalogFile(rootPath, this);
     }
 
-    public void deleteFromFileSystem(String rootPath){
-        super.deleteFromFileSystem(rootPath);
-
-        //File f = getCatalogFile(rootPath);
-        File f = new File(getFullPath(rootPath));
-
-        if (f.exists()){
-            try {
-		FileUtils.MoveToCache(f);
-		if(FileUtils.CountFiles(f.getParentFile(),true)==0){
-			FileUtils.DeleteFile(f.getParentFile());
-		}
-	    } catch (FileNotFoundException e) {
-		e.printStackTrace();
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
+    public CatCatalogBean getCatalog(String rootPath){
+        return CatalogUtils.getCatalog(rootPath, this);
+    }
+    
+    public static void backupEntry(String parentPath,CatCatalogBean cat,UserI user, EventMetaI c, String timestamp) throws FileNotFoundException, IOException{
+    	if (cat!=null){
+            for(CatEntryI entry: cat.getEntries_entry()){
+				final File f = new File(parentPath,entry.getUri());
+            	final File newFile=FileUtils.CopyToHistory(f,timestamp);
+				entry.setUri(newFile.getAbsolutePath());
+				((CatEntryBean)entry).setModifiedtime(EventUtils.getEventDate(c, false));
+				if(user!=null){
+					entry.setModifiedby(user.getUsername());
+				}
+				
+				if(c!=null && c.getEventId()!=null){
+					entry.setModifiedeventid(Integer.valueOf(c.getEventId().intValue()));
+				}
+            }
         }
     }
     
-    public int entryCount =0;
-    public boolean formalizeCatalog(CatCatalogI cat, String catPath){
-    	boolean modified=false;
-    	for(CatCatalogI subSet:cat.getSets_entryset()){
-    		if(formalizeCatalog(subSet,catPath)){
-    			modified=true;
-    		}
+    public void backupToHistory(String rootPath,UserI user, EventMetaI c) throws Exception{
+    	final File f = this.getCatalogFile(rootPath);	
+    	final String parentPath=f.getParentFile().getAbsolutePath();
+    	final CatCatalogBean cat=CatalogUtils.getCatalog(rootPath,this);
+    	
+    	if(cat!=null){
+    		String timestamp=EventUtils.getTimestamp(c);
+    		backupEntry(parentPath, cat, user, c,timestamp);
+			CatalogUtils.writeCatalogToFile(cat, FileUtils.BuildHistoryFile(f,timestamp));
     	}
-    	for(CatEntryI entry: cat.getEntries_entry()){
-	    	if(entry.getId()==null || !entry.getId().equals("")){
-		        String entryPath = StringUtils.ReplaceStr(FileUtils.AppendRootPath(catPath,entry.getUri()),"\\","/");
-		        File f =getFileOnLocalFileSystem(entryPath);
-		        if(f!=null){
-			        ((CatEntryBean)entry).setId((entryCount++) + "/" + f.getName());
-			        modified=true;
-		        }else{
-		        	logger.error("Missing Resource:" + entryPath);
-		        }
-	    	}
-	    }
-	    
-	    return modified;
     }
     
-    public CatCatalogBean getCleanCatalog(String rootPath,boolean includeFullPaths){
-    	return CatalogUtils.getCleanCatalog(rootPath, this, includeFullPaths);
+
+
+    public void deleteWithBackup(String rootPath, UserI user, EventMetaI c) throws Exception{
+		backupToHistory(rootPath, user, c);
+			
+    	deleteFromFileSystem(rootPath);
+    }
+
+    public void deleteFromFileSystem(String rootPath){
+    	super.deleteFromFileSystem(rootPath);
+    	
+    	final File f = this.getCatalogFile(rootPath);	
+
+    	if (f.exists()){
+    		try {
+    			FileUtils.MoveToCache(f);
+    			if(FileUtils.CountFiles(f.getParentFile(),true)==0){
+    				FileUtils.DeleteFile(f.getParentFile());
+    			}
+    		} catch (FileNotFoundException e) {
+    			logger.error("",e);
+    		} catch (IOException e) {
+    			logger.error("",e);
+    		}
+    	}
+    }
+    
+    public int entryCount =0;
+    public boolean formalizeCatalog(CatCatalogI cat, String catPath,UserI user, EventMetaI now){
+    	return CatalogUtils.formalizeCatalog(cat,catPath,user,now);
+    }
+    
+    public CatCatalogBean getCleanCatalog(String rootPath,boolean includeFullPaths,UserI user, EventMetaI c){
+    	return CatalogUtils.getCleanCatalog(rootPath, this, includeFullPaths,user,c);
     }
 
     Integer count = null;
@@ -245,7 +235,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
         return size.longValue();
     }
     
-    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception{
+    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user,EventMetaI ci) throws IOException,Exception{
     	String uri = this.getUri();
     	
     	String relativePath=null;
@@ -297,7 +287,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     	FileUtils.MoveFile(catalog, newFile, true, true);
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false);
+    	this.save(user, true, false,ci);
     }
     
     public void moveCatalogEntries(CatCatalogI cat,String existingRootPath,String newRootPath) throws IOException{

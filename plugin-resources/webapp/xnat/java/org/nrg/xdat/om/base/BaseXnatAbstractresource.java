@@ -16,6 +16,7 @@ import org.nrg.xdat.model.XnatAbstractresourceTagI;
 import org.nrg.xdat.om.base.auto.AutoXnatAbstractresource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 
@@ -64,39 +65,31 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
     Long size = null;
     public long getSize(String rootPath){
         if (size ==null){
-            long sizeI = 0;
-            int countI = 0;
-            Iterator files = this.getCorrespondingFiles(rootPath).iterator();
-            while (files.hasNext()){
-                File f = (File)files.next();
-                if (f.exists()){
-                    countI++;
-                    sizeI+=f.length();
-                }
-            }
-
-            size = new Long(sizeI);
-            count = new Integer(countI);
+            calculate(rootPath);
         }
         return size.longValue();
+    }
+    
+    public void calculate(String rootPath){
+    	long sizeI = 0;
+        int countI = 0;
+        Iterator files = this.getCorrespondingFiles(rootPath).iterator();
+        while (files.hasNext()){
+            File f = (File)files.next();
+            if (f.exists()){
+                countI++;
+                sizeI+=f.length();
+            }
+        }
+
+        size = new Long(sizeI);
+        count = new Integer(countI);
     }
 
     Integer count = null;
     public Integer getCount(String rootPath){
         if (count ==null){
-            long sizeI = 0;
-            int countI = 0;
-            Iterator files = this.getCorrespondingFiles(rootPath).iterator();
-            while (files.hasNext()){
-                File f = (File)files.next();
-                if (f.exists()){
-                    countI++;
-                    sizeI+=f.length();
-                }
-            }
-
-            size = new Long(sizeI);
-            count = new Integer(countI);
+            calculate(rootPath);
         }
         return count;
     }
@@ -153,6 +146,9 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
         return "";
     }
 
+    public void deleteWithBackup(String rootPath, UserI user, EventMetaI c) throws Exception{
+    	deleteFromFileSystem(rootPath);
+    }
 
     public void deleteFromFileSystem(String rootPath){
         ArrayList<File> files = this.getCorrespondingFiles(rootPath);
@@ -196,5 +192,5 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
     }
     
     
-    public abstract void moveTo(File newSessionDir, String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception;
+    public abstract void moveTo(File newSessionDir, String existingSessionDir,String rootPath,XDATUser user,EventMetaI ci) throws IOException,Exception;
 }

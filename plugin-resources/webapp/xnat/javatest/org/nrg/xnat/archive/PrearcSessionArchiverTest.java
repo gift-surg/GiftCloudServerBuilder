@@ -49,7 +49,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 			proj.setId(PROJECT);
 			proj.setSecondaryId(PROJECT);
 			proj.setName(PROJECT);
-			XnatProjectdata.quickSave(proj, user, false, false);
+			XnatProjectdata.quickSave(proj, user, false, false,null);
 		}
 		
 		XnatProjectdata proj2=XnatProjectdata.getXnatProjectdatasById(PROJECT2, user, false);
@@ -58,14 +58,14 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 			proj2.setId(PROJECT2);
 			proj2.setSecondaryId(PROJECT2);
 			proj2.setName(PROJECT2);
-			XnatProjectdata.quickSave(proj2, user, false, false);
+			XnatProjectdata.quickSave(proj2, user, false, false,null);
 		}
 		
 		subject=new XnatSubjectdata((UserI)user);
 		subject.setId(TEST_SUB_1);
 		subject.setProject(PROJECT);
 		subject.setLabel(TEST_SUB_1);
-		subject.save(user, false, false);
+		subject.save(user, false, false,null);
 		
 		mr=new XnatMrsessiondata((UserI)user);
 		mr.setId(MR);
@@ -73,13 +73,13 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		mr.setLabel(MR);
 		mr.setUid(MR);
 		mr.setSubjectId(TEST_SUB_1);
-		mr.save(user, false, false);
+		mr.save(user, false, false,null);
 	}
 	
 	@AfterClass
 	public static void tearDownAfterClass(){
 		if(subject!=null){
-			subject.delete(proj, user, true);
+			subject.delete(proj, user, true,null);
 		}
 	}
 	

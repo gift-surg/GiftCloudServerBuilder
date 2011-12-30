@@ -17,10 +17,12 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ModifyProject extends SecureAction {
     static Logger logger = Logger.getLogger(ModifyItem.class);
@@ -30,7 +32,6 @@ public class ModifyProject extends SecureAction {
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
 
-        try {
             PopulateItem populater = PopulateItem.Populate(data,"xnat:projectData",true);
             XDATUser user = TurbineUtils.getUser(data);
             
@@ -43,6 +44,11 @@ public class ModifyProject extends SecureAction {
             XFTItem item = populater.getItem();
             XnatProjectdata  project = new XnatProjectdata(item);
             
+
+            final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
+	    	EventMetaI c=wrk.buildEvent();
+
+        try {
             if (error!=null)
             {
                 data.addMessage(error.getMessage());
@@ -53,7 +59,7 @@ public class ModifyProject extends SecureAction {
 
             
             try {
-				project.initNewProject(user,false,true);
+				project.initNewProject(user,false,true,c);
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(item,data);
                 data.addMessage(e2.getMessage());
@@ -65,12 +71,12 @@ public class ModifyProject extends SecureAction {
 			}
             
             
-            item.save(user, false, false);
+            item.save(user, false, false,c);
             
             XnatProjectdata postSave = new XnatProjectdata(item);
             postSave.getItem().setUser(user);
 
-            postSave.initGroups();
+            postSave.initGroups(c);
             
             user.initGroups();
             user.clearLocalCache();
@@ -82,7 +88,7 @@ public class ModifyProject extends SecureAction {
             }
             
             if (!accessibility.equals("private"))
-                project.initAccessibility(accessibility, true);
+                project.initAccessibility(accessibility, true,c);
             
            // p.initBundles((XDATUser)user);
             
@@ -92,14 +98,12 @@ public class ModifyProject extends SecureAction {
                 this.redirectToReportScreen("XDATScreen_report_xnat_projectData.vm",(ItemI) postSave, data);
             }
                        
+            WorkflowUtils.complete(wrk, c);
             user.clearLocalCache();
             ElementSecurity.refresh();
-        } catch (XFTInitException e) {
+        } catch (Exception e) {
             logger.error("",e);
-        } catch (ElementNotFoundException e) {
-            logger.error("",e);
-        } catch (FieldNotFoundException e) {
-            logger.error("",e);
+            WorkflowUtils.fail(wrk, c);
         }
     }
 

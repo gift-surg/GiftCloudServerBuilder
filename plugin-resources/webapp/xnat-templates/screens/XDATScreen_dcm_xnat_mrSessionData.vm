@@ -142,11 +142,7 @@ $page.setVlinkColor($ui.vlink)
 					</TD>
 				</TR>
 			</TABLE>
-			<!-- <form name="form1" method="post" action="$link.setAction("SubjectForMRAction")">
-			<INPUT TYPE="hidden" name="popup" value="$!popup"/>
-			<INPUT TYPE="hidden" name="destination" value="XDATScreen_uploaded_xnat_mrSessionData.vm"/>
-			<input type="submit" name="eventSubmit_doPerform" value="Proceed"/>
-			</form>
+
 END xnat:mrSessionData -->
 		</TD>
 	</TR>

@@ -9,4 +9,8 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 public interface ArchivableItem extends ItemI{
 	public String getArchiveDirectoryName();
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure;
+	public String getXSIType();
+	public String getId();
+	public String getProject();
+	public String getArchiveRootPath();
 }

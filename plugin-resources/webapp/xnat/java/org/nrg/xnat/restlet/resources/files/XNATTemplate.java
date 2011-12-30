@@ -19,9 +19,10 @@ import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.FileUtils;
@@ -322,8 +323,30 @@ public class XNATTemplate extends SecureResource {
 			return false;
 		}
 	}
+	
+	public ItemI getSecurityItem(){
+		if(this.security!=null)return security;
+		
+		XnatExperimentdata assessed=null;
+		if(this.assesseds.size()==1)assessed=assesseds.get(0);
 
-	public boolean insertCatalag(XnatResourcecatalog catResource)
+		if (recons.size()>0) {
+			return assessed;
+		} else if (scans.size()>0) {
+			return assessed;
+		} else if (expts.size()>0) {
+//			experiment
+			return expts.get(0);
+		}else if(sub!=null){
+			return sub;
+		}else if(proj!=null){
+			return proj;
+		}else{
+			return null;
+		}
+	}
+
+	public boolean insertCatalag(XnatResourcecatalog catResource,EventMetaI ci)
 			throws InvalidArchiveStructure, Exception {
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
 				XNATRestConstants.PREARCHIVE_TIMESTAMP);
@@ -388,7 +411,7 @@ public class XNATTemplate extends SecureResource {
 				recon.setOut_file(catResource);
 			}
 
-			recon.save(user, false, false);
+			recon.save(user, false, false,ci);
 			return true;
 		} else if (scans.size()>0) {
 			XnatImagescandata scan=scans.get(0);
@@ -441,7 +464,7 @@ public class XNATTemplate extends SecureResource {
 
 			scan.setFile(catResource);
 
-			scan.save(user, false, false);
+			scan.save(user, false, false,ci);
 			return true;
 		} else if (expts.size()>0) {
 //			experiment
@@ -505,12 +528,12 @@ public class XNATTemplate extends SecureResource {
 					iad.setOut_file(catResource);
 				}
 
-				iad.save(user, false, false);
+				iad.save(user, false, false,ci);
 
 			}else{
 				session.setResources_resource(catResource);
 
-				session.save(user, false, false);
+				session.save(user, false, false,ci);
 			}
 			return true;
 		}else if(sub!=null){
@@ -548,7 +571,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			sub.setResources_resource(catResource);
 
-			sub.save(user, false, false);
+			sub.save(user, false, false,ci);
 			return true;
 		}else if(proj!=null){
 			String dest_path=null;
@@ -584,7 +607,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			proj.setResources_resource(catResource);
 
-			proj.save(user, false, false);
+			proj.save(user, false, false,ci);
 			return true;
 		}
 		return true;

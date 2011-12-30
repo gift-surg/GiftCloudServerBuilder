@@ -2,6 +2,7 @@
 #if ($data.message)
 <DIV class="error">$data.message</DIV><br>
 #end
+<form name="form1" method="post" action="$link.setAction("ActivateAction").setPage("ClosePage.vm")">
 <TABLE width=100%>
 	<TR>
 		<TD>
@@ -12,15 +13,14 @@
 	#if($user.canActivate($item))
 	<TR>
 		<TD>
-			<form name="form1" method="post" action="$link.setAction("ActivateAction").setPage("ClosePage.vm")">
 			<input type="hidden" name="search_element" value="$search_element"/>
 			<input type="hidden" name="search_field" value="$search_field"/>
 			<input type="hidden" name="search_value" value="$search_value"/>
 			<input type="hidden" name="popup" value="true"/>
 			<input type="submit" name="eventSubmit" value="Activate"/>
-			</form>
 		</TD>
 	</TR>
+	#auditBoxes("1" "" "" "Removed from quarantine")
 	#end
 	
 	<TR>
@@ -29,18 +29,5 @@
 		</TD>
 	</TR>
 	
-	#if($user.canActivate($item))
-	<TR>
-		<TD>
-			<form name="form1" method="post" action="$link.setAction("ActivateAction").setPage("ClosePage.vm")">
-			<input type="hidden" name="search_element" value="$search_element"/>
-			<input type="hidden" name="search_field" value="$search_field"/>
-			<input type="hidden" name="search_value" value="$search_value"/>
-			<input type="hidden" name="popup" value="true"/>
-			<input type="submit" name="eventSubmit" value="Activate"/>
-			</form>
-		</TD>
-	</TR>
-	#end
-	
 </TABLE>
+</form>

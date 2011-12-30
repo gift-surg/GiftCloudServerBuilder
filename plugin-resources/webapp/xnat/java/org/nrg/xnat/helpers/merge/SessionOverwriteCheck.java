@@ -1,5 +1,6 @@
 package org.nrg.xnat.helpers.merge;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -14,24 +15,30 @@ import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.model.XnatResourceI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.model.XnatResourceseriesI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.security.UserI;
 import org.nrg.xnat.utils.CatalogUtils;
 
 public class SessionOverwriteCheck implements Callable<Boolean> {
 	final XnatImagesessiondataI src,dest;
 	final String srcRootPath,destRootPath;
+	final UserI u;
+	final EventMetaI c;
 	
-	public SessionOverwriteCheck(XnatImagesessiondataI src, XnatImagesessiondataI dest,String srcRootPath,String destRootPath){
+	public SessionOverwriteCheck(XnatImagesessiondataI src, XnatImagesessiondataI dest,String srcRootPath,String destRootPath, UserI user, EventMetaI now){
 		this.src=src;
 		this.dest=dest;
 		this.srcRootPath=srcRootPath;
 		this.destRootPath=destRootPath;
+		this.u=user;
+		this.c=now;
 	}
 	
 	@Override
 	public Boolean call(){
 		final List<XnatImagescandataI> srcScans=src.getScans_scan();
 		final List<XnatImagescandataI> destScans=dest.getScans_scan();
-
+		
 		for(final XnatImagescandataI srcScan: srcScans){
 			final XnatImagescandataI destScan = MergeUtils.getMatchingScan(srcScan,destScans);
 			if(destScan==null){
@@ -44,9 +51,9 @@ public class SessionOverwriteCheck implements Callable<Boolean> {
 					if(destRes==null){
 					}else{
 						if(destRes instanceof XnatResourcecatalogI){
-							final CatCatalogBean srcCat=CatalogUtils.getCleanCatalog(srcRootPath, (XnatResourcecatalogI)srcRes, false);
+							final CatCatalogBean srcCat=CatalogUtils.getCleanCatalog(srcRootPath, (XnatResourcecatalogI)srcRes, false,u,c);
 
-							final CatCatalogBean destCat=CatalogUtils.getCleanCatalog(destRootPath, (XnatResourcecatalogI)destRes, false);
+							final CatCatalogBean destCat=CatalogUtils.getCleanCatalog(destRootPath, (XnatResourcecatalogI)destRes, false,u,c);
 							
 							if(detectOverwrite(srcCat,destCat)){
 								return true;

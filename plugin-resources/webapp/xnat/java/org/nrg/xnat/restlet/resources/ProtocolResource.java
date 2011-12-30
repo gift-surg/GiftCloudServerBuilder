@@ -11,6 +11,7 @@ import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
 import org.restlet.Context;
@@ -101,7 +102,7 @@ public class ProtocolResource extends ItemResource {
 						protocol.setProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender",this.getQueryVariable("gender"));
 					}
 											
-					if(protocol.save(user,false,true)){
+					if(protocol.save(user,false,true,EventUtils.ADMIN_EVENT(user))){
 						MaterializedView.DeleteByUser(user);
 					}
 					
@@ -135,7 +136,7 @@ public class ProtocolResource extends ItemResource {
 		
 			if(protocol!=null){
 				if (protocol!=null){				        
-			        DBAction.DeleteItem(protocol.getItem().getCurrentDBVersion(), user);
+			        DBAction.DeleteItem(protocol.getItem().getCurrentDBVersion(), user,EventUtils.ADMIN_EVENT(user));
 			    }
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -178,7 +179,7 @@ public class ProtocolResource extends ItemResource {
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/data-type", temp.getProperty("data-type"));
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
 					    }
-					    temp.save(user, false, false);
+					    temp.save(user, false, false,EventUtils.ADMIN_EVENT(user));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -4,6 +4,10 @@ package org.nrg.xnat.restlet.resources;
 import java.util.ArrayList;
 
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -51,7 +55,11 @@ public class ProjectAccessibilityResource extends SecureResource {
 			
 				String currentAccess = proj.getPublicAccessibility();
 				if (!currentAccess.equals(access)){
-					proj.initAccessibility(access, true);
+					PersistentWorkflowI wrk=WorkflowUtils.buildProjectWorkflow(user, proj,newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS,EventUtils.MODIFY_PROJECT_ACCESS+" ("+ access + ")"));
+                    EventMetaI c=wrk.buildEvent();
+                    if(proj.initAccessibility(access, true,c)){
+                    	WorkflowUtils.complete(wrk, c);
+                    }
 				}
 				
 				getResponse().setEntity(getRepresentation(getVariants().get(0)));

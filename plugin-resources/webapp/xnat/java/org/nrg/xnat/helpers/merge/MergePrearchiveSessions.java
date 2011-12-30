@@ -3,6 +3,7 @@ package org.nrg.xnat.helpers.merge;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -12,13 +13,15 @@ import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourceI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.model.XnatResourceseriesI;
+import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
 import org.restlet.data.Status;
 
 
 public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondataBean>  {
 
-	public MergePrearchiveSessions(Object control,final File srcDIR, final XnatImagesessiondataBean src, final String srcRootPath, final File destDIR, final XnatImagesessiondataBean existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion, SaveHandlerI<XnatImagesessiondataBean> saver) {
-		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion, saver);
+	public MergePrearchiveSessions(Object control,final File srcDIR, final XnatImagesessiondataBean src, final String srcRootPath, final File destDIR, final XnatImagesessiondataBean existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion, SaveHandlerI<XnatImagesessiondataBean> saver, final UserI u) {
+		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion, saver,u,null);
 	}
 
 
@@ -28,9 +31,10 @@ public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondata
 	}
 	
 
-	public org.nrg.xnat.helpers.merge.MergeSessionsA<XnatImagesessiondataBean>.UpdatedSession<XnatImagesessiondataBean> mergeSessions(final XnatImagesessiondataBean src, final String srcRootPath, final XnatImagesessiondataBean dest, final String destRootPath) throws ClientException, ServerException {
-		if(dest==null)return new UpdatedSession<XnatImagesessiondataBean>(src, new ArrayList<File>());
-		
+	public org.nrg.xnat.helpers.merge.MergeSessionsA.Results<XnatImagesessiondataBean> mergeSessions(final XnatImagesessiondataBean src, final String srcRootPath, final XnatImagesessiondataBean dest, final String destRootPath,final File rootbackup) throws ClientException, ServerException {
+		if(dest==null)return new Results<XnatImagesessiondataBean>(src);
+
+		final Results<XnatImagesessiondataBean> result=new Results<XnatImagesessiondataBean>(dest);
 		final List<XnatImagescandataI> srcScans=src.getScans_scan();
 		final List<XnatImagescandataI> destScans=dest.getScans_scan();
 	
@@ -51,8 +55,11 @@ public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondata
 							destScan.addFile(srcRes);
 						}else{
 							if(destRes instanceof XnatResourcecatalogI){
-								File del=mergeCatalogs(srcRootPath,(XnatResourcecatalogI)srcRes,destRootPath,(XnatResourcecatalogI)destRes);
-								if(del!=null)toDelete.add(del);
+								MergeSessionsA.Results<File> r=mergeCatalogs(srcRootPath,(XnatResourcecatalogI)srcRes,destRootPath,(XnatResourcecatalogI)destRes);
+								if(r!=null){
+									toDelete.add(r.result);
+									result.addAll(r);
+								}
 							}else if(destRes instanceof XnatResourceseriesI){
 								srcRes.setLabel(srcRes.getLabel()+"2");
 								destScan.addFile(srcRes);
@@ -72,7 +79,29 @@ public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondata
 			throw new ServerException(e.getMessage(), e);
 		}
 		
-		return new UpdatedSession<XnatImagesessiondataBean>(dest, toDelete);
+		final File backup = new File(rootbackup,"catalog_bk");
+		backup.mkdirs();
+		
+		final List<Callable<Boolean>> followup=new ArrayList<Callable<Boolean>>();
+		followup.add(new Callable<Boolean>(){
+			@Override
+			public Boolean call() throws Exception {
+				try {
+					int count=0;
+					for(File f:toDelete){
+						File catBkDir=new File(backup,""+count++);
+						catBkDir.mkdirs();
+						
+						FileUtils.MoveFile(f, new File(catBkDir,f.getName()), false);
+					}
+					return Boolean.TRUE;
+				} catch (Exception e) {
+					throw new ServerException(e.getMessage(),e);
+				}
+			}});
+		
+		result.getBeforeDirMerge().addAll(followup);
+		return result;
 	}
 
 

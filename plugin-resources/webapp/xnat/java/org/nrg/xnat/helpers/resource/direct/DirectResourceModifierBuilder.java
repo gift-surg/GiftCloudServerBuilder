@@ -8,6 +8,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
 
 public class DirectResourceModifierBuilder implements ResourceModifierBuilderI {
 	private XnatReconstructedimagedata recon;
@@ -101,33 +102,33 @@ public class DirectResourceModifierBuilder implements ResourceModifierBuilderI {
 	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceBuilderI#buildResourceModifier()
 	 */
 	@Override
-	public ResourceModifierA buildResourceModifier(final boolean overwrite, final XDATUser user) throws Exception{        
+	public ResourceModifierA buildResourceModifier(final boolean overwrite, final XDATUser user,EventMetaI ci) throws Exception{        
 		if(recon!=null){
 			//reconstruction			
 			if(assessed==null){
 				throw new Exception("Invalid session id");
 			}
 			
-			return new DirectReconResourceImpl(recon, assessed, type,overwrite,user);
+			return new DirectReconResourceImpl(recon, assessed, type,overwrite,user,ci);
 		}else if(scan!=null){
 			//scan
 			if(assessed==null){
 				throw new Exception("Invalid session id");
 			}
 			
-			return new DirectScanResourceImpl(scan, assessed,overwrite,user);
+			return new DirectScanResourceImpl(scan, assessed,overwrite,user,ci);
 		}else if(assess!=null){
 			if(assessed==null){
 				throw new Exception("Invalid session id");
 			}
 		
-			return new DirectAssessResourceImpl((XnatImageassessordata)assess,(XnatImagesessiondata)assessed,type,overwrite,user);
+			return new DirectAssessResourceImpl((XnatImageassessordata)assess,(XnatImagesessiondata)assessed,type,overwrite,user,ci);
 		}else if(expt!=null){
-			return new DirectExptResourceImpl(project, expt,overwrite,user);
+			return new DirectExptResourceImpl(project, expt,overwrite,user,ci);
 		}else if(subject!=null){
-			return new DirectSubjResourceImpl(project, subject,overwrite,user);
+			return new DirectSubjResourceImpl(project, subject,overwrite,user,ci);
 		}else if(project!=null){
-			return new DirectProjResourceImpl(project,overwrite,user);
+			return new DirectProjResourceImpl(project,overwrite,user,ci);
 		}else{
 			throw new Exception("Unknown resource");
 		}

@@ -92,6 +92,7 @@
 		#parse("/screens/EditProjectSpecificFields.vm")
 		  </td>
 		</tr>
+		#auditBoxes("2" "" "" "$!page_title")
 				
 		<tr>
 			<td colspan=2 align="center">

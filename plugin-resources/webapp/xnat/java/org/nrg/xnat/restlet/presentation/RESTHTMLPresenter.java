@@ -30,6 +30,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.XFTTableI;
+import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.utils.StringUtils;
 /**
@@ -227,13 +228,13 @@ public class RESTHTMLPresenter extends PresentationA {
 			Hashtable row = table.nextRowHash();
 			Object[] newRow = new Object[columnHeaders.size()];
 			fields = visibleFields.iterator();
-			String status = "active";
+			String status = ViewManager.ACTIVE;
 
 			Object tempStatus = row.get("quarantine_status");
 			if (tempStatus!=null)
 			{
 			    status = (String)tempStatus;
-			    if (status.equals("quarantine"))
+			    if (status.equals(ViewManager.QUARANTINE))
 			        csv.addQuarantineRow(table.getRowCursor());
 			}
 
@@ -300,7 +301,7 @@ public class RESTHTMLPresenter extends PresentationA {
 						    {
 							    String diff = "<td";
 							    String classNames="x_rs_td";
-								if(status.equals("quarantine"))
+								if(status.equals(ViewManager.QUARANTINE))
 								{
 									classNames+=" quarantine";
 								}
@@ -347,7 +348,7 @@ public class RESTHTMLPresenter extends PresentationA {
 					}
 
 					String classNames="x_rs_td";
-					if(status.equals("quarantine"))
+					if(status.equals(ViewManager.QUARANTINE))
 					{
 						classNames+=" quarantine";
 					}
@@ -584,7 +585,7 @@ public class RESTHTMLPresenter extends PresentationA {
 						sb.append(" valign=\"" + dfr.getHTMLCellVAlign() + "\"");
 					}
 					String classNames="x_rs_td";
-					if(status.equals("quarantine"))
+					if(status.equals(ViewManager.QUARANTINE))
 					{
 						classNames+=" quarantine";
 					}

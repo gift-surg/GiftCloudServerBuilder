@@ -16,6 +16,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 public class XDATScreen_manage_xnat_projectData  extends SecureReport {
@@ -29,7 +30,7 @@ public class XDATScreen_manage_xnat_projectData  extends SecureReport {
         try {
             context.put("guest", project.getPublicAccessibility());
 
-            project.initGroups();
+            project.initGroups(EventUtils.ADMIN_EVENT(user));
             
             XFTTable table = XFTTable.Execute("select TRIM(email) AS email, lastname || ', ' || firstname AS user_name FROM xdat_user WHERE email IS NOT NULL ORDER BY LOWER(lastname);", project.getDBName(), user.getLogin());
             context.put("allUsers", table.convertToMap("user_name", "email",new TreeMap<Object, Object>()));

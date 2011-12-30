@@ -10,6 +10,8 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
@@ -22,8 +24,8 @@ public class DirectAssessResourceImpl extends ResourceModifierA {
 	private final XnatImagesessiondata session;
 	private final String type;
 	
-	public DirectAssessResourceImpl(final XnatImageassessordata expt, final XnatImagesessiondata session, final String type,final boolean overwrite, final XDATUser user){
-		super(overwrite,user);
+	public DirectAssessResourceImpl(final XnatImageassessordata expt, final XnatImagesessiondata session, final String type,final boolean overwrite, final XDATUser user, final EventMetaI ci){
+		super(overwrite,user,ci);
 		this.expt=expt;
 		this.session=session;
 		this.type=type;
@@ -67,7 +69,7 @@ public class DirectAssessResourceImpl extends ResourceModifierA {
 			iad.setOut_file(resource);
 		}
 		
-		iad.save(user, false, false);
+		iad.save(user, false, false,ci);
 		return true;
 	}
 

@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.UserGroup;
@@ -30,10 +29,13 @@ import org.nrg.xft.db.ItemAccessHistory;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.email.EmailUtils;
 import org.nrg.xft.email.EmailerI;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
-import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ProjectAccessRequest {
     static org.apache.log4j.Logger logger = Logger.getLogger(ProjectAccessRequest.class);
@@ -543,7 +545,7 @@ public class ProjectAccessRequest {
         }
     }
     
-    public void process(XDATUser user,boolean accept) throws Exception{
+    public void process(XDATUser user,boolean accept, EventUtils.TYPE t, String reason, String comment) throws Exception{
     	this.setUserId(user.getXdatUserId());
 		this.setApproved(accept);
 		this.setApprovalDate(Calendar.getInstance().getTime());
@@ -553,40 +555,42 @@ public class ProjectAccessRequest {
 
 		if(accept){
 			final String projectID = this.getProjectID();
+			
+			PersistentWorkflowI wrk=WorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,projectID,projectID,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, t, EventUtils.ADD_USER_TO_PROJECT, reason, comment));
+			EventMetaI c=wrk.buildEvent();
 
-			for (Map.Entry<String, UserGroup> entry : user.getGroups().entrySet()) {
-				if (entry.getValue().getTag().equals(projectID)) {
-					for (XdatUserGroupid map : user.getGroups_groupid()) {
-						if (map.getGroupid().equals(entry.getValue().getId())) {
-							if(!map.getGroupid().endsWith("_owner"))
-								DBAction.DeleteItem(map.getItem(), user);
+			try {
+				for (Map.Entry<String, UserGroup> entry : user.getGroups().entrySet()) {
+					if (entry.getValue().getTag().equals(projectID)) {
+						for (XdatUserGroupid map : user.getGroups_groupid()) {
+							if (map.getGroupid().equals(entry.getValue().getId())) {
+								if(!map.getGroupid().endsWith("_owner"))
+									DBAction.DeleteItem(map.getItem(), user,c);
+									
+							}
 						}
 					}
 				}
-			}
 
-			String level = this.getLevel();
+				String level = this.getLevel();
 
-			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
+				XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
 
-			if (!level.startsWith(project.getId())) {
-				level = project.getId() + "_" + level;
-			}
-			user.addGroup(project.addGroupMember(level, user, user));
+				if (!level.startsWith(project.getId())) {
+					level = project.getId() + "_" + level;
+				}
+				user.addGroup(project.addGroupMember(level, user, user,c));
 
-			try {
-				WrkWorkflowdata workflow = new WrkWorkflowdata((UserI) user);
-				workflow.setDataType("xnat:projectData");
-				workflow.setExternalid(project.getId());
-				workflow.setId(project.getId());
-				workflow.setPipelineName("New " + this.getLevel() + ": " + user.getFirstname() + " " + user.getLastname());
-				workflow.setStatus("Complete");
-				workflow.setLaunchTime(Calendar.getInstance().getTime());
-				workflow.save(user, false, false);
-
-				ItemAccessHistory.LogAccess(user, project.getItem(), "report");
-			} catch (Throwable e) {
-				logger.error("",e);
+				WorkflowUtils.complete(wrk, c);
+				
+				try {
+					ItemAccessHistory.LogAccess(user, project.getItem(), "report");
+				} catch (Throwable e) {
+					logger.error("",e);
+				}
+			} catch (Exception e) {
+				WorkflowUtils.fail(wrk, c);
+				throw e;
 			}
 		}
     }

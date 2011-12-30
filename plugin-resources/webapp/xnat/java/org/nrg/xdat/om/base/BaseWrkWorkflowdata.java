@@ -7,6 +7,8 @@
 package org.nrg.xdat.om.base;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -17,15 +19,24 @@ import org.nrg.xdat.om.WrkXnatexecutionenvironment;
 import org.nrg.xdat.om.base.auto.AutoWrkWorkflowdata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils.CATEGORY;
+import org.nrg.xft.event.EventUtils.TYPE;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
 
 /**
  * @author XDAT
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata {
+public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements PersistentWorkflowI{
 
     public static final String AWAITING_ACTION = "AWAITING ACTION";
     public static final String FAILED = "FAILED";
@@ -245,7 +256,118 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata {
        logger.info("Workflows by Ordered by Launch Time " + workflows.size());
         return workflows;
     }
+    
+    public synchronized EventMetaI buildEvent(){
+    	Date d=Calendar.getInstance().getTime();
+    	return new WorkflowEvent((String)null,d,this.getUser(),this.getEventId(),FileUtils.getTimestamp(d));
+    }
+    
+    public class WorkflowEvent implements EventMetaI{
+    	final String message;
+    	final Date d;
+    	final UserI user;
+    	final Number id;
+    	final String timestamp;
+    	
+		public WorkflowEvent(String message, Date d, UserI user, Number id,
+				String timestamp) {
+			super();
+			this.message = message;
+			this.d = d;
+			this.user = user;
+			this.id = id;
+			this.timestamp = timestamp;
+		}
+
+		@Override
+		public String getMessage() {
+			return message;
+		}
+
+		@Override
+		public Date getEventDate() {
+			return d;
+		}
+
+		@Override
+		public String getTimestamp() {
+			return timestamp;
+		}
+
+		@Override
+		public UserI getUser() {
+			return user;
+		}
+
+		@Override
+		public Number getEventId() {
+			return id;
+		}
+    	
+    }
+
+	public Number getEventId() {
+		Number i= getWrkWorkflowdataId();
+		if(i==null){
+			try {
+				i=(Number)getNextWorkflowID();
+				setWrkWorkflowdataId(new Integer(i.intValue()));
+			} catch (Exception e) {
+				logger.error("",e);
+			}
+		}
+		
+		return i;
+	}
 
 
+    private static String __table=null;
+    private static String __dbName=null;
+    private static final String __pk="wrk_workflowData_id";
+    private static String __sequence=null;
+    private synchronized static Number getNextWorkflowID() throws Exception{
+        if(__table==null){
+        	try {
+				GenericWrapperElement element=GenericWrapperElement.GetElement(WrkWorkflowdata.SCHEMA_ELEMENT_NAME);
+				__dbName=element.getDbName();
+				__table=element.getSQLName();
+				__sequence=element.getSequenceName();
+			} catch (XFTInitException e) {
+				logger.error("",e);
+			} catch (ElementNotFoundException e) {
+				logger.error("",e);
+			}
+        }
+    	return (Number)PoolDBUtils.GetNextID(__dbName, __table, __pk, __sequence);
+    }
+
+	@Override
+	public Integer getWorkflowId() {
+		return getWrkWorkflowdataId();
+	}
+
+	@Override
+	public Date getLaunchTimeDate() {
+		try {
+			return getDateProperty("launch_time");
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+	}
+    
+	public String getUsername(){
+		return this.getInsertUser().getLogin();
+	}
+
+	@Override
+	public void setType(TYPE v) {
+		this.setType(v.toString());
+	}
+
+	@Override
+	public void setCategory(CATEGORY v) {
+		this.setCategory(v.toString());
+	}
 
 }

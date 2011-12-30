@@ -492,6 +492,8 @@
 			<xs:element name="activation_date" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="activation_user" type="xdat:user" minOccurs="0"/>
 			<xs:element name="last_modified" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="row_last_modified" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="xft_version" type="xs:string" minOccurs="0"/>
 			<xs:element name="origin" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="meta_data_id" type="xs:integer" use="required">
@@ -510,6 +512,8 @@
 					<xs:enumeration value="active"/>
 					<xs:enumeration value="quarantine"/>
 					<xs:enumeration value="obsolete"/>
+					<xs:enumeration value="deleted"/>
+					<xs:enumeration value="locked"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -549,6 +553,32 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="change_date" type="xs:dateTime"/>
+		<xs:attribute name="previous_change_date" type="xs:dateTime"/>
+	</xs:complexType>
+	<xs:complexType name="change_info">
+		<xs:sequence>
+			<xs:element name="change_user" type="xdat:user" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field>
+							<xdat:sqlField name="change_user"/>
+						</xdat:field>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="comment" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="change_date" type="xs:dateTime"/>
+		<xs:attribute name="event_id" type="xs:integer"/>
+		<xs:attribute name="xdat_change_info_id" type="xs:long">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field>
+						<xdat:sqlField primaryKey="true" type="bigserial" autoIncrement="true"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="user_login">
 		<xs:sequence>

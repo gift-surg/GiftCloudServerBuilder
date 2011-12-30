@@ -18,6 +18,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
@@ -249,7 +250,7 @@ public class SavedSearchResource extends ItemResource {
 				}
 				
 				try {
-					search.save(user, false, true);
+					search.save(user, false, true,EventUtils.ADMIN_EVENT(user));
 				} catch (DBPoolException e) {
 					e.printStackTrace();
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -307,22 +308,20 @@ public class SavedSearchResource extends ItemResource {
 						}
 					}
 					
-					boolean processed=false;
-					
 					if(mine!=null){
 						if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
-							DBAction.DeleteItem(mine.getItem(), user);
+							DBAction.DeleteItem(mine.getItem(), user,EventUtils.ADMIN_EVENT(user));
 						}else{
-							DBAction.DeleteItem(search.getItem(), user);
+							DBAction.DeleteItem(search.getItem(), user,EventUtils.ADMIN_EVENT(user));
 						}
 					}else if(group!=null){
 						if(search.getAllowedUser().size()>0 || search.getAllowedGroups_groupid().size()>1){
-							DBAction.DeleteItem(group.getItem(), user);
+							DBAction.DeleteItem(group.getItem(), user,EventUtils.ADMIN_EVENT(user));
 						}else{
-							DBAction.DeleteItem(search.getItem(), user);
+							DBAction.DeleteItem(search.getItem(), user,EventUtils.ADMIN_EVENT(user));
 						}
 					}else if(user.getGroup("ALL_DATA_ADMIN")!=null){
-						DBAction.DeleteItem(search.getItem(), user);
+						DBAction.DeleteItem(search.getItem(), user,EventUtils.ADMIN_EVENT(user));
 					}else{						
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 						return;

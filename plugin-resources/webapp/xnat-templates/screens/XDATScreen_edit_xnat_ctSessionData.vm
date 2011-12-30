@@ -233,6 +233,7 @@ $page.setVlinkColor($ui.vlink)
 		<td><textarea name="xnat:ctSessionData.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
 	</tr>
 </TABLE><BR><BR><HR>
+#auditTable("" "Session Modification")
 <table>
 #xdatEditProps($item $edit_screen)
 <DIV ID="ADDIN"></DIV>

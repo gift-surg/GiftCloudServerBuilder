@@ -29,9 +29,14 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 /**
  * @author Tim
@@ -248,6 +253,9 @@ public class EditSubjectAction extends SecureAction {
             
             boolean removedReference = false;
             XFTItem first = (XFTItem)found;
+            
+            PersistentWorkflowI wrk = WorkflowUtils.getOrCreateWorkflowData(null, user, first.getXSIType(), subject.getId(), subject.getProject(), newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(subject.getXSIType(), false)));
+            EventMetaI ci=wrk.buildEvent();
 
             Object[] keysArray = data.getParameters().getKeys();
             for (int i=0;i<keysArray.length;i++)
@@ -262,10 +270,18 @@ public class EditSubjectAction extends SecureAction {
                     final ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
                     if (items.size() > 0)
                     {
-                    	final ItemI toRemove = items.getFirst();
-                        DBAction.RemoveItemReference(first.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
-                        first.removeItem(toRemove);
-                        removedReference = true;
+                    	wrk.setPipelineName("Remove Item");
+                    	PersistentWorkflowUtils.save(wrk, ci);
+                    	
+                    	try {
+							final ItemI toRemove = items.getFirst();
+							DBAction.RemoveItemReference(first.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data),ci);
+							first.removeItem(toRemove);
+							removedReference = true;
+							PersistentWorkflowUtils.complete(wrk,ci);
+						} catch (Exception e) {
+							PersistentWorkflowUtils.fail(wrk,ci);
+						}
                     }else{
                         logger.debug("ITEM NOT FOUND:" + key + "="+ value);
                     }
@@ -296,7 +312,11 @@ public class EditSubjectAction extends SecureAction {
                 }
             }else{
             	try {
-            		found.save(TurbineUtils.getUser(data),false,false);
+                	wrk.setPipelineName("Modify Subject");
+                	PersistentWorkflowUtils.save(wrk, ci);
+            		found.save(TurbineUtils.getUser(data),false,false,ci);
+            		
+            		PersistentWorkflowUtils.complete(wrk,ci);
             		
 					MaterializedView.DeleteByUser(user);
 					
@@ -306,6 +326,7 @@ public class EditSubjectAction extends SecureAction {
             		    first = (XFTItem)temp1;
             		}
             	} catch (Exception e) {
+            		PersistentWorkflowUtils.fail(wrk,ci);
             		logger.error("Error Storing " + found.getXSIType(),e);
             		
             		data.setMessage("Error Saving item.");
@@ -333,7 +354,7 @@ public class EditSubjectAction extends SecureAction {
             }
         } catch (Exception e) {
             logger.error("",e);
-            data.setMessage("Unknown Error.");
+            data.setMessage(e.getMessage());
             if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
             TurbineUtils.SetEditItem(found,data);
             if (data.getParameters().getString("edit_screen") !=null)

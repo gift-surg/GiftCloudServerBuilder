@@ -3,13 +3,11 @@ package org.nrg.xnat.restlet.resources;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.velocity.VelocityContext;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUsergroup;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -18,6 +16,10 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -25,8 +27,8 @@ import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
-import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -72,7 +74,7 @@ public class ProjectMemberResource extends SecureResource {
 					group = new XdatUsergroup(gItem);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 			
@@ -125,22 +127,22 @@ public class ProjectMemberResource extends SecureResource {
 					}
 				}
 			} catch (XFTInitException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (ElementNotFoundException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (DBPoolException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (FieldNotFoundException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 
@@ -165,19 +167,19 @@ public class ProjectMemberResource extends SecureResource {
 				if(user.canDelete(proj)){
 					try {
 						for(XDATUser newUser: newUsers){
-						    proj.removeGroupMember(group.getId(), newUser, user);													
+						    proj.removeGroupMember(group.getId(), newUser, user,newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.REMOVE_USER_TO_PROJECT + "(" + newUser.getLogin() + ")"));													
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("",e);
 					}
 				}else{
 					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				}
 			} catch (InvalidItemException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 		}
@@ -205,10 +207,17 @@ public class ProjectMemberResource extends SecureResource {
 							    context.put("admin_email",AdminUtils.getAdminEmailId());
 							    context.put("projectOM",proj);
 							    //SEND email to user
-							    ProjectAccessRequest.InviteUser(context, uID, user, user.getFirstname() + " " + user.getLastname() + " has invited you to join the " + proj.getName() + " project.");
+							    final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.SCHEMA_ELEMENT_NAME,proj.getId(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.INVITE_USER_TO_PROJECT + "(" + uID + ")"));
+						    	try {
+									ProjectAccessRequest.InviteUser(context, uID, user, user.getFirstname() + " " + user.getLastname() + " has invited you to join the " + proj.getName() + " project.");
+									WorkflowUtils.complete(wrk, wrk.buildEvent());
+								} catch (Exception e) {
+									WorkflowUtils.fail(wrk, wrk.buildEvent());
+									logger.error("",e);
+								}
 							}
 						} catch (Throwable e) {
-							e.printStackTrace();
+							logger.error("",e);
 						}
 					}
 					
@@ -219,48 +228,45 @@ public class ProjectMemberResource extends SecureResource {
 						Form f = getRequest().getResourceRef().getQueryAsForm();
 						if(f!=null)email=f.getFirstValue("sendemail");
 						
+			            
 						boolean sendmail=Boolean.parseBoolean(email);
 						
 						for(XDATUser newUser: newUsers){
-							proj.addGroupMember(group.getId(), newUser, user);
-	                        try {
-	            				WrkWorkflowdata workflow = new WrkWorkflowdata((UserI)user);
-	            				workflow.setDataType("xnat:projectData");
-	            				workflow.setExternalid(proj.getId());
-	            				workflow.setId(proj.getId());
-	            				workflow.setPipelineName("New Member: " + newUser.getFirstname() + " " + newUser.getLastname());
-	            				workflow.setStatus("Complete");
-	            				workflow.setLaunchTime(Calendar.getInstance().getTime());
-	            				workflow.save(user, false, false);
-	            			} catch (Throwable e) {
-	            				e.printStackTrace();
-	            			}
-	                        if (sendmail){
-	    						try {
-									VelocityContext context = new VelocityContext();
-									
-									context.put("user",user);
-									context.put("server",TurbineUtils.GetFullServerPath(request));
-									context.put("process","Transfer to the archive.");
-									context.put("system",TurbineUtils.GetSystemName());
-									context.put("access_level","member");
-									context.put("admin_email",AdminUtils.getAdminEmailId());
-									context.put("projectOM",proj);
-									org.nrg.xnat.turbine.modules.actions.ProcessAccessRequest.SendAccessApprovalEmail(context, newUser.getEmail(), user, TurbineUtils.GetSystemName() + " Access Granted for " + proj.getName());
-								} catch (Throwable e) {
-									e.printStackTrace();
+							final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.SCHEMA_ELEMENT_NAME,proj.getId(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + "(" + newUser.getLogin() + ")"));
+					    	EventMetaI c=wrk.buildEvent();
+							
+								try {
+									proj.addGroupMember(group.getId(), newUser, user,WorkflowUtils.setStep(wrk, "Add " + newUser.getLogin()));
+									WorkflowUtils.complete(wrk, c);
+									if (sendmail){
+										try {
+											VelocityContext context = new VelocityContext();
+											
+											context.put("user",user);
+											context.put("server",TurbineUtils.GetFullServerPath(request));
+											context.put("process","Transfer to the archive.");
+											context.put("system",TurbineUtils.GetSystemName());
+											context.put("access_level","member");
+											context.put("admin_email",AdminUtils.getAdminEmailId());
+											context.put("projectOM",proj);
+											org.nrg.xnat.turbine.modules.actions.ProcessAccessRequest.SendAccessApprovalEmail(context, newUser.getEmail(), user, TurbineUtils.GetSystemName() + " Access Granted for " + proj.getName());
+										} catch (Throwable e) {
+											logger.error("",e);
+										}
+									}
+								} catch (Exception e) {
+									throw e;
 								}
-	                        }
-						}
+							}
 					}
 				}else{
 					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				}
 			} catch (InvalidItemException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-					e.printStackTrace();
+				logger.error("",e);
 					getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 			returnDefaultRepresentation();
@@ -275,10 +281,10 @@ public class ProjectMemberResource extends SecureResource {
 				String query = "SELECT g.id AS \"GROUP_ID\", displayname,login,firstname,lastname,email FROM xdat_userGroup g RIGHT JOIN xdat_user_Groupid map ON g.id=map.groupid RIGHT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE tag='" + proj.getId() + "' ORDER BY g.id DESC;";
 				table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (DBPoolException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 		}

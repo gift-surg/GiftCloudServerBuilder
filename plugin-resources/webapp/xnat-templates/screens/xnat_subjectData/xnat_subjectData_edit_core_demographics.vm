@@ -22,7 +22,7 @@
       <div id="DIV_DOB" #if($hasDOB)style="display:block"#else style="display:none"#end>
 				       <script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
 				       <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')"> 
-									       <input type="text" id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob")) value="$turbineUtils.formatDate($!om.getDateProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"MM/dd/yyyy")" #end/>
+									       <input type="text" id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob")) value="$!turbineUtils.formatDate($!om.getDateProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"MM/dd/yyyy")" #end/>
 									       <script type="text/javascript">
 									        insertCalendar(document.getElementById("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"Date Of Birth");
 									       </script>

@@ -23,6 +23,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.AdminEditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
+import org.nrg.xft.event.EventUtils;
 
 public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 
@@ -70,7 +71,7 @@ public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 				try {
             		PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
             		pipelineRepository.setPipeline(pipelineDetails);
-            		pipelineRepository.save(user, false, true);
+            		pipelineRepository.save(user, false, true,EventUtils.ADMIN_EVENT(user));
             		PipelineRepositoryManager.Reset();
     				data.setMessage("The pipeline has been added to the repository");
     				data.setScreenTemplate("ClosePage.vm");

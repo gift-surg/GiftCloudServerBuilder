@@ -23,16 +23,16 @@ $item.getProperty("project")
 #end
 #else
 #if($create_projects.size()>0)
-<SELECT ID="$item.getXSIType()/project" name="$item.getXSIType()/project" ONCHANGE="addNewProject(this.options[this.selectedIndex].value,this.options[this.selectedIndex].text);">
+<SELECT class="required" ID="$item.getXSIType()/project" name="$item.getXSIType()/project" ONCHANGE="">
 <option value="">(SELECT)</option>
 #foreach($proj in $create_projects)
-<option value="$proj">
-#if($projectMap.get($proj))
-$projectMap.get($proj)
-#elseif($proj!="*")
-$proj
-#end
-</option>
+	#if($proj!="*")
+		<option value="$proj">
+			#if($projectMap.get($proj))
+				$projectMap.get($proj)
+			#end
+		</option>
+	#end
 #end
 </SELECT>
 #else
@@ -45,11 +45,7 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
  <TH ALIGN="left"><label ID='${item.getXSIType()}_label'>#if($item.instanceOf("xnat:subjectData"))Subject#else Experiment#end
 's ID within this project:</label></TH>
  <TD>
- #if($item.getProperty("ID"))
-<INPUT size="10" type="text" value="$!item.getProperty("label")" id="$item.getXSIType()/label" name="$item.getXSIType()/label" ONCHANGE="identifierChanged();"/>
- #else
- <INPUT size="10" type="text" value="$!item.getProperty("label")" id="$item.getXSIType()/label" name="$item.getXSIType()/label" ONCHANGE="identifierChanged();"/>
- #end
+<INPUT class="required" size="10" type="text" value="$!item.getProperty("label")" id="$item.getXSIType()/label" name="$item.getXSIType()/label" ONCHANGE="identifierChanged();"/>
  </TD>
  <TD></TD>
 </TR>

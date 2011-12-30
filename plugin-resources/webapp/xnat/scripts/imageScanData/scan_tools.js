@@ -330,7 +330,6 @@ function ScanEditor(_sessionID,_scanID,_options){
 		    if(this.list.length>0){
 	       //show label button
 	       var toggleD = function(e,obj1) {
-	          //YAHOO.util.Event.stopEvent(e);
 	          if(!YAHOO.util.Dom.hasClass(obj1.dToggler, "open")) {
 	             YAHOO.util.Dom.addClass(obj1.dToggler, "open")
 	          }
@@ -386,7 +385,7 @@ function scanDeleteDialog(_options){
 
 	this.render=function(){
 		this.panel=new YAHOO.widget.Dialog("scanDeletionDialog",{close:true,
-		   width:"400px",height:"100px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
+		   width:"400px",height:"200px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
 		this.panel.setHeader("Scan Deletion Dialog");
 
 		var bd = document.createElement("form");
@@ -396,7 +395,7 @@ function scanDeleteDialog(_options){
 		table.appendChild(tb);
 		bd.appendChild(table);
 
-		//modality
+		//delete files
 		tr=document.createElement("tr");
 		td1=document.createElement("th");
 		td2=document.createElement("td");
@@ -413,6 +412,24 @@ function scanDeleteDialog(_options){
 		tr.appendChild(td1);
 		tr.appendChild(td2);
 		tb.appendChild(tr);
+		
+
+		//modality
+		tr=document.createElement("tr");
+		td1=document.createElement("th");
+		td2=document.createElement("td");
+
+		td1.innerHTML="Justification:";
+		td1.align="left";
+		var sel = document.createElement("textarea");
+		sel.cols="24";
+		sel.rows="4";
+		sel.id="event_reason";
+		sel.name="event_reason";
+		td2.appendChild(sel);
+		tr.appendChild(td1);
+		tr.appendChild(td2);
+		tb.appendChild(tr);
 
 		this.panel.setBody(bd);
 
@@ -421,6 +438,11 @@ function scanDeleteDialog(_options){
 		this.panel.selector=this;
 		var buttons=[{text:"Delete",handler:{fn:function(){
 				this.selector.delete_files = this.form.delete_files.checked;
+				this.selector.event_reason = this.form.event_reason.value;
+				if(this.selector.event_reason==""){
+					alert("Please enter a justification!");
+					return;
+				}
 				this.cancel();
 				this.selector.onResponse.fire();
 			}},isDefault:true},
@@ -444,6 +466,7 @@ function scanDeletor(_options){
 		this.deleteDialog=new scanDeleteDialog();
 		this.deleteDialog.onResponse.subscribe(function(){
 			var delete_files=this.deleteDialog.delete_files;
+			var event_reason=this.deleteDialog.event_reason;
 
 			this.initCallback={
 				success:function(obj1){
@@ -456,9 +479,18 @@ function scanDeletor(_options){
 				},
 				scope:this
 			}
+			
+			var params="";
+			if(delete_files){
+				params+="&removeFiles=true";
+			}
+			
+			params+="&event_reason="+event_reason;
+			params+="&event_type=WEB_FORM";
+			params+="&event_action=Session Modification form";
 
 			openModalPanel("delete_scan","Delete scan.");
-			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json',this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json'+params,this.initCallback,null,this);
 		},this,this);
 
 		this.deleteDialog.render();

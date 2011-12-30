@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Calendar;
 
 import org.apache.axis.utils.StringUtils;
 import org.apache.commons.logging.Log;
@@ -17,7 +18,7 @@ public class FileUtils {
 		if (src.exists()) {
 			final File cache = (StringUtils.isEmpty(subdir)) ? new File(XFT.GetCachePath(), project) : new File(new File(XFT.GetCachePath(), project), subdir);
 
-			final File dest = new File(cache, org.nrg.xft.utils.FileUtils.renameWTimestamp(src.getName()));
+			final File dest = new File(cache, org.nrg.xft.utils.FileUtils.renameWTimestamp(src.getName(),Calendar.getInstance().getTime()));
 
 			org.nrg.xft.utils.FileUtils.MoveDir(src, dest, false);
 		}
@@ -28,7 +29,7 @@ public class FileUtils {
 			project = "Unknown";
 		final File cache = (StringUtils.isEmpty(subdir)) ? new File(XFT.GetCachePath(), project) : new File(new File(XFT.GetCachePath(), project), subdir);
 
-		final File dest = new File(cache, org.nrg.xft.utils.FileUtils.renameWTimestamp(destName));
+		final File dest = new File(cache, org.nrg.xft.utils.FileUtils.renameWTimestamp(destName,Calendar.getInstance().getTime()));
 
 		return dest;
 	}

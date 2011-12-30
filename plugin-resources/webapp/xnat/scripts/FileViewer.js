@@ -53,42 +53,59 @@ function FileViewer(_obj){
 		closeModalPanel("refresh_file");
 		alert("Error loading files");
 	}
+	   
+	this.removeFile=function(item){	
+		var justification=new XNAT.app.requestJustification("file","File Deletion Dialog",this._removeFile,this);
+		justification.item=item;		
+	}
    
-   this.removeFile=function(item){
-   	  if(confirm("Are you sure you want to delete '" + item.file_name + "'?")){
-			this.initCallback={
-				success:function(obj1){
-		    		this.refreshCatalogs("file");
-				},
-				failure:function(o){
-		    		closeModalPanel("file");
-					displayError("ERROR " + o.status+ ": Failed to delete file.");
-				},
-				scope:this
-			}
-			
-			openModalPanel("file","Deleting '" + item.file_name +"'");
-			YAHOO.util.Connect.asyncRequest('DELETE',item.uri,this.initCallback,null,this);
+   this._removeFile=function(arg1,arg2,container){	   
+		var event_reason=container.dialog.event_reason;
+		this.initCallback={
+			success:function(obj1){
+	    		this.refreshCatalogs("file");
+			},
+			failure:function(o){
+	    		closeModalPanel("file");
+				displayError("ERROR " + o.status+ ": Failed to delete file.");
+			},
+			scope:this
 		}
+		
+		openModalPanel("file","Deleting '" + container.item.file_name +"'");
+
+		var params="";		
+		params+="event_reason="+event_reason;
+		params+="&event_type=WEB_FORM";
+		params+="&event_action=File Deletion Dialog";
+		
+		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+"?"+params,this.initCallback,null,this);
    }
    
    this.removeCatalog=function(item){
-   	  if(confirm("Are you sure you want to delete this folder '" + item.file_name + "'?")){
-			this.initCallback={
-				success:function(obj1){
-	  				this.refreshCatalogs("file");
-				},
-				failure:function(o){
-		    		closeModalPanel("file");
-					displayError("ERROR " + o.status+ ": Failed to delete file.");
-				},
-				argument:item,
-				scope:this
-			}
-			
-			openModalPanel("file","Deleting folder '" + item.file_name +"'");
-			YAHOO.util.Connect.asyncRequest('DELETE',item.uri,this.initCallback,null,this);
+		var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeCatalog,this);
+		justification.item=item;		
+   }
+   
+   this._removeCatalog=function(arg1,arg2,container){
+		var event_reason=container.dialog.event_reason;
+		this.initCallback={
+			success:function(obj1){
+  				this.refreshCatalogs("file");
+			},
+			failure:function(o){
+	    		closeModalPanel("file");
+				displayError("ERROR " + o.status+ ": Failed to delete file.");
+			},
+			scope:this
 		}
+		
+		openModalPanel("file","Deleting folder '" + container.item.file_name +"'");
+		var params="";		
+		params+="event_reason="+event_reason;
+		params+="&event_type=WEB_FORM";
+		params+="&event_action=Folder Deletion Dialog";
+		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+"?"+params,this.initCallback,null,this);
    }
    
    this.getScan=function(sc, sid){

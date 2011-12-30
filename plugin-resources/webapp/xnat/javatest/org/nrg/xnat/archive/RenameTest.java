@@ -12,6 +12,7 @@ import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.DBItemCache;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.archive.Rename.UnsupportedResourceType;
 
@@ -35,7 +36,7 @@ public class RenameTest {
 		res.setUri((new File(session_dir,snapshot)).getAbsolutePath());
 		
 		final SecurityManager sm= SecurityManager.GetInstance();
-		final DBItemCache cache = new DBItemCache();
+		final DBItemCache cache = new DBItemCache(null,null);
 		
 		final Rename rnm=new Rename();
 		rnm.modifyResource(res, session_dir.toURI(), session_dir2.getAbsolutePath(), null, sm, cache);
@@ -57,7 +58,7 @@ public class RenameTest {
 		res.setUri((new File(session_dir3,snapshot)).getAbsolutePath());
 		
 		final SecurityManager sm= SecurityManager.GetInstance();
-		final DBItemCache cache = new DBItemCache();
+		final DBItemCache cache = new DBItemCache(null,null);;
 		
 		final Rename rnm=new Rename();
 		rnm.modifyResource(res, session_dir.toURI(), session_dir2.getAbsolutePath(), null, sm, cache);
@@ -81,7 +82,7 @@ public class RenameTest {
 		res.setUri("arc001/mr1/SCANS/1/SNAPSHOTS/x.gif");
 		
 		final SecurityManager sm= SecurityManager.GetInstance();
-		final DBItemCache cache = new DBItemCache();
+		final DBItemCache cache = new DBItemCache(null,null);
 		
 		final Rename rnm=new Rename();
 		try {

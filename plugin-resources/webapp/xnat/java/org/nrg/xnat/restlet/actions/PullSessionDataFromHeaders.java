@@ -21,6 +21,9 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
@@ -42,13 +45,15 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
 	private final XDATUser user;
 	private boolean allowDataDeletion;
 	private final boolean overwrite,isInPrearchive;
+	private final EventMetaI c;
 	
-	public PullSessionDataFromHeaders(final XnatImagesessiondata mr, final XDATUser user, boolean allowDataDeletion, final boolean overwrite, final boolean isInPrearchive){
+	public PullSessionDataFromHeaders(final XnatImagesessiondata mr, final XDATUser user, boolean allowDataDeletion, final boolean overwrite, final boolean isInPrearchive,EventMetaI c){
 		this.tempMR=mr;
 		this.user=user;
 		this.allowDataDeletion=allowDataDeletion;
 		this.overwrite=overwrite;
 		this.isInPrearchive=isInPrearchive;
+		this.c=c;
 	}
 
 
@@ -149,7 +154,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
             throw new ValidationException(vr.toString());
         }else{
         	final XnatProjectdata proj = newmr.getProjectData();
-        	if(newmr.save(user,false,allowDataDeletion)){
+        	if(newmr.save(user,false,allowDataDeletion,c)){
 	try {
 				MaterializedView.DeleteByUser(user);
 
@@ -161,18 +166,6 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
 					}
 			}
             
-            try {
-            	final WrkWorkflowdata workflow = new WrkWorkflowdata((UserI)user);
-  				workflow.setDataType(newmr.getXSIType());
-  				workflow.setExternalid(proj.getId());
-  				workflow.setId(newmr.getId());
-  				workflow.setPipelineName("Header Mapping");
-  				workflow.setStatus("Complete");
-  				workflow.setLaunchTime(Calendar.getInstance().getTime());
-  				workflow.save(user, false, false);
-  			} catch (Throwable e) {
-  				logger.error("",e);
-  			}
         }
         
         return Boolean.TRUE;

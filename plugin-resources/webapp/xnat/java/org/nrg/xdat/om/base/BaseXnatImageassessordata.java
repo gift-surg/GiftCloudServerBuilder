@@ -23,6 +23,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatImageassessordata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
@@ -137,15 +138,18 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
     }
     
     
-    public void deleteFiles() throws IOException{
-    	super.deleteFiles();
+    public void deleteFiles(UserI u, EventMetaI ci) throws Exception{
+    	super.deleteFiles(u,ci);
+    	
+    	final String rootPath=ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject());
     	
     	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, u,ci);
     	}
     	
     	for(XnatAbstractresourceI abstRes:this.getOut_file()){
-    		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+    		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, u,ci);
+        	
     	}
     }
 

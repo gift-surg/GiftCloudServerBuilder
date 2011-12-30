@@ -8,10 +8,11 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
 
 public interface ResourceModifierBuilderI {
 
-	public abstract ResourceModifierA buildResourceModifier(final boolean overwrite, final XDATUser user) throws Exception;
+	public abstract ResourceModifierA buildResourceModifier(final boolean overwrite, final XDATUser user,final EventMetaI ci) throws Exception;
 
 	public abstract void setProject(XnatProjectdata project);
 

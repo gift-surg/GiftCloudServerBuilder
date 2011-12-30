@@ -1,9 +1,12 @@
+#if($data.getSession().getAttribute("user").canActivate($item))
+	<div id="lock_a" class="warning" style="display:none;"></div>
+#end
 		#elementActionsBoxNoEnd($element $search_field $search_value $data.getSession().getAttribute("user") $item)
 	      <li class="yuimenuitem">
 													       <A href="" ONCLICK="showFiles();return false;"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("scripts/yui/build/treeview/assets/img/folders/cf.gif")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>Manage Files</A>
 													      </li>
 													      	#if ($item.canDelete($user))
-													      <li class="yuimenuitem">
+													      <li class="yuimenuitem lockable">
 													       <A href="" ONCLICK="restDelete();return false;"><div class="ic"><img border="0" src="$content.getURI("images/delete.gif")"/></div><div class="ic_spacer">&nbsp;</div>Delete</A>
 													      </li>
 													      #end
@@ -38,4 +41,18 @@
 													   window.deleter=new RestDeleter(_a,{defaultHeight:450,defaultWidth:600});
    window.deleter.init();
 				}
+				
+				//setup locking feature
+YAHOO.util.Event.onDOMReady(function(){
+				#if($item.isLocked())
+					XNAT.app.locker.showUnlock();
+					XNAT.app.locker.status=true;
+				#else
+					XNAT.app.locker.showLock();
+					XNAT.app.locker.status=true;
+				#end
+}
 				</script>
+				
+<script type="text/javascript" src="$content.getURI("scripts/locking.js")"></script>
+			

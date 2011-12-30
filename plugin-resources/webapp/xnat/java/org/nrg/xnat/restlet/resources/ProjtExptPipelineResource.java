@@ -24,7 +24,6 @@ import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.model.ArcPipelineparameterdataI;
 import org.nrg.xdat.om.ArcPipelinedata;
-import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -32,12 +31,17 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xnat.exceptions.ValidationException;
 import org.nrg.xnat.restlet.actions.FixScanTypes;
 import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -124,17 +128,35 @@ public class ProjtExptPipelineResource extends SecureResource {
 			try {
 				if(step.equals(XNATRestConstants.TRIGGER_PIPELINES)){
 					if(user.canEdit(expt)){
-						FixScanTypes fst=new FixScanTypes(expt,user,proj,true);
-						fst.call();
+
+						PersistentWorkflowI wrk = PersistentWorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.TRIGGER_PIPELINES));
+						EventMetaI c=wrk.buildEvent();
 						
-						TriggerPipelines tp = new TriggerPipelines(expt,true,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
-						tp.call();
+						try {
+							FixScanTypes fst=new FixScanTypes(expt,user,proj,true,c);
+							fst.call();
+							
+							TriggerPipelines tp = new TriggerPipelines(expt,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
+							tp.call();
+							PersistentWorkflowUtils.complete(wrk,c);
+						} catch (Exception e) {
+							WorkflowUtils.fail(wrk, c);
+							throw e;
 						}
+					}
 				}else if(step.equals(XNATRestConstants.PULL_DATA_FROM_HEADERS) && expt instanceof XnatImagesessiondata){
 					if(user.canEdit(expt)){
 						try {
-							PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt, user, this.isQueryVariableTrue("allowDataDeletion"), this.isQueryVariableTrue("overwrite"),false);
-							pull.call();
+							PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.DICOM_PULL));
+							EventMetaI c=wrk.buildEvent();
+							try {
+								PullSessionDataFromHeaders pull=new PullSessionDataFromHeaders((XnatImagesessiondata)expt, user, this.isQueryVariableTrue("allowDataDeletion"), this.isQueryVariableTrue("overwrite"),false,c);
+								pull.call();
+								WorkflowUtils.complete(wrk, c);
+							} catch (Exception e) {
+								WorkflowUtils.fail(wrk, c);
+								throw e;
+							}
 						} catch (SAXException e){
 							logger.error("",e);
 							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,e.getMessage());
@@ -145,14 +167,25 @@ public class ProjtExptPipelineResource extends SecureResource {
 							logger.error("",e);
 							this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 							return;
-							}
+						}
 					}else{
 						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-						}
+					}
 				}else if(step.equals(XNATRestConstants.FIX_SCAN_TYPES) && expt instanceof XnatImagesessiondata){
 					if(user.canEdit(expt)){
-						FixScanTypes fst=new FixScanTypes(expt,user,proj,true);
-						fst.call();
+
+						PersistentWorkflowI wrk = PersistentWorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.TRIGGER_PIPELINES));
+						EventMetaI c=wrk.buildEvent();
+						PersistentWorkflowUtils.save(wrk,c);
+					
+						try {
+							FixScanTypes fst=new FixScanTypes(expt,user,proj,true,c);
+							fst.call();
+							WorkflowUtils.complete(wrk, c);
+						} catch (Exception e) {
+							WorkflowUtils.fail(wrk, c);
+							throw e;
+						}
 					}else{
 						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 					}

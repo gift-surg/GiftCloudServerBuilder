@@ -27,6 +27,14 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.ActionNameAbsent;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
@@ -41,7 +49,6 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
-import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,13 +104,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final XDATUser user;
 	private final String project;
 	private final Map<String,Object> params;
-
+	
 	private final File srcDIR;
 
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
 	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
 	private final boolean waitFor;
+	
 
 	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
@@ -121,6 +129,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite, final boolean waitFor, final Boolean overwrite_files)
 	throws IOException,SAXException {
 		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite, waitFor,overwrite_files);
+	}
+
+	public XnatImagesessiondata getSrc(){
+		return src;
 	}
 
 	public File getSrcDIR(){
@@ -190,7 +202,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * by deriving and setting them, if necessary.
 	 * @throws ArchivingException
 	 */
-	private void fixSubject()  throws ClientException,ServerException {
+	private void fixSubject(EventMetaI c)  throws ClientException,ServerException {
 		String subjectID =  (String)params.get(PARAM_SUBJECT);
 
 		if(!XNATUtils.hasValue(subjectID)){
@@ -238,7 +250,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 			subject.setId(newID);
 			try {
-				subject.save(user, false, false);
+				subject.save(user, false, false,c);
 			} catch (Exception e) {
 				failed("unable to save new subject " + newID);
 				throw new ServerException("Unable to save new subject " + subject, e);
@@ -285,7 +297,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * @throws AlreadyArchivingException
 	 */
 	private void preventConcurrentArchiving(final String id, final XDATUser user) throws ClientException {
-		Collection<WrkWorkflowdata> wrks=WorkflowUtils.getOpenWorkflows(user, id);
+		Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user, id);
 		if (!wrks.isEmpty()){
 			this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName());
 			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName(),new Exception());
@@ -392,10 +404,9 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		populateAdditionalFields();
 
 		fixSessionLabel();
-		fixSubject();
-
+		
 		final XnatImagesessiondata existing=retrieveExistingExpt();
-
+		
 		if(existing==null){
 			try {
 				if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
@@ -407,45 +418,57 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			src.setId(existing.getId());
 			preventConcurrentArchiving(existing.getId(),user);
 		}
+		
 
-
-		WrkWorkflowdata workflow;
+		
+		final PersistentWorkflowI workflow;
+		final EventMetaI c;
+		
 		try {
-			workflow = WorkflowUtils.buildOpenWorkflow(user, src.getXSIType(), src.getId(), src.getProject());
-			workflow.setPipelineName("Transfer");
+			workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), EventUtils.TRANSFER, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
 			workflow.setStepDescription("Validating");
-			workflow.save(user, false, false);
-		} catch (Exception e2) {
-			failed("unable to create workflow entry.");
-			throw new ServerException("unable to create workflow entry.", e2);
+			c=workflow.buildEvent();
+			try {
+				PersistentWorkflowUtils.save(workflow,c);
+			} catch (Exception e) {
+				throw new ServerException(e);
+			}
+		} catch (JustificationAbsent e2) {
+			throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e2);
+		} catch (EventRequirementAbsent e2) {
+			throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e2);
 		}
 
+		fixSubject(c);
+
+		
 		try {
 			processing("validating loaded data");
 			validateSesssion();
 
-		final File arcSessionDir = getArcSessionDir();
+			final File arcSessionDir = getArcSessionDir();
 
 			if(existing!=null)checkForConflicts(src,srcDIR,existing,arcSessionDir);
 
 			if(arcSessionDir.exists()){
-				this.setStep("Merging", workflow);
+				this.setStep("Merging", workflow,c);
 				processing("merging files data with existing session");
 			}else{
-				this.setStep("Archiving", workflow);
+				this.setStep("Archiving", workflow,c);
 				processing("archiving session");
 			}
 
 			final boolean shouldForceQuarantine;
-			if(params.containsKey("quarantine") && params.get("quarantine").toString().equalsIgnoreCase("true")){
+			if(params.containsKey(ViewManager.QUARANTINE) && params.get(ViewManager.QUARANTINE).toString().equalsIgnoreCase("true")){
 				shouldForceQuarantine=true;
 			}else{
 				shouldForceQuarantine=false;
 			}
 
+			final EventMetaI savetime=workflow.buildEvent();
 			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
-				public void save(XnatImagesessiondata merged) throws Exception {
-					if(merged.save(user,false,false)){
+				public void save(XnatImagesessiondata merged) throws Exception {					
+					if(merged.save(user,false,false,savetime)){
 						user.clearLocalCache();
 						try {
 							MaterializedView.DeleteByUser(user);
@@ -470,44 +493,44 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				}
 			};
 
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, (allowDataDeletion)?allowDataDeletion:overwrite_files,saveImpl))
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, (allowDataDeletion)?allowDataDeletion:overwrite_files,saveImpl,user,workflow.buildEvent()))
 				.call();
 
 			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
 			org.nrg.xft.utils.FileUtils.DeleteFile(srcDIR);
 
 			try {
-				workflow.setStepDescription(WorkflowUtils.COMPLETE);
-				workflow.setStatus(WorkflowUtils.COMPLETE);
-				workflow.save(user, false, false);
+				workflow.setStepDescription(PersistentWorkflowUtils.COMPLETE);
+				workflow.setStatus(PersistentWorkflowUtils.COMPLETE);
+				PersistentWorkflowUtils.save(workflow,c);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
 
 			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
-				TriggerPipelines tp=new TriggerPipelines(src,false,false,user,waitFor);
+				TriggerPipelines tp=new TriggerPipelines(src,false,user,waitFor);
 				tp.call();
 			}
 		} catch (ServerException e) {
 			try {
-				workflow.setStatus(WorkflowUtils.FAILED);
-				workflow.save(user, false, false);
+				workflow.setStatus(PersistentWorkflowUtils.FAILED);
+				PersistentWorkflowUtils.save(workflow,c);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
 			throw e;
 		} catch (ClientException e) {
 			try {
-				workflow.setStatus(WorkflowUtils.FAILED);
-				workflow.save(user, false, false);
+				workflow.setStatus(PersistentWorkflowUtils.FAILED);
+				PersistentWorkflowUtils.save(workflow,c);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
 			throw e;
 		} catch (Throwable e) {
 			try {
-				workflow.setStatus(WorkflowUtils.FAILED);
-				workflow.save(user, false, false);
+				workflow.setStatus(PersistentWorkflowUtils.FAILED);
+				PersistentWorkflowUtils.save(workflow,c);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -522,10 +545,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	}
 
-	public void setStep(String step,WrkWorkflowdata workflow){
+	public void setStep(String step,PersistentWorkflowI workflow,EventMetaI c){
 		try {
 			workflow.setStepDescription(step);
-			workflow.save(user, false, false);
+			PersistentWorkflowUtils.save(workflow,c);
 		} catch (Exception e1) {
 			logger.error("", e1);
 		}

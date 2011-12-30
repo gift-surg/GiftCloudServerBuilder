@@ -26,6 +26,7 @@ import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatImagescandata;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
@@ -145,11 +146,11 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 
 
-    public void deleteFilesFromFileSystem(String rootPath){
+    public void deleteFilesFromFileSystem(String rootPath,UserI u, EventMetaI ci) throws Exception{
         List<XnatAbstractresourceI> files = this.getFile();
         if (!files.isEmpty())
         for (XnatAbstractresourceI resource:files){
-            ((XnatAbstractresource)resource).deleteFromFileSystem(rootPath);
+        	((XnatAbstractresource)resource).deleteWithBackup(rootPath, u,ci);
         }
     }
 
@@ -349,7 +350,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 				if(res.getLabel()!=null && res.getLabel().equalsIgnoreCase("SNAPSHOTS")){
 				    path="/data/experiments/"+ses.getId() + "/scans/"+this.getId() + "/resources/SNAPSHOTS/files/";
 				    if(res instanceof XnatResourcecatalog){
-						CatCatalogI cat=((XnatResourcecatalog)res).getCleanCatalog(ses.getProjectData().getRootArchivePath(), false);
+						CatCatalogI cat=((XnatResourcecatalog)res).getCleanCatalog(ses.getProjectData().getRootArchivePath(), false,null,null);
 						for(CatEntryI entry:cat.getEntries_entry()){
 							if(entry.getContent().equalsIgnoreCase("THUMBNAIL")){
 							    snapshot.setThumbnail(path + entry.getUri());

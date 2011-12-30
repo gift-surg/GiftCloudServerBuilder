@@ -4,10 +4,12 @@
 package org.nrg.xnat.helpers.resource;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 
 /**
@@ -16,9 +18,21 @@ import org.nrg.xft.utils.StringUtils;
  */
 public class XnatResourceInfo {
 	private String description,format,content=null;
+	private Number event_id=null;
 	private List<String> tags=new ArrayList<String>();
 	private Map<String,String> meta=new HashMap<String,String>();
+	private final Date lastModified,created;
+	private final UserI user;
 	
+	public Date getLastModified() {
+		return lastModified;
+	}
+	public Date getCreated() {
+		return created;
+	}
+	public UserI getUser() {
+		return user;
+	}
 	public String getDescription() {
 		return description;
 	}
@@ -58,11 +72,15 @@ public class XnatResourceInfo {
 		this.tags.add(tag);
 	}
 	
-	
+	public XnatResourceInfo(UserI user, Date created, Date lastModified){
+		this.created=created;
+		this.lastModified=lastModified;
+		this.user=user;
+	}
 
 	
-    public static XnatResourceInfo buildResourceInfo(final String description, final String format, final String content, final String[] tags){
-		XnatResourceInfo info = new XnatResourceInfo();
+    public static XnatResourceInfo buildResourceInfo(final String description, final String format, final String content, final String[] tags, final UserI user, Date created, Date modified, Number i){
+		XnatResourceInfo info = new XnatResourceInfo(user,created,modified);
         
 	    if(description!=null){
 	    	info.setDescription(description);
@@ -72,6 +90,10 @@ public class XnatResourceInfo {
 	    }
 	    if(content!=null){
 	    	info.setContent(content);
+	    }
+	    
+	    if(i!=null){
+	    	info.setEvent_id(i);
 	    }
 	    
 	    if(tags!=null){
@@ -98,5 +120,11 @@ public class XnatResourceInfo {
 	    }
 		
 		return info;
+	}
+	public void setEvent_id(Number event_id) {
+		this.event_id = event_id;
+	}
+	public Number getEvent_id() {
+		return event_id;
 	}
 }

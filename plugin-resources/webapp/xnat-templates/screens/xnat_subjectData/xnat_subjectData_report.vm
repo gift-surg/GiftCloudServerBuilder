@@ -72,7 +72,13 @@ function summaryIndexChanged(){
    
 function summaryTabManagerInit(){
     window.summaryTabView = new YAHOO.widget.TabView('subjectSummary');   
-    window.subject_summary_module = new YAHOO.widget.Module("subject_summary_module",{visible:false,zIndex:5});
+    window.subject_summary_module = new YAHOO.widget.Module("subject_summary_module",{visible:false,zIndex:5});   
+	
+window.summaryTabView.addTab( new YAHOO.widget.Tab({   
+    label: 'History',   
+    dataSrc: serverRoot+'/REST/subjects/$om.getId()?format=html&requested_screen=WorkflowHistorySummary&includeFiles=false',   
+    cacheData: false
+}));   
     
     window.subject_summary_module.show(); 		    
     
@@ -93,7 +99,7 @@ function summaryTabManagerInit(){
 													       <A href="" ONCLICK="showFiles();return false;"><div class="ic"><img border="0" src="$content.getURI("scripts/yui/build/treeview/assets/img/folders/cf.gif")"/></div><div class="ic_spacer">&nbsp;</div>Manage Files</A>
 													      </li>
 													      	#if ($item.canDelete($user))
-													      <li class="yuimenuitem">
+													      <li class="yuimenuitem lockable">
 													       <A href="" ONCLICK="restDelete();return false;"><div class="ic"><img border="0" src="$content.getURI("images/delete.gif")"/></div><div class="ic_spacer">&nbsp;</div>Delete</A>
 													      </li>
 													      #end

@@ -9,6 +9,8 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
@@ -20,8 +22,8 @@ public class DirectSubjResourceImpl extends ResourceModifierA {
 	private final XnatProjectdata proj;
 	private final XnatSubjectdata sub;
 	
-	public DirectSubjResourceImpl(final XnatProjectdata proj, final XnatSubjectdata sub,final boolean overwrite, final XDATUser user){
-		super(overwrite,user);
+	public DirectSubjResourceImpl(final XnatProjectdata proj, final XnatSubjectdata sub,final boolean overwrite, final XDATUser user, final EventMetaI ci){
+		super(overwrite,user,ci);
 		this.proj=proj;
 		this.sub=sub;
 	}
@@ -45,7 +47,7 @@ public class DirectSubjResourceImpl extends ResourceModifierA {
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {		
 		sub.setResources_resource(resource);
 		
-		sub.save(user, false, false);
+		sub.save(user, false, false,ci);
 		return true;
 	}
 

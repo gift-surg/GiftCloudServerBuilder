@@ -31,6 +31,7 @@ import org.nrg.xdat.security.XDATUser.PasswordAuthenticationException;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
@@ -518,7 +519,7 @@ public class LDAPAuthenticator extends Authenticator {
 	public void updateStoredDN(final String newDN,XDATUser u){
 		try {
 			u.setQuarantinePath(newDN);
-			u.save(null, true, false, true, false);
+			u.save(null, true, false, true, false,null);
 		} catch (Exception e) {
 			logger.error(u.getUsername() + ":Failed to update stored DN for user. Proceeding...",e);
 		}
@@ -559,7 +560,7 @@ public class LDAPAuthenticator extends Authenticator {
 				if (authenticate(u, cred)){
 					if(u.getXdatUserId()==null){
 
-						u.save(null, true, false, true, false);
+						u.save(null, true, false, true, false,EventUtils.ADMIN_EVENT(u));
 
 						u = new XDATUser(cred.getUsername());
 						u.setLoggedIn(true);

@@ -19,6 +19,8 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xft.db.DBItemCache;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
@@ -57,7 +59,7 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 			proj.setId(PROJECT);
 			proj.setSecondaryId(PROJECT);
 			proj.setName(PROJECT);
-			XnatProjectdata.quickSave(proj, user, false, false);
+			XnatProjectdata.quickSave(proj, user, false, false,EventUtils.TEST_EVENT(user));
 		}
 		
 		XnatProjectdata proj2=XnatProjectdata.getXnatProjectdatasById(PROJECT2, user, false);
@@ -66,27 +68,27 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 			proj2.setId(PROJECT2);
 			proj2.setSecondaryId(PROJECT2);
 			proj2.setName(PROJECT2);
-			XnatProjectdata.quickSave(proj2, user, false, false);
+			XnatProjectdata.quickSave(proj2, user, false, false,EventUtils.TEST_EVENT(user));
 		}
 		
 		subject=new XnatSubjectdata((UserI)user);
 		subject.setId(TEST_SUB_1);
 		subject.setProject(PROJECT);
 		subject.setLabel(TEST_SUB_1);
-		subject.save(user, false, false);
+		subject.save(user, false, false,null);
 		
 		mr=new XnatMrsessiondata((UserI)user);
 		mr.setId(MR);
 		mr.setProject(PROJECT);
 		mr.setLabel(MR);
 		mr.setSubjectId(TEST_SUB_1);
-		mr.save(user, false, false);
+		mr.save(user, false, false,null);
 	}
 	
 	@AfterClass
 	public static void tearDownAfterClass(){
 		if(subject!=null){
-			subject.delete(proj, user, true);
+			subject.delete(proj, user, true,null);
 		}
 	}
 
@@ -106,7 +108,7 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 		
 		createFile(dest, "TEST2.txt", "SDFDSFDSF");
 		
-		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,false,false,null);
+		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,false,false,null,null,null);
 		try {
 			test.checkForConflict();
 			fail("Expected failure");
@@ -134,7 +136,7 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 		createFile(src, "TEST1.txt", "SDFDSFDSF");
 		createFile(dest, "TEST2.txt", "SDFDSFDSF");
 		
-		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,true,false,null);
+		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,true,false,null,null,null);
 		test.checkForConflict();
 	}
 
@@ -157,7 +159,7 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 
 		createFile(dest, "TEST2.txt", "SDFDSFDSF");
 		
-		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,true,false,null);
+		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,true,false,null,null,null);
 		try {
 			test.checkForConflict();
 			fail("Expected failure");
@@ -188,7 +190,7 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 
 		createFile(dest, "TEST2.txt", "SDFDSFDSF");
 		
-		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,true,true,null);
+		MergePrearcToArchiveSession test=new MergePrearcToArchiveSession("",src,newMR,null,dest,mr,null,true,true,null,null,null);
 		test.checkForConflict();
 
 	}

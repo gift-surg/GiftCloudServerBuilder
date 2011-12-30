@@ -20,6 +20,7 @@ import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusPublisherI;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;

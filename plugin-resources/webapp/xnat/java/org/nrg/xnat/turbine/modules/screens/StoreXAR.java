@@ -33,9 +33,14 @@ import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -46,40 +51,15 @@ import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.xml.sax.SAXException;
 
 public class StoreXAR extends RawScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(ArcPut.class);
     XDATUser user=null;
 
-    private Hashtable<String,File> findXMLFiles(String path,File dir){
-        final Hashtable<String,File> files = new Hashtable<String,File>();
-        final File[] children=dir.listFiles();
-        if (children!=null){
-            for(File f:children){
-                if (f.isDirectory()){
-                    files.putAll(findXMLFiles(path + f.getName() + "/",f));
-                }else{
-                    if (f.getName().endsWith(".xml")){
-                        files.put(path+f.getName(), f);
-                    }
-                }
-            }
-        }
-
-        return files;
-    }
-
     @Override
     public void doOutput(RunData data)  {
-        String allowD = data.getParameters().getString("allowDataDeletion");
-        boolean allowDataDeletion = true;
-        if (allowD==null || allowD.equalsIgnoreCase("true")){
-            allowDataDeletion=true;
-        }else{
-            allowDataDeletion=false;
-        }
-
         final HttpServletResponse response = data.getResponse();
         response.setContentType("text/xml");
         response.setHeader("Cache-Control", "no-cache");
@@ -112,7 +92,6 @@ public class StoreXAR extends RawScreen {
                 String cachepath= ArcSpecManager.GetInstance().getGlobalCachePath();
                 Date d = Calendar.getInstance().getTime();
 
-                StringBuffer sb = new StringBuffer();
                 java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("yyyyMMdd_HHmmss");
                 String uploadID = formatter.format(d);
 
@@ -407,7 +386,16 @@ public class StoreXAR extends RawScreen {
 
                         for(ItemI item : items){
 
-                            item.save(user, false, true);
+                        	if(user.canEdit(item)){
+                        		PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, item.getItem(), SecureAction.newEventInstance(data,EventUtils.CATEGORY.DATA, EventUtils.STORE_XAR));
+                        		EventMetaI c=wrk.buildEvent();
+                                try {
+									item.save(user, false, true,c);
+									WorkflowUtils.complete(wrk, c);
+								} catch (Exception e) {
+									WorkflowUtils.fail(wrk, c);
+								}
+                        	}
 
                         }
 

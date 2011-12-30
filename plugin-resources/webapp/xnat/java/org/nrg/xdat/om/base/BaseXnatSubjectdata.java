@@ -6,7 +6,6 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -15,7 +14,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -58,6 +56,10 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventDetails;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -74,6 +76,7 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 /**
  * @author XDAT
@@ -1208,7 +1211,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	return generator.generateIdentifier();
     }
     
-    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user) throws Exception{
+    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
     		if(!user.canEdit(this)){
@@ -1260,16 +1263,16 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         				}
         				existingSessionDir=uri.substring(0,lastSlash);
         			}
-        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,ci);
     			}else{
-    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
+    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,ci);
     			}
     		}
     		
     		XFTItem current=this.getCurrentDBVersion(false);
     		current.setProperty("project", newProject.getId());
     		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false); 
+    		current.save(user, true, false,ci); 
     		
     		this.setProject(newProject.getId());
     		this.setLabel(newLabel);
@@ -1322,7 +1325,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	}
     }
     
-    public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles){
+    public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles,final EventMetaI c){
     	BaseXnatSubjectdata sub=this;
     	if(this.getItem().getUser()!=null){
     		sub=new XnatSubjectdata(this.getCurrentDBVersion(true));
@@ -1348,7 +1351,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				int match = -1;
 				for(XnatProjectparticipantI pp : sub.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user);
+						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -1362,7 +1365,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				final  List<XnatSubjectassessordataI> expts = sub.getExperiments_experiment();
 		        for (XnatSubjectassessordataI exptI : expts){
 		        	final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
-		            expt.delete(proj,user,false);
+		            expt.delete(proj,user,false,c);
 		        }
 				
 				return null;
@@ -1381,17 +1384,17 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				}
 							
 				if(removeFiles){
-					this.deleteFiles();
+					this.deleteFiles(user,c);
 				}
 
 				final  List<XnatSubjectassessordataI> expts = sub.getExperiments_experiment();
 		        for (XnatSubjectassessordataI exptI : expts){
 		        	final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
-		            msg=expt.delete(proj,user,removeFiles);
+		            msg=expt.delete(proj,user,removeFiles,c);
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(sub.getItem().getCurrentDBVersion(), user);
+		        DBAction.DeleteItem(sub.getItem().getCurrentDBVersion(), user,c);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -1406,7 +1409,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	return null;
     }
     
-    public void deleteFiles() throws IOException{
+    public void deleteFiles(UserI user, EventMetaI ci) throws Exception{
     	XnatProjectdata proj = this.getPrimaryProject(false);
     	String archive=proj.getRootArchivePath();
     	File dir=new File(archive,"subjects/"+ this.getArchiveDirectoryName());
@@ -1415,7 +1418,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	}
     	
     	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    		((XnatAbstractresource)abstRes).deleteFromFileSystem(archive);
+    		((XnatAbstractresource)abstRes).deleteWithBackup(archive,user,ci);
     	}
     }
     
@@ -1499,4 +1502,60 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
 		return new File(this.getPrimaryProject(false).getRootArchivePath(),"subjects/"+ this.getArchiveDirectoryName());
 	}
+	
+	public static void save(XnatSubjectdata subject,boolean overrideSecurity, boolean allowItemRemoval, XDATUser user,EventDetails event) throws Exception{
+		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, subject.getXSIType(), subject.getId(),subject.getProject(),event);
+		EventMetaI c=wrk.buildEvent();
+		
+		try {
+			subject.save(user, overrideSecurity, allowItemRemoval,c);
+			WorkflowUtils.complete(wrk, c);
+		} catch (Exception e) {
+			WorkflowUtils.fail(wrk, c);
+			throw e;
+		}
+	}
+
+	public static void SaveSharedProject(XnatProjectparticipant pp, XnatSubjectdata expt,XDATUser user,EventDetails event) throws Exception{
+		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, expt.getItem(), event);
+		EventMetaI c=wrk.buildEvent();
+		PersistentWorkflowUtils.save(wrk, c);
+		try {
+			((XnatProjectparticipant)pp).save(user,false,false,c);
+			PersistentWorkflowUtils.complete(wrk, c);
+		} catch (Exception e) {
+			logger.error("",e);
+			PersistentWorkflowUtils.fail(wrk, c);
+			throw e;
+		}
+	}
+	
+	public static EventMetaI ChangePrimaryProject(XDATUser user, XnatSubjectdata assessor, XnatProjectdata newProject, String newLabel,EventDetails event) throws Exception{
+		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, assessor.getXSIType(), assessor.getId(),assessor.getProject(),event);
+		wrk.setDetails("Move subject from project " + assessor.getProject() + " to " + newProject.getId());
+		EventMetaI c=wrk.buildEvent();
+		PersistentWorkflowUtils.save(wrk, c);
+
+		try {
+			assessor.moveToProject(newProject,newLabel,user,c);
+
+			PersistentWorkflowUtils.complete(wrk, c);
+		} catch (Exception e) {
+			logger.error("",e);
+			PersistentWorkflowUtils.fail(wrk,c);
+			throw e;
+		}
+		
+		return c;
+	}
+
+    /**
+     * Gets root path to the primary project's archive space.
+     * @return
+     */
+    public String getArchiveRootPath(){
+        final String path= getPrimaryProject(false).getRootArchivePath();
+
+        return path;
+    }
 }

@@ -66,6 +66,10 @@
  <tr>
   <td>&nbsp;</td>
  </tr>
+	#auditBoxes("" "" "" "Remove Project")
+ <tr>
+  <td>&nbsp;</td>
+ </tr>
  <tr>
   <td> 
         										<input type="button" name="eventSubmit_doPerform" value="Delete" onclick="deleteEntries();"/>

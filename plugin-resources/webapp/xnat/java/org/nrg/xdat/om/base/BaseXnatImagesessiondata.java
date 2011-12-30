@@ -4,7 +4,6 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -58,6 +57,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -3020,7 +3020,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     	return customfields;
     }
     
-    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user) throws Exception{
+    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI c) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
     		if(!user.canEdit(this)){
@@ -3074,9 +3074,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				//don't attempt to move sessions which are outside of the Session Directory.
             				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
-            			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+            			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,c);
         			}else{
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,c);
         			}
     			}
     		}
@@ -3118,9 +3118,9 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				//don't attempt to move sessions which are outside of the Session Directory.
             				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,c);
         			}else{
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,c);
         			}
     			}
     		}
@@ -3162,14 +3162,14 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             				//don't attempt to move sessions which are outside of the Session Directory.
             				throw new Exception("Non-standard file location for file(s):" + uri);
             			}
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,c);
         			}else{
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
+        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,c);
         			}
     			}
     		}
     		
-    		super.moveToProject(newProject, newLabel, user);
+    		super.moveToProject(newProject, newLabel, user,c);
     	}
     }
     
@@ -3305,7 +3305,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     
 
     
-    public String delete(XnatProjectdata proj, XDATUser user, boolean removeFiles){
+    public String delete(XnatProjectdata proj, XDATUser user, boolean removeFiles,EventMetaI c){
     	BaseXnatImagesessiondata expt=this;
     	if(this.getItem().getUser()!=null){
     		expt=new XnatImagesessiondata(this.getCurrentDBVersion(true));
@@ -3332,7 +3332,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -3345,7 +3345,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
 				final  List<XnatImageassessordataI> expts = expt.getAssessors_assessor();
 		        for (XnatImageassessordataI iad : expts){
-		        	((XnatImageassessordata)iad).delete(proj,user,false);
+		        	((XnatImageassessordata)iad).delete(proj,user,false,c);
 		        }
 		        
 				return null;
@@ -3364,16 +3364,16 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				}
 							
 				if(removeFiles){
-					this.deleteFiles();
+					this.deleteFiles(user,c);
 				}
 
 				final  List<XnatImageassessordata> expts = expt.getAssessors_assessor();
 		        for (XnatImageassessordata iad : expts){
-		        	msg=iad.delete(proj,user,removeFiles);
+		        	msg=iad.delete(proj,user,removeFiles,c);
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,c);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -3388,29 +3388,38 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     	return null;
     }
     
-    public void deleteFiles() throws IOException{
-    	super.deleteFiles();
+    public void deleteFiles(UserI user, EventMetaI ci) throws Exception{
+    	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
+    		((XnatAbstractresource)abstRes).deleteWithBackup(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()), user,ci);
+    	}
+    	
+    	String rootPath=ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject());
     	
     	for(final XnatImagescandataI scan: this.getScans_scan()){
         	for(XnatAbstractresourceI abstRes:scan.getFile()){
-        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
+        		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, user, ci);
         	}
     	}
     	
     	for(XnatReconstructedimagedataI scan: this.getReconstructions_reconstructedimage()){
         	for(XnatAbstractresourceI abstRes:scan.getOut_file()){
-        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
-        	}
+        		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, user, ci);
+            }
     	}
     	
     	for(XnatImageassessordataI scan: this.getAssessors_assessor()){
         	for(XnatAbstractresourceI abstRes:scan.getResources_resource()){
-        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
-        	}
+        		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, user, ci);
+            }
         	
         	for(XnatAbstractresourceI abstRes:scan.getOut_file()){
-        		((XnatAbstractresource)abstRes).deleteFromFileSystem(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));
-        	}
+        		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, user, ci);
+            }
+    	}
+    	
+    	File dir=this.getSessionDir();
+    	if(dir!=null){
+    		FileUtils.MoveToCache(dir);
     	}
     }
     

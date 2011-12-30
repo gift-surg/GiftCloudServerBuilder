@@ -1053,14 +1053,16 @@ div.ic_spacer{
              <DIV class="bd">
               <ul class="first-of-type">
          #end
-                 #foreach ($actionObject in $actionGroup.getActions())
+         #foreach ($actionObject in $actionGroup.getActions())
             #set($canAccess = "true")
+            #set($li_class = "")
             #if($actionObject.getSecureAccess().equalsIgnoreCase("edit"))
                 #if ($item.canEdit($user))
                     #set($canAccess = "true")
                 #else
                     #set($canAccess = "false")
                 #end
+				#set($li_class = "lockable")
             #elseif($actionObject.getSecureAccess().equalsIgnoreCase("read"))
                 #if ($item.canRead($user))
                     #set($canAccess = "true")
@@ -1073,12 +1075,14 @@ div.ic_spacer{
                 #else
                     #set($canAccess = "false")
                 #end
+				#set($li_class = "lockable")
             #elseif($actionObject.getSecureAccess().equalsIgnoreCase("delete"))
                 #if ($item.canDelete($user))
                     #set($canAccess = "true")
                 #else
                     #set($canAccess = "false")
                 #end
+				#set($li_class = "lockable")
             #elseif($actionObject.getSecureAccess().equalsIgnoreCase("activate"))
                 #if ($item.canActivate($user))
                     #set($canAccess = "true")
@@ -1095,21 +1099,21 @@ div.ic_spacer{
 
             #if($canAccess.equalsIgnoreCase("true"))
              #if ($actionObject.getPopup() && $actionObject.getPopup()=="always")
-<li class="yuimenuitem">
+<li class="yuimenuitem $!li_class">
                           <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=700,height=600,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
                           </li>
                 #elseif($actionObject.getPopup() && $actionObject.getPopup()=="sometimes")
                     #if ($popup=="true")
-<li class="yuimenuitem">
+<li class="yuimenuitem $!li_class">
 <A HREF="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
 </li>
                     #else
-<li class="yuimenuitem">
+<li class="yuimenuitem $!li_class">
                             <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=700,height=600,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
 </li>
                     #end
                 #else
-<li class="yuimenuitem">
+<li class="yuimenuitem $!li_class">
 <A HREF="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
 </li>
                 #end
@@ -1253,3 +1257,23 @@ $!turbineUtils.escapeHTML($s)
 #macro(escapeJS $s)
 $!turbineUtils.escapeJS($s)
 #end
+
+
+#macro(auditTable $reason $action)
+	<TABLE>
+		#auditBoxes("1" "" $reason $action)
+	</TABLE>
+#end
+
+#macro(auditBoxes $span $align $reason $action)
+	<TR>
+		<TD colspan="$span" align="$align">
+			<input type="hidden" name="event_action" value="$!action"/>
+			<input type="hidden" name="event_type" value="WEB_FORM"/>
+			<div class="justification">Justification (Why are you completing this form?)<BR/>
+				<textarea rows="3" cols="70" id="event_reason" name="event_reason" class="required">$!reason</textarea>
+			</div>
+		</TD>	
+	</TR>
+#end
+

@@ -28,6 +28,10 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.zip.TarUtils;
@@ -37,6 +41,7 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.xml.sax.SAXException;
 
 public class XarImporter extends ImporterHandlerA implements Callable<List<String>> {
@@ -353,7 +358,14 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
 	                    }
 	                }
 	                for(ItemI item : items){
-	                    item.save(user, false, true);
+	                	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, item.getItem(), EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), EventUtils.STORE_XAR, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
+                		EventMetaI c=wrk.buildEvent();
+                        try {
+							item.save(user, false, true,c);
+							WorkflowUtils.complete(wrk, c);
+						} catch (Exception e) {
+							WorkflowUtils.fail(wrk, c);
+						}
 	                }
 				} catch (Exception e) {
 					throw new ServerException("ERROR:  Server-side exception");

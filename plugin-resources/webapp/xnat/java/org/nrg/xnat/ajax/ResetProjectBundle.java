@@ -23,6 +23,7 @@ import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.UserGroupManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XdatStoredSearch;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 
@@ -92,7 +93,7 @@ public class ResetProjectBundle {
         	
         	if(xss!=null && modified){
                 try {
-                    xss.save(user, true, true);
+                    xss.save(user, true, true,EventUtils.ADMIN_EVENT(user));
                     
                     //XdatStoredSearch.ReplacePreLoadedSearch(xss);
                     

@@ -331,7 +331,7 @@ function checkProgress(){
  </tr>
  <tr id="option1">
   <td>
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html")" onSubmit="return prog(this);">
+<form ID="uploadFORM" class="noHide" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="true"/>
 <INPUT TYPE="hidden" name="threshhold" value="51516279"/>
 
@@ -373,6 +373,8 @@ function checkProgress(){
 	<TR>
 		<TH align="left">File</TH><TD><input type="file" name="image_archive" size="75"/></TD>
 	</TR>
+	
+	#auditBoxes("3" "" "" "Upload Images")
 	<TR>
 		<TD colspan="3" align="right">&nbsp;</TD>
 	</TR>

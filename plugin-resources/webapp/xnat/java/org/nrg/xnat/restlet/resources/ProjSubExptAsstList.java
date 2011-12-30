@@ -17,6 +17,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
@@ -243,19 +244,10 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 					return;
 	            }
 				
-				if(assessor.save(user,false,allowDataDeletion)){
-					MaterializedView.DeleteByUser(user);
-				}
+	            
+	            create(assessor, false, allowDataDeletion, newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.getAddModifyAction(assessor.getXSIType(), (existing==null))));
 
-				if(this.getQueryVariable("activate")!=null && this.getQueryVariable("activate").equals("true")){
-					if(user.canActivate(assessor.getItem()))assessor.activate(user);
-					else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-				}
-
-				if(this.getQueryVariable("quarantine")!=null && this.getQueryVariable("quarantine").equals("true")){
-					if(user.canActivate(assessor.getItem()))assessor.quarantine(user);
-					else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-				}
+	            postSaveManageStatus(assessor);
 				
 				this.returnSuccessfulCreateFromList(assessor.getId());
 				}else{

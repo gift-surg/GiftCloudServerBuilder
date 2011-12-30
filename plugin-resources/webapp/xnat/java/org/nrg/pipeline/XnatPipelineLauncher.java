@@ -24,6 +24,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
+import org.nrg.xft.db.DBItemCache;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
@@ -232,14 +233,15 @@ public class XnatPipelineLauncher {
         boolean success = true;
         try {
             logger.debug("Launching command: " + command + " -pwd ****** -parameter pwd=******" );
-            WrkWorkflowdata wrk = new WrkWorkflowdata();
-            wrk.setDataType(this.getDataType());
-            wrk.setId(this.getId());
-            wrk.setExternalid(this.getExternalId());
-            wrk.setPipelineName(this.getPipelineName());
-            wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
-            wrk.setStatus("Queued");
-            wrk.save(user,false,true);
+            //REMOVED DUE to dateTime milliseconds inconsistency
+//            WrkWorkflowdata wrk = new WrkWorkflowdata();
+//            wrk.setDataType(this.getDataType());
+//            wrk.setId(this.getId());
+//            wrk.setExternalid(this.getExternalId());
+//            wrk.setPipelineName(this.getPipelineName());
+//            wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
+//            wrk.setStatus("Queued");
+//            wrk.save(user,false,true,DBItemCache.DEFAULT_MESSAGE);
             ProcessLauncher processLauncher = new ProcessLauncher();
             processLauncher.setCommand(command + " " + pcommand);
             processLauncher.start();

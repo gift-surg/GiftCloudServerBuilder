@@ -28,12 +28,18 @@ import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatCatalogTagI;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -44,6 +50,7 @@ import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 public class ArcPut extends RawScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(ArcPut.class);
     @Override
@@ -214,13 +221,20 @@ public class ArcPut extends RawScreen {
                     }
                 }
                 if (counter>0){
+                	PersistentWorkflowI workflow =WorkflowUtils.getOrCreateWorkflowData(null, user, tempMR.getXSIType(), tempMR.getId(), tempMR.getProject(),SecureAction.newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.ARCPUT));
+                	EventMetaI ci=workflow.buildEvent();
+                	
                     File dest = new File(FileUtils.AppendRootPath(tempMR.getArchiveRootPath(),destinationPath));
                     FileUtils.MoveDir(destination, dest, true);
                     FileUtils.DeleteFile(destination);
                     try {
-                        tempMR.save(user,false,false);
+                    	PersistentWorkflowUtils.save(workflow,ci);
+                    	
+                        tempMR.save(user,false,false,ci);
                         data.setMessage("Files successfully uploaded.");
+                        PersistentWorkflowUtils.complete(workflow,ci);
                     } catch (Exception e) {
+                        PersistentWorkflowUtils.fail(workflow,ci);
                     	logger.error("",e);
                         pw.println("<UploadResponse status=\"ERROR\" CODE=\"104\">");
                         pw.println("<message>Error updating MR Database Entries.</message>");

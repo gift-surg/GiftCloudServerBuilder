@@ -5,11 +5,8 @@ package org.nrg.xnat.helpers;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -34,11 +31,9 @@ import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PrearcImporterA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ImageUploadHelper;
 import org.restlet.data.Status;
-import org.xml.sax.SAXException;
 
 public class PrearcImporterHelper extends PrearcImporterA{
     private static final String SESSION = "session";
@@ -259,7 +254,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		};
 		
 		//pass in populated beans and root paths
-		ListenerUtils.addListeners(this,new MergePrearchiveSessions(uID,srcDIR,src,src.getPrearchivepath(),destDIR,dest,destDIR.getAbsolutePath(),overwrite,allowDataDeletion,saveImpl))
+		ListenerUtils.addListeners(this,new MergePrearchiveSessions(uID,srcDIR,src,src.getPrearchivepath(),destDIR,dest,destDIR.getAbsolutePath(),overwrite,allowDataDeletion,saveImpl,user))
 			.call();
 
 		org.nrg.xft.utils.FileUtils.DeleteFile(srcXML);

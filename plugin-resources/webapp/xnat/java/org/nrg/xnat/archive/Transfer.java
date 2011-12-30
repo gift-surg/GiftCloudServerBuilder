@@ -9,19 +9,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.exceptions.UndefinedArchive;
@@ -155,16 +152,7 @@ public class Transfer {
                 xnatPipelineLauncher.setParameter("cpath", QCImageCreator.getQCCachePathForSession(mr.getProject()));
             } */
             
-            
-            if (clearExistingWorkflows)
-            {
-                ArrayList<WrkWorkflowdata> workflows = WrkWorkflowdata.getWrkWorkflowdatasByField("wrk:workFlowData.ID", mr.getId(), user, false);
-                
-                for (WrkWorkflowdata wrk : workflows){
-                    DBAction.DeleteItem(wrk.getItem(),user);
-                }
-            }
-       
+          
             _successful = xnatPipelineLauncher.launch(null);
             if (!_successful) {
                 throw new Exception("Unable to complete transfer");

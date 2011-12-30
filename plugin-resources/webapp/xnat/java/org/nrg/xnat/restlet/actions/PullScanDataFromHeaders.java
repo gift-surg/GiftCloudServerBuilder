@@ -17,6 +17,9 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
@@ -37,12 +40,14 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 	private final XnatImagescandata tempMR;
 	private final XDATUser user;
 	private final boolean allowDataDeletion,isInPrearchive;
+	private final EventMetaI c;
 	
-	public PullScanDataFromHeaders(final XnatImagescandata scan, final XDATUser user, boolean allowDataDeletion,boolean isInPrearchive){
+	public PullScanDataFromHeaders(final XnatImagescandata scan, final XDATUser user, boolean allowDataDeletion,boolean isInPrearchive,EventMetaI c){
 		this.tempMR=scan;
 		this.user=user;
 		this.allowDataDeletion=allowDataDeletion;
 		this.isInPrearchive=isInPrearchive;
+		this.c=c;
 	}
 
 	/**
@@ -102,7 +107,7 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
         }else{
         	final XnatImagesessiondata mr=tempMR.getImageSessionData();
         	final XnatProjectdata proj = mr.getProjectData();
-        	if(newscan.save(user,false,allowDataDeletion)){
+        	if(newscan.save(user,false,allowDataDeletion,c)){
 				try {
 				MaterializedView.DeleteByUser(user);
 
@@ -113,19 +118,6 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 						logger.error("",e);
 					}
 			}
-            
-            try {
-            	final WrkWorkflowdata workflow = new WrkWorkflowdata((UserI)user);
-  				workflow.setDataType(mr.getXSIType());
-  				workflow.setExternalid(proj.getId());
-  				workflow.setId(mr.getId());
-  				workflow.setPipelineName("Header Mapping: Scan "+newscan.getId());
-  				workflow.setStatus("Complete");
-  				workflow.setLaunchTime(Calendar.getInstance().getTime());
-  				workflow.save(user, false, false);
-  			} catch (Throwable e) {
-  				e.printStackTrace();
-  			}
         }
 
         return Boolean.TRUE;

@@ -29,6 +29,7 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -315,7 +316,7 @@ public final class PrearcSessionResource extends SecureResource {
             }
 
             try {
-                return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, screen, new HashMap<String,String>(){{
+                return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, screen, new HashMap<String,Object>(){{
                     put("project",project);
                     put("timestamp",timestamp);
                     put("folder",session);

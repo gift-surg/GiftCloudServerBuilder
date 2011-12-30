@@ -3,9 +3,11 @@ package org.nrg.xnat.helpers.merge;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourceI;
@@ -14,13 +16,18 @@ import org.nrg.xdat.model.XnatResourceseriesI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.CatalogUtils;
 import org.restlet.data.Status;
 
 
 public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesessiondata> {
-	public MergePrearcToArchiveSession(Object control,final File srcDIR, final XnatImagesessiondata src, final String srcRootPath, final File destDIR, final XnatImagesessiondata existing, final String destRootPath, boolean addFilesToExisting, boolean overwrite_files,SaveHandlerI<XnatImagesessiondata> saver) {
-		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, addFilesToExisting, overwrite_files,saver);
+	public MergePrearcToArchiveSession(Object control,final File srcDIR, final XnatImagesessiondata src, final String srcRootPath, final File destDIR, final XnatImagesessiondata existing, final String destRootPath, boolean addFilesToExisting, boolean overwrite_files,SaveHandlerI<XnatImagesessiondata> saver,final UserI u, final EventMetaI now) {
+		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, addFilesToExisting, overwrite_files,saver,u,now);
 	}
 
 
@@ -38,16 +45,42 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 				if (XNATUtils.isNullOrEmpty(((XnatAbstractresource)file).getContent())) {
 					((XnatResource)file).setContent("RAW");
 				}
+				
+				if(file instanceof XnatResourcecatalog){
+					CatalogUtils.populateStats((XnatResourcecatalog)file, root);
+				}
+			}
+		}
+	}
+	
+	public void postSave(XnatImagesessiondata session){
+		final String root = destRootPath.replace('\\','/') + "/";
+		boolean modified=false;
+		for(XnatImagescandataI scan:session.getScans_scan()){
+			for (final XnatAbstractresourceI file : scan.getFile()) {
+				if(file instanceof XnatResourcecatalog){
+					XnatResourcecatalog res=(XnatResourcecatalog)file;
+					File f=CatalogUtils.getCatalogFile(root, res);
+					CatCatalogBean cat=CatalogUtils.getCatalog(root, res);
+					if(CatalogUtils.formalizeCatalog(cat, f.getParentFile().getAbsolutePath(), user, c)){
+						try {
+							CatalogUtils.writeCatalogToFile(cat, f);
+						} catch (Exception e) {
+							logger.error("",e);
+						}
+					}
+				}
 			}
 		}
 	}
 
-	public org.nrg.xnat.helpers.merge.MergeSessionsA<XnatImagesessiondata>.UpdatedSession<XnatImagesessiondata> mergeSessions(
+	public org.nrg.xnat.helpers.merge.MergeSessionsA.Results<XnatImagesessiondata> mergeSessions(
 			XnatImagesessiondata src, String srcRootPath,
-			XnatImagesessiondata dest, String destRootPath)
+			XnatImagesessiondata dest, String destRootPath,final File rootbackup)
 			throws ClientException, ServerException {
-		if(dest==null)return new UpdatedSession<XnatImagesessiondata>(src,new ArrayList<File>());
-		
+		if(dest==null)return new Results<XnatImagesessiondata>(src);
+
+		final Results<XnatImagesessiondata> results=new Results<XnatImagesessiondata>();
 		final List<XnatImagescandataI> srcScans=src.getScans_scan();
 		final List<XnatImagescandataI> destScans=dest.getScans_scan();
 		
@@ -68,8 +101,13 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 							destScan.addFile(srcRes);
 						}else{
 							if(destRes instanceof XnatResourcecatalogI){
-								File del=mergeCatalogs(srcRootPath,(XnatResourcecatalogI)srcRes,destRootPath,(XnatResourcecatalogI)destRes);
-								if(del!=null)toDelete.add(del);
+								MergeSessionsA.Results<File> r=mergeCatalogs(srcRootPath,(XnatResourcecatalogI)srcRes,destRootPath,(XnatResourcecatalogI)destRes);
+								if(r!=null){
+									toDelete.add(r.result);
+									results.addAll(r);
+								}else{
+									CatalogUtils.populateStats((XnatAbstractresource)srcRess, srcRootPath);
+								}
 							}else if(destRes instanceof XnatResourceseriesI){
 								srcRes.setLabel(srcRes.getLabel()+"2");
 								srcScan.addFile(destRes);
@@ -94,7 +132,28 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 			failed("Failed to merge upload into existing data.");
 			throw new ServerException(e.getMessage(), e);
 		}
+
+		final File backup = new File(rootbackup,"catalog_bk");
+		backup.mkdirs();
 		
+		final List<Callable<Boolean>> followup=new ArrayList<Callable<Boolean>>();
+		followup.add(new Callable<Boolean>(){
+			@Override
+			public Boolean call() throws Exception {
+				try {
+					int count=0;
+					for(File f:toDelete){
+						File catBkDir=new File(backup,""+count++);
+						catBkDir.mkdirs();
+						
+						FileUtils.MoveFile(f, new File(catBkDir,f.getName()), false);
+					}
+					return Boolean.TRUE;
+				} catch (Exception e) {
+					throw new ServerException(e.getMessage(),e);
+				}
+			}});
+
 		if(src.getXSIType().equals(dest.getXSIType())){
 			try {
 				src.copyValuesFrom(dest);
@@ -102,10 +161,14 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 				failed("Failed to merge upload into existing data.");
 				throw new ServerException(e.getMessage(), e);
 			}
-		return new UpdatedSession<XnatImagesessiondata>(src, toDelete);
+			
+			results.setResult(src);
 		}else{
-			return new UpdatedSession<XnatImagesessiondata>(dest, toDelete);
+			results.setResult(dest);
 		}
+		
+		results.getBeforeDirMerge().addAll(followup);
+		return results;
 	}
 
 }

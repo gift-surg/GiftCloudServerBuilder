@@ -12,6 +12,7 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class SetEmailSpecs extends SecureAction {
@@ -28,7 +29,7 @@ public class SetEmailSpecs extends SecureAction {
         
         ArcArchivespecification arc = new ArcArchivespecification(item);
         
-        arc.save(TurbineUtils.getUser(data), false, false);
+        arc.save(TurbineUtils.getUser(data), false, false,EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
         
         ArcSpecManager.Reset();
     }

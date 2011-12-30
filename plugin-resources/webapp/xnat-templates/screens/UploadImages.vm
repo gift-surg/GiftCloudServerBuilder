@@ -288,7 +288,7 @@ Once the image data have been uploaded, it may take several hours for the databa
     <table cellspacing="5" cellpadding="5" border="0" align="center">
       <tr>
         <td valign="top">
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$link.setAction("UploadBatch")" onSubmit="return prog(this);">
+<form class="noHide" ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$link.setAction("UploadBatch")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="true"/>
 <INPUT TYPE="hidden" name="ID" value="$uploadID"/>
 <INPUT TYPE="hidden" name="image_type" value="$image_type"/>
@@ -301,6 +301,7 @@ Once the image data have been uploaded, it may take several hours for the databa
 	<TR>
 <TD colspan="3"><input type="file" id="image_archive" name="image_archive" size="60"/></TD>
 	</TR>
+	#auditBoxes("3" "" "" "Upload Images")
 	<TR>
 		<TD colspan="3" align="right"><input type="submit" name="eventSubmit_doPerform" value="Upload"/></TD>
 	</TR>

@@ -106,6 +106,7 @@ public abstract class BaseElement{
             super(s,e);
        }
     }
+    
     public static Date parseDate(String s) throws ParseException
     {
         if (s.indexOf("'")!= -1)
@@ -165,6 +166,20 @@ public abstract class BaseElement{
             return sb.toString();
         }
    }
+     
+    private static List<String> formatsDT=Arrays.asList(
+    		"yyyy-MM-dd'T'HH:mm:ss.SSS".intern()
+    		,"yyyy-MM-dd'T'HH:mm:ss".intern()
+    		,"EEE MMM dd HH:mm:ss z yyyy".intern()
+    		,"yyyy-MM-dd HH:mm:ss.S".intern()
+    		,"yyyy-MM-dd HH:mm:ss".intern()
+    		,"EEE MMM dd HH:mm:ss.S".intern()
+    		,"yyyy-MM-dd HH:mm:ss z".intern()
+    		,"EEE MMM dd HH:mm:ss".intern()
+    		,"EEE MMM dd HH:mm:ss z".intern()
+    		,"MM/dd/yyyy".intern()
+    		,"yyyy-MM-dd".intern());
+	
     public static Date parseDateTime(String s) throws ParseException
     {
         if (s.indexOf("'")!= -1)
@@ -178,60 +193,14 @@ public abstract class BaseElement{
             try {
                 return DateFormat.getInstance().parse(s);
             } catch (ParseException e) {
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US);
-                try {
-                    return sdf.parse(s);
-                } catch (ParseException e1) {
-                    sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            	for(final String format:formatsDT){
+            		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
                     try {
                         return sdf.parse(s);
-                    } catch (ParseException e2) {
-                        sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss", Locale.US);
-                        try {
-                            return sdf.parse(s);
-                        } catch (ParseException e6) {
-                            sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss.S", Locale.US);
-                            try {
-                                return sdf.parse(s);
-                            } catch (ParseException e3) {
-                                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z", Locale.US);
-                                try {
-                                    return sdf.parse(s);
-                                } catch (ParseException e4) {
-                                    sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.US);
-                                    try {
-                                        return sdf.parse(s);
-                                    } catch (ParseException e5) {
-                                        sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z", Locale.US);
-                                        try {
-                                            return sdf.parse(s);
-                                        } catch (ParseException e7) {
-                                            sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-                                            try {
-                                                return sdf.parse(s);
-                                            } catch (ParseException e8) {
-                                                sdf = new SimpleDateFormat("MM/dd/yyyy-HH-mm-ss-z", Locale.US);
-                                                try {
-                                                    return sdf.parse(s);
-                                                } catch (ParseException e9) {
-                                                    sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-                                                    try {
-                                                        return sdf.parse(s);
-                                                    } catch (ParseException e10) {
-                                                        sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                                                        return sdf.parse(s);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-
-                    }
+                    } catch (ParseException e1) {}
                 }
+            	
+            	throw e;
             }
         }
     }
@@ -464,10 +433,9 @@ public abstract class BaseElement{
                 if (o.getClass().getName().equalsIgnoreCase("java.util.Date"))
                 {
                     java.util.Date d = (java.util.Date)o;
-                    StringBuffer sb = new StringBuffer();
-                    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss");
-                    sb.append(formatter.format(d));
-                    return sb.toString();
+                    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                    String s=formatter.format(d);
+                    return s;
                 }else if (o.getClass().getName().equalsIgnoreCase("java.sql.Date"))
                 {
                     java.sql.Date d = (java.sql.Date)o;
@@ -499,6 +467,51 @@ public abstract class BaseElement{
             }
     }
 
+	
+	public BaseElement copy(){
+		try {
+			BaseElement base2=this.getClass().newInstance();
+			
+			for(int i=0;i<this.getAllFields().size();i++){
+				try {
+					String path=(String)this.getAllFields().get(i);
+					String ft=this.getFieldType(path);
+					if(ft.equals(BaseElement.field_data) || ft.equals(BaseElement.field_LONG_DATA)){
+						Object v1=this.getDataFieldValue(path);
+						if(v1!=null && !(v1 instanceof Date)){
+							base2.setDataField(path,v1.toString());
+						}else if(v1!=null){
+							base2.setDataField(path, (new java.text.SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS")).format((Date)v1));
+						}
+					}else{
+						//reference
+						Object o1=this.getReferenceField(path);
+						
+						if(o1 instanceof ArrayList){
+							ArrayList<BaseElement> children1=(ArrayList<BaseElement>)o1;
+								for(int j=0;j<children1.size();j++){
+									base2.setReferenceField(path,children1.get(j).copy());
+								}
+						}else if(o1!=null){
+							BaseElement child1=(BaseElement)o1;
+							base2.setReferenceField(path,child1.copy());
+						}
+					}
+				} catch (UnknownFieldException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			return base2;
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+    }
 
     protected void addXMLAtts(java.io.Writer writer) throws java.io.IOException{
     }

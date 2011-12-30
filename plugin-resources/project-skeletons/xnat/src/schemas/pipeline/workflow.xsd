@@ -9,7 +9,47 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="executionEnvironment" type="wrk:abstractExecutionEnvironment" minOccurs="0"/>
+			<xs:element name="comments" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field size="10000"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="details" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field size="10000"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="justification" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<xdat:field size="10000"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
+		<xs:attribute name="src" type="xs:string" use="optional"/>
+		<xs:attribute name="type" type="xs:string" use="optional"/>
+		<xs:attribute name="category" type="xs:string" use="optional"/>
 		<xs:attribute name="data_type" type="xs:string" use="required"/>
 		<xs:attribute name="ID" type="xs:string" use="required">
 			<xs:annotation>
@@ -22,6 +62,7 @@
 		<xs:attribute name="current_step_launch_time" type="xs:dateTime" use="optional"/>
 		<xs:attribute name="current_step_id" type="xs:string" use="optional"/>
 		<xs:attribute name="status" type="xs:string" use="required"/>
+		<xs:attribute name="create_user" type="xs:string" use="optional"/>
 		<xs:attribute name="pipeline_name" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:appinfo>

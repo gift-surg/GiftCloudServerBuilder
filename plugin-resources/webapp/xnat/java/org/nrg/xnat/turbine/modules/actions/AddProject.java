@@ -17,7 +17,13 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class AddProject extends SecureAction {
 	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AddProject.class);
@@ -39,9 +45,12 @@ public class AddProject extends SecureAction {
                         
             found = populater.getItem();
             XnatProjectdata  project = new XnatProjectdata(found);
-                       
+
+            final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.getAddModifyAction("xnat:projectData", true)));
+	    	EventMetaI c=wrk.buildEvent();
+	    	
             try {
-				project.initNewProject(user,false,false);
+				project.initNewProject(user,false,false,c);
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(found,data);
                 data.addMessage(e2.getMessage());
@@ -70,7 +79,7 @@ public class AddProject extends SecureAction {
                 }
             }else{
             	try {
-            		project.save(TurbineUtils.getUser(data),false,false);
+            		project.save(TurbineUtils.getUser(data),false,false,c);
             		ItemI temp1 =project.getItem().getCurrentDBVersion(false);
             		if (temp1 != null)
             		{
@@ -88,30 +97,38 @@ public class AddProject extends SecureAction {
                     return;
             	}
                 
-                XnatProjectdata postSave = new XnatProjectdata(found);
-                postSave.getItem().setUser(user);
+                XnatProjectdata postSave;
+				try {
+					postSave = new XnatProjectdata(found);
+					postSave.getItem().setUser(user);
 
-                postSave.initGroups();
-                
-                //postSave.initBundles(user);
-                
-                String accessibility=data.getParameters().getString("accessibility");
-                if (accessibility==null){
-                    accessibility="protected";
-                }
-                
-                if (!accessibility.equals("private"))
-                    project.initAccessibility(accessibility, true);
-                
-                user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
-                populater = PopulateItem.Populate(data,"arc:project",true);
+					postSave.initGroups(c);
+					
+					//postSave.initBundles(user);
+					
+					String accessibility=data.getParameters().getString("accessibility");
+					if (accessibility==null){
+					    accessibility="protected";
+					}
+					
+					if (!accessibility.equals("private"))
+					    project.initAccessibility(accessibility, true,c);
+					
+					user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
+					populater = PopulateItem.Populate(data,"arc:project",true);
 
-                XFTItem item = populater.getItem();
-                ArcProject arcP = new ArcProject(item);
-                postSave.initArcProject(arcP, user);
+					XFTItem item = populater.getItem();
+					ArcProject arcP = new ArcProject(item);
+					postSave.initArcProject(arcP, user,c);
 
-                user.clearLocalCache();
-                EventManager.Trigger(XnatProjectdata.SCHEMA_ELEMENT_NAME, postSave.getId(), Event.UPDATE);
+					WorkflowUtils.complete(wrk, c);
+					
+					user.clearLocalCache();
+					EventManager.Trigger(XnatProjectdata.SCHEMA_ELEMENT_NAME, postSave.getId(), Event.UPDATE);
+				} catch (Exception e) {
+					WorkflowUtils.fail(wrk, c);
+					throw e;
+				}
                 
             	data = TurbineUtils.setDataItem(data,found);
             	data = TurbineUtils.SetSearchProperties(data,found);
@@ -125,13 +142,7 @@ public class AddProject extends SecureAction {
                 
             }
         } catch (Exception e) {
-            logger.error("",e);
-            data.setMessage("Unknown Error.");
-            TurbineUtils.SetEditItem(found,data);
-            if (data.getParameters().getString("edit_screen") !=null)
-            {
-                data.setScreenTemplate(data.getParameters().getString("edit_screen"));
-            }
+            handleException(data, found, e, TurbineUtils.EDIT_ITEM);
         }
 	}
 }

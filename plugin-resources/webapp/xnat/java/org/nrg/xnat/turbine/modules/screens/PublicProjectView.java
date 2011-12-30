@@ -11,6 +11,7 @@ import org.apache.turbine.modules.screens.VelocityScreen;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
@@ -30,7 +31,7 @@ public class PublicProjectView extends VelocityScreen {
         ArrayList allProjects = new ArrayList();
         
         for(XnatProjectdata p :XnatProjectdata.getAllXnatProjectdatas(user, false)){
-            if (user.can(p.getItem(), "active")){
+            if (user.can(p.getItem(), SecurityManager.ACTIVATE)){
                 allProjects.add(p);
             }
         }

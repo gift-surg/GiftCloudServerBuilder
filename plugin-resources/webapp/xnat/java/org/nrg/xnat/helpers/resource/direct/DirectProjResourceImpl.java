@@ -8,6 +8,8 @@ import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
@@ -18,8 +20,8 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 public class DirectProjResourceImpl extends ResourceModifierA {
 	private final XnatProjectdata proj;
 	
-	public DirectProjResourceImpl(final XnatProjectdata proj,final boolean overwrite, final XDATUser user){
-		super(overwrite,user);
+	public DirectProjResourceImpl(final XnatProjectdata proj,final boolean overwrite, final XDATUser user, final EventMetaI ci){
+		super(overwrite,user,ci);
 		this.proj=proj;
 	}
 	
@@ -42,7 +44,7 @@ public class DirectProjResourceImpl extends ResourceModifierA {
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
 		proj.setResources_resource(resource);
 		
-		proj.save(user, false, false);
+		proj.save(user, false, false,ci);
 		return true;
 	}
 

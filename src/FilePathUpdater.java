@@ -11,6 +11,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.DBItemCache;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
@@ -154,7 +155,7 @@ public class FilePathUpdater {
 			
 			ItemCollection coll= ItemSearch.GetAllItems("xnat:file",tool.getUser(),false);
 
-            DBItemCache cache =  new DBItemCache();
+            DBItemCache cache =  new DBItemCache(null,EventUtils.ADMIN_EVENT(tool.getUser()));
             String dbname = null;
 			StringBuffer sb = new StringBuffer();
 			sb.append("SESSION,OLD,NEW\n");

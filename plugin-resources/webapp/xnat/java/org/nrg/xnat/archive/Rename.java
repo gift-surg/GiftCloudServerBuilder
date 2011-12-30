@@ -31,6 +31,10 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.DBItemCache;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
@@ -47,8 +51,10 @@ public class Rename  implements Callable<File>{
 	private final ArchivableItem i;
 	private final XnatProjectdata proj;
 	
-	private final String newLabel;
+	private final String newLabel,reason;
 	private final XDATUser user;
+	
+	private final EventUtils.TYPE type;
 	
 	private STEP step=STEP.PREPARING;
 	/**
@@ -59,13 +65,17 @@ public class Rename  implements Callable<File>{
 		i=null;
 		newLabel=null;
 		user=null;
+		reason=null;
+		type=null;
 	}
 	
-	public Rename(final XnatProjectdata p,final ArchivableItem e, final String lbl, final XDATUser u){
+	public Rename(final XnatProjectdata p,final ArchivableItem e, final String lbl, final XDATUser u, final String reason, final EventUtils.TYPE type){
 		proj=p;
 		i=e;
 		newLabel=lbl;
 		user=u;
+		this.reason=reason;
+		this.type=type;
 		
 		if(i==null){
 			throw new NullPointerException();
@@ -134,16 +144,18 @@ public class Rename  implements Callable<File>{
 			final File oldSessionDir = i.getExpectedCurrentDirectory();
 				
 
-			final Collection<WrkWorkflowdata> open=WorkflowUtils.getOpenWorkflows(user, id);
+			final Collection<? extends PersistentWorkflowI> open=PersistentWorkflowUtils.getOpenWorkflows(user, id);
 			if(!open.isEmpty()){		
 				throw new ProcessingInProgress(((WrkWorkflowdata)CollectionUtils.get(open, 0)).getPipelineName());
 			}
 			
+			final String message=String.format("Renamed from %s to %s", current_label,newLabel);
+			
 			//add workflow entry    		
-			final WrkWorkflowdata workflow = WorkflowUtils.buildOpenWorkflow(user, i.getXSIType(), i.getStringProperty("ID"), proj.getId());
-			workflow.setPipelineName(String.format("Renamed from %s to %s", current_label,newLabel));
-			workflow.setStepDescription(getStep().toString());
-			workflow.save(user, false, false);
+			final PersistentWorkflowI workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, i.getXSIType(), i.getStringProperty("ID"), proj.getId(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, type, EventUtils.RENAME, reason,null));
+			workflow.setDetails(message);
+			EventMetaI c=WorkflowUtils.setStep(workflow, getStep().toString());
+			PersistentWorkflowUtils.save(workflow,c);
 			
 			
 			final URI expected=oldSessionDir.toURI();
@@ -151,14 +163,14 @@ public class Rename  implements Callable<File>{
 			
 			final boolean moveFiles=oldSessionDir.exists();
 			
-			this.updateStep(workflow, setStep(STEP.PREPARE_SQL));	
+			c=this.updateStep(workflow, setStep(STEP.PREPARE_SQL));	
 			
 			try {
 				//Copy files to new location    		
 				
 				//Generate SQL to update URIs
-				final DBItemCache cache=new DBItemCache();
-				generateLabelSQL(i, newLabel, cache, user);
+				final DBItemCache cache=new DBItemCache(user,c);
+				generateLabelSQL(i, newLabel, cache, user,c);
 				generateURISQL(i, expected, newArchive, cache, user);
 
 				this.updateStep(workflow, setStep(STEP.COPY_DIR));
@@ -175,7 +187,7 @@ public class Rename  implements Callable<File>{
 				
 				//close workflow entry
 				workflow.setStepDescription(setStep(STEP.COMPLETE).toString());
-				workflow.setStatus(WorkflowUtils.COMPLETE);
+				workflow.setStatus(PersistentWorkflowUtils.COMPLETE);
 			} catch (final Exception e) {
 				if(!getStep().equals(STEP.DELETE_OLD_DIR)){
 					try {
@@ -185,18 +197,14 @@ public class Rename  implements Callable<File>{
 					}
 					
 					//close workflow
-					workflow.setStatus(WorkflowUtils.FAILED);
+					workflow.setStatus(PersistentWorkflowUtils.FAILED);
 					
 					throw e;
 				}else{
-					workflow.setStatus(WorkflowUtils.COMPLETE);
+					workflow.setStatus(PersistentWorkflowUtils.COMPLETE);
 				}
 			}finally{
-				try {
-					workflow.save(user, false, false);
-				} catch (Exception e1) {
-					logger.error("", e1);
-				}				
+				PersistentWorkflowUtils.save(workflow,c);
 			}
 		} catch (XFTInitException e) {
 			logger.error("", e);
@@ -207,13 +215,10 @@ public class Rename  implements Callable<File>{
 		return newSessionDir;
 	}
 	
-	public void updateStep(final WrkWorkflowdata wrk, final STEP step){
-		wrk.setStepDescription(step.toString());
-		try {
-			wrk.save(user, false, false);
-		} catch (Exception e1) {
-			logger.error("", e1);
-		}
+	public EventMetaI updateStep(final PersistentWorkflowI wrk, final STEP step) throws Exception{
+		EventMetaI c=WorkflowUtils.setStep(wrk, step.toString());
+		PersistentWorkflowUtils.save(wrk,c);
+		return c;
 	}
 	
 	public static boolean checkPermissions(final ArchivableItem i, final XDATUser user) throws Exception{
@@ -350,10 +355,10 @@ public class Rename  implements Callable<File>{
 	 * @throws SQLException
 	 * @throws Exception
 	 */
-	protected static void generateLabelSQL(final ArchivableItem i, final String newLabel, final DBItemCache cache,final XDATUser user) throws SQLException, Exception{
+	protected static void generateLabelSQL(final ArchivableItem i, final String newLabel, final DBItemCache cache,final XDATUser user,EventMetaI message) throws SQLException, Exception{
 		i.getItem().setProperty("label", newLabel);
 
-		DBAction.StoreItem(i.getItem(),user,false,false,false,false,SecurityManager.GetInstance());
+		DBAction.StoreItem(i.getItem(),user,false,false,false,false,SecurityManager.GetInstance(),message);
 	}
 	
 	/**

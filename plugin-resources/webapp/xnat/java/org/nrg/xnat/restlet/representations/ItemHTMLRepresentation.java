@@ -1,6 +1,8 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.representations;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.xdat.security.XDATUser;
@@ -15,8 +17,8 @@ public class ItemHTMLRepresentation extends TurbineScreenRepresentation {
 	static org.apache.log4j.Logger logger = Logger.getLogger(ItemHTMLRepresentation.class);
 	private final String screen;
 	
-	public ItemHTMLRepresentation(XFTItem i,MediaType mt,Request request,XDATUser _user) throws TurbineException,ElementNotFoundException {
-		super(mt,request,_user);
+	public ItemHTMLRepresentation(XFTItem i,MediaType mt,Request request,XDATUser _user,Map<String,Object> params) throws TurbineException,ElementNotFoundException {
+		super(mt,request,_user,params);
 		
 		TurbineUtils.setDataItem(data, i);
 		 
@@ -30,6 +32,28 @@ public class ItemHTMLRepresentation extends TurbineScreenRepresentation {
 		
 		
 		screen = DisplayItemAction.GetReportScreen(i.getItem().getGenericSchemaElement());
+	}
+	
+	public ItemHTMLRepresentation(XFTItem i,MediaType mt,Request request,XDATUser _user,String requested_screen,Map<String,Object> params) throws TurbineException,ElementNotFoundException {
+		super(mt,request,_user,params);
+		
+		TurbineUtils.setDataItem(data, i);
+		 
+		try {
+			if(i.getProperty("project")!=null){
+				data.getParameters().setString("project", i.getStringProperty("project"));
+			}
+		} catch (Throwable e1) {
+			logger.error("",e1);
+		}
+		
+		
+		if(requested_screen==null){
+			screen = DisplayItemAction.GetReportScreen(i.getItem().getGenericSchemaElement());
+		}else{
+			if(!requested_screen.endsWith(".vm"))requested_screen+=".vm";
+			screen = requested_screen;
+		}
 	}
 
 	@Override

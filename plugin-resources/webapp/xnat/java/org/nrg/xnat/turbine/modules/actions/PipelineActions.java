@@ -29,6 +29,7 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.db.DBAction;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
@@ -97,9 +98,6 @@ public class PipelineActions extends SecureAction{
             	if (workFlow.getStatus().equals(org.nrg.xdat.om.base.BaseWrkWorkflowdata.AWAITING_ACTION)) {
             		xnatPipelineLauncher.setStartAt(workFlow.getNextStepId());
             	}
-                for (WrkWorkflowdata wrk : workflows){
-                    DBAction.DeleteItem(wrk.getItem(),TurbineUtils.getUser(data));
-                }
             }
             xnatPipelineLauncher.launch();
             data.setMessage("<p><b>The build process was successfully launched.  Status email will be sent upon its completion.</b></p>");

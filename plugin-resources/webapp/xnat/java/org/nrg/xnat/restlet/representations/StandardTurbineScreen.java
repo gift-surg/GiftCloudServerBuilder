@@ -24,12 +24,9 @@ public class StandardTurbineScreen extends TurbineScreenRepresentation {
 	 * @throws TurbineException
 	 */
 	public StandardTurbineScreen(MediaType mediaType, Request request,
-			XDATUser _user, String screen, Map<String,String> data_props) throws TurbineException {
-		super(mediaType, request, _user);
+			XDATUser _user, String screen, Map<String,Object> data_props) throws TurbineException {
+		super(mediaType, request, _user,data_props);
 		this.screen=screen;
-		for(Map.Entry<String,String> entry: data_props.entrySet()){
-			data.getParameters().setString(entry.getKey(), entry.getValue());
-		}
 	}
 	
 	public RunData getData(){

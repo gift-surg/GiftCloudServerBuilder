@@ -38,7 +38,7 @@ public class AcceptProjectAccess extends SecureAction {
 			data.setMessage("Project Invitation already accepted by a different user.  Please request access to the project directly.");
 			data.setScreenTemplate("Index.vm");
 		}else{
-			par.process(user,true);
+			par.process(user,true, getEventType(data), getReason(data), getComment(data));
 	        
 			this.redirectToReportScreen(project, data);
 		}

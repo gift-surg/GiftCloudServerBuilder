@@ -4,6 +4,7 @@ package org.nrg.xnat.restlet.representations;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,16 +32,17 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
 	final RunData data;
 	final Request request;
 	final XDATUser user;
+	final Map<String,Object> params;
 
-	public TurbineScreenRepresentation(MediaType mediaType,Request request, XDATUser _user) throws TurbineException{
+	public TurbineScreenRepresentation(MediaType mediaType,Request request, XDATUser _user,Map<String,Object> params) throws TurbineException{
 		super(mediaType);
 		this.request=request;
 		user=_user;
-		
+		this.params=params;
 		HttpServletRequest _request = ((ServletCall)((HttpRequest) request).getHttpCall()).getRequest(); 
 		HttpServletResponse _response = ((ServletCall)((HttpRequest) request).getHttpCall()).getResponse(); 
 		
-		data = populateRunData(_request,_response,user);
+		data = populateRunData(_request,_response,user,params);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -70,7 +72,7 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
         writer.close();
 	}
 	
-	public static RunData populateRunData(HttpServletRequest request, HttpServletResponse response,XDATUser user) throws TurbineException{
+	public static RunData populateRunData(HttpServletRequest request, HttpServletResponse response,XDATUser user,final Map<String,Object> params) throws TurbineException{
 //		RunDataService rundataService = null;
 //		rundataService = TurbineRunDataFacade.getService();
 //		if (rundataService == null)
@@ -102,6 +104,12 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
 		//RENAME script name /REST to /app
 		data.getServerData().setScriptName("/app");
 		
+		if(params!=null){
+			for(Map.Entry<String,Object> entry:params.entrySet()){
+				data.getParameters().add(entry.getKey(), entry.getValue().toString());
+			}
+		}
+				
 		return data;
 	}
 	

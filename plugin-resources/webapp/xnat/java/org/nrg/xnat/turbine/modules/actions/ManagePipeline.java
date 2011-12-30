@@ -24,8 +24,8 @@ import org.nrg.pipeline.utils.FileUtils;
 import org.nrg.pipeline.utils.PipelineAdder;
 import org.nrg.pipeline.utils.PipelineUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
-import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
+import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.om.ArcProject;
@@ -34,7 +34,6 @@ import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.PipePipelinedetails;
 import org.nrg.xdat.om.PipePipelinerepository;
-import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -44,6 +43,10 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
@@ -51,6 +54,7 @@ import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ManagePipeline extends SecureAction {
 	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ManagePipeline.class);
@@ -97,7 +101,7 @@ public class ManagePipeline extends SecureAction {
 			if (pline != null) {
 	            PipePipelinedetails pipeline = new PipePipelinedetails(pline);
 				data.setMessage("Item deleted");
-				PipelineRepositoryManager.RemoveReferenceToPipelineFromProject(pipeline, user, projectId);
+				PipelineRepositoryManager.RemoveReferenceToPipelineFromProject(pipeline, user, projectId,getEventType(data),getReason(data));
 				PipelineRepositoryManager.Reset();
 			}
 		}catch(Exception e) {
@@ -113,10 +117,11 @@ public class ManagePipeline extends SecureAction {
 		try {
 			XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
 			if (pipeline != null) {
-				DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
+				EventMetaI c=EventUtils.ADMIN_EVENT(user);
+				DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user,c);
 				logger.info("Deleted " + pipeline.getProperty("path"));
 				data.setMessage("Pipeline removed from site repository");
-				PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects( (String)pipeline.getProperty("path"), user);
+				PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects( (String)pipeline.getProperty("path"), user,c);
 				PipelineRepositoryManager.Reset();
 			}
 		}catch(Exception e) {
@@ -205,7 +210,9 @@ public class ManagePipeline extends SecureAction {
             boolean launchedAtAutoArchive = data.getParameters().getBoolean("auto_archive");
 			String templateSuppliedStepId = found.getStringProperty("stepid");
 	   		boolean saved = false;
-	   	 
+
+	   		PersistentWorkflowI wrk=WorkflowUtils.buildOpenWorkflow(user, XnatProjectdata.SCHEMA_ELEMENT_NAME,projectId,projectId,newEventInstance(data, EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.MODIFY_CONFIGURED_PIPELINE));
+			EventMetaI c=wrk.buildEvent();
             //A set of pipelines can be launched on auto archive.This set will have
             //AUTO_ARCHIVE_<SEQUENTIAL NUMBER> unless site wants to setup the stepid at the template level
             //If the step is provided at the template level, it must be of the kind AUTO_<SOMETHING>
@@ -220,7 +227,7 @@ public class ManagePipeline extends SecureAction {
     				if (existing.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
     					existing.setStepid(existing.getDisplaytext());
     				}
-    				saved = existing.save(user, false, false);
+    				saved = existing.save(user, false, false,c);
     			}else {
     				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(arcProject), newPipeline.getDisplaytext() );
     				newPipeline.setStepid(stepId);
@@ -243,7 +250,7 @@ public class ManagePipeline extends SecureAction {
         				if (existingPipeline.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
         					existingPipeline.setStepid(existingPipeline.getDisplaytext());
         				}
-       					saved = existingPipeline.save(user, false, false);
+       					saved = existingPipeline.save(user, false, false,c);
     				}else {
     	   				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(existingDesc), newPipeline.getDisplaytext() );
         				newPipeline.setStepid(stepId);
@@ -254,8 +261,9 @@ public class ManagePipeline extends SecureAction {
     			}
     		}
     		if (!edit) {
-    			saved = arcProject.save(user, false, false);
+    			saved = arcProject.save(user, false, false,c);
     		}
+			PersistentWorkflowUtils.complete(wrk, c);
     		ArcSpecManager.Reset();
     		String msg = "<p><b>The pipelines for the project could NOT be modified.</b></p>";
             if (saved) {
@@ -300,7 +308,7 @@ public class ManagePipeline extends SecureAction {
 		XDATUser user = TurbineUtils.getUser(data);
         XFTItem found = null;
 
-        try {
+		try {
             EditScreenA screen = (EditScreenA) ScreenLoader.getInstance().getInstance("XDATScreen_add_pipeline");
             XFTItem newItem = (XFTItem)screen.getEmptyItem(data);
             TurbineUtils.OutputDataParameters(data);
@@ -309,7 +317,7 @@ public class ManagePipeline extends SecureAction {
 
             PipePipelinedetails pipelineDetails = new PipePipelinedetails(found);
             PipelineRepositoryManager.SetInfo(pipelineDetails);
-
+            
             ValidationResults vr = null;
 
             ValidationResults temp = pipelineDetails.getItem().validate();
@@ -330,7 +338,7 @@ public class ManagePipeline extends SecureAction {
             	try {
             		PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
             		pipelineRepository.setPipeline(pipelineDetails);
-            		pipelineRepository.save(user, false, true);
+            		pipelineRepository.save(user, false, true,EventUtils.ADMIN_EVENT(user));
             		PipelineRepositoryManager.Reset();
             		data.setMessage("Pipeline " + pipelineDetails.getPath() + " has been successfully added to the repository");
             		data.setScreenTemplate("ClosePageAndRefresh.vm");

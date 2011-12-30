@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import org.nrg.xdat.om.base.auto.AutoXnatPublicationresource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
@@ -251,7 +252,7 @@ public class BaseXnatPublicationresource extends AutoXnatPublicationresource {
             return this.getTitle();
     }
     
-    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user) throws IOException,Exception{
+    public void moveTo(File newSessionDir,String existingSessionDir,String rootPath,XDATUser user,EventMetaI c) throws IOException,Exception{
     	String uri = this.getUri();
     	
     	String relativePath=null;
@@ -283,6 +284,6 @@ public class BaseXnatPublicationresource extends AutoXnatPublicationresource {
     	}
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false);
+    	this.save(user, true, false,c);
     }
 }

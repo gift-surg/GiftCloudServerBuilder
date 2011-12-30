@@ -13,18 +13,24 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ManageEntryAccess extends ModifyItem {
     static Logger logger = Logger.getLogger(ManageEntryAccess.class);
@@ -32,14 +38,26 @@ public class ManageEntryAccess extends ModifyItem {
     
     public void save(XFTItem first,RunData data, Context context) throws InvalidItemException,Exception{
         ArrayList<XFTItem>al = first.getChildItems("sharing/share");
-        for (XFTItem i : al){
-            if (first.getGenericSchemaElement().instanceOf("xnat:subjectData")){
-                i.setProperty("subject_id", first.getProperty("ID"));
-            }else{
-                i.setProperty("sharing_share_xnat_experimentda_id", first.getProperty("ID"));
-            }
-            i.save(TurbineUtils.getUser(data),false,false);
-        }
+        
+		PersistentWorkflowI wrk=WorkflowUtils.buildOpenWorkflow(TurbineUtils.getUser(data), first, newEventInstance(data,EventUtils.CATEGORY.DATA,EventUtils.CONFIGURED_PROJECT_SHARING));
+		EventMetaI c=wrk.buildEvent();
+		PersistentWorkflowUtils.save(wrk, c);
+		
+        try {
+			for (XFTItem i : al){
+			    if (first.getGenericSchemaElement().instanceOf("xnat:subjectData")){
+			        i.setProperty("subject_id", first.getProperty("ID"));
+			    }else{
+			        i.setProperty("sharing_share_xnat_experimentda_id", first.getProperty("ID"));
+			    }
+				
+			    i.save(TurbineUtils.getUser(data),false,false,c);
+			}
+			WorkflowUtils.complete(wrk, c);
+		} catch (Exception e) {
+			WorkflowUtils.fail(wrk, c);
+			throw e;
+		}
     }
     
     public void doPerform(RunData data, Context context) throws Exception

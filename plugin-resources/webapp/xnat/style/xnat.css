@@ -321,3 +321,11 @@ TD.ext-content{
    width:300px;
    white-space:normal;
 }
+DIV.justification{
+    font-size:11px;
+    line-height:13px;
+	border:1px solid #DDDDDD;
+    background-color:#F2F2F2;
+    padding:4px;
+    font-weight:700;
+}

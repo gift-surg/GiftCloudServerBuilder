@@ -20,33 +20,55 @@ import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.db.DBAction;
+import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventDetails;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.presentation.FlattenedItemA;
+import org.nrg.xft.presentation.ItemJSONBuilder;
+import org.nrg.xft.presentation.ItemMerger;
+import org.nrg.xft.presentation.ItemPropBuilder;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
+import org.nrg.xnat.itemBuilders.FullFileHistoryBuilder;
+import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ChangeSummary;
+import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ItemEventI;
+import org.nrg.xnat.presentation.DateBasedSummaryBuilder;
 import org.nrg.xnat.restlet.representations.CSVTableRepresentation;
 import org.nrg.xnat.restlet.representations.HTMLTableRepresentation;
 import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
+import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
 import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -87,7 +109,7 @@ public abstract class SecureResource extends Resource {
 
 	public static final String USER_ATTRIBUTE = "user";
 
-	static Logger logger = Logger.getLogger(SecureResource.class);
+	public static Logger logger = Logger.getLogger(SecureResource.class);
 	public Hashtable<String, String> fieldMapping = new Hashtable<String, String>();
 	
 	// TODO: these should be proper extension types: application/x-xList, application/x-xcat+xml, application/x-xar
@@ -149,7 +171,7 @@ public abstract class SecureResource extends Resource {
 				login = user.getLogin();
 			}
 
-			AccessLogger.LogServiceAccess(login, getRequest().getClientInfo()					.getAddress(), getRequest().getMethod() + " " + url, "");
+			AccessLogger.LogServiceAccess(login, getRequest().getClientInfo().getAddress(), getRequest().getMethod() + " " + url, "");
 			}
 		}
 		
@@ -229,6 +251,17 @@ public abstract class SecureResource extends Resource {
 			}
 		}
 		
+	public Map<String,Object> getQueryVariablesAsMap(){
+		Map<String,Object> params=new Hashtable<String,Object>();
+		Form f = getQueryVariableForm();
+		if (f != null) {
+			for (Parameter p:f){
+				params.put(p.getName(), p.getValue());
+			}
+		}
+		return params;
+	}
+	
 	public boolean isQueryVariable(String key, String value,			boolean caseSensitive) {
 		if (this.getQueryVariable(key) != null) {
 			if ((caseSensitive && this.getQueryVariable(key).equals(value))					|| (!caseSensitive && this.getQueryVariable(key)							.equalsIgnoreCase(value))) {
@@ -257,6 +290,10 @@ public abstract class SecureResource extends Resource {
 		}else{
 			return MediaType.TEXT_XML;
 		}
+	}
+	
+	public String getReason(){
+		return this.getQueryVariable(EventUtils.EVENT_REASON);
 	}
 	
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params){
@@ -326,7 +363,20 @@ public abstract class SecureResource extends Resource {
 
 		if (mt.equals(MediaType.TEXT_HTML)) {
 			try {
-				return new ItemHTMLRepresentation(item, MediaType.TEXT_HTML, getRequest(), user);
+				return new ItemHTMLRepresentation(item, MediaType.TEXT_HTML, getRequest(), user,getQueryVariable("requested_screen"),new Hashtable<String,Object>());
+			} catch (Exception e) {
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				return null;
+			}
+		}else if (mt.equals(MediaType.APPLICATION_JSON)) {
+			try {
+				FlattenedItemA.HistoryConfigI history=(isQueryVariableTrue("includeHistory"))?FlattenedItemA.GET_ALL:new FlattenedItemA.HistoryConfigI(){
+					@Override
+					public boolean getIncludeHistory() {
+						return false;
+					}
+				};
+				return new JSONObjectRepresentation(MediaType.APPLICATION_JSON,(new ItemJSONBuilder()).call(item, history,  isQueryVariableTrue("includeHeaders")));
 			} catch (Exception e) {
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 				return null;
@@ -831,6 +881,234 @@ public abstract class SecureResource extends Resource {
 			return defaultCompression;
 		}else{
 			return ZipUtils.DEFAULT_COMPRESSION;
+		}
+	}
+	
+	public Representation buildChangesets(XFTItem item, MediaType mt) throws Exception{
+		Map<Date,ChangeSummary> changes=DateBasedSummaryBuilder.build(
+				Arrays.asList(
+						ItemMerger.merge(
+							ItemPropBuilder.build(item, FlattenedItemA.GET_ALL,Arrays.asList(new FullFileHistoryBuilder())))),null);
+			
+			JSONObject wrapper = new JSONObject();
+			JSONArray objects=new JSONArray();
+			
+			for(Map.Entry<Date,ChangeSummary> entry: changes.entrySet()){
+				JSONObject o = new JSONObject();
+				o.put("date", entry.getKey());
+				
+				JSONArray a = new JSONArray();
+				o.put("events", a);
+				for(ItemEventI ie: entry.getValue().getEvents()){
+					a.put(ie.toJSON());
+				}
+				
+				objects.put(o);
+			}
+			wrapper.put("changesets", objects);
+			
+			return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, wrapper);
+	}
+	
+	public Integer getEventId(){
+		final String id=getQueryVariable(EventUtils.EVENT_ID);
+		if(id!=null){
+			return Integer.valueOf(id);
+		}else{
+			return null;
+		}
+	}
+	
+	public EventUtils.TYPE getEventType(){
+		final String id=getQueryVariable(EventUtils.EVENT_TYPE);
+		if(id!=null){
+			return EventUtils.getType(id, EventUtils.TYPE.WEB_SERVICE);
+		}else{
+			return EventUtils.TYPE.WEB_SERVICE;
+		}
+	}
+	
+	public String getAction(){
+		return getQueryVariable(EventUtils.EVENT_ACTION);
+	}
+	
+	public String getComment(){
+		return this.getQueryVariable(EventUtils.EVENT_COMMENT);
+	}
+	
+	public EventDetails newEventInstance(EventUtils.CATEGORY cat){
+		return EventUtils.newEventInstance(cat, getEventType(), getAction(), getReason(), getComment());
+	}
+	
+	public EventDetails newEventInstance(EventUtils.CATEGORY cat,String action){
+		return EventUtils.newEventInstance(cat, getEventType(), (getAction()!=null)?getAction():action, getReason(), getComment());
+	}
+		
+	public void delete(ArchivableItem item,EventDetails event) throws Exception{
+		final PersistentWorkflowI workflow=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, item.getXSIType(), item.getId(), item.getProject(),event);
+		final EventMetaI ci=workflow.buildEvent();
+    	
+		try {
+			String removeFiles=this.getQueryVariable("removeFiles");
+			if (removeFiles!=null){
+				final List<XFTItem> hash = item.getItem().getChildrenOfType("xnat:abstractResource");
+			    
+			    for (XFTItem resource : hash){
+			        ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
+			        if (om instanceof XnatAbstractresource){
+			            XnatAbstractresource resourceA = (XnatAbstractresource)om;
+			            resourceA.deleteWithBackup(item.getArchiveRootPath(),user,ci);
+			        }
+			    }
+			}
+			DBAction.DeleteItem(item.getItem().getCurrentDBVersion(), user,ci);
+			
+			WorkflowUtils.complete(workflow,ci);
+		} catch (Exception e) {
+			WorkflowUtils.fail(workflow,ci);
+		}
+        
+	    user.clearLocalCache();
+		MaterializedView.DeleteByUser(user);
+	}
+	
+	public void delete(ArchivableItem parent, ItemI item,EventDetails event) throws Exception{
+		final PersistentWorkflowI workflow=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, parent.getXSIType(), parent.getId(), parent.getProject(),event);
+		final EventMetaI ci=workflow.buildEvent();
+    	
+		try {
+			String removeFiles=this.getQueryVariable("removeFiles");
+			if (removeFiles!=null){
+				final List<XFTItem> hash = item.getItem().getChildrenOfType("xnat:abstractResource");
+			    
+			    for (XFTItem resource : hash){
+			        ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
+			        if (om instanceof XnatAbstractresource){
+			            XnatAbstractresource resourceA = (XnatAbstractresource)om;
+			            resourceA.deleteWithBackup(parent.getArchiveRootPath(),user,ci);
+			        }
+			    }
+			}
+			DBAction.DeleteItem(item.getItem().getCurrentDBVersion(), user,ci);
+			
+			WorkflowUtils.complete(workflow,ci);
+		} catch (Exception e) {
+			WorkflowUtils.fail(workflow,ci);
+			throw e;
+		}
+        
+	    user.clearLocalCache();
+		MaterializedView.DeleteByUser(user);
+	}
+	
+	public void create(ArchivableItem parent, ItemI sub,boolean overwriteSecurity, boolean allowDataDeletion,EventDetails event) throws Exception{
+		PersistentWorkflowI wrk=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, parent.getItem(), event);
+		EventMetaI c=wrk.buildEvent();
+		
+		try {
+			if(sub.save(user,false,false,c)){
+				WorkflowUtils.complete(wrk, c);
+				MaterializedView.DeleteByUser(user);
+			}
+		} catch (Exception e) {
+			WorkflowUtils.fail(wrk, c);
+			throw e;
+		}
+	}
+	
+	public void create(ArchivableItem sub,boolean overwriteSecurity, boolean allowDataDeletion,EventDetails event) throws Exception{
+		PersistentWorkflowI wrk=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, sub.getItem(), event);
+		EventMetaI c=wrk.buildEvent();
+		
+		try {
+			if(sub.save(user,false,false,c)){
+				WorkflowUtils.complete(wrk, c);
+				MaterializedView.DeleteByUser(user);
+			}
+		} catch (Exception e) {
+			WorkflowUtils.fail(wrk, c);
+			throw e;
+		}
+	}
+
+	protected static Representation returnStatus(ItemI i,MediaType mt){
+		try {
+			if(i.needsActivation()){
+			    return new StringRepresentation(ViewManager.QUARANTINE,mt);
+			}else{
+			    return new StringRepresentation(ViewManager.ACTIVE,mt);
+			}
+		} catch (Exception e) {
+		    return new StringRepresentation(ViewManager.ACTIVE,mt);
+		}
+	}
+	
+	protected void postSaveManageStatus(ItemI i) throws ActionException{
+		try {
+			if(this.isQueryVariableTrue("activate")){
+				if(user.canActivate(i.getItem())){
+					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Activated"));
+					try {
+						i.activate(user);
+						WorkflowUtils.complete(wrk, wrk.buildEvent());
+					} catch (Exception e) {
+						logger.error("",e);
+						WorkflowUtils.fail(wrk,wrk.buildEvent());
+					}
+				}else {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
+				}
+			}
+
+			if(this.isQueryVariableTrue(ViewManager.QUARANTINE)){
+				if(user.canActivate(i.getItem())){
+					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Quarantined"));
+					try {
+						i.quarantine(user);
+						WorkflowUtils.complete(wrk, wrk.buildEvent());
+					} catch (Exception e) {
+						logger.error("",e);
+						WorkflowUtils.fail(wrk,wrk.buildEvent());
+					}
+				}else {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
+				}
+			}
+
+
+			if(this.isQueryVariableTrue("_lock")){
+				if(user.canActivate(i.getItem())){
+					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Locked"));
+					try {
+						i.lock(user);
+						WorkflowUtils.complete(wrk, wrk.buildEvent());
+					} catch (Exception e) {
+						logger.error("",e);
+						WorkflowUtils.fail(wrk,wrk.buildEvent());
+					}
+				}else { 
+					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.",new Exception());
+				}
+			}
+//			else if(this.isQueryVariableTrue("_unlock")){
+//				if(user.canActivate(i.getItem())){
+//					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Unlocked"));
+//					try {
+//						i.activate(user);
+//						WorkflowUtils.complete(wrk, wrk.buildEvent());
+//					} catch (Exception e) {
+//						logger.error("",e);
+//						WorkflowUtils.fail(wrk,wrk.buildEvent());
+//					}
+//				}else { 
+//					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.",new Exception());
+//				}
+//			}
+		} catch (ActionException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("",e);
+			throw new org.nrg.action.ServerException("Error modifying status",e);
 		}
 	}
 }

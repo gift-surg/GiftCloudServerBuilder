@@ -16,8 +16,6 @@ width:1px;
 					<li><a href="#othermgmt"><em>Manage<span class="spacer"></span></em></a></li>
 					<li><a href="#tab4"><em>Pipelines<span class="spacer"></span></em></a></li>
   #end
-
-				<li><a href="#tab6"><em>History<span class="spacer"></span></em></a></li>
 #end
   </ul>
  <div class="yui-content">   
@@ -37,10 +35,6 @@ width:1px;
 						<p>#parse($turbineUtils.getTemplateName("_summary_pipeline","xnat:projectData",$project.getId()))</p>
 					</div>
  #end
-
-				<div id="tab5">
-					<p>#parse($turbineUtils.getTemplateName("_summary_history","xnat:projectData",$project.getId()))</p>
-				</div>
 #end
 
   </div> 
@@ -66,6 +60,13 @@ function summaryTabManagerInit(){
     var oButton5= new YAHOO.widget.Button("button5");
     #end
 #end
+
+	window.summaryTabView.addTab( new YAHOO.widget.Tab({   
+    label: 'History',   
+    dataSrc: serverRoot+'/REST/projects/$om.getId()?format=html&requested_screen=WorkflowHistorySummary&includeFiles=false',   
+    cacheData: false
+}));   
+
     window.project_summary_module = new YAHOO.widget.Module("project_summary_module",{visible:false,zIndex:5});
     
     window.project_summary_module.show(); 		    
@@ -94,6 +95,7 @@ function summaryTabManagerInit(){
     #end
     window.summaryTabView.subscribe("activeTabChange",summaryIndexChanged);
 #end
+	
 					}
 					summaryTabManagerInit();
 </script>

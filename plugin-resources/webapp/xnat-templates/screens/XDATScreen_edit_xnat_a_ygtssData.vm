@@ -119,6 +119,7 @@ $page.setVlinkColor($ui.vlink)
 <textarea name="xnat_a:ygtssData.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea>
 
 <hr>
+#auditTable("" "")
 
 <input type="button" onclick="javascript:history.go(-1)" value="Back"/>
 &nbsp;&nbsp;&nbsp;

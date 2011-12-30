@@ -34,6 +34,9 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.email.EmailUtils;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
@@ -70,6 +73,9 @@ public class BatchTransfer extends Thread{
     public void execute(){
         final Collection<String> messages = new LinkedList<String>();
         final Collection<Collection<String>> errors = new LinkedList<Collection<String>>();
+        
+        EventMetaI ci=EventUtils.ADMIN_EVENT(user);
+        
         for(int i=0, nSessions = sessions.size(); i<nSessions; i++){
             boolean _successful = true;
             WrkWorkflowdata wkdata = null;
@@ -120,7 +126,7 @@ public class BatchTransfer extends Thread{
                 
                 try {
                     wkdata.setStatus("In Progress");
-                    wkdata.save(user, false, false);
+                    PersistentWorkflowUtils.save(wkdata,ci);
                 } catch (Throwable e) {
                     logger.error("",e);
                 }
@@ -140,7 +146,7 @@ public class BatchTransfer extends Thread{
                 session.fixScanTypes();
                 session.correctArchivePaths();
                 
-                session.save(user, false, false);
+                session.save(user, false, false,ci);
                 
 
 //                        logger.error("",e2);
@@ -157,7 +163,7 @@ public class BatchTransfer extends Thread{
                     wkdata.setCurrentStepId("Copy To Arc");
                     wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
                     wkdata.setNextStepId("Verify Copy");
-                    wkdata.save(user, false, false);
+                    PersistentWorkflowUtils.save(wkdata,ci);
                 } catch (Exception e) {
                     logger.error("",e);
                 }
@@ -237,7 +243,7 @@ public class BatchTransfer extends Thread{
                     wkdata.setCurrentStepId("Verify Copy");
                     wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
                     wkdata.setNextStepId("Zip");
-                    wkdata.save(user, false, false);
+                    PersistentWorkflowUtils.save(wkdata,ci);
                 } catch (Exception e) {
                     logger.error("",e);
                 }
@@ -250,7 +256,7 @@ public class BatchTransfer extends Thread{
                     try {
                 	wkdata.setStatus("Failed");
                 	wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                	wkdata.save(user, false, false);
+                    PersistentWorkflowUtils.save(wkdata,ci);
                     } catch (Exception e) {
                 	logger.error("",e);
                     }
@@ -328,7 +334,7 @@ public class BatchTransfer extends Thread{
                   try {
                       wkdata.setStatus("Complete");
                       wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                      wkdata.save(user, false, false);
+                      PersistentWorkflowUtils.save(wkdata,ci);
                   } catch (Exception e) {
                       logger.error("",e);
                   }
@@ -378,7 +384,7 @@ public class BatchTransfer extends Thread{
                       try {
                           wkdata.setStatus("Complete");
                           wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                          wkdata.save(user, false, false);
+                          PersistentWorkflowUtils.save(wkdata,ci);
                       } catch (Exception e) {
                           logger.error("",e);
                       }
@@ -386,7 +392,7 @@ public class BatchTransfer extends Thread{
                       try {
                           wkdata.setStatus("Failed");
                           wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                          wkdata.save(user, false, false);
+                          PersistentWorkflowUtils.save(wkdata,ci);
                       } catch (Exception e) {
                           logger.error("",e);
                       }

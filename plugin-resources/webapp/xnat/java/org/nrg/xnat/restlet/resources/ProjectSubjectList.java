@@ -12,6 +12,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
@@ -153,20 +154,10 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 							}
-				
-				if(sub.save(user,false,false)){
-					MaterializedView.DeleteByUser(user);
-						}
 
-				if(this.getQueryVariable("activate")!=null && this.getQueryVariable("activate").equals("true")){
-					if(user.canActivate(sub.getItem()))sub.activate(user);
-					else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-					}
-					
-				if(this.getQueryVariable("quarantine")!=null && this.getQueryVariable("quarantine").equals("true")){
-					if(user.canActivate(sub.getItem()))sub.quarantine(user);
-					else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-				}
+	            create(sub,false,false,newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(sub.getXSIType(), (existing==null))));
+
+	            postSaveManageStatus(sub);
 					
 				this.returnSuccessfulCreateFromList(sub.getId());
 				}else{

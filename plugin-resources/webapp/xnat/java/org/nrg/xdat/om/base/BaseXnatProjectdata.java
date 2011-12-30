@@ -6,7 +6,6 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -16,6 +15,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.display.DisplayField;
 import org.nrg.xdat.model.ArcPathinfoI;
@@ -64,7 +66,12 @@ import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.Event;
+import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventManager;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -76,10 +83,13 @@ import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 
 /**
@@ -720,10 +730,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             path=ArcSpecManager.GetInstance().getGlobalArchivePath()+"/" + this.getId();
         }
 
-        if (path==null){
-            path ="./" + this.getId();
-        }
-
         path = path.replace('\\', '/');
         if (!path.endsWith("/")){
             path = path +"/";
@@ -745,10 +751,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         if (path==null){
             path=ArcSpecManager.GetInstance().getGlobalCachePath()+"/" + this.getId();
-        }
-
-        if (path==null){
-            path ="./" + this.getId();
         }
 
         path = path.replace('\\', '/');
@@ -774,10 +776,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             path=ArcSpecManager.GetInstance().getGlobalPrearchivePath()+"/" + this.getId();
         }
 
-        if (path==null){
-            path ="./" + this.getId();
-        }
-
         path = path.replace('\\', '/');
         if (!path.endsWith("/")){
             path = path +"/";
@@ -799,10 +797,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         if (path==null){
             path=ArcSpecManager.GetInstance().getGlobalBuildPath()+"/" + this.getId();
-        }
-
-        if (path==null){
-            path ="./" + this.getId();
         }
 
         path = path.replace('\\', '/');
@@ -875,31 +869,39 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
     }
 
-    public String addGroupMember(String group_id, XDATUser newUser,XDATUser currentUser) throws Exception{
+    public String addGroupMember(String group_id, XDATUser newUser,XDATUser currentUser, EventMetaI ci) throws Exception{
 		final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
     	XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
     	if(t.size()==0){
             final XdatUserGroupid map = new XdatUserGroupid((UserI)currentUser);
             map.setProperty(map.getXSIType() +".groups_groupid_xdat_user_xdat_user_id", newUser.getXdatUserId());
             map.setGroupid(group_id);
-            map.save(currentUser, false, false);
+            map.save(currentUser, false, false,ci);
     	}
         return group_id;
     }
 
-    public void removeGroupMember(String group_id, XDATUser newUser,XDATUser currentUser) throws Exception{
-		final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
+    public void removeGroupMember(String group_id, XDATUser newUser,XDATUser currentUser,EventDetails ci) throws Exception{
+    	final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
     	XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
     	if(t.size()>0){
     		final String query = "DELETE FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
 
-            PoolDBUtils.ExecuteNonSelectQuery(query,getDBName(), currentUser.getLogin());
+    		PersistentWorkflowI wrk= PersistentWorkflowUtils.buildOpenWorkflow(currentUser, this.SCHEMA_ELEMENT_NAME, this.getId(), this.getId(), ci);
+    		try {
+				PoolDBUtils.ExecuteNonSelectQuery(query,getDBName(), currentUser.getLogin());
 
-            PoolDBUtils.PerformUpdateTrigger(newUser.getItem(), currentUser.getLogin());
+				PoolDBUtils.PerformUpdateTrigger(newUser.getItem(), currentUser.getLogin());
+				PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
+			} catch (Exception e) {
+				PersistentWorkflowUtils.fail(wrk,wrk.buildEvent());
+				throw e;
+			}
     	}
+    	
     }
 
-    public void initGroups(){
+    public void initGroups(EventMetaI ci){
     	final long startTime = Calendar.getInstance().getTimeInMillis();
     	final ArrayList<XdatUsergroup> owner = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", this.getId() + "_" + OWNER_GROUP, this.getUser(), true);
 
@@ -923,8 +925,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             try {
 				if (es.isSecure() && (es.getSchemaElement().getGenericXFTElement().instanceOf("xnat:subjectData") || es.getSchemaElement().getGenericXFTElement().instanceOf("xnat:experimentData"))){
 
-				    es.initPSF(es.getElementName() + "/project");
-				    es.initPSF(es.getElementName() + "/sharing/share/project");
+				    es.initPSF(es.getElementName() + "/project",ci);
+				    es.initPSF(es.getElementName() + "/sharing/share/project",ci);
 				}else{
 				    ess.remove(es);
 				}
@@ -943,7 +945,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 group.setId(getId() + "_" + OWNER_GROUP);
                 group.setDisplayname("Owners");
                 group.setTag(getId());
-                group.save(this.getUser(), true, true);
+                group.save(this.getUser(), true, true,ci);
             } catch (Exception e) {
                 logger.error("",e);
             }
@@ -952,7 +954,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
 
         try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false);
+            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
 
             Iterator iter = ess.iterator();
             while (iter.hasNext())
@@ -960,11 +962,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 ElementSecurity es = (ElementSecurity)iter.next();
 
 
-                if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false)){
+                if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci)){
                 	//ownerMod = true;
                 }
                      
-                if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false)){
+                if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci)){
                 	//ownerMod = true;
                 }
             }
@@ -996,7 +998,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 group.setId(getId() + "_" + MEMBER_GROUP);
                 group.setDisplayname("Members");
                 group.setTag(getId());
-                group.save(this.getUser(), true, true);
+                group.save(this.getUser(), true, true,ci);
             } catch (Exception e) {
                 logger.error("",e);
             }
@@ -1005,15 +1007,15 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
 
         try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false);
+            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
 
             Iterator iter = ess.iterator();
             while (iter.hasNext())
             {
                 ElementSecurity es = (ElementSecurity)iter.next();
 
-                group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false);
-                group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false);
+                group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
+                group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
             }
         } catch (Exception e) {
             logger.error("",e);
@@ -1043,7 +1045,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 group.setId(getId() + "_" + COLLABORATOR_GROUP);
                 group.setDisplayname("Collaborators");
                 group.setTag(getId());
-                group.save(this.getUser(), true, true);
+                group.save(this.getUser(), true, true,ci);
             } catch (Exception e) {
                 logger.error("",e);
             }
@@ -1053,15 +1055,15 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 
         try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false);
+            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
 
             Iterator iter = ess.iterator();
             while (iter.hasNext())
             {
                 ElementSecurity es = (ElementSecurity)iter.next();
 
-                group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false);
-                group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false);
+                group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
+                group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
             }
         } catch (Exception e) {
             logger.error("",e);
@@ -1082,21 +1084,21 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         if (XFT.VERBOSE)System.out.println("Group init(): " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
     }
 
-    public static void quickSave(XnatProjectdata project, XDATUser user,boolean allowDataDeletion,boolean overrideSecurity) throws Exception{
-    	project.initNewProject(user,allowDataDeletion,true);
+    public static void quickSave(XnatProjectdata project, XDATUser user,boolean allowDataDeletion,boolean overrideSecurity,EventMetaI ci) throws Exception{
+    	project.initNewProject(user,allowDataDeletion,true,ci);
 
 	
-		project.save(user,overrideSecurity,false);
+		project.save(user,overrideSecurity,false,ci);
 		XFTItem item =project.getItem().getCurrentDBVersion(false);
 		
 		XnatProjectdata postSave = new XnatProjectdata(item);
 	    postSave.getItem().setUser(user);
 	
-	    postSave.initGroups();
+	    postSave.initGroups(ci);
 	        
 	    user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
 	
-	    postSave.initArcProject(null, user);
+	    postSave.initArcProject(null, user,ci);
 	
 	    user.clearLocalCache();
 		MaterializedView.DeleteByUser(user);
@@ -1411,7 +1413,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
     }
 
-    public void initAccessibility(String accessibility, boolean forceInit){
+    public boolean initAccessibility(String accessibility, boolean forceInit, EventMetaI ci){
         try {
             if (accessibility!=null){
                 if ((!accessibility.equals(this.getPublicAccessibility())) || forceInit)
@@ -1423,7 +1425,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                         XFTItem i = XFTItem.NewItem("xdat:user",this.getUser());
                         i.setProperty("login","guest");
                         i.setProperty("enabled", 0);
-                        i.save(this.getUser(), true, false);
+                        i.save(this.getUser(), true, false,ci);
 
                         guest = new XDATUser("guest");
                     }
@@ -1432,38 +1434,39 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     if (accessibility.equals("public"))
                     {
                         //public
-                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, true,true);
+                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, true,true,ci);
 
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(), false, true, false, false, true,true);
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(), false, false, false, false, false,true);
+                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(), false, true, false, false, true,true,ci);
+                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(), false, false, false, false, false,true,ci);
                         	}
                         }
                     }else if (accessibility.equals("protected"))
                     {
                         //protected
-                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, false,true);
+                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, false,true,ci);
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true);
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true);
+                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true,ci);
+                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true,ci);
                         	}
                         }
                     }else
                     {
                         //private
-                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, false, false, false, false,true);
+                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, false, false, false, false,true,ci);
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true);
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true);
+                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true,ci);
+                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true,ci);
                         	}
                         }
                     }
+                    return true;
                 }
             }
         } catch (UserNotFoundException e) {
@@ -1485,13 +1488,14 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         } catch (Exception e) {
             logger.error("",e);
         }
+        return false;
     }
 
     /* (non-Javadoc)
      * @see org.nrg.xft.ItemWrapper#save(org.nrg.xft.security.UserI, boolean, boolean)
      */
     @Override
-    public boolean save(UserI user, boolean overrideSecurity, boolean allowItemRemoval) throws Exception {
+    public boolean save(UserI user, boolean overrideSecurity, boolean allowItemRemoval,EventMetaI c) throws Exception {
         XdatUsergroup group = new XdatUsergroup((UserI)this.getUser());
         group.setId(getId() + "_" + OWNER_GROUP);
         group.setDisplayname("Owners");
@@ -1499,20 +1503,20 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
         if(ownerG==null){
-        	group.save(this.getUser(), true, true);
+        	group.save(this.getUser(), true, true,c);
 
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)user,false);
+            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)user,false,c);
 
             if(!((XDATUser)user).getGroups().containsKey(group.getId())){
                 UserGroup ug= new UserGroup(group.getId());
                 ug.init(group);
                 ((XDATUser)user).getGroups().put(group.getId(),ug);
 
-                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user);
+                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user,c);
             }
         }
 
-        return super.save(user, overrideSecurity, allowItemRemoval);
+        return super.save(user, overrideSecurity, allowItemRemoval,c);
     }
 
     public String getDisplayName(){
@@ -1569,7 +1573,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
     }
 
-    public void initNewProject(XDATUser user,boolean allowDataDeletion,boolean allowMatchingID) throws Exception{
+    public void initNewProject(XDATUser user,boolean allowDataDeletion,boolean allowMatchingID,EventMetaI c) throws Exception{
     	if (this.getId()==null){
             String secondaryID = this.getSecondaryId();
             if (secondaryID==null){
@@ -1615,7 +1619,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                         //NOT REQUESTED
                         if (protocol.getProperty("xnat_abstractProtocol_id")!=null){
                             try {
-                            	getItem().getCurrentDBVersion().removeChildFromDB("xnat:projectData/studyProtocol", protocol.getCurrentDBVersion(), user);
+                            	getItem().getCurrentDBVersion().removeChildFromDB("xnat:projectData/studyProtocol", protocol.getCurrentDBVersion(), user,c);
                             } catch (SQLException e) {
                                 logger.error("",e);
                             } catch (Exception e) {
@@ -1665,7 +1669,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
     }
 
-    public void initArcProject(ArcProject arcP, XDATUser user) throws Exception{
+    public void initArcProject(ArcProject arcP, XDATUser user,EventMetaI c) throws Exception{
     	if(arcP==null){
     		 XFTItem item = XFTItem.NewItem("arc:project", user);
     	     arcP = new ArcProject(item);
@@ -1679,7 +1683,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         arcP.setProperty("arc:project/paths/cachePath", ArcSpecManager.GetInstance().getGlobalCachePath() + getId()+"/");
         arcP.setProperty("arc:project/paths/buildPath", ArcSpecManager.GetInstance().getGlobalBuildPath() + getId()+"/");
 
-        arcP.save(user, true, false);
+        arcP.save(user, true, false,c);
         ArcSpecManager.Reset();
     }
 
@@ -1773,7 +1777,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		return null;
     }
 
-    public void deleteFiles() throws IOException{
+    public void deleteFiles(UserI user, EventMetaI ci) throws Exception{
     	String archive=this.getRootArchivePath();
     	File dir=new File(archive);
     	if(dir.exists()){
@@ -1781,7 +1785,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	}
 
     	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    		((XnatAbstractresource)abstRes).deleteFromFileSystem(archive);
+    		((XnatAbstractresource)abstRes).deleteWithBackup(archive,user,ci);
     	}
     }
 
@@ -1886,7 +1890,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 //    	return null;
 //    }
 
-    public void delete(boolean removeFiles, XDATUser user)throws SQLException,Exception{
+    public void delete(boolean removeFiles, XDATUser user, EventMetaI ci)throws SQLException,Exception{
     	boolean preventProjectDelete=false;
         boolean preventProjectDeleteByP=false;
     	for (XnatSubjectdata subject : getParticipants_participant()){
@@ -1903,9 +1907,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 
                     if(expt.getProject().equals(getId())){
-                        if(user.canDelete(expt)){
-                        	expt.deleteWorkflowEntries(expt.getId(), user);
-                        	
+                        if(user.canDelete(expt)){                        	
                             if (removeFiles){
                             	final List<XFTItem> hash = expt.getItem().getChildrenOfType("xnat:abstractResource");
 
@@ -1913,12 +1915,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                                     ItemI om = BaseElement.GetGeneratedItem((XFTItem)resource);
                                     if (om instanceof XnatAbstractresource){
                                         XnatAbstractresource resourceA = (XnatAbstractresource)om;
-                                        resourceA.deleteFromFileSystem(getRootArchivePath());
+                                        resourceA.deleteWithBackup(getRootArchivePath(), user, ci);
                                     }
                                 }
                             }
 
-                        	DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+                        	DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,ci);
                         }else{
                         	preventSubjectDeleteByP=true;
                         }
@@ -1926,7 +1928,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     	preventSubjectDelete=true;
                     	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
                     		if(pp.getProject().equals(getId())){
-                    			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
+                    			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user,ci);
                     		}
                     	}
                     }
@@ -1937,7 +1939,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             	if(!subject.getProject().equals(getId())){
             		for(XnatProjectparticipantI pp : subject.getSharing_share()){
                 		if(pp.getProject().equals(getId())){
-                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
+                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user,ci);
                 		}
                 	}
             	}else{
@@ -1958,7 +1960,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                                     }
                                 }
                             }
-                    		DBAction.DeleteItem(subject.getItem().getCurrentDBVersion(), user);
+                    		DBAction.DeleteItem(subject.getItem().getCurrentDBVersion(), user,ci);
                 		}else{
                 			preventProjectDeleteByP=true;
                 		}
@@ -1972,10 +1974,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 		if (!preventProjectDelete && !preventProjectDeleteByP){
 			final File arc=new File(this.getRootArchivePath());
-			final File prearc=new File(this.getPrearchivePath());
 			
 			PrearcUtils.deleteProject(this.getId());
-	        DBAction.DeleteItem(getItem().getCurrentDBVersion(), user);
+	        DBAction.DeleteItem(getItem().getCurrentDBVersion(), user,ci);
 
 	        //DELETE field mappings
 	        ItemSearch is = ItemSearch.GetItemSearch("xdat:field_mapping", user);
@@ -1984,7 +1985,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	        while (items.hasNext())
 	        {
 	            XFTItem item = (XFTItem)items.next();
-	            DBAction.DeleteItem(item, user);
+	            DBAction.DeleteItem(item, user,ci);
 	        }
 
 	        //DELETE user.groupId
@@ -1995,7 +1996,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	        while(groups.hasNext()){
 	            XdatUserGroupid g = (XdatUserGroupid)groups.next();
 	            try {
-	                DBAction.DeleteItem(g.getItem(), user);
+	                DBAction.DeleteItem(g.getItem(), user,ci);
 	            } catch (Throwable e) {
 	                logger.error("",e);
 	            }
@@ -2009,7 +2010,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	        while(groups.hasNext()){
 	            XdatUsergroup g = (XdatUsergroup)groups.next();
 	            try {
-	                DBAction.DeleteItem(g.getItem(), user);
+	                DBAction.DeleteItem(g.getItem(), user,ci);
 	            } catch (Throwable e) {
 	                logger.error("",e);
 	            }
@@ -2021,7 +2022,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	        {
 	            ItemI bundle = (ItemI)bundles.next();
 	            try {
-	                DBAction.DeleteItem(bundle.getItem(), user);
+	                DBAction.DeleteItem(bundle.getItem(), user,ci);
 	            } catch (Throwable e) {
 	                logger.error("",e);
 	            }
@@ -2029,7 +2030,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 	        ArcProject p =getArcSpecification();
 	        try {
-	            if (p!=null)DBAction.DeleteItem(p.getItem(), user);
+	            if (p!=null)DBAction.DeleteItem(p.getItem(), user,ci);
 	        } catch (Throwable e) {
 	            logger.error("",e);
 	        }
@@ -2106,4 +2107,89 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		
 		return proj;
 	}
+
+	@Override
+	public String getProject() {
+		return getId();
+	}
+
+	@Override
+	public String getArchiveRootPath() {
+		return this.getRootArchivePath();
+	}
+
+	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion,EventDetails event,String accessibility) throws ActionException{
+		 PersistentWorkflowI wrk;
+			try {
+				wrk = PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),event);
+			} catch (EventRequirementAbsent e1) {
+				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e1);
+			}
+			EventMetaI c=wrk.buildEvent();
+			
+			try {
+				String id=createProject(project, user, allowDataDeletion, c, accessibility);
+				
+				user.clearLocalCache();
+				ElementSecurity.refresh();
+				try {
+					WorkflowUtils.complete(wrk, c);
+				} catch (Exception e) {
+					throw new ServerException(e);
+				}
+				return id;
+			} catch (ActionException e) {
+				try {
+					WorkflowUtils.fail(wrk, c);
+				} catch (Exception e1) {
+					logger.error("",e1);
+				}
+				throw e;
+			}
+	}
+	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion,EventMetaI event,String accessibility) throws ActionException{
+		try {
+			project.initNewProject(user,allowDataDeletion,false,event);
+	
+			final ValidationResults vr = project.validate();
+	
+			if (vr != null && !vr.isValid())
+			{
+				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, vr.toFullString(),null);
+			}
+	
+			project.save(user,true,false,event);
+		} catch (ClientException e) {
+			throw e;
+		} catch (Exception e) {
+			SecureResource.logger.error("",e);
+			throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+		}
+		try {
+			XFTItem item =project.getItem().getCurrentDBVersion(false);
+	
+			XnatProjectdata postSave = new XnatProjectdata(item);
+			postSave.getItem().setUser(user);
+	
+			postSave.initGroups(event);
+	
+			if (accessibility==null){
+				accessibility="protected";
+			}
+	
+			if (!accessibility.equals("private"))
+				project.initAccessibility(accessibility, true,event);
+	
+			user.refreshGroup(postSave.getId() + "_" + OWNER_GROUP);
+	
+			postSave.initArcProject(null, user,event);
+	
+			
+			
+			return postSave.getId();
+		} catch (Exception e) {
+			throw new ServerException(e);
+		}
+	}
+	
 }

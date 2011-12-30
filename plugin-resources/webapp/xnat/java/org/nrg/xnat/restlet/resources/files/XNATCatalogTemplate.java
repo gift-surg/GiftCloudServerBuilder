@@ -3,6 +3,8 @@ package org.nrg.xnat.restlet.resources.files;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -11,18 +13,14 @@ import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
-import org.nrg.xnat.helpers.resource.direct.DirectAssessResourceImpl;
-import org.nrg.xnat.helpers.resource.direct.DirectExptResourceImpl;
-import org.nrg.xnat.helpers.resource.direct.DirectProjResourceImpl;
-import org.nrg.xnat.helpers.resource.direct.DirectReconResourceImpl;
 import org.nrg.xnat.helpers.resource.direct.DirectResourceModifierBuilder;
-import org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI;
 import org.nrg.xnat.helpers.resource.direct.ResourceModifierA;
-import org.nrg.xnat.helpers.resource.direct.DirectScanResourceImpl;
-import org.nrg.xnat.helpers.resource.direct.DirectSubjResourceImpl;
+import org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -32,7 +30,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 	
 	ArrayList<String> resource_ids=null;
 	ArrayList<XnatAbstractresource> resources=new ArrayList<XnatAbstractresource>();
-	
+		
 	public XNATCatalogTemplate(Context context, Request request,
 			Response response,boolean allowAll) {
 		super(context, request, response);
@@ -143,9 +141,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
         return f;
     }
 	
-    public XnatResourceInfo buildResourceInfo(){
-		XnatResourceInfo info = new XnatResourceInfo();
-        		
+    public XnatResourceInfo buildResourceInfo(EventMetaI ci){
 		final String description;
 	    if(this.getQueryVariable("description")!=null){
 	    	description=this.getQueryVariable("description");
@@ -174,10 +170,11 @@ public class XNATCatalogTemplate extends XNATTemplate {
 	    	tags=null;
 	    }
         
-		return XnatResourceInfo.buildResourceInfo(description, format, content, tags);
+	    Date d=EventUtils.getEventDate(ci, false);
+		return XnatResourceInfo.buildResourceInfo(description, format, content, tags,user,d,d,EventUtils.getEventId(ci));
 	}
 			
-	protected ResourceModifierA buildResourceModifier(final boolean overwrite) throws Exception{
+	protected ResourceModifierA buildResourceModifier(final boolean overwrite,EventMetaI ci) throws Exception{
 		XnatImagesessiondata assessed=null;
 			
 		if(this.assesseds.size()==1)assessed=(XnatImagesessiondata)assesseds.get(0);
@@ -212,6 +209,6 @@ public class XNATCatalogTemplate extends XNATTemplate {
 			throw new Exception("Unknown resource");
 		}
 		
-		return builder.buildResourceModifier(overwrite,user);
+		return builder.buildResourceModifier(overwrite,user,ci);
 	}
 }

@@ -68,6 +68,7 @@ $page.setVlinkColor($ui.vlink)
 						      </DIV>
 	</TD></TR>
 		#xdatEditProps($item $edit_screen)
+		#auditBoxes("2" "" "" "Modified project")
 				<TR><TH align="left">&nbsp;</TH></TR>
 						<TR>
 		<TR><TD COLSPAN=2 ALIGN=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/></TD></TR>

@@ -38,7 +38,6 @@ public abstract class BaseXDATTestCase{
 				throw new FileNotFoundException(XNAT_INSTANCE_FOLDER + "InstanceSettings.xml");
 		}
 		
-		
 		XDATUser temp=new XDATUser(USER);
 		temp.login(PASS);
 		
@@ -47,7 +46,6 @@ public abstract class BaseXDATTestCase{
 		admin_user=new XDATUser(ADMIN_USER);
 		admin_user.login(ADMIN_PASS);
 	}
-
 	
 	public static File createFile(File dir, String name, String content) throws IOException{
 		if(!dir.exists())dir.mkdirs();

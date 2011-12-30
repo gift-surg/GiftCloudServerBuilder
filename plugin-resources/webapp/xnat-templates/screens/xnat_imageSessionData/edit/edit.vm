@@ -61,7 +61,8 @@ $page.setVlinkColor($ui.vlink)
 #else
   #set($allowDataDeletion=true)
 #end
-       <DIV class="edit_title">Image Session #if($om.getId()) Modification Form #else Creation Form #end</DIV><br>
+#set($formName="Image Session #if($om.getId()) Modification Form #else Creation Form #end")
+       <DIV class="edit_title">$formName</DIV><br>
 <form method="post" action="$target" name="form1" id="form1" onsubmit="return validateForm();">
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
     #if($om.getId())
@@ -127,8 +128,8 @@ $page.setVlinkColor($ui.vlink)
     <td><textarea name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
   </tr>
 </TABLE><BR><BR><HR>
-<table>
 #xdatEditProps($item $edit_screen)
+#auditTable("" "$!formName")
 <input type="hidden" name="tag" value="$!tag"/>
 <DIV ID="ADDIN"></DIV>
 	#if($src)
@@ -139,6 +140,5 @@ $page.setVlinkColor($ui.vlink)
       <input type="submit" name="eventSubmit_doInsert" value="Submit"/>
 
   </form>
-</table>
 
 

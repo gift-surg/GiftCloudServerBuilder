@@ -110,6 +110,7 @@ $page.setVlinkColor($ui.vlink)
 <textarea name="xnat_a:updrs3Data.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea>
 
 <hr>
+#auditTable("" "")
 
 #xdatEditProps($item $edit_screen)
 <input type="button" onclick="javascript:history.go(-1)" value="Back"/>

@@ -1,0 +1,180 @@
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("/ScreenOnly.vm")
+
+<style>
+	ul.workflow {
+		margin-top:24px;
+		margin-left:0;
+		padding:0;
+		font:13px/18px Verdana, Geneva, sans-serif;
+	}
+	ul.workflow li {
+        border:1px solid #ccc;    
+		margin:0 3px 24px 0;
+		position:relative;
+	}
+	ul.workflow a {
+		text-decoration:none;
+	}
+	.workflow h4 {
+		background-color: #ccc;
+		color: #666;
+		font-size: 9px;
+		height:18px;
+		margin:0;
+		padding:0 6px;
+		position:absolute;
+			top:-18px;
+			left:-1px;
+	}
+	.workflow p { 
+		margin:0;
+	}
+    ul.workflow, 
+    ul.workflow_history,
+    ul.workflow_history_details {	
+        list-style: none;
+    }
+    ul.workflow_history,
+	ul.workflow_history_details {
+        font-size:11px;
+    }
+	ul.workflow_history li,
+	ul.workflow_history_details li {
+		border:0;
+		margin-bottom:3px;
+	}
+	ul.workflow_history {
+		border-left:1px dotted #ccc;
+		padding-left:1em;
+		margin-left:2em;
+	}
+    li.LIhistory,
+    ul.historyWrapper,
+    li.historyWrapper,
+    li.historyHeader {	
+        padding:0px;
+    }
+    li.file_add,
+    li.file_edit,
+    li.file_remove,
+	li.user_add,
+	li.user_edit,
+	li.user_remove {
+		background-color:#f0f0f0;
+		display:block;
+        padding: 3px 3px 3px 40px;	
+    } 
+    li.changeType0 {	
+       // background-image:url($content.getURI("images/file-added-32.png"));
+        background-repeat:no-repeat;
+        background-position:left 6px; /*align left, 6px padding from top */
+    }
+    li.changeType1 {	
+        //background-image:url($content.getURI("images/file-edit-32.png"));
+        background-repeat:no-repeat;
+        background-position:left 6px; /*align left, 6px padding from top */
+	}
+    li.changeType2 {	
+        //background-image:url($content.getURI("images/file-delete-32.png"));
+        background-repeat:no-repeat;
+        background-position:left 6px; /*align left, 6px padding from top */
+	}
+	li.user_add {	
+        background-image:url($content.getURI("images/user-added-32.png"));
+        background-repeat:no-repeat;
+        background-position:left 6px; /*align left, 6px padding from top */
+	}
+	li.user_edit {	
+        background-image:url($content.getURI("images/user-change-32.png"));
+        background-repeat:no-repeat;
+        background-position:left 6px; /*align left, 6px padding from top */
+	}
+	li.user_remove {	
+        background-image:url($content.getURI("images/user-remove-32.png"));
+        background-repeat:no-repeat;
+        background-position:left 6px; /*align left, 6px padding from top */
+	}
+	ul.workflow li:hover {
+		background-color:#fe9;
+	}
+	.audit_datetime {
+		color:#888;
+		float:right; 
+	}
+	.audit_summary {
+		border-top:1px dotted #ccc;
+		display:block;
+		padding-top:6px;
+		margin-top:6px !important;
+		font-size:11px;
+	}
+	li.untracked {	
+		background-color:#ff9;
+    }
+    </style>
+<ul class="workflow">
+#set($level1=0)
+	#foreach($wv in $change_sets)
+		<li class="changeType$!wv.getDominantChangeType() #if($wv.getWorkflow()) tracked #else untracked #end" onClick="XNAT.app.toggle('ul_$wv.getDate().getTime()')">
+                <h4 class="audit_category">Data 1</h4>
+				<p><span class="audit_datetime">$turbineUtils.formatDate($wv.getDate(),"yyyy-MM-dd HH:mm:ss")</span> $!wv.getMessage() by <b>$!wv.getUsername()</b> </p>
+				<p class="audit_summary">$wv.getSummary()</p>
+           </li>
+	   
+	   <ul class="workflow_history" name="ul_$wv.getDate().getTime()" id="ul_$wv.getDate().getTime()" style="display:none;"> <!-- hide this by default, show on click of parent li -->
+            <li class="audit_reason"><strong>Reason:</strong> $!wv.getWorkflow().getJustification()</li>
+                #foreach($sum in $wv.getChangeSummaries())
+			<li>
+                <span class="audit_datetime">$!turbineUtils.formatDate($sum.getDate(),"yyyy-MM-dd HH:mm:ss")</span> 
+                $!sum.toString()
+            </li>
+            <ul class="workflow_history_details"> 
+				
+                		#set($modified=0)
+                		#set($added=0)
+                		#set($removed=0)
+					#foreach($ent in $sum.getEvents())
+						<li>$ent.Action $!ent.ObjectHeader $!ent.ObjectLabel 
+                			#if($ent.Action.equals("Modified"))
+                				$!ent.Field.FieldLabel from '$!ent.Field.OldValue' to '$!ent.Field.NewValue'
+                				#if($ent.Parent && $ent.getParents().size()>0)
+                					 of $!ent.Parent.ObjectHeader $!ent.Parent.ObjectLabel
+                				#end
+                				#set($modified=$modified+1)
+                			#elseif($ent.Action.equals("Removed"))
+                				#set($removed=$removed+1)
+                				#if($ent.Parent && $ent.getParents().size()>0)
+                					 from $!ent.Parent.ObjectHeader $!ent.Parent.ObjectLabel
+                				#end
+                			#else
+                				#set($added=$added+1)
+                				#if($ent.Parent && $ent.getParents().size()>0)
+                					 to $!ent.Parent.ObjectHeader $!ent.Parent.ObjectLabel
+                				#end
+                			#end
+                			#if($ent.getParents().size()>1)
+                				#set($grandparents=$ent.getParents().size() - 1)
+                				##intentially leave off the last one.
+                				#foreach($grandparent in [$grandparents..1])
+                					 of $ent.getParents().get($grandparent).ObjectHeader $ent.getParents().get($grandparent).ObjectLabel
+                				#end				
+							#end
+						</li>
+					#end
+                				#if($modified>0)
+                			<script>
+                					//document.getElementById("ul_$!sum.getDate().getTime()").style.backgroundColor="#ff99cc";
+                			</script>
+                				#elseif($removed>0)
+                			<script>
+                					//document.getElementById("ul_$!sum.getDate().getTime()").style.backgroundColor="#ffCCCC";
+                			</script>
+                				#end
+          </ul>
+				#end
+       </ul>
+	#end
+</ul>
+
+

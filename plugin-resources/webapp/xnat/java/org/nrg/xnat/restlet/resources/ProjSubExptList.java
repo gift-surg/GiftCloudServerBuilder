@@ -2,7 +2,6 @@
 package org.nrg.xnat.restlet.resources;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.nrg.xdat.base.BaseElement;
@@ -16,8 +15,8 @@ import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.search.CriteriaCollection;
@@ -172,7 +171,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 							this.subject.setProject(this.proj.getId());
 							this.subject.setLabel(expt.getSubjectId());
 							this.subject.setId(XnatSubjectdata.CreateNewID());
-							this.subject.save(user, false, true);
+				            create(this.subject,false,true,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.AUTO_CREATE_SUBJECT));
 							expt.setSubjectId(this.subject.getId());
 						}
 					}
@@ -237,27 +236,13 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 					return;
 	            }
 
-				if(expt.save(user,false,allowDataDeletion)){
-					MaterializedView.DeleteByUser(user);
+	            create(expt,false,allowDataDeletion,newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(expt.getXSIType(), (existing==null))));
 
-					if(this.proj.getArcSpecification().getQuarantineCode().equals(1)){
-						expt.quarantine(user);
-					}
-				}
-
-				if(this.getQueryVariable("activate")!=null && this.getQueryVariable("activate").equals("true")){
-					if(user.canActivate(expt.getItem()))expt.activate(user);
-					else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-				}
-
-				if(this.getQueryVariable("quarantine")!=null && this.getQueryVariable("quarantine").equals("true")){
-					if(user.canActivate(expt.getItem()))expt.quarantine(user);
-					else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-				}
+	            postSaveManageStatus(expt);
 
 				if(user.canEdit(expt.getItem())){
 					if(this.isQueryVariableTrue(XNATRestConstants.TRIGGER_PIPELINES) || this.containsAction(XNATRestConstants.TRIGGER_PIPELINES)){
-						TriggerPipelines tp = new TriggerPipelines(expt,true,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
+						TriggerPipelines tp = new TriggerPipelines(expt,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
 						tp.call();
 					}
 				}

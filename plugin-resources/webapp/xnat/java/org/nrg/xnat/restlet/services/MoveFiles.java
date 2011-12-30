@@ -1,11 +1,17 @@
 package org.nrg.xnat.restlet.services;
 
 import java.net.MalformedURLException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xnat.helpers.move.FileMover;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -53,6 +59,8 @@ public class MoveFiles extends SecureResource {
 	Boolean overwrite=null;
 		
 	String src=null,dest=null;
+	
+	Date eventTime=Calendar.getInstance().getTime();
 	
 	ListMultimap<String,Object> otherParams=ArrayListMultimap.create();
 
@@ -126,11 +134,20 @@ public class MoveFiles extends SecureResource {
 				return;
 			}
 			
+
+			EventMetaI ci;
+			PersistentWorkflowI work=PersistentWorkflowUtils.getWorkflowByEventId(user, getEventId());
+			if(work!=null){
+				ci=work.buildEvent();
+			}else{
+				ci = EventUtils.ADMIN_EVENT(user);
+			}
+			
 			//this should allow injection of a different implementation- TO
 			final FileMover mover =new FileMover(overwrite,user,otherParams);
 			
 			for(Map.Entry<URIManager.UserCacheURI,ResourceURII> entry: moves.entrySet()){
-				mover.call(entry.getKey(),entry.getValue());
+				mover.call(entry.getKey(),entry.getValue(),ci);
 			}
 		} catch (ActionException e) {
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());

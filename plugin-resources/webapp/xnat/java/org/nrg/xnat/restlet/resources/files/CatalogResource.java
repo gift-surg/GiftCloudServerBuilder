@@ -2,21 +2,30 @@
 package org.nrg.xnat.restlet.resources.files;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.ScanResource;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -60,24 +69,24 @@ public class CatalogResource extends XNATCatalogTemplate {
 	@Override
 	public void handlePut() {
 		if(this.parent!=null && this.security!=null){
-	        XFTItem item = null;	
+			XFTItem item = null;	
 			try {	
-		        if(user.canEdit(this.security)){
-		        	if(this.resources.size()>0){
+				if(user.canEdit(this.security)){
+					if(this.resources.size()>0){
 						this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "Specified resource already exists.");
 						return;
-		        	}
+					}
 
 					item=this.loadItem("xnat:resourceCatalog",true);
-					
+
 					if(item==null){
 						this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
 						return;
 					}
-					
+
 					if(item.instanceOf("xnat:resourceCatalog")){
 						XnatResourcecatalog catResource = (XnatResourcecatalog)BaseElement.GetGeneratedItem(item);
-						
+
 						if(catResource.getXnatAbstractresourceId()!=null){
 							XnatAbstractresource existing=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(catResource.getXnatAbstractresourceId(), user, false);
 							if(existing!=null){
@@ -90,60 +99,84 @@ public class CatalogResource extends XNATCatalogTemplate {
 								return;
 							}
 						}
-						
+
 						if(this.getQueryVariable("description")!=null){
 							catResource.setDescription(this.getQueryVariable("description"));
-					    }
-					    if(this.getQueryVariable("format")!=null){
-					    	catResource.setFormat(this.getQueryVariable("format"));
-					    }
-					    if(this.getQueryVariable("content")!=null){
-					    	catResource.setContent(this.getQueryVariable("content"));
-					    }
-					    
-					    if(this.getQueryVariables("tags")!=null){
-					    	String[] tags = this.getQueryVariables("tags");
-					    	for(String tag: tags){
-					    		tag = tag.trim();
-					    		if(!tag.equals("")){
-					    			for(String s:StringUtils.CommaDelimitedStringToArrayList(tag)){
-					    				s=s.trim();
-					    				if(!s.equals("")){
-					    					XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)user);
-					    		    		if(s.indexOf("=")>-1){
-					    		    			t.setName(s.substring(0,s.indexOf("=")));
-					    		    			t.setTag(s.substring(s.indexOf("=")+1));
-					    		    		}else{
-					    		    			if(s.indexOf(":")>-1){
-						    		    			t.setName(s.substring(0,s.indexOf(":")));
-						    		    			t.setTag(s.substring(s.indexOf(":")+1));
-						    		    		}else{
-						    		    			t.setTag(s);
-						    		    		}
-					    		    		}
-					    		    		catResource.setTags_tag(t);
-					    				}
-					    			}
-					    			
-					    		}
-					    	}
-					    }
+						}
+						if(this.getQueryVariable("format")!=null){
+							catResource.setFormat(this.getQueryVariable("format"));
+						}
+						if(this.getQueryVariable("content")!=null){
+							catResource.setContent(this.getQueryVariable("content"));
+						}
+
+						if(this.getQueryVariables("tags")!=null){
+							String[] tags = this.getQueryVariables("tags");
+							for(String tag: tags){
+								tag = tag.trim();
+								if(!tag.equals("")){
+									for(String s:StringUtils.CommaDelimitedStringToArrayList(tag)){
+										s=s.trim();
+										if(!s.equals("")){
+											XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)user);
+											if(s.indexOf("=")>-1){
+												t.setName(s.substring(0,s.indexOf("=")));
+												t.setTag(s.substring(s.indexOf("=")+1));
+											}else{
+												if(s.indexOf(":")>-1){
+													t.setName(s.substring(0,s.indexOf(":")));
+													t.setTag(s.substring(s.indexOf(":")+1));
+												}else{
+													t.setTag(s);
+												}
+											}
+											catResource.setTags_tag(t);
+										}
+									}
+
+								}
+							}
+						}
 						
 						catResource.setLabel(resource_ids.get(0));
+
+						PersistentWorkflowI wrk=PersistentWorkflowUtils.getWorkflowByEventId(user,getEventId());
+						if(wrk==null && "SNAPSHOTS".equals(catResource.getLabel())){
+							if(getSecurityItem() instanceof XnatExperimentdata){
+								Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user,((ArchivableItem)getSecurityItem()).getId());
+								if(wrks!=null && wrks.size()==1){
+									wrk=(WrkWorkflowdata)CollectionUtils.get(wrks, 0);
+									if(!"xnat_tools/AutoRun.xml".equals(wrk.getPipelineName())){
+										wrk=null;
+									}
+								}
+							}
+						}
 						
-						this.insertCatalag(catResource);
-						
-		}else{
+						boolean isNew=false;
+						if(wrk==null){
+							isNew=true;
+							wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, getSecurityItem().getItem(), newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.CREATE_RESOURCE));
+						}
+
+						EventMetaI ci=wrk.buildEvent();
+
+						this.insertCatalag(catResource,ci);
+
+						if(isNew){
+							WorkflowUtils.complete(wrk, ci);
+						}
+					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only ResourceCatalog documents can be PUT to this address.");
-		}
-		        }else{
+					}
+				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
 					return;
-	}
+				}
 
 			} catch (Exception e) {
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-	            logger.error("",e);
+				logger.error("",e);
 			}
 		}
 	}
@@ -155,20 +188,36 @@ public class CatalogResource extends XNATCatalogTemplate {
 
 	@Override
 	public void handleDelete(){
-			if(resources.size()>0 && this.parent!=null && this.security!=null){
-				for(XnatAbstractresource resource:resources){
+		if(resources.size()>0 && this.parent!=null && this.security!=null){
+			for(XnatAbstractresource resource:resources){
 				try {
 					if(user.canEdit(this.security)){
+						String securityId=null;
 						if(proj==null){
 							if(parent.getItem().instanceOf("xnat:experimentData")){
+								securityId=((XnatExperimentdata)parent).getId();
 								proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
 							}else if(security.getItem().instanceOf("xnat:experimentData")){
+								securityId=((XnatExperimentdata)security).getId();
 								proj = ((XnatExperimentdata)security).getPrimaryProject(false);
 							}
 						}
-						resource.deleteFromFileSystem(proj.getRootArchivePath());
-			            
-							DBAction.RemoveItemReference(this.parent.getItem(), xmlPath, resource.getItem(), user);
+						
+						final String rootPath=proj.getRootArchivePath();
+						
+						final PersistentWorkflowI workflow=PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, security.getXSIType(), securityId, (proj==null)?null:proj.getId(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.REMOVE_CATALOG));
+				    	EventMetaI ci=workflow.buildEvent();
+						
+						try {
+							resource.deleteWithBackup(rootPath, user, ci);
+
+							DBAction.RemoveItemReference(this.parent.getItem(), xmlPath, resource.getItem(), user,ci);
+
+							PersistentWorkflowUtils.complete(workflow,ci);
+						} catch (Exception e) {
+							PersistentWorkflowUtils.fail(workflow,ci);
+							throw e;
+						}
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
 						return;
@@ -230,7 +279,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 					}
 					
 					XnatResourcecatalog catResource = (XnatResourcecatalog)resource;
-					CatCatalogBean cat= catResource.getCleanCatalog(proj.getRootArchivePath(),includeRoot);
+					CatCatalogBean cat= catResource.getCleanCatalog(proj.getRootArchivePath(),includeRoot,null,null);
 			    	
 			    	if(cat!=null)
 						return new CatalogRepresentation(cat,MediaType.TEXT_XML);

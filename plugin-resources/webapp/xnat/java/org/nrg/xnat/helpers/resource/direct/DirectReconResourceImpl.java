@@ -10,6 +10,8 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
@@ -22,8 +24,8 @@ public class DirectReconResourceImpl extends ResourceModifierA {
 	private final XnatImagesessiondata session;
 	private final String type;
 	
-	public DirectReconResourceImpl(final XnatReconstructedimagedata recon, final XnatImagesessiondata session, final String type,final boolean overwrite, final XDATUser user){
-		super(overwrite,user);
+	public DirectReconResourceImpl(final XnatReconstructedimagedata recon, final XnatImagesessiondata session, final String type,final boolean overwrite, final XDATUser user, final EventMetaI ci){
+		super(overwrite,user,ci);
 		this.recon=recon;
 		this.session=session;
 		this.type=type;
@@ -59,7 +61,7 @@ public class DirectReconResourceImpl extends ResourceModifierA {
 			recon.setOut_file(resource);
 		}
 		
-		recon.save(user, false, false);
+		recon.save(user, false, false,ci);
 		return true;
 	}
 

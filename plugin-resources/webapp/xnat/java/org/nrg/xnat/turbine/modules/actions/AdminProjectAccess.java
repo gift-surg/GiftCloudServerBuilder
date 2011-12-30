@@ -11,6 +11,10 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class AdminProjectAccess extends SecureAction {
 
@@ -19,7 +23,6 @@ public class AdminProjectAccess extends SecureAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        Object[] keysArray = data.getParameters().getKeys();
         XDATUser user = TurbineUtils.getUser(data);
         int counter=0;
         while(TurbineUtils.HasPassedParameter("project" + counter, data)){
@@ -30,8 +33,13 @@ public class AdminProjectAccess extends SecureAction {
                 
                 String currentAccess = p.getPublicAccessibility();
                 
+                
                 if (!currentAccess.equals(access)){
-                    p.initAccessibility(access, true);
+                    PersistentWorkflowI wrk=WorkflowUtils.buildProjectWorkflow(user, p,newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.MODIFY_PROJECT_ACCESS));
+                    EventMetaI c=wrk.buildEvent();
+                    if(p.initAccessibility(access, true,c)){
+                    	WorkflowUtils.complete(wrk, c);
+                    }
                 }
             }
             

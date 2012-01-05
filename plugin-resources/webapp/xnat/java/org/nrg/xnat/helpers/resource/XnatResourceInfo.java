@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nrg.xft.utils.StringUtils;
+
 /**
- * @author timo
- *
+ * @author Timothy R Olsen -- WUSTL
+ * Used to encapsulate the data typically associated with the resource and file elements in XNAT.
  */
 public class XnatResourceInfo {
 	private String description,format,content=null;
@@ -56,4 +58,45 @@ public class XnatResourceInfo {
 		this.tags.add(tag);
 	}
 	
+	
+
+	
+    public static XnatResourceInfo buildResourceInfo(final String description, final String format, final String content, final String[] tags){
+		XnatResourceInfo info = new XnatResourceInfo();
+        
+	    if(description!=null){
+	    	info.setDescription(description);
+	    }
+	    if(format!=null){
+	    	info.setFormat(format);
+	    }
+	    if(content!=null){
+	    	info.setContent(content);
+	    }
+	    
+	    if(tags!=null){
+	    	for(String tag: tags){
+	    		tag = tag.trim();
+	    		if(!tag.equals("")){
+	    			for(String s:StringUtils.CommaDelimitedStringToArrayList(tag)){
+	    				s=s.trim();
+	    				if(!s.equals("")){
+	    		    		if(s.indexOf("=")>-1){
+	    		    			info.addMeta(s.substring(0,s.indexOf("=")),s.substring(s.indexOf("=")+1));
+	    		    		}else{
+	    		    			if(s.indexOf(":")>-1){
+		    		    			info.addMeta(s.substring(0,s.indexOf(":")),s.substring(s.indexOf(":")+1));
+		    		    		}else{
+		    		    			info.addTag(s);
+		    		    		}
+	    		    		}
+	    				}
+	    			}
+	    			
+	    		}
+	    	}
+	    }
+		
+		return info;
+	}
 }

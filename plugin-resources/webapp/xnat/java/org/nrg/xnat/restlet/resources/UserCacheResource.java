@@ -20,6 +20,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
+import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.UserUtils;
@@ -28,10 +29,20 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.restlet.util.ByteUtils;
 
+import com.google.common.collect.Maps;
+
 public class UserCacheResource extends SecureResource {
+	private static final String _ON_SUCCESS_RETURN_JS = "_onSuccessReturnJS";
+	private static final String _ON_FAILURE_RETURN_JS = "_onFailureReturnJS";
+	
+	private static final String _ON_SUCCESS_RETURN_HTML = "_onSuccessReturnHTML";
+	private static final String _ON_FAILURE_RETURN_HTML = "_onFailureReturnHTML";
+
 	static Logger logger = Logger.getLogger(UserCacheResource.class);
 
 	static final String[] zipExtensions={".zip",".jar",".rar",".ear",".gar",".xar"};
@@ -94,7 +105,7 @@ public class UserCacheResource extends SecureResource {
 	        }
         
 		} catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+			fail(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 			logger.error("",e);
 		}
     }
@@ -110,7 +121,7 @@ public class UserCacheResource extends SecureResource {
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
-	        	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid Operation.");
+	        	fail(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid Operation.");
 	        	
 	        } else if (pXNAME != null && pFILE == null) {
 	        	
@@ -123,7 +134,7 @@ public class UserCacheResource extends SecureResource {
 	        }
         
 		} catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+			fail(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 			logger.error("",e);
 		}
     }
@@ -137,25 +148,50 @@ public class UserCacheResource extends SecureResource {
 	        
 	    if (pXNAME == null && pFILE == null) {
 	     	
-	      	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid Operation.");
+	    	fail(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid Operation.");
 	        	
 	    } else if (pXNAME != null && pFILE == null) {
 	        	
 	       	if (this.isQueryVariableTrue("inbody")) {
-	       		this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Please use HTTP PUT request to specify a file name in the URL.");
+	       		fail(Status.CLIENT_ERROR_BAD_REQUEST,"Please use HTTP PUT request to specify a file name in the URL.");
 	       	} else  if (uploadUserFile(userPath,pXNAME)) {
-	       		this.getResponse().setStatus(Status.SUCCESS_CREATED,"File(s) successfully uploaded");
+	       		success(Status.SUCCESS_CREATED,"File(s) successfully uploaded");
 	       	} else {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,"Unable to complete upload.");
+	       		fail(Status.SERVER_ERROR_INTERNAL,"Unable to complete upload.");
 	       	}
-	        	
 	    } else if (pXNAME != null && pFILE != null) {
-	    	
-	       	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Please use HTTP PUT request to specify a file name in the URL.");
-	       	
+	    	fail(Status.CLIENT_ERROR_BAD_REQUEST,"Please use HTTP PUT request to specify a file name in the URL.");
 	    }
         
-    }
+    }	
+	
+	public void fail(Status status, String msg){
+		this.getResponse().setStatus(status,msg);
+		
+		String _return =this.retrieveParam(_ON_FAILURE_RETURN_JS);
+		if(_return !=null){
+			getResponse().setEntity(new StringRepresentation("<script>"+_return + "</return>", MediaType.TEXT_HTML));
+		}else{
+			_return =this.retrieveParam(_ON_FAILURE_RETURN_HTML);
+			if(_return !=null){
+				getResponse().setEntity(new StringRepresentation(_return , MediaType.TEXT_HTML));
+			}
+		}
+	}
+	
+	public void success(Status status, String msg){
+		this.getResponse().setStatus(status,msg);
+		
+		String _return =this.retrieveParam(_ON_SUCCESS_RETURN_JS);
+		if(_return !=null){
+			getResponse().setEntity(new StringRepresentation("<script>"+_return + "</script>", MediaType.TEXT_HTML));
+		}else{
+			_return =this.retrieveParam(_ON_SUCCESS_RETURN_HTML);
+			if(_return !=null){
+				getResponse().setEntity(new StringRepresentation(_return , MediaType.TEXT_HTML));
+			}
+		}
+	}
 	
 	@Override
 	public void handlePut() {
@@ -168,27 +204,27 @@ public class UserCacheResource extends SecureResource {
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
-	        	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid Operation.");
+	        	fail(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid Operation.");
 	        	
 	        } else if (pXNAME != null && pFILE == null) {
 	        	
 	        	createUserResource(userPath,pXNAME);
 	        	
 	        } else if (pXNAME != null && pFILE != null) {
-	        	
-	        	if (this.isQueryVariableTrue("extract")) {
-	        		// PUT Specification wants to enable a GET request on the same URL.  Wouldn't want to put extracted files without the 
-	        		// original archive file, or would't want to create and delete it.  Could possibly enable extraction by create, then 
-	        		// extracting the archive file without removing it.
-	        		this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"File extraction not supported under HTTP PUT requests.");
-	        		return;
-	        	} 
+//	        	commenting this out because we currently need this feature.
+//	        	if (this.isQueryVariableTrue("extract")) {
+//	        		// PUT Specification wants to enable a GET request on the same URL.  Wouldn't want to put extracted files without the 
+//	        		// original archive file, or would't want to create and delete it.  Could possibly enable extraction by create, then 
+//	        		// extracting the archive file without removing it.
+//	        		fail(Status.CLIENT_ERROR_BAD_REQUEST,"File extraction not supported under HTTP PUT requests.");
+//	        		return;
+//	        	} 
 	        	uploadUserFile(userPath,pXNAME,pFILE);
 	        	
 	        }
         
 		} catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+			fail(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 			logger.error("",e);
 		}
     }
@@ -204,7 +240,7 @@ public class UserCacheResource extends SecureResource {
         if(fileArray!=null){
         for (File f : fileArray) {
         	String fn=f.getName();
-        	Object[] oarray = new Object[] { fn, constructURI(fn) };
+        	Object[] oarray = new Object[] { fn, constructResourceURI(fn) };
         	table.insertRow(oarray);
         }
         }
@@ -235,7 +271,8 @@ public class UserCacheResource extends SecureResource {
 	        Iterator<File> i = fileList.iterator();
 	        while (i.hasNext()) {
 	        	File f = i.next();
-	        	Object[] oarray = new Object[] { f.getName(), f.length(), constructURI(f) };
+	        	String path=constructPath(f);
+	        	Object[] oarray = new Object[] { path.substring(1), f.length(), constructURI(path) };
 	        	table.insertRow(oarray);
 	        }
 		
@@ -369,6 +406,9 @@ public class UserCacheResource extends SecureResource {
 				return false;
 			}
 		}
+		
+		
+		
 		if(this.isQueryVariableTrue("inbody")){
 			return handleInbodyUserFileUpload(userPath,dirString,fileName);
 		} else {
@@ -390,9 +430,16 @@ public class UserCacheResource extends SecureResource {
 	        
 	        // Write original file if not requesting or have non-archive file
 			File ouf=new File(dirString,fileName);
+			
+			ouf.getParentFile().mkdirs();
+			
        		FileOutputStream fos=new FileOutputStream(ouf);
-	        ByteUtils.write(getRequest().getEntity().getStream(), fos);
-	        fos.close();
+	        try {
+				ByteUtils.write(getRequest().getEntity().getStream(), fos);
+			}finally{
+				fos.close();
+			}
+	        
 	        return true;
 			
 		} catch (IOException e) {
@@ -402,6 +449,20 @@ public class UserCacheResource extends SecureResource {
 		}
 		
 	}
+	
+	private Map<String,String> bodyParams=Maps.newHashMap();
+	
+	private String retrieveParam(String key){
+		String param=this.getQueryVariable(key);
+		if(param==null){
+			if(bodyParams.containsKey(key)){
+				return bodyParams.get(key);
+			}
+		}
+		
+		return param;
+	}
+	
 
 	@SuppressWarnings("deprecation")
 	private boolean handleAttachedUserFileUpload(String userPath, String dirString, String requestedName) {
@@ -416,13 +477,21 @@ public class UserCacheResource extends SecureResource {
 	
 			for (FileItem fi:fileItems) {    						         
 		    	
+				if (fi.isFormField()) {
+                	// Load form field to passed parameters map
+					bodyParams.put(fi.getFieldName(),fi.getString());
+                   	continue;
+                } 
+				
 		        String fileName;
 				if (requestedName==null || requestedName.length()<1) {
 					fileName=fi.getName();
 				} else {
 					fileName=requestedName;
 				}
-		        if (this.isQueryVariableTrue("extract")) {
+				
+				final String extract=this.retrieveParam("extract");
+		        if (extract!=null && extract.equalsIgnoreCase("true")) {
 		        	// Write extracted files
 		        	CompressionMethod method = getCompressionMethod(fileName);
 		        	if (method != CompressionMethod.NONE) {
@@ -554,23 +623,28 @@ public class UserCacheResource extends SecureResource {
 		
 	}
 			
-    private String constructURI(String resource) {
+    private String constructResourceURI(String resource) {
     	
     	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
     	return requestPart + "/" + resource;
     	
     }
 			
-    private String constructURI(File f) {
+    private String constructURI(String path) {
     	
     	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
     	if (requestPart.endsWith("/resources/files") || !requestPart.endsWith("/files")) {
     		requestPart+="/files";
     	}
+    	
+    	return requestPart + path;
+    	
+    }
+    
+    public static String constructPath(File f){
     	String filePart = f.getAbsolutePath().replace(ArcSpecManager.GetInstance().getGlobalCachePath(),"");
     	filePart = filePart.replaceFirst("^[^\\\\/]+[\\\\/][^\\\\/]+[\\\\/][^\\\\/]+","");
-    	return requestPart + filePart;
-    	
+    	return filePart;
     }
 	
 	@SuppressWarnings("unchecked")

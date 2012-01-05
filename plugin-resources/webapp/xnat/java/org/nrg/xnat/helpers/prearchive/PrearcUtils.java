@@ -26,6 +26,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -379,10 +380,10 @@ public class PrearcUtils {
 	}
 
 	public static String identifyProject(final Map<String,Object> params) throws MalformedURLException{
-		if(params.containsKey(UriParserUtils.PROJECT_ID)){
-			return (String)params.get(UriParserUtils.PROJECT_ID);
+		if(params.containsKey(URIManager.PROJECT_ID)){
+			return (String)params.get(URIManager.PROJECT_ID);
 		}else if(params.containsKey(RequestUtil.DEST)){
-			return (String)(parseURI((String)params.get(RequestUtil.DEST))).get(UriParserUtils.PROJECT_ID);
+			return (String)(parseURI((String)params.get(RequestUtil.DEST))).get(URIManager.PROJECT_ID);
 		}
 		return null;
 	}

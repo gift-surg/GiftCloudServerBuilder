@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
+import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
 import org.restlet.util.Template;
 
@@ -43,29 +43,29 @@ public class UriParserUtilsTest {
 			}
 		}
 		List<URIe> uris=new ArrayList<URIe>(){{
-			add(new URIe("/archive/projects/X/experiments/e".intern(),UriParserUtils.ArchiveURI.class,2));
-			add(new URIe("/archive/projects/X/subjects/s".intern(),UriParserUtils.ArchiveURI.class,2));
-			add(new URIe("/archive/projects/X/subjects/s/experiments/e".intern(),UriParserUtils.ArchiveURI.class,3));
-			add(new URIe("/archive/projects/x/subjects/s/experiments/a/assessors/e".intern(),UriParserUtils.ArchiveURI.class,4));
-			add(new URIe("/archive/projects/x/subjects/s/experiments/a/scans/s".intern(),UriParserUtils.ArchiveURI.class,4));
-			add(new URIe("/archive/projects/x/subjects/s/experiments/a/reconstructions/r".intern(),UriParserUtils.ArchiveURI.class,4));
-			add(new URIe("/archive/projects/x".intern(),UriParserUtils.ArchiveURI.class,1));
-			add(new URIe("/archive".intern(),UriParserUtils.ArchiveURI.class,0));
+			add(new URIe("/archive/projects/X/experiments/e".intern(),URIManager.ArchiveURI.class,2));
+			add(new URIe("/archive/projects/X/subjects/s".intern(),URIManager.ArchiveURI.class,2));
+			add(new URIe("/archive/projects/X/subjects/s/experiments/e".intern(),URIManager.ArchiveURI.class,3));
+			add(new URIe("/archive/projects/x/subjects/s/experiments/a/assessors/e".intern(),URIManager.ArchiveURI.class,4));
+			add(new URIe("/archive/projects/x/subjects/s/experiments/a/scans/s".intern(),URIManager.ArchiveURI.class,4));
+			add(new URIe("/archive/projects/x/subjects/s/experiments/a/reconstructions/r".intern(),URIManager.ArchiveURI.class,4));
+			add(new URIe("/archive/projects/x".intern(),URIManager.ArchiveURI.class,1));
+			add(new URIe("/archive".intern(),URIManager.ArchiveURI.class,0));
 		
-			add(new URIe("/archive/experiments/e".intern(),UriParserUtils.ArchiveURI.class,1));
-			add(new URIe("/archive/experiments/a/scans/s".intern(),UriParserUtils.ArchiveURI.class,2));
-			add(new URIe("/archive/experiments/a/reconstructions/r".intern(),UriParserUtils.ArchiveURI.class,2));
-			add(new URIe("/archive/experiments/a/assessors/r".intern(),UriParserUtils.ArchiveURI.class,2));
-			add(new URIe("/archive/subjects/s".intern(),UriParserUtils.ArchiveURI.class,1));
-			add(new URIe("/prearchive/projects/p/t/s".intern(),UriParserUtils.PrearchiveURI.class,3));
-			add(new URIe("/prearchive/projects/p/t".intern(),UriParserUtils.PrearchiveURI.class,2));
-			add(new URIe("/prearchive/projects/p".intern(),UriParserUtils.PrearchiveURI.class,1));
-			add(new URIe("/prearchive".intern(),UriParserUtils.PrearchiveURI.class,0));
+			add(new URIe("/archive/experiments/e".intern(),URIManager.ArchiveURI.class,1));
+			add(new URIe("/archive/experiments/a/scans/s".intern(),URIManager.ArchiveURI.class,2));
+			add(new URIe("/archive/experiments/a/reconstructions/r".intern(),URIManager.ArchiveURI.class,2));
+			add(new URIe("/archive/experiments/a/assessors/r".intern(),URIManager.ArchiveURI.class,2));
+			add(new URIe("/archive/subjects/s".intern(),URIManager.ArchiveURI.class,1));
+			add(new URIe("/prearchive/projects/p/t/s".intern(),URIManager.PrearchiveURI.class,3));
+			add(new URIe("/prearchive/projects/p/t".intern(),URIManager.PrearchiveURI.class,2));
+			add(new URIe("/prearchive/projects/p".intern(),URIManager.PrearchiveURI.class,1));
+			add(new URIe("/prearchive".intern(),URIManager.PrearchiveURI.class,0));
 		}};
 		
 		for(URIe e:uris){
 			System.out.println(e.s);
-			DataURIA _return=UriParserUtils.parseURI(e.s);
+			URIManager.DataURIA _return=UriParserUtils.parseURI(e.s);
 			assertTrue("" + _return.getClass().getName() + " should be a " + e.clazz.getName(),e.clazz.isInstance(_return));
 			assertEquals(e.s,_return.getProps().size(),e.variables);
 		}

@@ -123,132 +123,45 @@ public class FileList extends XNATCatalogTemplate {
 
 	@Override
 	public void handlePost() {
-			if(this.parent!=null && this.security!=null){
-				try {
-					if(user.canEdit(this.security)){
-						if(proj==null){
-							if(parent.getItem().instanceOf("xnat:experimentData")){
-								proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
-							}else if(security.getItem().instanceOf("xnat:experimentData")){
-								proj = ((XnatExperimentdata)security).getPrimaryProject(false);
-							}
+		if(this.parent!=null && this.security!=null){
+			try {
+				if(user.canEdit(this.security)){
+					if(proj==null){
+						if(parent.getItem().instanceOf("xnat:experimentData")){
+							proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+						}else if(security.getItem().instanceOf("xnat:experimentData")){
+							proj = ((XnatExperimentdata)security).getPrimaryProject(false);
 						}
-						
-						if(resource==null){
-							if(catalogs.size()>0){
-							for(Object[] row: catalogs.rows()){
-								Integer o = (Integer)row[0];
-								
-								resource=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(o, user, false);
-									}
-								}
-							}
+					}
 					
-					//why is it doing this?
-					//because you cannot post files to a pre-existing resource that is not a catalog
-					if(resource!=null && !(resource instanceof XnatResourcecatalog)){
-						resource=null;
-						}
-						
-						if(resource==null){
-							//build new resourceCatalog
-						String defaultType=this.getQueryVariable("xsiType");
-						if(defaultType==null){
-							defaultType=this.getQueryVariable("ELEMENT_0");
-						}
-						
-						if(defaultType==null){
-							defaultType="xnat:resourceCatalog";
-						}
-						
-						XFTItem item = this.loadItem(defaultType,false);
-						
-						resource = (XnatAbstractresource) BaseElement.GetGeneratedItem(item);
-
-						XnatResource temp = (XnatResource)resource;
-							
-						if(this.getQueryVariable("format")!=null && temp.getFormat()==null){
-							temp.setFormat(this.getQueryVariable("format"));
-						}
-						
-						if(this.getQueryVariable("content")!=null && temp.getContent()==null){
-							temp.setContent(this.getQueryVariable("content"));
-						}
-						
-						if(temp.getLabel()==null && resource_ids!=null && resource_ids.size()>0){
-							temp.setLabel(resource_ids.get(0));
-						}
-						
-						if(resource instanceof XnatResourcecatalog){
-							this.insertCatalag((XnatResourcecatalog)resource);
-						}
-					}
-						
+					final Object resourceIdentifier;
+					
 					if(resource==null){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Missing Catalog.");
-						return;
-					}
-						
-						
-						try
-						{
-						List<FileWriterWrapperI> files=this.getFileWriters();
-						        
-						for(FileWriterWrapperI fw:files){
-							String fileName=fw.getName();
-							if (fileName != null) {
-						        if(fileName.indexOf('\\')>-1){
-						        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
-						        }
-						        
-						        String dest = null;
-					        if(StringUtils.isEmpty(filepath)){
-					        	if(fw.getType().equals(FileWriterWrapperI.UPLOAD_TYPE.INBODY)){
-					        		this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri.");
-						        	return;
-					        	}
-						        	dest=fileName;
-						        }else{			
-						        	if(files.size()>1 || filepath.endsWith("/")){
-						        		dest=filepath + "/" + fileName;
-						        	}else{
-						        		dest=filepath;
-						        	}
-						        }
-						        
-						        if(resource instanceof XnatResourcecatalog){
-    						        	
-					        	if(!CatalogUtils.storeCatalogEntry(fw, dest, (XnatResourcecatalog)resource, proj, this.isQueryVariableTrue("extract"), this.buildResourceInfo())){
-							        	break;
-							        }
-						        }else{
-							    if(!this.buildResourceModifier().saveFile(fw, dest, (XnatResource)resource, user, this.buildResourceInfo())){
-							        	break;
-							        }
-						        }
-						          
-						        if(filepath==null || filepath.equals("")){
-									this.returnSuccessfulCreateFromList(dest);
-						        }
+						if(catalogs.rows().size()>0){
+							resourceIdentifier=catalogs.getFirstObject();
+						}else{
+							if(resource_ids.size()>0){
+								resourceIdentifier=resource_ids.get(0);
+							}else{
+								resourceIdentifier=null;
 							}
 						}
-						     
-						 }catch(Exception e){
-						 e.printStackTrace();
-						 logger.error("",e);
-						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-						return;
-						 }
 					}else{
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid read permissions.");
-						return;
+						resourceIdentifier=resource.getXnatAbstractresourceId();
 					}
-				} catch (Exception e) {
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-					return;
+
+					final boolean overwrite=this.isQueryVariableTrue("overwrite");
+					
+					this.buildResourceModifier(overwrite).addFile(getFileWriters(),resourceIdentifier,type, filepath, this.buildResourceInfo(),overwrite);
+				
 				}
+			} catch (Exception e) {
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				logger.error("",e);
+				return;
 			}
 		}
+	}
 
 
 //	public static void importInbodyFile(final String filepath,final Representation entity,final XnatAbstractresource resource){

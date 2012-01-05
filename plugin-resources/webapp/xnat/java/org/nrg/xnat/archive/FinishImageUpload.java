@@ -28,7 +28,7 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
-import org.nrg.xnat.helpers.uri.UriParserUtils;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.util.RequestUtil;
@@ -44,13 +44,13 @@ import com.google.common.collect.Lists;
 public class FinishImageUpload extends StatusProducer implements Callable<String>,StatusPublisherI {
     private final org.apache.log4j.Logger logger = Logger.getLogger(FinishImageUpload.class);
 	private final PrearcSession session;
-	private final UriParserUtils.DataURIA destination;
+	private final URIManager.DataURIA destination;
 	private final boolean allowDataDeletion, overwrite,inline;
 	private final XDATUser user;
 	
 	static List<String> prearc_variables=Lists.newArrayList(RequestUtil.AA,RequestUtil.AUTO_ARCHIVE,PrearcUtils.PREARC_SESSION_FOLDER,PrearcUtils.PREARC_TIMESTAMP);
 
-	public FinishImageUpload(Object control, XDATUser user,final PrearcSession session,final UriParserUtils.DataURIA destination, final boolean allowDataDeletion, final boolean overwrite, final boolean inline) {
+	public FinishImageUpload(Object control, XDATUser user,final PrearcSession session,final URIManager.DataURIA destination, final boolean allowDataDeletion, final boolean overwrite, final boolean inline) {
 		super(control);
 		this.session=session;
 		this.destination=destination;
@@ -179,7 +179,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		return isAutoArchive(session,destination);
 	}
 	
-	private static boolean isAutoArchive(final PrearcSession session, final UriParserUtils.DataURIA destination) throws SQLException, SessionException, Exception{
+	private static boolean isAutoArchive(final PrearcSession session, final URIManager.DataURIA destination) throws SQLException, SessionException, Exception{
 		//determine auto-archive setting
 		if(session.getProject()==null){
 			return false;
@@ -188,7 +188,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			return session.getSessionData().getAutoArchive(); 
 		}
 						
-		if(destination !=null && destination instanceof UriParserUtils.ArchiveURI){
+		if(destination !=null && destination instanceof URIManager.ArchiveURI){
 			return true;
 		}
 		

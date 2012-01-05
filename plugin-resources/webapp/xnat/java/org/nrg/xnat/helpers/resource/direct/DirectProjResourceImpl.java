@@ -3,6 +3,8 @@
  */
 package org.nrg.xnat.helpers.resource.direct;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
@@ -13,11 +15,16 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
  * @author timo
  *
  */
-public class DirectProjResourceImpl extends DirectResourceModifierA {
+public class DirectProjResourceImpl extends ResourceModifierA {
 	private final XnatProjectdata proj;
 	
-	public DirectProjResourceImpl(final XnatProjectdata proj){
+	public DirectProjResourceImpl(final XnatProjectdata proj,final boolean overwrite, final XDATUser user){
+		super(overwrite,user);
 		this.proj=proj;
+	}
+	
+	public XnatProjectdata getProject(){
+		return proj;
 	}
 	
 	/* (non-Javadoc)
@@ -32,11 +39,39 @@ public class DirectProjResourceImpl extends DirectResourceModifierA {
 	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
 	 */
 	@Override
-	public boolean addResource(XnatResource resource, XDATUser user) throws Exception {
+	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
 		proj.setResources_resource(resource);
 		
 		proj.save(user, false, false);
 		return true;
 	}
 
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById(java.lang.Integer)
+	 */
+	@Override
+	public XnatAbstractresourceI getResourceById(Integer i, final String type) {
+		for(XnatAbstractresourceI res: this.proj.getResources_resource()){
+			if(res.getXnatAbstractresourceId().equals(i)){
+				return res;
+			}
+		}
+		
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel(java.lang.String)
+	 */
+	@Override
+	public XnatAbstractresourceI getResourceByLabel(String lbl, final String type) {
+		for(XnatAbstractresourceI res: this.proj.getResources_resource()){
+			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+				return res;
+			}
+		}
+		
+		return null;
+	}
 }

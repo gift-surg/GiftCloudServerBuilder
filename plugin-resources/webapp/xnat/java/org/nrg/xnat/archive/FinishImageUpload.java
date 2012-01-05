@@ -214,7 +214,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		}
 	}
 	
-	private static boolean isOverwriteFiles(final PrearcSession session, final UriParserUtils.DataURIA destination) throws SQLException, SessionException, Exception{
+	private static boolean isOverwriteFiles(final PrearcSession session, final URIManager.DataURIA destination) throws SQLException, SessionException, Exception{
 		//determine overwrite_files setting
 		if(session.getProject()==null){
 			return false;

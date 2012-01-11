@@ -1,1 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) --><Instance_Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%XDAT_PROJECT%/schemas/xdat/instance.xsd" admin_email="%ADMIN_EMAIL%">	<Databases>		<Database Type="POSTGRESQL" Id="%DB_NAME%" Driver="%DB_DRIVER%" Url="%DB_URL%" User="%USER%" Pass="%PASSWORD%" MaxConnections="10"/>	</Databases>	<Models>		<Data_Model File_Name="security.xsd" File_Location="%XDAT_PROJECT%/schemas/security" DB="%DB_NAME%"/>		<Data_Model File_Name="sample.xsd" File_Location="%XDAT_PROJECT%/schemas/sample" DB="%DB_NAME%"/>	</Models></Instance_Settings>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) -->
+<Instance_Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%XDAT_PROJECT%/schemas/xdat/instance." admin_email="%ADMIN_EMAIL%">
+	<Databases>
+		<Database Type="POSTGRESQL" Id="%DB_NAME%" Driver="%DB_DRIVER%" Url="%DB_URL%" User="%USER%" Pass="%PASSWORD%" MaxConnections="10"/>
+	</Databases>
+	<Models>
+		<Data_Model File_Name="security.xsd" File_Location="%XDAT_PROJECT%/schemas/security" DB="%DB_NAME%"/>
+		<Data_Model File_Name="sample.xsd" File_Location="%XDAT_PROJECT%/schemas/sample" DB="%DB_NAME%"/>
+        <!-- Start modules schemas: Reserved for xnat_builder, don't modify anything between this line and the end modules line. -->
+        <!-- End modules schemas: Reserved for xnat_builder, don't modify anything between this line and the start modules line. -->
+	</Models>
+</Instance_Settings>
+

@@ -200,6 +200,7 @@ public class XNATApplication extends Application {
         router.attach("/JSESSION",org.nrg.xnat.restlet.resources.UserSession.class);
         
         router.attach("/prearchive",org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
+        router.attach("/prearchive/experiments", org.nrg.xnat.restlet.resources.prearchive.RecentPrearchiveSessions.class);
         router.attach(PREARC_PROJECT_URI,org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
         router.attach(PREARC_SESSION_URI, org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans", org.nrg.xnat.restlet.resources.prearchive.PrearcScansListResource.class);
@@ -222,6 +223,8 @@ public class XNATApplication extends Application {
         router.attach("/services/archive",Archiver.class);
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
+	router.attach("/services/dicomdump", DicomDump.class);
+
         
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
         

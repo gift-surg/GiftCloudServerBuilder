@@ -41,26 +41,26 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 	
 	public ProjSubExptAsstList(Context context, Request request, Response response) {
 		super(context, request, response);
-		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
-			if(pID!=null){
-				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
-				String subID= (String)request.getAttributes().get("SUBJECT_ID");
-				if(subID!=null){
+		String pID= (String)request.getAttributes().get("PROJECT_ID");
+		if(pID!=null){
+			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
+
+			String subID= (String)request.getAttributes().get("SUBJECT_ID");
+			if(subID!=null){
 				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 						.getId(), subID, user, false);
-					
-					if(sub==null){
+
+				if(sub==null){
 					sub = XnatSubjectdata.getXnatSubjectdatasById(subID, user,
 							false);
 					if (sub != null
 							&& (proj != null && !sub.hasProject(proj.getId()))) {
 						sub = null;
 					}
-					}
-					
-					if(sub!=null){
+				}
+
+				if(sub!=null){
 					String exptID = (String) request.getAttributes().get(
 							"ASSESSED_ID");
 					assessed = XnatExperimentdata.getXnatExperimentdatasById(
@@ -70,37 +70,44 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 									.getId()))) {
 						assessed = null;
 					}
-						
-						if(assessed==null){
+
+					if(assessed==null){
 						assessed = XnatExperimentdata
-								.GetExptByProjectIdentifier(proj.getId(),
-										exptID, user, false);
-						}
-						
-						if(assessed!=null){
+						.GetExptByProjectIdentifier(proj.getId(),
+								exptID, user, false);
+					}
+
+					if(assessed!=null){
 						this.getVariants().add(
 								new Variant(MediaType.APPLICATION_JSON));
 						this.getVariants()
-								.add(new Variant(MediaType.TEXT_HTML));
-							this.getVariants().add(new Variant(MediaType.TEXT_XML));
-						}else{
+						.add(new Variant(MediaType.TEXT_HTML));
+						this.getVariants().add(new Variant(MediaType.TEXT_XML));
+					}else{
 						response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 								"Unable to find experiment.");
 					}
 				}else{
 					response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-							"Unable to find subject.");
+					"Unable to find subject.");
 				}
 			}else{
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-						"Unable to find subject.");
+				"Unable to find subject.");
 			}
 		}else{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-					"Unable to find project.");
+			String exptID = (String) request.getAttributes().get("ASSESSED_ID");
+			assessed = XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
+			if(assessed!=null){
+				this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+				this.getVariants().add(new Variant(MediaType.TEXT_XML));
+			}else{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 		}
 
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA,true));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA,true));
 	}
 
 

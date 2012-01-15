@@ -28,7 +28,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/axis/jars/axis.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/batik/jars/batik-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-collections/jars/commons-collections-3.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.2.1.jar"/>
@@ -123,8 +123,8 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ecat4xnat-1.5.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.4-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.0.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>

@@ -13,6 +13,7 @@
     <th style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Note</th>
   </tr>
   #set ($scanCounter = 0)
+  #set ($scanWFiles = 0)
   #foreach($scan in $om.getSortedScans())
     #set ($scanID =$!scan.getProperty("ID"))
     #set ($scanQC = $!scan.getManualQC())
@@ -56,6 +57,7 @@
         <div id="scans_$!scan.getId()_stats">
           <a onclick="window.viewer.init();">Show Counts</a>
         </div>
+			#set ($scanWFiles = $scanWFiles+1)
         #else (0 files, 0.00MB)
         #end
       </td>
@@ -71,6 +73,15 @@
     #set ($scanQC = "")
     #set ($scanCounter= $scanCounter + 1)
   #end
+        #if($scanWFiles>0)
+			<tr>
+				<td colspan="3" align="right">
+				</td>
+				<td NOWRAP >
+					<span ID="total_dicom_files" style="position:relative;"><a onclick="window.viewer.init();">Show Total Counts</a></span>
+				</td>
+			</tr>
+        #end
 </table>
 <BR/>
 <BR/>

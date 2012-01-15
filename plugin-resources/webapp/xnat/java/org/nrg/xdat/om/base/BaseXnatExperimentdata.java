@@ -720,10 +720,17 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * Gets root path to the primary project's archive space.
      * @return
      */
-    public String getArchiveRootPath(){
-        final String path= getPrimaryProject(false).getRootArchivePath();
-
-        return path;
+    public String getArchiveRootPath() throws UnknownPrimaryProjectException{
+    	XnatProjectdata p=getPrimaryProject(false);
+    	if(p!=null){
+    		return p.getRootArchivePath();
+    	}else{
+    		throw new UnknownPrimaryProjectException();
+    	}
+    }
+    
+    public static class UnknownPrimaryProjectException extends Exception{
+    	
     }
 
     /**
@@ -751,7 +758,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * @return 
      * @throws InvalidArchiveStructure
      */
-    public String getCurrentArchiveFolder() throws InvalidArchiveStructure{
+    public String getCurrentArchiveFolder() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
 
           final String arcpath = this.getArchiveRootPath();
           final File f = new File(arcpath);
@@ -807,7 +814,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * @return
      * @throws InvalidArchiveStructure
      */
-    public String getCurrentSessionFolder(boolean absolute) throws InvalidArchiveStructure{
+    public String getCurrentSessionFolder(boolean absolute) throws InvalidArchiveStructure,UnknownPrimaryProjectException{
         String session_path;
         
         final String currentarc = this.getCurrentArchiveFolder();
@@ -828,7 +835,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * This method looks for an existing session directory in the archive space.  If none is found, it returns the location where said directory would be created.
      * @return 
      */
-    public File getExpectedSessionDir() throws InvalidArchiveStructure{
+    public File getExpectedSessionDir() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
     	final File sessionDIR=this.getSessionDir();
     	
     	if(sessionDIR==null){
@@ -865,7 +872,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
 	
 	
-	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
+	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure,UnknownPrimaryProjectException {
 		return getExpectedSessionDir();
 	}
 	

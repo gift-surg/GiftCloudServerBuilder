@@ -53,6 +53,7 @@ import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -171,13 +172,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
                                 throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,
                                         "error parsing DICOM object", e);
                             }
-                            final ByteArrayInputStream bis = new ByteArrayInputStream(Decompress.dicomObject2Bytes(dataset));
+                            final ByteArrayInputStream bis = new ByteArrayInputStream(Decompress.dicomObject2Bytes(dataset,tsuid));
                             final DicomObject d = Decompress.decompress_image(bis, tsuid);
                             final String dtsdui = Decompress.getTsuid(d);
                             try {
                                 fmi.putString(Tag.TransferSyntaxUID, VR.UI, dtsdui);
                                 dos.writeFileMetaInformation(fmi);
-                                dos.writeDataset(dataset, dtsdui);
+                                dos.writeDataset(d.dataset(), dtsdui);
                             } catch (Throwable t) {
                                 if (t instanceof IOException) {
                                     ioexception = (IOException)t;
@@ -249,15 +250,16 @@ public class GradualDicomImporter extends ImporterHandlerA {
     }
 
     public XnatProjectdata getProject(final Object alias, final Callable<XnatProjectdata> defaultProject) {
+        if (null == projectCache) {
+            setCacheManager(CacheManager.getInstance());
+        }
         if (null != alias) {
-            if (null == projectCache) {
-                setCacheManager(CacheManager.getInstance());
-            }
+            logger.debug("looking for project matching alias {} from query parameters", alias);
             final Element pe = projectCache.get(alias);
             if (null != pe) {
                 return (XnatProjectdata)pe.getValue();
             } else {
-                logger.debug("cache miss for project alias {}, trying database", alias);
+                logger.trace("cache miss for project alias {}, trying database", alias);
                 final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
                 if (null != p && canCreateIn(p)) {
                     projectCache.put(new Element(alias, p));
@@ -273,8 +275,10 @@ public class GradualDicomImporter extends ImporterHandlerA {
                     }
                 }
             }
+        } else {
+            logger.debug("no project alias found in query parameters");
         }
-        // Couldn't find anything. Use the default project.
+        // Couldn't find a project match. Use the default project.
         try {
             final XnatProjectdata dp = null == defaultProject ? null : defaultProject.call();
             if (null != alias) {
@@ -374,6 +378,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, "unable to read DICOM object " + name, t);
         }
 
+        logger.trace("handling file with query parameters {}", params);
         final XnatProjectdata project;
         try {
             // project identifier is expensive, so avoid if possible
@@ -405,19 +410,28 @@ public class GradualDicomImporter extends ImporterHandlerA {
         final File tsdir, sessdir;
 
         tsdir = new File(root, PrearcUtils.makeTimestamp());
-        final String session;
+        
+        String session;
         if (params.containsKey(UriParserUtils.EXPT_LABEL)) {
             session = (String)params.get(UriParserUtils.EXPT_LABEL);
             logger.trace("using provided experiment label {}", params.get(UriParserUtils.EXPT_LABEL));
         } else {
             session = projectIdentifier.getSessionLabel(o);
         }
+        if (Strings.isNullOrEmpty(session)) {
+            session = "dicom_upload";
+        }
+        
         final String subject;
         if (params.containsKey(UriParserUtils.SUBJECT_ID)) {
         	subject = (String)params.get(UriParserUtils.SUBJECT_ID);
         } else {
         	subject = projectIdentifier.getSubjectLabel(o);
         }
+        if (null == subject) {
+            logger.trace("subject is null for session {}/{}", tsdir, session);
+        }
+        
         sess = new SessionData();
         sess.setFolderName(session);
         sess.setName(session);
@@ -435,7 +449,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
             sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
-            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());        
+            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
+            PrearcDatabase.setStatus(sess.getName(), sess.getTimestamp(), sess.getProject(), PrearcStatus.RECEIVING);
         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {

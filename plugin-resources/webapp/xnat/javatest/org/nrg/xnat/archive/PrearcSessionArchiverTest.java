@@ -71,6 +71,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		mr.setId(MR);
 		mr.setProject(PROJECT);
 		mr.setLabel(MR);
+		mr.setUid(MR);
 		mr.setSubjectId(TEST_SUB_1);
 		mr.save(user, false, false);
 	}
@@ -90,7 +91,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setLabel("TEST2");
 		newMR.setSubjectId(TEST_SUB_1);
 		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true,true,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 
@@ -104,6 +105,28 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 	}
 	
 	@Test
+	public void shouldCheckForUIDConflict() throws Exception{
+		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
+		newMR.setId(MR);
+		newMR.setProject(PROJECT);
+		newMR.setLabel(MR);
+		newMR.setSubjectId(TEST_SUB_1);
+		newMR.setUid(MR+"x");
+		
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true,true,false);
+		try {
+			XnatImagesessiondata existing=test.retrieveExistingExpt();
+
+			test.checkForConflicts(newMR, src, existing, dest);
+			fail("Expected failure");
+		} catch (ClientException e) {
+			if(!e.getMessage().equals(PrearcSessionArchiver.UID_MOD)){
+				fail("Expected '" + PrearcSessionArchiver.UID_MOD + "' received: " + e.getMessage());
+			}
+		}
+	}
+	
+	@Test
 	public void shouldCheckForProjectConflict() throws Exception{
 		XnatMrsessiondata newMR=new XnatMrsessiondata((UserI)user);
 		newMR.setId(MR);
@@ -111,7 +134,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setLabel(MR);
 		newMR.setSubjectId(TEST_SUB_1);
 		
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), true, true,true,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 
@@ -131,7 +154,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setProject(PROJECT);
 		newMR.setLabel(MR);
 		newMR.setSubjectId(TEST_SUB_1);
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, false);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, false,true,false);
 		try {
 			XnatImagesessiondata existing=test.retrieveExistingExpt();
 		
@@ -151,7 +174,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		newMR.setProject(PROJECT);
 		newMR.setLabel(MR);
 		newMR.setSubjectId(TEST_SUB_1);
-		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true);
+		PrearcSessionArchiver test=new PrearcSessionArchiver(newMR,null,user,PROJECT, new Hashtable<String,Object>(), false, true,true,false);
 		
 		XnatImagesessiondata existing=test.retrieveExistingExpt();
 

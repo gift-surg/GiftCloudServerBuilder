@@ -24,6 +24,7 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -85,6 +86,8 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	public static final String LABEL_MOD = "Invalid modification of session label via archive process.";
 
+	public static final String UID_MOD = "Invalid modification of session UID via archive process.";
+
 	public static final String LABEL2 = "label";
 
 	public static final String PARAM_SESSION = "session";
@@ -100,8 +103,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
+	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
+	private final boolean waitFor;
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
@@ -109,12 +114,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.params = params;
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
 		this.overwrite=(overwrite==null)?false:overwrite;
+		this.overwrite_files=(overwrite_files==null)?false:overwrite_files;
 		this.srcDIR=srcDIR;
+		this.waitFor=waitFor;
 	}
 
-	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite)
+	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite, final boolean waitFor, final Boolean overwrite_files)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite);
+		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite, waitFor,overwrite_files);
 	}
 
 	public File getSrcDIR(){
@@ -249,9 +256,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	/**
 	 * Retrieves the archive session directory for the given session.
 	 * @return archive session directory
+	 * @throws UnknownPrimaryProjectException 
 	 * @throws ArchivingException
 	 */
-	private File getArcSessionDir() throws ServerException{
+	private File getArcSessionDir() throws ServerException, UnknownPrimaryProjectException{
 		final File currentArcDir;
 		try {
 			final String path = src.getCurrentArchiveFolder();
@@ -348,20 +356,29 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
 			}
 
-		if(!src.getLabel().equals(existing.getLabel())){
-			this.failed(LABEL_MOD);
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
-		}
-
-		if(!existing.getProject().equals(src.getProject())){
-			failed(PROJ_MOD);
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
-		}
-
-		if(!existing.getSubjectId().equals(existing.getSubjectId())){
-			failed(SUBJECT_MOD);
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
-		}
+			if(!StringUtils.equals(src.getLabel(),existing.getLabel())){
+				this.failed(LABEL_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
+			}
+	
+			if(!StringUtils.equals(existing.getProject(),src.getProject())){
+				failed(PROJ_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
+			}
+	
+			if(!StringUtils.equals(existing.getSubjectId(),src.getSubjectId())){
+				failed(SUBJECT_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
+			}
+			
+			if(!allowDataDeletion){
+				if(StringUtils.isNotEmpty(existing.getUid()) && StringUtils.isNotEmpty(src.getUid())){
+					if(!StringUtils.equals(existing.getUid(), src.getUid())){
+						failed(UID_MOD);
+						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,UID_MOD, new Exception());
+					}
+				}
+			}
 		}
 	}
 
@@ -432,13 +449,13 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				public void save(XnatImagesessiondata merged) throws Exception {
 					if(merged.save(user,false,false)){
 						user.clearLocalCache();
-		try {
+						try {
 							MaterializedView.DeleteByUser(user);
-		} catch (Exception e) {
+						} catch (Exception e) {
 							logger.error("",e);
-		}
-
-		try {
+						}
+						
+						try {
 							if (shouldForceQuarantine) {
 								src.quarantine(user);
 							} else {
@@ -455,7 +472,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				}
 			};
 
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, allowDataDeletion,saveImpl))
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, (allowDataDeletion)?allowDataDeletion:overwrite_files,saveImpl))
 				.call();
 
 			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
@@ -470,8 +487,8 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 
 			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
-				TriggerPipelines tp=new TriggerPipelines(src,false,false,user);
-			tp.call();
+				TriggerPipelines tp=new TriggerPipelines(src,false,false,user,waitFor);
+				tp.call();
 			}
 		} catch (ServerException e) {
 			try {

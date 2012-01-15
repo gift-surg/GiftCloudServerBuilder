@@ -20,6 +20,7 @@ import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
@@ -50,6 +51,12 @@ public class ModifySubjectAssessorData extends ModifyItem{
             {
                 handleException(data,(XFTItem)found,populater.getError());
                 return;
+            }
+            
+            try {
+                preProcess(found,data,context);
+            } catch (RuntimeException e1) {
+                logger.error("",e1);
             }
             
             
@@ -109,7 +116,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
             {
                 try {
                     
-                    found.save(TurbineUtils.getUser(data),false,false);
+                    found.save(TurbineUtils.getUser(data),false,allowDataDeletion());
                     
 					MaterializedView.DeleteByUser(TurbineUtils.getUser(data));
 

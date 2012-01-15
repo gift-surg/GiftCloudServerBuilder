@@ -12,12 +12,8 @@
 	<td>#xdatTextBox("xnat:qcManualAssessorData/scans/scan[$scan_counter]/motion" $item "" $vr)</td>
 </tr>
 <tr>
-	<td>Image Artifacts</td>
-	<td>#xdatTextBox("xnat:qcManualAssessorData/scans/scan[$scan_counter]/imageArtifacts" $item "" $vr)</td>
-</tr>
-<tr>
-	<td>Other</td>
-	<td>#xdatTextBox("xnat:qcManualAssessorData/scans/scan[$scan_counter]/other" $item "" $vr)</td>
+	<td>Other Image Artifacts</td>
+	<td>#xdatTextBox("xnat:qcManualAssessorData/scans/scan[$scan_counter]/otherImageArtifacts" $item "" $vr)</td>
 </tr>
 <tr>
 	<td>Comments</td>

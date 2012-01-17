@@ -174,4 +174,19 @@
 		  	  	  	  	  	  <td align="left">$!addP.getAddfield()</td>
 		          </tr>
 			#end
-  		      </table>
+		
+            #foreach($scanAssessor in $scanAssessors)
+            		#if($scanAssessor.canRead($user))
+						#set($scanById=$!scanAssessor.getScanById($scanID))
+						#if($scanById)
+							<tr>
+								<td></td>
+								<td><a href="$url" title="$scanAssessor.getIdentifier($project)">$!scanAssessor.getHeader():</a></td>
+								<td border=0 style="font-weight:bold; text-align:left;"  NOWRAP>	
+									$!scanAssessor.getScanById($scanID).getSummary()
+								</td>
+							</tr>
+						#end
+					#end
+            #end
+     </table>

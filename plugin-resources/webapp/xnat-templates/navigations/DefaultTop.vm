@@ -163,6 +163,33 @@ $navigation.setTemplate("XNATQuickSearch.vm")
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="http://docs.xnat.org/XNAT+Tools#XNAT%20Client%20Tools-Developed%20by%20NRG-XNAT%20web%20services%20client%20tools%20%28NRG%29">Command Prompt Tools</a>
            </li>
+           <li class="yuimenuitem">
+           <a class="yuimenuitemlabel" href="#information"> 
+	                    Archive Headers 
+	                </a> 
+	 
+	                <!-- A submenu --> 
+	 
+                <div id="information" class="yuimenu"> 
+	                    <div class="bd">                                         
+	                        <ul>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","1")">One Day</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","7")">One Week</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","30")">One Month</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","365")">All</a>
+           </li>       
+
+	                        </ul>                     
+	                    </div> 
+	                </div>  
+           </li>
           </ul>
          </DIV>
         </DIV>

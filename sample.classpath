@@ -147,7 +147,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry combineaccessrules="false" kind="src" path="/xdat_core"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/xdat"/>
   <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
   <classpathentry kind="output" path="ide-bin"/>
 </classpath>

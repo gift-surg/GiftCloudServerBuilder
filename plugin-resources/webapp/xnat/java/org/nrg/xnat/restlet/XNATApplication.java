@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet;
 
+import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
 import org.nrg.xnat.restlet.resources.ExperimentListResource;
 import org.nrg.xnat.restlet.resources.ExperimentResource;
@@ -54,7 +55,7 @@ import org.restlet.resource.Resource;
 public class XNATApplication extends Application {
      public static String PREARC_PROJECT_URI = "/prearchive/projects/{PROJECT_ID}",
     PREARC_SESSION_URI = PREARC_PROJECT_URI + "/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
-    
+
 	public XNATApplication(Context parentContext) {
         super(parentContext);
     }
@@ -63,10 +64,10 @@ public class XNATApplication extends Application {
 		router.attach(uri.intern(),clazz);
 		router.attach(("/archive"+uri).intern(),clazz);
 	}
-	
+
 	public void addRoutes(final Router router){
         attachArchiveURI(router,"/investigators",InvestigatorListResource.class);
-        
+
         //BEGIN ---- Pipelines section
         attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines",ProjectPipelineListResource.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines/{STEP_ID}/experiments/{EXPT_ID}",ProjtExptPipelineResource.class);
@@ -111,7 +112,7 @@ public class XNATApplication extends Application {
 
         attachArchiveURI(router,"/subjects/{SUBJECT_ID}",SubjectResource.class);
         attachArchiveURI(router,"/subjects",SubjectListResource.class);
-        
+
         //resources
         attachArchiveURI(router,"/projects/{PROJECT_ID}/resources",CatalogResourceList.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources",CatalogResourceList.class);
@@ -198,8 +199,9 @@ public class XNATApplication extends Application {
         router.attach("/projects/{PROJECT_ID}/pars",org.nrg.xnat.restlet.resources.ProjectPARListResource.class);
 
         router.attach("/JSESSION",org.nrg.xnat.restlet.resources.UserSession.class);
-        
+
         router.attach("/prearchive",org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
+        router.attach("/prearchive/experiments", org.nrg.xnat.restlet.resources.prearchive.RecentPrearchiveSessions.class);
         router.attach(PREARC_PROJECT_URI,org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
         router.attach(PREARC_SESSION_URI, org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans", org.nrg.xnat.restlet.resources.prearchive.PrearcScansListResource.class);
@@ -222,21 +224,22 @@ public class XNATApplication extends Application {
         router.attach("/services/archive",Archiver.class);
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
-        
+        router.attach("/services/dicomdump", DicomDump.class);
+
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
-        
+
         router.attach("/version",VersionRepresentation.class);
 	}
-        
+
     @Override
     public synchronized Restlet createRoot() {
         Router router = new Router(getContext());
 
         addRoutes(router);
-        
+
         XnatSecureGuard guard = new XnatSecureGuard();
         guard.setNext(router);
-        
+
         return guard;
     }
 }

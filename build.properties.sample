@@ -53,3 +53,8 @@ xdat.require_login=true
 #  If this is false, then an email will be sent to the admin (xdat.admin_email) requesting that the
 #  account be enabled, and the user will be unable to login until the account is enabled.
 xdat.enable_new_registrations=false
+
+# The modules location setting indicates where data type modules are located. If this isn't set,
+# the setup/update scripts will look in the modules subfolder of the xnat_builder installation.
+# xdat.modules.location=/Library/XNAT/modules
+

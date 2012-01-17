@@ -34,7 +34,6 @@ import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.PipePipelinedetails;
 import org.nrg.xdat.om.PipePipelinerepository;
-import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -112,12 +111,23 @@ public class ManagePipeline extends SecureAction {
 		XDATUser user = TurbineUtils.getUser(data);
 		try {
 			XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
+			String pipeline_path = (String)pipeline.getProperty("path");
 			if (pipeline != null) {
-				DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
-				logger.info("Deleted " + pipeline.getProperty("path"));
-				data.setMessage("Pipeline removed from site repository");
-				PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects( (String)pipeline.getProperty("path"), user);
-				PipelineRepositoryManager.Reset();
+				PipePipelinerepository pipelines = PipelineRepositoryManager.GetInstance();
+                DBAction.RemoveItemReference(pipelines.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user);
+                pipelines.getItem().removeItem(pipeline.getItem());
+                //boolean deleted = pipelines.save(user, false, false);
+				//DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
+				//if (deleted) {
+	                logger.info("Deleted " + pipeline.getProperty("path"));
+					data.setMessage("Pipeline removed from site repository");
+					PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects(pipeline_path, user);
+					PipelineRepositoryManager.Reset();
+					ArcSpecManager.Reset();
+				/*}else {
+		    		logger.error("Error deleting "  + data.getParameters().get("search_value"));
+		    		data.setMessage("Error Deleting item.");
+				}*/
 			}
 		}catch(Exception e) {
     		logger.error("Error deleting "  + data.getParameters().get("search_value") ,e);
@@ -136,7 +146,7 @@ public class ManagePipeline extends SecureAction {
 	        context.put("pipelinePath", pipelinePath);
 	        String customWebPage = "PipelineScreen_default_launcher.vm";
 	        try {
-		        ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+		        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 		        if (schemaType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
 		        	ArcProjectPipeline pipelineData = (ArcProjectPipeline)arcProject.getPipelineByPath(pipelinePath);
 		        	if (pipelineData.getCustomwebpage() != null)
@@ -211,7 +221,7 @@ public class ManagePipeline extends SecureAction {
             //If the step is provided at the template level, it must be of the kind AUTO_<SOMETHING>
             //It is assumed that the sequence will be independent
 
-    		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+    		ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
     		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
     			ArcProjectPipeline newPipeline = new ArcProjectPipeline(found);
     			if (edit) {

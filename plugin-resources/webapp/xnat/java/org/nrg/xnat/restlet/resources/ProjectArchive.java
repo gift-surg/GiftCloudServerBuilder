@@ -1,9 +1,9 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.util.ArrayList;
-
+import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -38,7 +38,8 @@ public class ProjectArchive extends ItemResource {
 		MediaType mt = overrideVariant(variant);
 		
 		if(proj!=null){
-	        	return this.representItem(proj.getArcSpecification().getItem(),MediaType.TEXT_XML);
+				ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
+	        	return this.representItem(arcProject.getItem(),MediaType.TEXT_XML);
 		}else{
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified scan.");
 		}

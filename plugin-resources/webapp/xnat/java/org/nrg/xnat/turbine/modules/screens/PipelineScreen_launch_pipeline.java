@@ -55,7 +55,7 @@ public class PipelineScreen_launch_pipeline extends SecureReport {
         		XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectId, TurbineUtils.getUser(data), false);
         		//Get the list of associated pipelines for this item
         		List pipelines = new ArrayList();
-        		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+        		ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
         		if (schema_element_name.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME))
         			pipelines = arcProject.getPipelines_pipeline();
         		else	

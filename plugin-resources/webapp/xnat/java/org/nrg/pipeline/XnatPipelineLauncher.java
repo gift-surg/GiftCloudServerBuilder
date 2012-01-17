@@ -332,7 +332,7 @@ public class XnatPipelineLauncher {
 
     private void setBuildDir() {
         //TODO Set this to be the buildDir for the project
-        String tdir = ArcSpecManager.GetInstance().getGlobalBuildPath() ;
+        String tdir = ArcSpecManager.GetFreshInstance().getGlobalBuildPath() ;
         if (tdir.endsWith(File.separator))
             tdir = tdir.substring(0,tdir.length()-1);
         ArrayList temp = new ArrayList();

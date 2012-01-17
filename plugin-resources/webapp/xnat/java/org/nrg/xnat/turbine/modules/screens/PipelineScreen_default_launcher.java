@@ -27,7 +27,7 @@ public class PipelineScreen_default_launcher extends DefaultPipelineScreen {
 	        String projectId = data.getParameters().get("project");
 	        String pipelinePath = data.getParameters().get("pipeline");
 	        String schemaType = data.getParameters().get("schema_type");
-	        ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+	        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 	        if (schemaType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
 	        	ArcProjectPipeline pipelineData = (ArcProjectPipeline)arcProject.getPipelineByPath(pipelinePath);
 	        	context.put("pipeline", pipelineData);

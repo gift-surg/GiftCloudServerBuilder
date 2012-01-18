@@ -36,6 +36,7 @@ import org.nrg.xdat.model.ArcProjectDescendantI;
 import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.model.ArcProjectI;
 import org.nrg.xdat.model.ArcProjectPipelineI;
+import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.WrkWorkflowdata;

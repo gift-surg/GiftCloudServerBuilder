@@ -297,15 +297,7 @@
 								<xs:attribute name="display_name" type="xs:string" use="required"/>
 								<xs:attribute name="sequence" type="xs:integer" use="optional" default="0"/>
 								<xs:attribute name="image" type="xs:string" use="optional"/>
-								<xs:attribute name="popup" use="optional">
-									<xs:simpleType>
-										<xs:restriction base="xs:string">
-											<xs:enumeration value="always"/>
-											<xs:enumeration value="never"/>
-											<xs:enumeration value="sometimes"/>
-										</xs:restriction>
-									</xs:simpleType>
-								</xs:attribute>
+                                <xs:attribute name="popup" type="xs:string" use="optional"/>
 								<xs:attribute name="secureAccess" use="optional">
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
@@ -363,15 +355,7 @@
 		<xs:attribute name="display_name" type="xs:string" use="required"/>
 		<xs:attribute name="sequence" type="xs:integer" use="optional" default="0"/>
 		<xs:attribute name="image" type="xs:string" use="optional"/>
-		<xs:attribute name="popup" use="optional">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="always"/>
-					<xs:enumeration value="never"/>
-					<xs:enumeration value="sometimes"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
+        <xs:attribute name="popup" type="xs:string" use="optional"/>
 		<xs:attribute name="secureAccess" use="optional">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">

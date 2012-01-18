@@ -3,14 +3,8 @@
  */
 package org.nrg.xnat.archive;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.xdat.security.XDATUser;
@@ -18,8 +12,13 @@ import org.nrg.xnat.helpers.ZipEntryFileWriterWrapper;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>

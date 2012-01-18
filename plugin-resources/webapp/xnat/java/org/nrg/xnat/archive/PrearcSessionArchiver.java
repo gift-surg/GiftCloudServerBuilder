@@ -3,14 +3,6 @@
  */
 package org.nrg.xnat.archive;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
@@ -47,6 +39,14 @@ import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -101,6 +101,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	private final File srcDIR;
 
+    // overwrite = false => No append or overwrite.
+    // overwrite = true:
+    //     allowDataDeletion = true => overwrite
+    //     allowDataDeletion = false => append
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
 	private final boolean overwrite_files;//should process proceed if the same file is reuploaded

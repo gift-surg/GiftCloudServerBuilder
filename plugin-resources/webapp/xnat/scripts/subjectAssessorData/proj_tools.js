@@ -102,7 +102,7 @@ function SubjectLoader(_options){
 		    this.list= eval("(" + o.responseText +")").ResultSet.Result;
 			this.onLoadComplete.fire();
 		    
-		    if(this.options.selects!=undefined){
+		    if(this.options != undefined && this.options.selects != undefined) {
 		    	for(var selectC=0;selectC<this.options.selects.length;selectC++){
 		    		var selectBox=this.options.selects[selectC];
 		    		if(this.options.defaultValue!=undefined){
@@ -113,7 +113,11 @@ function SubjectLoader(_options){
 		    	}
 		    }
 		}catch(e){
+			if (o.status != 200) {
 			this.displayError("ERROR " + o.status+ ": Failed to parse subject list.");
+            } else {
+                this.displayError("EXCEPTION: " + e.toString());
+            }
 		}
 		
 	};

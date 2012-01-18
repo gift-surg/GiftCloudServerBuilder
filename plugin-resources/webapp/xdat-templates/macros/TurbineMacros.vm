@@ -1261,10 +1261,13 @@ div.ic_spacer{
                 #set($additionalParameters="")
             #end
 
+            #set($width=$actionObject.getPopupWidth())
+            #set($height=$actionObject.getPopupHeight())
+
             #if($canAccess.equalsIgnoreCase("true"))
              #if ($actionObject.getPopup() && $actionObject.getPopup()=="always")
 <li class="yuimenuitem">
-                          <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=700,height=600,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
+                          <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=$!width,height=$!height,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
                           </li>
                 #elseif($actionObject.getPopup() && $actionObject.getPopup()=="sometimes")
                     #if ($popup=="true")
@@ -1273,7 +1276,7 @@ div.ic_spacer{
 </li>
                     #else
 <li class="yuimenuitem">
-                            <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=700,height=600,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
+                            <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=$!width,height=$!height,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
 </li>
                     #end
                 #else

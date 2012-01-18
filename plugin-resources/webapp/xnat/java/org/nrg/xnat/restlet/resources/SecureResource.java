@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.noelios.restlet.http.HttpConstants;
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
@@ -37,35 +38,22 @@ import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
-import org.nrg.xnat.restlet.representations.CSVTableRepresentation;
-import org.nrg.xnat.restlet.representations.HTMLTableRepresentation;
-import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
-import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
-import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
-import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
-import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
+import org.nrg.xnat.restlet.representations.*;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.FileRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
+import org.restlet.resource.*;
 import org.restlet.util.Series;
 import org.xml.sax.SAXParseException;
 
-import com.noelios.restlet.http.HttpConstants;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public abstract class SecureResource extends Resource {
@@ -760,9 +748,12 @@ public abstract class SecureResource extends Resource {
 	public void loadParams (final String _json) throws ClientException {
 	    try {
 	        final JSONObject json = new JSONObject(_json);
-	        for (final String key: JSONObject.getNames(json)) {
+        String[] keys = JSONObject.getNames(json);
+        if (keys != null) {
+            for (final String key : keys) {
 	            handleParam(key, json.get(key));
 	        }
+        }
 	    } catch (JSONException e) {
 	        logger.error("invalid JSON message " + _json, e);
 	    } catch (NullPointerException e) {
@@ -785,7 +776,7 @@ public abstract class SecureResource extends Resource {
 					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
 				}
 				
-				if(entity.getSize()==-1 || entity.getSize()==0){
+                if (entity == null || entity.getSize() == -1 || entity.getSize() == 0) {
 					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
 				}
 				

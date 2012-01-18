@@ -1,28 +1,23 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.nrg.dcm.DicomSCP;
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
-import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.exception.*;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
 
 public class SessionXMLRebuilderJob implements JobInterface {
 	@Override
@@ -51,10 +46,10 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		} catch (Exception e1) {
 			logger.error("", e1);
 		}
-		List<SessionData> sds = null;
+		List<SessionData> dataList = null;
 		long now = Calendar.getInstance().getTimeInMillis();
 		try {
-			sds = PrearcDatabase.getAllSessions();
+			dataList = PrearcDatabase.getAllSessions();
 		} catch (SessionException e) {
 			logger.error("", e);
 		} catch (SQLException e) {
@@ -64,14 +59,12 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		}
 		int updated = 0;
 		int total = 0;
-		Iterator<SessionData> i = sds.iterator();
-		while (i.hasNext()) {
+        for (SessionData sessionData : dataList) {
 			total++;
-			SessionData s = i.next();
-			if (s.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING)) {
+            if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit()) {
 				File sessionDir = null;
 				try {
-					sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
+                    sessionDir = PrearcUtils.getPrearcSessionDir(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), false);
 				} catch (IOException e) {
 					logger.error("", e);
 				} catch (InvalidPermissionException e) {
@@ -79,18 +72,19 @@ public class SessionXMLRebuilderJob implements JobInterface {
 				} catch (Exception e) {
 					logger.error("", e);
 				}
-				long then = s.getLastBuiltDate().getTime();
-				double interval = (double) _map.getIntValue("interval");
-				double diff = diffInMinutes(then, now);
-				if (diff >= interval) {
-					logger.info("commiting " + s.getExternalUrl());
+                long then = sessionData.getLastBuiltDate().getTime();
+                final double interval = (double) _map.getIntValue("interval");
+                final double elapsed = diffInMinutes(then, now);
+                logger.debug("Found configured interval of " + interval + " minutes, " + elapsed + " minutes have elapsed.");
+                if (elapsed >= interval) {
+                    logger.info("committing " + sessionData.getExternalUrl());
 					try {
 						updated++;
-						if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
-							PrearcDatabase.buildSession(sessionDir, s.getFolderName(), s.getTimestamp(), s.getProject());
-							PrearcUtils.resetStatus(user, s.getProject(), s.getTimestamp(), s.getFolderName(), true);
+                        if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
+                            PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject());
+                            PrearcUtils.resetStatus(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), true);
 
-							final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(s.getProject(), s.getTimestamp(), s.getFolderName(), null, user), null, false, true, false);
+                            final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);
 							uploader.call();
 						}
 					} catch (SyncFailedException e) {

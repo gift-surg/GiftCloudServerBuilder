@@ -3,37 +3,15 @@
  */
 package org.nrg.xnat.archive;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
-
-import org.dcm4che2.data.BasicDicomObject;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.data.Tag;
-import org.dcm4che2.data.TransferSyntax;
-import org.dcm4che2.data.VR;
+import org.dcm4che2.data.*;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
 import org.dcm4che2.io.StopTagInputHandler;
@@ -45,6 +23,8 @@ import org.nrg.dcm.DicomFileNamer;
 import org.nrg.dcm.Extractor;
 import org.nrg.dcm.MatchedPatternExtractor;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
+import org.nrg.framework.constants.AutoArchive;
+import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
@@ -64,10 +44,13 @@ import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Tim Olsen <olsent@mir.wustl.edu>
@@ -78,6 +61,15 @@ public class GradualDicomImporter extends ImporterHandlerA {
     public static final String SENDER_AE_TITLE_PARAM = "Sender-AE-Title";
     public static final String SENDER_ID_PARAM = "Sender-ID";
     public static final String TSUID_PARAM = "Transfer-Syntax-UID";
+
+    // IMPORTANT: This must stay in sync with the AUTO_ARCHIVE constant defined in org.nrg.upload.data.Project.
+    public static final String AUTO_ARCHIVE = "autoArchive";
+
+    // IMPORTANT: This must stay in sync with the corresponding constants defined in org.nrg.dcm.Study.
+    public static final String PREVENT_ANON = "prevent_anon";
+    public static final String PREVENT_AUTO_COMMIT = "prevent_auto_commit";
+    public static final String SOURCE = "source";
+
     private static final String DEFAULT_TRANSFER_SYNTAX = TransferSyntax.ImplicitVRLittleEndian.uid();
     private static final String DICOM_IMPORTER_PROPS = "dicom-importer.properties";
     private static final String DICOM_PROJECT_RULES = "dicom-project.rules";
@@ -93,8 +85,12 @@ public class GradualDicomImporter extends ImporterHandlerA {
     private final XDATUser user;
     private final Map<String,Object> params;
     private TransferSyntax ts = null;
+    private AutoArchive _autoArchive;
     private Cache projectCache = null;
     private final RuleBasedIdentifier projectIdentifier = new RuleBasedIdentifier(this);
+    private Boolean _preventAnon;
+    private Boolean _preventAutoCommit;
+    private String _source;
 
     public GradualDicomImporter(Object listenerControl, XDATUser u,	FileWriterWrapperI fw, Map<String,Object> params)
     throws IOException,ClientException {
@@ -104,6 +100,18 @@ public class GradualDicomImporter extends ImporterHandlerA {
         this.params = params;
         if (params.containsKey(TSUID_PARAM)) {
             ts = TransferSyntax.valueOf((String)params.get(TSUID_PARAM));
+        }
+        if (params.containsKey(AUTO_ARCHIVE)) {
+            _autoArchive = AutoArchive.valueOf((String) params.get(AUTO_ARCHIVE));
+        }
+        if (params.containsKey(PREVENT_ANON)) {
+            _preventAnon = Boolean.parseBoolean((String) params.get(PREVENT_ANON));
+        }
+        if (params.containsKey(PREVENT_AUTO_COMMIT)) {
+            _preventAutoCommit = Boolean.parseBoolean((String) params.get(PREVENT_AUTO_COMMIT));
+        }
+        if (params.containsKey(SOURCE)) {
+            _source = (String) params.get(SOURCE);
         }
     }
 
@@ -150,8 +158,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
     private static Logger slog() { return LoggerFactory.getLogger(GradualDicomImporter.class); }
 
-    private static void write(final DicomObject fmi, final DicomObject dataset,
-            BufferedInputStream remainder, final File f, final String source)
+    private static void write(final DicomObject fmi, final DicomObject dataSet, BufferedInputStream remainder, final File f, final String source)
     throws ClientException,IOException {
         IOException ioexception = null;
         final FileOutputStream fos = new FileOutputStream(f);
@@ -166,13 +173,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
                             // Read the rest of the object into memory so the pixel data can be decompressed.
                             final DicomInputStream dis = new DicomInputStream(remainder, tsuid);
                             try {
-                                dis.readDicomObject(dataset, -1);
+                                dis.readDicomObject(dataSet, -1);
                             } catch (IOException e) {
                                 ioexception = e;
                                 throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,
                                         "error parsing DICOM object", e);
                             }
-                            final ByteArrayInputStream bis = new ByteArrayInputStream(Decompress.dicomObject2Bytes(dataset,tsuid));
+                            final ByteArrayInputStream bis = new ByteArrayInputStream(Decompress.dicomObject2Bytes(dataSet,tsuid));
                             final DicomObject d = Decompress.decompress_image(bis, tsuid);
                             final String dtsdui = Decompress.getTsuid(d);
                             try {
@@ -196,7 +203,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                         } catch (Throwable t) {
                             slog().error("Decompression failed; storing in original format " + tsuid, t);
                             dos.writeFileMetaInformation(fmi);
-                            dos.writeDataset(dataset, tsuid);
+                            dos.writeDataset(dataSet, tsuid);
                             if (null != remainder) {
                                 final long copied = ByteStreams.copy(remainder, bos);
                                 slog().trace("copied {} additional bytes to {}", copied, f);
@@ -204,7 +211,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                         }
                     } else {
                         dos.writeFileMetaInformation(fmi);
-                        dos.writeDataset(dataset, tsuid);
+                        dos.writeDataset(dataSet, tsuid);
                         if (null != remainder) {
                             final long copied = ByteStreams.copy(remainder, bos);
                             slog().trace("copied {} additional bytes to {}", copied, f);
@@ -213,7 +220,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 } catch (NoClassDefFoundError t) {
                     slog().error("Unable to check compression status; storing in original format " + tsuid, t);
                     dos.writeFileMetaInformation(fmi);
-                    dos.writeDataset(dataset, tsuid);
+                    dos.writeDataset(dataSet, tsuid);
                     if (null != remainder) {
                         final long copied = ByteStreams.copy(remainder, bos);
                         slog().trace("copied {} additional bytes to {}", copied, f);
@@ -344,7 +351,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         final BufferedInputStream bis;
         final DicomInputStream dis;
         final String name = fw.getName();
-        final DicomObject o;
+        final DicomObject dicomObject;
         try {
             bis = new BufferedInputStream(fw.getInputStream());
             try {
@@ -352,16 +359,16 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 final int lastTag = projectIdentifier.getTags().last() + 1;
                 logger.trace("reading object into memory up to {}", TagUtils.toString(lastTag));
                 dis.setHandler(new StopTagInputHandler(lastTag));
-                o = dis.readDicomObject();
+                dicomObject = dis.readDicomObject();
                 try {
                     bis.reset();
                 } catch (IOException e) {
                     logger.error("unable to reset DICOM data stream", e);
                 }
-                if (Strings.isNullOrEmpty(o.getString(Tag.SOPClassUID))) {
+                if (Strings.isNullOrEmpty(dicomObject.getString(Tag.SOPClassUID))) {
                     throw new ClientException("object " + name + " contains no SOP Class UID");
                 }
-                if (Strings.isNullOrEmpty(o.getString(Tag.SOPInstanceUID))) {
+                if (Strings.isNullOrEmpty(dicomObject.getString(Tag.SOPInstanceUID))) {
                     throw new ClientException("object " + name + " contains no SOP Instance UID");
                 }
             } catch (Throwable t) {
@@ -385,19 +392,18 @@ public class GradualDicomImporter extends ImporterHandlerA {
             project = getProject(PrearcUtils.identifyProject(params),
                     new Callable<XnatProjectdata>() {
                 public XnatProjectdata call() {
-                    return projectIdentifier.getProject(o);
+                                         return projectIdentifier.getProject(dicomObject);
                 }
             });
         } catch (MalformedURLException e1) {
             logger.error("unable to parse supplied destination flag", e1);
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e1);
         }
-        final String studyInstanceUID = o.getString(Tag.StudyInstanceUID);
+        final String studyInstanceUID = dicomObject.getString(Tag.StudyInstanceUID);
         logger.trace("Looking for study {} in project {}", studyInstanceUID,
                 null == project ? null : project.getId());
 
         // Fill a SessionData object in case it is the first upload
-        SessionData sess = null;
         final File root;
         final String project_id;
         if (null == project) {
@@ -407,16 +413,16 @@ public class GradualDicomImporter extends ImporterHandlerA {
             root = new File(project.getPrearchivePath());
             project_id = project.getId();
         }
-        final File tsdir, sessdir;
+        final File timeStampDir, sessionDir;
 
-        tsdir = new File(root, PrearcUtils.makeTimestamp());
+        timeStampDir = new File(root, PrearcUtils.makeTimestamp());
         
         String session;
         if (params.containsKey(UriParserUtils.EXPT_LABEL)) {
             session = (String)params.get(UriParserUtils.EXPT_LABEL);
             logger.trace("using provided experiment label {}", params.get(UriParserUtils.EXPT_LABEL));
         } else {
-            session = projectIdentifier.getSessionLabel(o);
+            session = projectIdentifier.getSessionLabel(dicomObject);
         }
         if (Strings.isNullOrEmpty(session)) {
             session = "dicom_upload";
@@ -426,31 +432,30 @@ public class GradualDicomImporter extends ImporterHandlerA {
         if (params.containsKey(UriParserUtils.SUBJECT_ID)) {
         	subject = (String)params.get(UriParserUtils.SUBJECT_ID);
         } else {
-        	subject = projectIdentifier.getSubjectLabel(o);
+        	subject = projectIdentifier.getSubjectLabel(dicomObject);
         }
         if (null == subject) {
-            logger.trace("subject is null for session {}/{}", tsdir, session);
+            logger.trace("subject is null for session {}/{}", timeStampDir, session);
         }
         
-        sess = new SessionData();
-        sess.setFolderName(session);
-        sess.setName(session);
-        sess.setProject(project_id);
-        sess.setScan_date(o.getDate(Tag.StudyDate));
-        sess.setTag(studyInstanceUID);
-        sess.setTimestamp(tsdir.getName());
-        sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
-        sess.setLastBuiltDate(Calendar.getInstance().getTime());
-        sess.setSubject(subject);
-
-        sess.setUrl((new File(tsdir,session)).getAbsolutePath());
+        SessionData sessionData = new SessionData();
+        sessionData.setFolderName(session);
+        sessionData.setName(session);
+        sessionData.setProject(project_id);
+        sessionData.setScan_date(dicomObject.getDate(Tag.StudyDate));
+        sessionData.setTag(studyInstanceUID);
+        sessionData.setTimestamp(timeStampDir.getName());
+        sessionData.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
+        sessionData.setLastBuiltDate(Calendar.getInstance().getTime());
+        sessionData.setSubject(subject);
+        sessionData.setUrl((new File(timeStampDir, session)).getAbsolutePath());
 
         // query the cache for an existing session that has this Study Instance UID and project name,
         // if found the SessionData object we just created is over-ridden with the values from the cache
         try {
-            sess = PrearcDatabase.getOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
-            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
-            PrearcDatabase.setStatus(sess.getName(), sess.getTimestamp(), sess.getProject(), PrearcStatus.RECEIVING);
+            sessionData = PrearcDatabase.getOrCreateSession(sessionData.getProject(), sessionData.getTag(), sessionData, timeStampDir, shouldAutoArchive(dicomObject), _preventAnon, _preventAutoCommit, _source);
+            PrearcDatabase.setLastModifiedTime(sessionData.getName(), sessionData.getTimestamp(), sessionData.getProject());
+            PrearcDatabase.setStatus(sessionData.getName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcStatus.RECEIVING);
         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {
@@ -459,11 +464,11 @@ public class GradualDicomImporter extends ImporterHandlerA {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         }
 
-        sessdir = new File(new File(root, sess.getTimestamp()),sess.getFolderName());
+        sessionDir = new File(new File(root, sessionData.getTimestamp()),sessionData.getFolderName());
 
         // Build the scan label
-        final String seriesNum = o.getString(Tag.SeriesNumber);
-        final String seriesUID = o.getString(Tag.SeriesInstanceUID);
+        final String seriesNum = dicomObject.getString(Tag.SeriesNumber);
+        final String seriesUID = dicomObject.getString(Tag.SeriesInstanceUID);
         final String scan;
         if (Files.isValidFilename(seriesNum)) {
             scan = seriesNum;
@@ -477,14 +482,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
         try {
             final DicomObject fmi;
-            if (o.contains(Tag.TransferSyntaxUID)) {
-                fmi = o.fileMetaInfo();
+            if (dicomObject.contains(Tag.TransferSyntaxUID)) {
+                fmi = dicomObject.fileMetaInfo();
             } else {
-                final String sopClassUID = o.getString(Tag.SOPClassUID);
-                final String sopInstanceUID = o.getString(Tag.SOPInstanceUID);
+                final String sopClassUID = dicomObject.getString(Tag.SOPClassUID);
+                final String sopInstanceUID = dicomObject.getString(Tag.SOPInstanceUID);
                 final String transferSyntaxUID;
                 if (null == ts) {
-                    transferSyntaxUID = o.getString(Tag.TransferSyntaxUID, DEFAULT_TRANSFER_SYNTAX);
+                    transferSyntaxUID = dicomObject.getString(Tag.TransferSyntaxUID, DEFAULT_TRANSFER_SYNTAX);
                 } else {
                     transferSyntaxUID = ts.uid();
                 }
@@ -495,10 +500,10 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 }
             }
 
-            final File f = getSafeFile(sessdir, scan, name, o, Boolean.valueOf((String)params.get(RENAME_PARAM)));
+            final File f = getSafeFile(sessionDir, scan, name, dicomObject, Boolean.valueOf((String)params.get(RENAME_PARAM)));
             f.getParentFile().mkdirs();
             try {
-                write(fmi, o, bis, f, source);
+                write(fmi, dicomObject, bis, f, source);
             } catch (IOException e) {
                 throw new ServerException(Status.SERVER_ERROR_INSUFFICIENT_STORAGE, e);
             }
@@ -511,8 +516,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
 
         logger.trace("Stored object {}/{}/{} as {} for {}",
-                new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl(), source});
-        return Collections.singletonList(sess.getExternalUrl());
+                     new Object[]{project, studyInstanceUID, dicomObject.getString(Tag.SOPInstanceUID), sessionData.getUrl(), source});
+        return Collections.singletonList(sessionData.getExternalUrl());
     }
 
     public void setCacheManager(final CacheManager cacheManager) {
@@ -536,23 +541,39 @@ public class GradualDicomImporter extends ImporterHandlerA {
     private static final Pattern aaPattern = Pattern.compile("\\A(?:.*\\W)?AA:([a-zA-Z]+)(?:\\W.*)?\\Z");
 
     /**
-     * Looks for AA:true|false in the given DICOM object. The AA: portion is case-sensitive,
-     * but the true/false is case-insensitive. Patient Comments is searched first, then
-     * Study Comments.
-     * @param o
+     * Looks for AA:[.*] in the given DICOM object. The AA: portion is case-sensitive,
+     * but the remaining token is case-insensitive. The Patient Comments field is searched first,
+     * then Study Comments. Valid values for the auto-archive setting token are:
+     *
+     * <ul>
+     *     <li>Any valid value for the {@link PrearchiveCode} enum</li>
+     *     <li><b>true</b> is treated the same as {@link PrearchiveCode#AutoArchive}</li>
+     *     <li><b>false</b> is treated the same as {@link PrearchiveCode#Manual}</li>
+     * </ul>
+     * @param dicomObject
      * @return true if AA:true is found, false if AA:false is found, null otherwise.
      */
-    private static Boolean shouldAutoArchive(final DicomObject o) {
+    private PrearchiveCode shouldAutoArchive(final DicomObject dicomObject) {
+        if (_autoArchive != null) {
+            switch (_autoArchive) {
+                case Append:
+                    return PrearchiveCode.AutoArchive;
+                case Overwrite:
+                    return PrearchiveCode.AutoArchiveOverwrite;
+            }
+        }
         for (final int tag : new int[]{Tag.PatientComments, Tag.StudyComments}) {
-            final String s = o.getString(tag);
+            final String s = dicomObject.getString(tag);
             if (null != s) {
                 final Matcher m = aaPattern.matcher(s);
                 if (m.matches()) {
                     final String arg = m.group(1);
                     if ("true".equalsIgnoreCase(arg)) {
-                        return true;
+                        return PrearchiveCode.AutoArchive;
                     } else if ("false".equalsIgnoreCase(arg)) {
-                        return false;
+                        return PrearchiveCode.Manual;
+                    } else if ("Manual".equalsIgnoreCase(arg)) {
+                        return PrearchiveCode.Manual;
                     }
                 }
             }
@@ -560,9 +581,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         return null;
     }
 
-    private static final class RuleBasedIdentifier
-    extends AbstractDicomObjectIdentifier<XnatProjectdata> {
-        private static final Extractor[] exts;
+    private static final class RuleBasedIdentifier extends AbstractDicomObjectIdentifier<XnatProjectdata> {
+        private static final Extractor[] extractors;
         static {
             final List<Extractor> es = Lists.newArrayList();
             final File config = new File(XFT.GetConfDir(), DICOM_PROJECT_RULES);
@@ -593,14 +613,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
             } else {
                 slog().debug("custom project rules spec {} not found", DICOM_PROJECT_RULES);                
             }
-            exts = es.toArray(new Extractor[0]);
+            extractors = es.toArray(new Extractor[0]);
         }
 
         private final GradualDicomImporter importer;
 
         RuleBasedIdentifier(final GradualDicomImporter importer) {
             this.importer = importer;
-            addProjectExtractors(exts);
+            addProjectExtractors(extractors);
         }
 
         private static final Extractor parseRule(final String rule) {

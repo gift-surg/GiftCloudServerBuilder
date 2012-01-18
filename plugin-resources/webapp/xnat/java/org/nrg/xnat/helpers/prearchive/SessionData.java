@@ -1,9 +1,10 @@
 package org.nrg.xnat.helpers.prearchive;
 
+import org.nrg.framework.constants.PrearchiveCode;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+
 import java.lang.reflect.Field;
 import java.util.Date;
-
-import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
 /**
  * SessionData is simply a container of values that represent a session. 
@@ -26,8 +27,11 @@ public final class SessionData {
 	private PrearcStatus status;
 	private SessionDataTriple sessionTriple = new SessionDataTriple();
 	private Date scan_date;
-	private String scan_time,subject,url,session,tag;
-	private Boolean autoArchive;
+	private String scan_time, subject, url, session, tag, source;
+	private PrearchiveCode autoArchive;
+    private Boolean preventAnon;
+    private Boolean preventAutoCommit;
+
 	public SessionData() {
 	}
 	public String getFolderName() {
@@ -44,7 +48,7 @@ public final class SessionData {
 	public String getName() {
 		return session;
 	}
-	public Boolean getAutoArchive() {
+	public PrearchiveCode getAutoArchive() {
 		return autoArchive;
 	}
 	public SessionData setName(String name) {
@@ -58,17 +62,79 @@ public final class SessionData {
 		return this;
 	}
 	
-	public SessionData setAutoArchive(Boolean b){
-		this.autoArchive = b;
+	public SessionData setAutoArchive(PrearchiveCode code){
+		this.autoArchive = code;
 		return this;
 	}
 	
-	public SessionData setAutoArchive(Object o) {
-		if (null != o) {
-			this.setAutoArchive((Boolean) o);
+	public SessionData setAutoArchive(Object object) {
+		if (null != object) {
+            PrearchiveCode code;
+            if (object instanceof String) {
+                code = PrearchiveCode.valueOf((String) object);
+            } else if (object instanceof PrearchiveCode) {
+                code = (PrearchiveCode) object;
+            } else if (object instanceof Integer) {
+                code = PrearchiveCode.code((Integer) object);
+            } else {
+                throw new ClassCastException("The object submitted for auto-archive must be a String, Integer, or PrearchiveCode; the submitted class is invalid for casting to PrearchiveCode: " + object.getClass());
+            }
+			this.setAutoArchive(code);
 		}
 		else {
 			this.autoArchive = null;
+		}
+		return this;
+	}
+	
+    public Boolean getPreventAnon() {
+        return preventAnon;
+    }
+
+    public SessionData setPreventAnon(Boolean preventAnon){
+        this.preventAnon = preventAnon;
+        return this;
+    }
+
+    public SessionData setPreventAnon(Object o) {
+        if (null != o) {
+            this.setPreventAnon((Boolean) o);
+        } else {
+            this.preventAnon = null;
+        }
+        return this;
+    }
+
+    public Boolean getPreventAutoCommit() {
+        return preventAutoCommit;
+    }
+
+    public SessionData setPreventAutoCommit(Boolean preventAutoCommit){
+        this.preventAutoCommit = preventAutoCommit;
+        return this;
+    }
+
+    public SessionData setPreventAutoCommit(Object o) {
+        if (null != o) {
+            this.setPreventAutoCommit((Boolean) o);
+        } else {
+            this.preventAutoCommit = null;
+        }
+        return this;
+    }
+
+    public String getSource() {
+		return source;
+	}
+
+	public SessionData setSource(String t) {
+		this.source=t;
+		return this;
+	}
+
+	public SessionData setSource(Object o) {
+		if (null != o) {
+			this.setSource((String)o);
 		}
 		return this;
 	}
@@ -223,29 +289,16 @@ public final class SessionData {
 	@Override
 	public String toString () {
 		StringBuilder sb = new StringBuilder();
-		Field[] fs = SessionData.class.getDeclaredFields();
-		for (int i = 0; i < fs.length; i++) {
-			sb.append(fs[i].toString());
+        for (Field f : SessionData.class.getDeclaredFields()) {
+            sb.append(f.toString());
 			sb.append(":");
 			try {
-			    sb.append(fs[i].get(this));
-			}
-			catch (IllegalAccessException e) {
+                sb.append(f.get(this));
+            } catch (IllegalAccessException e) {
 				sb.append("<cannot access>");
 			}
 			sb.append("\n");
 		}
 		return sb.toString();		
 	}
-	
-	public boolean nullCheck () throws IllegalArgumentException, IllegalAccessException {
-		Field[] fs = SessionData.class.getDeclaredFields();
-		String s = null;
-		for (int i = 0; i < fs.length; i++) {
-			if (fs[i].get(this) == null) {
-				return false;
 			}
-		}
-		return true;
-	}
-}

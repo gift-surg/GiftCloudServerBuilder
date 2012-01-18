@@ -3,15 +3,8 @@
  */
 package org.nrg.xnat.restlet.resources.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.action.ActionException;
@@ -40,8 +33,10 @@ import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>

@@ -146,16 +146,20 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			if (YAHOO.env.ua.gecko > 0)this.subjBox.style.color="red";
 		}
 		
+        this.subjBox.submitButton = this.submitButton;
 		if(eval("window.confirmValues")!=undefined){
 			this.subjBox.onchange=function(){
 				if (YAHOO.env.ua.gecko > 0)this.style.color=this.options[this.selectedIndex].style.color;
 				confirmValues(false);
+                checkSubmitButton(this.selectedIndex, this.submitButton);
 			}
 			
 			confirmValues(false);
+            checkSubmitButton(this.selectedIndex, this.submitButton);
 		}else{
 			this.subjBox.onchange=function(){
 				if (YAHOO.env.ua.gecko > 0)this.style.color=this.options[this.selectedIndex].style.color;
+                checkSubmitButton(this.selectedIndex, this.submitButton);
 			}
 		}
 	}
@@ -189,6 +193,13 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 	  	alert('failed to load expts');
 	  }
 	}
+}
+
+function checkSubmitButton(selectedIndex, submitButton) {
+    var button = document.getElementById(submitButton);
+    if (button) {
+        button.disabled = selectedIndex == 0;
+    }
 }
 
 function fixSessionID(val)

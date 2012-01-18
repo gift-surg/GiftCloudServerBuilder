@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet;
 
+import org.nrg.framework.logging.Analytics;
 import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
 import org.nrg.xnat.restlet.resources.ExperimentListResource;
@@ -36,6 +37,7 @@ import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
 import org.nrg.xnat.restlet.resources.files.FileList;
+import org.nrg.xnat.restlet.resources.protocols.ProjectSubjectVisitsRestlet;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.services.RemoteLoggingRestlet;
@@ -226,11 +228,15 @@ public class XNATApplication extends Application {
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
         router.attach("/services/dicomdump", DicomDump.class);
-        router.attach("/services/logging/{TOOL}", RemoteLoggingRestlet.class);
+        router.attach("/services/logging/{" + Analytics.TOOL_TAG + "}", RemoteLoggingRestlet.class);
 
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
         router.attach("/version",VersionRepresentation.class);
+
+        // TODO: These are placeholders for the protocol REST services to come.
+        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);
+        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits/{VISIT_ID}", ProjectSubjectVisitsRestlet.class);
 	}
 
     @Override

@@ -3,14 +3,6 @@
  */
 package org.nrg.xnat.restlet.actions;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
@@ -23,9 +15,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
-import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -36,12 +26,18 @@ import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 public class SessionImporter extends ImporterHandlerA implements Callable<List<String>> {
 
 	static Logger logger = Logger.getLogger(SessionImporter.class);
 
-	public static final String RESPONSE_URL = "URL";
-	
 	private final Boolean allowDataDeletion;
 	
 	private final Boolean overwrite;
@@ -57,21 +53,19 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	
 	/**
 	 * 
-	 * @param listenerControl
-	 * @param u
-	 * @param session
-	 * @param overwrite:   'append' means overwrite, but preserve un-modified content (don't delete anything)
-	 *                      'delete' means delete the pre-existing content.
-	 * @param additionalValues: should include project, subject_ID and label (if session is null)
+	 * @param listenerControl The listener control for callback purposes.
+	 * @param user The user attempting the import operation.
+     * @param writer The file writer wrapper for writing out imported sessions.
+     * @param parameters Any parameters to be passed in for the import operation.
 	 */
-	public SessionImporter(final Object listenerControl, final XDATUser u, final FileWriterWrapperI fw, final Map<String,Object> params){
-		super(listenerControl, u, fw, params);
+	public SessionImporter(final Object listenerControl, final XDATUser user, final FileWriterWrapperI writer, final Map<String,Object> parameters){
+		super(listenerControl, user, writer, parameters);
 		this.uID=listenerControl;
-		this.user=u;
-		this.fw=fw;
-		this.params=params;
+		this.user=user;
+		this.fw=writer;
+		this.params=parameters;
 		
-		String overwriteV=(String)params.remove("overwrite");
+		String overwriteV=(String)parameters.remove("overwrite");
 		
 		if(overwriteV==null){
 			this.allowDataDeletion=false;
@@ -266,7 +260,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	public List<String> returnURLs(final List<PrearcSession> sessions)throws ActionException{
 		List<String> _return= new ArrayList<String>();
 		for(final PrearcSession ps: sessions){
-			_return.add(ps.getUrl().toString());
+			_return.add(ps.getUrl());
 		}
 		return _return;
 	}
@@ -275,11 +269,11 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		for(final PrearcSession ps:sessions){
 
 			try {
-				Map<String,Object> sess=PrearcUtils.parseURI(ps.getUrl().toString());
+				Map<String,Object> session = PrearcUtils.parseURI(ps.getUrl());
 				try {
-					PrearcUtils.addSession(user, (String) sess.get(UriParserUtils.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.addSession(user, (String) session.get(UriParserUtils.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				} catch (SessionException e) {
-					PrearcUtils.resetStatus(user, (String) sess.get(UriParserUtils.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.resetStatus(user, (String) session.get(UriParserUtils.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				}
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);

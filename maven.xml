@@ -779,9 +779,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -817,9 +819,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -848,9 +852,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -883,9 +889,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -922,9 +930,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -960,9 +970,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1002,9 +1014,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1048,9 +1062,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1077,7 +1093,12 @@
 		</jar>
 		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
 		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
+		<j:if test="${context.getVariable('xdat.pipeline.location') != null}">
+            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${xdat.pipeline.location}/lib/xdat-${beans.jar.name}-1.0.jar"/>
+        </j:if>
+        <j:if test="${context.getVariable('xdat.pipeline.location') == null}">
 		<copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-1.0.jar"/>
+	</j:if>
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Populates the root level lib directory                                      -->
@@ -1416,9 +1437,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>
@@ -1526,9 +1549,11 @@
 				<pathelement location="./lib/commons-configuration-1.0.jar"/>
 				<pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
 				<pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-logging-1.0.4.jar"/>
 				<pathelement location="./lib/commons-pool-1.2.jar"/>
 				<pathelement location="./lib/jakarta-regexp-1.2.jar"/>
 				<pathelement location="./lib/log4j-1.2.15.jar"/>
+				<pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
 				<pathelement location="./lib/parser-1.jar"/>
 				<pathelement location="./lib/postgresql-7.4.214.jdbc2.jar"/>
 				<pathelement location="./lib/stratum-1.0-b5.jar"/>

@@ -16,10 +16,13 @@ if (supported)
 	}
 }
 
-function popupWSize(url,h,w)
+function popupWSize(url,h,w,name)
 {
 	if (! window.focus)return true;
-	window.open(url, "", "width=" + w + ",height=" + h + ",status=yes,resizable=yes,scrollbars=yes,toolbar=yes");
+    if (!name) {
+        name="";
+    }
+    window.open(url, name, "width=" + w + ",height=" + h + ",status=yes,resizable=yes,scrollbars=yes,toolbar=yes");
 	return false;
 }
 

@@ -698,8 +698,9 @@
 				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
 				<xdat:element_action element_action_name="add_experiment" display_name="Add Experiment" sequence="2" image="update.gif"/>
-				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="3" image="save.gif"/>
-				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="4" image="right2.gif" popup="never"/>
+				<xdat:element_action element_action_name="upload_images" display_name="Upload Images" sequence="3" image="Up.gif" popup="always:840,580" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="4" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="5" image="right2.gif" popup="never"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:ctSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="CT Session" plural="CT Sessions" accessible="1" code="CT">

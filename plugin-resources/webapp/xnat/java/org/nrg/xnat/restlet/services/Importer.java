@@ -1,16 +1,5 @@
 package org.nrg.xnat.restlet.services;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
@@ -29,11 +18,7 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -41,6 +26,17 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 public class Importer extends SecureResource {
 	private static final String CRLF = "\r\n";
@@ -186,7 +182,8 @@ public class Importer extends SecureResource {
 		}
 	}
 
-		private void respondToException(Exception e, Status status) {
+		@Override
+        protected void respondToException(Exception e, Status status) {
 			logger.error("",e);
 			if (this.requested_format!=null && this.requested_format.equalsIgnoreCase("HTML")){
 				response = new ArrayList<String>();

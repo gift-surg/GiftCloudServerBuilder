@@ -864,4 +864,9 @@ public abstract class SecureResource extends Resource {
 			return ZipUtils.DEFAULT_COMPRESSION;
 		}
 	}
+
+    protected void respondToException(Exception exception, Status status) {
+        logger.error("Transaction got a status: " + status, exception);
+        getResponse().setStatus(status, exception.getMessage());
+}
 }

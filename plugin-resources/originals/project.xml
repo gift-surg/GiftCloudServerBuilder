@@ -1245,6 +1245,24 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.8.5</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.8.5</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<!-- End Spring Framework dependencies -->
 	</dependencies>
 	<build>

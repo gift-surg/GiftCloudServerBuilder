@@ -105,6 +105,11 @@ public final class DicomHeaderDump {
 		DicomObjectToStringParam formatParams = DicomObjectToStringParam.getDefaultParam();
 		XFTTable t = new XFTTable();
 		t.initTable(columns);
+		if (this.file == null) {
+			return t;
+		}
+		DicomObject header = this.getHeader(new File(this.file));
+		DicomObjectToStringParam formatParams = DicomObjectToStringParam.getDefaultParam();
 
 		for (Iterator<DicomElement> it = header.iterator(); it.hasNext();) {
 			DicomElement e = it.next();

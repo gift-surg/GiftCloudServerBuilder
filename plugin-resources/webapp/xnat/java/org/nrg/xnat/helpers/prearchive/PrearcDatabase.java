@@ -513,7 +513,10 @@ public final class PrearcDatabase {
                         params.put("project", project);
                     }
                     params.put("label", session);
-                    params.put("subject_ID", sd.getSubject());
+                    final String subject = sd.getSubject();
+                    if (!Strings.isNullOrEmpty(subject)) {
+                        params.put("subject_ID", sd.getSubject());
+                    }
 
                     try {
                         final Boolean r = new XNATSessionBuilder(sessionDir, new File(sessionDir.getPath() + ".xml"), true, params).call();	        
@@ -572,7 +575,12 @@ public final class PrearcDatabase {
                 while(i.hasNext()){
                     SessionDataTriple _s = i.next();
                     try {
-                        PrearcDatabase._moveToProject(_s.getFolderName(),_s.getTimestamp(),_s.getProject(),newProj);
+                    	if (!_s.getProject().equals(newProj)) {
+                    		PrearcDatabase._moveToProject(_s.getFolderName(),_s.getTimestamp(),_s.getProject(),newProj);
+                    	}
+                    	else {
+                    		// cannot move a session back on itself.
+                    	}
                     } catch (SyncFailedException e) {
                         logger.error(e);
                     } catch (Exception e) {

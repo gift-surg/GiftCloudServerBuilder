@@ -24,6 +24,7 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -272,9 +273,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	/**
 	 * Retrieves the archive session directory for the given session.
 	 * @return archive session directory
+	 * @throws UnknownPrimaryProjectException 
 	 * @throws ArchivingException
 	 */
-	private File getArcSessionDir() throws ServerException{
+	private File getArcSessionDir() throws ServerException, UnknownPrimaryProjectException{
 		final File currentArcDir;
 		try {
 			final String path = src.getCurrentArchiveFolder();

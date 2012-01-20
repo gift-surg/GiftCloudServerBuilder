@@ -40,7 +40,8 @@ $page.setVlinkColor($ui.vlink)
 			<select name="download_type">
 				<option value="zip" selected>zip</option>
 				<option value="xar">xar (3D Slicer)</option>
-				<option value="tar">tar.gz</option>
+				<option value="tar">tar</option>
+				<option value="tar.gz">tar.gz</option>
 				<option value="xcat">Catalog XML (.xcat)</option>
 			</select>
 		</td>	

@@ -2,6 +2,7 @@
 package org.nrg.xnat.restlet;
 
 import org.nrg.xnat.helpers.editscript.DicomEdit;
+import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
@@ -36,7 +37,7 @@ public class XNATApplication extends Application {
     private static final Log _log = LogFactory.getLog(XNATApplication.class);
     public static final String PREARC_PROJECT_URI = "/prearchive/projects/{PROJECT_ID}";
     public static final String PREARC_SESSION_URI = PREARC_PROJECT_URI + "/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
-    
+
 	public XNATApplication(Context parentContext) {
         super(parentContext);
 
@@ -58,10 +59,10 @@ public class XNATApplication extends Application {
 		router.attach(uri.intern(),clazz);
 		router.attach(("/archive"+uri).intern(),clazz);
 	}
-	
+
 	private void addRoutes(final Router router){
         attachArchiveURI(router,"/investigators",InvestigatorListResource.class);
-        
+
         //BEGIN ---- Pipelines section
         attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines",ProjectPipelineListResource.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/pipelines/{STEP_ID}/experiments/{EXPT_ID}",ProjtExptPipelineResource.class);
@@ -108,7 +109,7 @@ public class XNATApplication extends Application {
 
         attachArchiveURI(router,"/subjects/{SUBJECT_ID}",SubjectResource.class);
         attachArchiveURI(router,"/subjects",SubjectListResource.class);
-        
+
         //resources
         attachArchiveURI(router,"/projects/{PROJECT_ID}/resources",CatalogResourceList.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/resources",CatalogResourceList.class);
@@ -195,8 +196,9 @@ public class XNATApplication extends Application {
         router.attach("/projects/{PROJECT_ID}/pars",org.nrg.xnat.restlet.resources.ProjectPARListResource.class);
 
         router.attach("/JSESSION",org.nrg.xnat.restlet.resources.UserSession.class);
-        
+
         router.attach("/prearchive",org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
+        router.attach("/prearchive/experiments", org.nrg.xnat.restlet.resources.prearchive.RecentPrearchiveSessions.class);
         router.attach(PREARC_PROJECT_URI,org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
         router.attach(PREARC_SESSION_URI, org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans", org.nrg.xnat.restlet.resources.prearchive.PrearcScansListResource.class);
@@ -228,20 +230,22 @@ public class XNATApplication extends Application {
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
         router.attach("/services/settings", SettingsRestlet.class);
+        router.attach("/services/dicomdump", DicomDump.class);
         router.attach("/services/settings/{PROPERTY}", SettingsRestlet.class);
         router.attach("/services/settings/{PROPERTY}/{VALUE}", SettingsRestlet.class);
-        
+
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
-        
+
         router.attach("/version",VersionRepresentation.class);
 	}
-        
+
     /**
      * This method walks the <b>org.nrg.xnat.restlet.extensions</b> package and attempts to find extensions for the
      * set of available REST services.
      * @param router The URL router for the restlet servlet.
      */
     private void addExtensionRoutes(Router router) {
+
         List<Class<?>> classes;
         try {
             classes = Reflection.getClassesForPackage("org.nrg.xnat.restlet.extensions");

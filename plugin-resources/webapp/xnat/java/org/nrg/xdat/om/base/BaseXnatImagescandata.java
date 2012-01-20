@@ -24,6 +24,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.om.base.auto.AutoXnatImagescandata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.search.CriteriaCollection;
@@ -31,6 +32,8 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.scanType.ScanTypeMapping;
+import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 
 /**
  * @author XDAT
@@ -214,7 +217,12 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
     public String deriveScanDir(){
         if (scan_dir==null)
         {
-            final String rootPath =this.getImageSessionData().getArchiveRootPath();
+            String rootPath;
+			try {
+				rootPath = this.getImageSessionData().getArchiveRootPath();
+			} catch (UnknownPrimaryProjectException e) {
+				rootPath=null;
+			}
             String last_dir = null;
                 for (XnatAbstractresourceI xnatFile:this.getFile())
                 {
@@ -227,7 +235,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
                             if (index!=-1){
                             	if(last_dir.toUpperCase().indexOf("/"+this.getId().toUpperCase()+"/",index)>-1){
                                     scan_dir = last_dir.substring(0,last_dir.toUpperCase().indexOf("/"+this.getId().toUpperCase()+"/",index)+this.getId().length()+1);
-	    } else {
+                            	} else {
                             		scan_dir = last_dir.substring(0,index+4);
                             	}
                                 return scan_dir;
@@ -418,7 +426,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 		return null;
 	}
 
-	public File getExpectedSessionDir() throws InvalidArchiveStructure{
+	public File getExpectedSessionDir() throws InvalidArchiveStructure, UnknownPrimaryProjectException{
 		return this.getImageSessionData().getExpectedSessionDir();
 	}
 
@@ -498,5 +506,9 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 		return XnatImagescandata.getXnatImagescandatasByField(cc, user,
 				preLoad);
+	}
+	
+	public ScanTypeMappingI getScanTypeMapping(String project, String dbName){
+		return new ScanTypeMapping(project, dbName);
 	}
 }

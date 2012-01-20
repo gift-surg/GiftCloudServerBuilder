@@ -215,7 +215,7 @@
         </u:available>
         <j:if test="${xdat.project.hgtags.exists}">
             <copy file="${basedir}/.hgtags" tofile="${basedir}/deployments/${xdat.project.name}/conf/tags" preservelastmodified="true"/>
-        </j:if>
+		</j:if>
         <!-- The plugin-resources copy needs to happen first so files can be superseded by files applied at the project level -->
         <ant:copy todir="${basedir}/deployments/${xdat.project.name}/conf" preservelastmodified="true" overwrite="true">
             <fileset dir="${xdat.plugins.resource.conf}">
@@ -716,7 +716,7 @@
     <!--Configures Log4j properties                                     -->
     <!-- ================================================================ -->
     <goal name="xdat:configureLog4j">
-                <!-- Deployment/Tools log4j.properties -->
+		<!-- Deployment/Tools log4j.properties -->
         <!-- PROJECTS DIR -->
         <maven:makeAbsolutePath var="xdat.project.logger.file" path="projects/${xdat.project.name}/log4j.properties" basedir="${basedir}"/>
         <!-- DEPLOYMENTS DIR -->
@@ -724,12 +724,9 @@
         <copy tofile="${xdat.deployment.logger.file}" file="${xdat.project.logger.file}"/>
         <ant:replace file="${xdat.deployment.logger.file}" token="@LOG_DIR@" value="${basedir}/deployments/${xdat.project.name}/logs"/>
         <ant:replace file="${xdat.deployment.logger.file}" token="\" value="/"/>
-
         <!-- Web Application log4j.properties -->
         <taskdef name="mergeProperty" classname="MergePropertiesTask" classpath="classes"/>
-        <ant:mergeProperty baseFile="${basedir}/plugin-resources/originals/log4j.properties" 
-                           overrideFile="${basedir}/projects/${xdat.project.name}/src/web-conf/log4j.merge.properties" 
-                           destFile="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties"/>
+		<ant:mergeProperty baseFile="${basedir}/plugin-resources/originals/log4j.properties" overrideFile="${basedir}/projects/${xdat.project.name}/src/web-conf/log4j.merge.properties" destFile="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties"/>
         <ant:replace file="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties" token="@TURBINE_APP_PACKAGE@" value="org.apache.turbine.app.${xdat.project.name}"/>
     </goal>
     <!-- ================================================================ -->
@@ -764,6 +761,7 @@
                 <include name="base/BasePipe*.java"/>
                 <include name="base/BaseArc*.java"/>
                 <include name="base/BaseVal*.java"/>
+				<include name="base/BaseScr*.java"/>
             </fileset>
         </delete>
         <copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
@@ -803,6 +801,7 @@
                 <include name="base/BasePipe*.java"/>
                 <include name="base/BaseArc*.java"/>
                 <include name="base/BaseVal*.java"/>
+				<include name="base/BaseScr*.java"/>
             </fileset>
         </delete>
         <copy todir="deployments/${xdat.project.name}/src/java/org/nrg/xdat/om" preservelastmodified="true" overwrite="true">
@@ -1553,8 +1552,8 @@
             <ant:exec executable="cmd" failonerror="true">
                 <ant:arg value="/c"/>
                             <ant:arg value="${pipeline.dir}\setup.bat"/>
-                <ant:arg value="${xdat.mail.admin}"/>
-                <ant:arg value="${xdat.mail.server}"/>
+							<ant:arg value="${xdat.admin_email}"/>
+							<ant:arg value="${xdat.smtp.server}"/>
                 <env key="JAVA_HOME" value="${JAVA_HOME}"/>
                 <env key="MAVEN_TERMINATE_CMD" value="on"/>
             </ant:exec>
@@ -1567,8 +1566,8 @@
             </ant:chmod>
                         <ant:echo>Launching ${pipeline.dir}/setup.sh script</ant:echo>
                         <ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
-                <ant:arg value="${xdat.mail.admin}"/>
-                <ant:arg value="${xdat.mail.server}"/>
+							<ant:arg value="${xdat.admin_email}"/>
+							<ant:arg value="${xdat.smtp.server}"/>
             </ant:exec>
         </j:if>
                 </j:if>

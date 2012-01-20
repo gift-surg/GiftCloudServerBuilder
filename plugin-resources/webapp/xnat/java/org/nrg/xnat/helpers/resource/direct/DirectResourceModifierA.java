@@ -10,6 +10,7 @@ import java.util.Calendar;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
@@ -51,7 +52,7 @@ public abstract class DirectResourceModifierA {
         return formatter.format(Calendar.getInstance().getTime());
 	}
 	
-	protected abstract String buildDestinationPath() throws InvalidArchiveStructure;
+	protected abstract String buildDestinationPath() throws InvalidArchiveStructure, UnknownPrimaryProjectException;
 	protected abstract boolean addResource(final XnatResource resource, final XDATUser user) throws Exception;
 //		
 //	public static boolean storeResourceFile(final FileWriterWrapper fi,final String relativePath, final XnatResource resource, final XDATUser user, final XnatResourceInfo info) throws IOException,Exception{

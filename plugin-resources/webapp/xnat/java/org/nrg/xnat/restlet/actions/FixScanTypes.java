@@ -33,7 +33,6 @@ public class FixScanTypes {
 	public Boolean call() throws Exception{
 		if(expt instanceof XnatImagesessiondata){
 			((XnatImagesessiondata)expt).fixScanTypes();
-			((XnatImagesessiondata)expt).defaultQuality("usable");
 		}
 
 		if(allowSave){

@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusList;
@@ -31,6 +30,7 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Product;
 import org.restlet.data.Request;
@@ -41,13 +41,16 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.restlet.util.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Importer extends SecureResource {
 	private static final String CRLF = "\r\n";
 	private static final String HTTP_SESSION_LISTENER = "http-session-listener";
 	private static final String JAVA = "Java";
 	public static final String APPLET_FLAG = "applet";
-    static org.apache.log4j.Logger logger = Logger.getLogger(Importer.class);
+	private final Logger logger = LoggerFactory.getLogger(Importer.class);
+
 	public Importer(Context context, Request request, Response response) {
 		super(context, request, response);
 
@@ -95,7 +98,16 @@ public class Importer extends SecureResource {
 	public void handlePost() {
 		//build fileWriters
 		try {
-			Representation entity = this.getRequest().getEntity();
+		    final Request request = getRequest();
+		    if (logger.isDebugEnabled()) {
+		        final ClientInfo client = request.getClientInfo();
+		        final StringBuilder sb = new StringBuilder("handling POST from ");
+		        sb.append(client.getAddress()).append(":").append(client.getPort());
+		        sb.append(" ").append(client.getAgent());
+		        logger.debug(sb.toString());
+		    }
+		    
+			Representation entity = request.getEntity();
 
 			fw=this.getFileWritersAndLoadParams(entity);
 
@@ -112,24 +124,6 @@ public class Importer extends SecureResource {
 				return;
 			}
 
-//			XnatImagesessiondata session=null;
-//
-//			if(session_id!=null){
-//				session=XnatImagesessiondata.getXnatImagesessiondatasById(session_id, user, false);
-//			}
-//
-//			if(session==null){
-//				if(project_id!=null){
-//					session=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project_id, session_id, user, false);
-//				}
-//			}
-//
-//			if(session==null){
-//				if(project_id==null || subject_id==null || session_id==null){
-//					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "New sessions require a project, subject and session id.");
-//					return;
-//				}
-//			}
 			
 			if(handler==null && entity!=null){
 				if(APPLICATION_DICOM.equals(entity.getMediaType()) || 

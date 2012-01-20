@@ -18,27 +18,3 @@
 		<td>$!item.getProperty("acquisition_site")</td>
 	</tr>
 #end
-
-#if($!om.getManualQC())
-	#set ( $qc = $om.getManualQC())
-	#set ( $qcID = $!qc.getProperty("ID"))
-	#set ( $qcField = "${qc.getXSIType()}.ID")
-	<tr>
-		<th align="left">Manual QC:</th>
-		<td>
-			#set ( $qcUrl = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!qc.getXSIType()).addPathInfo('search_field',$qcField).addPathInfo('search_value',$qcID).addPathInfo('popup',$popup).addPathInfo('project',$project)" )  
-			<a href="$qcUrl">
-				#if ($!qc.getStringProperty("pass").equals("1"))
-					Passed
-				#elseif($!qc.getStringProperty("pass").equals("0"))
-					Failed
-				#else
-					Unknown 
-					#if ($!qc.getStringProperty("pass"))
-						($!qc.getStringProperty("pass"))
-					#end
-				#end
-			</a>
-		</td>
-							</tr>
-							#end

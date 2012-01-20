@@ -3,8 +3,8 @@ package org.nrg.xnat.restlet.servlet;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Properties;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,17 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.DicomSCP;
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.security.XDATUser;
+import org.nrg.framework.services.ContextService;
+import org.nrg.xdat.XDAT;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
 public class XNATRestletServlet extends ServerServlet {
@@ -81,7 +79,15 @@ public class XNATRestletServlet extends ServerServlet {
             logger().error("Unable to initialize prearchive database", e);
         }
 
-        dicomSCP = startDicomSCP();
+        final ContextService context = XDAT.getContextService();
+        dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
+        if (null != dicomSCP) {
+            try {
+                dicomSCP.start();
+            } catch (Throwable t) {
+                throw new ServletException("unable to start DICOM SCP", t);
+            }
+        }
     }
 
     @Override
@@ -95,51 +101,9 @@ public class XNATRestletServlet extends ServerServlet {
 
     private static Logger logger() { return LoggerFactory.getLogger(XNATRestletServlet.class); }
 
-    /**
-     * Create and start a DICOM SCP
-     */
-    public static DicomSCP startDicomSCP() {
-        try {
-            final ArcArchivespecification arcspec = ArcSpecManager.GetInstance();
-
-            final Properties properties = DicomSCP.getProperties();
-            final XDATUser user;
-            try {
-                user = DicomSCP.getUser(properties); 
-            } catch (Throwable t) {
-                logger().error("Not starting DICOM C-STORE SCP: unable to get user", t);
-                return null;
-            }
-            final int port;
-            try {
-                port = DicomSCP.getPort(properties, arcspec.getDcm_dcmPort());
-            } catch (Throwable t) {
-                logger().error("Not starting DICOM C-STORE SCP: unable to get port", t);
-                return null;
-            }
-
-            final String aetitle = arcspec.getDcm_dcmAe();
-            if (Strings.isNullOrEmpty(aetitle)) {
-                logger().info("Not starting DICOM C-STORE SCP: no DICOM AE title defined");
-                return null;
-            } else {
-                final DicomSCP scp = DicomSCP.makeSCP(user, aetitle, port);
-                scp.start();
-                return scp;
-            }
-        } catch (IOException e) {
-            logger().error("error starting DICOM SCP", e);
-            return null;
-        } catch (Throwable t) {
-            logger().error("unexpected error starting DICOM SCP", t);
-            return null;
-        }
-    }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.service(request, response);
     }
-
-
 }

@@ -11,6 +11,7 @@
             <map>
                 <entry key="job.bean.name" value="sessionXmlRebuilderJob" />
                 <entry key="interval" value="5" />
+                <entry key="user" value-ref="receivedFileUserProvider" />
             </map>
         </property>
     </bean>

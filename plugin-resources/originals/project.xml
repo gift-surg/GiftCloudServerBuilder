@@ -1106,7 +1106,7 @@
 		<dependency>
 			<groupId>guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r08</version>
+			<version>10.0.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1319,6 +1319,15 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+		  <groupId>javax</groupId>
+		  <artifactId>javax.inject</artifactId>
+		  <version>1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-mail</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
@@ -1327,6 +1336,7 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
+
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-notify</artifactId>

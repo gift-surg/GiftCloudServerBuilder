@@ -39,13 +39,23 @@ public class ArcSpecManager {
         return site_id;
     }
 
+	public synchronized static ArcArchivespecification GetFreshInstance() {
+		ArcArchivespecification arcSpec = null;
+        logger.warn("Getting Fresh ArcSpec...");
+		ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
+	    if (allSpecs.size()>0) {
+	        arcSpec = allSpecs.get(0);
+	    }
+	    return arcSpec;
+	}
+    
     public synchronized static  ArcArchivespecification GetInstance(){
     	return GetInstance(true);
     }
     
     public synchronized static  ArcArchivespecification GetInstance(boolean dbInit){
         if (arcSpec==null){
-            System.out.print("Initializing ArcSpec...");
+            logger.info("Initializing ArcSpec...");
             ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
             if (allSpecs.size()>0) {
                 arcSpec = allSpecs.get(0);

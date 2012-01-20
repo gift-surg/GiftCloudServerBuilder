@@ -87,7 +87,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 	public Representation getRepresentation(Variant variant) {
 		if(proj!=null && step!=null){
 			ArcPipelinedata arcPipeline = null;
-			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
+			ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 			//arcProject.setItem(arcProject.getCurrentDBVersion());
 			Form f = getRequest().getResourceRef().getQueryAsForm();
 			try {
@@ -157,7 +157,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 					}
 				}else{
-					ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
+					ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 					//arcProject.setItem(arcProject.getCurrentDBVersion());
 					Form f = getRequest().getResourceRef().getQueryAsForm();
 					String match = null;

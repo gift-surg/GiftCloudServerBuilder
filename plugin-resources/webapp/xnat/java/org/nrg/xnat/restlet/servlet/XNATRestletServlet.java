@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nrg.xdat.security.XDATUser;
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.DicomSCP;
@@ -29,9 +30,9 @@ public class XNATRestletServlet extends ServerServlet {
 
     private DicomSCP dicomSCP = null;
     public static ServletConfig REST_CONFIG=null;
-    
+
     /**
-     * Get the username of the site administrator. If there are multiple 
+     * Get the username of the site administrator. If there are multiple
      * site admins, just get the first one. If none are found, return null.
      * @return
      */
@@ -53,7 +54,7 @@ public class XNATRestletServlet extends ServerServlet {
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
         try {
         	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
-        	Configuration init_config = AnonUtils.getInstance().getScript(path, null); 
+        	Configuration init_config = AnonUtils.getInstance().getScript(path, null);
         	if (init_config == null) {
         		logger().info("Creating Script Table.");
         		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());

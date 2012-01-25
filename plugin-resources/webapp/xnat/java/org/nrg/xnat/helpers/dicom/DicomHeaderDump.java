@@ -1,13 +1,5 @@
 package org.nrg.xnat.helpers.dicom;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.DicomObjectToStringParam;
@@ -16,6 +8,14 @@ import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.StopTagInputHandler;
 import org.dcm4che2.util.TagUtils;
 import org.nrg.xft.XFTTable;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 /**
  * Class that marshals the header of a DICOM file into an XFTTable. 
  * Currently only two levels of nesting are supported, meaning that top level
@@ -101,13 +101,12 @@ public final class DicomHeaderDump {
 	 * @throws FileNotFoundException
 	 */
 	public XFTTable render () throws IOException, FileNotFoundException {
-		DicomObject header = this.getHeader(new File(this.file));
-		DicomObjectToStringParam formatParams = DicomObjectToStringParam.getDefaultParam();
 		XFTTable t = new XFTTable();
 		t.initTable(columns);
 		if (this.file == null) {
 			return t;
 		}
+
 		DicomObject header = this.getHeader(new File(this.file));
 		DicomObjectToStringParam formatParams = DicomObjectToStringParam.getDefaultParam();
 

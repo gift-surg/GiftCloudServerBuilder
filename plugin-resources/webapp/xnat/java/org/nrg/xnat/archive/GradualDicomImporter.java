@@ -3,34 +3,14 @@
  */
 package org.nrg.xnat.archive;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Callable;
-
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
-
-import org.dcm4che2.data.BasicDicomObject;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.data.Tag;
-import org.dcm4che2.data.TransferSyntax;
-import org.dcm4che2.data.VR;
+import org.dcm4che2.data.*;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
 import org.dcm4che2.io.StopTagInputHandler;
@@ -42,10 +22,8 @@ import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
-import org.nrg.dcm.xnat.ScriptTable;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.XFT;
 import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
@@ -54,7 +32,6 @@ import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -67,9 +44,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.io.ByteStreams;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author Tim Olsen <olsent@mir.wustl.edu>
@@ -400,13 +382,11 @@ public class GradualDicomImporter extends ImporterHandlerA {
             				throw new Exception ("Unable to retrieve the site-wide script.");
             			}
             			else {
-            				Anonymize.anonymize(f, 
-            									sess.getProject(), 
-            									sess.getSubject(), 
-            									sess.getFolderName(), 
-            									true, 
-            									c.getId(), 
-            									c.getContents());
+            				Anonymize.anonymize(f,sess.getProject(), sess.getSubject(),
+                                    sess.getFolderName(),
+                                    true,
+                                    c.getId(),
+                                    c.getContents());
             			}
             		} else {
             			// site-wide anonymization is disabled.
@@ -446,8 +426,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl(), source});
         return Collections.singletonList(sess.getExternalUrl());
     }
-    
-	public void setCacheManager(final CacheManager cacheManager) {
+
+    // TODO: This is only a place holder because the method did not exist and was blocking xnat_builder compilation.
+    private Boolean shouldAutoArchive(final DicomObject o) {
+        return true;
+    }
+
+    public void setCacheManager(final CacheManager cacheManager) {
         final String cacheName = user.getLogin() + "-projects";
         synchronized (cacheManager) {
             if (!cacheManager.cacheExists(cacheName)) {

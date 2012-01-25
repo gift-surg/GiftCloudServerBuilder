@@ -15,6 +15,11 @@ import org.apache.log4j.Logger;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.security.UserI;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.xml.sax.SAXException;
 
@@ -34,13 +39,23 @@ public class ArcSpecManager {
         return site_id;
     }
 
+	public synchronized static ArcArchivespecification GetFreshInstance() {
+		ArcArchivespecification arcSpec = null;
+        logger.warn("Getting Fresh ArcSpec...");
+		ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
+	    if (allSpecs.size()>0) {
+	        arcSpec = allSpecs.get(0);
+	    }
+	    return arcSpec;
+	}
+    
     public synchronized static  ArcArchivespecification GetInstance(){
     	return GetInstance(true);
     }
     
     public synchronized static  ArcArchivespecification GetInstance(boolean dbInit){
         if (arcSpec==null){
-            System.out.print("Initializing ArcSpec...");
+            logger.info("Initializing ArcSpec...");
             ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
             if (allSpecs.size()>0) {
                 arcSpec = allSpecs.get(0);
@@ -213,6 +228,50 @@ public class ArcSpecManager {
 
     public synchronized static  void Reset(){
         arcSpec=null;
+    }
+
+    public synchronized static ArcArchivespecification initialize(UserI user) throws XFTInitException, ElementNotFoundException, FieldNotFoundException, InvalidValueException {
+        arcSpec = new ArcArchivespecification(user);
+        if (XFT.GetAdminEmail()!=null && !XFT.GetAdminEmail().equals("")) {
+            arcSpec.setSiteAdminEmail(XFT.GetAdminEmail());
+        }
+
+        if (XFT.GetSiteURL()!=null && !XFT.GetSiteURL().equals("")) {
+            arcSpec.setSiteUrl(XFT.GetSiteURL());
+        }
+
+        if (XFT.GetAdminEmailHost()!=null && !XFT.GetAdminEmailHost().equals("")) {
+            arcSpec.setSmtpHost(XFT.GetAdminEmailHost());
+        }
+
+        arcSpec.setEnableNewRegistrations(XFT.GetUserRegistration());
+
+        arcSpec.setRequireLogin(XFT.GetRequireLogin());
+        if (XFT.GetPipelinePath()!=null && !XFT.GetPipelinePath().equals("")) {
+            arcSpec.setProperty("globalPaths/pipelinePath", XFT.GetPipelinePath());
+        }
+
+        if (XFT.GetArchiveRootPath()!=null && !XFT.GetArchiveRootPath().equals("")) {
+            arcSpec.setProperty("globalPaths/archivePath", XFT.GetArchiveRootPath());
+        }
+
+        if (XFT.GetPrearchivePath()!=null && !XFT.GetPrearchivePath().equals("")) {
+            arcSpec.setProperty("globalPaths/prearchivePath", XFT.GetPrearchivePath());
+        }
+
+        if (XFT.GetCachePath()!=null && !XFT.GetCachePath().equals("")) {
+            arcSpec.setProperty("globalPaths/cachePath", XFT.GetCachePath());
+        }
+
+        if (XFT.getFtpPath()!=null && !XFT.getFtpPath().equals("")) {
+            arcSpec.setProperty("globalPaths/ftpPath", XFT.getFtpPath());
+        }
+
+        if (XFT.getBuildPath()!=null && !XFT.getBuildPath().equals("")) {
+            arcSpec.setProperty("globalPaths/buildPath", XFT.getBuildPath());
+        }
+
+        return arcSpec;
     }
 
     public static boolean allowTransferEmail(){

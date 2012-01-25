@@ -66,7 +66,7 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements ArchivableItem {
+public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements ArchivableItem, MoveableI {
 
 	public BaseXnatExperimentdata(ItemI item)
 	{
@@ -430,73 +430,39 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	return generator.generateIdentifier();
     }
     
+    /**
+     * newlabel can be null defaults to this.getLabel(), if that is null this.getId()
+     * @param newProject
+     * @param newLabel
+     * @param user
+     * @throws Exception
+     */
     public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
-    		if(!user.canEdit(this)){
+    		
+    		if (!MoverMaker.check(this, user)) {
     			throw new InvalidPermissionException(this.getXSIType());
     		}
-    		
     		String existingRootPath=this.getProjectData().getRootArchivePath();
     		
     		if(newLabel==null)newLabel = this.getLabel();
     		if(newLabel==null)newLabel = this.getId();
     		
+    		// newSessionDir = /ARCHIVE/proj_x/arc001
     		final File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
     		
+    		// Label defaults to this.getId()
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
     		
+    		
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    			String uri= null;
-    			if(abstRes instanceof XnatResource){
-    				uri=((XnatResource)abstRes).getUri();
-    			}else{
-    				uri=((XnatResourceseries)abstRes).getPath();
-    			}
-    			
-    			if(FileUtils.IsAbsolutePath(uri)){
-    				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-    				if(lastIndex>-1)
-    				{
-    					lastIndex+=1+current_label.length();
-    				}
-    				if(lastIndex==-1){
-    					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+this.getId().length();
-        				}
-    				}
-    				String existingSessionDir=null;
-    				if(lastIndex>-1){
-        				//in session_dir
-        				existingSessionDir=uri.substring(0,lastIndex);
-        			}else{
-        				//outside session_dir
-//        				newSessionDir = new File(newSessionDir,"RESOURCES");
-//        				newSessionDir = new File(newSessionDir,"RESOURCES/"+abstRes.getXnatAbstractresourceId());
-//        				int lastSlash=uri.lastIndexOf("/");
-//        				if(uri.lastIndexOf("\\")>lastSlash){
-//        					lastSlash=uri.lastIndexOf("\\");
-//        				}
-//        				existingSessionDir=uri.substring(0,lastSlash);
-        				//don't attempt to move sessions which are outside of the Session Directory.
-        				throw new Exception("Non-standard file location for file(s):" + uri);
-        			}
-        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-    			}else{
-    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
-    			}
+    			MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user);
     		}
     		
-    		XFTItem current=this.getCurrentDBVersion(false);
-    		current.setProperty("project", newProject.getId());
-    		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false); 
-    		
-    		this.setProject(newProject.getId());
-    		this.setLabel(newLabel);
+    		MoverMaker.writeDB(this, newProject, newLabel, user);
+    		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
     
@@ -514,6 +480,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     }
     
     public boolean hasProject(String proj_id){
+    if (this.getProject() == null) {
+    	return false;
+    }
 	if(this.getProject().equals(proj_id)){
 	    return true;
 	}else{
@@ -568,7 +537,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		return msg;
     	}
     	
-    	if(!expt.getProject().equals(proj.getId())){
+    	if(expt.getProject() != null && !expt.getProject().equals(proj.getId())){
 			try {
 				SecurityValues values = new SecurityValues();
 				values.put(this.getXSIType() + "/project", proj.getId());

@@ -142,6 +142,9 @@
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/jackson/jars/jackson-mapper-asl-1.8.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/guava/jars/guava-10.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.4-SNAPSHOT.jar!/" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/plugin-resources/webapp/xnat/java" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/projects/xnat/src/java" expected_position="1" />
@@ -168,8 +171,13 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="xdat" />
+    <orderEntry type="module" module-name="nrg_anonymize" />
+    <orderEntry type="module" module-name="nrg_transaction" />
     <orderEntry type="module" module-name="nrg_config" />
+    <orderEntry type="module" module-name="nrg_notify" />
+    <orderEntry type="module" module-name="nrg_mail" />
     <orderEntry type="module" module-name="nrg_framework" />
+    <orderEntry type="module" module-name="nrgutil" />
     <orderEntry type="module-library">
       <library name="ant-1.5.3-1.jar">
         <CLASSES>
@@ -639,15 +647,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="jdbc-2.0.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/jdbc/jars/jdbc-2.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="jdom-1.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/jdom/jars/jdom-1.jar!/" />
@@ -783,9 +782,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="postgresql-7.4.214.jdbc2.jar">
+      <library name="postgresql-9.0-801.jdbc4.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/postgresql/jars/postgresql-7.4.214.jdbc2.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -990,15 +989,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="commons-net-1.1.0.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/webapp/xnat/applet/commons-net-1.1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="com.noelios.restlet.ext.servlet_2.5-1.1.6.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/restlet/jars/com.noelios.restlet.ext.servlet_2.5-1.1.6.jar!/" />
@@ -1136,15 +1126,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="guava-r08.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/guava/jars/guava-r08.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="dcm4che-core-2.0.25.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar!/" />
@@ -1262,9 +1243,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="dicom-xnat-util-1.5.1.jar">
+      <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.4-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1409,6 +1390,15 @@
       <library name="org.springframework.web-3.0.5.RELEASE.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/org.springframework.web-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/guava/jars/guava-10.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

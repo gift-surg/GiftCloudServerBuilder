@@ -160,13 +160,13 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
     public boolean preventAnon() throws Exception {
         final Boolean preventAnon = session.getSessionData().getPreventAnon();
         return preventAnon != null && preventAnon;
-	}
-	
+		}
+		
     public boolean preventAutoCommit() throws Exception {
         final Boolean preventAutoCommit = session.getSessionData().getPreventAutoCommit();
         return preventAutoCommit != null && preventAutoCommit;
-    }
-
+	}
+	
     public String getSource() throws Exception {
         return session.getSessionData().getSource();
 	}

@@ -98,7 +98,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 		protected void setHasFreesurfer(XnatMrsessiondata mr,  Context context) {
 			String project = mr.getProject();
 			int hasFreesurfer = 0;
-			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
+			ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(project);
 			List<ArcProjectDescendantPipelineI> descPipelines = arcProject.getPipelinesForDescendant(mr.SCHEMA_ELEMENT_NAME);
 			for (int i = 0; i < descPipelines.size(); i++) {
 				ArcProjectDescendantPipeline aPipeline = (ArcProjectDescendantPipeline)descPipelines.get(i);
@@ -245,7 +245,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
     }
 
     protected void setParameters(String pipeline) throws PipelineNotFoundException {
-        ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
+        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(project);
         ArcPipelinedataI pipelineData = null;
         if (arcProject == null) { //Project pipeline hasnt been set
         	PipePipelinedetails pipelineDetails = PipelineRepositoryManager.GetInstance().getPipeline(pipeline);

@@ -80,7 +80,7 @@ import org.nrg.xnat.turbine.utils.XNATUtils;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements ArchivableItem{
+public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements ArchivableItem, MoveableI{
     protected ArrayList<ItemI> minLoadAssessors = null;
 
 	public BaseXnatSubjectdata(ItemI item)
@@ -1211,7 +1211,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
-    		if(!user.canEdit(this)){
+    		if (!MoverMaker.check(this, user)) {
     			throw new InvalidPermissionException(this.getXSIType());
     		}
     		
@@ -1223,56 +1223,16 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
     		
     		String current_label=this.getLabel();
+    		
     		if(current_label==null)current_label=this.getId();
-    		
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    			String uri= null;
-    			if(abstRes instanceof XnatResource){
-    				uri=((XnatResource)abstRes).getUri();
-    			}else{
-    				uri=((XnatResourceseries)abstRes).getPath();
-    			}
-    			
-    			if(FileUtils.IsAbsolutePath(uri)){
-    				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-    				if(lastIndex>-1)
-    				{
-    					lastIndex+=1+current_label.length();
-    				}
-    				if(lastIndex==-1){
-    					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+this.getId().length();
-        				}
-    				}
-    				String existingSessionDir=null;
-    				if(lastIndex>-1){
-        				//in session_dir
-        				existingSessionDir=uri.substring(0,lastIndex);
-        			}else{
-        				//outside session_dir
-        				newSessionDir = new File(newSessionDir,"RESOURCES");
-        				newSessionDir = new File(newSessionDir,"RESOURCES/"+abstRes.getXnatAbstractresourceId());
-        				int lastSlash=uri.lastIndexOf("/");
-        				if(uri.lastIndexOf("\\")>lastSlash){
-        					lastSlash=uri.lastIndexOf("\\");
-        				}
-        				existingSessionDir=uri.substring(0,lastSlash);
-        			}
-        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-    			}else{
-    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
-    			}
+    			MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user);
+    			m.setResource((XnatAbstractresource) abstRes);
+    			m.call();
     		}
-    		
-    		XFTItem current=this.getCurrentDBVersion(false);
-    		current.setProperty("project", newProject.getId());
-    		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false); 
-    		
-    		this.setProject(newProject.getId());
-    		this.setLabel(newLabel);
+    		    		
+    		MoverMaker.writeDB(this, newProject, newLabel, user);
+    		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
     
@@ -1488,7 +1448,13 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				continue;
 			}
 			
-			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project: " + uri);
+			File u = new File(uri);
+			if (u.isFile()) {
+				FileUtils.ValidateUriAgainstRoot(u.getParent(),expectedPath,"URI references data outside of the project: " + uri);
+			}
+			else {
+				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project: " + uri);
+			}
 		}
 		
 		for(final XnatSubjectassessordataI expt:this.getExperiments_experiment()){

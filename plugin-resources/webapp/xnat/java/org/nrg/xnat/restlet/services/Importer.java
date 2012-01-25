@@ -41,6 +41,8 @@ import java.util.Map;
 public class Importer extends SecureResource {
 	private static final String CRLF = "\r\n";
 	private static final String HTTP_SESSION_LISTENER = "http-session-listener";
+	private static final String JAVA = "Java";
+	public static final String APPLET_FLAG = "applet";
 	private final Logger logger = LoggerFactory.getLogger(Importer.class);
 
 	public Importer(Context context, Request request, Response response) {
@@ -126,6 +128,9 @@ public class Importer extends SecureResource {
 			}
 
 			ImporterHandlerA importer;
+			
+			this.addAppletFlagToParams();
+			
 			try {
 				importer = ImporterHandlerA.buildImporter(handler, listenerControl, user, fw.get(0), params);
 			} catch (SecurityException e) {
@@ -182,15 +187,63 @@ public class Importer extends SecureResource {
 		}
 	}
 
-		@Override
-        protected void respondToException(Exception e, Status status) {
-			logger.error("",e);
-			if (this.requested_format!=null && this.requested_format.equalsIgnoreCase("HTML")){
-				response = new ArrayList<String>();
-				response.add(e.getMessage());
-				returnDefaultRepresentation();
-			}else{
-				this.getResponse().setStatus(status, e.getMessage());
+    protected void respondToException(Exception e, Status status) {
+		logger.error("",e);
+		if (this.requested_format!=null && this.requested_format.equalsIgnoreCase("HTML")) {
+			response = new ArrayList<String>();
+			response.add(e.getMessage());
+			returnDefaultRepresentation();
+		} else {
+			this.getResponse().setStatus(status, e.getMessage());
+		}
+	}
+
+	/**
+	 * Add an attribute that tells users of the global parameter 
+	 * if the file is being uploaded via the Upload Applet.
+	 * 
+	 * Determining whether a session was uploaded via the applet is 
+	 * done by inspecting the individual products of User Agent string.
+	 * 
+	 * Upload applet sessions seem to come in with a the first product is
+	 * is the browser string (Mozilla etc.) and the second, the operation
+	 * system identifier is "Java". So if the second product is "Java", 
+	 * the session came in from the Upload Applet. 
+	 * 
+	 * Another case when the name of a product is "Java" is when a Java
+	 * program makes calls to the REST API, for example, the functional
+	 * tests in the xnat_test package. In this case however, the first
+	 * product, the browser identifier is "Java" and not the second.  
+	 * 
+	 * TL;DR If the second product is "Java", the session came in via the 
+	 * upload applet
+	 * 
+	 */
+	private void addAppletFlagToParams() {
+		List<Product> ps = this.getRequest().getClientInfo().getAgentProducts();
+		String appletFound = "false";
+		if (ps.size() > 2) {
+			if (ps.get(1).getName().equals(Importer.JAVA)) {
+				appletFound = "true";	
+			}
+		}
+			
+		if (!params.containsKey(Importer.APPLET_FLAG)) {
+			this.params.put(Importer.APPLET_FLAG, appletFound);
+		}
+		else {
+			// the "applet" query string parameter has already been passed,
+			// don't override it. 
+		}
+ 	}
+	
+	public static Boolean getUploadFlag(Map<String, Object> params) {
+		if (params.containsKey(Importer.APPLET_FLAG)) {
+			String flag = (String) params.get(Importer.APPLET_FLAG);
+			return flag.equals("true");
+		}
+		else {
+			return new Boolean(false);
 			}
 		}
 

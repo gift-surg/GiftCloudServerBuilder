@@ -14,11 +14,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
+import org.nrg.dcm.CopyOp;
+import org.nrg.transaction.*;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -57,6 +61,7 @@ import org.nrg.xdat.om.base.auto.AutoXnatQcassessmentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
@@ -75,6 +80,7 @@ import org.nrg.xft.utils.FileTracker;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 import org.nrg.xnat.scanAssessors.AssessorComparator;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
@@ -2980,6 +2986,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 			    	file.setProperty("content", "RAW");
 			} catch (Throwable e) {
 			    logger.error("",e);
+			
 			}
 	    }
 	}
@@ -2991,156 +2998,62 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     	return customfields;
     }
     
-    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user) throws Exception{
+    public void moveToProject(final XnatProjectdata newProject, final String label , final XDATUser user) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
-    		if(!user.canEdit(this)){
+    		if (!MoverMaker.check(this, user)) {
     			throw new InvalidPermissionException(this.getXSIType());
     		}
     		
-    		String existingRootPath=this.getProjectData().getRootArchivePath();
-    		
-    		if(newLabel==null)newLabel = this.getLabel();
-    		if(newLabel==null)newLabel = this.getId();
-    		
+    		final File rootBackup=MoverMaker.createPrimaryBackupDirectory("move",this.getProject(),getId());
+    		final String existingRootPath=this.getProjectData().getRootArchivePath();
+    		//FIXME: Is this correct?
+    		final String newLabel = label == null? (this.getLabel() == null ? this.getId() : this.getLabel()) : label;
     		final File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
+    		final String current_label=this.getLabel() == null ? this.getId() : this.getLabel();
+    		final BaseXnatImagesessiondata base = this;
     		
-    		String current_label=this.getLabel();
-    		if(current_label==null)current_label=this.getId();
+    		Map<String,File> fs = new HashMap<String,File>();
+    		fs.put("src", this.getSessionDir());
+    		CopyOp scanOp = new CopyOp(new OperationI<Map<String,File>>(){
+				public void run(Map<String,File> fs) throws Exception {
+					new ProjectAnonymizer(base,newProject.getId(), base.getArchivePath(existingRootPath)).call();
+					for(XnatImagescandataI scan: getScans_scan()){
+		    			for(XnatAbstractresourceI abstRes: scan.getFile()){
+		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user);
+		    				m.setResource((XnatAbstractresource)abstRes);
+		    				m.call();
+		    			}
+		    		}
+		    		
+		    		for(XnatReconstructedimagedataI recon:base.getReconstructions_reconstructedimage()){
+		    			for(XnatAbstractresourceI abstRes: recon.getOut_file()){
+		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user);
+		    				m.setResource((XnatAbstractresource)abstRes);
+		    				m.call();
+		    			}
+		    		}
+		    		
+		    		for(XnatImageassessordataI assessor:base.getAssessors_assessor()){
+		    			for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
+		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user);
+		    				m.setResource((XnatAbstractresource)abstRes);
+		    				m.call();
+		    			}
+		    		}
+		    		BaseXnatImagesessiondata.super.moveToProject(newProject, newLabel, user);
+				}
+			}, new File(rootBackup, "src_backup"), fs);
     		
-    		for(XnatImagescandataI scan:this.getScans_scan()){
-    			for(XnatAbstractresourceI abstRes: scan.getFile()){
-        			String uri= null;
-        			if(abstRes instanceof XnatResource){
-        				uri=((XnatResource)abstRes).getUri();
-        			}else{
-        				uri=((XnatResourceseries)abstRes).getPath();
-        			}
-        			
-        			if(FileUtils.IsAbsolutePath(uri)){
-        				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+current_label.length();
-        				}
-        				if(lastIndex==-1){
-        					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-            				if(lastIndex>-1)
-            				{
-            					lastIndex+=1+this.getId().length();
-            				}
-        				}
-        				String existingSessionDir=null;
-        				if(lastIndex>-1){
-            				//in session_dir
-            				existingSessionDir=uri.substring(0,lastIndex);
-            			}else{
-            				//outside session_dir
-//            				newSessionDir = new File(new File(newSessionDir,"SCANS"),scan.getId());
-//            				int lastSlash=uri.lastIndexOf("/");
-//            				if(uri.lastIndexOf("\\")>lastSlash){
-//            					lastSlash=uri.lastIndexOf("\\");
-//            				}
-//            				existingSessionDir=uri.substring(0,lastSlash);
-            				//don't attempt to move sessions which are outside of the Session Directory.
-            				throw new Exception("Non-standard file location for file(s):" + uri);
-            			}
-            			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-        			}else{
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
-        			}
-    			}
+    		try {
+    			Run.runTransaction(scanOp);
     		}
-    		
-    		for(XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
-    			for(XnatAbstractresourceI abstRes: recon.getOut_file()){
-        			String uri= null;
-        			if(abstRes instanceof XnatResource){
-        				uri=((XnatResource)abstRes).getUri();
-        			}else{
-        				uri=((XnatResourceseries)abstRes).getPath();
-        			}
-        			
-        			if(FileUtils.IsAbsolutePath(uri)){
-        				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+current_label.length();
-        				}
-        				if(lastIndex==-1){
-        					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-            				if(lastIndex>-1)
-            				{
-            					lastIndex+=1+this.getId().length();
-            				}
-        				}
-        				String existingSessionDir=null;
-        				if(lastIndex>-1){
-            				//in session_dir
-            				existingSessionDir=uri.substring(0,lastIndex);
-            			}else{
-            				//outside session_dir
-//            				newSessionDir = new File(new File(newSessionDir,"PROCESSED"),recon.getId());
-//            				int lastSlash=uri.lastIndexOf("/");
-//            				if(uri.lastIndexOf("\\")>lastSlash){
-//            					lastSlash=uri.lastIndexOf("\\");
-//            				}
-//            				existingSessionDir=uri.substring(0,lastSlash);
-            				//don't attempt to move sessions which are outside of the Session Directory.
-            				throw new Exception("Non-standard file location for file(s):" + uri);
-            			}
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-        			}else{
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
-        			}
-    			}
+    		catch (TransactionException e) {
+    			throw new Exception(e);
     		}
-    		
-    		for(XnatImageassessordataI assessor:this.getAssessors_assessor()){
-    			for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
-        			String uri= null;
-        			if(abstRes instanceof XnatResource){
-        				uri=((XnatResource)abstRes).getUri();
-        			}else{
-        				uri=((XnatResourceseries)abstRes).getPath();
-        			}
-        			
-        			if(FileUtils.IsAbsolutePath(uri)){
-        				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+current_label.length();
-        				}
-        				if(lastIndex==-1){
-        					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-            				if(lastIndex>-1)
-            				{
-            					lastIndex+=1+this.getId().length();
-            				}
-        				}
-        				String existingSessionDir=null;
-        				if(lastIndex>-1){
-            				//in session_dir
-            				existingSessionDir=uri.substring(0,lastIndex);
-            			}else{
-            				//outside session_dir
-//            				newSessionDir = new File(new File(newSessionDir,"ASSESSORS"),assessor.getId());
-//            				int lastSlash=uri.lastIndexOf("/");
-//            				if(uri.lastIndexOf("\\")>lastSlash){
-//            					lastSlash=uri.lastIndexOf("\\");
-//            				}
-//            				existingSessionDir=uri.substring(0,lastSlash);
-            				//don't attempt to move sessions which are outside of the Session Directory.
-            				throw new Exception("Non-standard file location for file(s):" + uri);
-            			}
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user);
-        			}else{
-        				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user);
-        			}
-    			}
+    		catch (RollbackException e) {
+    			throw new Exception(e);
     		}
-    		
-    		super.moveToProject(newProject, newLabel, user);
     	}
     }
     

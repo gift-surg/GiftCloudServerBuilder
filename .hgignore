@@ -11,7 +11,9 @@ plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar
 plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar
 plugin-resources/misc/template2.*
 Thumbs.db
+out
 
+work
 syntax: regexp
 ^classes/org
 ^deployments
@@ -33,3 +35,5 @@ glob:work/templates/*
 glob:plugin-resources/repository/commons-lang/jars/commons-lang-2.0.jar*
 glob:target*
 build.properties.sample
+^.*\.log
+.*\.orig

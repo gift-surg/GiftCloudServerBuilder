@@ -2,36 +2,77 @@
 package org.nrg.xnat.restlet.servlet;
 
 import java.io.IOException;
-import java.util.Properties;
+import java.util.Iterator;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-import org.nrg.dcm.DicomSCP;
-import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
+import org.apache.commons.io.FileUtils;
+import org.nrg.config.entities.Configuration;
+import org.nrg.dcm.DicomSCP;
+import org.nrg.framework.services.ContextService;
+import org.nrg.xdat.XDAT;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
+import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
 public class XNATRestletServlet extends ServerServlet {
     private static final long serialVersionUID = 1592366035839385170L;
 
     private DicomSCP dicomSCP = null;
-
     public static ServletConfig REST_CONFIG=null;
+
+    /**
+     * Get the username of the site administrator. If there are multiple
+     * site admins, just get the first one. If none are found, return null.
+     * @return
+     */
+    private String getAdminUser() throws Exception {
+    	String admin = null;
+    	Iterator<String> logins = XDATUser.getAllLogins().iterator();
+    	while(logins.hasNext()) {
+    		String l = logins.next();
+    		XDATUser u = new XDATUser(l);
+    		if (u.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
+    			admin = l;
+    		}
+    	}
+    	return admin;
+    }
     @Override
     public void init() throws ServletException {
         super.init();
-
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
+        try {
+        	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
+        	Configuration init_config = AnonUtils.getInstance().getScript(path, null);
+        	if (init_config == null) {
+        		logger().info("Creating Script Table.");
+        		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
+        		String adminUser = this.getAdminUser();
+        		if (adminUser != null) {
+        			AnonUtils.getInstance().setSiteWideScript(adminUser, path,site_wide);
+        		}
+        		else {
+        			throw new Exception("Site administrator not found.");
+        		}
+        	}
+        	else {
+        		// there is a default site-wide script, nothing to do here.
+        	}
+        }
+        catch (Throwable e){
+        	logger().error("Unable to either find or initialize script database: " + e.getMessage());
+        }
 
         try {
             PrearcDatabase.initDatabase();
@@ -39,7 +80,15 @@ public class XNATRestletServlet extends ServerServlet {
             logger().error("Unable to initialize prearchive database", e);
         }
 
-        dicomSCP = startDicomSCP();
+        final ContextService context = XDAT.getContextService();
+        dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
+        if (null != dicomSCP) {
+            try {
+                dicomSCP.start();
+            } catch (Throwable t) {
+                throw new ServletException("unable to start DICOM SCP", t);
+            }
+        }
     }
 
     @Override
@@ -53,51 +102,9 @@ public class XNATRestletServlet extends ServerServlet {
 
     private static Logger logger() { return LoggerFactory.getLogger(XNATRestletServlet.class); }
 
-    /**
-     * Create and start a DICOM SCP
-     */
-    public static DicomSCP startDicomSCP() {
-        try {
-            final ArcArchivespecification arcspec = ArcSpecManager.GetInstance();
-
-            final Properties properties = DicomSCP.getProperties();
-            final XDATUser user;
-            try {
-                user = DicomSCP.getUser(properties); 
-            } catch (Throwable t) {
-                logger().error("Not starting DICOM C-STORE SCP: unable to get user", t);
-                return null;
-            }
-            final int port;
-            try {
-                port = DicomSCP.getPort(properties, arcspec.getDcm_dcmPort());
-            } catch (Throwable t) {
-                logger().error("Not starting DICOM C-STORE SCP: unable to get port", t);
-                return null;
-            }
-
-            final String aetitle = arcspec.getDcm_dcmAe();
-            if (Strings.isNullOrEmpty(aetitle)) {
-                logger().info("Not starting DICOM C-STORE SCP: no DICOM AE title defined");
-                return null;
-            } else {
-                final DicomSCP scp = DicomSCP.makeSCP(user, aetitle, port);
-                scp.start();
-                return scp;
-            }
-        } catch (IOException e) {
-            logger().error("error starting DICOM SCP", e);
-            return null;
-        } catch (Throwable t) {
-            logger().error("unexpected error starting DICOM SCP", t);
-            return null;
-        }
-    }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.service(request, response);
     }
-
-
 }

@@ -11,7 +11,7 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.InputParameters;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.InputParameters.Parameter;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.InputParameters.Parameter.Values;
@@ -42,7 +42,7 @@ public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 			PipePipelinedetails pipelineDetails = (PipePipelinedetails)context.get("pipeline");
 			context.remove("pipeline");
 			String pathToPipeline = pipelineDetails.getPath();
-			PipelineDocument pipelineDoc = FileUtils.GetDocument(pathToPipeline);
+			PipelineDocument pipelineDoc = PipelineFileUtils.GetDocument(pathToPipeline);
 			pipelineDetails.setDescription(pipelineDoc.getPipeline().getDescription());
 			if (pipelineDoc.getPipeline().isSetDocumentation()) {
 				if (pipelineDoc.getPipeline().getDocumentation().isSetInputParameters()) {

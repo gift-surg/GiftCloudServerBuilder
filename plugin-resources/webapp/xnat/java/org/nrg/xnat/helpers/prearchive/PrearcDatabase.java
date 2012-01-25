@@ -1,7 +1,19 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.framework.constants.PrearchiveCode;
@@ -19,13 +31,8 @@ import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 /**
  * This class creates a in-memory database that holds all the information in the prearchive 
@@ -51,7 +58,7 @@ public final class PrearcDatabase {
     /**
      * Initialize the cache with a path to the prearchive and/or a delegate object
      * that syncs up the cache with some permanent store.
-     * @param prearcPath Prearchive path
+     * @param prearcPath
      * @throws SQLException
      * @throws IllegalStateException
      * @throws SessionException
@@ -235,7 +242,7 @@ public final class PrearcDatabase {
      * @throws SQLException
      * @throws SessionException
      */
-    public static SessionData getSession (String uri) throws IllegalFormatException, Exception, SQLException, SessionException {
+    public static SessionData getSession (String uri) throws java.util.IllegalFormatException, Exception, SQLException, SessionException {
         final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
         final Map<String,String> sess = parser.readUri(uri);
         return new SessionOp<SessionData>() {
@@ -248,11 +255,11 @@ public final class PrearcDatabase {
 
     /**
      * Path to the project in the users prearchive directory
-     * @param project
+     * @param proj
      * @return
      */
-    static String projectPath (String project) {
-        return StringUtils.join(new String[]{PrearcDatabase.prearcPath,project});
+    static String projectPath (String proj) {
+        return StringUtils.join(new String[]{PrearcDatabase.prearcPath,proj});
     }
 
     /**
@@ -308,36 +315,36 @@ public final class PrearcDatabase {
      * Move a session from one project to another. 'oldProj' is allowed to be null or empty to allow
      * moving from an unassigned project to a real one. The other arguments must be non-empty, non-null 
      * values. 
-     * @param session Name of the old session
+     * @param sess Name of the old session 
      * @param timestamp timestamp of old session
-     * @param newProject Name of the new Project
-     * @param project project of old session
+     * @param proj project of old session
+     * @param newProj Name of the new Project
      * @return Return true if successful, false otherwise
      * @throws SessionException
      * @throws SQLException 
      * @throws Exception 
      */
-    private static synchronized boolean _moveToProject (final String session, final String timestamp, final String project, final String newProject) throws Exception, SessionException, SyncFailedException, SQLException{
-        if (null == newProject || newProject.isEmpty()) {
+    private static synchronized boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception, SessionException, SyncFailedException, SQLException{
+        if (null == newProj || newProj.isEmpty()) {
             throw new SessionException("New project argument is null or empty");
         }
-        final SessionData sd = PrearcDatabase.getSession(session, timestamp, project);
+        final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
 
-        LockAndSync<java.lang.Void> l =  new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
+        LockAndSync<java.lang.Void> l =  new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()) {
             java.lang.Void extSync() throws PrearcDatabase.SyncFailedException {
-                PrearcDatabase.sessionDelegate.move(sd, newProject);
+                PrearcDatabase.sessionDelegate.move(sd, newProj);
                 return null;
             }
-            void cacheSync() throws Exception {
+            void cacheSync() throws SQLException, SessionException, Exception {
                 PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>(){
                     public Void op () throws SQLException, SessionException, Exception {
                         try {
                             PrearcDatabase._unsafeDeleteSession(sess, timestamp,proj);
                             SessionData newSd = sd;
-                            newSd.setProject(newProject);
+                            newSd.setProject(newProj);
                             newSd.setStatus(PrearcUtils.PrearcStatus.READY);
 
-                            final File projectF=new File(PrearcDatabase.getPrearcPath(),newProject);
+                            final File projectF=new File(PrearcDatabase.getPrearcPath(),newProj);
                             final File tsdir=new File(projectF, timestamp);
                             final File session=new File(tsdir, sess);
                             newSd.setUrl(session.getAbsolutePath());
@@ -385,16 +392,20 @@ public final class PrearcDatabase {
 
     /**
      * Move a session from the prearchive to the archive.
-     * @param sessions Name of the old session
-     * @param allowDataDeletion Whether data should be deleted.
-     * @param overwrite Whether to allow overwriting.
-     * @param overwriteFiles Whether files should be overwritten.
-     * @param user XDAT user for this operation.
-     * @param listeners Any listeners for this operation.
+     * @param sessions
+     * @param allowDataDeletion
+     * @param overwrite
+     * @param overwriteFiles
+     * @param user
+     * @param listeners
      * @return Return true if successful, false otherwise
-     * @throws Exception When an exceptional condition occurs.
+     * @throws Exception
+     * @throws SQLException
+     * @throws SessionException
+     * @throws SyncFailedException
+     * @throws IllegalStateException
      */
-    public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final boolean allowDataDeletion, final boolean overwrite, final boolean overwriteFiles, final XDATUser user, final Set<StatusListenerI> listeners) throws Exception {
+    public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final boolean allowDataDeletion, final boolean overwrite, final boolean overwriteFiles, final XDATUser user, final Set<StatusListenerI> listeners) throws Exception, SQLException, SessionException, SyncFailedException, IllegalStateException {
         List<SessionDataTriple> ss= new ArrayList<SessionDataTriple>();
 
         for(PrearcSession map:sessions){
@@ -404,7 +415,9 @@ public final class PrearcDatabase {
         final Map<SessionDataTriple, Boolean> ret = PrearcDatabase.markSessions(ss, PrearcUtils.PrearcStatus.ARCHIVING);
         new Thread() {
             public void run() {
-                for (PrearcSession _s : sessions) {
+                final java.util.Iterator<PrearcSession> i = sessions.iterator();
+                while(i.hasNext()){
+                    PrearcSession _s = i.next();
                     try {
                         PrearcDatabase._archive(_s,allowDataDeletion,overwrite,overwriteFiles,user,listeners,true);
                     } catch (SyncFailedException e) {
@@ -582,7 +595,7 @@ public final class PrearcDatabase {
     /**
      * Queue a list of sessions for deletion.
      * @param ss
-     * @return A map of the given sessions and flag that indicates whether the session was successfully queued. 
+     * @return A map of the given sessions and flag that indicates whether the session was successfully queued.
      * @throws SQLException
      * @throws SessionException
      * @throws SyncFailedException
@@ -639,18 +652,18 @@ public final class PrearcDatabase {
 
     /**
      * Set the status of an existing session. All arguments must be non-null and non-empty. Allows the user to set an inprocess status (i.e a status that begins with '_')
-     * @param session
+     * @param sess
      * @param timestamp
-     * @param project
+     * @param proj
      * @param status
      * @throws SQLException
      * @throws SessionException
      */
-    public static boolean setStatus (final String session, final String timestamp, final String project, final PrearcUtils.PrearcStatus status, boolean overrideLock) throws Exception, SQLException, SessionException {
-        if (!overrideLock && PrearcDatabase.isLocked(session, timestamp, project)) {
+    public static boolean setStatus (final String sess, final String timestamp, final String proj, final PrearcUtils.PrearcStatus status, boolean overrideLock) throws Exception, SQLException, SessionException {
+        if (!overrideLock && PrearcDatabase.isLocked(sess, timestamp, proj)) {
             return false;
         }
-        PrearcDatabase.unsafeSetStatus(session, timestamp, project, status);
+        PrearcDatabase.unsafeSetStatus(sess, timestamp, proj, status); 
         return true;
     }
 
@@ -737,10 +750,13 @@ public final class PrearcDatabase {
      * Delete a session from the prearchive database. 
      * if the session is locked.
      * @param sess
+     * @param timestamp
      * @param proj
      * @return Return true if successful, false
+     * @throws Exception
      * @throws SQLException
-     * @throws SyncFailedException 
+     * @throws SessionException
+     * @throws SyncFailedException
      */
     public static boolean deleteCacheRow (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException, SyncFailedException {
         final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
@@ -769,10 +785,14 @@ public final class PrearcDatabase {
      * Delete a session from the prearchive database. 
      * if the session is locked.
      * @param sess
+     * @param timestamp
      * @param proj
      * @return Return true if successful, false
+     * @throws Exception
      * @throws SQLException
-     * @throws SyncFailedException      */
+     * @throws SessionException
+     * @throws SyncFailedException
+     */
     private static boolean _deleteSession (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException, SyncFailedException {
         final SessionData sd = PrearcDatabase.getSession(sess, timestamp, proj);
         LockAndSync<java.lang.Void> l = new LockAndSync<java.lang.Void>(sess,timestamp,proj,sd.getStatus()){
@@ -888,35 +908,35 @@ public final class PrearcDatabase {
      * @param <Left> Return type if the left branch of tree is taken.
      * @param <Right> Return type if the right branch of the tree is taken.
      */
-    static abstract class Either<Left,Right> {
+    public static abstract class Either<Left,Right> {
+    	enum Eithers {LEFT,RIGHT};
         // typically the result of an error
         Left l;
         // typically the result of a successful operation
         Right r;
         // true if Right is not null, false if Left is not null. 
-        boolean set;
+        Eithers set;
         Either<Left,Right> setLeft(Left l) {
-            this.set = false;
+            this.set = Eithers.LEFT;
             this.l = l;
             return this;
         }
         Either<Left,Right> setRight(Right r) {
-            this.set = true;
+            this.set = Eithers.RIGHT;
             this.r = r;
             return this;
         }
-        Left getLeft(){
-            this.set = false;
+        public Left getLeft(){
             return this.l;
         }
-        Right getRight() {
+        public Right getRight() {
             return this.r;
         }
-        boolean isLeft() {
-            return this.set == false;
+        public boolean isLeft() {
+            return this.set == Eithers.LEFT;
         }
-        boolean isRight() {
-            return this.set == true;
+        public boolean isRight() {
+            return this.set == Eithers.RIGHT;
         }
     }
 
@@ -926,8 +946,8 @@ public final class PrearcDatabase {
      *  
      * @author aditya
      *
-     * @param <X> Return type if the predicate holds
-     * @param <Y> Return type if the predicate fails
+     * @param <X> Return type if the predicate fails
+     * @param <Y> Return type if the predicate holds
      */
     static abstract class PredicatedOp<X,Y> {
         // the predicate
@@ -1175,18 +1195,18 @@ public final class PrearcDatabase {
     /**
      * Set the prearchive row that corresponds to the given session, timestamp, project triple to the given
      * autoArchive setting.
-     * @param session
+     * @param sess
      * @param timestamp
-     * @param project
+     * @param proj
      * @param autoArchive
      * @throws Exception
      * @throws SQLException
      * @throws SessionException
      */
-    public static void setAutoArchive(final String session, final String timestamp, final String project, final PrearchiveCode autoArchive) throws Exception, SQLException, SessionException {
-        PrearcDatabase.modifySession(session, timestamp, project, new SessionOp<Void>() {
+    public static void setAutoArchive(final String sess, final String timestamp, final String proj, final PrearchiveCode autoArchive) throws Exception, SQLException, SessionException {
+        PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
             public Void op () throws SQLException, SessionException, Exception {
-                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.AUTOARCHIVE.updateSessionSql(session, timestamp, project, autoArchive), null, null);
+                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.AUTOARCHIVE.updateSessionSql(sess, timestamp, proj, autoArchive), null, null);
                 return null;
             }
         }); 
@@ -1276,23 +1296,54 @@ public final class PrearcDatabase {
             }
         }.run();
     }
-
+    
     /**
-     * Either retrieve and existing session or create a new one.
+     * Either retrieve and existing session or create a new one and return it.
+     * 
+     * This function is useful if the caller does not care which operation was performed.
+     * 
      * @param project
      * @param suid
      * @param s
      * @param tsFile
      * @param autoArchive
-     * @param preventAnon
-     * @param preventAutoCommit
-     * @param source
      * @return
      * @throws SQLException
      * @throws SessionException
      * @throws Exception
      */
-    public static synchronized SessionData getOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final PrearchiveCode autoArchive, final Boolean preventAnon, final Boolean preventAutoCommit, final String source) throws SQLException, SessionException, Exception {
+    public static SessionData getOrCreateSession(final String project,
+    				     					     final String suid,
+    				     					     final SessionData s,
+    				     					     final File tsFile,
+    				     					     final Boolean autoArchive)
+    throws SQLException, SessionException, Exception {
+    	Either<SessionData, SessionData> result = PrearcDatabase.eitherGetOrCreateSession(project, suid, s, tsFile, autoArchive);
+        if (result.isLeft()) {
+            return result.getLeft();
+        }
+        else{
+            return result.getRight();
+        }
+    }
+
+    /**
+     * Either retrieve and existing session or create a new one. If a session is created an Either
+     * object with the "Right" branch set is returned. If we just retrieve one that is already in the
+     * prearchive table an Either object with the "Left" branch set is returned.
+     * 
+     * This is useful in case the caller needs to know which operation was performed.
+     * @param project
+     * @param suid
+     * @param s
+     * @param tsFile
+     * @param autoArchive
+     * @return
+     * @throws SQLException
+     * @throws SessionException
+     * @throws Exception
+     */
+    public static synchronized Either<SessionData,SessionData> eitherGetOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
         Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
             SessionData ss;
             /**
@@ -1326,10 +1377,7 @@ public final class PrearcDatabase {
                         s.setFolderName(s.getFolderName() + suffixString);
                         s.setName(s.getName() + suffixString);
                         s.setUrl((new File(tsFile,s.getFolderName()).getAbsolutePath()));
-                        s.setAutoArchive(autoArchive);
-                        s.setPreventAnon(preventAnon);
-                        s.setPreventAutoCommit(preventAutoCommit);
-                        s.setSource(source);
+                        s.setAutoArchive((Object) autoArchive);
 
                         PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
                         for (int i = 0; i < DatabaseSession.values().length; i++) {
@@ -1370,13 +1418,9 @@ public final class PrearcDatabase {
                 }.run();
             }
         }.run();
+        
+        return result;
 
-        if (result.isLeft()) {
-            return result.getLeft();
-        }
-        else{
-            return result.getRight();
-        }
     }
 
     /**
@@ -1536,6 +1580,7 @@ public final class PrearcDatabase {
 
     /**
      * Build a list of sessions in the given projects. 
+     * @param ss
      * @return
      * @throws SQLException
      * @throws SessionException
@@ -1695,16 +1740,16 @@ public final class PrearcDatabase {
 
     /**
      * Check that a session exists in the prearchive table. 
-     * @param session
+     * @param sess
      * @param timestamp
-     * @param project
+     * @param proj
      * @return
      * @throws Exception
      * @throws SQLException
      * @throws SessionException
      */
-    public static boolean exists (final String session, final String timestamp, final String project) throws Exception, SessionException {
-        int rowCount = PrearcDatabase.countOf(session,timestamp,project);
+    public static boolean exists (final String sess, final String timestamp, final String proj) throws Exception, SQLException, SessionException {
+        int rowCount = PrearcDatabase.countOf(sess,timestamp,proj);
         boolean b = false;
         if (rowCount == 0){
             b = false;
@@ -1720,24 +1765,24 @@ public final class PrearcDatabase {
     /**
      * Check session parameters and run the operation
      * @param <T>
-     * @param session
+     * @param sess
      * @param timestamp
-     * @param project
+     * @param proj
      * @param op
      * @return
      * @throws SQLException
      * @throws SessionException
      */
 
-    private static <T> T withSession (String session, String timestamp, String project, SessionOp<T> op) throws Exception {
-        PrearcDatabase.checkSession(session,timestamp,project);
+    private static <T extends Object> T withSession (String sess, String timestamp, String proj, SessionOp<T> op) throws Exception, SQLException, SessionException {
+        PrearcDatabase.checkSession(sess,timestamp,proj);
         return op.run();
     }
 
-    private static <T> T modifySession (final String session, final String timestamp, final String project, SessionOp<T> op) throws Exception, SessionException {
-        withSession(session,timestamp,project,new SessionOp<java.lang.Void>() {
-            public Void op() throws Exception {
-                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.LASTMOD.updateSessionSql(session, timestamp, project, Calendar.getInstance().getTime()), null, null);
+    private static <T extends Object> T modifySession (final String sess, final String timestamp, final String proj, SessionOp<T> op) throws Exception, SQLException, SessionException {
+        withSession(sess,timestamp,proj,new SessionOp<java.lang.Void>() {
+            public Void op() throws SQLException, Exception {
+                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.LASTMOD.updateSessionSql(sess, timestamp, proj, Calendar.getInstance().getTime()), null, null);
                 return null;
             }
         });

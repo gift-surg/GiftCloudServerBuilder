@@ -16,6 +16,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
+import org.nrg.xnat.helpers.merge.SiteWideAnonymizer;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -23,6 +24,7 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
+import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
@@ -38,6 +40,8 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 
 	static Logger logger = Logger.getLogger(SessionImporter.class);
 
+	public static final String RESPONSE_URL = "URL";
+	
 	private final Boolean allowDataDeletion;
 	
 	private final Boolean overwrite;
@@ -53,19 +57,19 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	
 	/**
 	 * 
-	 * @param listenerControl The listener control for callback purposes.
-	 * @param user The user attempting the import operation.
-     * @param writer The file writer wrapper for writing out imported sessions.
-     * @param parameters Any parameters to be passed in for the import operation.
+	 * @param listenerControl
+	 * @param u
+     * @param fw
+     * @param params
 	 */
-	public SessionImporter(final Object listenerControl, final XDATUser user, final FileWriterWrapperI writer, final Map<String,Object> parameters){
-		super(listenerControl, user, writer, parameters);
+	public SessionImporter(final Object listenerControl, final XDATUser u, final FileWriterWrapperI fw, final Map<String,Object> params){
+		super(listenerControl, u, fw, params);
 		this.uID=listenerControl;
-		this.user=user;
-		this.fw=writer;
-		this.params=parameters;
+		this.user=u;
+		this.fw=fw;
+		this.params=params;
 		
-		String overwriteV=(String)parameters.remove("overwrite");
+		String overwriteV=(String)params.remove("overwrite");
 		
 		if(overwriteV==null){
 			this.allowDataDeletion=false;
@@ -225,6 +229,9 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				
 			try {
 				final FinishImageUpload finisher=ListenerUtils.addListeners(this, new FinishImageUpload(this.uID, user, session,destination, allowDataDeletion,overwrite,true));
+				XnatImagesessiondata s = new XNATSessionPopulater(user, session.getSessionDir(), session.getProject(), false).populate();
+				SiteWideAnonymizer site_wide = new SiteWideAnonymizer(s, true);
+				site_wide.call();
 				if(finisher.isAutoArchive()){
 					return new ArrayList<String>(){{add(finisher.call());}};
 				}else{

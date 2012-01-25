@@ -104,7 +104,7 @@ $navigation.setTemplate("XNATQuickSearch.vm")
          <DIV class="bd">
           <ul class="first-of-type">
 				           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("LaunchUploadApplet.vm")">Images</a>
+            <a class="yuimenuitemlabel" href="$link.setPage("ImageUpload.vm")">Images</a>
            </li>
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="$link.setPage("XMLUpload.vm")">XML</a>
@@ -135,13 +135,13 @@ $navigation.setTemplate("XNATQuickSearch.vm")
             <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_email.vm")" >Email</a>
            </li>
            <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("EditArcSpecs.vm")">Default Settings</a>
-           </li>
-           <li class="yuimenuitem">
             <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_manage_pipeline.vm")">Pipelines</a>
            </li>
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin_options.vm")" >More options...</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" HREF="$link.setPage("Configuration.vm")">Configuration</a>
            </li>
               </ul>
              </DIV>
@@ -162,6 +162,9 @@ $navigation.setTemplate("XNATQuickSearch.vm")
            </li>
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="http://docs.xnat.org/XNAT+Tools#XNAT%20Client%20Tools-Developed%20by%20NRG-XNAT%20web%20services%20client%20tools%20%28NRG%29">Command Prompt Tools</a>
+           </li>
+           <li>
+           	<a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_EditScript.vm").addPathInfo("user","Test")">View Edit Script</a>
            </li>
            <li class="yuimenuitem">
            <a class="yuimenuitemlabel" href="#information"> 

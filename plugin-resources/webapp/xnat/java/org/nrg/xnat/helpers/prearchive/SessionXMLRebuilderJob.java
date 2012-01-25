@@ -1,23 +1,25 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import org.apache.log4j.Logger;
-import org.nrg.dcm.DicomSCP;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.inject.Provider;
+
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.security.XDATUser.UserNotFoundException;
-import org.nrg.xft.exception.*;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SessionXMLRebuilderJob implements JobInterface {
 	@Override
@@ -27,29 +29,13 @@ public class SessionXMLRebuilderJob implements JobInterface {
 
 	@Override
 	public void execute() throws JobExecutionException {
-		logger.debug("Running prearc job");
-		XDATUser user = null;
-		try {
-			user = DicomSCP.getUser();
-		} catch (UserNotFoundException e1) {
-			logger.error("", e1);
-		} catch (XFTInitException e1) {
-			logger.error("", e1);
-		} catch (ElementNotFoundException e1) {
-			logger.error("", e1);
-		} catch (DBPoolException e1) {
-			logger.error("", e1);
-		} catch (SQLException e1) {
-			logger.error("", e1);
-		} catch (FieldNotFoundException e1) {
-			logger.error("", e1);
-		} catch (Exception e1) {
-			logger.error("", e1);
-		}
-		List<SessionData> dataList = null;
+		final Provider<XDATUser> provider = (Provider<XDATUser>)_map.get("user");
+		XDATUser user = provider.get();
+        logger.trace("Running prearc job as {}", user.getLogin());
+		List<SessionData> sds = null;
 		long now = Calendar.getInstance().getTimeInMillis();
 		try {
-			dataList = PrearcDatabase.getAllSessions();
+			sds = PrearcDatabase.getAllSessions();
 		} catch (SessionException e) {
 			logger.error("", e);
 		} catch (SQLException e) {
@@ -59,12 +45,14 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		}
 		int updated = 0;
 		int total = 0;
-        for (SessionData sessionData : dataList) {
+		Iterator<SessionData> i = sds.iterator();
+		while (i.hasNext()) {
 			total++;
-            if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit()) {
+			SessionData s = i.next();
+			if (s.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING)) {
 				File sessionDir = null;
 				try {
-                    sessionDir = PrearcUtils.getPrearcSessionDir(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), false);
+					sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
 				} catch (IOException e) {
 					logger.error("", e);
 				} catch (InvalidPermissionException e) {
@@ -72,19 +60,18 @@ public class SessionXMLRebuilderJob implements JobInterface {
 				} catch (Exception e) {
 					logger.error("", e);
 				}
-                long then = sessionData.getLastBuiltDate().getTime();
-                final double interval = (double) _map.getIntValue("interval");
-                final double elapsed = diffInMinutes(then, now);
-                logger.debug("Found configured interval of " + interval + " minutes, " + elapsed + " minutes have elapsed.");
-                if (elapsed >= interval) {
-                    logger.info("committing " + sessionData.getExternalUrl());
+				long then = s.getLastBuiltDate().getTime();
+				double interval = (double) _map.getIntValue("interval");
+				double diff = diffInMinutes(then, now);
+				if (diff >= interval) {
+					logger.info("commiting {}", s.getExternalUrl());
 					try {
 						updated++;
-                        if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
-                            PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject());
-                            PrearcUtils.resetStatus(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), true);
+						if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
+							PrearcDatabase.buildSession(sessionDir, s.getFolderName(), s.getTimestamp(), s.getProject());
+							PrearcUtils.resetStatus(user, s.getProject(), s.getTimestamp(), s.getFolderName(), true);
 
-                            final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);
+							final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(s.getProject(), s.getTimestamp(), s.getFolderName(), null, user), null, false, true, false);
 							uploader.call();
 						}
 					} catch (SyncFailedException e) {
@@ -103,7 +90,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
 				}
 			}
 		}
-		logger.info(String.format("Built %d of %d", updated, total));
+		logger.info("Built {} of {}", updated, total);
 	}
 
 	@Override
@@ -116,6 +103,6 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		return Math.floor(seconds / 60);
 	}
 
-	private static Logger logger = Logger.getLogger(SessionXMLRebuilderJob.class);
+	private Logger logger = LoggerFactory.getLogger(SessionXMLRebuilderJob.class);
 	private JobDataMap _map;
 }

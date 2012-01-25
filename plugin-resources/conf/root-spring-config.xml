@@ -4,4 +4,7 @@
     <!-- Root Context: defines shared resources visible to all other web components -->
     <!-- import resource="services/service-context.xml"/ -->
 
+	<bean name="receivedFileUserProvider" class="org.nrg.xnat.utils.XnatUserProvider">
+		<constructor-arg value="admin"/>
+	</bean>
 </beans>

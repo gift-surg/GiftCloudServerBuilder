@@ -18,7 +18,7 @@ import java.util.Date;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.Authors.Author;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.Authors.Author.Contact;
@@ -224,7 +224,7 @@ public class PipelineScreen_details extends XDATScreen_pdf {
 	
 		
 		private PipelineDocument getDocument(String pathToPipelineXmlFile) throws Exception {
-			return FileUtils.GetDocument(pathToPipelineXmlFile);
+			return PipelineFileUtils.GetDocument(pathToPipelineXmlFile);
 		}
 
 	   public void doBuildTemplate(RunData data, Context context)	{

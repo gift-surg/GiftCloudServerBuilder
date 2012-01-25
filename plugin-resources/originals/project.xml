@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>7.4.214.jdbc2</version>
+			<version>9.0-801.jdbc4</version>
 			<type>jar</type>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -346,16 +346,6 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>jdbc</groupId>
-			<artifactId>jdbc</artifactId>
-			<version>2.0</version>
-			<url>http://java.sun.com/products/jdbc/</url>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>jndi</groupId>
 			<artifactId>jndi</artifactId>
 			<version>1.2.1</version>
@@ -578,6 +568,15 @@
 		</dependency>
 		<dependency>
 			<groupId>dcm</groupId>
+			<artifactId>dcm4che-iod</artifactId>
+			<version>2.0.25</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
 			<artifactId>dcm4che-net</artifactId>
 			<version>2.0.25</version>
 			<properties>
@@ -722,6 +721,33 @@
 		</dependency>
 		<dependency>
 			<groupId>nrg</groupId>
+			<artifactId>nrg-anonymize</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>DicomEdit</artifactId>
+			<version>1.5.2</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr-runtime</artifactId>
+			<version>3.2</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
 			<artifactId>nrg-status</artifactId>
 			<version>2.0.0</version>
 			<properties>
@@ -733,6 +759,15 @@
 			<groupId>nrg</groupId>
 			<artifactId>nrgutil</artifactId>
 			<version>1.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-transaction</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1071,7 +1106,7 @@
 		<dependency>
 			<groupId>guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r08</version>
+			<version>10.0.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1220,6 +1255,15 @@
 		</dependency>
 		<dependency>
 			<groupId>spring</groupId>
+			<artifactId>org.springframework.oxm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
 			<artifactId>org.springframework.transaction</artifactId>
 			<version>3.0.5.RELEASE</version>
 			<properties>
@@ -1246,6 +1290,153 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>1.7.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+		  	<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<!-- End Spring Framework dependencies -->
+		<!-- Begin NRG framework and service additions -->
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+		  <groupId>javax</groupId>
+		  <artifactId>javax.inject</artifactId>
+		  <version>1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-mail</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-notify</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-config</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.jdbc</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.orm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>2.7.6</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-commons-annotations</artifactId>
+			<version>3.2.0.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.6.3.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jta</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>com.springsource.net.sf.cglib</artifactId>
+			<version>2.2.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>inject</groupId>
+			<artifactId>com.springsource.javax.inject</artifactId>
+			<version>1.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
 			<version>1.8.5</version>
@@ -1263,11 +1454,101 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<!-- End Spring Framework dependencies -->
 		<dependency>
-			<groupId>nrg</groupId>
-			<artifactId>nrg-framework</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<groupId>javassist</groupId>
+			<artifactId>com.springsource.javassist</artifactId>
+			<version>3.10.0.GA</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>slf4j</groupId>
+			<artifactId>slf4j-jcl</artifactId>
+			<version>1.5.8</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<!-- End NRG framework and service additions -->
+		<dependency>
+			<groupId>gnu</groupId>
+			<artifactId>java-getopt</artifactId>
+			<version>1.0.13</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>XNATTools</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>pipelineXNAT</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>pipelineWorkFlow</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>PipelineTools</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>pipelineClient</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pipeline</groupId>
+			<artifactId>Pipeline</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.ostermiller</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.07.00</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>com.springsource.org.apache.xmlbeans</artifactId>
+			<version>2.4.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

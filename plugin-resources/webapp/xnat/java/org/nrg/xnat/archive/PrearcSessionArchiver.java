@@ -3,6 +3,14 @@
  */
 package org.nrg.xnat.archive;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
@@ -39,14 +47,6 @@ import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -99,18 +99,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final String project;
 	private final Map<String,Object> params;
 
-	private final File srcDIR;
+	private final PrearcSession prearcSession;
 
-    // overwrite = false => No append or overwrite.
-    // overwrite = true:
-    //     allowDataDeletion = true => overwrite
-    //     allowDataDeletion = false => append
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
 	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
 	private final boolean waitFor;
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
@@ -119,17 +115,34 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
 		this.overwrite=(overwrite==null)?false:overwrite;
 		this.overwrite_files=(overwrite_files==null)?false:overwrite_files;
-		this.srcDIR=srcDIR;
+		this.prearcSession=prearcSession;
 		this.waitFor=waitFor;
 	}
 
-	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite, final boolean waitFor, final Boolean overwrite_files)
+	public PrearcSessionArchiver(final PrearcSession session,	
+								 final XDATUser user, 
+								 final Map<String,Object> params, 
+								 boolean allowDataDeletion,
+								 final boolean overwrite, 
+								 final boolean waitFor, 
+								 final Boolean overwrite_files)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite, waitFor,overwrite_files);
+		this((new XNATSessionPopulater(user, 
+									   session.getSessionDir(),  
+									   session.getProject(), 
+									   false)).populate(),
+			  session, 
+			  user, 
+			  session.getProject(), 
+			  params, 
+			  allowDataDeletion,
+			  overwrite, 
+			  waitFor,
+			  overwrite_files);
 	}
 
 	public File getSrcDIR(){
-		return srcDIR;
+		return prearcSession.getSessionDir();
 	}
 
 
@@ -432,7 +445,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 		final File arcSessionDir = getArcSessionDir();
 
-			if(existing!=null)checkForConflicts(src,srcDIR,existing,arcSessionDir);
+			if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
 
 			if(arcSessionDir.exists()){
 				this.setStep("Merging", workflow);
@@ -476,11 +489,19 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				}
 			};
 
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, (allowDataDeletion)?allowDataDeletion:overwrite_files,saveImpl))
-				.call();
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),
+																			 this.prearcSession.getSessionDir(),
+																			 src,
+																			 src.getPrearchivepath(),
+																			 arcSessionDir,
+																			 existing,
+																			 arcSessionDir.getAbsolutePath(),
+																			 overwrite, 
+																			 (allowDataDeletion)?allowDataDeletion:overwrite_files,
+																			 saveImpl)).call();
 
-			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
-			org.nrg.xft.utils.FileUtils.DeleteFile(srcDIR);
+			org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));
+			org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession.getSessionDir());
 
 			try {
 				workflow.setStepDescription(WorkflowUtils.COMPLETE);

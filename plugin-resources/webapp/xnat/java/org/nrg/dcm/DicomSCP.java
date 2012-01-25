@@ -24,24 +24,21 @@ import static org.dcm4che2.data.UID.RLELossless;
 import static org.dcm4che2.data.UID.VerificationSOPClass;
 import static org.dcm4che2.data.UID.XMLEncoding;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Executor;
+
+import javax.inject.Provider;
 
 import org.dcm4che2.net.Device;
 import org.dcm4che2.net.NetworkApplicationEntity;
 import org.dcm4che2.net.NetworkConnection;
-import org.dcm4che2.net.NewThreadExecutor;
 import org.dcm4che2.net.TransferCapability;
 import org.dcm4che2.net.service.DicomService;
 import org.dcm4che2.net.service.VerificationService;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.XFT;
-import org.nrg.xnat.utils.CachedUserFactory;
-import org.nrg.xnat.utils.UserFactory;
+import org.nrg.xnat.DicomObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,11 +49,6 @@ import com.google.common.collect.Lists;
  * 
  */
 public class DicomSCP {
-    private static final String DICOM_SCP_PROPS = "DICOM-SCP.properties";
-    private static final String DICOM_SCP_USER = "DICOM.user";
-    private static final String DICOM_SCP_DEFAULT_USER = "admin";
-    private static final String DICOM_SCP_PORT = "DICOM.port";
-    
     private static final String SERVICE_NAME = "XNAT_DICOM";
 
     // Verification service can only use LE encoding
@@ -75,77 +67,65 @@ public class DicomSCP {
         JPEG2000Part2Multicomponent, JPIPReferenced, JPIPReferencedDeflate,
         MPEG2, RLELossless, RFC2557MIMEencapsulation, XMLEncoding };
 
-    private static final UserFactory userFactory = new CachedUserFactory();
-
     private final Logger logger = LoggerFactory.getLogger(DicomSCP.class);
 
     private final Executor executor;
     private final Device device;
     private final XDATUser user;
+    private final NetworkApplicationEntity ae;
+    private final CStoreService cstore;
 
-    public DicomSCP(final XDATUser user, final Executor executor,
-            final Device device, final NetworkApplicationEntity ae)
+    public DicomSCP(final XDATUser user,
+            final Executor executor,
+            final Device device,
+            final NetworkApplicationEntity ae,
+            final DicomObjectIdentifier<XnatProjectdata> identifier)
     throws IOException {
         this.executor = executor;
         this.device = device;
         this.user = user;
-        final CStoreService cstore = new CStoreService(ae, user);
+        this.ae = ae;
+        cstore = new CStoreService(ae, identifier, user);
         initTransferCapability(ae, cstore);
     }
+    
+    public DicomSCP(final Provider<XDATUser> userProvider,
+            final Executor executor,
+            final Device device,
+            final NetworkApplicationEntity ae,
+            final DicomObjectIdentifier<XnatProjectdata> identifier)
+    throws IOException {
+        this(userProvider.get(), executor, device, ae, identifier);
+    }
 
-    private static Logger slog() {
-        return LoggerFactory.getLogger(DicomSCP.class);
+    /**
+     * Set the hostname for the SCP. This may be used to
+     * distinguish among multiple network interfaces.
+     * @param hostname
+     * @return this
+     */
+    public DicomSCP setHostname(final String hostname) {
+        // TODO: check state. is this possible?
+        ae.getNetworkConnection()[0].setHostname(hostname);
+        return this;
     }
     
-    public static Properties getProperties() {
-        final File propsfile = new File(XFT.GetConfDir(), DicomSCP.DICOM_SCP_PROPS);
-        final Properties properties = new Properties();
-        try {
-            properties.load(new FileReader(propsfile));
-        } catch (IOException e) {
-            slog().debug("no DICOM SCP properties file " + propsfile + " found", e);
-        }
-        return properties;
+    /**
+     * Set the DicomFileNamer used to build file names
+     * @param namer
+     * @return this
+     */
+    public DicomSCP setNamer(final DicomFileNamer namer) {
+        cstore.setNamer(namer);
+        return this;
     }
     
-    public static XDATUser getUser(final Properties properties) throws Exception {
-        return userFactory.getUser(properties.getProperty(DicomSCP.DICOM_SCP_USER, DicomSCP.DICOM_SCP_DEFAULT_USER));
-    }
-    
-    public static XDATUser getUser() throws Exception {
-        return getUser(getProperties());
-    }
-    
-    public static int getPort(final Properties properties, final String defaultPort) {
-        final String sp = properties.getProperty(DicomSCP.DICOM_SCP_PORT, defaultPort);
-        return Integer.parseInt(sp);
-    }
-    
-    public static DicomSCP makeSCP(final XDATUser user, final String aeTitle,
-            final int port) throws IOException {
-        final NetworkConnection nc = new NetworkConnection();
-        nc.setPort(port);
-
-        final NetworkApplicationEntity ae = new NetworkApplicationEntity();
-        ae.setNetworkConnection(nc);
-        ae.setAssociationAcceptor(true);
-        ae.register(new VerificationService());
-        ae.setAETitle(aeTitle);
-
-        final Device device = new Device(SERVICE_NAME);
-        device.setNetworkConnection(nc);
-        device.setNetworkApplicationEntity(ae);
-
-        final Executor executor = new NewThreadExecutor(SERVICE_NAME);
-
-        return new DicomSCP(user, executor, device, ae);
-    }
-
     public void start() throws IOException {
-        logger.info("starting DICOM SCP {} on port {} as user {}",
+        logger.info("starting DICOM SCP {} on {}:{} as user {}",
                 new Object[] {
-                device.getNetworkApplicationEntity(),
-                device.getNetworkConnection()[0].getPort(),device,
+                device.getNetworkApplicationEntity()[0].getAETitle(),
+                device.getNetworkConnection()[0].getHostname(),
+                device.getNetworkConnection()[0].getPort(),
                 user.getUsername()
         });
         device.startListening(executor);
@@ -169,5 +149,37 @@ public class DicomSCP {
         }
 
         ae.setTransferCapability(tcs.toArray(new TransferCapability[0]));
+    }
+
+    /**
+     * Creates a new DICOM C-STORE SCP. This can be a little easier to use
+     * than the constructor because it wraps creating some of the DICOM
+     * networking infrastructure
+     * @param userProvider Provides XNAT user who owns the service
+     * @param aeTitle application entity title
+     * @param port port on which the service will run
+     * @param identifier DicomObjectIdentifier used to assign incoming data to
+     *          project, subject, session, etc.
+     * @return new DicomSCP
+     * @throws IOException
+     */
+    public static DicomSCP create(final Provider<XDATUser> userProvider,
+            final Executor executor,
+            final String aeTitle, final int port,
+            DicomObjectIdentifier<XnatProjectdata> identifier) throws IOException {
+        final NetworkConnection nc = new NetworkConnection();
+        nc.setPort(port);
+
+        final NetworkApplicationEntity ae = new NetworkApplicationEntity();
+        ae.setNetworkConnection(nc);
+        ae.setAssociationAcceptor(true);
+        ae.register(new VerificationService());
+        ae.setAETitle(aeTitle);
+
+        final Device device = new Device(SERVICE_NAME);
+        device.setNetworkConnection(nc);
+        device.setNetworkApplicationEntity(ae);
+
+        return new DicomSCP(userProvider, executor, device, ae, identifier);
     }
 }

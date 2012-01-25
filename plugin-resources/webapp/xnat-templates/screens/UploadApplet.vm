@@ -1,3 +1,10 @@
+#* @vtlvariable name="scan_type" type="java.lang.String" *#
+#* @vtlvariable name="visit_id" type="java.lang.String" *#
+#* @vtlvariable name="scan_date" type="java.lang.String" *#
+#* @vtlvariable name="subject_id" type="java.lang.String" *#
+#* @vtlvariable name="project" type="java.lang.String" *#
+#* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
+#* @vtlvariable name="arc" type="org.nrg.xdat.om.ArcArchivespecification" *#
 <script type="text/javascript" src="$content.getURI("scripts/java/deployJava.js")"></script>
 <script type="text/javascript">
 // The upload applet requires at least Java 1.5 (because of the wizard library).
@@ -5,7 +12,7 @@
 // to ensure that a supported version of the JRE exists on the client.
 // Use an anonymous function to prevent global scope
 (function() {
-    SUPPORTED_JRE_VERSIONS = ["1.5", "1.6", "1.7"];
+    var SUPPORTED_JRE_VERSIONS = ["1.5", "1.6", "1.7"];
     
     function hasSupport(versions) {
         for (var i=0; i < versions.length; i++) {
@@ -39,6 +46,15 @@
     #if( $subject_id )
     <PARAM NAME="xnat-subject" VALUE="$subject_id"/>
     #end
+    #if( $scan_date )
+        <PARAM NAME="xnat-scan-date" value="$scan_date"/>
+    #end
+    #if( $visit_id )
+        <PARAM NAME="xnat-visit-id" value="$visit_id"/>
+    #end
+    #if( $scan_type )
+        <PARAM NAME="xnat-scan-type" value="$scan_type"/>
+    #end
 #end
 
 The XNAT upload applet requires Java (1.5 or greater) to be installed on your computer.
@@ -46,4 +62,3 @@ You can get Java <a href="http://java.com/en/download/index.jsp">here</a>.
 After installing Java, you will most likely need to restart your browser,
 and possibly your computer, before the XNAT upload applet will work.
 </APPLET>
-

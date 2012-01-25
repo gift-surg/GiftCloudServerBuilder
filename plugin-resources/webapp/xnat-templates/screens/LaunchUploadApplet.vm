@@ -1,53 +1,83 @@
+#* @vtlvariable name="part_id" type="java.lang.String" *#
+#* @vtlvariable name="project" type="java.lang.String" *#
+#* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
+#* @vtlvariable name="arc" type="org.nrg.xdat.om.ArcArchivespecification" *#
+#* @vtlvariable name="link" type="org.apache.turbine.util.template.TemplateLink" *#
+<script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
+<link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
 <form action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='applet' onsubmit="popupWSize('about:blank',580,840,'applet')">
-<table border="0">
+    <table border="0">
         #if($arc)
- <tr>
+            <tr>
                 <td colspan="2">&nbsp;</td>
- </tr>
- <tr>
+            </tr>
+            <tr>
                 <td colspan="2"><h3>Launch Upload Applet</h3></td>
             </tr>
             <tr>
                 <td valign="top" align="left" colspan="2">
-                    <div style="width:500px">DICOM and ECAT files can be uploaded via an online upload tool. Please select a
-                                             project and subject for which you want to upload a session.
+                    <div style="width:500px">
+                        DICOM and ECAT files can be uploaded via an online upload tool. Please
+                        select a project and subject for which you want to upload a session.
                     </div>
-  </td>
- </tr>
-<tr>
+                </td>
+            </tr>
+            <tr>
                 <th align="left"><label for="project">Project</label></th>
                 <td><select id="project" name="project" style="width: 100%;" disabled=true></select></td>
             </tr>
             <tr>
-                <td colspan="2">Please select a subject for this new experiment.</td>
+                <th align="left"><label for="part_id">Subject</label></th>
+                <td><select id="part_id" name="part_id" style="width: 100%;" disabled=true>
+                    <option>(Select a project)</option>
+                </select></td>
             </tr>
             <tr>
-                <th align="left"><label for="part_id">Subject</label></th>
-                <td><select id="part_id" name="part_id" style="width: 100%;" disabled=true><option>(Select a project)</option></select></td>
+                <th align="left"><label for="scan_date">Scan Date</label></th>
+                <td>
+                    <input type="text" id="scan_date" name="scan_date"/>
+                    <script type="text/javascript">insertCalendar(document.getElementById("scan_date"), "Scan Date");</script>
+                </td>
             </tr>
-            <script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
-	<script type="text/javascript">
-                function verifyExptId(obj){        };
-                window.ProjectSubjectManager = new ProjectSubjectSelector("project", "part_id", "gojuice", "$!project", "$!part_id");
-                window.ProjectSubjectManager.init();
-	</script>
+            <tr id="visit_entry" style="display: none;">
+                <th align="left"><label for="visit_id">Visit</label></th>
+                <td><select id="visit_id" name="visit_id" style="width: 100%;" disabled=true>
+                    <option>(Select a subject)</option>
+                </select></td>
+            </tr>
+            <tr id="scan_type_entry" style="display: none;">
+                <th align="left"><label for="scan_type">Scan Type</label></th>
+                <td><select id="scan_type" name="scan_type" style="width: 100%;" disabled=true>
+                    <option value="mr">MR</option>
+                    <option value="pet-fdg">PET with FDG tracer</option>
+                    <option value="pet-pib">PET with PIB tracer</option>
+                </select></td>
+            </tr>
+            <script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_visit_selector.js')"></SCRIPT>
+            <script type="text/javascript">
+                window.ProjectSubjectVisitManager = new ProjectSubjectVisitSelector("project", "part_id", "gojuice", "$!project", "$!part_id");
+                window.ProjectSubjectVisitManager.init();
+            </script>
             <tr>
                 <td colspan="2">&nbsp;</td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
                 <td align="left">
-                    <input type="submit" id="gojuice" name="gojuice" style="line-height:10px;font-size:9px;font-weight:700;" value="Launch Uploader" disabled="true"/>
-			  </td>
- </tr>
-  <tr>
+                    <input type="submit" id="gojuice" name="gojuice"
+                           style="line-height:10px;font-size:9px;font-weight:700;" value="Launch Uploader"
+                           disabled="true"/>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2" align="center">&nbsp;</td>
- </tr>
-  <tr>
+            </tr>
+            <tr>
                 <td colspan="2">
-                    <div style="width:500px">There are <A HREF="$link.setPage("AlternateImageUpload.vm")">alternate ways to upload images</a> available, but the upload applet is the preferred method.</A></div>
-  </td>
- </tr>
-#end
-</table>
+                    <div style="width:500px">There are <A HREF="$link.setPage("AlternateImageUpload.vm")">alternate ways
+                        to upload images</a> available, but the upload applet is the preferred method.</A></div>
+                </td>
+            </tr>
+        #end
+    </table>
 </form>

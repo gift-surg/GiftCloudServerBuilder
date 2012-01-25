@@ -427,61 +427,100 @@
 	<!-- ================================================================ -->
 	<!-- Extracts all files from module jars and pushes into the project. -->
 	<!-- ================================================================ -->
-	<goal name="xdat:updateFilesFromModules">
-		<ant:echo>Extracting modules into project build structure.</ant:echo>
-		<j:if test="${context.getVariable('xdat.modules.location') != null}">
-			<j:set var="modules.dir" value="${xdat.modules.location}"/>
-		</j:if>
-		<j:if test="${context.getVariable('xdat.modules.location') == null}">
-			<j:set var="modules.dir" value="${basedir}/modules"/>
-		</j:if>
-		<j:set var="modules.dir.exists" value="false"/>
-		<u:available file="${modules.dir}">
-			<j:set var="modules.dir.exists" value="true"/>
-		</u:available>
-		<j:if test="${context.getVariable('modules.dir.exists') == 'false'}">
-			<ant:echo>Didn't find a modules folder, skipping module initialization.</ant:echo>
-		</j:if>
-		<j:if test="${context.getVariable('modules.dir.exists') == 'true'}">
-			<!-- Specify and clear (rm and re-mk) the extract folder. -->
-			<j:if test="${context.getVariable('xdat.modules.extraction.location') != null}">
-				<j:set var="modules.extraction.dir" value="${xdat.modules.extraction.location}"/>
-			</j:if>
-			<j:if test="${context.getVariable('xdat.modules.extraction.location') == null}">
-				<j:set var="modules.extraction.dir" value="${java.io.tmpdir}/${xdat.project.name}_modules"/>
-			</j:if>
-			<ant:echo>Clearing and refreshing module extraction folder: ${modules.extraction.dir}</ant:echo>
-			<u:available file="${modules.extraction.dir}">
-				<ant:delete dir="${modules.extraction.dir}"/>
-			</u:available>
-			<ant:mkdir dir="${modules.extraction.dir}"/>
-			
-			<!-- Extract all zips and jars to the extract folder. -->
-			<ant:echo>Extracting all archive files from ${modules.dir} to ${modules.extraction.dir}</ant:echo>
-			<ant:unzip dest="${modules.extraction.dir}">
-				<fileset dir="${modules.dir}">
-					<include name="**/*.zip"/>
-					<include name="**/*.jar"/>
-				</fileset>
-			</ant:unzip>
+    <goal name="xdat:updateFilesFromModules">
+        <ant:echo>Extracting modules into project build structure.</ant:echo>
+        <j:set var="modules.default.dir.exists" value="false"/>
+        <u:available file="${basedir}/modules">
+            <j:set var="modules.default.dir.exists" value="true"/>
+        </u:available>
+        <j:if test="${context.getVariable('xdat.modules.location') != null}">
+            <j:set var="modules.custom.dir" value="${xdat.modules.location}"/>
+        </j:if>
+        <j:set var="modules.custom.dir.exists" value="false"/>
+        <u:available file="${modules.custom.dir}">
+            <j:set var="modules.custom.dir.exists" value="true"/>
+        </u:available>
+        <ant:echo>modules.default.dir: ${basedir}/modules</ant:echo>
+        <ant:echo>modules.default.dir.exists: ${modules.default.dir.exists}</ant:echo>
+        <ant:echo>modules.custom.dir: ${modules.custom.dir}</ant:echo>
+        <ant:echo>modules.custom.dir.exists: ${modules.custom.dir.exists}</ant:echo>
+        <j:set var="any.module.dir.exists" value="true"/>
+        <j:if test="${context.getVariable('modules.default.dir.exists') == 'false'}">
+            <j:if test="${context.getVariable('modules.custom.dir.exists') == 'false'}">
+            <ant:echo>Didn't find a modules folder, skipping module initialization.</ant:echo>
+                <j:set var="any.module.dir.exists" value="false"/>
+            </j:if>
+        </j:if>
+        <ant:echo>any.module.dir.exists: ${any.module.dir.exists}</ant:echo>
+        <j:if test="${context.getVariable('any.module.dir.exists') == 'true'}">
+            <j:if test="${context.getVariable('modules.default.dir.exists') == 'false'}">
+                <ant:echo>Didn't find default modules folder, initializing only from the custom module folder ${modules.custom.dir}.</ant:echo>
+            </j:if>
+            <j:if test="${context.getVariable('modules.custom.dir.exists') == 'false'}">
+                <ant:echo>Didn't find custom modules folder, initializing only from the default module folder ${basedir}/modules.</ant:echo>
+            </j:if>
+            <j:if test="${context.getVariable('modules.default.dir.exists') == 'true'}">
+                <j:if test="${context.getVariable('modules.custom.dir.exists') == 'true'}">
+                    <ant:echo>Found both default and custom modules folders, initializing from folder ${basedir}/modules and ${modules.custom.dir}.</ant:echo>
+                </j:if>
+            </j:if>
 
-			<!-- Get contents of the custom folder and copy into the extract folder -->
-			<!-- TODO: This is a work-around, ant can't do "foreach subfolder in folder" construct -->
-			<u:available file="${modules.dir}/custom">
-				<ant:echo>Overlaying all files from ${modules.dir}/custom to ${modules.extraction.dir}</ant:echo>
-				<copy todir="${modules.extraction.dir}">
-					<fileset dir="${modules.dir}/custom"/>
-				</copy>
-			</u:available>
+            <attainGoal name="xdat:buildModuleExtractionFolder"/>
+            
+            <!-- Extract all zips and jars from the default module folder to the extract folder. -->
+            <j:if test="${context.getVariable('modules.default.dir.exists') == 'true'}">
+                <j:set var="modules.hosting.dir" value="${basedir}/modules"/>
+                <ant:echo>Extracing modules from the default modules folder at ${modules.hosting.dir}.</ant:echo>
+                <attainGoal name="xdat:copyModulesToExtractionDir"/>
+            </j:if>
 
-			<!-- Copy all extracted overlaid contents to project folder -->
-			<ant:echo>Pushing all completed modules from ${modules.extraction.dir} to projects/${xdat.project.name}</ant:echo>
-			<copy todir="projects/${xdat.project.name}" preservelastmodified="true">
-				<fileset dir="${modules.extraction.dir}"/>
-			</copy>
+            <!-- Extract all zips and jars from the user-specified module folder to the extract folder. -->
+            <j:if test="${context.getVariable('modules.custom.dir.exists') == 'true'}">
+                <j:set var="modules.hosting.dir" value="${modules.custom.dir}"/>
+                <ant:echo>Extracing modules from the custom modules folder at ${modules.hosting.dir}.</ant:echo>
+                <attainGoal name="xdat:copyModulesToExtractionDir"/>
+            </j:if>
 
-		</j:if>
-	</goal>
+            <!-- Copy all extracted overlaid contents to project folder -->
+            <ant:echo>Pushing all completed modules from ${modules.extraction.dir} to projects/${xdat.project.name}</ant:echo>
+            <copy todir="projects/${xdat.project.name}" preservelastmodified="true">
+                <fileset dir="${modules.extraction.dir}"/>
+            </copy>
+
+        </j:if>
+    </goal>
+    <goal name="xdat:buildModuleExtractionFolder">
+            <!-- Specify and clear (rm and re-mk) the extract folder. -->
+            <j:if test="${context.getVariable('xdat.modules.extraction.location') != null}">
+                <j:set var="modules.extraction.dir" value="${xdat.modules.extraction.location}"/>
+            </j:if>
+            <j:if test="${context.getVariable('xdat.modules.extraction.location') == null}">
+                <j:set var="modules.extraction.dir" value="${java.io.tmpdir}/${xdat.project.name}_modules"/>
+            </j:if>
+            <ant:echo>Clearing and refreshing module extraction folder: ${modules.extraction.dir}</ant:echo>
+            <u:available file="${modules.extraction.dir}">
+                <ant:delete dir="${modules.extraction.dir}"/>
+            </u:available>
+            <ant:mkdir dir="${modules.extraction.dir}"/>
+    </goal>
+    <goal name="xdat:copyModulesToExtractionDir">
+        <ant:echo>Extracting all archive files from ${modules.hosting.dir} to ${modules.extraction.dir}</ant:echo>
+            <ant:unzip dest="${modules.extraction.dir}">
+            <fileset dir="${modules.hosting.dir}">
+                    <include name="**/*.zip"/>
+                    <include name="**/*.jar"/>
+                </fileset>
+            </ant:unzip>
+
+            <!-- Get contents of the custom folder and copy into the extract folder -->
+            <!-- TODO: This is a work-around, ant can't do "foreach subfolder in folder" construct -->
+        <u:available file="${modules.hosting.dir}/custom">
+            <ant:echo>Overlaying all files from ${modules.hosting.dir}/custom to ${modules.extraction.dir}</ant:echo>
+                <copy todir="${modules.extraction.dir}">
+                <fileset dir="${modules.hosting.dir}/custom"/>
+                </copy>
+            </u:available>
+    </goal>
 	<!-- ================================================================ -->
 	<!--Copies pertinent project based files to the deployment            -->
 	<!-- ================================================================ -->

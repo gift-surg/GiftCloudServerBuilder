@@ -13,9 +13,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nrg.xdat.model.XnatSubjectassessordataI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xft.XFTTable;
+import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -25,10 +28,14 @@ import org.restlet.data.Status;
 import org.restlet.resource.Variant;
 
 import java.io.IOException;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 public class ProjectSubjectVisitsRestlet extends SecureResource {
-    public ProjectSubjectVisitsRestlet(Context context, Request request, Response response) {
+    public ProjectSubjectVisitsRestlet(Context context, Request request, Response response) throws SQLException, DBPoolException {
         super(context, request, response);
         setModifiable(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
@@ -43,10 +50,13 @@ public class ProjectSubjectVisitsRestlet extends SecureResource {
             response.setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED, "You must specify a " + (!hasProjectID ? "project" : "subject") + " ID for this service call.");
             _project = null;
             _subject = null;
+            _actions = null;
             return;
         }
 
-        _log.info(String.format("Found service call for project %s, subject %s, and visit %s.", _projectId, _subjectId, _visitId));
+        _actions = getActions();
+
+        _log.info(String.format("Found service call for project %s, subject %s, visit %s, actions %s.", _projectId, _subjectId, _visitId, _actions));
 
         _project = XnatProjectdata.getProjectByIDorAlias(_projectId, user, false);
         if (_project == null) {
@@ -59,10 +69,7 @@ public class ProjectSubjectVisitsRestlet extends SecureResource {
         if (_subject == null) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, "The subject ID " + _subjectId + " does not result in a valid subject.");
             _log.warn("Found no corresponding subject for requested subject ID: " + _subjectId + ", requested by user: " + user.getUsername());
-            return;
         }
-
-        initializeVisits();
     }
 
     /**
@@ -72,14 +79,26 @@ public class ProjectSubjectVisitsRestlet extends SecureResource {
      */
     @Override
     public void handleGet() {
-        try {
-            if (StringUtils.isBlank(_visitId)) {
-                getResponse().setEntity("{\"ResultSet\":{\"Result\":" + _mapper.writeValueAsString(_visits) + "}}", MediaType.APPLICATION_JSON);
-            } else {
-                getResponse().setEntity("{\"ResultSet\":{\"Result\":" + _mapper.writeValueAsString(_visits.get(_visitId)) + "}}", MediaType.APPLICATION_JSON);
+        if (_project.getId().startsWith("DIAN")) {
+            try {
+                if (StringUtils.isBlank(_visitId)) {
+                    Map<String, Object> visitData = new Hashtable<String, Object>();
+                    visitData.put("project", _projectId);
+                    visitData.put("subject", _subjectId);
+                    visitData.put("last_visit_id", getLastVisitID());
+                    visitData.put("available", VISIT_LIST);
+                    visitData.put("visit_data", getSubjectVisits());
+                    String marshaledVisitData = _mapper.writeValueAsString(visitData);
+                    String payload = String.format(VISITS, marshaledVisitData, 1);
+                    getResponse().setEntity(payload, MediaType.APPLICATION_JSON);
+                } else {
+                    getResponse().setEntity(getSubjectVisitData(), MediaType.APPLICATION_JSON);
+                }
+            } catch (Exception exception) {
+                respondToException(exception, Status.SERVER_ERROR_INTERNAL);
             }
-        } catch (IOException exception) {
-            respondToException(exception, Status.SERVER_ERROR_INTERNAL);
+        } else {
+            getResponse().setEntity("{\"ResultSet\":{\"Result\":\"\"}}", MediaType.APPLICATION_JSON);
         }
     }
 
@@ -91,45 +110,78 @@ public class ProjectSubjectVisitsRestlet extends SecureResource {
     @Override
     public void handlePost() {
         if (StringUtils.isBlank(_visitId)) {
-            getResponse().setEntity("{\"ResultSet\":{\"Result\":" + formatVisitId(_visits.size()) + "}}", MediaType.APPLICATION_JSON);
+            getResponse().setEntity("{\"ResultSet\":{\"Result\":\"\"}}", MediaType.APPLICATION_JSON);
         } else {
-            getRequest().getEntity();
+            getResponse().setEntity("{\"ResultSet\":{\"Result\":\"\"}}", MediaType.APPLICATION_JSON);
         }
     }
 
-    /**
-     * This constructs a crude "visit map" based on visit date. Basically all experiments
-     * performed on a single day are characterized as being part of the same visit. The containing
-     * map and set are TreeMap and TreeSet respectively, so that dates and experiment IDs are
-     * automatically sorted.
-     */
-    private void initializeVisits() {
-        List<XnatSubjectassessordataI> experiments = _subject.getExperiments_experiment();
-        TreeMap<Date, TreeSet<String>> visitsByDate = new TreeMap<Date, TreeSet<String>>();
-        for (XnatSubjectassessordataI experiment : experiments) {
-            Date date = (Date) experiment.getDate();
-            if (!visitsByDate.containsKey(date)) {
-                visitsByDate.put(date, new TreeSet<String>());
+    private String getLastVisitID() throws ElementNotFoundException, XFTInitException, SQLException, DBPoolException {
+        final String query = String.format(QUERY_MAX_VISIT_ID, _subject.getId(), _project.getId());
+        XFTTable results = XFTTable.Execute(query, user.getDBName(), user.getUsername());
+        if (results.getNumRows() > 0) {
+            return (String) results.convertColumnToArrayList("last_visit_id").get(0);
+        } else {
+            return DEFAULT_VISIT_ID;
+        }
+    }
+
+    private List<Map<String, Object>> getSubjectVisits() throws SQLException, DBPoolException, IOException {
+        final String query = String.format(QUERY_VISIT_LIST, _subject.getId(), _project.getId());
+        XFTTable results = XFTTable.Execute(query, user.getDBName(), user.getUsername());
+        final int numRows = results.getNumRows();
+        List<Map<String, Object>> mappedRows = new ArrayList<Map<String, Object>>();
+        if (numRows > 0) {
+            while(results.hasMoreRows()) {
+                Object[] row = results.nextRow();
+                Map<String, Object> mappedRow = new Hashtable<String, Object>();
+                for (int index = 0; index < ROW_LIST.length; index++) {
+                    mappedRow.put(ROW_LIST[index], row[index] == null ? "" : row[index]);
+                }
+                mappedRows.add(mappedRow);
             }
-            visitsByDate.get(date).add(experiment.getId());
         }
-        int index = 0;
-        for (TreeSet<String> experimentIDs : visitsByDate.values()) {
-            _visits.put(formatVisitId(index), experimentIDs);
-        }
+        return mappedRows;
     }
 
-    private String formatVisitId(int index) {
-        return String.format("v%03d", index);
+    private String getSubjectVisitData() throws SQLException, DBPoolException, IOException {
+        final String query = String.format(QUERY_VISIT_LIST + QUERY_FILTER_BY_VISIT, _subject.getId(), _project.getId(), _visitId);
+        XFTTable results = XFTTable.Execute(query, user.getDBName(), user.getUsername());
+        final int numRows = results.getNumRows();
+        String payload;
+        if (numRows > 0) {
+            payload = _mapper.writeValueAsString(results.rows());
+        } else {
+            payload = "";
+        }
+        return String.format(VISITS, payload, numRows);
     }
 
     private static final Log _log = LogFactory.getLog(ProjectSubjectVisitsRestlet.class);
+    // private static final String VISIT_LIST = "{\"ResultSet\":{\"Result\":{\"project\":\"%s\",\"subject\":\"%s\",\"first_unused\":\"%s\",\"available\":[\"v00\",\"v01\",\"v02\",\"v03\",\"v04\",\"v05\"]},\"totalRecords\":\"1\"}}";
+    private static final String[] VISIT_LIST = { "v00","v01","v02","v03","v04","v05" };
+    private static final String[] ROW_LIST = { "visit_id", "type", "date", "occurred" };
+    private static final String VISITS = "{\"ResultSet\":{\"Result\":%s,\"totalRecords\":\"%s\"}}";
+    private static final String DEFAULT_VISIT_ID = "v00";
+    private static final String QUERY_MAX_VISIT_ID = "select max(visit_id) as last_visit_id from xnat_experimentdata expt " +
+            "LEFT JOIN xnat_subjectassessordata sad ON expt.id=sad.id " +
+            "LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id " +
+            "WHERE xme.element_name='visit:visitData' AND subject_id='%s' AND project='%s'";
+
+    private static final String QUERY_VISIT_LIST = "select visit_id, type, date, occurred from xnat_experimentdata expt " +
+            "LEFT JOIN xnat_subjectassessordata sad ON expt.id=sad.id " +
+            "LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id " +
+            "LEFT JOIN visit_visitData visit ON expt.id=visit.id " +
+            "WHERE xme.element_name='visit:visitData' AND subject_id='%s' AND project='%s'";
+
+    private static final String QUERY_FILTER_BY_VISIT = " AND visit_id='%s'";
+
 
     private final ObjectMapper _mapper = new ObjectMapper();
-    private final XnatProjectdata _project;
-    private final XnatSubjectdata _subject;
     private final String _projectId;
     private final String _subjectId;
+    private final XnatProjectdata _project;
+    private final XnatSubjectdata _subject;
+    private final List<String> _actions;
     private final String _visitId;
-    private TreeMap<String, TreeSet<String>> _visits = new TreeMap<String, TreeSet<String>>();
 }

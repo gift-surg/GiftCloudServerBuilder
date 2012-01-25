@@ -54,7 +54,7 @@ xdat.require_login=true
 #  account be enabled, and the user will be unable to login until the account is enabled.
 xdat.enable_new_registrations=false
 
-# The modules location setting indicates where data type modules are located. If this isn't set,
-# the setup/update scripts will look in the modules subfolder of the xnat_builder installation.
-# xdat.modules.location=/Library/XNAT/modules
-
+# The modules location setting indicates where custom modules are located. The setup/update scripts
+# always look in the modules subfolder of the xnat_builder installation, but will also look in the
+# indicated folder if this is set.
+# xdat.modules.location=d:/Path/To/Modules/Repo

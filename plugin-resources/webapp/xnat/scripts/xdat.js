@@ -481,7 +481,7 @@ function validateDate(sel){
   	button.type="button";
   	button.value=">";
   	button.id="cal_"+input.id;
-  	
+
   	//CREATE CALENDAR CONTAINER
 	var calendarContainer = document.createElement("DIV");
 	calendarContainer.className="yui-skin-sam";
@@ -499,8 +499,12 @@ function validateDate(sel){
 	var calendarDIV= document.createElement("DIV");
 	calendarContainer.appendChild(calendarDIV);
 	calendarDIV.style.position="absolute";
-	
-	var cal1 = new YAHOO.widget.Calendar("cal1",calendarDIV,{context:["cal_"+input.id,"tr","tl"],title:_title,navigator:true,close:true,visible:false}); 
+
+      try {
+          var cal1 = new YAHOO.widget.Calendar("cal1", calendarDIV, {context:["cal_" + input.id, "tr", "tl"], title:_title, navigator:true, close:true, visible:false});
+      } catch (e) {
+          alert("Found exception creating calendar: " + e);
+      }
 
     cal1.text_input = input;
     input.calendar=cal1;

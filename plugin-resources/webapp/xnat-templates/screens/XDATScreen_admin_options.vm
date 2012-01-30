@@ -29,7 +29,8 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 	<td colspan=2>
 
 	<a href="$link.setPage("Configuration.vm")">Configuration</a><BR><BR>
-
+	
+<a href="$link.setPage("XDATScreen_EditScript.vm").addPathInfo("user","Test")">View Edit Script</a><BR><BR>
 <a href="$link.setPage("XDATScreen_emailSpecifications.vm")">Set Email Settings</a><BR><BR>
 
 <a href="$link.setAction("RefreshAction").addPathInfo("refresh","ElementSecurity")">Reload Security Settings</a><BR><BR>

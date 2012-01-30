@@ -26,6 +26,7 @@ import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.restlet.Context;
@@ -189,6 +190,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 				|| containsQueryVariable("activeSince")
 				|| containsQueryVariable("recent")
 				|| containsQueryVariable("favorite")
+				|| containsQueryVariable("admin")
 				|| (this.requested_format!=null && requested_format.equals("search_xml"))){
 
 			try {
@@ -274,7 +276,25 @@ public class ProjectListResource extends QueryOrganizerResource {
 						orCC.addCriteria(cc);
 					}
 				}
-				
+				if(getQueryVariable("admin") != null){
+					if (isQueryVariableTrue("admin")) {
+						if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
+							CriteriaCollection cc = new CriteriaCollection("OR");
+							DisplayCriteria dc = new DisplayCriteria();
+							dc = new DisplayCriteria();
+							dc.setSearchFieldByDisplayField("xnat:projectData","ID");
+							dc.setComparisonType(" IS NOT ");
+							dc.setValue(" NULL ",false);
+							dc.setOverrideDataFormatting(true);
+							cc.add(dc);
+							orCC.addCriteria(cc);
+						}			
+					}
+					else {
+						
+					}
+				}
+								
 				String member = this.getQueryVariable("member");
 				if(member!=null){
 					if(member.equalsIgnoreCase("true")){

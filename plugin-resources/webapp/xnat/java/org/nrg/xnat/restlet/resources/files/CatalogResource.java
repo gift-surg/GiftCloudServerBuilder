@@ -13,6 +13,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
@@ -168,7 +169,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 						}
 						resource.deleteFromFileSystem(proj.getRootArchivePath());
 			            
-							DBAction.RemoveItemReference(this.parent.getItem(), xmlPath, resource.getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(this.parent.getItem(), xmlPath, resource.getItem(), user);
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
 						return;

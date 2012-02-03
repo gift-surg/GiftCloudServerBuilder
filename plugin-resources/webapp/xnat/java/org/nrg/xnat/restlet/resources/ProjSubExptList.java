@@ -23,6 +23,7 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -172,7 +173,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 							this.subject.setProject(this.proj.getId());
 							this.subject.setLabel(expt.getSubjectId());
 							this.subject.setId(XnatSubjectdata.CreateNewID());
-							this.subject.save(user, false, true);
+							SaveItemHelper.unauthorizedSave(subject,user, false, true);
 							expt.setSubjectId(this.subject.getId());
 						}
 					}
@@ -237,7 +238,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 					return;
 	            }
 
-				if(expt.save(user,false,allowDataDeletion)){
+				if(SaveItemHelper.authorizedSave(expt,user,false,allowDataDeletion)){
 					MaterializedView.DeleteByUser(user);
 
 					if(this.proj.getArcSpecification().getQuarantineCode().equals(1)){

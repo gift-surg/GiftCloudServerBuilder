@@ -67,6 +67,7 @@ import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileTracker;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
@@ -3229,7 +3230,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -3270,7 +3271,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+		        SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);

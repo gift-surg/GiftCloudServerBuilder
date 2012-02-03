@@ -11,12 +11,14 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
@@ -199,8 +201,9 @@ public class ReconResource extends ItemResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 	            }
-				
-					recon.save(user,false,allowDataDeletion);
+
+		           Authorizer.getInstance().authorizeSave(session.getItem(), user);
+	            SaveItemHelper.authorizedSave(recon,user,false,allowDataDeletion);
 					
 					MaterializedView.DeleteByUser(user);
 				}else{
@@ -255,7 +258,7 @@ public class ReconResource extends ItemResource {
 	                    }
 	                }
 	            }
-	            DBAction.DeleteItem(recon.getItem().getCurrentDBVersion(), user);
+	            SaveItemHelper.authorizedDelete(recon.getItem().getCurrentDBVersion(), user);
 	            
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);

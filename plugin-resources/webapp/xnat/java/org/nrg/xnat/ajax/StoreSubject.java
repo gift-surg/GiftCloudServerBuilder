@@ -28,6 +28,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.xml.sax.InputSource;
 
 public class StoreSubject{
@@ -127,7 +128,7 @@ public class StoreSubject{
             
             subject.setId(newID);
             
-            subject.save(user, false, true);
+            SaveItemHelper.unauthorizedSave(subject,user, false, true);
             successful=true;
 
         } catch (Exception e1) {

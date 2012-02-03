@@ -38,6 +38,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 
 
 public class BatchTransfer extends Thread{
@@ -120,7 +121,7 @@ public class BatchTransfer extends Thread{
                 
                 try {
                     wkdata.setStatus("In Progress");
-                    wkdata.save(user, false, false);
+                    SaveItemHelper.authorizedSave(wkdata,user, false, false);
                 } catch (Throwable e) {
                     logger.error("",e);
                 }
@@ -140,7 +141,7 @@ public class BatchTransfer extends Thread{
                 session.fixScanTypes();
                 session.correctArchivePaths();
                 
-                session.save(user, false, false);
+                SaveItemHelper.authorizedSave(session,user, false, false);
                 
 
 //                        logger.error("",e2);
@@ -157,7 +158,7 @@ public class BatchTransfer extends Thread{
                     wkdata.setCurrentStepId("Copy To Arc");
                     wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
                     wkdata.setNextStepId("Verify Copy");
-                    wkdata.save(user, false, false);
+                    SaveItemHelper.authorizedSave(wkdata,user, false, false);
                 } catch (Exception e) {
                     logger.error("",e);
                 }
@@ -237,7 +238,7 @@ public class BatchTransfer extends Thread{
                     wkdata.setCurrentStepId("Verify Copy");
                     wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
                     wkdata.setNextStepId("Zip");
-                    wkdata.save(user, false, false);
+                    SaveItemHelper.authorizedSave(wkdata,user, false, false);
                 } catch (Exception e) {
                     logger.error("",e);
                 }
@@ -250,7 +251,7 @@ public class BatchTransfer extends Thread{
                     try {
                 	wkdata.setStatus("Failed");
                 	wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                	wkdata.save(user, false, false);
+                	SaveItemHelper.authorizedSave(wkdata,user, false, false);
                     } catch (Exception e) {
                 	logger.error("",e);
                     }
@@ -328,7 +329,7 @@ public class BatchTransfer extends Thread{
                   try {
                       wkdata.setStatus("Complete");
                       wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                      wkdata.save(user, false, false);
+                      SaveItemHelper.authorizedSave(wkdata,user, false, false);
                   } catch (Exception e) {
                       logger.error("",e);
                   }
@@ -378,7 +379,7 @@ public class BatchTransfer extends Thread{
                       try {
                           wkdata.setStatus("Complete");
                           wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                          wkdata.save(user, false, false);
+                          SaveItemHelper.authorizedSave(wkdata,user, false, false);
                       } catch (Exception e) {
                           logger.error("",e);
                       }
@@ -386,7 +387,7 @@ public class BatchTransfer extends Thread{
                       try {
                           wkdata.setStatus("Failed");
                           wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                          wkdata.save(user, false, false);
+                          SaveItemHelper.authorizedSave(wkdata,user, false, false);
                       } catch (Exception e) {
                           logger.error("",e);
                       }

@@ -25,6 +25,7 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class XnatPipelineLauncher {
@@ -239,7 +240,7 @@ public class XnatPipelineLauncher {
             wrk.setPipelineName(this.getPipelineName());
             wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
             wrk.setStatus("Queued");
-            wrk.save(user,false,true);
+            SaveItemHelper.authorizedSave(wrk,user,false,true);
             ProcessLauncher processLauncher = new ProcessLauncher();
             processLauncher.setCommand(command + " " + pcommand);
             processLauncher.start();

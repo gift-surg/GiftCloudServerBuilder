@@ -15,6 +15,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
@@ -75,7 +76,7 @@ public class TriggerPipelines implements Callable<Boolean> {
 				ArrayList<WrkWorkflowdata> workflows = WrkWorkflowdata.getWrkWorkflowdatasByField("wrk:workFlowData.ID", expt.getId(), user, false);
 
 				for (WrkWorkflowdata wrk : workflows){
-				    DBAction.DeleteItem(wrk.getItem(),user);
+					SaveItemHelper.authorizedDelete(wrk.getItem(),user);
 				}
 			} catch (SQLException e) {
 				logger.error("",e);

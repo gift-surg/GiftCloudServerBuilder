@@ -2,6 +2,7 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -40,6 +41,27 @@ public class AddProject extends SecureAction {
             found = populater.getItem();
             XnatProjectdata  project = new XnatProjectdata(found);
                        
+            if(StringUtils.isEmpty(project.getId())){
+            	data.addMessage("Missing required field (Abbreviation).");
+				TurbineUtils.SetEditItem(found,data);
+                if (data.getParameters().getString("edit_screen") !=null)
+                {
+                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                }
+                return;
+            }
+            
+            XFTItem existing=project.getItem().getCurrentDBVersion(false);
+            if(existing!=null){
+            	data.addMessage("Project '" + project.getId() + "' already exists.");
+				TurbineUtils.SetEditItem(found,data);
+                if (data.getParameters().getString("edit_screen") !=null)
+                {
+                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                }
+                return;
+            }
+            
             try {
 				project.initNewProject(user,false,false);
 			} catch (Exception e2) {

@@ -32,6 +32,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
@@ -239,7 +240,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 			subject.setId(newID);
 			try {
-				subject.save(user, false, false);
+				SaveItemHelper.authorizedSave(subject,user, false, false);
 			} catch (Exception e) {
 				failed("unable to save new subject " + newID);
 				throw new ServerException("Unable to save new subject " + subject, e);
@@ -416,7 +417,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			workflow = WorkflowUtils.buildOpenWorkflow(user, src.getXSIType(), src.getId(), src.getProject());
 			workflow.setPipelineName("Transfer");
 			workflow.setStepDescription("Validating");
-			workflow.save(user, false, false);
+			SaveItemHelper.authorizedSave(workflow,user, false, false);
 		} catch (Exception e2) {
 			failed("unable to create workflow entry.");
 			throw new ServerException("unable to create workflow entry.", e2);
@@ -447,7 +448,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
 				public void save(XnatImagesessiondata merged) throws Exception {
-					if(merged.save(user,false,false)){
+					if(SaveItemHelper.authorizedSave(merged,user,false,false)){
 						user.clearLocalCache();
 						try {
 							MaterializedView.DeleteByUser(user);
@@ -481,7 +482,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			try {
 				workflow.setStepDescription(WorkflowUtils.COMPLETE);
 				workflow.setStatus(WorkflowUtils.COMPLETE);
-				workflow.save(user, false, false);
+				SaveItemHelper.authorizedSave(workflow,user, false, false);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -493,7 +494,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		} catch (ServerException e) {
 			try {
 				workflow.setStatus(WorkflowUtils.FAILED);
-				workflow.save(user, false, false);
+				SaveItemHelper.authorizedSave(workflow,user, false, false);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -501,7 +502,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		} catch (ClientException e) {
 			try {
 				workflow.setStatus(WorkflowUtils.FAILED);
-				workflow.save(user, false, false);
+				SaveItemHelper.authorizedSave(workflow,user, false, false);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -509,7 +510,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		} catch (Throwable e) {
 			try {
 				workflow.setStatus(WorkflowUtils.FAILED);
-				workflow.save(user, false, false);
+				SaveItemHelper.authorizedSave(workflow,user, false, false);
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -527,7 +528,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	public void setStep(String step,WrkWorkflowdata workflow){
 		try {
 			workflow.setStepDescription(step);
-			workflow.save(user, false, false);
+			SaveItemHelper.authorizedSave(workflow,user, false, false);
 		} catch (Exception e1) {
 			logger.error("", e1);
 		}

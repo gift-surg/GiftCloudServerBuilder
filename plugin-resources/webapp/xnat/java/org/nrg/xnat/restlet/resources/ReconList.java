@@ -10,6 +10,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
@@ -19,6 +20,7 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
@@ -231,8 +233,9 @@ public class ReconList extends QueryOrganizerResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 	            }
-				
-					recon.save(user,false,allowDataDeletion);
+
+		           Authorizer.getInstance().authorizeSave(session.getItem(), user);
+	            SaveItemHelper.authorizedSave(recon,user,false,allowDataDeletion);
 					
 					MaterializedView.DeleteByUser(user);
 				

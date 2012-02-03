@@ -26,7 +26,9 @@ import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 public class ModifySubjectAssessorData extends ModifyItem{
@@ -80,7 +82,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     if (items.size() > 0)
                     {
                         ItemI toRemove = items.getFirst();
-                        DBAction.RemoveItemReference(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
+                        SaveItemHelper.unauthorizedRemoveChild(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
                         found.removeItem(toRemove);
                         removedReference = true;
                     }else{
@@ -115,8 +117,12 @@ public class ModifySubjectAssessorData extends ModifyItem{
             if (vr.isValid())
             {
                 try {
-                    
-                    found.save(TurbineUtils.getUser(data),false,allowDataDeletion());
+                    if(!TurbineUtils.getUser(data).canEdit(sa)){
+                    	error(new InvalidPermissionException("Unable to modify experient "+ sa.getId()),data);
+                    	return;
+                    }
+                	
+                    SaveItemHelper.authorizedSave(found,TurbineUtils.getUser(data),false,allowDataDeletion());
                     
 					MaterializedView.DeleteByUser(TurbineUtils.getUser(data));
 

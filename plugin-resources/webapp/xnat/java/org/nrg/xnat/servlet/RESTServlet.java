@@ -45,6 +45,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -327,7 +328,7 @@ public class RESTServlet extends HttpServlet {
 							            				workflow.setPipelineName("New Member: " + newUser.getFirstname() + " " + newUser.getLastname());
 							            				workflow.setStatus("Complete");
 							            				workflow.setLaunchTime(Calendar.getInstance().getTime());
-							            				workflow.save(user, false, false);
+							            				SaveItemHelper.authorizedSave(workflow,user, false, false);
 							            			} catch (Throwable e) {
 							            				logger.error(e);
 							            			}
@@ -382,7 +383,7 @@ public class RESTServlet extends HttpServlet {
 					XFTItem item = reader.parse(is);
 					XnatInvestigatordata investigator=new XnatInvestigatordata(item);
 					if(investigator.getItem().getCurrentDBVersion()==null){
-						investigator.save(user, false, false);
+						SaveItemHelper.authorizedSave(investigator,user, false, false);
 					}
 					response.setHeader("Cache-Control", "no-cache");
 					String query = "SELECT DISTINCT ON ( inv.lastname,inv.firstname) inv.firstname,inv.lastname,inv.institution,inv.department,inv.email,inv.xnat_investigatorData_id,login FROM xnat_investigatorData inv LEFT JOIN xdat_user u ON ((lower(inv.firstname)=lower(u.firstname) AND lower(inv.lastname)=lower(u.lastname)) OR inv.email=u.email) ORDER BY inv.lastname,inv.firstname";
@@ -440,7 +441,7 @@ public class RESTServlet extends HttpServlet {
 
 								try {
 									if (!user.canDelete(project)){
-										response.sendError(401);
+										response.sendError(403);
 										return;
 									}
 								} catch (InvalidItemException e1) {	

@@ -23,6 +23,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
@@ -149,7 +150,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
             throw new ValidationException(vr.toString());
         }else{
         	final XnatProjectdata proj = newmr.getProjectData();
-        	if(newmr.save(user,false,allowDataDeletion)){
+        	if(SaveItemHelper.authorizedSave(newmr,user,false,allowDataDeletion)){
 	try {
 				MaterializedView.DeleteByUser(user);
 
@@ -169,7 +170,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
   				workflow.setPipelineName("Header Mapping");
   				workflow.setStatus("Complete");
   				workflow.setLaunchTime(Calendar.getInstance().getTime());
-  				workflow.save(user, false, false);
+  				SaveItemHelper.authorizedSave(workflow,user, false, false);
   			} catch (Throwable e) {
   				logger.error("",e);
   			}

@@ -30,6 +30,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.search.CriteriaCollection;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineActions extends SecureAction{
@@ -98,7 +99,7 @@ public class PipelineActions extends SecureAction{
             		xnatPipelineLauncher.setStartAt(workFlow.getNextStepId());
             	}
                 for (WrkWorkflowdata wrk : workflows){
-                    DBAction.DeleteItem(wrk.getItem(),TurbineUtils.getUser(data));
+                	SaveItemHelper.authorizedDelete(wrk.getItem(),TurbineUtils.getUser(data));
                 }
             }
             xnatPipelineLauncher.launch();

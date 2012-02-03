@@ -16,6 +16,7 @@ import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 
 
 
@@ -65,7 +66,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		subject.setId(TEST_SUB_1);
 		subject.setProject(PROJECT);
 		subject.setLabel(TEST_SUB_1);
-		subject.save(user, false, false);
+		SaveItemHelper.authorizedSave(subject,user, false, false);
 		
 		mr=new XnatMrsessiondata((UserI)user);
 		mr.setId(MR);
@@ -73,7 +74,7 @@ public class PrearcSessionArchiverTest extends BaseXDATTestCase {
 		mr.setLabel(MR);
 		mr.setUid(MR);
 		mr.setSubjectId(TEST_SUB_1);
-		mr.save(user, false, false);
+		SaveItemHelper.authorizedSave(mr,user, false, false);
 	}
 	
 	@AfterClass

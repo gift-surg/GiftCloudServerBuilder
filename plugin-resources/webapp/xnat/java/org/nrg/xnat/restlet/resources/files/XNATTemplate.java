@@ -25,6 +25,7 @@ import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -388,7 +389,7 @@ public class XNATTemplate extends SecureResource {
 				recon.setOut_file(catResource);
 			}
 
-			recon.save(user, false, false);
+			SaveItemHelper.authorizedSave(recon,user, false, false);
 			return true;
 		} else if (scans.size()>0) {
 			XnatImagescandata scan=scans.get(0);
@@ -441,7 +442,7 @@ public class XNATTemplate extends SecureResource {
 
 			scan.setFile(catResource);
 
-			scan.save(user, false, false);
+			SaveItemHelper.authorizedSave(scan,user, false, false);
 			return true;
 		} else if (expts.size()>0) {
 //			experiment
@@ -505,12 +506,12 @@ public class XNATTemplate extends SecureResource {
 					iad.setOut_file(catResource);
 				}
 
-				iad.save(user, false, false);
+				SaveItemHelper.authorizedSave(iad,user, false, false);
 
 			}else{
 				session.setResources_resource(catResource);
 
-				session.save(user, false, false);
+				SaveItemHelper.authorizedSave(session,user, false, false);
 			}
 			return true;
 		}else if(sub!=null){
@@ -548,7 +549,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			sub.setResources_resource(catResource);
 
-			sub.save(user, false, false);
+			SaveItemHelper.authorizedSave(sub,user, false, false);
 			return true;
 		}else if(proj!=null){
 			String dest_path=null;
@@ -584,7 +585,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			proj.setResources_resource(catResource);
 
-			proj.save(user, false, false);
+			SaveItemHelper.authorizedSave(proj,user, false, false);
 			return true;
 		}
 		return true;

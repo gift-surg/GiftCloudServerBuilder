@@ -40,6 +40,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
@@ -218,7 +219,7 @@ public class ArcPut extends RawScreen {
                     FileUtils.MoveDir(destination, dest, true);
                     FileUtils.DeleteFile(destination);
                     try {
-                        tempMR.save(user,false,false);
+                    	SaveItemHelper.authorizedSave(tempMR,user,false,false);
                         data.setMessage("Files successfully uploaded.");
                     } catch (Exception e) {
                     	logger.error("",e);

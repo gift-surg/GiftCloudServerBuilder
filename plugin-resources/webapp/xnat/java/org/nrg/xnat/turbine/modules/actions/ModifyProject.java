@@ -5,6 +5,7 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -19,8 +20,10 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class ModifyProject extends SecureAction {
     static Logger logger = Logger.getLogger(ModifyItem.class);
@@ -42,6 +45,16 @@ public class ModifyProject extends SecureAction {
 
             XFTItem item = populater.getItem();
             XnatProjectdata  project = new XnatProjectdata(item);
+                       
+            if(StringUtils.isEmpty(project.getId())){
+            	data.addMessage("Missing required field (Abbreviation).");
+				TurbineUtils.SetEditItem(item,data);
+                if (data.getParameters().getString("edit_screen") !=null)
+                {
+                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                }
+                return;
+            }
             
             if (error!=null)
             {
@@ -51,6 +64,10 @@ public class ModifyProject extends SecureAction {
                 return;
             }
 
+            if(!user.canEdit(project)){
+            	error(new InvalidPermissionException("User cannot modify project " + project.getId()), data);
+            	return;
+            }
             
             try {
 				project.initNewProject(user,false,true);
@@ -65,7 +82,7 @@ public class ModifyProject extends SecureAction {
 			}
             
             
-            item.save(user, false, false);
+            SaveItemHelper.authorizedSave(item,user, false, false);
             
             XnatProjectdata postSave = new XnatProjectdata(item);
             postSave.getItem().setUser(user);

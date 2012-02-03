@@ -34,6 +34,7 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 /**
@@ -259,7 +260,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			}
 		}
 		if (save) {
-			arcProject.save(user, false, true);
+			SaveItemHelper.authorizedSave(arcProject,user, false, true);
 		}
 		}catch(Exception e) {
 			success = false;

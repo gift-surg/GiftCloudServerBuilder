@@ -34,6 +34,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
@@ -383,7 +384,7 @@ public class ExptFileUpload extends SecureAction {
                 FileUtils.DeleteFile(dir);
                 
                 try {
-                    tempMR.save(TurbineUtils.getUser(data),false,false);
+                	SaveItemHelper.authorizedSave(tempMR,TurbineUtils.getUser(data),false,false);
                     data.setMessage("Files successfully uploaded.");
                 } catch (Exception e) {
                     error(e,data);

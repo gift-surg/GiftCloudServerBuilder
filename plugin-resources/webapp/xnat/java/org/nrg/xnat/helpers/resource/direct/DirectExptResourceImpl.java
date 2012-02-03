@@ -8,6 +8,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -38,7 +39,7 @@ public class DirectExptResourceImpl extends DirectResourceModifierA {
 	public boolean addResource(XnatResource resource, XDATUser user) throws Exception {
 		expt.setResources_resource(resource);
 		
-		expt.save(user, false, false);
+		SaveItemHelper.authorizedSave(expt,user, false, false);
 		
 		return true;
 	}

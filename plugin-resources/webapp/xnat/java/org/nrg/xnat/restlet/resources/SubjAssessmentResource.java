@@ -22,6 +22,7 @@ import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.Rename;
@@ -182,7 +183,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 									matched=(XnatExperimentdataShare)pp;
 									if(newLabel!=null && !pp.getLabel().equals(newLabel)){
 										((XnatExperimentdataShare)pp).setLabel(newLabel);
-										((XnatExperimentdataShare)pp).save(user,false,false);
+										SaveItemHelper.authorizedSave(((XnatExperimentdataShare)pp),user,false,false);
 									}
 									break;
 								}
@@ -208,7 +209,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 								expt.moveToProject(newProject,newLabel,user);
 
 								if(matched!=null){
-									DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user);
+									SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user);
 									expt.removeSharing_share(index);
 								}
 							}else{
@@ -226,7 +227,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 											pp.setProject(newProject.getId());
 											if(newLabel!=null)pp.setLabel(newLabel);
 											pp.setProperty("sharing_share_xnat_experimentda_id", expt.getId());
-											pp.save(user, false, false);
+											SaveItemHelper.authorizedSave(pp,user, false, false);
 										}else{
 											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in the " + newProject.getId() + " project.");
 											return;
@@ -338,7 +339,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priveledges for subjects in this project.");
 									return;
 					}
-								this.subject.save(user, false, true);
+								SaveItemHelper.authorizedSave(this.subject,user, false, true);
 								expt.setSubjectId(this.subject.getId());
 							}
 						}
@@ -451,7 +452,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						return;
 		            }
 					
-					if(expt.save(user,false,allowDataDeletion)){
+					if(SaveItemHelper.authorizedSave(expt,user,false,allowDataDeletion)){
 						user.clearLocalCache();
 					MaterializedView.DeleteByUser(user);
 

@@ -17,6 +17,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 
 /**
@@ -162,6 +163,6 @@ public class BaseXnatDicomseries extends AutoXnatDicomseries {
     	for(XnatDicomseriesImageI img : this.getImageset_image()){
     		((XnatDicomseriesImage)img).moveTo(newSessionDir, existingSessionDir, rootPath, user);
     	}
-    	this.save(user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false);
     }
 }

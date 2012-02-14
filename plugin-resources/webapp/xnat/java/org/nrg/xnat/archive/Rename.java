@@ -34,6 +34,7 @@ import org.nrg.xft.db.DBItemCache;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
@@ -143,7 +144,7 @@ public class Rename  implements Callable<File>{
 			final WrkWorkflowdata workflow = WorkflowUtils.buildOpenWorkflow(user, i.getXSIType(), i.getStringProperty("ID"), proj.getId());
 			workflow.setPipelineName(String.format("Renamed from %s to %s", current_label,newLabel));
 			workflow.setStepDescription(getStep().toString());
-			workflow.save(user, false, false);
+			SaveItemHelper.authorizedSave(workflow,user, false, false);
 			
 			
 			final URI expected=oldSessionDir.toURI();
@@ -193,7 +194,7 @@ public class Rename  implements Callable<File>{
 				}
 			}finally{
 				try {
-					workflow.save(user, false, false);
+					SaveItemHelper.authorizedSave(workflow,user, false, false);
 				} catch (Exception e1) {
 					logger.error("", e1);
 				}				
@@ -210,7 +211,7 @@ public class Rename  implements Callable<File>{
 	public void updateStep(final WrkWorkflowdata wrk, final STEP step){
 		wrk.setStepDescription(step.toString());
 		try {
-			wrk.save(user, false, false);
+			SaveItemHelper.authorizedSave(wrk,user, false, false);
 		} catch (Exception e1) {
 			logger.error("", e1);
 		}

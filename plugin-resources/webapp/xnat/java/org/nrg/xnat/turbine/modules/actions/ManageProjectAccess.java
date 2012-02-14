@@ -19,7 +19,9 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 
 public class ManageProjectAccess extends SecureAction {
@@ -31,6 +33,11 @@ public class ManageProjectAccess extends SecureAction {
         String p = data.getParameters().getString("project");
         XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
+        XDATUser user=TurbineUtils.getUser(data);
+        if(!user.canEdit(project)){
+        	error(new InvalidPermissionException("User cannot modify project " + project.getId()), data);
+        	return;
+        }
 
         String accessibility = data.getParameters().getString("accessibility");
         project.initAccessibility(accessibility, false);
@@ -69,7 +76,7 @@ public class ManageProjectAccess extends SecureAction {
             				workflow.setPipelineName("New Owner: " + newUOM.getFirstname() + " " + newUOM.getLastname());
             				workflow.setStatus("Complete");
             				workflow.setLaunchTime(Calendar.getInstance().getTime());
-            				workflow.save(TurbineUtils.getUser(data), false, false);
+            				SaveItemHelper.authorizedSave(workflow,TurbineUtils.getUser(data), false, false);
             			} catch (Throwable e) {
             				logger.error("",e);
             			}
@@ -120,7 +127,7 @@ public class ManageProjectAccess extends SecureAction {
             				workflow.setPipelineName("New Member: " + newUOM.getFirstname() + " " + newUOM.getLastname());
             				workflow.setStatus("Complete");
             				workflow.setLaunchTime(Calendar.getInstance().getTime());
-            				workflow.save(TurbineUtils.getUser(data), false, false);
+            				SaveItemHelper.authorizedSave(workflow,TurbineUtils.getUser(data), false, false);
             			} catch (Throwable e) {
             				logger.error("",e);
             			}
@@ -171,7 +178,7 @@ public class ManageProjectAccess extends SecureAction {
             				workflow.setPipelineName("New Collaborator: " + newUOM.getFirstname() + " " + newUOM.getLastname());
             				workflow.setStatus("Complete");
             				workflow.setLaunchTime(Calendar.getInstance().getTime());
-            				workflow.save(TurbineUtils.getUser(data), false, false);
+            				SaveItemHelper.authorizedSave(workflow,TurbineUtils.getUser(data), false, false);
             			} catch (Throwable e) {
             				logger.error("",e);
             			}

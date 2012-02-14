@@ -25,6 +25,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class ResetProjectBundle {
     private Logger logger = Logger.getLogger(ResetProjectBundle.class);
@@ -92,7 +93,7 @@ public class ResetProjectBundle {
         	
         	if(xss!=null && modified){
                 try {
-                    xss.save(user, true, true);
+                    SaveItemHelper.unauthorizedSave(xss,user, true, true);
                     
                     //XdatStoredSearch.ReplacePreLoadedSearch(xss);
                     

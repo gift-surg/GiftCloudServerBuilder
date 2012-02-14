@@ -28,11 +28,14 @@ public class AdminProjectAccess extends SecureAction {
             if (access!=null && !access.equals("")){
                 XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(pId, user, false);
                 
-                String currentAccess = p.getPublicAccessibility();
-                
-                if (!currentAccess.equals(access)){
-                    p.initAccessibility(access, true);
+                if(user.canEdit(p)){
+                    String currentAccess = p.getPublicAccessibility();
+                    
+                    if (!currentAccess.equals(access)){
+                        p.initAccessibility(access, true);
+                    }
                 }
+                
             }
             
             counter++;

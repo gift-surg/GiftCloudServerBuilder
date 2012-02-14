@@ -26,6 +26,7 @@ import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -231,7 +232,7 @@ public class ProjectMemberResource extends SecureResource {
 	            				workflow.setPipelineName("New Member: " + newUser.getFirstname() + " " + newUser.getLastname());
 	            				workflow.setStatus("Complete");
 	            				workflow.setLaunchTime(Calendar.getInstance().getTime());
-	            				workflow.save(user, false, false);
+	            				SaveItemHelper.authorizedSave(workflow,user, false, false);
 	            			} catch (Throwable e) {
 	            				e.printStackTrace();
 	            			}

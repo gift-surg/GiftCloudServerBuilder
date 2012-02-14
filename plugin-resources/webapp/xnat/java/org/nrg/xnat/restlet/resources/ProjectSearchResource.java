@@ -15,6 +15,7 @@ import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -129,7 +130,7 @@ public class ProjectSearchResource extends ItemResource {
 				}
 				
 				try {
-					search.save(user, false, true);
+					SaveItemHelper.authorizedSave(search,user, false, true);
 				} catch (DBPoolException e) {
 					e.printStackTrace();
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -180,9 +181,9 @@ public class ProjectSearchResource extends ItemResource {
 					
 					if(mine!=null){
 						if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
-							DBAction.DeleteItem(mine.getItem(), user);
+							SaveItemHelper.authorizedDelete(mine.getItem(), user);
 						}else{
-							DBAction.DeleteItem(search.getItem(), user);
+							SaveItemHelper.authorizedDelete(search.getItem(), user);
 						}
 					}
 				}

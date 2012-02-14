@@ -23,6 +23,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.presentation.RESTHTMLPresenter;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.ItemResource;
@@ -249,7 +250,7 @@ public class SavedSearchResource extends ItemResource {
 				}
 				
 				try {
-					search.save(user, false, true);
+					SaveItemHelper.unauthorizedSave(search,user, false, true);
 				} catch (DBPoolException e) {
 					e.printStackTrace();
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -311,18 +312,18 @@ public class SavedSearchResource extends ItemResource {
 					
 					if(mine!=null){
 						if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
-							DBAction.DeleteItem(mine.getItem(), user);
+							SaveItemHelper.authorizedDelete(mine.getItem(), user);
 						}else{
-							DBAction.DeleteItem(search.getItem(), user);
+							SaveItemHelper.authorizedDelete(search.getItem(), user);
 						}
 					}else if(group!=null){
 						if(search.getAllowedUser().size()>0 || search.getAllowedGroups_groupid().size()>1){
-							DBAction.DeleteItem(group.getItem(), user);
+							SaveItemHelper.authorizedDelete(group.getItem(), user);
 						}else{
-							DBAction.DeleteItem(search.getItem(), user);
+							SaveItemHelper.authorizedDelete(search.getItem(), user);
 						}
 					}else if(user.getGroup("ALL_DATA_ADMIN")!=null){
-						DBAction.DeleteItem(search.getItem(), user);
+						SaveItemHelper.authorizedDelete(search.getItem(), user);
 					}else{						
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 						return;

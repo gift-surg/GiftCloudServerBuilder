@@ -25,14 +25,15 @@ import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.ItemAccessHistory;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.email.EmailUtils;
 import org.nrg.xft.email.EmailerI;
 import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 
 public class ProjectAccessRequest {
@@ -552,6 +553,13 @@ public class ProjectAccessRequest {
 		this.moveOtherPARs(user);
 
 		if(accept){
+
+			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
+			
+			if(!user.canDelete(project)){
+				throw new InvalidPermissionException("User cannot modify project settings");
+			}
+			
 			final String projectID = this.getProjectID();
 
 			for (Map.Entry<String, UserGroup> entry : user.getGroups().entrySet()) {
@@ -559,15 +567,13 @@ public class ProjectAccessRequest {
 					for (XdatUserGroupid map : user.getGroups_groupid()) {
 						if (map.getGroupid().equals(entry.getValue().getId())) {
 							if(!map.getGroupid().endsWith("_owner"))
-								DBAction.DeleteItem(map.getItem(), user);
+								SaveItemHelper.authorizedDelete(map.getItem(), user);
 						}
 					}
 				}
 			}
 
 			String level = this.getLevel();
-
-			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
 
 			if (!level.startsWith(project.getId())) {
 				level = project.getId() + "_" + level;
@@ -582,7 +588,7 @@ public class ProjectAccessRequest {
 				workflow.setPipelineName("New " + this.getLevel() + ": " + user.getFirstname() + " " + user.getLastname());
 				workflow.setStatus("Complete");
 				workflow.setLaunchTime(Calendar.getInstance().getTime());
-				workflow.save(user, false, false);
+				SaveItemHelper.authorizedSave(workflow,user, false, false);
 
 				ItemAccessHistory.LogAccess(user, project.getItem(), "report");
 			} catch (Throwable e) {

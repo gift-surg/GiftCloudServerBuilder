@@ -48,6 +48,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -113,7 +114,7 @@ public class ManagePipeline extends SecureAction {
 		try {
 			XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
 			if (pipeline != null) {
-				DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
+				SaveItemHelper.unauthorizedDelete(pipeline.getCurrentDBVersion(), user);
 				logger.info("Deleted " + pipeline.getProperty("path"));
 				data.setMessage("Pipeline removed from site repository");
 				PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects( (String)pipeline.getProperty("path"), user);
@@ -220,7 +221,7 @@ public class ManagePipeline extends SecureAction {
     				if (existing.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
     					existing.setStepid(existing.getDisplaytext());
     				}
-    				saved = existing.save(user, false, false);
+    				saved = SaveItemHelper.authorizedSave(existing,user, false, false);
     			}else {
     				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(arcProject), newPipeline.getDisplaytext() );
     				newPipeline.setStepid(stepId);
@@ -243,7 +244,7 @@ public class ManagePipeline extends SecureAction {
         				if (existingPipeline.getStepid().startsWith(PipelineUtils.AUTO_ARCHIVE) && !launchedAtAutoArchive) {
         					existingPipeline.setStepid(existingPipeline.getDisplaytext());
         				}
-       					saved = existingPipeline.save(user, false, false);
+       					saved = SaveItemHelper.authorizedSave(existingPipeline,user, false, false);
     				}else {
     	   				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(existingDesc), newPipeline.getDisplaytext() );
         				newPipeline.setStepid(stepId);
@@ -254,7 +255,7 @@ public class ManagePipeline extends SecureAction {
     			}
     		}
     		if (!edit) {
-    			saved = arcProject.save(user, false, false);
+    			saved = SaveItemHelper.authorizedSave(arcProject,user, false, false);
     		}
     		ArcSpecManager.Reset();
     		String msg = "<p><b>The pipelines for the project could NOT be modified.</b></p>";
@@ -330,7 +331,7 @@ public class ManagePipeline extends SecureAction {
             	try {
             		PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
             		pipelineRepository.setPipeline(pipelineDetails);
-            		pipelineRepository.save(user, false, true);
+            		SaveItemHelper.authorizedSave(pipelineRepository,user, false, true);
             		PipelineRepositoryManager.Reset();
             		data.setMessage("Pipeline " + pipelineDetails.getPath() + " has been successfully added to the repository");
             		data.setScreenTemplate("ClosePageAndRefresh.vm");

@@ -23,6 +23,7 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -243,7 +244,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 					return;
 	            }
 				
-				if(assessor.save(user,false,allowDataDeletion)){
+				if(SaveItemHelper.authorizedSave(assessor,user,false,allowDataDeletion)){
 					MaterializedView.DeleteByUser(user);
 				}
 

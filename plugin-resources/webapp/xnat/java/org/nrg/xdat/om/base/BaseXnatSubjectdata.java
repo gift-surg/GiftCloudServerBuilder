@@ -15,7 +15,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -56,7 +55,6 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
@@ -70,6 +68,7 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
@@ -1269,7 +1268,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		XFTItem current=this.getCurrentDBVersion(false);
     		current.setProperty("project", newProject.getId());
     		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false); 
+    		SaveItemHelper.authorizedSave(current,user, true, false); 
     		
     		this.setProject(newProject.getId());
     		this.setLabel(newLabel);
@@ -1348,7 +1347,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				int match = -1;
 				for(XnatProjectparticipantI pp : sub.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -1391,7 +1390,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(sub.getItem().getCurrentDBVersion(), user);
+		        SaveItemHelper.authorizedDelete(sub.getItem().getCurrentDBVersion(), user);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);

@@ -29,8 +29,10 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 /**
@@ -263,7 +265,7 @@ public class EditSubjectAction extends SecureAction {
                     if (items.size() > 0)
                     {
                     	final ItemI toRemove = items.getFirst();
-                        DBAction.RemoveItemReference(first.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
+                    	SaveItemHelper.unauthorizedRemoveChild(first.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
                         first.removeItem(toRemove);
                         removedReference = true;
                     }else{
@@ -296,7 +298,11 @@ public class EditSubjectAction extends SecureAction {
                 }
             }else{
             	try {
-            		found.save(TurbineUtils.getUser(data),false,false);
+            		XnatSubjectdata sub=new XnatSubjectdata(found);
+            		if(!user.canEdit(sub)){
+            			error(new InvalidPermissionException("Unable to save subject " + sub.getId()),data);
+            		}
+            		SaveItemHelper.authorizedSave(sub,TurbineUtils.getUser(data),false,false);
             		
 					MaterializedView.DeleteByUser(user);
 					

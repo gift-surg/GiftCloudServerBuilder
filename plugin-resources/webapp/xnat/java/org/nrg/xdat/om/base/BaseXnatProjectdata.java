@@ -1094,8 +1094,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     public static void quickSave(XnatProjectdata project, XDATUser user,boolean allowDataDeletion,boolean overrideSecurity) throws Exception{
     	project.initNewProject(user,allowDataDeletion,true);
 
-	
-		project.save(user,overrideSecurity,false);
+    	SaveItemHelper.authorizedSave(project, user,overrideSecurity,false);
 		XFTItem item =project.getItem().getCurrentDBVersion(false);
 		
 		XnatProjectdata postSave = new XnatProjectdata(item);
@@ -1494,34 +1493,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         } catch (Exception e) {
             logger.error("",e);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.nrg.xft.ItemWrapper#save(org.nrg.xft.security.UserI, boolean, boolean)
-     */
-    @Override
-    public boolean save(UserI user, boolean overrideSecurity, boolean allowItemRemoval) throws Exception {
-        XdatUsergroup group = new XdatUsergroup((UserI)this.getUser());
-        group.setId(getId() + "_" + OWNER_GROUP);
-        group.setDisplayname("Owners");
-        group.setTag(getId());
-
-        UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
-        if(ownerG==null){
-        	SaveItemHelper.authorizedSave(group,this.getUser(), true, true);
-
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)user,false);
-
-            if(!((XDATUser)user).getGroups().containsKey(group.getId())){
-                UserGroup ug= new UserGroup(group.getId());
-                ug.init(group);
-                ((XDATUser)user).getGroups().put(group.getId(),ug);
-
-                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user);
-            }
-        }
-
-        return super.save(user, overrideSecurity, allowItemRemoval);
     }
 
     public String getDisplayName(){
@@ -2072,6 +2043,14 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	public void preSave() throws Exception{
 		super.preSave();
 
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}
+		
+		if(StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+
 		final String expectedPath=getExpectedCurrentDirectory().getAbsolutePath().replace('\\', '/');
 
 		for(final XnatAbstractresourceI res: this.getResources_resource()){
@@ -2086,6 +2065,27 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
+		
+
+        XdatUsergroup group = new XdatUsergroup((UserI)this.getUser());
+        group.setId(getId() + "_" + OWNER_GROUP);
+        group.setDisplayname("Owners");
+        group.setTag(getId());
+
+        UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
+        if(ownerG==null){
+        	SaveItemHelper.authorizedSave(group,this.getUser(), true, true);
+
+            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false);
+
+            if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
+                UserGroup ug= new UserGroup(group.getId());
+                ug.init(group);
+                ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
+
+                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)this.getUser(), (XDATUser)this.getUser());
+            }
+        }
 	}
 
 

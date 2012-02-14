@@ -18,6 +18,7 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 public class AddProject extends SecureAction {
@@ -92,7 +93,7 @@ public class AddProject extends SecureAction {
                 }
             }else{
             	try {
-            		project.save(TurbineUtils.getUser(data),false,false);
+            		SaveItemHelper.authorizedSave(project, TurbineUtils.getUser(data),false,false);
             		ItemI temp1 =project.getItem().getCurrentDBVersion(false);
             		if (temp1 != null)
             		{

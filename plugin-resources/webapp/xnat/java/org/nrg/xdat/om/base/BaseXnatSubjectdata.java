@@ -1470,6 +1470,23 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 	public void preSave() throws Exception{
 		super.preSave();
 		
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(StringUtils.IsEmpty(this.getLabel())){
+			throw new IllegalArgumentException();
+		}
+		
+		if(StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+		
+		if(StringUtils.IsAlphaNumericUnderscore(getLabel())){
+			throw new IllegalArgumentException("Labels cannot use special characters.");
+		}
+		
+		
 		final XnatProjectdata proj = this.getPrimaryProject(false);
 		if(proj==null){
 			throw new Exception("Unable to identify project for:" + this.getProject());

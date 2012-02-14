@@ -183,7 +183,7 @@ function UserManager(user_mgmt_div_id, pID){
 
 	this.inviteUser= function (emails,access_level) {
 		if (emails!=undefined && access_level!=undefined){
-			var post_url = serverRoot + "/REST/projects/" + this.pID + "/users/" + access_level;
+			var post_url = serverRoot + "/REST/projects/" + this.pID + "/users/" + access_level ;
 			var email_array=emails.split(',');
 			var unknownUsers=new Array();
 			var knownUsers=new Array();
@@ -220,11 +220,11 @@ function UserManager(user_mgmt_div_id, pID){
 							failure:that.inviteFailure,
 							scope:that
 					};
-					var params = "format=json";
+					var params = "XNAT_CSRF=" + csrfToken + "&format=json";
 					if(send){
 						params+="&sendmail=true";
 					}
-					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails,that.insertCallback,params,that);
+					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails+ "?XNAT_CSRF=" + csrfToken,that.insertCallback,params,that);
 				};
 			};
 
@@ -267,7 +267,7 @@ function UserManager(user_mgmt_div_id, pID){
 				scope:this
 		};
 		var post_url = serverRoot + "/REST/projects/" + this.pID + "/users/" + group;
-		YAHOO.util.Connect.asyncRequest('DELETE',post_url + "/" + login + "?format=json",this.deleteCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('DELETE',post_url + "/" + login + "?format=json&XNAT_CSRF="+csrfToken,this.deleteCallback,null,this);
 	};
 
 	this.userExists=function (email){
@@ -471,7 +471,7 @@ function DefaultAccessibilityManager(_dom,_pID){
 		};
 		this.disableDOM(true);
 
-		YAHOO.util.Connect.asyncRequest('PUT',serverRoot + "/REST/projects/" + this.pID + "/accessibility/" + this._level,this.accessibilityCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('PUT',serverRoot + "/REST/projects/" + this.pID + "/accessibility/" + this._level + '&XNAT_CSRF='+csrfToken,this.accessibilityCallback,null,this);
 	};
 
 }

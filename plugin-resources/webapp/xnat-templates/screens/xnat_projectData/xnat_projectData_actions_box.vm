@@ -75,7 +75,7 @@ function toggleFavorites(){
 				      },
 			      scope:this
 		    }
-    YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()",initCallback);
+    YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
   }else{
     var initCallback={
 						      success:function(o){
@@ -87,7 +87,7 @@ function toggleFavorites(){
 				      },
 			      scope:this
 		    }
-    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()",initCallback);
+    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()&XNAT_CSRF="+csrfToken,initCallback);
   }
 }
 

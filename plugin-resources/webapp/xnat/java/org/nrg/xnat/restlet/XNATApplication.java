@@ -223,6 +223,8 @@ public class XNATApplication extends Application {
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
         
+        //router.attach("/services/csrfToken",CsrfToken.class);
+        
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
         
         router.attach("/version",VersionRepresentation.class);

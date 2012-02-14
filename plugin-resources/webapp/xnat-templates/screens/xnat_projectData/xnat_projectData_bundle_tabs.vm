@@ -33,6 +33,8 @@ function TabManagerInit(){
 
     window.tab_manager=new TabManager();
     
+    window.tab_manager.setCsrfToken("$!XNAT_CSRF");
+    
     window.tab_manager.init(stored_searches);
     
     var bundles=YAHOO.util.Cookie.get("${project.getId()}.open_bundle.tabs");

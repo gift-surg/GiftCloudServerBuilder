@@ -53,7 +53,7 @@ function PARManager(_div,_obj){
 			
 		openModalPanel("par","Accepting invitation...");
 		
-		YAHOO.util.Connect.asyncRequest('PUT',serverRoot +'/REST/pars/' + par_id + '?accept=true&format=json',callback,null,this);
+		YAHOO.util.Connect.asyncRequest('PUT',serverRoot +'/REST/pars/' + par_id + '?accept=true&format=json&XNAT_CSRF='+csrfToken,callback,null,this);
 	}
 	
 	this.decline=function(par_id,msg){
@@ -69,7 +69,7 @@ function PARManager(_div,_obj){
 		   msg="Declining invitation...";
 		openModalPanel("par",msg);
 				
-		YAHOO.util.Connect.asyncRequest('PUT',serverRoot +'/REST/pars/' + par_id + '?decline=true&format=json',callback,null,this);
+		YAHOO.util.Connect.asyncRequest('PUT',serverRoot +'/REST/pars/' + par_id + '?decline=true&format=json&XNAT_CSRF='+csrfToken,callback,null,this);
 	}
 	
 	this.render=function(){

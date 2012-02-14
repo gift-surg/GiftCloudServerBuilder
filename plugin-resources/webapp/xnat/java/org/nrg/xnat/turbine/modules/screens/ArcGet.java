@@ -30,6 +30,7 @@ import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
@@ -91,6 +92,9 @@ created in buildPDF.
                 }
                 if (user != null)
                 {
+                	
+                		SecureAction.isCsrfTokenOk(data.getRequest());
+                	
                         String id = data.getParameters().getString("id");
 
                         HttpServletResponse response = data.getResponse();

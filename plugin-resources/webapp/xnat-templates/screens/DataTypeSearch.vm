@@ -2,4 +2,5 @@
 <input type="hidden" name="ELEMENT_0" value="$dataType"/>
 #parse("/screens/${schemaElement.getSQLName()}_search.vm")
 <div align="center">		<input type="submit" name="eventSubmit_doPerform" value="Submit" /></div>
+<input type="hidden" name="XNAT_CSRF" value="$!XNAT_CSRF" />
 </form>

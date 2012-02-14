@@ -154,7 +154,7 @@ function fileManager(_resource){
 					}
 					
 					openModalPanel("file","Deleting file '" + this.file.Name +"'");
-					YAHOO.util.Connect.asyncRequest('DELETE',serverRoot + this.file.URI,this.initCallback,null,this);
+					YAHOO.util.Connect.asyncRequest('DELETE',serverRoot + this.file.URI + "?XNAT_CSRF=" + csrfToken,this.initCallback,null,this);
 				}
 			}
 			td.appendChild(dA);
@@ -516,7 +516,7 @@ function fileManager(_resource){
 				file_name=file_name.substring(1);
 			}
 			
-			var file_params="?file_upload=true";
+			var file_params="?file_upload=true&XNAT_CSRF="+csrfToken;
 			
 			if(file_content!=""){
 				file_params+="&content="+file_content;
@@ -543,7 +543,7 @@ function fileManager(_resource){
   				var collection_format=document.getElementById("collection_format").value.trim();
   				var collection_content=document.getElementById("collection_content").value.trim();
   				
-  				var params = "?label="+collection_name;
+  				var params = "?label="+collection_name + "&XNAT_CSRF=" + csrfToken;
   				if(collection_content!=""){
   					params+="&content="+collection_content;
   				}
@@ -612,6 +612,7 @@ function fileManager(_resource){
 				if(file_name!=""){
 					method='PUT';
 				}
+				
 				YAHOO.util.Connect.asyncRequest(method,file_dest,callback);
   			}
   		},this,true);

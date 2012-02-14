@@ -3,8 +3,10 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.obj=obj;
     this.div_table_id=_div_table_id;
     this.xml=obj.XML;
-    if(_config==undefined)
+    if(_config==undefined) {
       _config=new Object();
+      _config.csrfToken = null;
+    }
     this.config=_config;
     this.options=_options;
 
@@ -53,6 +55,10 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	document.getElementById(this.div_table_id+"_p").innerHTML="";
       }catch(e){}
     }
+    
+    params += '&XNAT_CSRF='+csrfToken;
+    
+    
     YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/search?'+params,this.initCallback,this.xml,this);
   };
 
@@ -184,6 +190,9 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
        */
       else if (o.status == 500) {
 	var url = that.searchURI+"?format=xList&offset="+ ((page-1)*that.config.rowsPerPage) + "&limit="+that.config.rowsPerPage;
+	
+	url += '&XNAT_CSRF=' + csrfToken;
+	
 	YAHOO.util.Connect.asyncRequest('GET', url, initCallback,null,that);
       }
       else{
@@ -200,8 +209,11 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.purge();
 
     document.getElementById(this.div_table_id).innerHTML = "";
+    var url2 = this.searchURI+"?format=xList"+this.generateRequest(page);
     
-    YAHOO.util.Connect.asyncRequest('GET',this.searchURI+"?format=xList"+this.generateRequest(page),initCallback,null,this);
+	url2 += '&XNAT_CSRF=' + csrfToken;
+	
+    YAHOO.util.Connect.asyncRequest('GET',url2,initCallback,null,this);
   };
 
   this.generateRequest=function(page){
@@ -448,7 +460,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	  },
 	  arguments:{"dts":this}
 	};
-	YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/search/saved/' + this.obj.SS_ID + '?format=json',callback,null,this);
+	YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/search/saved/' + this.obj.SS_ID + '?format=json&XNAT_CSRF='+csrfToken,callback,null,this);
       }
     }
     return true;
@@ -578,6 +590,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     tempInput.value=_searchXML;
 
     tempForm.appendChild(tempInput);
+    
+    
+    var cs = document.createElement("input");
+	cs.type = "hidden";
+	cs.name = "XNAT_CSRF";
+	cs.value = csrfToken;
+	tempForm.appendChild(cs);
+    
 
     if(divContent!=undefined)
       divContent.appendChild(tempForm);

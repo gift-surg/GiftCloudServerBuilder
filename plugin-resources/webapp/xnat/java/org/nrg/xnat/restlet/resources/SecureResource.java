@@ -85,6 +85,8 @@ public abstract class SecureResource extends Resource {
 	private static final String ACTION = "action";
 
 	public static final String USER_ATTRIBUTE = "user";
+	
+	public static final String XNAT_CSRF_ATTRIBUTE = "XNAT_CSRF";
 
 	static Logger logger = Logger.getLogger(SecureResource.class);
 	public Hashtable<String, String> fieldMapping = new Hashtable<String, String>();
@@ -115,6 +117,8 @@ public abstract class SecureResource extends Resource {
 	protected String requested_format = null;
 	public String filepath = null;
 	
+	protected String csrfToken = null;
+	
 	public SecureResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
@@ -123,7 +127,11 @@ public abstract class SecureResource extends Resource {
 		// expects that the user exists in the session (either via traditional
 		// session or set via the XnatSecureGuard
 		user = (XDATUser) getRequest().getAttributes().get(USER_ATTRIBUTE);
-
+		
+		//pulls the csrf token out of the user's session.
+		csrfToken = (String) getRequest().getAttributes().get(XNAT_CSRF_ATTRIBUTE);
+		
+		
 		filepath = getRequest().getResourceRef().getRemainingPart();
 		if (filepath != null) {
 			if (filepath.indexOf("?") > -1) {

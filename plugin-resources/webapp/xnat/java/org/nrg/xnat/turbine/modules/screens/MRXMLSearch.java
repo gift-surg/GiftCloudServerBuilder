@@ -19,6 +19,7 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
@@ -76,6 +77,9 @@ created in buildPDF.
         if (user != null)
         {
     	    try {
+    	    	
+    	    	SecureAction.isCsrfTokenOk(data.getRequest());
+    	    	
                 String dataType = "xnat:imageSessionData";
                 String id = data.getParameters().getString("id");
                 

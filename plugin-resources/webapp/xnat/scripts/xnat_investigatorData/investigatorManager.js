@@ -27,7 +27,7 @@ function InvestigatorManager(){
 	
 	this.insert=function(investigator){
 		var parasm="investigator_xml="+investigator.toXML("");
-		YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/investigators/' + investigator.lastname +'?format=json',this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/investigators/' + investigator.lastname +'?format=json&XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 	}
 	
 	this.populateSelect=function(_select,_selectedID){

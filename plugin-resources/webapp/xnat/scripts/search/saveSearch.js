@@ -94,10 +94,10 @@ function SavePopupForm(_search,_div,_config){
 			    	this.saver.searchDOM.setDescription(_desc);
 			    }
 		        
-			    var params="";
+			    var params="?XNAT_CSRF="+csrfToken;
 			    if(this.saver.config.saveAs){
 			    	preventComments=true;
-			    	params+="?saveAs=true";
+			    	params+="&saveAs=true";
 			    }
 		        
 		        this.saver.savePopupDialog.saveMsgTab.innerHTML="<DIV style='color:red'>Saving...</DIV>";

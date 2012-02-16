@@ -6,8 +6,8 @@ $page.setVlinkColor($ui.vlink)
 #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 #set($days = [ 1..31 ])
 #set($years = [ $!turbineUtils.getYear()..1900])
-#if ($data.getParameters().getString("popup"))
-	#set ($popup = $data.getParameters().getString("popup") )
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+	#set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 #else
 	#set ($popup = "false")
 #end

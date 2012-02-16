@@ -45,9 +45,9 @@ public class AddProject extends SecureAction {
             if(StringUtils.isEmpty(project.getId())){
             	data.addMessage("Missing required field (Abbreviation).");
 				TurbineUtils.SetEditItem(found,data);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -56,9 +56,9 @@ public class AddProject extends SecureAction {
             if(existing!=null){
             	data.addMessage("Project '" + project.getId() + "' already exists.");
 				TurbineUtils.SetEditItem(found,data);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -68,9 +68,9 @@ public class AddProject extends SecureAction {
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(found,data);
                 data.addMessage(e2.getMessage());
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
 			}
@@ -87,9 +87,9 @@ public class AddProject extends SecureAction {
             {
                 TurbineUtils.SetEditItem(project.getItem(),data);
                 context.put("vr",vr);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
             }else{
             	try {
@@ -104,9 +104,9 @@ public class AddProject extends SecureAction {
             		
             		data.setMessage("Error Saving item.");
                     TurbineUtils.SetEditItem(found,data);
-                    if (data.getParameters().getString("edit_screen") !=null)
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                     {
-                        data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                     }
                     return;
             	}
@@ -118,7 +118,7 @@ public class AddProject extends SecureAction {
                 
                 //postSave.initBundles(user);
                 
-                String accessibility=data.getParameters().getString("accessibility");
+                String accessibility=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
                 if (accessibility==null){
                     accessibility="protected";
                 }
@@ -151,9 +151,9 @@ public class AddProject extends SecureAction {
             logger.error("",e);
             data.setMessage("Unknown Error.");
             TurbineUtils.SetEditItem(found,data);
-            if (data.getParameters().getString("edit_screen") !=null)
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
             {
-                data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
             }
         }
 	}

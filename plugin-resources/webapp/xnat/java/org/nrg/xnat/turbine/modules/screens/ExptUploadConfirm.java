@@ -33,7 +33,7 @@ public class ExptUploadConfirm extends SecureReport {
             cache_path += File.separator;
         }                    
 
-        String uploadID= data.getParameters().getString("uploadID");
+        String uploadID= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("uploadID",data));
         context.put("uploadID", uploadID);
         cache_path +="user_uploads" + File.separator + uploadID + File.separator;
         File dir = new File(cache_path);

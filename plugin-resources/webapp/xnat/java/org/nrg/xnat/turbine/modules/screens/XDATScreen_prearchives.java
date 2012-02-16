@@ -31,7 +31,7 @@ public class XDATScreen_prearchives extends SecureScreen {
 	    context.put("investigators", hash);
 
 	    if (data.getParameters().containsKey("project")) {
-		context.put("project", data.getParameters().getObject("project"));
+		context.put("project", org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
 	    }
 	} catch (Exception e) {
 	    log.error(e);

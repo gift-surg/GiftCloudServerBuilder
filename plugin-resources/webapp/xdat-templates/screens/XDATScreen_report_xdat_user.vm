@@ -2,7 +2,7 @@
 $page.setTitle("XDAT")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
-		    #set ($dataPopup = $data.getParameters().getString("popup"))
+		    #set ($dataPopup = $turbineUtils.GetPassedParameter("popup",$data))
 #if ($data.message)
 <DIV class="error">$data.message</DIV><br>
 #end
@@ -138,7 +138,7 @@ $page.setVlinkColor($ui.vlink)
                     					<TR><TD align=left><INPUT TYPE="radio" name="xdat:user.enabled" value="true" #if($item.getBooleanProperty("enabled"))CHECKED #end/>Enabled</TD>
                                                             <TD align=left><INPUT TYPE="radio" name="xdat:user.enabled" value="false" #if(!$item.getBooleanProperty("enabled"))CHECKED #end/>Disabled</TD>
                                                              <TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        #if ($data.getParameters().getString("popup")=="true")
+                                        #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
                                                 <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                     #else
                         <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
@@ -471,7 +471,7 @@ addGroup("$!groupid.getGroupid()");
 				
 		<TR>
 					<TD ALIGN="right">&nbsp;<BR><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					#if ($data.getParameters().getString("popup")=="true")
+					#if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
 						<input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                     #else
                         <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
@@ -518,7 +518,7 @@ addGroup("$!groupid.getGroupid()");
 								<TD align=left nowrap>
 <INPUT TYPE="radio" id="data_admin" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ADMIN" #if($userObject.getGroup("ALL_DATA_ADMIN"))CHECKED#end/> <label for="data_admin">Read, Edit & Delete</label>
 								</TD><TD align=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        #if ($data.getParameters().getString("popup")=="true")
+                                        #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
                                                 <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                     #else
                         <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>

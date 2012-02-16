@@ -50,7 +50,7 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 				}
 				else if (key.equals(ASYNC)) {
 					// async = f.getValues(SRC).equals("true") ? true : false;
-						if (f.getFirstValue(ASYNC).equals("false")) {
+						if (this.getQueryVariable(ASYNC).equals("false")) {
 							async = false;
 						}
 				}

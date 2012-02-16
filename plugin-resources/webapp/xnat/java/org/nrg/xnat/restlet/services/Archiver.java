@@ -69,25 +69,25 @@ public class Archiver extends BatchPrearchiveActionsA  {
 	@Override
 	public void loadParams(Form f) {
 			for(final String key:f.getNames()){
-			if(f.getFirstValue(key)!=null){
+			if(this.getQueryVariable(key)!=null){
 				if(key.equals(PROJECT)){
 					additionalValues.put("project",project_id);
 				}else if(key.equals(PrearcUtils.PREARC_TIMESTAMP)){
-					timestamp=f.getFirstValue(PrearcUtils.PREARC_TIMESTAMP);
+					timestamp=this.getQueryVariable(PrearcUtils.PREARC_TIMESTAMP);
 				}else if(key.equals(PrearcUtils.PREARC_SESSION_FOLDER)){
 					sessionFolder=f.getValuesArray(PrearcUtils.PREARC_SESSION_FOLDER);
 				}else if(key.equals(OVERWRITE_FILES)){
-					overwriteFILES=f.getFirstValue(OVERWRITE_FILES);
+					overwriteFILES=this.getQueryVariable(OVERWRITE_FILES);
 				}else if(key.equals(OVERWRITE)){
-					overwriteV=f.getFirstValue(OVERWRITE);
+					overwriteV=this.getQueryVariable(OVERWRITE);
 				}else if(key.equals(DEST)){
-					dest=f.getFirstValue(DEST);
+					dest=this.getQueryVariable(DEST);
 				}else if(key.equals(SRC)){
 					srcs=Arrays.asList(f.getValuesArray(SRC));
 				}else if(key.equals(REDIRECT2)){
-					redirect=f.getFirstValue(REDIRECT2);
+					redirect=this.getQueryVariable(REDIRECT2);
 				}else{
-					additionalValues.put(key,f.getFirstValue(key));
+					additionalValues.put(key,this.getQueryVariable(key));
 				}
 			}
 		}

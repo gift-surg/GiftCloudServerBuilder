@@ -2,8 +2,8 @@
 #if($popup)
 
 #else
-#if ($data.getParameters().getString("popup"))
-	#set ($popup = $data.getParameters().getString("popup") )
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+	#set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 #else
 	#set ($popup = "")
 #end

@@ -26,7 +26,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
     @Override
     protected void doBuildTemplate(RunData data, Context context)
             throws Exception {
-        String[] sessions = data.getParameters().getStrings("sessions");
+        String[] sessions = ((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sessions",data));
         if (sessions==null)
         {
             
@@ -49,7 +49,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
             	}
             }
             
-            String project = data.getParameters().getString("project");
+            String project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
             
             String query=null;
             if (project==null)

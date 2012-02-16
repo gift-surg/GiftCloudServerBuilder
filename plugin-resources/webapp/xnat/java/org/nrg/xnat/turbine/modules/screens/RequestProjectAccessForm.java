@@ -17,7 +17,7 @@ public class RequestProjectAccessForm extends SecureScreen {
     private XnatProjectdata project = null;
     @Override
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XDATUser user = TurbineUtils.getUser(data);
         if (project==null){
             project = XnatProjectdata.getXnatProjectdatasById(p, user, false);
@@ -29,8 +29,8 @@ public class RequestProjectAccessForm extends SecureScreen {
             return;
         }
         
-        String access_level = data.getParameters().getString("access_level");
-        Integer id = data.getParameters().getInteger("id");
+        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
         
         context.put("user", other);

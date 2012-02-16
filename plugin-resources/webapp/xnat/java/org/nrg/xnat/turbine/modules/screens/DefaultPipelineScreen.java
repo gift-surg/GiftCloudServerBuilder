@@ -170,10 +170,10 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 				    context.put("user",TurbineUtils.getUser(data));
 				    if(XFT.VERBOSE)System.out.println("Loaded user object (org.nrg.xdat.security.XDATUser) as context parameter 'user'.");
 	            	context.put("element",org.nrg.xdat.schema.SchemaElement.GetElement(item.getXSIType()));
-	            	context.put("search_element",data.getParameters().getString("search_element"));
-	            	context.put("search_field",data.getParameters().getString("search_field"));
-	            	context.put("search_value",data.getParameters().getString("search_value"));
-	            	project = data.getParameters().getString("project");
+	            	context.put("search_element",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)));
+	            	context.put("search_field",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)));
+	            	context.put("search_value",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
+	            	project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
 	            	pipelinePath = (String)context.get("pipelinePath");
 
 	            	context.put("project",project);

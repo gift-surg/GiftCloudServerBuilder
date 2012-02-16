@@ -42,7 +42,7 @@ public class DeleteProjectData extends SecureAction {
 
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        final String projectID = data.getParameters().getString("project");
+        final String projectID = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         final XDATUser user = (XDATUser)TurbineUtils.getUser(data);
         final XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(projectID, user, false);
         boolean preventProjectDelete=false;

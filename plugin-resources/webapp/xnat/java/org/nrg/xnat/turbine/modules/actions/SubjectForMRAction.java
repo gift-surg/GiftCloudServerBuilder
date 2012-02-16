@@ -25,7 +25,7 @@ public class SubjectForMRAction extends SecureAction {
      * @see org.apache.turbine.modules.actions.VelocityAction#doPerform(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
      */
     public void doPerform(RunData data, Context context) throws Exception {
-        String s = data.getParameters().getString("part_id");
+        String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("part_id",data));
         CriteriaCollection cc = new CriteriaCollection("OR");
         cc.addClause("xnat:subjectData/ID",s);
         
@@ -51,9 +51,9 @@ public class SubjectForMRAction extends SecureAction {
         {
             ItemI item = items.getFirst();
             boolean confirmed = false;
-            if (data.getParameters().getString("confirmed")!=null)
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("confirmed",data))!=null)
             {
-                if (data.getParameters().getString("confirmed").equalsIgnoreCase("true"))
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("confirmed",data)).equalsIgnoreCase("true"))
                 {
                     confirmed = true;
                 }

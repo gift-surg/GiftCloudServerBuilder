@@ -19,10 +19,10 @@ public class PipelineAdder {
 	
     public void prepareScreen(RunData data, Context context) {
 	    logger.debug("BEGIN SECURE REPORT :" + this.getClass().getName());
-	    String projectId = data.getParameters().get("project");
-	    String pipelinePath = data.getParameters().get("pipeline_path");
-	    String dataType = data.getParameters().get("dataType");
-	    boolean edit = data.getParameters().getBoolean("edit");
+	    String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+	    String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline_path",data));
+	    String dataType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("dataType",data));
+	    boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit",data));
 	    String templateFile = null;
 	    try {
 	    	if (edit) {
@@ -74,7 +74,7 @@ public class PipelineAdder {
 				data.setScreenTemplate(screenName);
 			}
 		}else {
-            String template = data.getParameters().get("template");
+            String template = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("template",data));
             data.setScreenTemplate(template);
 		}
     }

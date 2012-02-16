@@ -161,7 +161,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 					//arcProject.setItem(arcProject.getCurrentDBVersion());
 					Form f = getRequest().getResourceRef().getQueryAsForm();
 					String match = null;
-					if(f!=null)match=f.getFirstValue("match");
+					if(f!=null)match=this.getQueryVariable("match");
 					if (match == null) match = "EXACT";
 
 					try {

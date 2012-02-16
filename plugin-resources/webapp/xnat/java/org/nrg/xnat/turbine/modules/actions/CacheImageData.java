@@ -36,7 +36,7 @@ public class CacheImageData extends SecureAction {
             final String prearchive_path;
             
             if (data.getParameters().containsKey("project")) {
-                final String project = data.getParameters().get("project");
+                final String project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
                 String path = null;
                 try {
                     path = ArcSpecManager.GetInstance().getPrearchivePathForProject(project);

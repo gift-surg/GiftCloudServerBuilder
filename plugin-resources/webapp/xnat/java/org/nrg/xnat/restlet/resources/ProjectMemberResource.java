@@ -218,7 +218,7 @@ public class ProjectMemberResource extends SecureResource {
 
 						String email="false";
 						Form f = getRequest().getResourceRef().getQueryAsForm();
-						if(f!=null)email=f.getFirstValue("sendemail");
+						if(f!=null)email=this.getQueryVariable("sendemail");
 						
 						boolean sendmail=Boolean.parseBoolean(email);
 						

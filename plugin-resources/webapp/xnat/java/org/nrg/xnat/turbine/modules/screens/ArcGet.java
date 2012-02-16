@@ -72,12 +72,12 @@ created in buildPDF.
     @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
 	protected final void doOutput(RunData data) 
 	{
-            String username = data.getParameters().getString("username");
-            String password = data.getParameters().getString("password");
-            String raw = data.getParameters().getString("raw");
-            String processed = data.getParameters().getString("proc");
-            String quality = data.getParameters().getString("quality");
-            String unzip = data.getParameters().getString("unzip");
+            String username = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("username",data));
+            String password = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("password",data));
+            String raw = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("raw",data));
+            String processed = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("proc",data));
+            String quality = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("quality",data));
+            String unzip = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("unzip",data));
             if (unzip==null){
                 unzip="false";
             }
@@ -95,7 +95,7 @@ created in buildPDF.
                 	
                 		SecureAction.isCsrfTokenOk(data.getRequest());
                 	
-                        String id = data.getParameters().getString("id");
+                        String id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
 
                         HttpServletResponse response = data.getResponse();
                         response.setContentType(getContentType(data));

@@ -296,7 +296,7 @@ public class DownloadImages extends SecureAction {
                     }
                 }
                 
-                final String identifier = data.getParameters().getString("search_element") + ":"+ data.getParameters().getString("search_field") + ":"+ data.getParameters().getString("search_value");
+                final String identifier = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)) + ":"+ ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)) + ":"+ ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
                 
                 data.getSession().setAttribute(identifier, fileMap);
                 

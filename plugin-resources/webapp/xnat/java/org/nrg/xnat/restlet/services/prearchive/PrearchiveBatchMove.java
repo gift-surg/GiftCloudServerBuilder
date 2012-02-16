@@ -48,9 +48,9 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 						srcs.add(src);
 					}
 				}else if(key.equals(NEW_PROJECT)){
-					newProject=f.getFirstValue(NEW_PROJECT);
+					newProject=this.getQueryVariable(NEW_PROJECT);
 				}else if(key.equals(ASYNC)) {
-					if (f.getFirstValue(ASYNC).equals("false")) {
+					if (this.getQueryVariable(ASYNC).equals("false")) {
 						async = false;
 					}
 				}

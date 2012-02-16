@@ -60,8 +60,8 @@ public class ProjectPipelineListResource extends SecureResource  {
 			String pathToPipeline = null;
 			String datatype = null;
 			if(f!=null) {
-				pathToPipeline = f.getFirstValue("path");
-				datatype = f.getFirstValue("datatype");
+				pathToPipeline = this.getQueryVariable("path");
+				datatype = this.getQueryVariable("datatype");
 				if (pathToPipeline != null && datatype != null) {
 					pathToPipeline = pathToPipeline.trim();
 					datatype=datatype.trim();
@@ -131,7 +131,7 @@ public class ProjectPipelineListResource extends SecureResource  {
 		if (isUserAuthorized) {
 			Form f = getRequest().getResourceRef().getQueryAsForm();
 			if(f!=null) {
-				String additionalStr=f.getFirstValue("additional");
+				String additionalStr=this.getQueryVariable("additional");
 				if (additionalStr != null)
 					additional = Boolean.parseBoolean(additionalStr);
 			}

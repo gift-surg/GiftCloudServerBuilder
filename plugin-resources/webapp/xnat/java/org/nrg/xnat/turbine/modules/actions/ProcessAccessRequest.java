@@ -42,10 +42,10 @@ public class ProcessAccessRequest extends SecureAction {
     static Logger logger = Logger.getLogger(ProcessAccessRequest.class);
 
     public void doDenial(RunData data, Context context) throws Exception {
-        Integer id = data.getParameters().getInteger("id");
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         
         if(p==null || p.contains("'")){
         	error(new InvalidArgumentException(p),data);
@@ -132,12 +132,12 @@ public class ProcessAccessRequest extends SecureAction {
     }
     
     public void doApprove(RunData data, Context context) throws Exception {
-        Integer id = data.getParameters().getInteger("id");
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
         XDATUser user = TurbineUtils.getUser(data);
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
-        String p = data.getParameters().getString("project");
-        String access_level = data.getParameters().getString("access_level");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
         if (StringUtils.isEmpty(access_level)){
         	access_level="member";
         }else{

@@ -25,7 +25,7 @@ public class DisplayMRSuperSearchAction extends DisplaySearchAction {
      * @see org.cnl.xdat.turbine.modules.actions.SearchA#setupSearch(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
      */
     public DisplaySearch setupSearch(RunData data, Context context) throws Exception {
-        String elementName= data.getParameters().getString("ELEMENT_0");
+        String elementName= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("ELEMENT_0",data));
         SchemaElement se = SchemaElement.GetElement(elementName);
         
         DisplaySearch ds = getSearchCriteria(se, elementName, data);
@@ -44,11 +44,11 @@ public class DisplayMRSuperSearchAction extends DisplaySearchAction {
 			String key = (String)enumer.nextElement();
 			if (TurbineUtils.HasPassedParameter("super_" + key.toLowerCase() + "_detailed",data))
 			{
-			    String s = data.getParameters().getString("super_" + key.toLowerCase() + "_detailed");
+			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase(,data)) + "_detailed");
 			    if (! s.equalsIgnoreCase(""))
 			        ds.addAdditionalView(key,s);
 			}else if(TurbineUtils.HasPassedParameter("super_" + key.toLowerCase() + "_brief",data)){
-			    String s = data.getParameters().getString("super_" + key.toLowerCase() + "_brief");
+			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase(,data)) + "_brief");
 			    if (! s.equalsIgnoreCase(""))
 			        ds.addAdditionalView(key,s);
 			}

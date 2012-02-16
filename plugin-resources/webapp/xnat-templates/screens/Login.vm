@@ -4,7 +4,7 @@ $page.setBgColor($ui.bgcolor)
 $page.addAttribute("onLoad", "document.getElementById('username').focus();")
 <DIV VALIGN="top">
 <br><br>
-#if($data.getParameters().get("par"))
+#if($turbineUtils.GetPassedParameter("par",$data))
   <table valign="top" align="center">
   
   <tr>
@@ -29,7 +29,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
     <h3>Existing Users Login</h3>
 #parse("/screens/login_box.vm")
 			      <div style="padding-bottom:5px;">
-        <a href="$link.setPage("ForgotLogin.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Forgot login or password?<a>
+        <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?<a>
       </div>
 		    </div>
     </td>
@@ -73,11 +73,11 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
          <table>
     <tr>
       <td >
-        <a href="$link.setPage("Register.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Register<a>
+        <a href="$link.setPage("Register.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Register<a>
       </td>
 			      <td align="left">&nbsp;&nbsp;&nbsp;</td>
 			      <td >
-        <a href="$link.setPage("ForgotLogin.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Forgot login or password?<a>
+        <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?<a>
       </td>
     </tr>
          </table>

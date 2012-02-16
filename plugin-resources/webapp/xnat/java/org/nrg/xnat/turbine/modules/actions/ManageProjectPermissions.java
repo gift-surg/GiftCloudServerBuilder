@@ -80,12 +80,12 @@ public class ManageProjectPermissions extends SecureAction {
                     
                     Integer fieldMappingSetID=(Integer)elementAccesses.get(protocol);
                     
-                    Object create = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_c");
-                    Object read = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_r");
-                    Object edit = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_e");
-                    Object delete = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_d");
-                    Object activate = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_a");
-                    Object fieldMappingID = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_id");
+                    Object create = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_c", data));
+                    Object read = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_r", data));
+                    Object edit = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_e",data));
+                    Object delete = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_d",data));
+                    Object activate = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_a",data));
+                    Object fieldMappingID = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_id",data));
                     
                     if (fieldMappingID=="")
                     {

@@ -25,7 +25,7 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 
         data.setScreenTemplate("Index.vm");
         
-         if (data.getParameters().get("par")!=null){
+         if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("par",data))!=null){
          	AcceptProjectAccess action = new AcceptProjectAccess();
          	context.put("user", user);
          	action.doPerform(data, context);

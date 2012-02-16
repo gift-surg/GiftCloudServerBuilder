@@ -2,8 +2,8 @@
 $page.setTitle("MRSession Details")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
-#if ($data.getParameters().getString("popup"))
-	#set ($popup = $data.getParameters().getString("popup") )
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+	#set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 	#else
 	#set ($popup = "false")
 #end

@@ -458,7 +458,7 @@ public class XnatPipelineLauncher {
 			xnatPipelineLauncher.setParameter("project", imageSession.getProject());
 	        xnatPipelineLauncher.setParameter("cachepath",QCImageCreator.getQCCachePathForSession(imageSession.getProject()));
 
-	       String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + data.getParameters().get("emailField");
+	       String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
 	       String[] emails = emailsStr.trim().split(",");
 	       for (int i = 0 ; i < emails.length; i++) {
 	           xnatPipelineLauncher.notify(emails[i]);

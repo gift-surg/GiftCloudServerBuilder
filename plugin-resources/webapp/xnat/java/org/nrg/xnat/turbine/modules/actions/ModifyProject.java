@@ -49,9 +49,9 @@ public class ModifyProject extends SecureAction {
             if(StringUtils.isEmpty(project.getId())){
             	data.addMessage("Missing required field (Abbreviation).");
 				TurbineUtils.SetEditItem(item,data);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -74,9 +74,9 @@ public class ModifyProject extends SecureAction {
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(item,data);
                 data.addMessage(e2.getMessage());
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
 			}
@@ -93,7 +93,7 @@ public class ModifyProject extends SecureAction {
             user.clearLocalCache();
             //postSave.initBundles(user);
             
-            String accessibility=data.getParameters().getString("accessibility");
+            String accessibility=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
             if (accessibility==null){
                 accessibility="protected";
             }

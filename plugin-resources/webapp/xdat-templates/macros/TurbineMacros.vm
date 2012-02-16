@@ -849,7 +849,7 @@
 
 ## EDIT PROPS
 #macro (xdatEditProps $item $edit_screen)
-  #set ($dataPopup = $data.getParameters().getString("popup"))
+  #set ($dataPopup = $turbineUtils.GetPassedParameter("popup",$data))
   #if($dataPopup)
   #else
     #set ($dataPopup = "false")
@@ -1293,7 +1293,7 @@ div.ic_spacer{
 #end
 
 #macro (elementActionsBoxNoEnd $element $search_field $search_value $user $item)
-    #set ($dataPopup = $data.getParameters().getString("popup"))
+    #set ($dataPopup = $turbineUtils.GetPassedParameter("popup",$data))
     #if($dataPopup)
     #else
       #set ($dataPopup = "false")
@@ -1336,7 +1336,7 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
 #end
 
 #macro (elementActionsBox $element $search_field $search_value $user $item)
-    #set ($dataPopup = $data.getParameters().getString("popup"))
+    #set ($dataPopup = $turbineUtils.GetPassedParameter("popup",$data))
     #if($dataPopup)
     #else
       #set ($dataPopup = "false")

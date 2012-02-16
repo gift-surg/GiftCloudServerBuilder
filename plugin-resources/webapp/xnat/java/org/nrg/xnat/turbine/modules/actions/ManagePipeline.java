@@ -57,7 +57,7 @@ public class ManagePipeline extends SecureAction {
 	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ManagePipeline.class);
 
 	public void doPerform(RunData data, Context context) throws Exception {
-		String task = data.getParameters().get("task");
+		String task = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("task",data));
 		if (task != null) {
 			if (task.equalsIgnoreCase("DELETE")) {
 				doDelete(data,context);
@@ -92,7 +92,7 @@ public class ManagePipeline extends SecureAction {
 	
 	private void doDeletefromproject(RunData data, Context context) {
 		XDATUser user = TurbineUtils.getUser(data);
-		String projectId = data.getParameters().get("project");
+		String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
 		try {
 			XFTItem pline = TurbineUtils.GetItemBySearch(data);
 			if (pline != null) {
@@ -102,7 +102,7 @@ public class ManagePipeline extends SecureAction {
 				PipelineRepositoryManager.Reset();
 			}
 		}catch(Exception e) {
-    		logger.error("Error deleting "  + data.getParameters().get("search_value") ,e);
+    		logger.error("Error deleting "  + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)) ,e);
     		data.setMessage("Error Deleting item.");
 		}
         return;
@@ -121,7 +121,7 @@ public class ManagePipeline extends SecureAction {
 				PipelineRepositoryManager.Reset();
 			}
 		}catch(Exception e) {
-    		logger.error("Error deleting "  + data.getParameters().get("search_value") ,e);
+    		logger.error("Error deleting "  + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)) ,e);
     		data.setMessage("Error Deleting item.");
 		}
 		data.setScreenTemplate("ClosePageAndRefresh.vm");
@@ -131,9 +131,9 @@ public class ManagePipeline extends SecureAction {
 	public void doRedirect(RunData data, Context context) throws Exception {
 		XDATUser user = TurbineUtils.getUser(data);
 		try {
-	        String projectId = data.getParameters().get("project");
-	        String pipelinePath = data.getParameters().get("pipeline");
-	        String schemaType = data.getParameters().get("schema_type");
+	        String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+	        String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline",data));
+	        String schemaType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("schema_type",data));
 	        context.put("pipelinePath", pipelinePath);
 	        String customWebPage = "PipelineScreen_default_launcher.vm";
 	        try {
@@ -187,12 +187,12 @@ public class ManagePipeline extends SecureAction {
 		XDATUser user = TurbineUtils.getUser(data);
         XFTItem found = null;
         try {
-            String projectId = data.getParameters().get("project");
-            String pipelinePath = data.getParameters().get("pipeline_path");
-            String dataType = data.getParameters().get("dataType");
-            String schemaType = data.getParameters().get("schemaType");
+            String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+            String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline_path",data));
+            String dataType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("dataType",data));
+            String schemaType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("schemaType",data));
 
-            boolean edit = data.getParameters().getBoolean("edit");
+            boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit",data));
 
         	XFTItem newItem = XFTItem.NewItem(schemaType,TurbineUtils.getUser(data));
             TurbineUtils.OutputDataParameters(data);
@@ -203,7 +203,7 @@ public class ManagePipeline extends SecureAction {
             PopulateItem populater = PopulateItem.Populate(data,schemaType,true,newItem);
             found = populater.getItem();
 
-            boolean launchedAtAutoArchive = data.getParameters().getBoolean("auto_archive");
+            boolean launchedAtAutoArchive = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("auto_archive",data));
 			String templateSuppliedStepId = found.getStringProperty("stepid");
 	   		boolean saved = false;
 	   	 
@@ -323,9 +323,9 @@ public class ManagePipeline extends SecureAction {
             {
                 TurbineUtils.SetEditItem(pipelineDetails.getItem(),data);
                 context.put("vr",vr);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
             }else{
             	try {
@@ -339,9 +339,9 @@ public class ManagePipeline extends SecureAction {
             		logger.error("Error Storing " + found.getXSIType(),e);
             		data.setMessage("Error Saving item.");
                     TurbineUtils.SetEditItem(found,data);
-                    if (data.getParameters().getString("edit_screen") !=null)
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                     {
-                        data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                     }
                     return;
             	}
@@ -350,9 +350,9 @@ public class ManagePipeline extends SecureAction {
             logger.error("",e);
             data.setMessage("Unknown Error.");
             TurbineUtils.SetEditItem(found,data);
-            if (data.getParameters().getString("edit_screen") !=null)
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
             {
-                data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
             }
         }
 	}
@@ -362,7 +362,7 @@ public class ManagePipeline extends SecureAction {
 		try {
 			XDATUser user = TurbineUtils.getUser(data);
 			XFTItem item = TurbineUtils.GetItemBySearch(data);
-			String pipeline_path = data.getParameters().get("pipeline_path");
+			String pipeline_path = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline_path",data));
 			XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);
 			xnatPipelineLauncher.setSupressNotification(true);
 	        xnatPipelineLauncher.setParameter("useremail", user.getEmail());
@@ -400,15 +400,15 @@ public class ManagePipeline extends SecureAction {
 
 	private Parameters extractParameters(RunData data, Context context){
 		Parameters parameters = Parameters.Factory.newInstance();
-		int totalParams = data.getParameters().getInt("param_cnt");
+		int totalParams = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param_cnt",data));
 		for (int i =0; i < totalParams; i++) {
-			String name = data.getParameters().get("param[" + i + "].name");
-			int rowcount = new Integer(data.getParameters().get("param[" + i + "].name.rowcount")).intValue();
+			String name = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param[" + i + "].name",data));
+			int rowcount = new Integer(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param[" + i + "].name.rowcount",data))).intValue();
 			ArrayList<String> formvalues = new ArrayList<String>();
 			for (int j=0; j < rowcount; j++) {
 				String formfieldname = "param[" + i + "][" + j + "].value";
 				if (TurbineUtils.HasPassedParameter(formfieldname,data))
-				   formvalues.add(data.getParameters().get(formfieldname));
+				   formvalues.add(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(formfieldname,data)));
 			}
 
 			if (formvalues.size()>0) {
@@ -466,9 +466,9 @@ public class ManagePipeline extends SecureAction {
             {
                 TurbineUtils.SetEditItem(pipelineDetails.getItem(),data);
                 context.put("vr",vr);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
             }else{
             	context.put("pipeline", pipelineDetails);
@@ -478,9 +478,9 @@ public class ManagePipeline extends SecureAction {
             logger.error("",e);
             data.setMessage("Unknown Error.");
             TurbineUtils.SetEditItem(found,data);
-            if (data.getParameters().getString("edit_screen") !=null)
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
             {
-                data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
             }
         }
 	}

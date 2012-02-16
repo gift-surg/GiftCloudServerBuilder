@@ -62,12 +62,12 @@ public class XDATScreen_report_xnat_projectData extends SecureReport {
                context.put("par_count", parcount);
            }
             
-           if(data.getParameters().get("topTab")!=null){
-        	   context.put("topTab", data.getParameters().get("topTab"));
+           if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("topTab",data))!=null){
+        	   context.put("topTab", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("topTab",data)));
            }
            
-           if(data.getParameters().get("bottomTab")!=null){
-        	   context.put("bottomTab", data.getParameters().get("bottomTab"));
+           if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("bottomTab",data))!=null){
+        	   context.put("bottomTab", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("bottomTab",data)));
            }
         } catch (XFTInitException e) {
             logger.error("",e);

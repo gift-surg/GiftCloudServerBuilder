@@ -73,7 +73,7 @@ public class StoreXAR extends RawScreen {
 
     @Override
     public void doOutput(RunData data)  {
-        String allowD = data.getParameters().getString("allowDataDeletion");
+        String allowD = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("allowDataDeletion",data));
         boolean allowDataDeletion = true;
         if (allowD==null || allowD.equalsIgnoreCase("true")){
             allowDataDeletion=true;

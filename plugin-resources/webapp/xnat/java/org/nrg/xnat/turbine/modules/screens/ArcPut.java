@@ -49,8 +49,8 @@ public class ArcPut extends RawScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(ArcPut.class);
     @Override
     protected void doOutput(RunData data) throws Exception {
-        String session = data.getParameters().getString("session");
-        String mr_session_id = data.getParameters().getString("mr_session_id");
+        String session = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("session",data));
+        String mr_session_id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("mr_session_id",data));
         HttpServletResponse response = data.getResponse();
         response.setContentType("text/xml");
         response.setHeader("Cache-Control", "no-cache");

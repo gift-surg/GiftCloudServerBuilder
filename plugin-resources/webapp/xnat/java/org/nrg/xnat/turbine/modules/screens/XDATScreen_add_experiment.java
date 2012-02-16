@@ -34,9 +34,9 @@ public class XDATScreen_add_experiment extends SecureScreen {
 //        }
 //        elements.trimToSize();
 
-        if(data.getParameters().get("confirmed")!=null)
+        if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("confirmed",data))!=null)
         {
-            context.put("confirmed",data.getParameters().get("confirmed"));
+            context.put("confirmed",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("confirmed",data)));
         }
 
         if (TurbineUtils.HasPassedParameter("destination", data)){
@@ -50,13 +50,13 @@ public class XDATScreen_add_experiment extends SecureScreen {
         String part_id = null;
         String project= null;
 
-        if(data.getParameters().get("search_field")!=null)
+        if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data))!=null)
         {
-            if(data.getParameters().getString("search_field").equalsIgnoreCase("xnat:subjectData.ID"))
+            if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)).equalsIgnoreCase("xnat:subjectData.ID"))
             {
-                if(data.getParameters().get("search_value")!=null)
+                if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data))!=null)
                 {
-                    part_id= data.getParameters().get("search_value");
+                    part_id= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
                 }
             }
         }

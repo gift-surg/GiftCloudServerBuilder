@@ -31,11 +31,11 @@ public class RequestAccess extends SecureAction {
 
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
 
-        String access_level = data.getParameters().getString("access_level");
-        String comments = data.getParameters().getString("comments");
+        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
+        String comments = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("comments",data));
 
         XDATUser user = TurbineUtils.getUser(data);
 

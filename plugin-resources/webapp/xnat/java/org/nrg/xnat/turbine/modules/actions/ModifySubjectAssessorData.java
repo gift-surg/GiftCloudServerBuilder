@@ -40,7 +40,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
     public void doPerform(RunData data, Context context) throws Exception {
         XFTItem found = null;
         try {
-            String element0 = data.getParameters().getString("element_0");
+            String element0 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("element_0",data));
             if (element0==null){
                 this.handleException(data, null, new Exception("Configuration Exception.<br><br> Please create an &lt;input&gt; with name 'ELEMENT_0' and value 'SOME XSI:TYPE' in your form.  This will tell the Submit action, which data type it is looking for."));
             }
@@ -76,7 +76,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     }
                     int index = key.indexOf("=");
                     String field = key.substring(index+1);
-                    Object value = data.getParameters().getObject(key);
+                    Object value = org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data);
                     logger.debug("FOUND REMOVE: " + field + " " + value);
                     ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
                     if (items.size() > 0)
@@ -94,9 +94,9 @@ public class ModifySubjectAssessorData extends ModifyItem{
             if (removedReference)
             {
                 TurbineUtils.SetEditItem(found,data);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -179,7 +179,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
 
         try {
             if (first!=null){
-                String part_id = data.getParameters().getString("part_id");
+                String part_id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("part_id",data));
                 if (part_id==null){
                     if (first.getStringProperty("subject_ID")!=null){
                         part_id = first.getStringProperty("subject_ID");

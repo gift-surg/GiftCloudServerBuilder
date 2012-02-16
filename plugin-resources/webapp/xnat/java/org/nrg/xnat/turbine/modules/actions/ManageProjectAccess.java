@@ -29,8 +29,8 @@ public class ManageProjectAccess extends SecureAction {
 	   
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        //String accessibility = data.getParameters().getString("accessibility");
-        String p = data.getParameters().getString("project");
+        //String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
         XDATUser user=TurbineUtils.getUser(data);
@@ -39,16 +39,16 @@ public class ManageProjectAccess extends SecureAction {
         	return;
         }
 
-        String accessibility = data.getParameters().getString("accessibility");
+        String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
         project.initAccessibility(accessibility, false);
         
         boolean sendmail=false;
-        if (null!=data.getParameters().getString("sendmail") && data.getParameters().getString("sendmail").equals("email"))
+        if (null!=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)) && ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)).equals("email"))
         	sendmail=true;
         
-        String collaborators = data.getParameters().getString("collaborators");
-        String members = data.getParameters().getString("members");
-        String owners = data.getParameters().getString("owners");
+        String collaborators = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("collaborators",data));
+        String members = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("members",data));
+        String owners = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("owners",data));
 
         List<String> ownersL= StringUtils.CommaDelimitedStringToArrayList(owners);
         List<String> membersL= StringUtils.CommaDelimitedStringToArrayList(members);

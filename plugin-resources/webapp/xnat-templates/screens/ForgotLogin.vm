@@ -47,7 +47,7 @@ $page.setBgColor($ui.bgcolor)
   </table>
         #foreach($key in $data.getParameters().getKeys())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
-        	<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!data.getParameters().getString($key))">	
+        	<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
         	#end
         #end
 </form>

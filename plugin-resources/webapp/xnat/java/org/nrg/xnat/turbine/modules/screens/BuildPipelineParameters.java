@@ -34,7 +34,7 @@ public class BuildPipelineParameters extends SecureReport
             data.setScreenTemplate("Error.vm");
             return;
         }
-        String pipelineName = data.getParameters().get("pipelineName");
+        String pipelineName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipelineName",data));
         if (pipelineName == null) {
             data.setScreenTemplate("Error.vm");
             return;

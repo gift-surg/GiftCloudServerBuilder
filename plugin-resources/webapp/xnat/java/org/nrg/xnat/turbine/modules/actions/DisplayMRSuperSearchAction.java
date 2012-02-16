@@ -44,11 +44,11 @@ public class DisplayMRSuperSearchAction extends DisplaySearchAction {
 			String key = (String)enumer.nextElement();
 			if (TurbineUtils.HasPassedParameter("super_" + key.toLowerCase() + "_detailed",data))
 			{
-			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase(,data)) + "_detailed");
+			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase() + "_detailed",data));
 			    if (! s.equalsIgnoreCase(""))
 			        ds.addAdditionalView(key,s);
 			}else if(TurbineUtils.HasPassedParameter("super_" + key.toLowerCase() + "_brief",data)){
-			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase(,data)) + "_brief");
+			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase() + "_brief",data));
 			    if (! s.equalsIgnoreCase(""))
 			        ds.addAdditionalView(key,s);
 			}

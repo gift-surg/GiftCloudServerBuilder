@@ -449,7 +449,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 			throw new IllegalArgumentException();
 		}	
 		
-		if(StringUtils.IsAlphaNumericUnderscore(getId())){
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
 		

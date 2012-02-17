@@ -2047,7 +2047,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			throw new IllegalArgumentException();
 		}
 		
-		if(StringUtils.IsAlphaNumericUnderscore(getId())){
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
 

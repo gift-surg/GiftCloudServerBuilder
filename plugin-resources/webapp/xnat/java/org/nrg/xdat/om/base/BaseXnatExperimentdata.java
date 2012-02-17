@@ -858,11 +858,11 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			throw new IllegalArgumentException();
 		}
 		
-		if(StringUtils.IsAlphaNumericUnderscore(getId())){
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
 		
-		if(StringUtils.IsAlphaNumericUnderscore(getLabel())){
+		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
 			throw new IllegalArgumentException("Labels cannot use special characters.");
 		}
 		

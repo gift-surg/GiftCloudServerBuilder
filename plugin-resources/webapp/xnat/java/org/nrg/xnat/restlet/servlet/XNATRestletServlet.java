@@ -1,10 +1,9 @@
-// Copyright 2010,2011 Washington University School of Medicine All Rights Reserved
+// Copyright 2010-2012 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.servlet;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
 public class XNATRestletServlet extends ServerServlet {
-    private static final long serialVersionUID = 1592366035839385170L;
-
-    private DicomSCP dicomSCP = null;
     public static ServletConfig REST_CONFIG=null;
+    private final Logger logger = LoggerFactory.getLogger(XNATRestletServlet.class);
+    private DicomSCP dicomSCP = null;
 
     /**
      * Get the username of the site administrator. If there are multiple
@@ -56,7 +54,7 @@ public class XNATRestletServlet extends ServerServlet {
         	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
         	Configuration init_config = AnonUtils.getInstance().getScript(path, null);
         	if (init_config == null) {
-        		logger().info("Creating Script Table.");
+        		logger.info("Creating Script Table.");
         		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
         		String adminUser = this.getAdminUser();
         		if (adminUser != null) {
@@ -71,19 +69,20 @@ public class XNATRestletServlet extends ServerServlet {
         	}
         }
         catch (Throwable e){
-        	logger().error("Unable to either find or initialize script database: " + e.getMessage());
+	    logger.error("Unable to either find or initialize script database", e);
         }
 
         try {
             PrearcDatabase.initDatabase();
-        } catch (Exception e) {
-            logger().error("Unable to initialize prearchive database", e);
+        } catch (Throwable e) {
+            logger.error("Unable to initialize prearchive database", e);
         }
 
         final ContextService context = XDAT.getContextService();
         dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
         if (null != dicomSCP) {
             try {
+		logger.debug("starting {}", dicomSCP);
                 dicomSCP.start();
             } catch (Throwable t) {
                 throw new ServletException("unable to start DICOM SCP", t);
@@ -93,18 +92,16 @@ public class XNATRestletServlet extends ServerServlet {
 
     @Override
     public void destroy() {
-        if (null != dicomSCP) {
-            dicomSCP.stop();
-            dicomSCP = null;
-        }
-        super.destroy();
+        logger.debug("stopping {}", dicomSCP);
+        dicomSCP.stop();
+        dicomSCP = null;
     }
-
-    private static Logger logger() { return LoggerFactory.getLogger(XNATRestletServlet.class); }
-
-
+    
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void service(final HttpServletRequest request, final HttpServletResponse response)
+    throws ServletException,IOException {
         super.service(request, response);
     }
+    
+    public DicomSCP getDicomSCP() { return dicomSCP; }
 }

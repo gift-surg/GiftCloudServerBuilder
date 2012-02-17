@@ -1,12 +1,13 @@
 /**
- * Copyright (c) 2006-2011 Washington University
+ * Copyright (c) 2006-2012 Washington University
  */
 package org.nrg.dcm;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.inject.Provider;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -15,7 +16,6 @@ import org.dcm4che2.data.VR;
 import org.dcm4che2.net.Association;
 import org.dcm4che2.net.CommandUtils;
 import org.dcm4che2.net.DicomServiceException;
-import org.dcm4che2.net.NetworkApplicationEntity;
 import org.dcm4che2.net.PDVInputStream;
 import org.dcm4che2.net.service.CStoreSCP;
 import org.dcm4che2.net.service.DicomService;
@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableMap;
  * DicomService implementing C-STORE SCP for XNAT
  * @author Kevin A. Archie <karchie@wustl.edu>
  */
-public class CStoreService extends DicomService implements CStoreSCP, Closeable {
+public class CStoreService extends DicomService implements CStoreSCP {
     private static final String PhilipsPrivateCXImageStorage = "1.3.46.670589.2.4.1.1";
     private static final String PhilipsPrivateVolumeStorage = "1.3.46.670589.5.0.1";
     private static final String PhilipsPrivate3DObjectStorage = "1.3.46.670589.5.0.2";
@@ -149,36 +149,24 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
     public static final int WARNING_ELEMENTS_DISCARDED = 0xB006;
 
     private final Logger logger = LoggerFactory.getLogger(CStoreService.class);
-    private final NetworkApplicationEntity ae;
-    private final XDATUser user;
-    
+
     private final DicomObjectIdentifier<XnatProjectdata> identifier;
+    private final Provider<XDATUser> userProvider;
     private DicomFileNamer namer = null;
 
 
-    public CStoreService(final NetworkApplicationEntity ae,
-            final DicomObjectIdentifier<XnatProjectdata> identifier,
-            final XDATUser user)
-    throws IOException {
+    public CStoreService(final DicomObjectIdentifier<XnatProjectdata> identifier,
+            final Provider<XDATUser> userProvider) {
         super(CUIDS);
-        this.ae = ae;
-        ae.register(this);
         this.identifier = identifier;
-        this.user = user;
-
-        logger.info("Starting C-STORE service {} for user {} on port {}",
-                new Object[] { ae.getAETitle(), user.getUsername(),
-                ae.getNetworkConnection()[0].getPort() });
+        this.userProvider = userProvider;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.io.Closeable#close()
-     */
-    @Override
-    public void close() {
-        logger.info("Stopping C-STORE service");
-        ae.unregister(this);
+    public CStoreService(final DicomObjectIdentifier<XnatProjectdata> identifier,
+            final XDATUser user) {
+        this(identifier, new Provider<XDATUser>() {
+            public XDATUser get() { return user; }
+        });
     }
 
     /*
@@ -207,7 +195,7 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         as.writeDimseRSP(pcid, rsp);
         CommandUtils.setIncludeUIDinRSP(includeUIDs);
     }
-    
+
     /**
      * Set the DicomFileNamer to be used for naming stored DICOM files.
      * @param namer
@@ -217,7 +205,7 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         this.namer = namer;
         return this;
     }
-
+    
     private final Object identifySender(final Association association) {
         return new StringBuilder()
         .append(association.getRemoteAET()).append("@")
@@ -231,7 +219,8 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         final FileWriterWrapperI fw = new StreamWrapper(dataStream);
         try {
             try {
-                final GradualDicomImporter importer = new GradualDicomImporter(this, user, fw,
+                final GradualDicomImporter importer = new GradualDicomImporter(this,
+                        userProvider.get(), fw,
                         ImmutableMap.of(GradualDicomImporter.SENDER_ID_PARAM, identifySender(as),
                                 GradualDicomImporter.TSUID_PARAM, tsuid,
                                 GradualDicomImporter.SENDER_AE_TITLE_PARAM, as.getRemoteAET()));
@@ -258,7 +247,7 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
                     e.getMessage());
         }
     }
-    
+
     private static final class StreamWrapper implements FileWriterWrapperI {
         private final InputStream in;
 
@@ -282,5 +271,44 @@ public class CStoreService extends DicomService implements CStoreSCP, Closeable 
         public void delete() {
             throw new UnsupportedOperationException();
         }
+    }
+    
+    public static final class Specifier {
+        private final String aeTitle;
+        private final Provider<XDATUser> userProvider;
+        private final DicomObjectIdentifier<XnatProjectdata> identifier;
+        private final DicomFileNamer namer;
+        
+        public Specifier(final String aeTitle,
+                final Provider<XDATUser> userProvider,
+                final DicomObjectIdentifier<XnatProjectdata> identifier,
+                final DicomFileNamer namer) {
+            this.aeTitle = aeTitle;
+            this.userProvider = userProvider;
+            this.identifier = identifier;
+            this.namer = namer;
+        }
+        
+        public Specifier(final String aeTitle,
+                final Provider<XDATUser> userProvider,
+                final DicomObjectIdentifier<XnatProjectdata> identifier) {
+            this(aeTitle, userProvider, identifier, null);
+        }
+        
+        public CStoreService build() {
+            final CStoreService cstore = new CStoreService(identifier, userProvider);
+            if (null != namer) {
+                cstore.setNamer(namer);
+            }
+            return cstore;
+        }
+        
+        public String getAETitle() { return aeTitle; }
+        
+        public Provider<XDATUser> getUserProvider() { return userProvider; }
+        
+        public DicomObjectIdentifier<XnatProjectdata> getIdentifier() { return identifier; }
+        
+        public DicomFileNamer getNamer() { return namer; }
     }
 }

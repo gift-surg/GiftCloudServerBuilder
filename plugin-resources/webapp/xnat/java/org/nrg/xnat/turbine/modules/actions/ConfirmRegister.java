@@ -32,7 +32,7 @@ public class ConfirmRegister extends SecureAction {
             
     		String nextPage = (String)TurbineUtils.GetPassedParameter("nextPage",data);
     		String nextAction = (String)TurbineUtils.GetPassedParameter("nextAction",data);
-    		String par = (String)TurbineUtils.GetPassedParamter("par",data);
+    		String par = (String)TurbineUtils.GetPassedParameter("par",data);
 
             if(!StringUtils.isEmpty(par)){
             	context.put("par", par);

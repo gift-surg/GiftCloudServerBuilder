@@ -221,7 +221,7 @@ public abstract class SecureResource extends Resource {
 	}
 	
 	private Form f= null;
-	private Form getQueryVariableForm(){
+	public Form getQueryVariableForm(){
 		if(f==null){
 			f= getRequest().getResourceRef().getQueryAsForm();
 		}
@@ -234,7 +234,7 @@ public abstract class SecureResource extends Resource {
 	
 	
 	private Form _body;
-	private Form getBodyAsForm(){
+	public Form getBodyAsForm(){
 		if(_body==null){
 		Representation entity = this.getRequest().getEntity();
 		
@@ -302,7 +302,11 @@ public abstract class SecureResource extends Resource {
 	
 	public String getQueryVariable(String key){
 		Form f = getQueryVariableForm();
-		if (f != null) {
+		if (f != null && f.getValuesMap().containsKey(key)) {
+			return TurbineUtils.escapeParam(f.getFirstValue(key));
+		}
+		f = getBodyAsForm();
+		if (f != null && f.getValuesMap().containsKey(key)) {
 			return TurbineUtils.escapeParam(f.getFirstValue(key));
 		}
 		return null;

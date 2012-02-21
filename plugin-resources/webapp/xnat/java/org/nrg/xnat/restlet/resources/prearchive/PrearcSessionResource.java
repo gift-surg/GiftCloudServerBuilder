@@ -72,13 +72,11 @@ public final class PrearcSessionResource extends SecureResource {
             Response response) {
         super(context, request, response);
 
-        final Map<String,Object> attrs = getRequest().getAttributes();
-
         // Project, timestamp, session are explicit in the request
-        final String p = (String)attrs.get(PROJECT_ATTR);
+        final String p = (String)getParameter(request,PROJECT_ATTR);
         project = p.equalsIgnoreCase(PrearcUtils.COMMON) ? null : p;
-        timestamp = (String)attrs.get(SESSION_TIMESTAMP);
-        session = (String)attrs.get(SESSION_LABEL);
+        timestamp = (String)getParameter(request,SESSION_TIMESTAMP);
+        session = (String)getParameter(request,SESSION_LABEL);
 
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.APPLICATION_ZIP));

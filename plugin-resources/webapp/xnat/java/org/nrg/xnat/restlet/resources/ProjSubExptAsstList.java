@@ -43,11 +43,11 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 	public ProjSubExptAsstList(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		String pID= (String)request.getAttributes().get("PROJECT_ID");
+		String pID= (String)getParameter(request,"PROJECT_ID");
 		if(pID!=null){
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
-			String subID= (String)request.getAttributes().get("SUBJECT_ID");
+			String subID= (String)getParameter(request,"SUBJECT_ID");
 			if(subID!=null){
 				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 						.getId(), subID, user, false);
@@ -62,7 +62,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 				}
 
 				if(sub!=null){
-					String exptID = (String) request.getAttributes().get(
+					String exptID = (String) getParameter(request,
 							"ASSESSED_ID");
 					assessed = XnatExperimentdata.getXnatExperimentdatasById(
 							exptID, user, false);
@@ -97,7 +97,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 				"Unable to find subject.");
 			}
 		}else{
-			String exptID = (String) request.getAttributes().get("ASSESSED_ID");
+			String exptID = (String) getParameter(request,"ASSESSED_ID");
 			assessed = XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
 			if(assessed!=null){
 				this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));

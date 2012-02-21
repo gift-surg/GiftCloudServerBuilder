@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -65,6 +66,7 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 import org.xml.sax.SAXParseException;
 
+import com.google.common.collect.Maps;
 import com.noelios.restlet.http.HttpConstants;
 
 @SuppressWarnings("deprecation")
@@ -134,8 +136,14 @@ public abstract class SecureResource extends Resource {
 			if (filepath.startsWith("/")) {
 				filepath = filepath.substring(1);
 				}
+			
+			filepath=TurbineUtils.escapeParam(filepath);
 		}
 		logAccess();
+	}
+
+	public static Object getParameter(Request request,String key){
+		return TurbineUtils.escapeParam(request.getAttributes().get(key));
 	}
 
 
@@ -212,28 +220,90 @@ public abstract class SecureResource extends Resource {
 		return false;
 	}
 	
-	Form f= null;
-	public Form getQueryVariableForm(){
+	private Form f= null;
+	private Form getQueryVariableForm(){
 		if(f==null){
 			f= getRequest().getResourceRef().getQueryAsForm();
 		}
 		return f;
 	}
 	
-	public Form getBodyAsForm(){
+	public Map<String,String> getQueryVariableMap(){
+		return convertFormToMap(getQueryVariableForm());
+	}
+	
+	
+	private Form _body;
+	private Form getBodyAsForm(){
+		if(_body==null){
 		Representation entity = this.getRequest().getEntity();
 		
 		if (RequestUtil.isMultiPartFormData(entity)) {
-			return new Form(entity);
+				_body=new Form(entity);
+			}
 		}
 		
+		return _body;
+	}
+	
+	private static Map<String,String> convertFormToMap(Form q){
+		Map<String,String> map=Maps.newLinkedHashMap();
+		if(q!=null){
+			for(String s:q.getValuesMap().keySet()){
+				map.put(s, TurbineUtils.escapeParam(q.getFirstValue(s)));
+			}
+		}
+		return map;
+	}
+	
+	public Map<String,String> getBodyVariableMap(){
+		return convertFormToMap(getBodyAsForm());
+	}
+	
+	public String getBodyVariable(String key){
+		Form f = getBodyAsForm();
+		if (f != null) {
+			return TurbineUtils.escapeParam(f.getFirstValue(key));
+		}
+		return null;
+	}
+	
+	private static String[] getVariablesFromForm(Form f, String key){
+		if (f != null) {
+			String[] values= f.getValuesArray(key).clone();
+			for(int i=0;i<values.length;i++){
+				values[i]=TurbineUtils.escapeParam(values[i]);
+			}
+			return f.getValuesArray(key);
+		}
+		return null;
+	}
+	
+	public String[] getBodyVariables(String key) {
+		return getVariablesFromForm(getBodyAsForm(),key);
+	}
+	
+	public boolean hasBodyVariable(String key){
+		if(getBodyVariable(key)==null)
+		{
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	public Set<String> getBodyVariableKeys() {
+		Form f = getBodyAsForm();
+		if (f != null) {
+			return f.getValuesMap().keySet();
+		}
 		return null;
 	}
 	
 	public String getQueryVariable(String key){
 		Form f = getQueryVariableForm();
 		if (f != null) {
-			return f.getFirstValue(key);
+			return TurbineUtils.escapeParam(f.getFirstValue(key));
 		}
 		return null;
 	}
@@ -247,6 +317,10 @@ public abstract class SecureResource extends Resource {
 			}
 		}
 		
+	public boolean hasQueryVariable(String key){
+		return containsQueryVariable(key);
+	}
+		
 	public boolean isQueryVariable(String key, String value,			boolean caseSensitive) {
 		if (this.getQueryVariable(key) != null) {
 			if ((caseSensitive && this.getQueryVariable(key).equals(value))					|| (!caseSensitive && this.getQueryVariable(key)							.equalsIgnoreCase(value))) {
@@ -257,9 +331,13 @@ public abstract class SecureResource extends Resource {
 	}
 	
 	public String[] getQueryVariables(String key) {
+		return getVariablesFromForm(getQueryVariableForm(),key);
+	}
+	
+	public Set<String> getQueryVariableKeys() {
 		Form f = getQueryVariableForm();
 		if (f != null) {
-			return f.getValuesArray(key);
+			return f.getValuesMap().keySet();
 			}
 		return null;
 	}
@@ -512,12 +590,9 @@ public abstract class SecureResource extends Resource {
 			}
 		}else if(req_format.equals("form")){
 			try {
-				Form bodyForm = new Form(entity);
-				Form queryForm = getRequest().getResourceRef().getQueryAsForm();
+				Map<String,String> params=getBodyVariableMap();
 				
-				Map<String,String> params=bodyForm.getValuesMap();
-				
-				params.putAll(queryForm.getValuesMap());
+				params.putAll(getQueryVariableMap());
 				
 					if(params.containsKey("ELEMENT_0")){
 						dataType=params.get("ELEMENT_0");
@@ -555,9 +630,7 @@ public abstract class SecureResource extends Resource {
 		}
 			
 		try {
-			Form queryForm = this.getQueryVariableForm();
-			
-			Map<String,String> params=queryForm.getValuesMap();
+			Map<String,String> params=getQueryVariableMap();
 				if(params.containsKey("ELEMENT_0")){
 					dataType=params.get("ELEMENT_0");
 			}
@@ -719,13 +792,10 @@ public abstract class SecureResource extends Resource {
 	 */
 	public List<String> getActions(){
 		if(actions==null){
-			final Form f = getQueryVariableForm();
-			if (f != null) {
-				final String[] actionA=f.getValuesArray(ACTION);
+			final String[] actionA=getQueryVariables(ACTION);
 				if(actionA!=null && actionA.length>0){
 					actions=Arrays.asList(actionA);
 }
-			}
 			
 			if(actions==null)actions=new ArrayList<String>();
 		}
@@ -749,11 +819,19 @@ public abstract class SecureResource extends Resource {
 		
 	}
 
+	public void loadQueryVariables() throws ClientException{
+		loadParams(getQueryVariableForm());
+	}
+	
+	public void loadBodyVariables() throws ClientException{
+		loadParams(getBodyAsForm());
+	}
+
 	public void loadParams(Form f) throws ClientException{
 		if(f!=null){
 			for(final String key:f.getNames()){
 				for(String v:f.getValuesArray(key)){
-					handleParam(key,v);
+					handleParam(key,TurbineUtils.escapeParam(v));
 				}
 			}
 		}
@@ -763,7 +841,7 @@ public abstract class SecureResource extends Resource {
 	    try {
 	        final JSONObject json = new JSONObject(_json);
 	        for (final String key: JSONObject.getNames(json)) {
-	            handleParam(key, json.get(key));
+	            handleParam(key, TurbineUtils.escapeParam(json.get(key)));
 	        }
 	    } catch (JSONException e) {
 	        logger.error("invalid JSON message " + _json, e);
@@ -810,7 +888,7 @@ public abstract class SecureResource extends Resource {
 				     
                     if (fi.isFormField()) {
                     	// Load form field to passed parameters map
-                    	handleParam(fi.getFieldName(),fi.getString());
+                    	handleParam(fi.getFieldName(),TurbineUtils.escapeParam(fi.getString()));
                        	continue;
                     } 
                     if (fi.getName()==null) {

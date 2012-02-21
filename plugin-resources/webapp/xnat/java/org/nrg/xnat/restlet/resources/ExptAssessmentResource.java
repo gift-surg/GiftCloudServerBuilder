@@ -12,6 +12,7 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
@@ -42,12 +43,12 @@ public class ExptAssessmentResource extends ItemResource {
 	public ExptAssessmentResource(Context context, Request request, Response response) {
 		super(context, request, response);
 
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 
-			String assessedID= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessedID= (String)getParameter(request,"ASSESSED_ID");
 			if(assessedID!=null){
 				if(assesed==null&& assessedID!=null){
 				assesed = XnatExperimentdata.getXnatExperimentdatasById(
@@ -63,7 +64,7 @@ public class ExptAssessmentResource extends ItemResource {
 					}
 				}
 
-				exptID= (String)request.getAttributes().get("EXPT_ID");
+				exptID= (String)getParameter(request,"EXPT_ID");
 				if(exptID!=null){
 				existing = (XnatImageassessordata) XnatExperimentdata
 						.getXnatExperimentdatasById(exptID, user, false);
@@ -83,7 +84,7 @@ public class ExptAssessmentResource extends ItemResource {
 			}
 		}else{
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-					"Unable to find assessed experiment '" + assessedID + "'");
+					"Unable to find assessed experiment '" + TurbineUtils.escapeParam(assessedID) + "'");
 		}
 
 

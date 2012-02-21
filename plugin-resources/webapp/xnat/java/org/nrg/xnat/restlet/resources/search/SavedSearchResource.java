@@ -47,7 +47,7 @@ public class SavedSearchResource extends ItemResource {
 			Response response) {
 		super(context, request, response);
 		
-			sID= (String)request.getAttributes().get("SEARCH_ID");
+			sID= (String)getParameter(request,"SEARCH_ID");
 			if(sID!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}else{

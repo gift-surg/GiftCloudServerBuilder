@@ -40,12 +40,12 @@ public class ReconResource extends ItemResource {
 	public ReconResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			String assessedID= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessedID= (String)getParameter(request,"ASSESSED_ID");
 			if(assessedID!=null){
 				if(session==null&& assessedID!=null){
 				session = (XnatImagesessiondata) XnatExperimentdata
@@ -62,7 +62,7 @@ public class ReconResource extends ItemResource {
 					}
 				}
 
-				exptID= (String)request.getAttributes().get("RECON_ID");
+				exptID= (String)getParameter(request,"RECON_ID");
 				if(exptID!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 					this.getVariants().add(new Variant(MediaType.TEXT_XML));

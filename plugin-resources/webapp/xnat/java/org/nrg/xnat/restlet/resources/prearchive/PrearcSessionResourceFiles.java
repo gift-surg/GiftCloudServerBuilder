@@ -7,19 +7,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
-import org.nrg.action.ClientException;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.merge.MergeUtils;
-import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
+import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -36,13 +33,13 @@ import com.google.common.collect.Lists;
  *
  */
 public class PrearcSessionResourceFiles extends PrearcSessionResourcesList {
-	private static final Object RESOURCE_ID = "RESOURCE_ID";
+	private static final String RESOURCE_ID = "RESOURCE_ID";
 	private final String resource_id;
 	
 	public PrearcSessionResourceFiles(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		resource_id = (String)request.getAttributes().get(RESOURCE_ID);
+		resource_id = (String)SecureResource.getParameter(request,RESOURCE_ID);
 	}
 
 

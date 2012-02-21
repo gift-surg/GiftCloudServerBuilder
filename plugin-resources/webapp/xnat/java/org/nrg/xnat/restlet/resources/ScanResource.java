@@ -46,12 +46,12 @@ public class ScanResource  extends ItemResource {
 	public ScanResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			String assessedID= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessedID= (String)getParameter(request,"ASSESSED_ID");
 			if(assessedID!=null){
 				if(session==null&& assessedID!=null){
 				session = (XnatImagesessiondata) XnatExperimentdata
@@ -68,7 +68,7 @@ public class ScanResource  extends ItemResource {
 					}
 				}
 
-				scanID= (String)request.getAttributes().get("SCAN_ID");
+				scanID= (String)getParameter(request,"SCAN_ID");
 				if(scanID!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 					this.getVariants().add(new Variant(MediaType.TEXT_XML));

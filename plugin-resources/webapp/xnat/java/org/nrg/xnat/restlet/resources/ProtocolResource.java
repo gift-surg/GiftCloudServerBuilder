@@ -34,12 +34,12 @@ public class ProtocolResource extends ItemResource {
 	public ProtocolResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-		String pID = (String) request.getAttributes().get("PROJECT_ID");
+		String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
 
-		protID = (String) request.getAttributes().get("PROTOCOL_ID");
+		protID = (String) getParameter(request,"PROTOCOL_ID");
 
 		if (proj != null)
 			existing = (XnatDatatypeprotocol) XnatAbstractprotocol

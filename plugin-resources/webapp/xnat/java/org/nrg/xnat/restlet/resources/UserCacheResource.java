@@ -68,8 +68,8 @@ public class UserCacheResource extends SecureResource {
 		try {
 			
 			String userPath = UserUtils.getUserCacheUploadsPath(user);
-	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	        String pFILE = (String)getRequest().getAttributes().get("FILE");
+	        String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	        String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
@@ -105,8 +105,8 @@ public class UserCacheResource extends SecureResource {
 		try {
 			
 			String userPath = UserUtils.getUserCacheUploadsPath(user);
-	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	        String pFILE = (String)getRequest().getAttributes().get("FILE");
+	        String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	        String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
@@ -132,8 +132,8 @@ public class UserCacheResource extends SecureResource {
 	public void handlePost() {
 		
 		String userPath = UserUtils.getUserCacheUploadsPath(user);
-	    String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	    String pFILE = (String)getRequest().getAttributes().get("FILE");
+	    String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	    String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	    if (pXNAME == null && pFILE == null) {
 	     	
@@ -163,8 +163,8 @@ public class UserCacheResource extends SecureResource {
 		try {
 			
 			String userPath = UserUtils.getUserCacheUploadsPath(user);
-	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	        String pFILE = (String)getRequest().getAttributes().get("FILE");
+	        String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	        String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	

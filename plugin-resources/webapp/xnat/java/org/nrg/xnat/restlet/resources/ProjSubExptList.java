@@ -46,7 +46,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 	public ProjSubExptList(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		pID = (String) request.getAttributes().get("PROJECT_ID");
+		pID = (String) getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
@@ -56,7 +56,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 				return;
 			}
 
-			subID = (String) request.getAttributes().get("SUBJECT_ID");
+			subID = (String) getParameter(request,"SUBJECT_ID");
 				if(subID!=null){
 				subject = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 						.getId(), subID, user, false);

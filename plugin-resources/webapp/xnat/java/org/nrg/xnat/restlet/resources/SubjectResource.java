@@ -43,12 +43,12 @@ public class SubjectResource extends ItemResource {
 	public SubjectResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			subID= (String)request.getAttributes().get("SUBJECT_ID");
+			subID= (String)getParameter(request,"SUBJECT_ID");
 
 		if(proj!=null)
 			existing=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);

@@ -58,7 +58,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 	public SubjAssessmentResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
@@ -68,7 +68,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 			return;
 			}
 
-			subID= (String)request.getAttributes().get("SUBJECT_ID");
+			subID= (String)getParameter(request,"SUBJECT_ID");
 			if(subID!=null){
 			subject = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 					.getId(), subID, user, false);
@@ -83,7 +83,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 				}
 			}
 			
-			exptID= (String)request.getAttributes().get("EXPT_ID");
+			exptID= (String)getParameter(request,"EXPT_ID");
 			if(exptID!=null){
 			if (proj != null) {
 				if (existing == null) {

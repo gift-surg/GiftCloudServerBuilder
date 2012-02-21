@@ -37,7 +37,7 @@ public class SearchFieldListResource extends SecureResource{
 	public SearchFieldListResource(Context context, Request request, Response response) {
 		super(context, request, response);
 
-			elementName= (String)request.getAttributes().get("ELEMENT_NAME");
+			elementName= (String)getParameter(request,"ELEMENT_NAME");
 			if(elementName!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}else{

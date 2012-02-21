@@ -34,10 +34,10 @@ public class ProjectSearchResource extends ItemResource {
 	public ProjectSearchResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			sID= (String)request.getAttributes().get("SEARCH_ID");
+			sID= (String)getParameter(request,"SEARCH_ID");
 			if(sID!=null){		
 				
-				String pID= (String)request.getAttributes().get("PROJECT_ID");
+				String pID= (String)getParameter(request,"PROJECT_ID");
 				if(pID!=null){
 					proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 					

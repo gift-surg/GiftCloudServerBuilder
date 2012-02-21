@@ -34,7 +34,7 @@ public class ProjectResource extends ItemResource {
 	public ProjectResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			pID= (String)request.getAttributes().get("PROJECT_ID");
+			pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}

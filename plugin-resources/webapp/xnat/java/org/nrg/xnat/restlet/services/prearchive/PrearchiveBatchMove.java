@@ -45,9 +45,9 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 				if(key.equals(SRC)){
 			srcs.add((String)o);	
 				}else if(key.equals(NEW_PROJECT)){
-					newProject=this.getQueryVariable(NEW_PROJECT);
+					newProject=(String)o;
 				}else if(key.equals(ASYNC)) {
-					if (this.getQueryVariable(ASYNC).equals("false")) {
+					if (((String)o).equals("false")) {
 						async = false;
 					}
 				}

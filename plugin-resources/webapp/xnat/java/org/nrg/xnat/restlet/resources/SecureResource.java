@@ -305,10 +305,6 @@ public abstract class SecureResource extends Resource {
 		if (f != null && f.getValuesMap().containsKey(key)) {
 			return TurbineUtils.escapeParam(f.getFirstValue(key));
 		}
-		f = getBodyAsForm();
-		if (f != null && f.getValuesMap().containsKey(key)) {
-			return TurbineUtils.escapeParam(f.getFirstValue(key));
-		}
 		return null;
 	}
 	

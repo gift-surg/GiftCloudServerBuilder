@@ -5,8 +5,6 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.Date;
-
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.ArcArchivespecification;
@@ -17,13 +15,16 @@ import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
+import java.util.Date;
+
 public class Index extends SecureScreen {
 
     @Override
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
         ArcArchivespecification arc= ArcSpecManager.GetInstance();
         if (arc==null || !arc.isComplete()){
-            this.doRedirect(data, "EditArcSpecs.vm");
+            context.put("initialize", true);
+            this.doRedirect(data, "Configuration.vm");
             return;
         }else{
             context.put("arc", arc);

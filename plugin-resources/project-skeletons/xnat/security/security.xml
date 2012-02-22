@@ -571,7 +571,7 @@
 				<xdat:assigned_role description="can insert experiments and subjects" role_name="DataManager" sequence="1">
 					<xdat:allowed_actions>
 						<xdat:allowed_action action_name="XMLUpload" display_name="Upload XML" sequence="7"/>
-						<xdat:allowed_action action_name="ImageUpload" display_name="Upload Images" sequence="10"/>
+						<xdat:allowed_action action_name="LaunchUploadApplet" display_name="Upload Images" sequence="10"/>
 						<xdat:allowed_action action_name="prearchives" display_name="View Prearchive" sequence="11"/>
 						<xdat:allowed_action action_name="add_xnat_projectData" display_name="Add Project" sequence="7"/>
 					</xdat:allowed_actions>
@@ -698,7 +698,7 @@
 				<xdat:element_action element_action_name="xml" display_name="View XML" sequence="1" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
 				<xdat:element_action element_action_name="add_experiment" display_name="Add Experiment" sequence="2" image="update.gif"/>
-				<xdat:element_action element_action_name="upload_images" display_name="Upload Images" sequence="3" image="Up.gif" popup="always:840,580" secureAccess="edit"/>
+				<xdat:element_action element_action_name="LaunchUploadApplet" display_name="Upload Images" sequence="3" image="Up.gif" popup="never" secureAccess="edit"/>
 				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="4" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="5" image="right2.gif" popup="never"/>
 			</xdat:element_actions>

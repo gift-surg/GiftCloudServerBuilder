@@ -104,7 +104,7 @@ $navigation.setTemplate("XNATQuickSearch.vm")
          <DIV class="bd">
           <ul class="first-of-type">
 				           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("ImageUpload.vm")">Images</a>
+            <a class="yuimenuitemlabel" href="$link.setPage("LaunchUploadApplet.vm")">Images</a>
            </li>
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="$link.setPage("XMLUpload.vm")">XML</a>

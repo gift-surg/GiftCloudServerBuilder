@@ -1,14 +1,5 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.inject.Provider;
-
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
@@ -20,6 +11,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Provider;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
 
 public class SessionXMLRebuilderJob implements JobInterface {
 	@Override
@@ -39,58 +37,63 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		} catch (SessionException e) {
 			logger.error("", e);
 		} catch (SQLException e) {
-			logger.error("", e);
+            // Just downgrade this message so it doesn't fill the logs before the prearchive is initialized.
+            if (e.getMessage().contains("relation \"xdat_search.prearchive\" does not exist")) {
+                logger.info("", e);
+            } else {
+                logger.error("", e);
+            }
 		} catch (Exception e) {
 			logger.error("", e);
 		}
 		int updated = 0;
 		int total = 0;
-		Iterator<SessionData> i = sds.iterator();
-		while (i.hasNext()) {
-			total++;
-			SessionData s = i.next();
-			if (s.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING)) {
-				File sessionDir = null;
-				try {
-					sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
-				} catch (IOException e) {
-					logger.error("", e);
-				} catch (InvalidPermissionException e) {
-					logger.error("", e);
-				} catch (Exception e) {
-					logger.error("", e);
-				}
-				long then = s.getLastBuiltDate().getTime();
-				double interval = (double) _map.getIntValue("interval");
-				double diff = diffInMinutes(then, now);
-				if (diff >= interval) {
-					logger.info("commiting {}", s.getExternalUrl());
-					try {
-						updated++;
-						if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
-							PrearcDatabase.buildSession(sessionDir, s.getFolderName(), s.getTimestamp(), s.getProject());
-							PrearcUtils.resetStatus(user, s.getProject(), s.getTimestamp(), s.getFolderName(), true);
+        if (sds != null && sds.size() > 0) {
+            for (final SessionData sessionData : sds) {
+                total++;
+                if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit()) {
+                    File sessionDir = null;
+                    try {
+                        sessionDir = PrearcUtils.getPrearcSessionDir(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), false);
+                    } catch (IOException e) {
+                        logger.error("", e);
+                    } catch (InvalidPermissionException e) {
+                        logger.error("", e);
+                    } catch (Exception e) {
+                        logger.error("", e);
+                    }
+                    long then = sessionData.getLastBuiltDate().getTime();
+                    double interval = (double) _map.getIntValue("interval");
+                    double diff = diffInMinutes(then, now);
+                    if (diff >= interval) {
+                        logger.info("committing {}", sessionData.getExternalUrl());
+                        try {
+                            updated++;
+                            if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
+                                PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject());
+                                PrearcUtils.resetStatus(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), true);
 
-							final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(s.getProject(), s.getTimestamp(), s.getFolderName(), null, user), null, false, true, false);
-							uploader.call();
-						}
-					} catch (SyncFailedException e) {
-						logger.error("", e);
-					} catch (SQLException e) {
-						logger.error("", e);
-					} catch (SessionException e) {
-						logger.error("", e);
-					} catch (IOException e) {
-						logger.error("", e);
-					} catch (InvalidPermissionException e) {
-						logger.error("", e);
-					} catch (Exception e) {
-						logger.error("", e);
-					}
-				}
-			}
-		}
-		logger.info("Built {} of {}", updated, total);
+                                final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);
+                                uploader.call();
+                            }
+                        } catch (SyncFailedException e) {
+                            logger.error("", e);
+                        } catch (SQLException e) {
+                            logger.error("", e);
+                        } catch (SessionException e) {
+                            logger.error("", e);
+                        } catch (IOException e) {
+                            logger.error("", e);
+                        } catch (InvalidPermissionException e) {
+                            logger.error("", e);
+                        } catch (Exception e) {
+                            logger.error("", e);
+                        }
+                    }
+                }
+            }
+        }
+        logger.info("Built {} of {}", updated, total);
 	}
 
 	@Override

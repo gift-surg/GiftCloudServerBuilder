@@ -229,6 +229,20 @@
 				<exclude name="README"/>
 			</fileset>
 		</ant:copy>
+	<ant:replace file="${basedir}/deployments/${xdat.project.name}/conf/services.properties" value="" propertyFile="build.properties">
+			<replacefilter token="@XDAT_MAIL_SERVER@" property="xdat.mail.server"/>
+			<replacefilter token="@XDAT_MAIL_PORT@" property="xdat.mail.port"/>
+			<replacefilter token="@XDAT_MAIL_PROTOCOL@" property="xdat.mail.protocol"/>
+			<replacefilter token="@XDAT_MAIL_USERNAME@" property="xdat.mail.username"/>
+			<replacefilter token="@XDAT_MAIL_PASSWORD@" property="xdat.mail.password"/>
+			<replacefilter token="@XDAT_MAIL_ADMIN@" property="xdat.mail.admin"/>
+			<replacefilter token="@XDAT_MAIL_PREFIX@" property="xdat.mail.prefix"/>
+			<replacefilter token="@XDAT_DB_NAME@" property="xdat.project.db.name"/>
+			<replacefilter token="@XDAT_DB_DRIVER@" property="xdat.project.db.driver"/>
+			<replacefilter token="@XDAT_DB_URL@" property="xdat.project.db.connection.string"/>
+			<replacefilter token="@XDAT_DB_USERNAME@" property="xdat.project.db.user"/>
+			<replacefilter token="@XDAT_DB_PASSWORD@" property="xdat.project.db.password"/>
+		</ant:replace>
 	</goal>
 	<!-- ================================================================ -->
 	<!-- Calls the maven task for the deployment xdat:deploy                                      -->
@@ -395,7 +409,7 @@
 					<fileset dir="${xdat.project.resource}" includes="**/CVS/"/>
 				</delete>
 				<delete dir="${xdat.project.resource}/pdf"/>
-				<ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.admin_email}"/>
+				<ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.mail.admin}"/>
 			</j:otherwise>
 		</j:choose>
 	</goal>
@@ -465,29 +479,29 @@
                 </j:if>
             </j:if>
 
-            <attainGoal name="xdat:buildModuleExtractionFolder"/>
+<attainGoal name="xdat:buildModuleExtractionFolder"/>
             
-            <!-- Extract all zips and jars from the default module folder to the extract folder. -->
+<!-- Extract all zips and jars from the default module folder to the extract folder. -->
             <j:if test="${context.getVariable('modules.default.dir.exists') == 'true'}">
                 <j:set var="modules.hosting.dir" value="${basedir}/modules"/>
                 <ant:echo>Extracing modules from the default modules folder at ${modules.hosting.dir}.</ant:echo>
                 <attainGoal name="xdat:copyModulesToExtractionDir"/>
             </j:if>
 
-            <!-- Extract all zips and jars from the user-specified module folder to the extract folder. -->
+<!-- Extract all zips and jars from the user-specified module folder to the extract folder. -->
             <j:if test="${context.getVariable('modules.custom.dir.exists') == 'true'}">
                 <j:set var="modules.hosting.dir" value="${modules.custom.dir}"/>
                 <ant:echo>Extracing modules from the custom modules folder at ${modules.hosting.dir}.</ant:echo>
                 <attainGoal name="xdat:copyModulesToExtractionDir"/>
             </j:if>
 
-            <!-- Copy all extracted overlaid contents to project folder -->
+<!-- Copy all extracted overlaid contents to project folder -->
             <ant:echo>Pushing all completed modules from ${modules.extraction.dir} to projects/${xdat.project.name}</ant:echo>
             <copy todir="projects/${xdat.project.name}" preservelastmodified="true">
                 <fileset dir="${modules.extraction.dir}"/>
             </copy>
 
-        </j:if>
+</j:if>
     </goal>
     <goal name="xdat:buildModuleExtractionFolder">
 			<!-- Specify and clear (rm and re-mk) the extract folder. -->
@@ -512,7 +526,7 @@
 				</fileset>
 			</ant:unzip>
 
-			<!-- Get contents of the custom folder and copy into the extract folder -->
+<!-- Get contents of the custom folder and copy into the extract folder -->
 			<!-- TODO: This is a work-around, ant can't do "foreach subfolder in folder" construct -->
         <u:available file="${modules.hosting.dir}/custom">
             <ant:echo>Overlaying all files from ${modules.hosting.dir}/custom to ${modules.extraction.dir}</ant:echo>
@@ -612,9 +626,9 @@
 		<ant:replace file="${xdat.instance.NEW}" token="%BUILD_LOCATION%" value="${xdat.build.location}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
+		<ant:replace file="${xdat.instance.NEW}" token="%ADMIN_EMAIL%" value="${xdat.mail.admin}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%SITE_URL%" value="${xdat.url}"/>
-		<ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
+		<ant:replace file="${xdat.instance.NEW}" token="%SMTP_SERVER%" value="${xdat.mail.server}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
 		<ant:replace file="${xdat.instance.NEW}" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>
@@ -632,18 +646,22 @@
 		<maven:makeAbsolutePath var="xdat.project" path="webapps/${xdat.project.name}" basedir="${maven.appserver.home}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%XDAT_PROJECT%/" value=""/>
 		<j:if test="${context.getVariable('xdat.pipeline.location') != null}">
+			<ant:echo>Setting pipeline location to ${xdat.pipeline.location}</ant:echo>
+			<ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${xdat.pipeline.location}"/>
 			<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PIPELINE_HOME%" value="${xdat.pipeline.location}"/>
 		</j:if>
 		<j:if test="${context.getVariable('xdat.pipeline.location') == null}">
+			<ant:echo>No explicit pipeline location specified, setting pipeline location to ${basedir}/pipeline</ant:echo>
+			<ant:replace file="${xdat.instance.NEW}" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
 			<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PIPELINE_HOME%" value="${basedir}/pipeline"/>
 		</j:if>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%FTP_LOCATION%" value="${xdat.ftp.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%BUILD_LOCATION%" value="${xdat.build.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%REQUIRE_LOGIN%" value="${xdat.require_login}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER_REGISTRATION%" value="${xdat.enable_new_registrations}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ADMIN_EMAIL%" value="${xdat.admin_email}"/>
+		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ADMIN_EMAIL%" value="${xdat.mail.admin}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SITE_URL%" value="${xdat.url}"/>
-		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SMTP_SERVER%" value="${xdat.smtp.server}"/>
+		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%SMTP_SERVER%" value="${xdat.mail.server}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ARCHIVE_LOCATION%" value="${xdat.archive.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%CACHE_LOCATION%" value="${xdat.cache.location}"/>
 		<ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PREARC_LOCATION%" value="${xdat.prearchive.location}"/>

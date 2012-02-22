@@ -236,15 +236,16 @@ public class XNATApplication extends Application {
         router.attach("/services/dicomdump", DicomDump.class);
         router.attach("/services/settings/{PROPERTY}", SettingsRestlet.class);
         router.attach("/services/settings/{PROPERTY}/{VALUE}", SettingsRestlet.class);
-        router.attach("/services/logging/{" + Analytics.TOOL_TAG + "}", RemoteLoggingRestlet.class);
+        router.attach("/services/logging/{" + Analytics.EVENT_KEY + "}", RemoteLoggingRestlet.class);
 
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
         router.attach("/version",VersionRepresentation.class);
 
         // TODO: These are placeholders for the protocol REST services to come.
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);
-        router.attach("/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits/{VISIT_ID}", ProjectSubjectVisitsRestlet.class);
+        router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);
+        router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits/{VISIT_ID}", ProjectSubjectVisitsRestlet.class);
+        router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/generate/{TYPE}", ProjectSubjectVisitsRestlet.class);
 	}
 
     /**

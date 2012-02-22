@@ -22,6 +22,7 @@ import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
+import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.DicomObjectIdentifier;
@@ -29,11 +30,8 @@ import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
-import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.*;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.prearchive.SessionData;
-import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.services.Importer;
@@ -67,7 +65,15 @@ public class GradualDicomImporter extends ImporterHandlerA {
     private static final String RENAME_PARAM = "rename";
     private static final DicomFileNamer DEFAULT_NAMER = new SOPHashDicomFileNamer();
     private static final long PROJECT_CACHE_EXPIRY_SECONDS = 120;
-    private static final boolean canDecompress = Decompress.isSupported();
+    private static final boolean canDecompress = initializeCanDecompress();
+
+    private static boolean initializeCanDecompress() {
+        try {
+            return Decompress.isSupported();
+        } catch (NoClassDefFoundError error) {
+            return false;
+        }
+    }
 
     private final Logger logger = LoggerFactory.getLogger(GradualDicomImporter.class);
     private final FileWriterWrapperI fw;
@@ -296,27 +302,25 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setStatus(PrearcUtils.PrearcStatus.RECEIVING);
         sess.setLastBuiltDate(Calendar.getInstance().getTime());
         sess.setSubject(subject);
-
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
-        Either<SessionData,SessionData> getOrCreate;
-	// Query the cache for an existing session that has this Study Instance UID and project name.
+
+	    // Query the cache for an existing session that has this Study Instance UID and project name.
         // If found the SessionData object we just created is over-ridden with the values from the cache.
         // Additionally a record of which operation was performed is contained in the Either<SessionData,SessionData>
         // object returned. 
         //
         // This record is necessary so that, if this row was created by this call, it can be deleted if anonymization
         // goes wrong. In case of any other error the file is left on the filesystem.
-        // 
+        Either<SessionData,SessionData> getOrCreate;
         try {
-                       getOrCreate = PrearcDatabase.eitherGetOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(o));
-           if (getOrCreate.isLeft()) {
-           	sess = getOrCreate.getLeft();
-           }
-           else { 
-           	sess = getOrCreate.getRight();
-           }
-             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
-         } catch (SQLException e) {
+            getOrCreate = PrearcDatabase.eitherGetOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(project, o));
+            if (getOrCreate.isLeft()) {
+                sess = getOrCreate.getLeft();
+            } else {
+           	    sess = getOrCreate.getRight();
+            }
+            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
+        } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
@@ -427,9 +431,12 @@ public class GradualDicomImporter extends ImporterHandlerA {
         return Collections.singletonList(sess.getExternalUrl());
     }
 
-    // TODO: This is only a place holder because the method did not exist and was blocking xnat_builder compilation.
-    private Boolean shouldAutoArchive(final DicomObject o) {
-        return true;
+    private PrearchiveCode shouldAutoArchive(final XnatProjectdata project, final DicomObject o) {
+        Boolean fromDicomObject = dicomObjectIdentifier.requestsAutoarchive(o);
+        if (fromDicomObject != null) {
+            return fromDicomObject ? PrearchiveCode.AutoArchive : PrearchiveCode.Manual;
+        }
+        return PrearchiveCode.code(project.getArcSpecification().getPrearchiveCode());
     }
 
     public void setCacheManager(final CacheManager cacheManager) {

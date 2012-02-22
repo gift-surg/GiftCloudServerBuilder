@@ -1,5 +1,4 @@
 <!-- Title: File System -->
-<script type="text/javascript" src="$content.getURI("scripts/project/settingsTabMgmt.js")"></script>
 <table id="mgmt_container">
     <tr>
         <td>
@@ -68,7 +67,7 @@
     </tr>
 </table>
 
-<input type="button" value="Save" name="eventSubmit_doPerform" id="save_button" onclick="window.fileSystemManager.saveTabSettings();"/>&nbsp;
+<input type="button" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>&nbsp;
 <input type="button" value="Reset" name="eventSubmit_doReset" id="reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
 
 <script language="javascript">

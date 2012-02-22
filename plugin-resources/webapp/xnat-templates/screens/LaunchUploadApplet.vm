@@ -1,3 +1,4 @@
+#* @vtlvariable name="om" type="org.nrg.xdat.om.XnatSubjectdata" *#
 #* @vtlvariable name="part_id" type="java.lang.String" *#
 #* @vtlvariable name="project" type="java.lang.String" *#
 #* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
@@ -7,77 +8,77 @@
 <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
 <form action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='applet' onsubmit="popupWSize('about:blank',580,840,'applet')">
     <table border="0">
-        #if($arc)
-            <tr>
-                <td colspan="2">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="2"><h3>Launch Upload Applet</h3></td>
-            </tr>
-            <tr>
-                <td valign="top" align="left" colspan="2">
-                    <div style="width:500px">
-                        DICOM and ECAT files can be uploaded via an online upload tool. Please
-                        select a project and subject for which you want to upload a session.
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th align="left"><label for="project">Project</label></th>
-                <td><select id="project" name="project" style="width: 100%;" disabled=true></select></td>
-            </tr>
-            <tr>
-                <th align="left"><label for="part_id">Subject</label></th>
-                <td><select id="part_id" name="part_id" style="width: 100%;" disabled=true>
-                    <option>(Select a project)</option>
-                </select></td>
-            </tr>
-            <tr>
-                <th align="left"><label for="scan_date">Scan Date</label></th>
-                <td>
-                    <input type="text" id="scan_date" name="scan_date"/>
-                    <script type="text/javascript">insertCalendar(document.getElementById("scan_date"), "Scan Date");</script>
-                </td>
-            </tr>
-            <tr id="visit_entry" style="display: none;">
-                <th align="left"><label for="visit_id">Visit</label></th>
-                <td><select id="visit_id" name="visit_id" style="width: 100%;" disabled=true>
-                    <option>(Select a subject)</option>
-                </select></td>
-            </tr>
-            <tr id="scan_type_entry" style="display: none;">
-                <th align="left"><label for="scan_type">Scan Type</label></th>
-                <td><select id="scan_type" name="scan_type" style="width: 100%;" disabled=true>
-                    <option value="mr">MR</option>
-                    <option value="pet-fdg">PET with FDG tracer</option>
-                    <option value="pet-pib">PET with PIB tracer</option>
-                </select></td>
-            </tr>
-            <script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_visit_selector.js')"></SCRIPT>
-            <script type="text/javascript">
-                window.ProjectSubjectVisitManager = new ProjectSubjectVisitSelector("project", "part_id", "gojuice", "$!project", "$!part_id");
-                window.ProjectSubjectVisitManager.init();
-            </script>
-            <tr>
-                <td colspan="2">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td align="left">
-                    <input type="submit" id="gojuice" name="gojuice"
-                           style="line-height:10px;font-size:9px;font-weight:700;" value="Launch Uploader"
-                           disabled="true"/>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div style="width:500px">There are <A HREF="$link.setPage("AlternateImageUpload.vm")">alternate ways
-                        to upload images</a> available, but the upload applet is the preferred method.</A></div>
-                </td>
-            </tr>
-        #end
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="2"><h3>Launch Upload Applet</h3></td>
+        </tr>
+        <tr>
+            <td valign="top" align="left" colspan="2">
+                <div style="width:500px">
+                    DICOM and ECAT files can be uploaded via an online upload tool. Please
+                    select a project and subject for which you want to upload a session.
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th align="left"><label for="project">Project</label></th>
+            <td><select id="project" name="project" style="width: 100%;" disabled=true></select></td>
+        </tr>
+        <tr>
+            <th align="left"><label for="part_id">Subject</label></th>
+            <td><select id="part_id" name="part_id" style="width: 100%;" disabled=true>
+                <option>(Select a project)</option>
+            </select></td>
+        </tr>
+        <tr>
+            <th align="left"><label for="scan_date">Scan Date</label></th>
+            <td>
+                <input type="text" id="scan_date" name="scan_date"/>
+                <script type="text/javascript">insertCalendar(document.getElementById("scan_date"), "Scan Date");</script>
+            </td>
+        </tr>
+        <tr id="visit_entry" style="display: none;">
+            <th align="left"><label for="visit_id">Visit</label></th>
+            <td><select id="visit_id" name="visit_id" style="width: 100%;" disabled=true>
+                <option>(Select a subject)</option>
+            </select></td>
+        </tr>
+        <tr id="scan_type_entry" style="display: none;">
+            <th align="left"><label for="scan_type">Scan Type</label></th>
+            <td><select id="scan_type" name="scan_type" style="width: 100%;" disabled=true>
+                <option>SELECT</option>
+                <option value="mr">MR</option>
+                <option value="pet-fdg">PET with FDG tracer</option>
+                <option value="pet-pib">PET with PIB tracer</option>
+            </select></td>
+        </tr>
+        <script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_visit_selector.js')"></SCRIPT>
+        <script type="text/javascript">
+            #set($project = $om.getProject())
+            #set($part_id = $om.getId())
+            window.projectSubjectVisitManager = new ProjectSubjectVisitSelector("project", "part_id", "gojuice", "$!project", "$!part_id");
+            window.projectSubjectVisitManager.init();
+        </script>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td align="left">
+                <input type="hidden" id="session_id" name="session_id" value=""/>
+                <input type="submit" id="gojuice" name="gojuice" style="line-height:10px;font-size:9px;font-weight:700;" value="Launch Uploader" disabled="true"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div style="width:500px">There are <A HREF="$link.setPage("AlternateImageUpload.vm")">alternate ways
+                    to upload images</a> available, but the upload applet is the preferred method.</A></div>
+            </td>
+        </tr>
     </table>
 </form>

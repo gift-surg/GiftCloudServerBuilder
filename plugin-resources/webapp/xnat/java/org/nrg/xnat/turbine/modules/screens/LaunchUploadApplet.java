@@ -7,22 +7,19 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.turbine.modules.screens.SecureScreen;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
-
-import java.net.MalformedURLException;
+import org.nrg.xdat.turbine.modules.screens.SecureReport;
 
 /**
  * @author timo
  *
  */
-public class LaunchUploadApplet extends SecureScreen {
-    /* (non-Javadoc)
-     * @see org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    protected void doBuildTemplate(final RunData data, final Context context) throws MalformedURLException {
-        final ArcArchivespecification arc = ArcSpecManager.GetInstance();
-        context.put("arc", arc);
+public class LaunchUploadApplet extends SecureReport {
+    @Override
+    public void finalProcessing(final RunData data, final Context context) {
+    }
+
+    @Override
+    public void noItemError(RunData data, Context context){
+        // Do nothing, we're totally cool with not having an item.
     }
 }

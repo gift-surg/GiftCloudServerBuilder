@@ -1,3 +1,8 @@
+#* @velocityproperties path= *#
+#* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
+#* @vtlvariable name="data" type="org.apache.turbine.util.RunData" *#
+#* @vtlvariable name="tabs" type="java.util.List<java.util.Properties>" *#
+#* @vtlvariable name="initialize" type="java.lang.Boolean" *#
 <!-- Start Configuration page, source file is plugin-resources/webapp/xnat-templates/screens/Configuration.vm -->
 <style>
 IMG{
@@ -19,7 +24,8 @@ IMG{
             <script type="text/javascript" src="$content.getURI("scripts/search/dataTableSearch.js")"></script>
             <script type="text/javascript" src="$content.getURI("scripts/search/dataTableStoredSearch.js")"></script>
             <script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
-            
+            <script type="text/javascript" src="$content.getURI("scripts/project/settingsTabMgmt.js")"></script>
+
             <!-- BEGIN TABS AND CONTENT DISPLAY: Taken from xnat_projectData_summary_tabs.vm -->
             <style>
                 span.spacer {
@@ -34,8 +40,10 @@ IMG{
                         <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>
                         <li><a href="#registration"><em>Registration<span class="spacer"></span></em></a></li>
                         <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
-                        #foreach($tab in $tabs)
-                            <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+                        #if(!$initialize != true)
+                            #foreach($tab in $tabs)
+                                <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+                            #end
                         #end
                     </ul>
                     <div class="yui-content">   
@@ -51,30 +59,25 @@ IMG{
                         <div id="dicomReceiver">
                             <p>#parse('screens/configuration/dicomReceiver.vm')</p>
                         </div>
-                        #foreach($tab in $tabs)
-                            <div id="$tab.getProperty("divName")">
-                                #set($path = "screens/configuration/${tab.getProperty('fileName')}")
-                                <p>#parse($path)</p>
-                            </div>
+                        #if(!$initialize)
+                            #foreach($tab in $tabs)
+                                <div id="$tab.getProperty("divName")">
+                                    #set($path = "screens/configuration/${tab.getProperty('fileName')}")
+                                    <p>#parse($path)</p>
+                                </div>
+                            #end
                         #end
                     </div>
                 </div>
             </div>
 
-            <script type="text/javascript">   
-                function configurationIndexChanged() {
-                   var activeIndex = this.get("activeIndex");
-                   YAHOO.util.Cookie.set("configuration.tab.index", activeIndex);
-                }
-                   
-                function configurationTabManagerInit() {
-                    window.configurationTabView = new YAHOO.widget.TabView('configurationTabs');   
-                    window.configuration_tabs_module = new YAHOO.widget.Module("configuration_tabs_module", {visible:false, zIndex:5});
-                    window.configuration_tabs_module.show();           
-                    window.configurationTabView.subscribe("activeTabChange", configurationIndexChanged);
-                }
-                
-                configurationTabManagerInit();
+            <script type="text/javascript">
+                #if(!$initialize)
+                    var initialize = false;
+                #else
+                    var initialize = true;
+                #end
+                configurationTabManagerInit(initialize);
             </script>
             <!-- END TABS AND CONTENT DISPLAY: Taken from xnat_projectData_summary_tabs.vm -->
         </td>
@@ -88,7 +91,7 @@ IMG{
         <td colspan="3">
             <div id="congratsContainer" class="container" style="width:98%;margin:5px;background-color:#ff99cc;">
                 <div id="congratsBody" class="containerBody">
-                    <div class="containerItem edit_header2" style="white-space:normal;line-height:18px"><FONT size="+1">Security Warning</FONT></DIV>
+                    <div class="containerItem edit_header2" style="white-space:normal;line-height:18px;font-size: larger;">Security Warning</DIV>
                     <div class="containerItem" style="white-space:normal;">You do not have administrator access and can't access this page.</DIV>
                 </div>
             </div>

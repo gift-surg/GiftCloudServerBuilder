@@ -9,6 +9,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.xdat.om.ArcArchivespecification;
+import org.nrg.xdat.turbine.utils.PopulateItem;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
@@ -27,6 +29,8 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +45,20 @@ public class SettingsRestlet extends SecureResource {
         _arcSpec = ArcSpecManager.GetInstance();
         _property = (String) getRequest().getAttributes().get("PROPERTY");
         if (!StringUtils.isBlank(_property)) {
-            _value = (String) getRequest().getAttributes().get("VALUE");
+            if (_property.equals("initialize")) {
+                if (_arcSpec != null && _arcSpec.isComplete()) {
+                    throw new RuntimeException("You can't initialize an already initialized system!");
+                }
+            } else {
+                if (_arcSpec == null) {
+                    throw new RuntimeException("You haven't yet initialized the system, so I can't return any values!");
+                }
+                _value = (String) getRequest().getAttributes().get("VALUE");
+            }
+        } else {
+            if (_arcSpec == null) {
+                throw new RuntimeException("You haven't yet initialized the system, so I can't return any values!");
+            }
         }
         if (request.isEntityAvailable()) {
             convertFormDataToMap(request.getEntity().getText());
@@ -51,16 +68,15 @@ public class SettingsRestlet extends SecureResource {
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         final MediaType mediaType = overrideVariant(variant);
-        ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
 
         try {
             if (StringUtils.isBlank(_property)) {
                 return mediaType == MediaType.TEXT_XML ?
-                    new ItemXMLRepresentation(arcSpec.getItem(), mediaType) :
+                    new ItemXMLRepresentation(_arcSpec.getItem(), mediaType) :
                     new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
             }
 
-            Object property = arcSpec.getProperty(_property);
+            Object property = _arcSpec.getProperty(_property);
             if (mediaType == MediaType.TEXT_XML) {
                 String xml = "<" + _property + ">" + property.toString() + "</" + _property + ">";
                 return new StringRepresentation(xml, mediaType);
@@ -120,46 +136,15 @@ public class SettingsRestlet extends SecureResource {
     }
 
     private void setProperties() {
-        ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
         try {
-            if (!StringUtils.isBlank(_property)) {
-                _log.debug("Setting arc spec property: [" + _property + "] = " + _value);
-                arcSpec.setProperty(_property, _value);
-            } else {
-                _log.debug("Setting arc spec property from body string: " + _form);
-                for (String property : _data.keySet()) {
-                    if (property.equals("siteId")) {
-                        _arcSpec.setSiteId(_data.get("siteId"));
-                    } else if (property.equals("siteUrl")) {
-                        _arcSpec.setSiteUrl(_data.get("siteUrl"));
-                    } else if (property.equals("siteAdminEmail")) {
-                        _arcSpec.setSiteAdminEmail(_data.get("siteAdminEmail"));
-                    } else if (property.equals("smtpHost")) {
-                        _arcSpec.setSmtpHost(_data.get("smtpHost"));
-                    } else if (property.equals("requireLogin")) {
-                        _arcSpec.setRequireLogin(_data.get("requireLogin"));
-                    } else if (property.equals("enableNewRegistrations")) {
-                        _arcSpec.setEnableNewRegistrations(_data.get("enableNewRegistrations"));
-                    } else if (property.equals("archivePath")) {
-                        _arcSpec.getGlobalpaths().setArchivepath(_data.get("archivePath"));
-                    } else if (property.equals("prearchivePath")) {
-                        _arcSpec.getGlobalpaths().setPrearchivepath(_data.get("prearchivePath"));
-                    } else if (property.equals("cachePath")) {
-                        _arcSpec.getGlobalpaths().setCachepath(_data.get("cachePath"));
-                    } else if (property.equals("buildPath")) {
-                        _arcSpec.getGlobalpaths().setBuildpath(_data.get("buildPath"));
-                    } else if (property.equals("ftpPath")) {
-                        _arcSpec.getGlobalpaths().setFtppath(_data.get("ftpPath"));
-                    } else if (property.equals("pipelinePath")) {
-                        _arcSpec.getGlobalpaths().setPipelinepath(_data.get("pipelinePath"));
-                    } else if (property.equals("dcmPort")) {
-                        _arcSpec.setDcm_dcmPort(_data.get("dcmPort"));
-                    } else if (property.equals("dcmAe")) {
-                        _arcSpec.setDcm_dcmAe(_data.get("dcmAe"));
-                    } else if (property.equals("dcmAppletLink")) {
-                        _arcSpec.setDcm_appletLink(_data.get("dcmAppletLink"));
-                    }
-                }
+            if (!StringUtils.isBlank(_property) && !_property.equals("initialize")) {
+                setDiscreteProperty();
+            } else
+                // We will only enter this if _property is "initialize", so that means we need to set up the arc spec entry.
+                if (!StringUtils.isBlank(_property)) {
+                    initializeArcSpec();
+                } else {
+                    setPropertiesFromFormData();
             }
         } catch (XFTInitException exception) {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
@@ -169,8 +154,98 @@ public class SettingsRestlet extends SecureResource {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
         } catch (InvalidValueException exception) {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
+        } catch (Exception exception) {
+            respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
         }
         returnDefaultRepresentation();
+    }
+
+    private void setPropertiesFromFormData() {
+        _log.debug("Setting arc spec property from body string: " + _form);
+        for (String property : _data.keySet()) {
+            if (property.equals("siteId")) {
+                _arcSpec.setSiteId(_data.get("siteId"));
+            } else if (property.equals("siteUrl")) {
+                _arcSpec.setSiteUrl(_data.get("siteUrl"));
+            } else if (property.equals("siteAdminEmail")) {
+                _arcSpec.setSiteAdminEmail(_data.get("siteAdminEmail"));
+            } else if (property.equals("smtpHost")) {
+                _arcSpec.setSmtpHost(_data.get("smtpHost"));
+            } else if (property.equals("requireLogin")) {
+                _arcSpec.setRequireLogin(_data.get("requireLogin"));
+            } else if (property.equals("enableNewRegistrations")) {
+                _arcSpec.setEnableNewRegistrations(_data.get("enableNewRegistrations"));
+            } else if (property.equals("archivePath")) {
+                _arcSpec.getGlobalpaths().setArchivepath(_data.get("archivePath"));
+            } else if (property.equals("prearchivePath")) {
+                _arcSpec.getGlobalpaths().setPrearchivepath(_data.get("prearchivePath"));
+            } else if (property.equals("cachePath")) {
+                _arcSpec.getGlobalpaths().setCachepath(_data.get("cachePath"));
+            } else if (property.equals("buildPath")) {
+                _arcSpec.getGlobalpaths().setBuildpath(_data.get("buildPath"));
+            } else if (property.equals("ftpPath")) {
+                _arcSpec.getGlobalpaths().setFtppath(_data.get("ftpPath"));
+            } else if (property.equals("pipelinePath")) {
+                _arcSpec.getGlobalpaths().setPipelinepath(_data.get("pipelinePath"));
+            } else if (property.equals("dcmPort")) {
+                _arcSpec.setDcm_dcmPort(_data.get("dcmPort"));
+            } else if (property.equals("dcmAe")) {
+                _arcSpec.setDcm_dcmAe(_data.get("dcmAe"));
+            } else if (property.equals("dcmAppletLink")) {
+                _arcSpec.setDcm_appletLink(_data.get("dcmAppletLink"));
+            }
+        }
+    }
+
+    private void initializeArcSpec() throws Exception {
+        PopulateItem populator = new PopulateItem(copyDataToXmlPath(), user, "arc:ArchiveSpecification", true);
+        XFTItem item = populator.getItem();
+        item.setUser(user);
+        ArcArchivespecification arc = new ArcArchivespecification(item);
+        arc.save(user, false, false);
+        ArcSpecManager.Reset();
+    }
+
+    private void setDiscreteProperty() throws XFTInitException, ElementNotFoundException, FieldNotFoundException, InvalidValueException {
+        _log.debug("Setting arc spec property: [" + _property + "] = " + _value);
+        _arcSpec.setProperty(_property, _value);
+    }
+
+    private Map<String, String> copyDataToXmlPath() {
+        Map<String, String> data = new HashMap<String, String>(_data.size());
+        addSpecifiedProperty(data, "arc:archivespecification/site_id", "siteId");
+        addSpecifiedProperty(data, "arc:archivespecification/site_url", "siteUrl");
+        addSpecifiedProperty(data, "arc:archivespecification/site_admin_email", "siteAdminEmail");
+        addSpecifiedProperty(data, "arc:archivespecification/smtp_host", "smtpHost");
+        addSpecifiedProperty(data, "arc:archivespecification/globalpaths/archivepath", "archivePath");
+        addSpecifiedProperty(data, "arc:archivespecification/globalpaths/prearchivepath", "prearchivePath");
+        addSpecifiedProperty(data, "arc:archivespecification/globalpaths/cachepath", "cachePath");
+        addSpecifiedProperty(data, "arc:archivespecification/globalpaths/ftppath", "ftpPath");
+        addSpecifiedProperty(data, "arc:archivespecification/globalpaths/buildpath", "buildPath");
+        addSpecifiedProperty(data, "arc:archivespecification/globalpaths/pipelinepath", "pipelinePath");
+        addSpecifiedProperty(data, "arc:archivespecification/require_login", "requireLogin");
+        addSpecifiedProperty(data, "arc:archivespecification/enable_new_registrations", "enableNewRegistrations");
+        addSpecifiedProperty(data, "arc:archivespecification/dcm/dcm_ae", "dcmAe");
+        addSpecifiedProperty(data, "arc:archivespecification/dcm/applet_link", "dcmAppletLink");
+        addSpecifiedProperty(data, "arc:archivespecification/dcm/dcm_port", "dcmPort");
+        return data;
+    }
+
+    /**
+     * Checks whether the {@link #_data} map contains the specified key and whether the corresponding value is blank.
+     * If the key exists and the value is not blank, this method puts the value into the submitted data map using the
+     * submitted <b>xmlPath</b> as the key.
+     * @param data       The data map to be populated with existing non-blank values.
+     * @param xmlPath    The key to use for storage in the data map.
+     * @param key        The key to check in the parsed data map.
+     */
+    private void addSpecifiedProperty(final Map<String, String> data, final String xmlPath, final String key) {
+        if (_data.containsKey(key)) {
+            String value = _data.get(key);
+            if (!StringUtils.isBlank(value)) {
+                data.put(xmlPath, value);
+            }
+        }
     }
 
     private void convertFormDataToMap(String text) {
@@ -184,7 +259,18 @@ public class SettingsRestlet extends SecureResource {
             } else if (atoms.length == 1) {
                 _data.put(atoms[0], "");
             } else {
-                _data.put(atoms[0], atoms[1]);
+                try {
+                    _data.put(atoms[0], URLDecoder.decode(atoms[1], "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    // This is the dumbest exception in the history of humanity: the form of this method that doesn't
+                    // specify an encoding is deprecated, so you have to specify an encoding. But the form of the method
+                    // that takes an encoding (http://bit.ly/yX56fe) has an note that emphasizes that you should only
+                    // use UTF-8 because "[n]ot doing so may introduce incompatibilities." Got it? You have to specify
+                    // it, but it should always be the same thing. Oh, and BTW? You have to catch an exception for
+                    // unsupported encodings because you may specify that one acceptable encoding or... something.
+                    //
+                    // I hate them.
+                }
             }
         }
     }

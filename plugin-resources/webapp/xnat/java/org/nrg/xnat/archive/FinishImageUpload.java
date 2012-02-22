@@ -73,7 +73,26 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 					.call();
 				}else{
 					if (PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.ARCHIVING)) {
-						return PrearcDatabase.archive(session, allowDataDeletion, overwrite,isOverwriteFiles(session,destination), user, getListeners());
+                        PrearchiveCode code = session.getSessionData().getAutoArchive();
+                        boolean delete, append;
+                        switch (code) {
+                            case Manual:
+                                delete = false;
+                                append = false;
+                                break;
+                            case AutoArchive:
+                                delete = false;
+                                append = true;
+                                break;
+                            case AutoArchiveOverwrite:
+                                delete = true;
+                                append = true;
+                                break;
+                            default:
+                                delete = allowDataDeletion;
+                                append = overwrite;
+                        }
+						return PrearcDatabase.archive(session, delete, append, isOverwriteFiles(session,destination), user, getListeners());
 					}else{
 						throw new ServerException("Unable to lock session for archiving.");
 					}
@@ -153,20 +172,10 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		}
 	}
 	
-	public boolean isAutoArchive() throws SQLException, SessionException, Exception{
+	public boolean isAutoArchive() throws SQLException, SessionException, Exception {
 		return isAutoArchive(session,destination);
-		}
+    }
 		
-    public boolean preventAnon() throws Exception {
-        final Boolean preventAnon = session.getSessionData().getPreventAnon();
-        return preventAnon != null && preventAnon;
-		}
-		
-    public boolean preventAutoCommit() throws Exception {
-        final Boolean preventAutoCommit = session.getSessionData().getPreventAutoCommit();
-        return preventAutoCommit != null && preventAutoCommit;
-	}
-	
     public String getSource() throws Exception {
         return session.getSessionData().getSource();
 	}
@@ -239,7 +248,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
         }
 						
 		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());
-		if(code!=null && code.equals(5)){
+		if(code!=null && code.equals(PrearchiveCode.AutoArchiveOverwrite.getCode())){
 			return true;
 		}
 		

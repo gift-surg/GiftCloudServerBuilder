@@ -1,3 +1,4 @@
+#* @vtlvariable name="item" type="org.nrg.xft.XFTItem" *#
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 <TABLE width="100%" border=0>
 	<TR>

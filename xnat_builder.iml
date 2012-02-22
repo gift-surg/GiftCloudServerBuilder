@@ -1432,6 +1432,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="inheritedJdk" />
   </component>
 </module>

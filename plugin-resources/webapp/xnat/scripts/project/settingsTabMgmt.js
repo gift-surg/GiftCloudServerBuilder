@@ -2,6 +2,99 @@
  * Set of functions to facilitate settings management via AJAX
  */
 
+function configurationIndexChanged() {
+    var activeIndex = this.get("activeIndex");
+    YAHOO.util.Cookie.set("configuration.tab.index", activeIndex);
+}
+
+function fullConfigHandler() {
+    if (!document.getElementById('siteId').value) {
+        showMessage('Site ID Required', 'You must specify a value for the site ID!');
+        return;
+    }
+
+    var missing = new Array();
+    if(window.dicomReceiverManager==undefined) {
+        missing.push('DICOM Receiver');
+    }
+    if(window.registrationManager==undefined) {
+        missing.push('Registration');
+    }
+    if(window.fileSystemManager==undefined) {
+        missing.push('File System');
+    }
+    if(window.siteInfoManager==undefined) {
+        missing.push('Site Information');
+    }
+    if (missing.length > 0) {
+        var message = 'You need to review the contents of the following panels before saving: <ul>';
+        for (var index = 0; index < missing.length; index++) {
+            message += "<li>" + missing[index] + "</li>";
+        }
+        message += "</ul>";
+        showMessage('Required', message);
+    } else {
+        this.initArcSpecCallback = {
+            success : function() {
+                showMessage('Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
+                window.location.replace(serverRoot);
+            },
+            failure : function(o) {
+                showMessage('Error', 'Your settings were not successfully saved: ' + o);
+            },
+            scope : this
+        };
+
+        var arcSpecControls = [ 'siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost', 'archivePath', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath', 'requireLogin', 'enableNewRegistrations', 'dcmAe', 'dcmAppletLink', 'dcmPort' ];
+        var data = '';
+        for (var index = 0; index < arcSpecControls.length; index++) {
+            var control = document.getElementById(arcSpecControls[index]);
+            if (data) {
+                data += '&';
+            }
+            var value = (control.type == 'checkbox' ? (control.checked ? 1 : 0) : control.value);
+            data += control.id + '=' + encodeURIComponent(value);
+        }
+
+        var putUrl = serverRoot + '/data/services/settings/initialize?stamp=' + (new Date()).getTime();
+        YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.initArcSpecCallback, data, this);
+    }
+}
+
+function configurationTabManagerInit(initialize) {
+    window.configurationTabView = new YAHOO.widget.TabView('configurationTabs');
+    window.configuration_tabs_module = new YAHOO.widget.Module("configuration_tabs_module", {visible:false, zIndex:5});
+    window.configuration_tabs_module.show();
+    window.configurationTabView.subscribe("activeTabChange", configurationIndexChanged);
+    if (initialize) {
+        // If we're initializing, divert all of the save handlers to centralized handling.
+        document.getElementById('siteInfo_save_button').onclick = fullConfigHandler;
+        document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
+        document.getElementById('registration_save_button').onclick = fullConfigHandler;
+        document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
+        showMessage('Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
+    }
+}
+
+function showMessage(title, body) {
+    var dialog = new YAHOO.widget.SimpleDialog("dialog", {
+        width:"20em",
+        close:false,
+        fixedcenter:true,
+        constraintoviewport:true,
+        modal:true,
+        icon:YAHOO.widget.SimpleDialog.ICON_WARN,
+        visible:true,
+        draggable:false,
+        buttons: [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }]
+    });
+
+    dialog.render(document.getElementById('configurationTabs'));
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.bringToTop();
+    dialog.show();
+}
 function prependLoader(div_id, msg) {
 	if (div_id.id == undefined) {
 		var div = document.getElementById(div_id);
@@ -133,10 +226,10 @@ function SettingsTabManager(settingsTabDivId, settings) {
                 }
 				YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url, this.updateCallback, data, this);
 			} else {
-				alert("None of the site information appears to have changed.");
+				showMessage('Message', 'None of the site information appears to have changed.');
 			}
 		} else {
-			alert("You need to enter a value into all of the site information settings boxes to save the site settings.");
+			showMessage('Note', 'You need to enter a value into all of the site information settings boxes to save the site settings.');
 		}
 	};
 
@@ -174,7 +267,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 	this.completeSave = function(o) {
 		this.completeInit(o);
 		this.setFormDisabled(false);
-		alert("Your settings have been successfully updated.");
+		showMessage('Success', 'Your settings have been successfully updated.');
 	};
 
 	this.saveFailure = function(o) {

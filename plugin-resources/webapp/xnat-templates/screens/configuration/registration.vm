@@ -1,5 +1,4 @@
 <!-- Title: Registration -->
-<script type="text/javascript" src="$content.getURI("scripts/project/settingsTabMgmt.js")"></script>
 <table id="mgmt_container">
     <tr>
         <td>
@@ -28,7 +27,7 @@
     </tr>
 </table>
 
-<input type="button" value="Save" name="eventSubmit_doPerform" id="save_button" onclick="window.registrationManager.saveTabSettings();"/>&nbsp;
+<input type="button" value="Save" name="eventSubmit_doPerform" id="registration_save_button" onclick="window.registrationManager.saveTabSettings();"/>&nbsp;
 <input type="button" value="Reset" name="eventSubmit_doReset" id="reset_button" onclick="window.registrationManager.resetForm();" disabled/>
 
 <script language="javascript">

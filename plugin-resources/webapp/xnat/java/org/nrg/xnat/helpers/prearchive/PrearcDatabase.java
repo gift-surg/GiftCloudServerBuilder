@@ -1,19 +1,7 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.framework.constants.PrearchiveCode;
@@ -31,8 +19,13 @@ import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * This class creates a in-memory database that holds all the information in the prearchive 
@@ -1316,7 +1309,7 @@ public final class PrearcDatabase {
     				     					     final String suid,
     				     					     final SessionData s,
     				     					     final File tsFile,
-    				     					     final Boolean autoArchive)
+    				     					     final PrearchiveCode autoArchive)
     throws SQLException, SessionException, Exception {
     	Either<SessionData, SessionData> result = PrearcDatabase.eitherGetOrCreateSession(project, suid, s, tsFile, autoArchive);
         if (result.isLeft()) {
@@ -1343,7 +1336,7 @@ public final class PrearcDatabase {
      * @throws SessionException
      * @throws Exception
      */
-    public static synchronized Either<SessionData,SessionData> eitherGetOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final Boolean autoArchive) throws SQLException, SessionException, Exception {
+    public static synchronized Either<SessionData,SessionData> eitherGetOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final PrearchiveCode autoArchive) throws SQLException, SessionException, Exception {
         Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
             SessionData ss;
             /**

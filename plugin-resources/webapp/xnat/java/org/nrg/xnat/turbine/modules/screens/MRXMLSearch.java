@@ -78,7 +78,7 @@ created in buildPDF.
         {
     	    try {
     	    	
-    	    	SecureAction.isCsrfTokenOk(data.getRequest());
+    	    	SecureAction.isCsrfTokenOk(data.getRequest(),false);
     	    	
                 String dataType = "xnat:imageSessionData";
                 String id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));

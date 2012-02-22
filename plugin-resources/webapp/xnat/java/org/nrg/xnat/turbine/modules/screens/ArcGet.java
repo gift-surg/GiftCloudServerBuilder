@@ -93,7 +93,7 @@ created in buildPDF.
                 if (user != null)
                 {
                 	
-                		SecureAction.isCsrfTokenOk(data.getRequest());
+                		SecureAction.isCsrfTokenOk(data.getRequest(),false);
                 	
                         String id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
 

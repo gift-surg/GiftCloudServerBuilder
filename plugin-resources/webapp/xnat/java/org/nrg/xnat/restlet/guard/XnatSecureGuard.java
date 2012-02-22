@@ -21,6 +21,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -82,14 +83,13 @@ public class XnatSecureGuard extends Filter {
 		final HttpServletRequest httpRequest = getHttpServletRequest(request);
 		final XDATUser sessionUser = getSessionUser(httpRequest);
 		if (sessionUser != null) {
-			
-			//Check for a CsrfToken if necessary.
-			try {
-				//isCsrfTokenOk either returns true or throws an exception...
-				SecureAction.isCsrfTokenOk(httpRequest);
-			} catch (Exception e){
-				throw new RuntimeException(e);//LOL.
-			}
+				//Check for a CsrfToken if necessary.
+				try {
+					//isCsrfTokenOk either returns true or throws an exception...
+					SecureAction.isCsrfTokenOk(httpRequest,false);
+				} catch (Exception e){
+					throw new RuntimeException(e);//LOL.
+				}
 			
 			attachUser(request, sessionUser);
 			return true;

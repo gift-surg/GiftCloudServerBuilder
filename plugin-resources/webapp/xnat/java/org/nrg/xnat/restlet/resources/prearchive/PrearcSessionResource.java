@@ -106,8 +106,9 @@ public final class PrearcSessionResource extends SecureResource {
     @Override
     public void handlePost(){
         try {
-            loadParams(this.getBodyAsForm());
-            loadParams(this.getQueryVariableForm());
+            loadBodyVariables();
+            loadQueryVariables();
+            
             final Representation entity=this.getRequest().getEntity();
             if(entity!=null){
                 final String json = entity.getText();

@@ -108,7 +108,7 @@ public class Importer extends SecureResource {
 			fw=this.getFileWritersAndLoadParams(entity);
 
 			//maintain parameters
-			loadParams(getQueryVariableForm());
+			loadQueryVariables();
 
 			if(fw.size()==0){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");

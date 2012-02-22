@@ -221,6 +221,10 @@ public abstract class SecureResource extends Resource {
 	}
 	
 	private Form f= null;
+	/**
+	 * This method is used internally to get the Query form.  It should remain private so that all access to parameters are guaranteed to be properly escaped.
+	 * @return
+	 */
 	private Form getQueryVariableForm(){
 		if(f==null){
 			f= getRequest().getResourceRef().getQueryAsForm();
@@ -234,6 +238,10 @@ public abstract class SecureResource extends Resource {
 	
 	
 	private Form _body;
+	/**
+	 * This method is used internally to get the Body form.  It should remain private so that all access to parameters are guaranteed to be properly escaped.
+	 * @return
+	 */
 	private Form getBodyAsForm(){
 		if(_body==null){
 		Representation entity = this.getRequest().getEntity();
@@ -302,7 +310,7 @@ public abstract class SecureResource extends Resource {
 	
 	public String getQueryVariable(String key){
 		Form f = getQueryVariableForm();
-		if (f != null) {
+		if (f != null && f.getValuesMap().containsKey(key)) {
 			return TurbineUtils.escapeParam(f.getFirstValue(key));
 		}
 		return null;

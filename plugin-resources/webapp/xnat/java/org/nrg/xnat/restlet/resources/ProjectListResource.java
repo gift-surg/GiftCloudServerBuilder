@@ -114,11 +114,11 @@ public class ProjectListResource extends QueryOrganizerResource {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
 					}
-					
-					if(!user.canEdit(project)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-						return;
-					}
+//					NOT NEEDED because this if block is only for new projects
+//					if(!user.canEdit(project)){
+//						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+//						return;
+//					}
 					
 						SaveItemHelper.authorizedSave(project,user,true,false);
 						item =project.getItem().getCurrentDBVersion(false);

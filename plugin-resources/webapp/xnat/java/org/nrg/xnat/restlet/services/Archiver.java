@@ -69,7 +69,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 			
 	@Override
 	public void handleParam(final String key,final Object value) throws ClientException {
-			if(this.getQueryVariable(key)!=null){
+			if(value !=null){
 				if(key.equals(PROJECT)){
 				additionalValues.put("project",value);
 				}else if(key.equals(PrearcUtils.PREARC_TIMESTAMP)){

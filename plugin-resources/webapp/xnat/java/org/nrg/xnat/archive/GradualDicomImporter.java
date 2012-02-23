@@ -304,7 +304,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setSubject(subject);
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
 
-	    // Query the cache for an existing session that has this Study Instance UID and project name.
+	// Query the cache for an existing session that has this Study Instance UID and project name.
         // If found the SessionData object we just created is over-ridden with the values from the cache.
         // Additionally a record of which operation was performed is contained in the Either<SessionData,SessionData>
         // object returned. 
@@ -314,13 +314,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
         Either<SessionData,SessionData> getOrCreate;
         try {
             getOrCreate = PrearcDatabase.eitherGetOrCreateSession(sess.getProject(), sess.getTag(), sess, tsdir, shouldAutoArchive(project, o));
-            if (getOrCreate.isLeft()) {
-                sess = getOrCreate.getLeft();
+           if (getOrCreate.isLeft()) {
+           	sess = getOrCreate.getLeft();
             } else {
-           	    sess = getOrCreate.getRight();
-            }
-            PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
-        } catch (SQLException e) {
+           	sess = getOrCreate.getRight();
+           }
+             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
+         } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
@@ -386,11 +386,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
             				throw new Exception ("Unable to retrieve the site-wide script.");
             			}
             			else {
-            				Anonymize.anonymize(f,sess.getProject(), sess.getSubject(),
-                                    sess.getFolderName(),
-                                    true,
-                                    c.getId(),
-                                    c.getContents());
+            				Anonymize.anonymize(f, 
+            									sess.getProject(), 
+            									sess.getSubject(), 
+            									sess.getFolderName(), 
+            									true, 
+            									c.getId(), 
+            									c.getContents());
             			}
             		} else {
             			// site-wide anonymization is disabled.
@@ -430,7 +432,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 new Object[]{project, studyInstanceUID, o.getString(Tag.SOPInstanceUID), sess.getUrl(), source});
         return Collections.singletonList(sess.getExternalUrl());
     }
-
+    
     private PrearchiveCode shouldAutoArchive(final XnatProjectdata project, final DicomObject o) {
         Boolean fromDicomObject = dicomObjectIdentifier.requestsAutoarchive(o);
         if (fromDicomObject != null) {
@@ -439,7 +441,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         return PrearchiveCode.code(project.getArcSpecification().getPrearchiveCode());
     }
 
-    public void setCacheManager(final CacheManager cacheManager) {
+	public void setCacheManager(final CacheManager cacheManager) {
         final String cacheName = user.getLogin() + "-projects";
         synchronized (cacheManager) {
             if (!cacheManager.cacheExists(cacheName)) {

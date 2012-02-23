@@ -1179,13 +1179,11 @@
 			<ant:echo>XDAT URL is not defined in build.properties.</ant:echo>
 			<j:set var="xdat.url.text" value=" "/>
 		</j:if>
-		<ant:property environment="env"/>
 		<j:forEach var="dep" items="${pom.dependencies}">
 			<j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
 		</j:forEach>
 		<delete file="${basedir}/plugin-resources/misc/template2.bat"/>
 		<copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%XNAT_HOME%" value="${basedir}  ${xdat.url.text}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="\" value="/"/>
@@ -1196,7 +1194,6 @@
 		</j:forEach>
 		<delete file="${basedir}/plugin-resources/misc/template2.sh"/>
 		<copy tofile="${basedir}/plugin-resources/misc/template2.sh" file="${basedir}/plugin-resources/misc/template.sh"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%XNAT_HOME%" value="${basedir} ${xdat.url.text}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="\" value="/"/>
@@ -1235,8 +1232,6 @@
 		<ant:replace file="${basedir}/bin/${ClassName}.bat" token="%CLASS_NAME%" value="${ClassName}"/>
 	</goal>
 	<goal name="xdat:buildDefinedExecutables" description="Generate SH and BAT files with classpath defined appropriately">
-		<ant:property environment="env"/>
-		<ant:echo>JAVA HOME: ${env.JAVA_HOME}</ant:echo>
 		<j:if test="${context.getVariable('xdat.url') != null}">
 			<j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
 		</j:if>
@@ -1247,7 +1242,6 @@
 		</j:forEach>
 		<delete file="${basedir}/plugin-resources/misc/template2.bat"/>
 		<copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%XNAT_HOME%" value="${basedir} -project ${xdat.project.name} ${xdat.url.text}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="\" value="/"/>
@@ -1258,7 +1252,6 @@
 		</j:forEach>
 		<delete file="${basedir}/plugin-resources/misc/template2.sh"/>
 		<copy tofile="${basedir}/plugin-resources/misc/template2.sh" file="${basedir}/plugin-resources/misc/template.sh"/>
-		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="%XNAT_HOME%" value="${basedir} -project ${xdat.project.name} ${xdat.url.text}"/>
 		<ant:replace file="${basedir}/plugin-resources/misc/template2.sh" token="\" value="/"/>
@@ -1281,56 +1274,44 @@
 	<goal name="xdat:buildJarExecutables" description="Builds exe wrappers for the executable jars">
 		<!-- BUILD SEARCH EXECUTABLES -->
 		<copy tofile="${basedir}/bin/SearchWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/SearchWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/SearchWS" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/SearchWS" token="%JAR_NAME%" value="xdat-search-1.jar"/>
 		<copy tofile="${basedir}/bin/SearchWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/SearchWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/SearchWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/SearchWS.bat" token="%JAR_NAME%" value="xdat-search-1.jar"/>
 		<!-- BUILD STORE EXECUTABLES -->
 		<copy tofile="${basedir}/bin/StoreXMLWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/StoreXMLWS" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/StoreXMLWS" token="%JAR_NAME%" value="xdat-store-1.jar"/>
 		<copy tofile="${basedir}/bin/StoreXMLWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/StoreXMLWS.bat" token="%JAR_NAME%" value="xdat-store-1.jar"/>
 		<!-- BUILD SEARCH EXECUTABLES -->
 		<copy tofile="${basedir}/bin/ArcGetWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcGetWS" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcGetWS" token="%JAR_NAME%" value="xdat-arcget-1.jar"/>
 		<copy tofile="${basedir}/bin/ArcGetWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcGetWS.bat" token="%JAR_NAME%" value="xdat-arcget-1.jar"/>
 		<!-- BUILD READ EXECUTABLES -->
 		<copy tofile="${basedir}/bin/ArcReadWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcReadWS" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcReadWS" token="%JAR_NAME%" value="xdat-arcread-1.jar"/>
 		<copy tofile="${basedir}/bin/ArcReadWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcReadWS.bat" token="%JAR_NAME%" value="xdat-arcread-1.jar"/>
 		<!-- BUILD SIM EXECUTABLES -->
 		<copy tofile="${basedir}/bin/ArcSimWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcSimWS" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcSimWS" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
 		<copy tofile="${basedir}/bin/ArcSimWS.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/ArcSimWS.bat" token="%JAR_NAME%" value="xdat-arcsim-1.jar"/>
 		<!-- BUILD SIM EXECUTABLES -->
 		<copy tofile="${basedir}/bin/XNATRestClient" file="${basedir}/plugin-resources/misc/template3.sh"/>
-		<ant:replace file="${basedir}/bin/XNATRestClient" token="$JAVA_HOME" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
 		<copy tofile="${basedir}/bin/XNATRestClient.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
-		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAVA_HOME%" value="${env.JAVA_HOME}"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%XNAT_HOME%" value="${basedir}"/>
 		<ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
 	</goal>

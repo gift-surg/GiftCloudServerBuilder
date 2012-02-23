@@ -756,6 +756,20 @@ public abstract class SecureResource extends Resource {
 			}
 		}else return false;
 	}
+	
+	protected boolean isFalse(Object value) {
+		if (value != null) {
+			String v = (String)value;
+			if(v.equalsIgnoreCase("false") || v.equalsIgnoreCase("0")){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
 
 	public String getLabelForFieldMapping(String xPath) {
 		for (Map.Entry<String, String> entry : this.fieldMapping.entrySet()) {

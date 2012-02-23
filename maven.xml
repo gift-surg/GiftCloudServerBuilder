@@ -1542,8 +1542,6 @@
 							<ant:arg value="${pipeline.dir}\setup.bat"/>
 							<ant:arg value="${xdat.mail.admin}"/>
 							<ant:arg value="${xdat.mail.server}"/>
-							<env key="JAVA_HOME" value="${JAVA_HOME}"/>
-							<env key="MAVEN_TERMINATE_CMD" value="on"/>
 						</ant:exec>
 					</j:if>
 					<j:if test="${!context.getVariable('os.name').startsWith('Windows')}">

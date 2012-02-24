@@ -172,7 +172,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							}
 							
 							if(!user.canRead(expt)){
-								this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for experiments in this project.");
+								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Specified user account has insufficient priviledges for experiments in this project.");
 								return;
 							}
 

@@ -42,16 +42,14 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 
 	@Override
 	public void handleParam(String key,Object value) throws ClientException {
-				if(key.equals(SRC)){
+		if(key.equals(SRC)){
 			srcs.add((String)value);
-				}
-				else if (key.equals(ASYNC)) {
-					// async = f.getValues(SRC).equals("true") ? true : false;
-				if (this.isQueryVariableFalse(ASYNC)) {
-							async = false;
-						}
-				}
-			}				
+		}
+		else if (key.equals(ASYNC)) {
+			boolean isFalse = isFalse(value);
+			async = !isFalse;
+		}	
+	}				
 
 	protected SessionDataTriple buildSessionDataTriple(String uri) throws MalformedURLException {
 		return SessionDataTriple.fromURI(uri);

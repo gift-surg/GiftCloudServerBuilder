@@ -27,10 +27,10 @@ public class RequestProjectAccessForm extends SecureScreen {
             data.setMessage("Permission Denied.  The current user is not authorized to view this data.");
             data.setScreenTemplate("UnauthorizedAccess.vm");
             return;
-        }
+        } 
         
         String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
-        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
         
         context.put("user", other);

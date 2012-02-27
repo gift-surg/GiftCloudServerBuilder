@@ -17,7 +17,7 @@ public class AcceptProjectAccess extends SecureAction {
     
 	@Override
 	public void doPerform(RunData data, Context context) throws Exception {
-		final Integer parID = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("par",data));
+		final Integer parID = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("par",data));
 		XDATUser user = TurbineUtils.getUser(data);
 		if (user==null)
 			user = (XDATUser) context.get("user");

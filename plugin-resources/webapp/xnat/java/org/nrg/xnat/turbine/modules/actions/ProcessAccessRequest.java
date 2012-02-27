@@ -42,7 +42,7 @@ public class ProcessAccessRequest extends SecureAction {
     static Logger logger = Logger.getLogger(ProcessAccessRequest.class);
 
     public void doDenial(RunData data, Context context) throws Exception {
-        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
         String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
@@ -132,7 +132,7 @@ public class ProcessAccessRequest extends SecureAction {
     }
     
     public void doApprove(RunData data, Context context) throws Exception {
-        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
         XDATUser user = TurbineUtils.getUser(data);
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 

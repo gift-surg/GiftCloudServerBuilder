@@ -62,7 +62,7 @@ public class GetFile extends RawScreen {
              String search_field = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data));
              String search_value = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
              String key = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("key",data));
-             Integer fileId = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("file",data));
+             Integer fileId = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("file",data));
              XDATUser user = null;
              String log = "";
              HttpSession httpSession = data.getRequest().getSession();

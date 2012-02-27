@@ -29,7 +29,7 @@ public class MatchPrearchiveSessions extends SecureAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        Integer num= ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("num_sessions",data));
+        Integer num= ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("num_sessions",data));
         BatchTransfer bt = new BatchTransfer(TurbineUtils.GetFullServerPath(),TurbineUtils.GetSystemName(),AdminUtils.getAdminEmailId());
         UserI user =TurbineUtils.getUser(data);
         bt.setUser((XDATUser)user);

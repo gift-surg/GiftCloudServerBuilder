@@ -22,7 +22,7 @@ public class PipelineAdder {
 	    String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
 	    String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline_path",data));
 	    String dataType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("dataType",data));
-	    boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit",data));
+	    boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("edit",data));
 	    String templateFile = null;
 	    try {
 	    	if (edit) {

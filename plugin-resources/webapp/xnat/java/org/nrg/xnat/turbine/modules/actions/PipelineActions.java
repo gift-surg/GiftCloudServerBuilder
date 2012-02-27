@@ -47,7 +47,7 @@ public class PipelineActions extends SecureAction{
     public void doLaunch(RunData data, Context context)  throws Exception {
             String project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
             String step = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipelineStep",data));
-            boolean isDescendant = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("isdescendant",data));
+            boolean isDescendant = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("isdescendant",data));
             ItemI data_item = TurbineUtils.GetItemBySearch(data);
             XnatPipelineLauncher xnatPipelineLauncher = getGenericCommonParameters(data,context, project, step, data_item);
             LinkedHashMap<ArcPipelineparameterdataI,ArrayList> paramHash = null;
@@ -134,7 +134,7 @@ public class PipelineActions extends SecureAction{
     
     public void doBuild(RunData data, Context context) throws Exception{
         String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("projectId",data));
-        int totalSessionsToBuild = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param:control:total",data));
+        int totalSessionsToBuild = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("param:control:total",data));
         String step = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("step",data));
         data.getParameters().remove("step");
         try {

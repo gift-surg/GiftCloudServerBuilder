@@ -192,7 +192,7 @@ public class ManagePipeline extends SecureAction {
             String dataType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("dataType",data));
             String schemaType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("schemaType",data));
 
-            boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit",data));
+            boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("edit",data));
 
         	XFTItem newItem = XFTItem.NewItem(schemaType,TurbineUtils.getUser(data));
             TurbineUtils.OutputDataParameters(data);
@@ -400,10 +400,10 @@ public class ManagePipeline extends SecureAction {
 
 	private Parameters extractParameters(RunData data, Context context){
 		Parameters parameters = Parameters.Factory.newInstance();
-		int totalParams = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param_cnt",data));
+		int totalParams = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("param_cnt",data));
 		for (int i =0; i < totalParams; i++) {
 			String name = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param[" + i + "].name",data));
-			int rowcount = new Integer(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("param[" + i + "].name.rowcount",data))).intValue();
+			int rowcount = new Integer((org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("param[" + i + "].name.rowcount",data))).intValue();
 			ArrayList<String> formvalues = new ArrayList<String>();
 			for (int j=0; j < rowcount; j++) {
 				String formfieldname = "param[" + i + "][" + j + "].value";

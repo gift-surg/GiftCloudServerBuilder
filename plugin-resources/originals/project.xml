@@ -642,7 +642,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>SessionBuilders</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.4</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

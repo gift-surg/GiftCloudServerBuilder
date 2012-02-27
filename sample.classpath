@@ -129,7 +129,7 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.1.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.4.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/com.springsource.org.aopalliance-1.0.0.jar"/>

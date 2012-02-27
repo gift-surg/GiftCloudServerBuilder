@@ -19,6 +19,7 @@ import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.services.RemoteLoggingRestlet;
 import org.nrg.xnat.restlet.services.SettingsRestlet;
+import org.nrg.xnat.restlet.services.mail.MailRestlet;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchDelete;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchMove;
 import org.nrg.xnat.restlet.transaction.monitor.SQListenerRepresentation;
@@ -237,6 +238,7 @@ public class XNATApplication extends Application {
         router.attach("/services/settings/{PROPERTY}", SettingsRestlet.class);
         router.attach("/services/settings/{PROPERTY}/{VALUE}", SettingsRestlet.class);
         router.attach("/services/logging/{" + Analytics.EVENT_KEY + "}", RemoteLoggingRestlet.class);
+        router.attach("/services/mail/send", MailRestlet.class);
 
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 

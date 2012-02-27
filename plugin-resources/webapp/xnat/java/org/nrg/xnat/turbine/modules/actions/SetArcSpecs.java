@@ -21,16 +21,13 @@ public class SetArcSpecs extends SecureAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        PopulateItem populater = null;
-        populater = PopulateItem.Populate(data,"arc:ArchiveSpecification",true);
+        PopulateItem populater = PopulateItem.Populate(data,"arc:ArchiveSpecification",true);
         XFTItem item = populater.getItem();
         item.setUser(TurbineUtils.getUser(data));
         
         ArcArchivespecification arc = new ArcArchivespecification(item);
-        
         arc.save(TurbineUtils.getUser(data), false, false);
         
         ArcSpecManager.Reset();
     }
-
 }

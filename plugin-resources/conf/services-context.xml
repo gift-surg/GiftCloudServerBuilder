@@ -18,8 +18,8 @@
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
     <context:component-scan base-package="org.nrg.framework.services" />
-    <!-- context:component-scan base-package="org.nrg.mail.services" />
-    <context:component-scan base-package="org.nrg.notify.services" />
+    <context:component-scan base-package="org.nrg.mail.services" />
+    <!-- context:component-scan base-package="org.nrg.notify.services" />
     <context:component-scan base-package="org.nrg.notify.daos" / -->
     <context:component-scan base-package="org.nrg.xft.services" />
     <context:component-scan base-package="org.nrg.xft.daos" />
@@ -32,14 +32,13 @@
         <value>org.nrg.config.entities</value>
     </util:list>
 
-    <!-- import resource="datasource-config.xml" / -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
         p:driverClassName="${datasource.driver}" p:url="${datasource.url}"
         p:username="${datasource.username}" p:password="${datasource.password}"/>
 
     <!-- import resource="mail-services-config.xml" / -->
     <!-- Bootstrap the Spring mail sender. -->
-    <!-- bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
           p:host="${mailserver.host}"
           p:port="${mailserver.port}" 
           p:username="${mailserver.username}" 
@@ -54,7 +53,7 @@
 
     <bean id="rendererProvider" class="org.nrg.notify.entities.ChannelRendererProvider">
         <property name="renderers" ref="renderers" />
-    </bean -->
+    </bean>
 
     <!-- <import resource="anon-script-config.xml" /> -->
     <!-- import resource="notify-services-config.xml" / -->

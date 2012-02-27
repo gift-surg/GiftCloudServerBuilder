@@ -12,12 +12,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import javax.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -28,8 +29,6 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.ItemAccessHistory;
 import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.email.EmailUtils;
-import org.nrg.xft.email.EmailerI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
@@ -507,39 +506,18 @@ public class ProjectAccessRequest {
         template.merge(context,sw);
         String message= sw.toString();
 
-        ArrayList<InternetAddress> to = new ArrayList<InternetAddress>();
-        InternetAddress ia = new InternetAddress();
-        ia.setAddress(otherUemail);
-        to.add(ia);
-
-        ArrayList<InternetAddress> bcc = new ArrayList<InternetAddress>();
+        String bcc = null;
         if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
-	        ia = new InternetAddress();
-	        ia.setAddress(AdminUtils.getAdminEmailId());
-	        bcc.add(ia);
+	        bcc = AdminUtils.getAdminEmailId();
         }
-        
-        ArrayList<InternetAddress> cc = new ArrayList<InternetAddress>();
-        ia = new InternetAddress();
-        ia.setAddress(user.getEmail());
-        cc.add(ia);
         
         String from = AdminUtils.getAdminEmailId();
 
         try {
-            EmailerI sm = EmailUtils.getEmailer();
-            sm.setFrom(from);
-            sm.setTo(to);
-            sm.setCc(cc);
-            sm.setBcc(bcc);
-            sm.setSubject(subject);
-            sm.setMsg(message);
-            
-            sm.send();
-        } catch (Exception e) {
-            logger.error("Unable to send mail",e);
-            System.out.println("Error sending Email");
-            throw e;
+            XDAT.getMailService().sendHtmlMessage(from, otherUemail, user.getEmail(), bcc, subject, message);
+        } catch (MessagingException exception) {
+            logger.error("Unable to send mail", exception);
+            throw exception;
         }
     }
     

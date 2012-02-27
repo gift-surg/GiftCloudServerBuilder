@@ -10,39 +10,14 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <tx:annotation-driven proxy-target-class="true" />
+    <!-- Load the NRG Notify basic application context. -->
+    <import resource="classpath:/META-INF/configuration/nrg-notify-context.xml" />
 
-    <context:component-scan base-package="org.nrg.notify.services" />
-    <context:component-scan base-package="org.nrg.notify.daos" />
-
-    <util:list id="nrgNotificationEntityPackages">
-        <value>org.nrg.notify.entities</value>
-    </util:list>
-
-    <!-- Used the improved naming strategy, class FooBar gives you foo_bar instead of FooBar. -->
-    <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy" />
-
-    <!-- Set up default hibernate properties. -->
-    <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="properties">
-            <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
-                <prop key="hibernate.show_sql">true</prop>
-            </props>
-        </property>
-    </bean>
-
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
-        p:dataSource-ref="dataSource"
-        p:hibernateProperties-ref="hibernateProperties"
-        p:packagesToScan-ref="nrgNotificationEntityPackages"
-        p:namingStrategy-ref="namingStrategy" />
-
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" p:sessionFactory-ref="sessionFactory" />
+    <!-- context:component-scan base-package="org.nrg.notify.services" />
+    <context:component-scan base-package="org.nrg.notify.daos" / -->
 
     <!-- This requires the mailService bean to be configured elsewhere. -->
-    <bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:mailService-ref="mailService" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
+    <!-- bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:mailService-ref="mailService" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
     
     <util:map id="renderers" value-type="org.nrg.notify.renderers.ChannelRenderer">
         <entry key="htmlMail" value-ref="mailChannelRenderer" />
@@ -51,6 +26,6 @@
 
     <bean id="rendererProvider" class="org.nrg.notify.entities.ChannelRendererProvider">
         <property name="renderers" ref="renderers" />
-    </bean>
+    </bean -->
 
 </beans>

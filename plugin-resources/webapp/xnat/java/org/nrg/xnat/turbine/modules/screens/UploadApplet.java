@@ -32,6 +32,4 @@ public class UploadApplet extends SecureScreen {
         storeParameterIfPresent(data, context, "scan_type");
 		context.put("arc", ArcSpecManager.GetInstance());
 	}
-
-
 }

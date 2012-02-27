@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[2.7.2.201109122348-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[true]]></enableImports>
+	<configs>
+		<config>plugin-resources/conf/orm-config.xml</config>
+		<config>plugin-resources/conf/datasource-config.xml</config>
+		<config>plugin-resources/conf/mail-services-config.xml</config>
+		<config>plugin-resources/conf/notify-services-config.xml</config>
+		<config>plugin-resources/conf/root-spring-config.xml</config>
+		<config>plugin-resources/conf/scheduler-context.xml</config>
+		<config>plugin-resources/conf/services-context.xml</config>
+		<config>plugin-resources/conf/framework-services-config.xml</config>
+		<config>plugin-resources/conf/xdat-services-config.xml</config>
+	</configs>
+	<configSets>
+		<configSet>
+			<name><![CDATA[Services]]></name>
+			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>plugin-resources/conf/datasource-config.xml</config>
+				<config>plugin-resources/conf/mail-services-config.xml</config>
+				<config>plugin-resources/conf/notify-services-config.xml</config>
+				<config>plugin-resources/conf/orm-config.xml</config>
+				<config>plugin-resources/conf/services-context.xml</config>
+				<config>plugin-resources/conf/framework-services-config.xml</config>
+				<config>plugin-resources/conf/xdat-services-config.xml</config>
+			</configs>
+		</configSet>
+	</configSets>
+</beansProjectDescription>

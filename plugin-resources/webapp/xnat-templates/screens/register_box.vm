@@ -13,7 +13,7 @@
                   </tr>
                   <tr>
                    <th align="left">Password</th>
-                   <td><input type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" />
+                   <td><input type="password" id="xdat:user.primary_password" name="xdat:user.primary_password"  autocomplete="off"/>
                    </td>
                   </tr>
                   <tr>
@@ -60,7 +60,7 @@
                  
                  </table>
         <input type="hidden" name="xdat:user.primary_password.encrypt" value="true">
-        #foreach($key in $data.getParameters().getKeys())
+        #foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
         		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
         	#end

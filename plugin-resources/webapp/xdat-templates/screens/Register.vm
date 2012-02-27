@@ -7,7 +7,7 @@ $page.setBgColor($ui.bgcolor)
 #parse("/screens/userValidationJS.vm")
 
 <form name="form2" id="registerForm" method="post" action="$link.setAction("XDATRegisterUser")" onSubmit="return XNAT.app.register.validateForm();">
-		#foreach($key in $data.getParameters().getKeys())
+		#foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&$key!="phone" &&$key!="comments" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
    		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
         	#end
@@ -37,11 +37,11 @@ $page.setBgColor($ui.bgcolor)
     </tr>
     <tr>
       #formLabelRequired("Password")
-  	  <TD><input type="password" id="xdat:user.primary_password" name="xdat:user.primary_password"></TD>
+  	  <TD><input type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" autocomplete="off"></TD>
     </tr>
     <tr>
       #formLabelRequired("Re-enter password")
-  	  <TD><input type="password" id="xdat:user.password_check" name="xdat:user.primary_password"></TD>
+  	  <TD><input type="password" id="xdat:user.password_check" name="xdat:user.primary_password" autocomplete="off"></TD>
     </tr>
     <tr>
     	<TD colspan="2"><hr/></TD>

@@ -1131,7 +1131,7 @@
 #macro (formPasswordCell $label $name $value)
   #formLabel($label)
   <td bgcolor="$ui.formFieldColor">
-      <input type="password" size="20" name="$name" value="$value">
+      <input type="password" size="20" name="$name" value="$value" autocomplete="off">
   </td>
 #end
 

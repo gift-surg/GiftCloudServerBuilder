@@ -77,7 +77,7 @@ Registering for an account allows you to upload, download, and analyze your  dat
         <input type="submit" name="SubmitName" value="Register" />      </td>
     </tr>
   </table>
-        #foreach($key in $data.getParameters().getKeys())
+        #foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
         		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
         	#end

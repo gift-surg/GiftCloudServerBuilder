@@ -125,7 +125,16 @@ function SavePopupForm(_search,_div,_config){
 			
 			var div1=document.createElement("DIV");
 			div1.style.display='block';
-			div1.innerHTML='Saving this search will allow you to execute it again in the future.';
+			if(this.searchDOM.getTag()){
+				if(this.config.saveAs){
+					div1.innerHTML='Saving this search will create a new listing (tab), in addition to the original.';
+				}else{
+					div1.innerHTML='This will modify the existing tab in the listings.  To create a new tab, use the Save As New Search option.';
+				}				
+			}else{
+				div1.innerHTML='Saving this search will allow you to execute it again in the future.';
+			}
+			
 			popupBD.appendChild(div1);
 		
 			tr = document.createElement("TR");
@@ -158,6 +167,9 @@ function SavePopupForm(_search,_div,_config){
 			input.id="save_brief";
 			if(this.searchDOM.getBriefDescription()){
 				input.value=this.searchDOM.getBriefDescription();
+				if(!(this.config.saveAs)){
+					input.disabled=true;
+				}
 			}
 			input.name="save_brief";
 			input.size="42";

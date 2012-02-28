@@ -534,9 +534,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 				      submenuitems.push({text:'Email',onclick:{fn:this.search.emailClick,scope:this.search}});
 
 				      submenuitems.push({text:'Save Search',onclick:{fn:this.search.saveClick,scope:this.search}});
-				      if(this.search.obj.ID.startsWith("ss.")){
-					submenuitems.push({text:'Save as New Search',onclick:{fn:this.search.saveAsClick,scope:this.search}});
-				      }
+				      submenuitems.push({text:'Save as New Search',onclick:{fn:this.search.saveAsClick,scope:this.search}});
 				      submenuitems.push({text:'Show XML',onclick:{fn:this.search.showXMLClick,scope:this.search}});
 
 				      if((this.en.indexOf("SessionData")>-1))

@@ -289,6 +289,49 @@ public class PrearcUtils {
 		return new java.util.Date(t.getTime());
 	}
 	
+	/**
+	 * Create a blank session that will be used to populate a row in the prearchive table that will
+	 * be filled later.
+	 * 
+	 * No attempt is made to create the necessary folder structure in the prearchive directory on the
+	 * filesystem. 
+	 * 
+	 * The essential fields are set:
+	 * - folderName
+	 * - project
+	 * - url
+	 * - tag (the Study Instance UID)
+	 * @param project
+	 * @param sessionLabel
+	 * @param tag
+	 * @return
+	 */
+	public static SessionData blankSession (String project, String sessionLabel, String tag) throws IOException {
+		if (sessionLabel == null || tag == null) {
+			throw new IOException("Cannot create a SessionData object with a session label or study instance uid");
+		}
+		
+		final File root;
+        if (null == project) {
+            root = new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath());
+        } else {
+            //root = new File(project.getPrearchivePath());
+        	root = new File (ArcSpecManager.GetInstance().getGlobalPrearchivePath() + "/" + project);
+        }
+        // doesn't currently exist only used to get pathname to create the URL
+        final File tsdir;
+        tsdir = new File(root, PrearcUtils.makeTimestamp());
+        
+        SessionData sess = new SessionData();
+        sess.setFolderName(sessionLabel);
+        sess.setName(sessionLabel);
+        sess.setTimestamp(tsdir.getName());
+        sess.setProject(project);
+        sess.setUrl((new File(tsdir,sessionLabel)).getAbsolutePath());
+        sess.setTag(tag);
+        return sess;
+	}
+	
 	public static void deleteProject (String project) throws SQLException, SessionException, Exception {
 		ArrayList<SessionData> ss = PrearcDatabase.getSessionsInProject(project);
 		Iterator<SessionData> i = ss.iterator();

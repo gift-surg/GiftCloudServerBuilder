@@ -24,6 +24,7 @@ import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
+import org.nrg.xnat.restlet.actions.PrearcImporterA;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.actions.importer.ImporterNotFoundException;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -56,8 +57,14 @@ public class Importer extends SecureResource {
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 	}
 
+	@Override
 	public boolean allowGet(){
 		return false;
+	}
+	
+	@Override
+	public boolean allowPut() {
+		return true;
 	}
 
 	@Override
@@ -90,7 +97,7 @@ public class Importer extends SecureResource {
 			params.put(key,value);
 		}
 	}
-
+	
 	@Override
 	public void handlePost() {
 		//build fileWriters
@@ -101,10 +108,54 @@ public class Importer extends SecureResource {
 
 			//maintain parameters
 			loadParams(getQueryVariableForm());
+			
+			ImporterHandlerA importer;
 
-			if(fw.size()==0){
+			if(fw.size()==0 && 
+					(handler == null) 
+							|| 
+					 !handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY))
+			{
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
 				return;
+			}
+			else {
+				if (!handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY)) {
+					throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, "For a POST request with no file, the \"" + ImporterHandlerA.IMPORT_HANDLER_ATTR + "\" parameter can only be \"" + ImporterHandlerA.BLANK_PREARCHIVE_ENTRY + "\".", new IllegalArgumentException());
+				}
+				else {
+					try {				
+						importer = ImporterHandlerA.buildImporter(handler, 
+																  listenerControl, 
+																  user, 
+																  null, // FileWriterWrapperI is null because no files should have been uploaded. 
+																  params);
+					}
+					catch (Exception e) {
+						logger.error("",e);
+						throw new ServerException(e.getMessage(),e);
+					}
+					
+					if(httpSessionListener){
+						if(StringUtils.isEmpty(listenerControl)){
+							getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"'" + XNATRestConstants.TRANSACTION_RECORD_ID+ "' is required when requesting '" + HTTP_SESSION_LISTENER + "'.");
+							return;
+						}
+						final StatusList sq = new StatusList();
+						importer.addStatusListener(sq);
+
+						storeStatusList(listenerControl, sq);
+					}
+
+					response= importer.call();
+								
+					if(entity!=null && APPLICATION_XMIRC.equals(entity.getMediaType())){
+						returnString("OK", Status.SUCCESS_OK);
+						return;
+					}
+					
+					returnDefaultRepresentation();
+				}
 			}
 
 			if(fw.size()>1){
@@ -112,25 +163,6 @@ public class Importer extends SecureResource {
 				return;
 			}
 
-//			XnatImagesessiondata session=null;
-//
-//			if(session_id!=null){
-//				session=XnatImagesessiondata.getXnatImagesessiondatasById(session_id, user, false);
-//			}
-//
-//			if(session==null){
-//				if(project_id!=null){
-//					session=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project_id, session_id, user, false);
-//				}
-//			}
-//
-//			if(session==null){
-//				if(project_id==null || subject_id==null || session_id==null){
-//					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "New sessions require a project, subject and session id.");
-//					return;
-//				}
-//			}
-			
 			if(handler==null && entity!=null){
 				if(APPLICATION_DICOM.equals(entity.getMediaType()) || 
 						APPLICATION_XMIRC.equals(entity.getMediaType()) || 
@@ -138,8 +170,6 @@ public class Importer extends SecureResource {
 					handler=ImporterHandlerA.GRADUAL_DICOM_IMPORTER;
 				}
 			}
-
-			ImporterHandlerA importer;
 			
 			this.addAppletFlagToParams();
 			

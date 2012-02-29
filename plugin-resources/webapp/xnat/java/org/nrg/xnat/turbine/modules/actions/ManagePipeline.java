@@ -34,7 +34,6 @@ import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.PipePipelinedetails;
 import org.nrg.xdat.om.PipePipelinerepository;
-import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -84,12 +83,12 @@ public class ManagePipeline extends SecureAction {
 
 	}
 
-	
+
 	public void doAddpipeline(RunData data, Context context) throws Exception {
 		PipelineAdder pipelineAdder = new PipelineAdder();
 		pipelineAdder.prepareScreen(data, context);
 	}
-	
+
 	private void doDeletefromproject(RunData data, Context context) {
 		XDATUser user = TurbineUtils.getUser(data);
 		String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
@@ -113,12 +112,23 @@ public class ManagePipeline extends SecureAction {
 		XDATUser user = TurbineUtils.getUser(data);
 		try {
 			XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
+			String pipeline_path = (String)pipeline.getProperty("path");
 			if (pipeline != null) {
-				SaveItemHelper.unauthorizedDelete(pipeline.getCurrentDBVersion(), user);
-				logger.info("Deleted " + pipeline.getProperty("path"));
-				data.setMessage("Pipeline removed from site repository");
-				PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects( (String)pipeline.getProperty("path"), user);
-				PipelineRepositoryManager.Reset();
+				PipePipelinerepository pipelines = PipelineRepositoryManager.GetInstance();
+				SaveItemHelper.authorizedRemoveChild(pipelines.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user);
+                pipelines.getItem().removeItem(pipeline.getItem());
+                //boolean deleted = pipelines.save(user, false, false);
+				//DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
+				//if (deleted) {
+	                logger.info("Deleted " + pipeline.getProperty("path"));
+					data.setMessage("Pipeline removed from site repository");
+					PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects(pipeline_path, user);
+					PipelineRepositoryManager.Reset();
+					ArcSpecManager.Reset();
+				/*}else {
+		    		logger.error("Error deleting "  + data.getParameters().get("search_value"));
+		    		data.setMessage("Error Deleting item.");
+				}*/
 			}
 		}catch(Exception e) {
     		logger.error("Error deleting "  + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)) ,e);
@@ -137,7 +147,7 @@ public class ManagePipeline extends SecureAction {
 	        context.put("pipelinePath", pipelinePath);
 	        String customWebPage = "PipelineScreen_default_launcher.vm";
 	        try {
-		        ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+		        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 		        if (schemaType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
 		        	ArcProjectPipeline pipelineData = (ArcProjectPipeline)arcProject.getPipelineByPath(pipelinePath);
 		        	if (pipelineData.getCustomwebpage() != null)
@@ -167,13 +177,13 @@ public class ManagePipeline extends SecureAction {
 			if (launchedAtAutoArchive) {
 				if (templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE)) {
 					rtn = templateSuppliedStepId;
-				}else 
+				}else
 					rtn = nextStepId;
 			}else if (!templateSuppliedStepId.startsWith(PipelineUtils.AUTO_ARCHIVE))
 				rtn = templateSuppliedStepId;
 			else
 				rtn = displayText;
-		}else { 
+		}else {
 			if (launchedAtAutoArchive) {
 				rtn = nextStepId;
 			}else {
@@ -182,7 +192,7 @@ public class ManagePipeline extends SecureAction {
 		}
 		return rtn;
 	}
-	
+
 	public void doAddprojectpipeline(RunData data, Context context) throws Exception {
 		XDATUser user = TurbineUtils.getUser(data);
         XFTItem found = null;
@@ -206,13 +216,13 @@ public class ManagePipeline extends SecureAction {
             boolean launchedAtAutoArchive = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("auto_archive",data));
 			String templateSuppliedStepId = found.getStringProperty("stepid");
 	   		boolean saved = false;
-	   	 
+
             //A set of pipelines can be launched on auto archive.This set will have
             //AUTO_ARCHIVE_<SEQUENTIAL NUMBER> unless site wants to setup the stepid at the template level
             //If the step is provided at the template level, it must be of the kind AUTO_<SOMETHING>
             //It is assumed that the sequence will be independent
 
-    		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+    		ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
     		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
     			ArcProjectPipeline newPipeline = new ArcProjectPipeline(found);
     			if (edit) {
@@ -226,7 +236,7 @@ public class ManagePipeline extends SecureAction {
     				String stepId = getStepId(templateSuppliedStepId,launchedAtAutoArchive, PipelineUtils.getNextAutoArchiveStepId(arcProject), newPipeline.getDisplaytext() );
     				newPipeline.setStepid(stepId);
     			}
-    				arcProject.setPipelines_pipeline(newPipeline.getItem());	
+    				arcProject.setPipelines_pipeline(newPipeline.getItem());
     		}else {
     			ArcProjectDescendant existingDesc = arcProject.getDescendant(dataType);
     			ArcProjectDescendant newDesc = new ArcProjectDescendant();
@@ -363,6 +373,12 @@ public class ManagePipeline extends SecureAction {
 			XDATUser user = TurbineUtils.getUser(data);
 			XFTItem item = TurbineUtils.GetItemBySearch(data);
 			String pipeline_path = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline_path",data));
+			boolean launch_now = false;
+			String launch_nowStr = data.getParameters().get("launch_now");
+			if (launch_nowStr != null){
+				launch_now = launch_nowStr.equalsIgnoreCase("true");
+			}
+
 			XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);
 			xnatPipelineLauncher.setSupressNotification(true);
 	        xnatPipelineLauncher.setParameter("useremail", user.getEmail());
@@ -386,7 +402,11 @@ public class ManagePipeline extends SecureAction {
 			xnatPipelineLauncher.setBuildDir(buildDir);
 			String paramFilePath = saveParameters(buildDir+File.separator + exptLabel,paramFileName,parameters);
 		    xnatPipelineLauncher.setParameterFile(paramFilePath);
-		    xnatPipelineLauncher.launch();
+		    if (launch_now)
+		    	xnatPipelineLauncher.launch(null);
+		    else
+		    	xnatPipelineLauncher.launch();
+
 
 		    data.setMessage("<p><b>The pipeline has been scheduled.  Status email will be sent upon its completion.</b></p>");
 	        data.setScreenTemplate("ClosePage.vm");

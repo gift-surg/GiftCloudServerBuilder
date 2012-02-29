@@ -87,7 +87,7 @@ public class FileUtils {
     }
 
 	public static String getBuildDir(String project,  boolean postfixTimestamp) {
-		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
+		ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(project);
 		String buildPath = XFT.GetPipelinePath()  ;
 		if (arcProject != null) {
 			buildPath = arcProject.getPaths().getBuildpath();

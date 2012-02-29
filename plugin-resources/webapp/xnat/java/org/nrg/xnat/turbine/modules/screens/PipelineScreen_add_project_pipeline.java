@@ -46,7 +46,7 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 	    try {
 	    	context.put("edit", edit);
 	    	if (edit) {
-				ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+				ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 	    		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
 					ArcProjectPipeline newPipeline = arcProject.getPipelineEltByPath(pipelinePath);
 					templateFile = newPipeline.getCustomwebpage();

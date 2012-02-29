@@ -66,7 +66,7 @@ public class ProjectPipelineListResource extends SecureResource  {
 					boolean isUserAuthorized = isUserAuthorized();
 					if (isUserAuthorized) {
 						try {
-						ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
+						ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 						boolean success = PipelineRepositoryManager.GetInstance().delete(arcProject, pathToPipeline, datatype, user);
 						if (!success) {
 							getLogger().log(getLogger().getLevel(), "Couldnt delete the pipeline " + pathToPipeline + " for the project " + proj.getId());
@@ -120,7 +120,7 @@ public class ProjectPipelineListResource extends SecureResource  {
 	public Representation getRepresentation(Variant variant) {
 		//Document xmldoc = null;
 		boolean isUserAuthorized = isUserAuthorized();
-		ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
+		ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 		String comment = "existing";
 		if (isUserAuthorized) {
 			boolean additional=this.isQueryVariableTrue("additional");

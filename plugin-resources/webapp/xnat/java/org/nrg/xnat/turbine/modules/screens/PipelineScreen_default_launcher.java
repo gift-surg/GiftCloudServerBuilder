@@ -27,7 +27,7 @@ public class PipelineScreen_default_launcher extends DefaultPipelineScreen {
 	        String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
 	        String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline",data));
 	        String schemaType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("schema_type",data));
-	        ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+	        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 	        if (schemaType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
 	        	ArcProjectPipeline pipelineData = (ArcProjectPipeline)arcProject.getPipelineByPath(pipelinePath);
 	        	context.put("pipeline", pipelineData);

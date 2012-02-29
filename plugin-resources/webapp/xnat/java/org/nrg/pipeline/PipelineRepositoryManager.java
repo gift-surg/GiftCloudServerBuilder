@@ -40,9 +40,11 @@ import org.nrg.xdat.om.PipePipelinedetailsParameter;
 import org.nrg.xdat.om.PipePipelinerepository;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
+import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineRepositoryManager {
@@ -141,9 +143,9 @@ public class PipelineRepositoryManager {
 		 XnatProjectdata proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
 		 List<PipePipelinedetailsElementI> elementsGenerated =  pipeline.getGenerateselements_element();
 		 if (proj != null) {
-			 ArcProject arcProject = proj.getArcSpecification();
+			 ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 			 removePipeline(pipeline.getPath(), arcProject, user);
-			 for (int i = 0; i < elementsGenerated.size(); i++) {
+			 /*for (int i = 0; i < elementsGenerated.size(); i++) {
 				 String xsiType = elementsGenerated.get(i).getElement();
 				 ArrayList experiments = proj.getExperimentsByXSIType(xsiType);
 				 if (experiments == null || experiments.size() == 0) {
@@ -162,25 +164,40 @@ public class PipelineRepositoryManager {
 						 }
 					 }
 				 }
-			 }
+			 }*/
 		 }
 	 }
 
 	 private static void removePipeline(String pipelinePath, ArcProject aProject, UserI user) {
 		 List<ArcProjectPipelineI> projectPipelines = aProject.getPipelines_pipeline();
+		 boolean deleted = false;
 		 for (int j = 0; j < projectPipelines.size(); j++) {
 			 ArcProjectPipeline projectPipeline = (ArcProjectPipeline)projectPipelines.get(j);
 			 ArcPipelinedata pipeline = (ArcPipelinedata) projectPipeline.getPipelinedata();
 			 String path = pipeline.getLocation() ;
 			 if (pipelinePath.equals(path)) {
 				 try {
-					 SaveItemHelper.authorizedDelete(pipeline.getItem(), user);
+                     SaveItemHelper.authorizedRemoveChild(projectPipeline.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user);
+                     projectPipeline.getItem().removeItem(pipeline.getItem());
+					 //DBAction.DeleteItem(pipeline.getItem(), user);
+					 deleted = true;
 					 break;
 				 }catch(Exception e) {
 					 logger.error("Couldnt delete pipelines located at " + pipelinePath + " for project " + aProject.getId() );
 				 }
 			 }
 		 }
+		 /*if (deleted) {
+	       try {
+			 ValidationResults vr = aProject.getCurrentDBVersion().validate();
+	         if (vr.isValid()){
+	                 aProject.getCurrentDBVersion().save(user,false,false);
+	         }
+           }catch(Exception e) {
+          	 logger.error("",e);
+           }
+		 }*/
+
 		 List<ArcProjectDescendantI> projectDescs = aProject.getPipelines_descendants_descendant();
 		 for (int j = 0; j < projectDescs.size(); j++) {
 			 ArcProjectDescendant projectDesc = (ArcProjectDescendant)projectDescs.get(j);
@@ -191,7 +208,11 @@ public class PipelineRepositoryManager {
 				 String path = pipeline.getLocation() ;
 				 if (pipelinePath.equals(path)) {
 					 try {
-						 SaveItemHelper.authorizedDelete(pipeline.getCurrentDBVersion(), user);
+	                     SaveItemHelper.authorizedRemoveChild(projectDesc.getCurrentDBVersion(),null,descPipeline.getCurrentDBVersion(),user);
+	                     projectDesc.getItem().removeItem(descPipeline.getItem());
+	                     
+						 deleted = true;
+						 //DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user);
 						 break;
 					 }catch(Exception e) {
 						 logger.error("Couldnt delete pipelines located at " + pipelinePath + " for project " + aProject.getId() + " descendant  " + projectDesc.getXsitype() );
@@ -199,11 +220,22 @@ public class PipelineRepositoryManager {
 					 }
 			 }
 		 }
+		 /*if (deleted) {
+		       try {
+				 ValidationResults vr = aProject.getCurrentDBVersion().validate();
+		         if (vr.isValid()){
+		                 aProject.getCurrentDBVersion().save(user,false,false);
+		         }
+	           }catch(Exception e) {
+	          	 logger.error("",e);
+	           }
+			 }*/
+
 		 ArcSpecManager.Reset();
 	 }
 
 	 public synchronized static void RemoveReferenceToPipelineFromProjects(String pipelinePath, UserI user) {
-		 ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
+		 ArcArchivespecification arcSpec = ArcSpecManager.GetFreshInstance();
 		 List<ArcProjectI> arcProjects = arcSpec.getProjects_project();
 		 for (int i = 0; i < arcProjects.size(); i++) {
 			 ArcProject aProject = (ArcProject) arcProjects.get(i);

@@ -36,6 +36,7 @@ import org.nrg.xdat.model.ArcProjectDescendantI;
 import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.model.ArcProjectI;
 import org.nrg.xdat.model.ArcProjectPipelineI;
+import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.WrkWorkflowdata;
@@ -89,7 +90,7 @@ public class PipelineManager {
    
    public static List<ArcProjectDescendantPipelineI> getPipelinesForProjectDescendant(String projectId, String descendantXsiType, boolean sort) {
        List rtn = new ArrayList();
-       ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+       ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
        if (arcProject != null) {
          List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
          for (ArcProjectDescendantI desc: descendants) {
@@ -116,7 +117,7 @@ public class PipelineManager {
    }
    
    public ArcProjectDescendantPipeline getPipelineForProjectDescendantByPath(String projectId, String descendantXsiType, String pipelineFullPath) {
-       ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+       ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
        ArcProjectDescendantPipeline rtn = null;
        if (arcProject != null) {
          List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
@@ -145,7 +146,7 @@ public class PipelineManager {
    
    public static ArrayList<ArcProjectDescendantPipelineI> getDependentPipelinesForProjectDescendant(String projectId, String descendantXsiType, boolean sort) {
        ArrayList rtn = new ArrayList();
-       ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+       ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
        if (arcProject != null) {
          List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
          for (ArcProjectDescendantI desc: descendants) {
@@ -180,7 +181,7 @@ public class PipelineManager {
    
    public static ArrayList<ArcProjectDescendantPipelineI> getIndependentPipelinesForProjectDescendant(String projectId, String descendantXsiType, boolean sort) {
        ArrayList rtn = new ArrayList();
-       ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+       ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
        if (arcProject != null) {
          List<ArcProjectDescendantI> descendants = arcProject.getPipelines_descendants_descendant();
          for (ArcProjectDescendantI desc: descendants) {
@@ -412,7 +413,7 @@ public class PipelineManager {
    
     public static List<ArcProjectPipelineI> getPipelinesForProject(String projectId, boolean sort) {
         List rtn = new ArrayList();
-        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+        ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
         if (arcProject != null) {
           List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
           if (sort) {
@@ -434,7 +435,7 @@ public class PipelineManager {
     
     public static ArrayList<ArcProjectPipelineI> getDependentPipelinesForProject(String projectId, boolean sort) {
         ArrayList rtn = new ArrayList();
-        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+        ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
         if (arcProject != null) {
           List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
           ArrayList<ArcProjectPipeline> dependent = new ArrayList<ArcProjectPipeline>();
@@ -460,7 +461,7 @@ public class PipelineManager {
     
     public static ArrayList<ArcProjectPipelineI> getIndependentPipelinesForProject(String projectId, boolean sort) {
         ArrayList rtn = new ArrayList();
-        ArcProjectI arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+        ArcProjectI arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
         if (arcProject != null) {
           List<ArcProjectPipelineI> pipelines = arcProject.getPipelines_pipeline();
           ArrayList<ArcProjectPipeline> independent = new ArrayList<ArcProjectPipeline>();

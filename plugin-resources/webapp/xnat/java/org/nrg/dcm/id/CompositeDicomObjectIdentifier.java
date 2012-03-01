@@ -52,14 +52,18 @@ DicomObjectIdentifier<XnatProjectdata> {
                 new ChainExtractor(sessionExtractors), new ChainExtractor(aaExtractors));
     }
 
-    private XDATUser user;
+    private XDATUser user = null;
+    private Provider<XDATUser> userProvider = null;
     
     /*
      * (non-Javadoc)
      * @see org.nrg.xnat.DicomObjectIdentifier#getProject(org.dcm4che2.data.DicomObject)
      */
     public final XnatProjectdata getProject(final DicomObject o) {
-        return projectID.apply(user, o);
+	if (null == user && null != userProvider) {
+	    user = userProvider.get();
+	}
+	return projectID.apply(user, o);
     }
     
     /*
@@ -110,7 +114,7 @@ DicomObjectIdentifier<XnatProjectdata> {
         this.user = user;
     }
     
-    public final void setUserProvider(final Provider<XDATUser> user) {
-        this.user = user.get();
+    public final void setUserProvider(final Provider<XDATUser> userProvider) {
+        this.userProvider = userProvider;
     }
 }

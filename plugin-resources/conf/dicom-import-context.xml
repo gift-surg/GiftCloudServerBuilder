@@ -17,7 +17,7 @@
 		<constructor-arg ref="dicomSCPExecutor" />
 		<constructor-arg value="8104" />
 		<constructor-arg ref="receivedFileUserProvider" />
-        <constructor-arg value="XNAT" />
+		<constructor-arg value="XNAT" />
 		<constructor-arg ref="dicomObjectIdentifier" />
 	</bean>
 </beans>

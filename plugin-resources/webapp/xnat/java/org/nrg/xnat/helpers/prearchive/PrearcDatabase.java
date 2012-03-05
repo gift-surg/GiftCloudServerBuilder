@@ -1276,6 +1276,7 @@ public final class PrearcDatabase {
      * given project.
      * @param sess
      * @param proj
+     * @param timestamp
      * @return
      * @throws SQLException
      * @throws SessionException 

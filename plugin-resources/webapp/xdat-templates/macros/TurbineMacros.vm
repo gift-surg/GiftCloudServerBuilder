@@ -410,6 +410,28 @@
   #end
 #end
 
+#macro (xdatSelectBoxWDefault $name $item $possibleValues $vr)
+#if ($vr)
+  #if($vr.getField($name))
+    <font color="red">&#8658</font>
+  #end
+#end
+  #if($item.isPKField($name) && (!$vr.getField($name)))
+    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    $item.getProperty($name)
+  #else
+    #if ($possibleValues.size()==0)
+      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+    #else
+      <SELECT ID="$name" name="$name">
+        #foreach ($pValue in $possibleValues)
+        <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
+        #end
+      </SELECT>
+    #end
+  #end
+#end
+
 #macro (xdatSimpleSelectBox $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))

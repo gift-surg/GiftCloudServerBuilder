@@ -16,6 +16,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.model.XnatSubjectdataAddidI;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -33,7 +34,7 @@ import org.xml.sax.InputSource;
 public class StoreSubject{
     static org.apache.log4j.Logger logger = Logger.getLogger(StoreSubject.class);
     public void execute(HttpServletRequest req, HttpServletResponse response) throws IOException{
-        final XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        final XDATUser user = XDAT.getUserDetails();
         final String xmlString = req.getParameter("subject");
 
         final StringReader sr = new StringReader(xmlString);

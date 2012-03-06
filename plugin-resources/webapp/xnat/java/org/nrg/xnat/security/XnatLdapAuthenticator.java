@@ -42,18 +42,18 @@ import org.nrg.xft.exception.XFTInitException;
  * 
  * Subsequent authentication attempts will use retrieved distinguishedName and user-supplied password to authenticate against the LDAP server.
  */
-public class LDAPAuthenticator extends Authenticator {
+public class XnatLdapAuthenticator extends Authenticator {
 
 	static org.apache.log4j.Logger logger = Logger
-			.getLogger(LDAPAuthenticator.class);
+			.getLogger(XnatLdapAuthenticator.class);
 
 	//LDAP server to connect to
-	private static String LDAP_HOST = "ldap://path.to.ldap.host";
+	private static String LDAP_HOST = "ldap://localhost";
 	
 	//account to use when connecting to LDAP server to verify account details
-	private  static String LDAP_USER = "CN=xnat-account,OU=Users,DC=your,DC=edu";
-	private  static String SEARCHBASE = "dc=your,dc=edu";
-	private  static String LDAP_PASS = "PASSWORD";
+	private  static String LDAP_USER = "CN=admin,OU=Users,DC=xnat,DC=com";
+	private  static String SEARCHBASE = "dc=xnat,dc=com";
+	private  static String LDAP_PASS = "admin";
 	
 	private  static String INITIAL_CONTEXT_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 	private  static String SECURITY_AUTHENTICATION = "simple";
@@ -80,7 +80,7 @@ public class LDAPAuthenticator extends Authenticator {
 
 	static File AUTH_PROPS=null;
 
-	public LDAPAuthenticator() {
+	public XnatLdapAuthenticator() {
 		try {
 			if(AUTH_PROPS==null){
 				AUTH_PROPS=new File(XFT.GetConfDir(),"authentication.properties");
@@ -245,11 +245,13 @@ public class LDAPAuthenticator extends Authenticator {
 				logger.debug("getUsers:answer[" + match++ +"]=" + sr.getName() + " "+sr.getClassName() + " " +attrs.size());
 
 				try {
+					//Create new user account for missing user
 					XFTItem i = XFTItem.NewItem("xdat:user", null);
 
 					if (attrs != null) {
 						try {
 							// multiple attributes returned from server need to be mapped to a single xdat:user
+							// this is the point when the XNAT-user's properties are set, it is generic to allow for different parameter mapping logic.
 							for (NamingEnumeration ae = attrs.getAll(); ae
 									.hasMore();) {
 								Attribute attr = (Attribute) ae.next();
@@ -524,6 +526,11 @@ public class LDAPAuthenticator extends Authenticator {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.nrg.xdat.security.Authenticator#authenticate(org.nrg.xdat.security.Authenticator.Credentials)
+	 * 
+	 * This is one of two possible starting points in this class.  It tries to authenticate a user, without knowing in advance the corresponding xnat-user object.
+	 */
 	public XDATUser authenticate(Credentials cred)
 			throws PasswordAuthenticationException, EnabledException,
 			ActivationException, Exception {
@@ -553,6 +560,7 @@ public class LDAPAuthenticator extends Authenticator {
 				u.setProperty(
 						"xdat:user.assigned_roles.assigned_role[1].role_name",
 						"DataManager");
+				//we have everything we need to create our user account here, but we haven't actually checked the password against LDAP yet.  The user will be saved, if that succeeds.
 			}
 
 			if (u != null) {
@@ -584,6 +592,11 @@ public class LDAPAuthenticator extends Authenticator {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.nrg.xdat.security.Authenticator#authenticate(org.nrg.xdat.security.XDATUser, org.nrg.xdat.security.Authenticator.Credentials)
+	 * 
+	 * This performs the actual user authentication (confirms if account is enabled, active, and has proper credentials).
+	 */
 	public boolean authenticate(XDATUser u, Credentials cred)
 			throws PasswordAuthenticationException, EnabledException,
 			ActivationException, Exception {
@@ -601,8 +614,10 @@ public class LDAPAuthenticator extends Authenticator {
 				}
 			}
 
+			//if the user account has a stored password, then it is a LOCAL account and shouldn't be managed by LDAP.  Otherwise, use LDAP.
 			if (StringUtils.isEmpty(u.getPrimaryPassword())) {
-				AuthenticationAttempt attempt = LDAPAuthenticator
+				//uses hand rolled credential caching to prevent LDAP from being flooded with duplicate authentication attempts, this is not required but nice.
+				AuthenticationAttempt attempt = XnatLdapAuthenticator
 						.RetrieveCachedAttempt(cred);
 				if (attempt == null) {
 					if (!cred.OTHER.containsKey(LDAP_USER_PK)) {
@@ -623,6 +638,7 @@ public class LDAPAuthenticator extends Authenticator {
 					attempt.expire();
 					RecordAttempt(attempt);
 				} else if (!attempt.isExpired()) {
+					//the in-memory passwords should be SHA2'd
 					if (attempt.cred.getPassword().equals(cred.getPassword())) {
 						logger.info(u.getUsername()
 								+ ": verified versus cache password. EXPIRES:"+ attempt.expires.getTime());
@@ -634,7 +650,9 @@ public class LDAPAuthenticator extends Authenticator {
 
 					}
 				}
+				//failed to authenticate vs a cached password...
 
+				//the in-memory passwords should be SHA2'd
 				if (!attempt.cred.getPassword().equals(cred.getPassword())) {
 					attempt.cred.setPassword(cred.getPassword());
 				}

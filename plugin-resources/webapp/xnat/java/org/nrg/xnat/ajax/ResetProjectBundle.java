@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.display.DisplayField;
 import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
 import org.nrg.xdat.model.XnatFielddefinitiongroupI;
@@ -31,7 +32,7 @@ public class ResetProjectBundle {
 
     public void execute(HttpServletRequest req, HttpServletResponse response,ServletConfig sc) throws IOException{
         String protocolID = req.getParameter("protocol");
-        XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        XDATUser user = XDAT.getUserDetails();
         if (user!=null){
             XnatDatatypeprotocol protocol = XnatDatatypeprotocol.getXnatDatatypeprotocolsByXnatAbstractprotocolId(protocolID, user, true);
             XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(protocol.getProject(), user, false);

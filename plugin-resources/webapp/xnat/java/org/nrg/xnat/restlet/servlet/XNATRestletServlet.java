@@ -1,34 +1,35 @@
 // Copyright 2010,2011 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.servlet;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.nrg.xdat.security.XDATUser;
+import com.noelios.restlet.ext.servlet.ServerServlet;
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.DicomSCP;
-import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.XdatUserAuth;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.authority.AuthorityUtils;
 
-import com.noelios.restlet.ext.servlet.ServerServlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class XNATRestletServlet extends ServerServlet {
     private static final long serialVersionUID = 1592366035839385170L;
 
-    private DicomSCP dicomSCP = null;
     public static ServletConfig REST_CONFIG=null;
 
     /**
@@ -38,12 +39,11 @@ public class XNATRestletServlet extends ServerServlet {
      */
     private String getAdminUser() throws Exception {
     	String admin = null;
-    	Iterator<String> logins = XDATUser.getAllLogins().iterator();
-    	while(logins.hasNext()) {
-    		String l = logins.next();
-    		XDATUser u = new XDATUser(l);
-    		if (u.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
-    			admin = l;
+        List<String> logins = (List<String>) XDATUser.getAllLogins();
+    	for (String login : logins) {
+    		XDATUser user = new XDATUser(login);
+    		if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
+    			admin = login;
     		}
     	}
     	return admin;
@@ -51,6 +51,9 @@ public class XNATRestletServlet extends ServerServlet {
     @Override
     public void init() throws ServletException {
         super.init();
+		
+		updateAuthTable();
+		
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
         try {
         	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
@@ -79,32 +82,33 @@ public class XNATRestletServlet extends ServerServlet {
         } catch (Exception e) {
             logger().error("Unable to initialize prearchive database", e);
         }
-
-        final ContextService context = XDAT.getContextService();
-        dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
-        if (null != dicomSCP) {
-            try {
-                dicomSCP.start();
-            } catch (Throwable t) {
-                throw new ServletException("unable to start DICOM SCP", t);
-            }
-        }
-    }
-
-    @Override
-    public void destroy() {
-        if (null != dicomSCP) {
-            dicomSCP.stop();
-            dicomSCP = null;
-        }
-        super.destroy();
     }
 
     private static Logger logger() { return LoggerFactory.getLogger(XNATRestletServlet.class); }
 
+    /**
+     * Adds users from old xdat_user table to new user authentication table if they are not already there. New local database users now get added to both automatically, but this is necessary
+     * so that those who upgrade from an earlier version will still have their users be able to log in. 
+     */
+    private void updateAuthTable(){
+        JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
+        List<XdatUserAuth> unmapped = template.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth WHERE auth_method='localdb')", new RowMapper<XdatUserAuth>() {
+            @Override
+            public XdatUserAuth mapRow(final ResultSet resultSet, final int i) throws SQLException {
+                final String login = resultSet.getString("login");
+                final boolean enabled = resultSet.getInt("enabled") == 1;
+                return new XdatUserAuth(login, "localdb", enabled, true, true, true, AuthorityUtils.NO_AUTHORITIES, login);
+            }
+        });
+        for (XdatUserAuth userAuth : unmapped) {
+            XDAT.getXdatUserAuthService().create(userAuth);
+        }
+    }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.service(request, response);
     }
+
+    private DicomSCP dicomSCP;
 }

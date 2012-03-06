@@ -1,6 +1,7 @@
-#WINDOWS USERS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.  Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
+# WINDOWS USERS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.
+# Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
 
-maven.appserver.home = TOMCAT_HOME
+maven.appserver.home = /usr/share/tomcat6
 
 xdat.project.name=xnat
 xdat.project.template=xnat
@@ -13,25 +14,25 @@ xdat.project.db.password=PASSWORD
 #IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
 #Location where image data will be stored.
 # eg. /tmp/ARCHIVE
-xdat.archive.location=ARCHIVE
+xdat.archive.location=/Library/XNAT/archive
 
 #Location where image data may be stored temporarily before it is stored into the archive.
 # eg. /tmp/PREARCHIVE
-xdat.prearchive.location=PREARCHIVE
+xdat.prearchive.location=/Library/XNAT/prearchive
 
 #Location where cached image data should be stored
 # eg. /tmp/CACHE
-xdat.cache.location=CACHE
+xdat.cache.location=/Library/XNAT/cache
 
 #Location for ftp data
-xdat.ftp.location=FTP
+xdat.ftp.location=/Library/XNAT/ftp
 
 #Location for build data.
-xdat.build.location=BUILD
+xdat.build.location=/Library/XNAT/build
 
 #Location of pipeline.
 #If you have pipeline installed outside of xnat, un-comment this property to set it automatically.
-#xdat.pipeline.location=/Library/XNAT/PIPELINE
+#xdat.pipeline.location=/Library/XNAT/pipeline
 
 # Mail server, port, and protocol. Standard SMTP port is 25 or 587, Google SMTPS port is 465
 xdat.mail.server=mail.server
@@ -48,7 +49,7 @@ xdat.mail.admin=administrator@xnat.org
 # Prefix to the subject line for system emails.
 xdat.mail.prefix=XNAT
 
-# e.g. http://localhost:8080.xnat
+# e.g. http://localhost:8080/xnat
 xdat.url=URL
 
 #  'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be
@@ -66,4 +67,22 @@ xdat.enable_new_registrations=false
 # The modules location setting indicates where custom modules are located. The setup/update scripts
 # always look in the modules subfolder of the xnat_builder installation, but will also look in the
 # indicated folder if this is set.
-# xdat.modules.location=d:/Path/To/Modules/Repo
+# xdat.modules.location=/Library/XNAT/modules
+
+# 'xdat.security.channel' specifies what type of HTTP connection should be configured for the XNAT
+# server. This has three possible values:
+#  * http indicates that the server MUST be unencrypted http connection
+#  * https indicates that the server MUST be an SSL-encrypted https connection
+#  * any indicates that the server can use either an unencrypted or SSL-encrypted connection
+# Production servers or any server on a network that can be reached from outside the hosting network
+# should always use https.
+xdat.security.channel=any
+
+# These properties configure the LDAP data store when you want to use LDAP as one of the primary
+# authentication providers for your XNAT system. The values for these variables is highly contingent
+# on the configuration of your LDAP server.
+xdat.security.ldap.address=LDAP_SERVER
+xdat.security.ldap.userdn=CN=LDAP,OU=Service Accounts,OU=Users,DC=service,DC=domain
+xdat.security.ldap.password=PASSWORD
+xdat.security.ldap.search.base=OU=Staff,OU=Users
+xdat.security.ldap.search.filter=(sAMAccountName={0})

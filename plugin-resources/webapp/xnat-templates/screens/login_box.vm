@@ -1,12 +1,23 @@
-<form name="form1" method="post" action="$link.setAction("XDATLoginUser")">
+<form name="form1" method="post" action="$content.getURI('')/j_spring_security_check">
   <table>
     <tr>
+      #formLabel("Login via")
+	  <td>
+			#set( $login_methods = ["Database","LDAP"])
+			#if($login_methods && $login_methods.size()==0)
+				#xdatTextBox("login_method" $item "" $vr)
+			#else
+				#xdatSelectBoxWDefault("login_method" $item $login_methods $vr)
+			#end
+		</td>
+    </tr>
+    <tr>
       #formLabel("User")
-  	  <TD><input type="text" id="username" name="username"></TD>
+  	  <TD><input type="text" id="username" name="j_username"></TD>
     </tr>
     <tr>
     	#formLabel("Password")
-  	  <TD><input type="password" name="password"></TD>
+  	  <TD><input type="password" name="j_password"></TD>
     </tr>
     <tr>
 					      <td></td>
@@ -17,7 +28,7 @@
             		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!data.getParameters().getString($key))">	
           	#end
         #end
-          <input type="submit" value="Login">
+          <input type="submit" name="login" value="Login">
         </font>
       </td>
     </tr>

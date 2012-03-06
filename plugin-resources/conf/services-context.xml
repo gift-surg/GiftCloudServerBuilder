@@ -17,25 +17,6 @@
     -->
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
-    <context:component-scan base-package="org.nrg.framework.services" />
-    <context:component-scan base-package="org.nrg.mail.services" />
-    <!-- context:component-scan base-package="org.nrg.notify.services" />
-    <context:component-scan base-package="org.nrg.notify.daos" / -->
-    <context:component-scan base-package="org.nrg.xft.services" />
-    <context:component-scan base-package="org.nrg.xft.daos" />
-    <context:component-scan base-package="org.nrg.config.services" />
-    <context:component-scan base-package="org.nrg.config.daos" />
-
-    <util:list id="xnatEntityPackages">
-        <!--  value>org.nrg.notify.entities</value -->
-        <value>org.nrg.xft.entities</value>
-        <value>org.nrg.config.entities</value>
-    </util:list>
-
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-        p:driverClassName="${datasource.driver}" p:url="${datasource.url}"
-        p:username="${datasource.username}" p:password="${datasource.password}"/>
-
     <!-- import resource="mail-services-config.xml" / -->
     <!-- Bootstrap the Spring mail sender. -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
@@ -54,31 +35,5 @@
     <bean id="rendererProvider" class="org.nrg.notify.entities.ChannelRendererProvider">
         <property name="renderers" ref="renderers" />
     </bean>
-
-    <!-- <import resource="anon-script-config.xml" /> -->
-    <!-- import resource="notify-services-config.xml" / -->
-    <!-- Used the prefixed table naming strategy, class FooBar gives you prefix_foo_bar instead of FooBar. -->
-    <bean id="namingStrategy" class="org.nrg.framework.orm.hibernate.PrefixedTableNamingStrategy" p:prefix="xhbm" />
-
-    <!-- Set up default hibernate properties. -->
-    <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="properties">
-            <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
-                <prop key="hibernate.show_sql">true</prop>
-            </props>
-        </property>
-    </bean>
-
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
-        p:dataSource-ref="dataSource"
-        p:hibernateProperties-ref="hibernateProperties"
-        p:packagesToScan-ref="xnatEntityPackages"
-        p:namingStrategy-ref="namingStrategy" />
-
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" p:sessionFactory-ref="sessionFactory" />
-
-    <tx:annotation-driven proxy-target-class="true"/>
 
 </beans>

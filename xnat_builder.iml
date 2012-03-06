@@ -140,6 +140,16 @@
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.5.RELEASE.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/org.springframework.web-3.0.5.RELEASE.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-ldap-1.3.1.RELEASE-all.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-acl-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-aspects-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-config-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-core-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-ldap-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-openid-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.5.RELEASE.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-web-3.0.5.RELEASE.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/jackson/jars/jackson-mapper-asl-1.8.5.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar!/" />
@@ -1408,6 +1418,24 @@
       <library name="org.springframework.web.servlet-3.0.5.RELEASE.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Spring Security">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-ldap-1.3.1.RELEASE-all.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-acl-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-aspects-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-config-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-core-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-ldap-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-openid-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/spring/jars/spring-security-web-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

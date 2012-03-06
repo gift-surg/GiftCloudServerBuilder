@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -36,7 +37,7 @@ public class QuickSearch {
     static org.apache.log4j.Logger logger = Logger.getLogger(StoreSubject.class);
     public void execute(HttpServletRequest req, HttpServletResponse response) throws IOException{
         String xmlString = req.getParameter("search");
-        XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        XDATUser user = XDAT.getUserDetails();
         if (user!=null){
             StringReader sr = new StringReader(xmlString);
             InputSource is = new InputSource(sr);

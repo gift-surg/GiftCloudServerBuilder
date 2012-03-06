@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.model.ArcProjectI;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -151,7 +152,7 @@ public final class Prearchive {
 	@SuppressWarnings("unchecked")
 	public void prearchives(final HttpServletRequest req, final HttpServletResponse response, final ServletConfig config) {
 		final HttpSession session = req.getSession();
-		final XDATUser user = (XDATUser)session.getAttribute("user");
+		final XDATUser user = XDAT.getUserDetails();
 		final String login = user.getLogin();
 
 		log.debug("received prearchive list request for user " + login);
@@ -305,7 +306,7 @@ public final class Prearchive {
 	 */
 	public void sessions(final HttpServletRequest req, final HttpServletResponse response, final ServletConfig config) {
 		final HttpSession session = req.getSession();
-		final XDATUser user = (XDATUser)session.getAttribute("user");
+		final XDATUser user = XDAT.getUserDetails();
 		final String login = user.getLogin();
 
 		if (null == login) {
@@ -606,7 +607,7 @@ public final class Prearchive {
 	 */
 	public void remove(final HttpServletRequest req, final HttpServletResponse response, final ServletConfig config) {
 		final HttpSession session = req.getSession();
-		final XDATUser user = (XDATUser)session.getAttribute("user");
+		final XDATUser user = XDAT.getUserDetails();
 		final String login = user.getLogin();
 
 		if (null == login) {
@@ -634,7 +635,7 @@ public final class Prearchive {
 	 */
 	public void move(final HttpServletRequest req, final HttpServletResponse response, final ServletConfig config) {
 		final HttpSession session = req.getSession();
-		final XDATUser user = (XDATUser)session.getAttribute("user");
+		final XDATUser user = XDAT.getUserDetails();
 		final String login = user.getLogin();
 
 		if (null == login) {

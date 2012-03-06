@@ -22,6 +22,7 @@ import org.apache.turbine.services.velocity.TurbineVelocity;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.TurbineException;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.search.CriteriaCollection;
@@ -46,7 +47,7 @@ public class RequestProjectBundle {
         response.setHeader("Cache-Control", "no-cache");
         
         HttpSession session = req.getSession();
-        XDATUser user = ((XDATUser)session.getAttribute("user"));
+        XDATUser user = XDAT.getUserDetails();
         
         RunDataService rundataService = null;
         rundataService = TurbineRunDataFacade.getService();

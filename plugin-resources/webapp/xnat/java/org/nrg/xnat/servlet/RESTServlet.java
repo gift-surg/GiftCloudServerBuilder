@@ -26,6 +26,7 @@ import org.apache.turbine.services.velocity.TurbineVelocity;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.TurbineException;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUsergroup;
@@ -56,7 +57,7 @@ public class RESTServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		XDATUser user = (XDATUser)request.getSession().getAttribute("user");
+		XDATUser user = XDAT.getUserDetails();
 		if (user==null){
 			response.sendError(401);
 			return;
@@ -184,7 +185,7 @@ public class RESTServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		XDATUser user = (XDATUser)request.getSession().getAttribute("user");
+		XDATUser user = XDAT.getUserDetails();
 		if (user==null){
 			response.sendError(401);
 			return;
@@ -405,7 +406,7 @@ public class RESTServlet extends HttpServlet {
 
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		XDATUser user = (XDATUser)request.getSession().getAttribute("user");
+		XDATUser user = XDAT.getUserDetails();
 		if (user==null){
 			response.sendError(401);
 			return;
@@ -474,7 +475,7 @@ public class RESTServlet extends HttpServlet {
 	
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		XDATUser user = (XDATUser)request.getSession().getAttribute("user");
+		XDATUser user = XDAT.getUserDetails();
 		if (user==null){
 			response.sendError(401);
 			return;

@@ -29,8 +29,8 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
-import org.nrg.xnat.security.LDAPAuthenticator;
-import org.nrg.xnat.security.LDAPAuthenticator.AuthenticationAttempt;
+import org.nrg.xnat.security.XnatLdapAuthenticator;
+import org.nrg.xnat.security.XnatLdapAuthenticator.AuthenticationAttempt;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class XnatPipelineLauncher {
@@ -377,7 +377,7 @@ public class XnatPipelineLauncher {
             arguments.add("-pwd");
             arguments.add(escapeSpecialShellCharacters(user.getPrimaryPassword()));
         } else {
-            AuthenticationAttempt attempt = LDAPAuthenticator.RetrieveCachedAttempt(new Credentials(user.getUsername(), ""));
+            AuthenticationAttempt attempt = XnatLdapAuthenticator.RetrieveCachedAttempt(new Credentials(user.getUsername(), ""));
             if (attempt != null) {
                 arguments.add("-pwd");
                 arguments.add(escapeSpecialShellCharacters(attempt.cred.getPassword()));
@@ -577,9 +577,6 @@ public class XnatPipelineLauncher {
         xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
         xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
 
-        // xnatPipelineLauncher.setParameter("xnatserver",
-        // TurbineUtils.GetSystemName());
-
         xnatPipelineLauncher.setId(imageSession.getId());
         xnatPipelineLauncher.setLabel(imageSession.getLabel());
         xnatPipelineLauncher.setDataType(imageSession.getXSIType());
@@ -610,9 +607,6 @@ public class XnatPipelineLauncher {
         xnatPipelineLauncher.setLabel(imageSession.getLabel());
         xnatPipelineLauncher.setDataType(imageSession.getXSIType());
         xnatPipelineLauncher.setExternalId(imageSession.getProject());
-
-        // xnatPipelineLauncher.setParameter("xnatserver",
-        // TurbineUtils.GetSystemName());
 
         return xnatPipelineLauncher;
     }

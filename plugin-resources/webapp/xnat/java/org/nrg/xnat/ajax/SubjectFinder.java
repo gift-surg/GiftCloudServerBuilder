@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.model.XnatSubjectdataAddidI;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -35,7 +36,7 @@ public class SubjectFinder {
             List<List<IdentifierResults>> matches=null;
             try {
                 final GenericWrapperElement element = GenericWrapperElement.GetElement("xnat:subjectData");
-                final XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+                final XDATUser user = XDAT.getUserDetails();
                 sb.append("<matchingSubjects ID=\"").append(s).append("\">");
                 CriteriaCollection cc = new CriteriaCollection("OR");
                 cc.addClause("xnat:subjectData/ID", "=",  s);

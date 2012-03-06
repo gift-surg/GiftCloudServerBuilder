@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -439,7 +440,7 @@ public class ArchiveServlet extends HttpServlet {
             path = path.substring(1);
         }
         
-        XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        XDATUser user = XDAT.getUserDetails();
         
             if (path.startsWith("catalogs/")){
                 if (user!=null)

@@ -56,6 +56,8 @@ public class Index extends SecureScreen {
 		
 		context.put("sub_count", user.getTotalCounts().get("xnat:subjectData"));
 		
+		context.put("user", user);
+		
 		Long isd_count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(*) FROM xnat_imageSessionData", "count", TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getUsername());
 		context.put("isd_count", isd_count);
     }

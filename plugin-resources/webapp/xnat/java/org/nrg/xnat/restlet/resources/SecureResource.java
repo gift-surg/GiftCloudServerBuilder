@@ -469,9 +469,8 @@ public abstract class SecureResource extends Resource {
 	
 	public FileRepresentation representFile(File f,MediaType mt){
 		mt=buildMediaType(mt,f.getName());
-		if(mt.getName().startsWith("APPLICATION")){
+
 			this.setContentDisposition(String.format("attachment; filename=\"%s\";",f.getName()));
-		}
 		
 		FileRepresentation fr= new FileRepresentation(f,mt);
 		fr.setModificationDate(new Date(f.lastModified()));

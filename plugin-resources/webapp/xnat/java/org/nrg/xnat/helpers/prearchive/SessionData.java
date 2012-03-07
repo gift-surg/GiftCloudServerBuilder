@@ -30,7 +30,7 @@ public final class SessionData {
 	private String scan_time, subject, url, session, tag, source;
 	private PrearchiveCode autoArchive;
     private Boolean preventAnon;
-    private Boolean preventAutoCommit;
+    private Boolean preventAutoCommit = Boolean.valueOf(false);
 
 	public SessionData() {
 	}

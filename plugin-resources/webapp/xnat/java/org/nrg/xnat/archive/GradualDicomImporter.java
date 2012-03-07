@@ -434,6 +434,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
     }
     
     private PrearchiveCode shouldAutoArchive(final XnatProjectdata project, final DicomObject o) {
+       if(null == project){
+          return null;
+       }
         Boolean fromDicomObject = dicomObjectIdentifier.requestsAutoarchive(o);
         if (fromDicomObject != null) {
             return fromDicomObject ? PrearchiveCode.AutoArchive : PrearchiveCode.Manual;

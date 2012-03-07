@@ -26,15 +26,15 @@ public class DownloadSessionsAction2 extends SecureAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        String [] session_ids=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sessions",data));
+        String [] session_ids=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("sessions",data));
         
-        String [] scanFormats=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("scan_format",data));
+        String [] scanFormats=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_format",data));
         
-        String [] scanTypes=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("scan_type",data));
-        String [] recons=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("recon",data));
-        String [] assessors=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("assessors",data));
+        String [] scanTypes=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_type",data));
+        String [] recons=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("recon",data));
+        String [] assessors=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("assessors",data));
 
-        String [] resources=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("resources",data));
+        String [] resources=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("resources",data));
 		//BEGIN:IOWA customization: to allow project and subject included in path
         boolean projectIncludedInPath = "true".equalsIgnoreCase(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("projectIncludedInPath",data)));
         boolean subjectIncludedInPath = "true".equalsIgnoreCase(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("subjectIncludedInPath",data)));

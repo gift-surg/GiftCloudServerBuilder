@@ -1080,60 +1080,60 @@
 		<!-- END XNATFS additions -->
 		<!-- Use APA reverse proxy to feed DicomServer-->
 		<dependency>
-		  <groupId>apa-webcontent</groupId>
-		  <artifactId>apa-webcontent</artifactId>
-		  <version>1.1</version>
-		  <url>http://portals.apache.org/applications/index.html</url>
-		  <properties>
-		    <war.bundle>true</war.bundle>
-		  </properties>
+			<groupId>apa-webcontent</groupId>
+			<artifactId>apa-webcontent</artifactId>
+			<version>1.1</version>
+			<url>http://portals.apache.org/applications/index.html</url>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
 		</dependency>
 		<dependency>
-		  <groupId>commons-configuration</groupId>
-		  <artifactId>commons-configuration</artifactId>
-		  <version>1.6</version>
-		  <url>http://commons.apache.org/configuration/index.html</url>
-		  <type>jar</type>
-		  <properties>
-		    <war.bundle>true</war.bundle>
-		  </properties>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.6</version>
+			<url>http://commons.apache.org/configuration/index.html</url>
+			<type>jar</type>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
 		</dependency>
 		<!-- BEGIN web.xml 1.5 additions 12/09/10 MRH -->
-	<dependency>
-	    	<groupId>org.codehaus.cargo</groupId>
-	       	<artifactId>cargo-core-api-module</artifactId>
-		<version>1.0.5</version>
-		<properties>
-			<war.bundle>false</war.bundle>
-		</properties>
-		<type>jar</type>
-	</dependency>
-	<dependency>
-	    	<groupId>org.codehaus.cargo</groupId>
-	       	<artifactId>cargo-core-api-util</artifactId>
-		<version>1.0.5</version>
-		<properties>
-			<war.bundle>false</war.bundle>
-		</properties>
-		<type>jar</type>
-	</dependency>
-	<dependency>
-	    	<groupId>jaxen</groupId>
-	       	<artifactId>jaxen</artifactId>
-		<version>1.1.1</version>
-		<properties>
-			<war.bundle>false</war.bundle>
-		</properties>
-		<type>jar</type>
-	</dependency>
+		<dependency>
+			<groupId>org.codehaus.cargo</groupId>
+			<artifactId>cargo-core-api-module</artifactId>
+			<version>1.0.5</version>
+			<properties>
+				<war.bundle>false</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.cargo</groupId>
+			<artifactId>cargo-core-api-util</artifactId>
+			<version>1.0.5</version>
+			<properties>
+				<war.bundle>false</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
+			<properties>
+				<war.bundle>false</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 		<!-- END web.xml 1.5 additions 12/09/10 MRH -->
-	      <dependency>
-		  <groupId>com.h2database</groupId>
-		  <artifactId>h2</artifactId>
-		  <version>1.2.147</version>
-		   <properties>
-		    <war.bundle>true</war.bundle>
-		  </properties>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.2.147</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
 		</dependency>
 		<dependency>
 			<groupId>quartz</groupId>
@@ -1143,6 +1143,14 @@
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nl.bitwalker</groupId>
+			<artifactId>UserAgentUtils</artifactId>
+			<version>1.2.4</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
 		</dependency>
 		<!-- END XDAT Dependencies -->
 		<!-- Begin Spring Framework dependencies -->

@@ -26,7 +26,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
     @Override
     protected void doBuildTemplate(RunData data, Context context)
             throws Exception {
-        String[] sessions = ((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sessions",data));
+        String[] sessions = ((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("sessions",data));
         if (sessions==null)
         {
             

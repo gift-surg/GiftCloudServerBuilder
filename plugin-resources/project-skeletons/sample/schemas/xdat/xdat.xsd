@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Tim Olsen (Washington University) -->
-<xs:schema targetNamespace="http://cnl.wustl.edu/xdat" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://cnl.wustl.edu/xdat" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema targetNamespace="http://nrg.wustl.edu/xdat" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://nrg.wustl.edu/xdat" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="rule">
 		<xs:complexType>
 			<xs:attribute name="name" use="required">

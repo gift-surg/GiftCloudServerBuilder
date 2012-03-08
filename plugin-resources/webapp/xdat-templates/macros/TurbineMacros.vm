@@ -553,7 +553,7 @@
 			document.getElementsByName(name + ".date")[0].selectedIndex = 1;
 		}
 	}
-	
+
 	function selectMonthReported(name, reported) {
 		if (reported) {
 			document.getElementById(name + "MonthNotReported").value = 0;
@@ -568,7 +568,7 @@
 			selectDayReported(name, reported);
 		}
 	}
-	
+
 	function selectYearReported(name, reported) {
 		if (reported) {
 			document.getElementById(name + "YearNotReported").value = 0;
@@ -591,7 +591,7 @@
 			<font color="red">&#8658</font>
 		#end
 	#end
-	
+
 	#set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 	#set($days = [ 1..31 ])
 	#set($DayNotReported = "${name}DayNotReported")
@@ -618,7 +618,7 @@
 			<option value="$day" #if (  !$item.getBooleanProperty($DayNotReported) && $day == $!expt_date.getDate() ) SELECTED="true" #end>$day</option>
 		#end
 		</select>
-		
+
 		<select name="${name}.year" onchange="if(this.selectedIndex === 1) { selectYearReported('${name}', false); } else { selectYearReported('${name}', true); validateDate(this); }">
 			<option value="bad">(SELECT)</option>
 			<option value="1900" #if ( $item.getBooleanProperty($YearNotReported) ) SELECTED="true" #end>Not Reported</option>
@@ -643,7 +643,7 @@
 			<option value="$day">$day</option>
 		#end
 		</select>
-		
+
 		<select name="${name}.year" onchange="if(this.selectedIndex === 1) { selectYearReported('${name}', false); } else { selectYearReported('${name}', true); validateDate(this); }">
 			<option value="bad">(SELECT)</option>
 			<option value="1900">Not Reported</option>
@@ -657,7 +657,7 @@
 	<INPUT type="hidden" id="${name}DayNotReported" name="${name}DayNotReported" value="$!item.getIntegerProperty($DayNotReported)"/>
 	<INPUT type="hidden" id="${name}MonthNotReported" name="${name}MonthNotReported" value="$!item.getIntegerProperty($MonthNotReported)"/>
 	<INPUT type="hidden" id="${name}YearNotReported" name="${name}YearNotReported" value="$!item.getIntegerProperty($YearNotReported)"/>
-	
+
 	</DIV>
 #end
 
@@ -665,21 +665,21 @@
 	#set($DayNotReported = "${name}DayNotReported")
 	#set($MonthNotReported = "${name}MonthNotReported")
 	#set($YearNotReported = "${name}YearNotReported")
-	
-	
+
+
 	#if($item.getDateProperty($name))
 		#set($storedDate = $!item.getDateProperty($name))
 		#set($viewedDate = "")
-		
+
 		#if ($item.getBooleanProperty($YearNotReported))
 			#set($viewedDate = "????")
 		#else
 			#set($year = $!storedDate.getYear() + 1900)
 			#set($viewedDate = "$!year")
 		#end
-		
+
 		#set($viewedDate = "$!{viewedDate}-")
-		
+
 		#if ($item.getBooleanProperty($MonthNotReported))
 			#set($viewedDate = "$!{viewedDate}??")
 		#else
@@ -689,9 +689,9 @@
 			#end
 			#set($viewedDate = "$!{viewedDate}$!month")
 		#end
-		
+
 		#set($viewedDate = "$!{viewedDate}-")
-		
+
 		#if ($item.getBooleanProperty($DayNotReported))
 			#set($viewedDate = "$!{viewedDate}??")
 		#else
@@ -1125,14 +1125,18 @@
 #end
 
 #macro (formLabel $label)
-  <TH ALIGN="left" style="white-space:nowrap">$label</TH>
+  <TH style="text-align: left; vertical-align: text-top; white-space:nowrap">$label</TH>
 #end
 
 #macro (formLabelRequired $label)
-  <TH ALIGN="left">
+  <TH style="text-align: left; vertical-align: text-top; white-space:nowrap">
     $label
-    <span style="color:red; font-size=1.2em;">*</font>
+    <span style="color:red; font-size=1.2em;">*</span>
   </TH>
+#end
+
+#macro (formSublabel $label)
+  <TD style="text-align: right; vertical-align: text-top; white-space:nowrap">$label</TD>
 #end
 
 #macro (formUnderlineLabel $label)

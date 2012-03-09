@@ -18,54 +18,54 @@ import org.nrg.xft.XFT;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AnonUtils {
 	private static AnonUtils _instance;
 	private static final Logger logger = LoggerFactory.getLogger(AnonUtils.class);
 	
 	private static final String DEFAULT_ANON_SCRIPT = "id.das";
-	private static ConfigService c;
+	
+	@Autowired
+	private ConfigService c;
 	
 	public AnonUtils() throws Exception {
         if (_instance != null) {
             throw new Exception("The ContextService is already initialized, try calling getInstance() instead.");
         }
-        AnonUtils.c = XDAT.getConfigService();
         _instance = this;
     }
 	
-	public static AnonUtils getInstance() {
-		if (_instance == null) {
-            try {
-                _instance = new AnonUtils();
-            } catch (Exception e) {
-            	logger.error("Unable to get an instance of AnonUtils.class");
-                // Do nothing. This should never happen, since the exception is only thrown when the service is already initialized.
-            }
-        }
-        return _instance;
+	public static AnonUtils getService() {
+	    if (_instance == null) {
+	    	_instance = XDAT.getContextService().getBean(AnonUtils.class);
+	    }
+	    return _instance;
 	}
+	
 	public Configuration getScript(String path, Long project) {
-		Configuration config = AnonUtils.c.getConfig(DicomEdit.ToolName, 
+		Configuration config = AnonUtils.getService().c.getConfig(DicomEdit.ToolName, 
 													 path,
 												     project);
 		return config == null? null : config;
 	}
 	
 	public boolean isEnabled(String path, Long project) {
-		Configuration config = AnonUtils.c.getConfig(DicomEdit.ToolName, 
+		Configuration config = this.c.getConfig(DicomEdit.ToolName, 
 													 path,
 													 project);
 		return config.getStatus().equals(Configuration.ENABLED_STRING);
 	}
 	
 	public List<Configuration> getAllScripts (Long project) {
-		List<Configuration> scripts = AnonUtils.c.getConfigsByTool(DicomEdit.ToolName, project);
+		List<Configuration> scripts = this.c.getConfigsByTool(DicomEdit.ToolName, project);
 		return scripts;
 	}
 	
 	public void setProjectScript (String login, String path, String script, Long project) throws ConfigServiceException {
-		AnonUtils.c.replaceConfig(login, 
+		this.c.replaceConfig(login, 
 							 	  "", 	
 							 	  DicomEdit.ToolName, 
 							 	  path, 
@@ -74,7 +74,7 @@ public class AnonUtils {
 	}
 	
 	public void setSiteWideScript(String login, String path, String script) throws ConfigServiceException {
-		AnonUtils.c.replaceConfig(login, 
+		this.c.replaceConfig(login, 
 			 	  				  "", 	
 			 	  				  DicomEdit.ToolName, 
 			 	  				  path, 
@@ -82,19 +82,19 @@ public class AnonUtils {
 	}
 	
 	public void enableSiteWide (String login, String path ) {
-		AnonUtils.c.enable(login, "", DicomEdit.ToolName, path);
+		this.c.enable(login, "", DicomEdit.ToolName, path);
 	}
 	
 	public void enableProjectSpecific(String login, String path, Long project) {
-		AnonUtils.c.enable(login, "", DicomEdit.ToolName, path, project);
+		this.c.enable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public void disableSiteWide(String login, String path) {
-		AnonUtils.c.disable(login, "", DicomEdit.ToolName, path);
+		this.c.disable(login, "", DicomEdit.ToolName, path);
 	}
 	
 	public void disableProjectSpecific(String login, String path, Long project){
-		AnonUtils.c.disable(login, "", DicomEdit.ToolName, path, project);
+		this.c.disable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public static File getDefaultScript () throws FileNotFoundException {

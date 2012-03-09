@@ -57,13 +57,13 @@ public class XNATRestletServlet extends ServerServlet {
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();
         try {
         	String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
-        	Configuration init_config = AnonUtils.getInstance().getScript(path, null);
+        	Configuration init_config = AnonUtils.getService().getScript(path, null);
         	if (init_config == null) {
         		logger().info("Creating Script Table.");
         		String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
         		String adminUser = this.getAdminUser();
         		if (adminUser != null) {
-        			AnonUtils.getInstance().setSiteWideScript(adminUser, path,site_wide);
+        			AnonUtils.getService().setSiteWideScript(adminUser, path,site_wide);
         		}
         		else {
         			throw new Exception("Site administrator not found.");

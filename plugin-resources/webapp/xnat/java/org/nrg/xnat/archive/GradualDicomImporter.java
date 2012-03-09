@@ -379,8 +379,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
             	if (!uploadedViaApplet) {
             		// I can't use the SiteWideAnonymizer here because it expects an XnatImagesessionI
             		String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, null);
-            		Configuration c = AnonUtils.getInstance().getScript(path,null);
-            		boolean enabled = AnonUtils.getInstance().isEnabled(path,null);
+            		Configuration c = AnonUtils.getService().getScript(path,null);
+            		boolean enabled = AnonUtils.getService().isEnabled(path,null);
             		if (enabled) {
             			if (c == null) {
             				throw new Exception ("Unable to retrieve the site-wide script.");

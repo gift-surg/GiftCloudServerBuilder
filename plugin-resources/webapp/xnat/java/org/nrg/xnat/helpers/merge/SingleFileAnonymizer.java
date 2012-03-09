@@ -44,12 +44,12 @@ public class SingleFileAnonymizer extends AnonymizerA {
 
 	@Override
 	Configuration getScript() {
-		return AnonUtils.getInstance().getScript(this.path, ProjectAnonymizer.getDBId(anonProject));
+		return AnonUtils.getService().getScript(this.path, ProjectAnonymizer.getDBId(anonProject));
 	}
 
 	@Override
 	boolean isEnabled() {
-		return AnonUtils.getInstance().isEnabled(this.path, ProjectAnonymizer.getDBId(anonProject));
+		return AnonUtils.getService().isEnabled(this.path, ProjectAnonymizer.getDBId(anonProject));
 	}
 
 	@Override

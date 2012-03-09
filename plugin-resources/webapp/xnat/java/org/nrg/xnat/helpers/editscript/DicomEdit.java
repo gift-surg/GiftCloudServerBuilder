@@ -241,10 +241,10 @@ public final class DicomEdit extends SecureResource {
 						if (rType == ResourceType.SCRIPT) { 
 							List<Configuration> cs = new ArrayList<Configuration>();
 							if (all) {
-								cs.addAll(AnonUtils.getInstance().getAllScripts(project_id));
+								cs.addAll(AnonUtils.getService().getAllScripts(project_id));
 							}
 							else {
-								cs.add(AnonUtils.getInstance().getScript(DicomEdit.buildScriptPath(scope, project), project_id));
+								cs.add(AnonUtils.getService().getScript(DicomEdit.buildScriptPath(scope, project), project_id));
 							}
 							table.initTable(scriptColumns);
 							for (Configuration c : cs) {
@@ -263,10 +263,10 @@ public final class DicomEdit extends SecureResource {
 						else if (rType == ResourceType.STATUS){
 							List<Configuration> cs = new ArrayList<Configuration>();
 							if (all) {
-								cs.addAll(AnonUtils.getInstance().getAllScripts(project_id));
+								cs.addAll(AnonUtils.getService().getAllScripts(project_id));
 							}
 							else {
-								cs.add(AnonUtils.getInstance().getScript(DicomEdit.buildScriptPath(scope, project), project_id));
+								cs.add(AnonUtils.getService().getScript(DicomEdit.buildScriptPath(scope, project), project_id));
 							}
 							table.initTable(editColumns);
 							for (Configuration c : cs) {
@@ -357,12 +357,12 @@ public final class DicomEdit extends SecureResource {
 							String script = getFile().call();
 							if (script != null) {
 								if (scope == ResourceScope.SITE_WIDE) {
-									AnonUtils.getInstance().setSiteWideScript(user.getLogin(), 
+									AnonUtils.getService().setSiteWideScript(user.getLogin(), 
 																	  DicomEdit.buildScriptPath(scope, project), 
 																	  script); 
 								}
 								else { // project specific 
-									AnonUtils.getInstance().setProjectScript(user.getLogin(), 
+									AnonUtils.getService().setProjectScript(user.getLogin(), 
 																	  		 DicomEdit.buildScriptPath(scope, project), 
 																	  		 script, 
 																	  		 DicomEdit.getDBId(project));
@@ -380,22 +380,22 @@ public final class DicomEdit extends SecureResource {
 									Boolean activate = Boolean.parseBoolean(qActivate);
 									if (scope == ResourceScope.SITE_WIDE) {
 										if (activate) {
-											AnonUtils.getInstance().enableSiteWide(user.getLogin(),
+											AnonUtils.getService().enableSiteWide(user.getLogin(),
 																		   	       DicomEdit.buildScriptPath(scope, project));
 										} 
 										else {
-											AnonUtils.getInstance().disableSiteWide(user.getLogin(), 
+											AnonUtils.getService().disableSiteWide(user.getLogin(), 
 										             			  					DicomEdit.buildScriptPath(scope, project));
 										}
 									}
 									else { // project -specific
 										if (activate) {
-											AnonUtils.getInstance().enableProjectSpecific(user.getLogin(), 
+											AnonUtils.getService().enableProjectSpecific(user.getLogin(), 
 																		   				  DicomEdit.buildScriptPath(scope, project), 
 																		   				  DicomEdit.getDBId(project));
 										}
 										else {
-											AnonUtils.getInstance().disableProjectSpecific(user.getLogin(), 
+											AnonUtils.getService().disableProjectSpecific(user.getLogin(), 
 																				 		   DicomEdit.buildScriptPath(scope, project), 
 																				 		   DicomEdit.getDBId(project));
 										}

@@ -112,10 +112,7 @@ public class Importer extends SecureResource {
 			
 			ImporterHandlerA importer;
 
-			if(fw.size()==0 && 
-					(handler == null) 
-							|| 
-					 !handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY))
+			if(fw.size()==0 && handler != null && !handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY))
 			{
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
 				return;

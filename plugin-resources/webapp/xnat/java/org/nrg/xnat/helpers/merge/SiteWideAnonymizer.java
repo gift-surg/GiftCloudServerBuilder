@@ -40,7 +40,7 @@ public class SiteWideAnonymizer extends AnonymizerA {
 	
 	
 	Configuration getScript() {
-		return AnonUtils.getInstance().getScript(this.path, null);
+		return AnonUtils.getService().getScript(this.path, null);
 	}
 	
 	public List<File> getFilesToAnonymize() throws IOException {
@@ -57,7 +57,7 @@ public class SiteWideAnonymizer extends AnonymizerA {
 	}
 	
 	boolean isEnabled() {
-		return AnonUtils.getInstance().isEnabled(this.path, null);
+		return AnonUtils.getService().isEnabled(this.path, null);
 	}
 	public java.lang.Void call() throws Exception {
 		super.call();

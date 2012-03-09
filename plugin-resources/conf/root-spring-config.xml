@@ -12,12 +12,14 @@
 
     <!-- Root Context: defines shared resources visible to all other web components -->
     <!-- import resource="services/service-context.xml"/ -->
-	<context:component-scan base-package="org.nrg.framework.services" />
+    <context:component-scan base-package="org.nrg.framework.services" />
     <context:component-scan base-package="org.nrg.xdat.services" />
     <context:component-scan base-package="org.nrg.xdat.daos" />
     <context:component-scan base-package="org.nrg.xft.services" />
     <context:component-scan base-package="org.nrg.xft.daos" />
- 
+    <context:component-scan base-package="org.nrg.xnat.helpers.merge"/>
+    <context:component-scan base-package="org.nrg.config.services"/>
+    <context:component-scan base-package="org.nrg.config.daos"/>
     <!--
         This extracts properties directly from the indicated properties file. If you want to encrypt properties,
         e.g. for password security, see services-context.encrypted.sample.xml, which uses the jasypt library

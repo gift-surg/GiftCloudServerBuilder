@@ -101,12 +101,12 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 	
 	@Override
 	Configuration getScript() {
-		return AnonUtils.getInstance().getScript(this.path, getDBId(projectId));
+		return AnonUtils.getService().getScript(this.path, getDBId(projectId));
 	}
 	
 	@Override
 	boolean isEnabled() {
-		return AnonUtils.getInstance().isEnabled(this.path, getDBId(projectId));
+		return AnonUtils.getService().isEnabled(this.path, getDBId(projectId));
 	}
 	
 	public java.lang.Void call() throws Exception {

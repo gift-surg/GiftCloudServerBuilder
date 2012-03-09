@@ -53,19 +53,19 @@ public class AnonUtils {
 	}
 	
 	public boolean isEnabled(String path, Long project) {
-		Configuration config = this.c.getConfig(DicomEdit.ToolName, 
+		Configuration config = AnonUtils.getService().c.getConfig(DicomEdit.ToolName, 
 													 path,
 													 project);
 		return config.getStatus().equals(Configuration.ENABLED_STRING);
 	}
 	
 	public List<Configuration> getAllScripts (Long project) {
-		List<Configuration> scripts = this.c.getConfigsByTool(DicomEdit.ToolName, project);
+		List<Configuration> scripts = AnonUtils.getService().c.getConfigsByTool(DicomEdit.ToolName, project);
 		return scripts;
 	}
 	
 	public void setProjectScript (String login, String path, String script, Long project) throws ConfigServiceException {
-		this.c.replaceConfig(login, 
+		AnonUtils.getService().c.replaceConfig(login, 
 							 	  "", 	
 							 	  DicomEdit.ToolName, 
 							 	  path, 
@@ -74,7 +74,7 @@ public class AnonUtils {
 	}
 	
 	public void setSiteWideScript(String login, String path, String script) throws ConfigServiceException {
-		this.c.replaceConfig(login, 
+		AnonUtils.getService().c.replaceConfig(login, 
 			 	  				  "", 	
 			 	  				  DicomEdit.ToolName, 
 			 	  				  path, 
@@ -82,19 +82,19 @@ public class AnonUtils {
 	}
 	
 	public void enableSiteWide (String login, String path ) {
-		this.c.enable(login, "", DicomEdit.ToolName, path);
+		AnonUtils.getService().c.enable(login, "", DicomEdit.ToolName, path);
 	}
 	
 	public void enableProjectSpecific(String login, String path, Long project) {
-		this.c.enable(login, "", DicomEdit.ToolName, path, project);
+		AnonUtils.getService().c.enable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public void disableSiteWide(String login, String path) {
-		this.c.disable(login, "", DicomEdit.ToolName, path);
+		AnonUtils.getService().c.disable(login, "", DicomEdit.ToolName, path);
 	}
 	
 	public void disableProjectSpecific(String login, String path, Long project){
-		this.c.disable(login, "", DicomEdit.ToolName, path, project);
+		AnonUtils.getService().c.disable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public static File getDefaultScript () throws FileNotFoundException {

@@ -48,7 +48,6 @@
 			<element_actions>
 				<element_action element_action_name="xml" display_name="View XML"/>
 				<element_action element_action_name="edit" display_name="Edit Details"/>
-				<element_action element_action_name="user_admin" display_name="Change Permissions"/>
 				<element_action element_action_name="enable" display_name="Enable/Disable"/>
 				<element_action element_action_name="activate" display_name="Authorize"/>
 			</element_actions>

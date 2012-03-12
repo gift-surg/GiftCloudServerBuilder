@@ -33,6 +33,7 @@
           p:loginFormUrl="/app/template/Login.vm"/>
 
 	<security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
+        <security:http-basic/>
     	<security:logout logout-url="/app/action/LogoutUser" />
         <security:intercept-url pattern="/app/template/Login.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Register.vm" access="permitAll" requires-channel="${security.channel}"/>

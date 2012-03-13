@@ -1451,3 +1451,16 @@ $!turbineUtils.escapeHTML($s)
 #macro(escapeJS $s)
 $!turbineUtils.escapeJS($s)
 #end
+
+#macro(renderEmployment $value)
+    #if($value == 0)
+        #set ($employmentDisplay = "Employed")
+    #elseif($value == 1)
+        #set ($employmentDisplay = "Unemployed")
+    #elseif($value == 2)
+        #set ($employmentDisplay = "Retired")
+    #elseif($value == 3)
+        #set ($employmentDisplay = "Unknown or N/A")
+    #end
+    $!employmentDisplay
+#end

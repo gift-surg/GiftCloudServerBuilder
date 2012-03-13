@@ -87,7 +87,7 @@ function toggleFavorites(){
 				      },
 			      scope:this
 		    }
-    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()&XNAT_CSRF="+csrfToken,initCallback);
+    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
   }
 }
 

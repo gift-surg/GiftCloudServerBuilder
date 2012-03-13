@@ -12,6 +12,15 @@ plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar
 plugin-resources/misc/template2.*
 Thumbs.db
 
+pom.xml
+plugin-resources/plugins/maven-turbine-plugin/maven-turbine-plugin/project.xml
+plugin-resources/plugins/maven-turbine-plugin
+hs_err_pid3120.log
+hs_err_pid1144.log
+classes/XNATTool.class
+classes/ValidateJavaBean.class
+classes/BuildCatalog.class
+StoreXML.launch
 syntax: regexp
 ^classes/org
 ^deployments

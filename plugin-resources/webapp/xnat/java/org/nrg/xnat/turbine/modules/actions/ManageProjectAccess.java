@@ -40,7 +40,7 @@ public class ManageProjectAccess extends SecureAction {
         }
 
         String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
-        project.initAccessibility(accessibility, false);
+        project.initAccessibility(accessibility, false,user);
         
         boolean sendmail=false;
         if (null!=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)) && ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)).equals("email"))

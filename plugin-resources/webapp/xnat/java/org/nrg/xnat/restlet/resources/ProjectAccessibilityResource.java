@@ -57,7 +57,7 @@ public class ProjectAccessibilityResource extends SecureResource {
 			
 				String currentAccess = proj.getPublicAccessibility();
 				if (!currentAccess.equals(access)){
-					proj.initAccessibility(access, true);
+					proj.initAccessibility(access, true,user);
 				}
 				
 				getResponse().setEntity(getRepresentation(getVariants().get(0)));

@@ -136,7 +136,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 		                }
 		                
 		                if (!accessibility.equals("private"))
-		                    project.initAccessibility(accessibility, true);
+		                    project.initAccessibility(accessibility, true,user);
 		                
 		                user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
 

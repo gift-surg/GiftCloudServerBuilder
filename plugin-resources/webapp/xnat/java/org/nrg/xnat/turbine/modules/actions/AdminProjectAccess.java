@@ -32,7 +32,7 @@ public class AdminProjectAccess extends SecureAction {
                     String currentAccess = p.getPublicAccessibility();
                     
                     if (!currentAccess.equals(access)){
-                        p.initAccessibility(access, true);
+                        p.initAccessibility(access, true,user);
                     }
                 }
                 

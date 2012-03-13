@@ -1419,7 +1419,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
     }
 
-    public void initAccessibility(String accessibility, boolean forceInit){
+    public void initAccessibility(String accessibility, boolean forceInit,XDATUser user){
         try {
             if (accessibility!=null){
                 if ((!accessibility.equals(this.getPublicAccessibility())) || forceInit)
@@ -1440,35 +1440,35 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     if (accessibility.equals("public"))
                     {
                         //public
-                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, true,true);
+                        guest.setPermissions(guest,user, "xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, true,true);
 
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(), false, true, false, false, true,true);
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(), false, false, false, false, false,true);
+                        		guest.setPermissions(guest,user,es.getElementName(),es.getElementName() + "/project", this.getId(), false, true, false, false, true,true);
+                        		guest.setPermissions(guest,user,es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(), false, false, false, false, false,true);
                         	}
                         }
                     }else if (accessibility.equals("protected"))
                     {
                         //protected
-                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, false,true);
+                        guest.setPermissions(guest,user,"xnat:projectData", "xnat:projectData/ID", this.getId(), false, true, false, false, false,true);
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true);
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true);
+                        		guest.setPermissions(guest,user,es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true);
+                        		guest.setPermissions(guest,user,es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true);
                         	}
                         }
                     }else
                     {
                         //private
-                        guest.setPermissions("xnat:projectData", "xnat:projectData/ID", this.getId(), false, false, false, false, false,true);
+                        guest.setPermissions(guest,user,"xnat:projectData", "xnat:projectData/ID", this.getId(), false, false, false, false, false,true);
                         for (ElementSecurity es: securedElements)
                         {
                         	if (es.hasField(es.getElementName() + "/project") && es.hasField(es.getElementName() + "/sharing/share/project")){
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true);
-                        		guest.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true);
+                        		guest.setPermissions(guest,user,es.getElementName(),es.getElementName() + "/project", this.getId(),  false, false, false, false, false,true);
+                        		guest.setPermissions(guest,user,es.getElementName(),es.getElementName() + "/sharing/share/project", this.getId(),  false, false, false, false, false,true);
                         	}
                         }
                     }
@@ -1595,6 +1595,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                         //NOT REQUESTED
                         if (protocol.getProperty("xnat_abstractProtocol_id")!=null){
                             try {
+                            	//This may need to use a authorized call instead of the unauthorized call that's inside removeChildFromDB
                             	getItem().getCurrentDBVersion().removeChildFromDB("xnat:projectData/studyProtocol", protocol.getCurrentDBVersion(), user);
                             } catch (SQLException e) {
                                 logger.error("",e);

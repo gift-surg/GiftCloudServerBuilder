@@ -9,6 +9,7 @@ import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.commandPrompt.CommandPromptTool;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
@@ -148,7 +149,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                 	projectAccess="private";
                 }
 
-                p.initAccessibility(projectAccess, true);
+                p.initAccessibility(projectAccess, true,getUser());
 
                 ArcProject arcP = new ArcProject((UserI)getUser());
                 arcP.setId(p.getId());

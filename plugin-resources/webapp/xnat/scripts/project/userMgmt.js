@@ -471,7 +471,7 @@ function DefaultAccessibilityManager(_dom,_pID){
 		};
 		this.disableDOM(true);
 
-		YAHOO.util.Connect.asyncRequest('PUT',serverRoot + "/REST/projects/" + this.pID + "/accessibility/" + this._level + '&XNAT_CSRF='+csrfToken,this.accessibilityCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('PUT',serverRoot + "/REST/projects/" + this.pID + "/accessibility/" + this._level + '?XNAT_CSRF='+csrfToken,this.accessibilityCallback,null,this);
 	};
 
 }

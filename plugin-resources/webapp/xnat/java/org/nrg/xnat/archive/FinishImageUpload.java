@@ -18,6 +18,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -73,8 +74,11 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 					.call();
 				}else{
 					if (PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.ARCHIVING)) {
-                        PrearchiveCode code = session.getSessionData().getAutoArchive();
-                        boolean delete, append;
+                        boolean delete = allowDataDeletion, append = overwrite;
+
+                        final SessionData sessionData = session.getSessionData();
+                        if (sessionData != null) {
+                            PrearchiveCode code = sessionData.getAutoArchive();
                         switch (code) {
                             case Manual:
                                 delete = false;
@@ -88,9 +92,7 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
                                 delete = true;
                                 append = true;
                                 break;
-                            default:
-                                delete = allowDataDeletion;
-                                append = overwrite;
+                            }
                         }
 						return PrearcDatabase.archive(session, delete, append, isOverwriteFiles(session,destination), user, getListeners());
 					}else{
@@ -177,7 +179,11 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
     }
 		
     public String getSource() throws Exception {
-        return session.getSessionData().getSource();
+        final SessionData sessionData = session.getSessionData();
+        if (sessionData != null) {
+            return sessionData.getSource();
+        }
+        return null;
 	}
 	
 	private static boolean isAutoArchive(final PrearcSession session, final UriParserUtils.DataURIA destination) throws SQLException, SessionException, Exception{
@@ -186,10 +192,13 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			return false;
 		}
 
-        PrearchiveCode sessionAutoArcSetting = session.getSessionData().getAutoArchive();
+        final SessionData sessionData = session.getSessionData();
+        if (sessionData != null) {
+            PrearchiveCode sessionAutoArcSetting = sessionData.getAutoArchive();
         if (sessionAutoArcSetting != null && (sessionAutoArcSetting == PrearchiveCode.AutoArchive || sessionAutoArcSetting == PrearchiveCode.AutoArchiveOverwrite)) {
             return true;
 		}
+        }
 						
 		if(destination !=null && destination instanceof UriParserUtils.ArchiveURI){
 			return true;
@@ -242,9 +251,12 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			return true;
 		}
 						
-        PrearchiveCode sessionAutoArcSetting = session.getSessionData().getAutoArchive();
+        final SessionData sessionData = session.getSessionData();
+        if (sessionData != null) {
+            PrearchiveCode sessionAutoArcSetting = sessionData.getAutoArchive();
         if (sessionAutoArcSetting != null && sessionAutoArcSetting == PrearchiveCode.AutoArchiveOverwrite) {
             return true;
+        }
         }
 						
 		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());

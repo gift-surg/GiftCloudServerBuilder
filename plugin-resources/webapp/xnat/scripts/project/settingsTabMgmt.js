@@ -9,7 +9,7 @@ function configurationIndexChanged() {
 
 function fullConfigHandler() {
     if (!document.getElementById('siteId').value) {
-        showMessage('Site ID Required', 'You must specify a value for the site ID!');
+        showMessage('configurationTabs', 'Site ID Required', 'You must specify a value for the site ID!');
         return;
     }
 
@@ -32,15 +32,15 @@ function fullConfigHandler() {
             message += "<li>" + missing[index] + "</li>";
         }
         message += "</ul>";
-        showMessage('Required', message);
+        showMessage('configurationTabs', 'Required', message);
     } else {
         this.initArcSpecCallback = {
             success : function() {
-                showMessage('Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
+                showMessage('configurationTabs', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
                 window.location.replace(serverRoot);
             },
             failure : function(o) {
-                showMessage('Error', 'Your settings were not successfully saved: ' + o);
+                showMessage('configurationTabs', 'Error', 'Your settings were not successfully saved: ' + o);
             },
             scope : this
         };
@@ -72,29 +72,10 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
-        showMessage('Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
+        showMessage('configurationTabs', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
 }
 
-function showMessage(title, body) {
-    var dialog = new YAHOO.widget.SimpleDialog("dialog", {
-        width:"20em",
-        close:false,
-        fixedcenter:true,
-        constraintoviewport:true,
-        modal:true,
-        icon:YAHOO.widget.SimpleDialog.ICON_WARN,
-        visible:true,
-        draggable:false,
-        buttons: [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }]
-    });
-
-    dialog.render(document.getElementById('configurationTabs'));
-    dialog.setHeader(title);
-    dialog.setBody(body);
-    dialog.bringToTop();
-    dialog.show();
-}
 function prependLoader(div_id, msg) {
 	if (div_id.id == undefined) {
 		var div = document.getElementById(div_id);
@@ -226,10 +207,10 @@ function SettingsTabManager(settingsTabDivId, settings) {
                 }
 				YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url, this.updateCallback, data, this);
 			} else {
-				showMessage('Message', 'None of the site information appears to have changed.');
+				showMessage('configurationTabs', 'Message', 'None of the site information appears to have changed.');
 			}
 		} else {
-			showMessage('Note', 'You need to enter a value into all of the site information settings boxes to save the site settings.');
+			showMessage('configurationTabs', 'Note', 'You need to enter a value into all of the site information settings boxes to save the site settings.');
 		}
 	};
 
@@ -244,7 +225,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 		}
         return true;
 	};
-	
+
 	this.isDirty = function() {
         if (this.dirtyFlag) {
             return true;
@@ -267,7 +248,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 	this.completeSave = function(o) {
 		this.completeInit(o);
 		this.setFormDisabled(false);
-		showMessage('Success', 'Your settings have been successfully updated.');
+		showMessage('configurationTabs', 'Success', 'Your settings have been successfully updated.');
 	};
 
 	this.saveFailure = function(o) {

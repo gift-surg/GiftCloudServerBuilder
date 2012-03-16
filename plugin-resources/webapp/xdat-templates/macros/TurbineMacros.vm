@@ -1452,15 +1452,32 @@ $!turbineUtils.escapeHTML($s)
 $!turbineUtils.escapeJS($s)
 #end
 
-#macro(renderEmployment $value)
-    #if($value == 0)
-        #set ($employmentDisplay = "Employed")
-    #elseif($value == 1)
-        #set ($employmentDisplay = "Unemployed")
-    #elseif($value == 2)
-        #set ($employmentDisplay = "Retired")
-    #elseif($value == 3)
-        #set ($employmentDisplay = "Unknown or N/A")
+#macro(selectEmployment $value $item $vr)
+    #if ($vr)
+        #if($vr.getField($name))
+            <span style="color: red; ">&#8658</span>
+        #end
     #end
-    $!employmentDisplay
+    #set($employment=$!item.getProperty($value))
+    <select name="$value">
+        <option value="" #if ( "" == $employment) selected="true" #end>(SELECT)</option>
+        <option value="0" #if ( 0 == $employment) selected="true" #end>Employed</option>
+        <option value="1" #if ( 1 == $employment) selected="true" #end>Unemployed</option>
+        <option value="2" #if ( 2 == $employment) selected="true" #end>Retired</option>
+        <option value="3" #if ( 3 == $employment) selected="true" #end>Unknown or N/A</option>
+    </select>
+#end
+
+#macro(renderEmployment $value)
+    #set ($employment = "")
+    #if($value == 0)
+        #set ($employment = "Employed")
+    #elseif($value == 1)
+        #set ($employment = "Unemployed")
+    #elseif($value == 2)
+        #set ($employment = "Retired")
+    #elseif($value == 3)
+        #set ($employment = "Unknown or N/A")
+    #end
+    $!employment
 #end

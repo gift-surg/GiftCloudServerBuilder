@@ -102,7 +102,7 @@ created in buildPDF.
                         
                         java.util.Date today = java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime();
                         String fileName=id + "_" + (today.getMonth() + 1) + "_" + today.getDate() + "_" + (today.getYear() + 1900) + "_" + today.getHours() + "_" + today.getMinutes() + "_" + today.getSeconds() + ".zip";
-                		response.setHeader("Content-Disposition","inline;filename=" + fileName);
+                		TurbineUtils.setContentDisposition(response, fileName, false);
                 		
                         ZipI zip = new ZipUtils();
                         if (unzip.equalsIgnoreCase("true"))

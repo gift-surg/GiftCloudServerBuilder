@@ -69,7 +69,7 @@ public class UserCacheAction extends SecureAction {
 		    	        try {
 		    	            HttpServletResponse response= data.getResponse();
 		    	    		response.setContentType(contentType);
-		    				response.setHeader("Content-Disposition","inline;filename=" + fileName);
+		    				TurbineUtils.setContentDisposition(response, fileName, false);
 		                    OutputStream outStream = response.getOutputStream();
 		                    
 		    				if ( isZip) {

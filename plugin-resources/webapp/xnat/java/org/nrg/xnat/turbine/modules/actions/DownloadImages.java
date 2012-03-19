@@ -106,7 +106,7 @@ public class DownloadImages extends SecureAction {
             
             HttpServletResponse response= data.getResponse();
     		response.setContentType(contentType);
-			response.setHeader("Content-Disposition","inline;filename=" + fileName);
+			TurbineUtils.setContentDisposition(response, fileName, false);
             
             if(cat){
                 final String server = TurbineUtils.GetFullServerPath();

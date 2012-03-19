@@ -486,7 +486,7 @@ public class FileList extends XNATCatalogTemplate {
                 cat.addEntries_entry(entry);
 			}
 			
-			this.setResponseHeader("Content-Disposition","inline;filename=files.xcat");
+			this.setContentDisposition("files.xcat", false);
 			
 			return new CatalogRepresentation(cat, mt,false);
 		}else if(isZIPRequest(mt)){
@@ -901,7 +901,7 @@ public class FileList extends XNATCatalogTemplate {
 			}
 		}
 		
-		String downloadName="download";
+		String downloadName;
 		if(security !=null){
 			downloadName=((ArchivableItem)security).getArchiveDirectoryName();
 		}else {
@@ -909,11 +909,11 @@ public class FileList extends XNATCatalogTemplate {
 		}
 		
 		if(mt.equals(MediaType.APPLICATION_ZIP)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".zip");
-		}else if(mt.equals(MediaType.APPLICATION_GNU_TAR)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".tar.gz");
-		}else if(mt.equals(MediaType.APPLICATION_TAR)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".tar");
+			this.setContentDisposition(downloadName + ".zip");
+ 		}else if(mt.equals(MediaType.APPLICATION_GNU_TAR)){
+			this.setContentDisposition(downloadName + ".tar.gz");
+ 		}else if(mt.equals(MediaType.APPLICATION_TAR)){
+			this.setContentDisposition(downloadName + ".tar");
 		}
 					
 		if(StringUtils.isEmpty(filepath) && index==null){
@@ -952,8 +952,6 @@ public class FileList extends XNATCatalogTemplate {
 							return null;
 						}
 						rep.addEntry(f.getName(),f);
-						
-						this.setContentDisposition(String.format("filename=\"%s.zip\";",f.getName()));
 						return rep;
 					}else{
 							return this.setFileRepresentation(f,mt);

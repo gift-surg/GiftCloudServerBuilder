@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DefaultFileItemFactory;
@@ -90,44 +91,44 @@ public abstract class SecureResource extends Resource {
 
 	static Logger logger = Logger.getLogger(SecureResource.class);
 	public Hashtable<String, String> fieldMapping = new Hashtable<String, String>();
-	
+
 	// TODO: these should be proper extension types: application/x-xList, application/x-xcat+xml, application/x-xar
 	public static final MediaType APPLICATION_XLIST = MediaType.register(
 			"application/xList", "XNAT Listing");
-	
+
 	public static final MediaType APPLICATION_XCAT = MediaType.register(
 			"application/xcat", "XNAT Catalog");
-	
+
 	public static final MediaType APPLICATION_XAR = MediaType.register(
 			"application/xar", "XAR Archive");
-	
+
 	public static final MediaType APPLICATION_DICOM = MediaType.register(
 	        "application/dicom", "Digital Imaging and Communications in Medicine");
 
-	
+
 	public static final MediaType APPLICATION_XMIRC = MediaType.register(
 	        "application/x-mirc", "MIRC");
-	
+
 	public static final MediaType APPLICATION_XMIRC_DICOM = MediaType.register(
 	        "application/x-mirc-dicom", "MIRC DICOM");
-	
+
 	protected List<String> actions=null;
 	protected String userName=null;
 	protected XDATUser user =null;
 	protected String requested_format = null;
 	public String filepath = null;
-	
+
 	protected String csrfToken = null;
-	
+
 	public SecureResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		
+
 		requested_format = getQueryVariable("format");
 
 		// expects that the user exists in the session (either via traditional
 		// session or set via the XnatSecureGuard
 		user = (XDATUser) getRequest().getAttributes().get(USER_ATTRIBUTE);
-		
+
 		filepath = getRequest().getResourceRef().getRemainingPart();
 		if (filepath != null) {
 			if (filepath.indexOf("?") > -1) {
@@ -136,7 +137,7 @@ public abstract class SecureResource extends Resource {
 			if (filepath.startsWith("/")) {
 				filepath = filepath.substring(1);
 				}
-			
+
 			filepath=TurbineUtils.escapeParam(filepath);
 		}
 		logAccess();
@@ -161,7 +162,7 @@ public abstract class SecureResource extends Resource {
 			AccessLogger.LogServiceAccess(login, getRequest().getClientInfo()					.getAddress(), getRequest().getMethod() + " " + url, "");
 			}
 		}
-		
+
 	public MediaType getRequestedMediaType() {
 		if (this.requested_format != null) {
 			if (this.requested_format.equals("xml")) {
@@ -188,15 +189,15 @@ public abstract class SecureResource extends Resource {
 		}
 		return null;
 	}
-	
+
 	public boolean isZIPRequest(){
 		return isZIPRequest(getRequestedMediaType());
 	}
-	
+
 	public static boolean isZIPRequest(MediaType mt){
-		if (mt==null ||  
-				!(mt.equals(MediaType.APPLICATION_ZIP) 
-					|| mt.equals(MediaType.APPLICATION_TAR) 
+		if (mt==null ||
+				!(mt.equals(MediaType.APPLICATION_ZIP)
+					|| mt.equals(MediaType.APPLICATION_TAR)
 					|| mt.equals(MediaType.APPLICATION_GNU_TAR))) {
     		return false;
     	}else{
@@ -219,7 +220,7 @@ public abstract class SecureResource extends Resource {
 
 		return false;
 	}
-	
+
 	private Form f= null;
 	/**
 	 * This method is used internally to get the Query form.  It should remain private so that all access to parameters are guaranteed to be properly escaped.
@@ -231,12 +232,12 @@ public abstract class SecureResource extends Resource {
 		}
 		return f;
 	}
-	
+
 	public Map<String,String> getQueryVariableMap(){
 		return convertFormToMap(getQueryVariableForm());
 	}
-	
-	
+
+
 	private Form _body;
 	/**
 	 * This method is used internally to get the Body form.  It should remain private so that all access to parameters are guaranteed to be properly escaped.
@@ -245,15 +246,15 @@ public abstract class SecureResource extends Resource {
 	private Form getBodyAsForm(){
 		if(_body==null){
 		Representation entity = this.getRequest().getEntity();
-		
+
 		if (RequestUtil.isMultiPartFormData(entity)) {
 				_body=new Form(entity);
 			}
 		}
-		
+
 		return _body;
 	}
-	
+
 	private static Map<String,String> convertFormToMap(Form q){
 		Map<String,String> map=Maps.newLinkedHashMap();
 		if(q!=null){
@@ -263,11 +264,11 @@ public abstract class SecureResource extends Resource {
 		}
 		return map;
 	}
-	
+
 	public Map<String,String> getBodyVariableMap(){
 		return convertFormToMap(getBodyAsForm());
 	}
-	
+
 	public String getBodyVariable(String key){
 		Form f = getBodyAsForm();
 		if (f != null) {
@@ -275,7 +276,7 @@ public abstract class SecureResource extends Resource {
 		}
 		return null;
 	}
-	
+
 	private static String[] getVariablesFromForm(Form f, String key){
 		if (f != null) {
 			String[] values= f.getValuesArray(key).clone();
@@ -286,11 +287,11 @@ public abstract class SecureResource extends Resource {
 		}
 		return null;
 	}
-	
+
 	public String[] getBodyVariables(String key) {
 		return getVariablesFromForm(getBodyAsForm(),key);
 	}
-	
+
 	public boolean hasBodyVariable(String key){
 		if(getBodyVariable(key)==null)
 		{
@@ -299,7 +300,7 @@ public abstract class SecureResource extends Resource {
 			return true;
 		}
 	}
-	
+
 	public Set<String> getBodyVariableKeys() {
 		Form f = getBodyAsForm();
 		if (f != null) {
@@ -307,7 +308,7 @@ public abstract class SecureResource extends Resource {
 		}
 		return null;
 	}
-	
+
 	public String getQueryVariable(String key){
 		Form f = getQueryVariableForm();
 		if (f != null && f.getValuesMap().containsKey(key)) {
@@ -315,7 +316,7 @@ public abstract class SecureResource extends Resource {
 		}
 		return null;
 	}
-	
+
 	public boolean containsQueryVariable(String key){
 		if(getQueryVariable(key)==null)
 		{
@@ -324,11 +325,11 @@ public abstract class SecureResource extends Resource {
 			return true;
 			}
 		}
-		
+
 	public boolean hasQueryVariable(String key){
 		return containsQueryVariable(key);
 	}
-		
+
 	public boolean isQueryVariable(String key, String value,			boolean caseSensitive) {
 		if (this.getQueryVariable(key) != null) {
 			if ((caseSensitive && this.getQueryVariable(key).equals(value))					|| (!caseSensitive && this.getQueryVariable(key)							.equalsIgnoreCase(value))) {
@@ -337,11 +338,11 @@ public abstract class SecureResource extends Resource {
 		}
 		return false;
 	}
-	
+
 	public String[] getQueryVariables(String key) {
 		return getVariablesFromForm(getQueryVariableForm(),key);
 	}
-	
+
 	public Set<String> getQueryVariableKeys() {
 		Form f = getQueryVariableForm();
 		if (f != null) {
@@ -362,11 +363,11 @@ public abstract class SecureResource extends Resource {
 			return MediaType.TEXT_XML;
 		}
 	}
-	
+
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params){
 		return representTable(table,mt,params,null);
 	}
-	
+
 	public Representation representTable(XFTTable table, MediaType mt,Hashtable<String,Object> params,Map<String,Map<String,String>> cp){
 		if(table!=null){
 			if(this.getQueryVariable("sortBy")!=null){
@@ -376,7 +377,7 @@ public abstract class SecureResource extends Resource {
 					table.reverse();
 				}
 			}
-			
+
 	        if (mt.equals(MediaType.TEXT_XML)){
 				return new XMLTableRepresentation(table,cp,params,MediaType.TEXT_XML);
 			}else if (mt.equals(MediaType.APPLICATION_JSON)){
@@ -396,11 +397,11 @@ public abstract class SecureResource extends Resource {
 			return rep;
 		}
 		}
-	
+
 	public String getCurrentURI(){
 		return this.getRequest().getResourceRef().getPath();
 	}
-	
+
 	public void returnDefaultRepresentation(){
 		getResponse().setEntity(getRepresentation(getVariants().get(0)));
         Representation selectedRepresentation = getResponse().getEntity();
@@ -413,7 +414,7 @@ public abstract class SecureResource extends Resource {
             }
         }
 	}
-	
+
 	public Representation representItem(XFTItem item, MediaType mt,			Hashtable<String, Object> metaFields, boolean allowDBAccess,			boolean allowSchemaLocation) {
 		if (item != null) {
 			if (mt.equals(MediaType.TEXT_XML)) {
@@ -439,7 +440,7 @@ public abstract class SecureResource extends Resource {
 			return new ItemXMLRepresentation(item, MediaType.TEXT_XML, true,!this.isQueryVariableTrue("concealHiddenFields"));
 		}
 	}
-	
+
 	public MediaType buildMediaType(MediaType mt, String fName){
 		if(fName.endsWith(".gif")){
 			mt = MediaType.IMAGE_GIF;
@@ -466,15 +467,15 @@ public abstract class SecureResource extends Resource {
 		}
 		return mt;
 	}
-	
+
 	public FileRepresentation representFile(File f,MediaType mt){
 		mt=buildMediaType(mt,f.getName());
 
-			this.setContentDisposition(String.format("attachment; filename=\"%s\";",f.getName()));
-		
+		this.setContentDisposition(String.format("attachment; filename=\"%s\";",f.getName()));
+
 		FileRepresentation fr= new FileRepresentation(f,mt);
 		fr.setModificationDate(new Date(f.lastModified()));
-		
+
 		return fr;
 	}
 
@@ -495,9 +496,9 @@ public abstract class SecureResource extends Resource {
 			return false;
 		}
 	}
-	
+
 	protected boolean completeDocument=false;
-	
+
 	public XFTItem loadItem(String dataType, boolean parseFileItems)throws IOException, SAXParseException {
 		return loadItem(dataType, parseFileItems, null);
 	}
@@ -507,7 +508,7 @@ public abstract class SecureResource extends Resource {
 		if (template != null && this.populateFromDB()) {
 			item = template;
 		}
-        
+
 		String req_format=getQueryVariable("req_format");
 		Representation entity = this.getRequest().getEntity();
 		if(req_format==null){
@@ -517,7 +518,7 @@ public abstract class SecureResource extends Resource {
 				req_format = "xml";
 			}
 		}
-		
+
 		if (req_format.equals("xml") && parseFileItems && !this.isQueryVariableTrue("inbody")) {
 			if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
 	        try {
@@ -525,7 +526,7 @@ public abstract class SecureResource extends Resource {
 					org.restlet.ext.fileupload.RestletFileUpload upload = new RestletFileUpload(factory);
 
 					List<FileItem> items = upload.parseRequest(this							.getRequest());
-				
+
 					for (FileItem fi : items) {
 						if (fi.getName().endsWith(".xml")) {
 							SAXReader reader = new SAXReader(user);
@@ -565,7 +566,7 @@ public abstract class SecureResource extends Resource {
 				if (entity != null) {
 					Reader sax = entity.getReader();
 					try {
-	            
+
 						SAXReader reader = new SAXReader(user);
 						if (item != null) {
 							reader.setTemplate(item);
@@ -582,7 +583,7 @@ public abstract class SecureResource extends Resource {
 	            if(item!=null){
 					completeDocument=true;
 	            }
-	            
+
 			} catch (SAXParseException e) {
 				e.printStackTrace();
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
@@ -599,9 +600,9 @@ public abstract class SecureResource extends Resource {
 		}else if(req_format.equals("form")){
 			try {
 				Map<String,String> params=getBodyVariableMap();
-				
+
 				params.putAll(getQueryVariableMap());
-				
+
 					if(params.containsKey("ELEMENT_0")){
 						dataType=params.get("ELEMENT_0");
 				}
@@ -625,7 +626,7 @@ public abstract class SecureResource extends Resource {
 					} else if (dataType != null) {
 						populater = PopulateItem.Populate(params, user,								dataType, true);
 					}
-					
+
 					item= populater.getItem();
 				}
 			} catch (XFTInitException e) {
@@ -636,7 +637,7 @@ public abstract class SecureResource extends Resource {
 				e.printStackTrace();
 			}
 		}
-			
+
 		try {
 			Map<String,String> params=getQueryVariableMap();
 				if(params.containsKey("ELEMENT_0")){
@@ -662,17 +663,17 @@ public abstract class SecureResource extends Resource {
 					}
 				}
 			}
-			
+
 			PopulateItem populater=null;
 			if(item!=null){
 				populater = PopulateItem.Populate(params,user,dataType,true,item);
 			}else if(dataType!=null){
 				populater = PopulateItem.Populate(params,user,dataType,true);
 			}
-			
+
 			if(populater!=null)
 				item= populater.getItem();
-			
+
 		} catch (XFTInitException e) {
 			logger.error("",e);
 		} catch (ElementNotFoundException e) {
@@ -753,7 +754,7 @@ public abstract class SecureResource extends Resource {
 			return false;
 		}
 	}
-	
+
 	protected boolean isQueryVariableFalse(String key){
 		if(this.getQueryVariable(key)!=null){
 			String v= this.getQueryVariable(key);
@@ -764,7 +765,7 @@ public abstract class SecureResource extends Resource {
 			}
 		}else return false;
 	}
-	
+
 	protected boolean isFalse(Object value) {
 		if (value != null) {
 			String v = (String)value;
@@ -791,23 +792,54 @@ public abstract class SecureResource extends Resource {
 	protected HttpServletRequest getHttpServletRequest() {
 		return new RequestUtil().getHttpServletRequest(getRequest());
 	}
-	
+
+    /**
+     * Sets the Content-Disposition response header. The filename parameter indicates the name of the content.
+     * This method specifies the content as an attachment. If you need to specify inline content (e.g. for MIME
+     * content in email or embedded content situations), use {@link #setContentDisposition(String, boolean)}.
+     *
+     * <b>Note:</b> This differs from the {@link TurbineUtils#setContentDisposition(HttpServletResponse, String)}
+     * version of this method in that it performs the header set in a "restlet-y" way. Both methods use the same
+     * {@link TurbineUtils#createContentDispositionValue(String, boolean)} method to create the actual value set
+     * for the response header.
+     *
+     * @param filename    The suggested filename for downloaded content.
+     */
+	public void setContentDisposition(String filename){
+        setContentDisposition(filename, true);
+    }
+
+    /**
+     * Sets the Content-Disposition response header. The filename parameter indicates the name of the content.
+     * This method specifies the content as an attachment when the <b>isAttachment</b> parameter is set to true,
+     * and as inline content when the <b>isAttachment</b> parameter is set to false. You can specify the content
+     * as an attachment by default by calling {@link #setContentDisposition(String)}.
+     *
+     * <b>Note:</b> This differs from the {@link TurbineUtils#setContentDisposition(HttpServletResponse, String, boolean)}
+     * version of this method in that it performs the header set in a "restlet-y" way. Both methods use the same
+     * {@link TurbineUtils#createContentDispositionValue(String, boolean)} method to create the actual value set
+     * for the response header.
+     *
+     * @param filename    The suggested filename for downloaded content.
+     * @param isAttachment    Indicates whether the content is an attachment or inline.
+     */
 	@SuppressWarnings("unchecked")
-	public void setContentDisposition(String content){
-		Object oHeaders = getResponse().getAttributes().get(
-                HttpConstants.ATTRIBUTE_HEADERS);
-        Series<Parameter> headers = null;
+	public void setContentDisposition(String filename, boolean isAttachment) {
+        final Map<String, Object> attributes = getResponse().getAttributes();
+        if (attributes.containsKey(CONTENT_DISPOSITION)) {
+            throw new IllegalStateException("A content disposition header has already been added to this response.");
+        }
+		Object oHeaders = attributes.get(HttpConstants.ATTRIBUTE_HEADERS);
+        Series<Parameter> headers;
         if (oHeaders != null) {
             headers = (Series<Parameter>) oHeaders;
         } else {
             headers = new Form();
         }
-        headers.add(new Parameter(CONTENT_DISPOSITION,content));
-
-        getResponse().getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
-                headers);
+        headers.add(new Parameter(CONTENT_DISPOSITION, TurbineUtils.createContentDispositionValue(filename, isAttachment)));
+        attributes.put(HttpConstants.ATTRIBUTE_HEADERS, headers);
 	}
-	
+
 	/**
 	 * Return the list of query string parameters value with the name 'action'.  List is created on first access, and cached for later access.
 	 * @return Should never be null.
@@ -818,12 +850,12 @@ public abstract class SecureResource extends Resource {
 				if(actionA!=null && actionA.length>0){
 					actions=Arrays.asList(actionA);
 }
-			
+
 			if(actions==null)actions=new ArrayList<String>();
 		}
 		return actions;
 	}
-	
+
 	public boolean containsAction(final String name){
 		if(getActions().contains(name)){
 			return true;
@@ -831,20 +863,20 @@ public abstract class SecureResource extends Resource {
 			return false;
 		}
 	}
-	
+
 	public List<FileWriterWrapperI> getFileWriters() throws FileUploadException, ClientException{
 		return getFileWritersAndLoadParams(this.getRequest().getEntity());
 	}
-	
+
 
 	public void handleParam(final String key,final Object value) throws ClientException{
-		
+
 	}
 
 	public void loadQueryVariables() throws ClientException{
 		loadParams(getQueryVariableForm());
 	}
-	
+
 	public void loadBodyVariables() throws ClientException{
 		loadParams(getBodyAsForm());
 	}
@@ -858,7 +890,7 @@ public abstract class SecureResource extends Resource {
 			}
 		}
 	}
-	
+
 	public void loadParams (final String _json) throws ClientException {
 	    try {
 	        final JSONObject json = new JSONObject(_json);
@@ -871,29 +903,29 @@ public abstract class SecureResource extends Resource {
 	        logger.error("",e);
 	    }
 	}
-					
+
 	public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException,ClientException{
 	    final List<FileWriterWrapperI> wrappers=new ArrayList<FileWriterWrapperI>();
 		if(this.isQueryVariableTrue("inbody") || RequestUtil.isFileInBody(entity)){
-			
+
 			if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must include the file directly as the body of the message (not as part of multi-part form data).");
 		        return null;
 			}else{
 				// NOTE: modified driveFileName here to return a name when content-type is null
 				final String fileName=(filepath==null || filepath.equals(""))?RequestUtil.deriveFileName("upload",entity,false):filepath;
-				
+
 				if(fileName==null){
 					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
 				}
-				
+
 				if(entity.getSize()==-1 || entity.getSize()==0){
 					throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
 				}
-				
+
 				wrappers.add(new FileWriterWrapper(entity,fileName));
 			}
-			
+
 		}else{
 			if (RequestUtil.isMultiPartFormData(entity)) {
 				final org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
@@ -904,19 +936,19 @@ public abstract class SecureResource extends Resource {
 				} catch (org.apache.commons.fileupload.FileUploadException e) {
 					throw new FileUploadException(e.getMessage(),e);
 				}
-					
-				for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {    
+
+				for (final Iterator<FileItem> it = items.iterator(); it.hasNext(); ) {
 				    final FileItem fi = it.next();
-				     
+
                     if (fi.isFormField()) {
                     	// Load form field to passed parameters map
                     	handleParam(fi.getFieldName(),TurbineUtils.escapeParam(fi.getString()));
                        	continue;
-                    } 
+                    }
                     if (fi.getName()==null) {
                     	throw new FileUploadException("multi-part form posts must contain the file name of the uploaded file.", new Exception());
-                    } 
-				    
+                    }
+
 				    String fileName=fi.getName();
 				    if(fileName.indexOf('\\')>-1){
 				    	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
@@ -924,12 +956,12 @@ public abstract class SecureResource extends Resource {
 				    wrappers.add(new FileWriterWrapper(fi,fileName));
 				}
 			}
-			
+
 		}
-		
+
 		return wrappers;
 	}
-	
+
 	public HttpSession getHttpSession() {
 		return getHttpServletRequest().getSession();
 }
@@ -950,7 +982,7 @@ public abstract class SecureResource extends Resource {
 	public void setResponseStatus(final ActionException e){
 		this.getResponse().setStatus(e.getStatus(), e, e.getMessage());
 	}
-	
+
 	public Integer identifyCompression(Integer defaultCompression)throws ActionException{
 		try {
 			if(this.containsQueryVariable(COMPRESSION)){
@@ -959,7 +991,7 @@ public abstract class SecureResource extends Resource {
 		} catch (NumberFormatException e) {
 			throw new ClientException(e.getMessage());
 		}
-		
+
 		if(defaultCompression!=null){
 			return defaultCompression;
 		}else{

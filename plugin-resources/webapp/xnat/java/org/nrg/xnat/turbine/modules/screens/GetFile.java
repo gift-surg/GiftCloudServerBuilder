@@ -114,7 +114,7 @@ public class GetFile extends RawScreen {
                      if (o instanceof File){
                          File f = (File)o;
                          if (f.exists()){
-                             data.getResponse().setHeader("Content-Disposition","inline;filename=" + f.getName());
+                             TurbineUtils.setContentDisposition(data.getResponse(), f.getName(), false);
                              java.io.FileInputStream in = new java.io.FileInputStream(f);
                              logger.debug(f.getName() + log + "," + (Calendar.getInstance().getTimeInMillis()-startTime));
                              int len;
@@ -126,7 +126,7 @@ public class GetFile extends RawScreen {
                      }else if (o instanceof SRBFile){
                          SRBFile f = (SRBFile)o;
                          if (f.exists()){
-                             data.getResponse().setHeader("Content-Disposition","inline;filename=" + f.getName());
+                             TurbineUtils.setContentDisposition(data.getResponse(), f.getName(), false);
 
                              byte[] tempBUF = new byte[FileUtils.LARGE_DOWNLOAD];
                              SRBFileInputStream is = new SRBFileInputStream(f);

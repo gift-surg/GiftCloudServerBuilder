@@ -126,7 +126,7 @@ public class DIRResource extends SecureResource {
 							return null;
 						}
 						rep.addEntry(f);
-						this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",f.getName()));
+						this.setContentDisposition(String.format("%s.zip", f.getName()));
 						return rep;
 					}else{
 						return this.representFile(f, mt);
@@ -182,7 +182,7 @@ public class DIRResource extends SecureResource {
 							rep.addAll(fs.getMatches());
 						}
 			
-						this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
+						this.setContentDisposition(rep.getDownloadName());
 						return rep;
 					}else{
 

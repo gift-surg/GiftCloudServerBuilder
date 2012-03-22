@@ -4,6 +4,9 @@
   font-size:9px;
 }
 </style>
+<div id="timeLeft">
+Time Left :
+</div>
 <div class="yui-skin-sam">
 <table >
 $navigation.setTemplate("LeftBarOptions.vm")
@@ -15,11 +18,55 @@ $navigation.setTemplate("LeftBarOptions.vm")
  </tr>
 </table>
 </div>
+
+<script type="text/javascript">
+  var warningTime = 30; // seconds
+  var warningDisplayedOnce = false;
+  var stopTheClock = false;
+  setInterval("if (!stopTheClock) setTimer();", 1000);
+  var callback = {
+    success : function (res) {
+                    var sessionExpired = res.responseText.indexOf("<HTML>") != -1;
+                    if (sessionExpired) {
+                       window.location.reload(true);
+                    }
+                    else {
+                    	YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", res.responseText);
+			warningDisplayedOnce = false;
+                    }
+              },
+    failure : function () {}
+ };
+ function setTimer() {
+   var cookie = YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
+   var secondsLeft = Math.floor((cookie - Date.now()) / 1000);
+   var secondsPart = secondsLeft;
+   var minutesPart = Math.floor(secondsPart / 60);
+   secondsPart = secondsPart % 60;
+   var hoursPart = Math.floor(minutesPart / 60);
+   minutesPart = minutesPart % 60;
+   document.getElementById('timeLeft').innerHTML="Time Left: " + hoursPart + "h " + minutesPart + "mins " + secondsPart + "secs ";
+   if (secondsLeft < 30) {
+     if (!warningDisplayedOnce) {
+       warningDisplayedOnce = true;
+       var currentTime = new Date();
+       var r = confirm("Your XNAT session will expire 30 seconds from " + currentTime.getHours() + ":" + currentTime.getMinutes() + ".\n Click OK to continue your session.");
+       if (r==true) {
+      	 YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/touch',callback,null);
+       }
+     }
+   }
+   if (secondsLeft <= 0) {
+     stopTheClock=true;
+     document.getElementById('timeLeft').innerHTML="Time Left: Session Expired.";
+   }
+ }
+</script>
 <script type="text/javascript">
 //build element_array
  var lTV = new LeftBarTreeView({treeview:"l.tv"});
- 
- lTV.loadNodeData=function(node, fnLoadComplete)  {   
+
+ lTV.loadNodeData=function(node, fnLoadComplete)  {
     var tabReqObject= node.data;
     tabReqObject.label=node.label;
     tabReqObject.node=node;
@@ -29,16 +76,16 @@ $navigation.setTemplate("LeftBarOptions.vm")
     	   if(tabReqObject.ID!=undefined && tabReqObject.ID=="ss"){
        	    var callback={
        	      success:function(oResponse){
-       	        var oResults = eval("(" + oResponse.responseText + ")"); 
-       	        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {  
-                   for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {      
+       	        var oResults = eval("(" + oResponse.responseText + ")");
+       	        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {
+                   for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {
                        var cpNode=new YAHOO.widget.TextNode({label:oResults.ResultSet.Result[ssC].brief_description,
 	                         		ID:"ss."+oResults.ResultSet.Result[ssC].id,
 	                         		SS_ID:oResults.ResultSet.Result[ssC].id,
 	                         		URL:serverRoot +'/REST/search/saved/' + oResults.ResultSet.Result[ssC].id + '',
 	                         		TITLE:oResults.ResultSet.Result[ssC].description},oResponse.argument.node,false);
-                   }   
-               } 
+                   }
+               }
        	        oResponse.argument.fnLoadComplete();
        	      },
        	      failure:function(oResponse){
@@ -46,16 +93,16 @@ $navigation.setTemplate("LeftBarOptions.vm")
        	      },
        	      argument:{"node":node,"fnLoadComplete":fnLoadComplete}
        	    };
-       	    
+
 																				           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-       	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?format=json&stamp='+ (new Date()).getTime(),callback,null);		
+       	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?format=json&stamp='+ (new Date()).getTime(),callback,null);
        }else{
     	   	    fnLoadComplete();
        }
     }
  }
- 
+
  lTV.init();
- 
- 
+
+
 </script>

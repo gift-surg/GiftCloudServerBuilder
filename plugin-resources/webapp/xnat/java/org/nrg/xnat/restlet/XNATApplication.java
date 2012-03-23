@@ -243,7 +243,6 @@ public class XNATApplication extends Application {
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
         router.attach("/version",VersionRepresentation.class);
-        router.attach("/touch", Touch.class);
 
         // TODO: These are placeholders for the protocol REST services to come.
         router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);

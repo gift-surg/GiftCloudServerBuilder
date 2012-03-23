@@ -57,8 +57,8 @@ public class UpdateExpirationCookie implements Filter {
 		HttpServletResponse hr = (HttpServletResponse) resp;
 		int sessionIdleTime = hq.getSession().getMaxInactiveInterval();
 		Cookie cookie = UpdateExpirationCookie.makeCookie(sessionIdleTime);
-		RemoveCookieFromRequest rq = new RemoveCookieFromRequest(hq, sessionIdleTime);
-		Cookie[] cookies = rq.getCookies();
+//		RemoveCookieFromRequest rq = new RemoveCookieFromRequest(hq, sessionIdleTime);
+//		Cookie[] cookies = rq.getCookies();
 //		for (int i = 0; i < cookies.length; i++) {
 //			hr.addCookie(cookies[i]);
 //		}

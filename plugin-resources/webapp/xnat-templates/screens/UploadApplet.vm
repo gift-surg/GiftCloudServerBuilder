@@ -1,4 +1,3 @@
-#* @vtlvariable name="jsessionid" type="java.lang.String" *#
 #* @vtlvariable name="session_id" type="java.lang.String" *#
 #* @vtlvariable name="scan_type" type="java.lang.String" *#
 #* @vtlvariable name="visit_id" type="java.lang.String" *#
@@ -16,7 +15,7 @@
 // to ensure that a supported version of the JRE exists on the client.
 // Use an anonymous function to prevent global scope
 (function() {
-    var SUPPORTED_JRE_VERSIONS = ["1.5", "1.6", "1.7"];
+    var SUPPORTED_JRE_VERSIONS = ["1.6", "1.7"];
     
     function hasSupport(versions) {
         for (var i=0; i < versions.length; i++) {
@@ -33,43 +32,29 @@
 })();
 
 function loadApplet() {
-    var appletTag = '<APPLET CODE="org.nrg.upload.ui.UploadAssistantApplet"\n';
-    appletTag += '    CODEBASE="$content.getURI("applet/")"\n';
-    appletTag += '    ARCHIVE="UploadAssistant-1.5.4-SNAPSHOT.jar,wizard-1.1.0-SNAPSHOT.jar,DicomEdit-1.5.2.jar,DicomUtils-1.2.0.jar,antlr-2.7.6.jar,antlr-runtime-3.2.jar,com.springsource.org.apache.commons.logging-1.1.1.jar,com.springsource.org.apache.log4j-1.2.16.jar,common-1.2.0.jar,commons-codec-1.4.jar,commons-collections-3.1.jar,commons-lang-2.6.jar,dcm4che-core-2.0.25.jar,dicom-xnat-sop-1.5.4-SNAPSHOT.jar,dicom-xnat-util-1.5.4-SNAPSHOT.jar,dom4j-1.6.1.jar,ecat-edit-0.1.2.jar,ecat-io-0.1.0.jar,fest-assert-1.2.jar,fest-reflect-1.2.jar,fest-swing-1.2.1.jar,fest-util-1.1.3.jar,framework-1.0.0-SNAPSHOT.jar,guava-11.0.jar,jackson-core-asl-1.8.5.jar,jackson-mapper-asl-1.8.5.jar,jcalendar-1.4.jar,jcip-annotations-1.0.jar,json-20080701.jar,jsr305-1.3.9.jar,looks-2.4.1.jar,nrgutil-1.0.0.jar,org.restlet-1.1.10.jar,org.springframework.beans-3.0.5.RELEASE.jar,org.springframework.core-3.0.5.RELEASE.jar,org.springframework.web-3.0.5.RELEASE.jar,slf4j-api-1.6.4.jar,slf4j-log4j12-1.6.4.jar,stringtemplate-3.2.jar"\n';
-    appletTag += '    width="800"\n';
-    appletTag += '    height="500"\n';
-    appletTag += '    MAYSCRIPT>\n\n';
-    appletTag += '    <PARAM NAME="xnat-url" VALUE="$!arc.getSiteUrl()"/>\n';
-    appletTag += '    <PARAM NAME="xnat-admin-email" VALUE="$!arc.getSiteAdminEmail()"/>\n';
-    appletTag += '    <PARAM NAME="xnat-description" VALUE="$!arc.getSiteId()"/>\n';
-    appletTag += '    <PARAM NAME="n-upload-threads" VALUE="4"/>\n';
-    appletTag += '    <PARAM NAME="fixed-size-streaming" VALUE="true"/>\n';
+    var attributes = { code: 'org.nrg.upload.ui.UploadAssistantApplet', codebase: '$content.getURI("applet/")', width: 800, height: 500 };
+    var parameters = { jnlp_href: 'UploadAssistantApplet.jnlp', 'xnat-url': '$!arc.getSiteUrl()', 'xnat-admin-email': '$!arc.getSiteAdminEmail()', 'xnat-description': '$!arc.getSiteId()', 'n-upload-threads': '4', 'fixed-size-streaming': 'true' };
+
 #if( $project )
-    appletTag += '    <PARAM NAME="xnat-project" value="$project"/>\n';
+        parameters['xnat-project'] = '$project';
     #if( $subject_id )
-    appletTag += '    <PARAM NAME="xnat-subject" VALUE="$subject_id"/>\n';
+            parameters['xnat-subject'] = '$subject_id';
     #end
     #if( $session_id )
-    appletTag += '    <PARAM NAME="xnat-session-label" VALUE="$session_id"/>\n';
+            parameters['xnat-session-label'] = '$session_id';
     #end
     #if( $scan_date )
-    appletTag += '    <PARAM NAME="xnat-scan-date" value="$scan_date"/>\n';
+            parameters['xnat-scan-date'] = '$scan_date';
     #end
     #if( $visit_id )
-    appletTag += '    <PARAM NAME="xnat-visit-id" value="$visit_id"/>\n';
+            parameters['xnat-visit-id'] = '$visit_id';
     #end
     #if( $scan_type )
-    appletTag += '    <PARAM NAME="xnat-scan-type" value="$scan_type"/>\n';
+            parameters['xnat-scan-type'] = '$scan_type';
     #end
 #end
-    appletTag += '\n';
-    appletTag += '    The XNAT upload applet requires Java (1.5 or greater) to be installed on your computer.\n';
-    appletTag += '    You can get Java <a href="http://java.com/en/download/index.jsp">here</a>.\n';
-    appletTag += '    After installing Java, you will most likely need to restart your browser,\n';
-    appletTag += '    and possibly your computer, before the XNAT upload applet will work.\n';
-    appletTag += '</APPLET>\n';
 
-    document.getElementById('appletDiv').innerHTML = appletTag;
+    deployJava.runApplet(attributes, parameters, '1.6');
 }
 
 if (YAHOO.util.Cookie.get("appletLoadNotification") == null) {

@@ -17,16 +17,19 @@
     -->
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
+    <!-- This scan basically pulls in the ContextService -->
+    <context:component-scan base-package="org.nrg.framework.services" />
+
     <!-- import resource="mail-services-config.xml" / -->
     <!-- Bootstrap the Spring mail sender. -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
           p:host="${mailserver.host}"
-          p:port="${mailserver.port}" 
-          p:username="${mailserver.username}" 
+          p:port="${mailserver.port}"
+          p:username="${mailserver.username}"
           p:password="${mailserver.password}" />
 
     <bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
-    
+
     <util:map id="renderers" value-type="org.nrg.notify.renderers.ChannelRenderer">
         <entry key="htmlMail" value-ref="mailChannelRenderer" />
         <entry key="textMail" value-ref="mailChannelRenderer" />

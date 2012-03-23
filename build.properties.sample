@@ -81,7 +81,7 @@ xdat.security.channel=any
 # These properties configure the LDAP data store when you want to use LDAP as one of the primary
 # authentication providers for your XNAT system. The values for these variables is highly contingent
 # on the configuration of your LDAP server.
-xdat.security.ldap.address=LDAP_SERVER
+xdat.security.ldap.address=ldap://127.0.0.1:389/dc=service,dc=domain
 xdat.security.ldap.userdn=CN=LDAP,OU=Service Accounts,OU=Users,DC=service,DC=domain
 xdat.security.ldap.password=PASSWORD
 xdat.security.ldap.search.base=OU=Staff,OU=Users

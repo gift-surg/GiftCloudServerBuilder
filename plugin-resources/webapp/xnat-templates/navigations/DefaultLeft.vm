@@ -20,7 +20,8 @@ $navigation.setTemplate("LeftBarOptions.vm")
 </div>
 
 <script type="text/javascript">
-  var warningTime = 30; // seconds
+  var cookie = YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
+  YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", cookie, {path : '/'});
   var warningDisplayedOnce = false;
   var stopTheClock = false;
   setInterval("if (!stopTheClock) setTimer();", 1000);
@@ -31,8 +32,8 @@ $navigation.setTemplate("LeftBarOptions.vm")
                        window.location.reload(true);
                     }
                     else {
-                    	YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", res.responseText);
-			warningDisplayedOnce = false;
+                      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", res.responseText, {path:"/"});
+		      warningDisplayedOnce = false;
                     }
               },
     failure : function () {}
@@ -52,7 +53,7 @@ $navigation.setTemplate("LeftBarOptions.vm")
        var currentTime = new Date();
        var r = confirm("Your XNAT session will expire 30 seconds from " + currentTime.getHours() + ":" + currentTime.getMinutes() + ".\n Click OK to continue your session.");
        if (r==true) {
-      	 YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/touch',callback,null);
+      	  YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/touch',callback,null);
        }
      }
    }

@@ -13,11 +13,8 @@
     <!-- Load the NRG Notify basic application context. -->
     <import resource="classpath:/META-INF/configuration/nrg-notify-context.xml" />
 
-    <!-- context:component-scan base-package="org.nrg.notify.services" />
-    <context:component-scan base-package="org.nrg.notify.daos" / -->
-
     <!-- This requires the mailService bean to be configured elsewhere. -->
-    <!-- bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:mailService-ref="mailService" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
+    <bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:mailService-ref="mailService" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
     
     <util:map id="renderers" value-type="org.nrg.notify.renderers.ChannelRenderer">
         <entry key="htmlMail" value-ref="mailChannelRenderer" />
@@ -26,6 +23,6 @@
 
     <bean id="rendererProvider" class="org.nrg.notify.entities.ChannelRendererProvider">
         <property name="renderers" ref="renderers" />
-    </bean -->
+    </bean>
 
 </beans>

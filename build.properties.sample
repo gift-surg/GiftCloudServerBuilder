@@ -38,7 +38,8 @@ xdat.smtp.server=smtp.server
 
 #email address of administrator.
 xdat.admin_email=administrator@xnat.org
-# eg. http://localhost:8080.xnat
+
+# eg. http://localhost:8080/xnat
 xdat.url=URL
 
 #  'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be

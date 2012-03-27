@@ -219,7 +219,8 @@ $navigation.setTemplate("LeftBarOptions.vm")
    * 2. The dialog needs to be displayed and this tab is not currently displaying it so toggle 
    * the local display variable, show the dialog and recurse so that case (1) is executed.
    * 3. The dialog should not be displayed and it is currently being shown so hide it.
-   * 4. The dialog should not be displayed and is not displayed. Nothing to do here.
+   * 4. The dialog should not be displayed and is not displayed. Hide the dialog anyway 
+   * in case another tab as been opened while the popup was open in this one.
    */
   function updateMessageOrHide (dialog) {
     if (synchronizingCookies.dialogDisplay.get() === "true" && locals.warningDisplayedOnce) {
@@ -238,7 +239,7 @@ $navigation.setTemplate("LeftBarOptions.vm")
       dialog.hide();
     }
     else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
-      // nothing to do here
+      dialog.hide();
     }
  };
  

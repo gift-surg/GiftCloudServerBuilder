@@ -25,8 +25,6 @@ $navigation.setTemplate("LeftBarOptions.vm")
    * - expirationTime : Stores a timestamp that indicates when this session will end
    * - dialogDisplay : Boolean flag that indicates if the warning dialog is currently being displayed
    *                   Used to synchronize the hiding of the warning dialog.
-   * - newSession : A flag that indicates whether a session has been extended. Used to synchronize
-   *                     whether the warning dialog should be redisplayed. 
    * - sessionTimeout : A boolean flag that indicates whether this session has timed out. Used to synchronize
    *                    redirecting to the login page. 
    *  
@@ -39,253 +37,275 @@ $navigation.setTemplate("LeftBarOptions.vm")
    * and if a user were to refresh tab B they would be redirected to the login page. This flag is used to 
    * broadcast to all tabs and windows that the session has indeed expired and they should take some action.
    */  
-  var synchronizingCookies = {
-    expirationTime : {
-      set : function (timeout) {
-	var cookieValue = timeout !== undefined ? timeout : YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
-	YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", cookieValue, {path : '/'});
-      },
-      get : function () {
-	return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
-      }
+var synchronizingCookies = {
+  expirationTime : {
+    set : function (timeout) {
+      var cookieValue = timeout !== undefined ? timeout : YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
+      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", cookieValue, {path : '/'});
     },
-    dialogDisplay : {
-      set : function (status) {
-	YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING", status, {path : '/'});
-      },
-      get : function () {
-      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING");
-      }
-    },
-    newSession : {
-      set : function (status) {
-	YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYED_ONCE", status, {path : '/'});
-      },
-      get : function () {
-      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYED_ONCE");
-      }
-    },
-    sessionTimeout : {
-     set : function (status) {
-      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIMEOUT", status, {path : '/'});
-     },
-     get : function () {
-       return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIMEOUT");
-     } 
+    get : function () {
+      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
     }
-  };
+  },
+  dialogDisplay : {
+    set : function (status) {
+      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING", status, {path : '/'});
+    },
+    get : function () {
+      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING");
+    }
+  },
+  sessionTimeout : {
+    set : function (status) {
+      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIMEOUT", status, {path : '/'});
+    },
+    get : function () {
+      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIMEOUT");
+    } 
+  }
+};
 
-  /**
-   * Local variables, think of them as thread-local variables. 
-   * warningDisplayedOnce - indicates if the warning dialog has been displayed already for this
-   *                        session
-   * timerInterval - the interval in milliseconds at which to update the state of the session counter, 
-   *                 the warning dialog and the various synchronizing cookies. This value is immutable.
-   * popupTime - The time in seconds in before the end of the session at which to popup a warning dialog.
-   *             Should be less than that length of the session.
-   */
-  var locals = {
-    warningDisplayedOnce : false,
-    timerInterval : 1000, // milliseconds
-    popupTime : 30 // seconds
-  };
-    
-  /**
-   * Set the synchronizating cookies to their base state.
-   * The starting state is:
-   * 1. A fresh expiration time is set
-   * 2. No pop-ups are being displayed on any tabs or windows
-   * 3. A fresh session is started on all tabs and windows
-   * 4. No tabs or windows have timed out
-   */
-  function refreshSynchronizingCookies () {
-    synchronizingCookies.expirationTime.set();
-    synchronizingCookies.dialogDisplay.set("false");
-    synchronizingCookies.newSession.set("true");
-    synchronizingCookies.sessionTimeout.set("false");
-  };
-    
-  /**
-   * If the user wants to extend the session, hide the dialog and "touch" the server
-   */
-  var handleOk = function () {
-    synchronizingCookies.dialogDisplay.set("false");
-    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version',callback,null);
-  };
-  
-  /**
-   * If the user does not want to extend the session broadcast their choice 
-   * to all tabs and ensure that they all close their dialogs.
-   */
-  var handleCancel = function () {
-    synchronizingCookies.newSession.set("false");
-    synchronizingCookies.dialogDisplay.set("false");
-    locals.warningDisplayedOnce = true;
-  };
+/**
+ * Local variables, think of them as thread-local variables. 
+ * warningDisplayedOnce - indicates if the warning dialog has been displayed already for this
+ *                        session
+ * timerInterval - the interval in milliseconds at which to update the state of the session counter, 
+ *                 the warning dialog and the various synchronizing cookies. This value is immutable.
+ * popupTime - The time in seconds in before the end of the session at which to popup a warning dialog.
+ *             Should be less than that length of the session.
+ * expirationTime - A local copy of the time this session will expire. It is periodically synchronized with 
+ *                  synchronizingCookies.expirationTime.
+ *                  Used to determine if the expiration time has increased since the last check, if it has the session has bee
+ *                  extended
+ * waitingOnIE - This is an ugly, ugly hack. 
+ *               IE 8 and under seem to try and refresh the page before the session runs out. So when we get to the 
+ *               point where we think we are about to redirect to the login page and the user is running IE we wait
+ *               one extra time interval just to make sure.
+ */
+var locals = {
+  warningDisplayedOnce : false,
+  timerInterval : 1000, // milliseconds
+  popupTime : 30, // seconds
+  expirationTime : -1, // milliseconds
+  waitingOnIE : false
+};
 
-  /**
-   * After touching the server, reset the synchronizing cookies and local variables
-   */
-  var callback = {
-    success : function (res) {
-                    var sessionExpired = res.responseText.indexOf("<HTML>") != -1;
-                    if (sessionExpired) {
-		      window.location.reload(true);
-                    }
-                    else {
-		      refreshSynchronizingCookies();
-		      locals.warningDisplayedOnce = false;
-                    }
-              },
-    failure : function () {}
-  };
-  
-    
-  /**
-   * Used to zero pad the time displays
-   */
-  var zeroPad = function (x) {
-    if (x < 10) {
-      return "0"+x;
+/**
+ * Set the synchronizating cookies to their base state.
+ * The starting state is:
+ * 1. A fresh expiration time is set
+ * 2. No pop-ups are being displayed on any tabs or windows
+ * 3. A fresh session is started on all tabs and windows
+ * 4. No tabs or windows have timed out
+ */
+function refreshSynchronizingCookies () {
+  synchronizingCookies.expirationTime.set();
+  synchronizingCookies.dialogDisplay.set("false");
+  synchronizingCookies.sessionTimeout.set("false");
+};
+
+/**
+ * If the user wants to extend the session, hide the dialog and "touch" the server
+ */
+var handleOk = function () {
+  synchronizingCookies.dialogDisplay.set("false");
+  YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version',callback,null);
+};
+
+/**
+ * If the user does not want to extend the session broadcast their choice 
+ * to all tabs and ensure that they all close their dialogs.
+ */
+var handleCancel = function () {
+  synchronizingCookies.dialogDisplay.set("false");
+  locals.warningDisplayedOnce = true;
+};
+
+/**
+ * After touching the server, reset the synchronizing cookies and local variables
+ */
+var callback = {
+  cache : false, // needed because otherwise IE will cache the responses
+  success : function (res) {
+    var sessionExpired = res.responseText.indexOf("<HTML>") != -1;
+    if (sessionExpired) {
+      window.location.reload(true);
     }
     else {
-      return "" + x;
+      refreshSynchronizingCookies();
+      locals.warningDisplayedOnce = false;
     }
-  };
-    
-  /**
-   * The warning dialog
-   */
-  var warningDialog = new YAHOO.widget.SimpleDialog("session_timeout_dialog", {
-			 width:"20em",
-			 close:false,
-			 fixedcenter:true,
-			 constraintoviewport:true,
-			 modal:true,
-			 icon:YAHOO.widget.SimpleDialog.ICON_WARN,
-			 visible:true,
-			 draggable:false,
-			 buttons : [{ text : 'OK', handler : handleOk, isDefault:true }, {text : 'Cancel' , handler : handleCancel}]
-			 });
+  },
+  failure : function () {}
+};
 
-  function initWarningDialog(dialog) {
-    dialog.manager = this;
-    dialog.render(document.body);
-    dialog.setHeader("Session Timeout Warning");
-    dialog.setBody("");
-    dialog.bringToTop();
-    dialog.hide();   
+/**
+ * Used to zero pad the time displays
+ */
+var zeroPad = function (x) {
+  if (x < 10) {
+    return "0"+x;
+  }
+  else {
+    return "" + x;
+  }
+};
+
+/**
+ * The warning dialog
+ */
+var warningDialog = new YAHOO.widget.SimpleDialog("session_timeout_dialog", {
+						    width:"20em",
+						    close:false,
+						    fixedcenter:true,
+						    constraintoviewport:true,
+						    modal:true,
+						    icon:YAHOO.widget.SimpleDialog.ICON_WARN,
+						    visible:true,
+						    draggable:false,
+						    buttons : [
+						      { text : 'OK', handler : handleOk, isDefault:true },
+						      {text : 'Cancel' , handler : handleCancel}
+						    ]
+						  });
+
+function initWarningDialog(dialog) {
+  dialog.manager = this;
+  dialog.render(document.body);
+  dialog.setHeader("Session Timeout Warning");
+  dialog.setBody("");
+  dialog.bringToTop();
+  dialog.hide();   
+};
+
+/**
+ * Return the timestamp as hours, minutes and seconds. Used to update the session counter
+ * and the warning dialog.
+ * 
+ * Also hold onto the number of milliseconds left.
+ * This value is used to determine when to redirect the page to the login page.
+ */
+function parseTimestamp (time) {
+  var millisecondsLeft = time - (new Date().getTime());
+  var secondsLeft = Math.floor(millisecondsLeft / 1000);
+  var secondsPart = secondsLeft;
+  var minutesPart = Math.floor(secondsPart / 60);
+  secondsPart = secondsPart % 60;
+  var hoursPart = Math.floor(minutesPart / 60);
+  minutesPart = minutesPart % 60;
+  return {
+    millisecondsLeft : millisecondsLeft,
+    secondsLeft : secondsLeft,
+    secondsPart : secondsPart,
+    minutesPart : minutesPart,
+    hoursPart : hoursPart
   };
+};
+
+/**
+ * See the comments for "locals" to see why this function necessary
+ */
+function redirectIfWaitingOnIE () {
+  if (locals.waitingOnIE) {
+    redirectToLogin();
+  }
+};
   
-  /**
-   * Return the timestamp as hours, minutes and seconds. Used to update the session counter
-   * and the warning dialog.
-   * 
-   * Also hold onto the number of milliseconds left.
-   * This value is used to determine when to redirect the page to the login page.
-   */
-  function parseTimestamp (time) {
-   var millisecondsLeft = time - Date.now();
-   var secondsLeft = Math.floor(millisecondsLeft / 1000);
-   var secondsPart = secondsLeft;
-   var minutesPart = Math.floor(secondsPart / 60);
-   secondsPart = secondsPart % 60;
-   var hoursPart = Math.floor(minutesPart / 60);
-   minutesPart = minutesPart % 60;
-   return {
-     millisecondsLeft : millisecondsLeft,
-     secondsLeft : secondsLeft,
-     secondsPart : secondsPart,
-     minutesPart : minutesPart,
-     hoursPart : hoursPart
-   };
- };
 
-  /**
-  * If the popup has been displayed once but the session has been 
-  * extended by this or another tab allow it to be re-displayed.
-  */
-  function displayWarningDialog() {
-   if (locals.warningDisplayedOnce && synchronizingCookies.newSession.get() === "true") {
-     locals.warningDisplayedOnce = false;
-   }
- };
-   
-  /**
-   * Determine whether to show the popup and update it or hide it.
-   * There are 4 possibilities:
-   * 1. The dialog needs to be displayed and this tab is currently displaying so 
-   * update the message with the session timer countdown.
-   * 2. The dialog needs to be displayed and this tab is not currently displaying it so toggle 
-   * the local display variable, show the dialog and recurse so that case (1) is executed.
-   * 3. The dialog should not be displayed and it is currently being shown so hide it.
-   * 4. The dialog should not be displayed and is not displayed. Hide the dialog anyway 
-   * in case another tab as been opened while the popup was open in this one.
-   */
-  function updateMessageOrHide (dialog) {
-    if (synchronizingCookies.dialogDisplay.get() === "true" && locals.warningDisplayedOnce) {
-      var cookie = synchronizingCookies.expirationTime.get();
-      var timeLeft = parseTimestamp(cookie);
-      dialog.setBody("Your XNAT session will expire in " + timeLeft.hoursPart + "h " 
-	                                                                      + zeroPad(timeLeft.minutesPart) + "mins " +
-		                                                              + zeroPad(timeLeft.secondsPart) + "secs .</br> Click OK to reset session.");  
-    }
-    else if (synchronizingCookies.dialogDisplay.get() === "true" && !locals.warningDisplayedOnce) {
-      locals.warningDisplayedOnce = true;
-      dialog.show();
-      updateMessageOrHide(dialog);
-    }
-    else if (synchronizingCookies.dialogDisplay.get() === "false" && locals.warningDisplayedOnce) {
-      dialog.hide();
-    }
-    else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
-      dialog.hide();
-    }
- };
- 
-  /**
-  * Control the display of the amount of time left in the session and determine when
-  * the session has timed out.
-  * 
-  * If it is time to warn the user and we haven't already broadcast tell the 
-  * other tabs and windows that they need to open the popup dialog
-  * 
-  * If this session will expire before we come back around to this function stop
-  * displaying a timer.
-  * 
-  * If this or some other tab has timed out first make sure to tell the other 
-  * tabs and then redirect to the login page
-  * 
-  */
-  function sessionCountdown() {
-   var timeLeft = parseTimestamp(synchronizingCookies.expirationTime.get());
+function syncSessionExpirationCookieWithLocal () {
+  var cookieExpirationTime = synchronizingCookies.expirationTime.get();
+  if (locals.expirationTime < cookieExpirationTime) {
+    locals.warningDisplayedOnce = false;
+  }
+  locals.expirationTime = cookieExpirationTime;
+}
 
-   document.getElementById('timeLeft').innerHTML="Time Left: " + timeLeft.hoursPart + "h " 
-                                                               + zeroPad(timeLeft.minutesPart) + "mins " +
-							       + zeroPad(timeLeft.secondsPart) + "secs ";
-   if ((timeLeft.secondsLeft < locals.popupTime) && (!locals.warningDisplayedOnce)) {
-     synchronizingCookies.dialogDisplay.set("true");
-   }
-    
-   if (timeLeft.millisecondsLeft <= locals.timerInterval) {
-     synchronizingCookies.dialogDisplay.set("false");
-     document.getElementById('timeLeft').innerHTML="Time Left: Session Expired.";
-   }
-   if (synchronizingCookies.sessionTimeout.get() === "true" ||
-       timeLeft.millisecondsLeft <= 0 ||
-       timeLeft.millisecondsLeft == undefined) {
-     synchronizingCookies.sessionTimeout.set("true");
-     window.location.reload(true);
-   }
- }
+/**
+ * Determine whether to show the popup and update it or hide it.
+ * There are 4 possibilities:
+ * 1. The dialog needs to be displayed and this tab is currently displaying so 
+ * update the message with the session timer countdown.
+ * 2. The dialog needs to be displayed and this tab is not currently displaying it so toggle 
+ * the local display variable, show the dialog and recurse so that case (1) is executed.
+ * 3. The dialog should not be displayed and it is currently being shown so hide it.
+ * 4. The dialog should not be displayed and is not displayed. Hide the dialog anyway 
+ * in case another tab as been opened while the popup was open in this one.
+ */
+function updateMessageOrHide (dialog) {
+  if (synchronizingCookies.dialogDisplay.get() === "true" && locals.warningDisplayedOnce) {
+    var timeLeft = parseTimestamp(locals.expirationTime);
+    dialog.setBody("Your XNAT session will expire in " + timeLeft.hoursPart + "h " 
+	           + zeroPad(timeLeft.minutesPart) + "mins " +
+		   + zeroPad(timeLeft.secondsPart) + "secs .</br> Click OK to reset session.");  
+  }
+  else if (synchronizingCookies.dialogDisplay.get() === "true" && !locals.warningDisplayedOnce) {
+    locals.warningDisplayedOnce = true;
+    dialog.show();
+    updateMessageOrHide(dialog);
+  }
+  else if (synchronizingCookies.dialogDisplay.get() === "false" && locals.warningDisplayedOnce) {
+    dialog.hide();
+  }
+  else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
+    dialog.hide();
+  }
+};
 
-  /**
-  * Initialize the synchronizing cookies and warning dialog and kick off the 
-  * counter.
-  */
-  refreshSynchronizingCookies();
-  initWarningDialog(warningDialog);
-  setInterval("displayWarningDialog();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
+/**
+ * If the session has expired just refreshing the page should redirect to the login page.
+ */
+function redirectToLogin () {
+  synchronizingCookies.sessionTimeout.set("true");
+  window.location.reload(true);
+}
+
+/**
+ * Control the display of the amount of time left in the session and determine when
+ * the session has timed out.
+ * 
+ * If it is time to warn the user and we haven't already broadcast tell the 
+ * other tabs and windows that they need to open the popup dialog
+ * 
+ * If this session will expire before we come back around to this function stop
+ * displaying a timer.
+ * 
+ * If this or some other tab has timed out first make sure to tell the other 
+ * tabs and then redirect to the login page
+ * 
+ */
+function sessionCountdown() {
+  var timeLeft = parseTimestamp(locals.expirationTime);
+
+  document.getElementById('timeLeft').innerHTML="Time Left: " + timeLeft.hoursPart + "h " 
+    + zeroPad(timeLeft.minutesPart) + "mins " +
+    + zeroPad(timeLeft.secondsPart) + "secs ";
+  if ((timeLeft.secondsLeft < locals.popupTime) && (!locals.warningDisplayedOnce)) {
+    synchronizingCookies.dialogDisplay.set("true");
+  }
+  
+  if (timeLeft.millisecondsLeft <= locals.timerInterval) {
+    synchronizingCookies.dialogDisplay.set("false");
+    document.getElementById('timeLeft').innerHTML="Time Left: Session Expired.";
+  }
+  if (synchronizingCookies.sessionTimeout.get() === "true" ||
+      timeLeft.millisecondsLeft <= 0 ||
+      timeLeft.millisecondsLeft == undefined) {
+    if (YAHOO.env.ua.ie > 0 && YAHOO.env.ua.ie <= 8) {
+      locals.waitingOnIE = true;
+    }
+    else {
+      redirectToLogin();  
+    }
+  }
+}
+
+/**
+ * Initialize the synchronizing cookies and warning dialog and kick off the 
+ * counter.
+ */
+refreshSynchronizingCookies();
+initWarningDialog(warningDialog);
+setInterval("redirectIfWaitingOnIE();syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
 </script>
 
 <script type="text/javascript">

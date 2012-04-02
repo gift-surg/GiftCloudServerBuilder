@@ -47,6 +47,7 @@ function parseExpirationTimeTuple (tuple) {
    *                   Used to synchronize the hiding of the warning dialog.
    * - sessionTimeout : A boolean flag that indicates whether this session has timed out. Used to synchronize
    *                    redirecting to the login page. 
+   * - serverResponseTime : store the time it takes for a response to reach the client from the server
    *  
    * The last two flags needs some explanation. Given the scenario where there are two session tabs A and B
    * (1) Currently a warning dialog pops up only once per session per tab. If a user extends a session in tab A
@@ -58,30 +59,60 @@ function parseExpirationTimeTuple (tuple) {
    * broadcast to all tabs and windows that the session has indeed expired and they should take some action.
    */  
 var synchronizingCookies = {
+  get : function (cookieName) {
+    if (YAHOO.util.Cookie.exists(cookieName)) {
+      return YAHOO.util.Cookie.get(cookieName);
+    }
+    else {
+      return null;
+    }
+  },
   expirationTime : {
+    name : "SESSION_EXPIRATION_TIME",
     set : function () {
-      var cookieValue = YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME");
-      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME", cookieValue, {path : '/'});
+      var cookieValue = YAHOO.util.Cookie.get(synchronizingCookies.expirationTime.name);
+      YAHOO.util.Cookie.set(synchronizingCookies.expirationTime.name, cookieValue , {path : '/'});
     },
     get : function () {
-      return parseExpirationTimeTuple(YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME"));
+      if (YAHOO.util.Cookie.exists(synchronizingCookies.expirationTime.name)) {
+	return parseExpirationTimeTuple(YAHOO.util.Cookie.get(synchronizingCookies.expirationTime.name));
+      }
+      else {
+	return null;
+      }
     }
   },
   dialogDisplay : {
+    name : "SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING",
     set : function (status) {
-      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING", status, {path : '/'});
+      YAHOO.util.Cookie.set(synchronizingCookies.dialogDisplay.name, status, {path : '/'});
     },
     get : function () {
-      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING");
+      return synchronizingCookies.get(synchronizingCookies.dialogDisplay.name);
     }
   },
   sessionTimeout : {
+    name : "SESSION_EXPIRATION_TIMEOUT",
     set : function (status) {
-      YAHOO.util.Cookie.set("SESSION_EXPIRATION_TIMEOUT", status, {path : '/'});
+      YAHOO.util.Cookie.set(synchronizingCookies.sessionTimeout.name, status, {path : '/'});
     },
     get : function () {
-      return YAHOO.util.Cookie.get("SESSION_EXPIRATION_TIMEOUT");
+      return synchronizingCookies.get(synchronizingCookies.sessionTimeout.name);
     } 
+  },
+  serverResponseTime : {
+    name : "SERVER_RESPONSE_TIME",
+    set : function (responseTime) {
+      YAHOO.util.Cookie.set(synchronizingCookies.serverResponseTime.name, responseTime, {path : "/"});
+    },
+    get : function () {
+      if (YAHOO.util.Cookie.exists(synchronizingCookies.serverResponseTime.name)) {
+	return parseInt(YAHOO.util.Cookie.get(synchronizingCookies.serverResponseTime.name));
+      }
+      else {
+	return null;
+      }      
+    }
   }
 };
 
@@ -132,7 +163,8 @@ function refreshSynchronizingCookies () {
  */
 var handleOk = function () {
   synchronizingCookies.dialogDisplay.set("false");
-  YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version',callback,null);
+  touchCallback.startTime = new Date().getTime();
+  YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version',touchCallback,null);
 };
 
 /**
@@ -147,12 +179,12 @@ var handleCancel = function () {
 /**
  * After touching the server, reset the synchronizing cookies and local variables
  */
-var callback = {
+var touchCallback = {
   cache : false, // needed because otherwise IE will cache the responses
   success : function (res) {
     var sessionExpired = res.responseText.indexOf("<HTML>") != -1;
     if (sessionExpired) {
-      window.location.reload(true);
+      redirectToLogin();
     }
     else {
       refreshSynchronizingCookies();
@@ -248,7 +280,7 @@ function syncSessionExpirationCookieWithLocal () {
   if (locals.expirationTime.flag !== cookieExpirationTime.flag) {
     locals.warningDisplayedOnce = false;
     locals.expirationTime.flag = cookieExpirationTime.flag;
-    locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime);
+    locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime - synchronizingCookies.serverResponseTime.get());
   }
   else {
     var oldTime = locals.expirationTime.timeLeft.time;
@@ -336,7 +368,19 @@ function sessionCountdown() {
  */
 refreshSynchronizingCookies();
 initWarningDialog(warningDialog);
-setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
+var initialServerTouch = {
+  cache : false,
+  startTime : 0,
+  success : function(res) {
+    if (synchronizingCookies.serverResponseTime.get() === null) {
+      synchronizingCookies.serverResponseTime.set((parseInt(new Date().getTime()) - initialServerTouch.startTime) / 2);
+    }
+    touchCallback.success(res);
+    setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
+  }
+};
+initialServerTouch.startTime = new Date().getTime();  
+YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version',initialServerTouch,null);  
 </script>
 
 <script type="text/javascript">

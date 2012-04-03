@@ -139,6 +139,19 @@ function LeftBarTreeView(_config){
  	
  	if(window.available_elements!=undefined){
 	 	//define data node
+ 		function sortByElementName(a,b)
+ 		{
+ 			var aName = a.element_name.toLowerCase();
+ 			var bName = b.element_name.toLowerCase();
+ 			if (aName < bName){
+ 		        return -1;
+ 		     }else if (aName > bName){
+ 		       return  1;
+ 		     }else{
+ 		       return 0;
+ 		     }
+ 		}
+ 		window.available_elements.sort(sortByElementName);
 	 	this.dataNode=new YAHOO.widget.TextNode({label:"Data",ID:"d"},root,this.open_array.contains("d"));
 	 	for(var esC=0;esC<window.available_elements.length;esC++){
 	 		var es=window.available_elements[esC];
@@ -222,6 +235,19 @@ function LeftBarTreeView(_config){
       success:function(oResponse){
         var oResults = eval("(" + oResponse.responseText + ")"); 
         if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {  
+    		function sortByDesc(a,b)
+     		{
+     			var aName = a.brief_description.toLowerCase();
+     			var bName = b.brief_description.toLowerCase();
+     			if (aName < bName){
+     		        return -1;
+     		     }else if (aName > bName){
+     		       return  1;
+     		     }else{
+     		       return 0;
+     		     }
+     		}
+    		oResults.ResultSet.Result.sort(sortByDesc);
            for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {   
                var cpNode=new YAHOO.widget.TextNode({label:oResults.ResultSet.Result[ssC].brief_description,
                      		ID:"ss."+oResults.ResultSet.Result[ssC].id,

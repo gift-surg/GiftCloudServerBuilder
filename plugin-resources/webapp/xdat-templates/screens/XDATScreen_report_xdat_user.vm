@@ -159,7 +159,7 @@ $page.setVlinkColor($ui.vlink)
                          <TABLE border="1" width="80%">
                                  <TR><TD valign="top">
                                          <Table border="0" width="100%">	
-								<TR><TH align=left colspan="2">STEP2: Assign project membership and roles
+								<TR><TH align=left colspan="2">STEP 2: Assign project membership and roles
 								</TH></TR>
 			<TR>
 			<TD align=left colspan=2 valign=top><DIV ID="groupDIV"></DIV>
@@ -306,6 +306,28 @@ addGroup("$!groupid.getGroupid()");
 	  var tBody = document.createElement("TBODY");
 	  t.appendChild(tBody);
 	     
+	  //Sorts selectedgroups and selectedtags arrays by project name
+	  	var found = true;
+        var tempGroup;
+        var tempTag;
+        while(found)
+        {
+          found = false;
+          for(i = 0; i < selectedtags.length - 1; i++)
+          {
+            if(window.projectTracker.getProjectById(selectedtags[i]).getDisplayName().toLowerCase() > window.projectTracker.getProjectById(selectedtags[i+1]).getDisplayName().toLowerCase())
+            {
+              found = true;
+			  tempGroup = selectedgroups[i + 1];
+              tempTag = selectedtags[i + 1];
+              selectedgroups[i + 1] = selectedgroups[i];
+              selectedtags[i + 1] = selectedtags[i];
+              selectedgroups[i] = tempGroup;
+              selectedtags[i] = tempTag;
+            }
+          }
+        }
+	 
 	  for(var stX=0;stX<selectedtags.length;stX++){
 	     var tr= document.createElement("TR");
 	     
@@ -494,7 +516,7 @@ addGroup("$!groupid.getGroupid()");
 					<TR>
 						<TD VALIGN="top">
 							<Table border="0" width="100%">
-								<TR><TH align=left colspan="4">STEP3: Assign administrative privileges for this account</TH>
+								<TR><TH align=left colspan="4">STEP 3: Assign administrative privileges for this account</TH>
                                                                 </TR>
                                                                 <TR>
                                                                     <TD align=center><img src="$content.getURI("images/rc.gif")" border=0></td>

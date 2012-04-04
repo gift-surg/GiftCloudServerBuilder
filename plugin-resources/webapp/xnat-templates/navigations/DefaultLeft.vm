@@ -69,10 +69,7 @@ var synchronizingCookies = {
   },
   expirationTime : {
     name : "SESSION_EXPIRATION_TIME",
-    set : function () {
-      var cookieValue = YAHOO.util.Cookie.get(synchronizingCookies.expirationTime.name);
-      YAHOO.util.Cookie.set(synchronizingCookies.expirationTime.name, cookieValue , {path : '/'});
-    },
+    // no set function, there is no reason to ever change its value.
     get : function () {
       if (YAHOO.util.Cookie.exists(synchronizingCookies.expirationTime.name)) {
 	return parseExpirationTimeTuple(YAHOO.util.Cookie.get(synchronizingCookies.expirationTime.name));
@@ -153,16 +150,41 @@ var locals = {
  * 4. No tabs or windows have timed out
  */
 function refreshSynchronizingCookies () {
-  synchronizingCookies.expirationTime.set();
   synchronizingCookies.dialogDisplay.set("false");
   synchronizingCookies.sessionTimeout.set("false");
+};
+
+function disableButtons (dialog) {
+  var buttons = dialog.getButtons();
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].set('disabled',true);
+  }
+};
+
+function enableButtons (dialog) {
+  var buttons = dialog.getButtons();
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].set('disabled',false);
+  }
+};
+
+function hideWarningDialog (dialog) {
+  disableButtons(dialog);
+  synchronizingCookies.dialogDisplay.set("false");
+  dialog.hide();
+};
+
+function showWarningDialog(dialog) {
+  enableButtons(dialog);
+  synchronizingCookies.dialogDisplay.set("true");
+  dialog.show();
 };
 
 /**
  * If the user wants to extend the session, hide the dialog and "touch" the server
  */
 var handleOk = function () {
-  synchronizingCookies.dialogDisplay.set("false");
+  hideWarningDialog(warningDialog);
   touchCallback.startTime = new Date().getTime();
   YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version',touchCallback,null);
 };
@@ -172,7 +194,7 @@ var handleOk = function () {
  * to all tabs and ensure that they all close their dialogs.
  */
 var handleCancel = function () {
-  synchronizingCookies.dialogDisplay.set("false");
+  hideWarningDialog(warningDialog);
   locals.warningDisplayedOnce = true;
 };
 
@@ -218,6 +240,7 @@ var warningDialog = new YAHOO.widget.SimpleDialog("session_timeout_dialog", {
 						    icon:YAHOO.widget.SimpleDialog.ICON_WARN,
 						    visible:true,
 						    draggable:false,
+						    hideAfterSubmit : true,
 						    buttons : [
 						      { text : 'OK', handler : handleOk, isDefault:true },
 						      {text : 'Cancel' , handler : handleCancel}
@@ -280,6 +303,7 @@ function syncSessionExpirationCookieWithLocal () {
   if (locals.expirationTime.flag !== cookieExpirationTime.flag) {
     locals.warningDisplayedOnce = false;
     locals.expirationTime.flag = cookieExpirationTime.flag;
+    console.log(cookieExpirationTime.flag + " " + locals.expirationTime.flag);
     locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime - synchronizingCookies.serverResponseTime.get());
   }
   else {
@@ -308,14 +332,14 @@ function updateMessageOrHide (dialog) {
   }
   else if (synchronizingCookies.dialogDisplay.get() === "true" && !locals.warningDisplayedOnce) {
     locals.warningDisplayedOnce = true;
-    dialog.show();
+    showWarningDialog(dialog);
     updateMessageOrHide(dialog);
   }
   else if (synchronizingCookies.dialogDisplay.get() === "false" && locals.warningDisplayedOnce) {
-    dialog.hide();
+    hideWarningDialog(dialog);
   }
   else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
-    dialog.hide();
+    hideWarningDialog(dialog);
   }
 };
 

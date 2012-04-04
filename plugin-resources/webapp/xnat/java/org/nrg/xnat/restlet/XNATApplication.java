@@ -240,6 +240,7 @@ public class XNATApplication extends Application {
         router.attach("/services/logging/{" + Analytics.EVENT_KEY + "}", RemoteLoggingRestlet.class);
         router.attach("/services/mail/send", MailRestlet.class);
 
+        
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
         router.attach("/version",VersionRepresentation.class);

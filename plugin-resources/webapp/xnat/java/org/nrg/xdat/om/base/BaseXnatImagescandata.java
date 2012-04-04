@@ -440,6 +440,19 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
+		validate(expectedPath);
+	}
+	
+	public void validate(String expectedPath) throws Exception{
+		
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+		
 		for(final XnatAbstractresourceI res: this.getFile()){
 			final String uri;
 			if(res instanceof XnatResource){

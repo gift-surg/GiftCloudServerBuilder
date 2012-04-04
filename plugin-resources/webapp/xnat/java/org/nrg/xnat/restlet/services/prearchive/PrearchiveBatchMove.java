@@ -41,32 +41,25 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 	private String newProject=null;
 
 	@Override
-	public void loadParams(Form f) throws ClientException {
-			for(final String key:f.getNames()){
+	public void handleParam(String key, Object o) throws ClientException {
 				if(key.equals(SRC)){
-					for(String src:f.getValuesArray(SRC)){
-						srcs.add(src);
-					}
+			srcs.add((String)o);	
 				}else if(key.equals(NEW_PROJECT)){
-					newProject=f.getFirstValue(NEW_PROJECT);
+					newProject=(String)o;
 				}else if(key.equals(ASYNC)) {
-					if (f.getFirstValue(ASYNC).equals("false")) {
+					if (((String)o).equals("false")) {
 						async = false;
 					}
 				}
 			}				
-	}
 
 	@Override
 	public void handlePost() {
-		Representation entity = this.getRequest().getEntity();
 		
 		try {
-			if (RequestUtil.isMultiPartFormData(entity)) {
-				loadParams(new Form(entity));
-			}
+			loadBodyVariables();
 			//maintain parameters
-			loadParams(getQueryVariableForm());				
+			loadQueryVariables();			
 		} catch (ClientException e) {
 			this.getResponse().setStatus(e.getStatus(),e);
 			return;

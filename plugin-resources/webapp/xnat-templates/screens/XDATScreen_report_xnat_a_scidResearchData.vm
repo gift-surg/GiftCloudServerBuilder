@@ -80,8 +80,8 @@ $page.setVlinkColor($ui.vlink)
 <div class="error">$data.message</div><br>
 #end
 
-#if ($data.getParameters().getString("popup"))
-	#set ($popup = $data.getParameters().getString("popup") )
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+	#set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 	#set ($popup = "false")
 #end
 

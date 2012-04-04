@@ -29,7 +29,7 @@ public class MatchPrearchiveSessions extends SecureAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        Integer num= data.getParameters().getInteger("num_sessions");
+        Integer num= ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("num_sessions",data));
         BatchTransfer bt = new BatchTransfer(TurbineUtils.GetFullServerPath(),TurbineUtils.GetSystemName(),AdminUtils.getAdminEmailId());
         UserI user =TurbineUtils.getUser(data);
         bt.setUser((XDATUser)user);
@@ -38,8 +38,8 @@ public class MatchPrearchiveSessions extends SecureAction {
         {
             for (int h=0;h<=num.intValue();h++)
             {
-                String sessionFolder = data.getParameters().getString("session" + h);
-                String match = data.getParameters().getString("match" + h);
+                String sessionFolder = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("session" + h,data));
+                String match = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("match" + h,data));
                 
                 if (sessionFolder !=null && !sessionFolder.equals("") && match!=null && !match.equals(""))
                 {

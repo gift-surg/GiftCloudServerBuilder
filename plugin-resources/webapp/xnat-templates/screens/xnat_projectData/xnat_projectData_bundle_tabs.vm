@@ -10,8 +10,14 @@
 
     <script language="javascript">
     var stored_searches=new Array();
+#set($default_search="")
 #foreach($bundle in $bundles)
 stored_searches.push({ID:"$!bundle.getId()",label:"$!bundle.getBriefDescription()",URL:serverRoot +"/REST/projects/${project.getId()}/searches/$!bundle.getId()"});
+    #if($bundle.getId().equals("@xnat:subjectData"))
+		#set($default_search="$!bundle.getId()")
+    #elseif($bundle.getId().equals("${project.getId()}_xnat:subjectData") && $default_search.equals(""))
+		#set($default_search="$!bundle.getId()")
+    #end
 #end
 
 var url = "$content.getURI("servlet/AjaxServlet")";
@@ -33,16 +39,18 @@ function TabManagerInit(){
 
     window.tab_manager=new TabManager();
     
+    window.tab_manager.setCsrfToken("$!XNAT_CSRF");
+    
     window.tab_manager.init(stored_searches);
     
     var bundles=YAHOO.util.Cookie.get("${project.getId()}.open_bundle.tabs");
     if(bundles==null){
-	window.tab_manager.load({label:"Subjects"});
+		window.tab_manager.load({ID:'$default_search'});
     }else{
-	var open_tab_array=bundles.split(',');
+		var open_tab_array=bundles.split(',');
     	for(var open_tab_counter=0;open_tab_counter<open_tab_array.length;open_tab_counter++){
             var open_tab = open_tab_array[open_tab_counter];
-	    window.tab_manager.load({ID:open_tab});	
+	    	window.tab_manager.load({ID:open_tab});	
         }
     }
     

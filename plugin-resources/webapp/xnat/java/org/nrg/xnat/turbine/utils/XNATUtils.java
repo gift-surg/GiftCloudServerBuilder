@@ -372,7 +372,7 @@ public class XNATUtils {
 
         final String server = TurbineUtils.GetFullServerPath();
         
-        final String url = server + "/app/template/GetFile.vm/search_element/" + data.getParameters().getString("search_element") + "/search_field/" + data.getParameters().getString("search_field") + "/search_value/" + data.getParameters().getString("search_value");
+        final String url = server + "/app/template/GetFile.vm/search_element/" + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)) + "/search_field/" + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)) + "/search_value/" + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
         
         try {
             Class c = thisOM.getClass();

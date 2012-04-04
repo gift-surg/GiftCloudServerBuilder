@@ -394,7 +394,7 @@
 		<dependency>
 			<groupId>javamail</groupId>
 			<artifactId>javamail</artifactId>
-			<version>1.3.2</version>
+			<version>1.4.3</version>
 			<url>http://java.sun.com/products/javamail/</url>
 			<type>jar</type>
 			<properties>
@@ -532,6 +532,13 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.5</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-email</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>1.2</version>
+			<url>http://jakarta.apache.org/commons/sandbox/email</url>
 			<type>jar</type>
 		</dependency>
 		<!-- End Spring Framework dependencies -->

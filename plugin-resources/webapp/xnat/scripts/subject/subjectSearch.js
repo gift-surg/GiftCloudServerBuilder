@@ -206,6 +206,7 @@ this.submitSearch=function(_id,_autoSelect){
      url = url + "&remote-method=execute";
      url = url + "&search="+escape(search);
      url = url + "&allowMultiples=false";
+     url = url + "&XNAT_CSRF="+csrfToken;
 	  
 	 req.open("POST", serverRoot + "/servlet/AjaxServlet", false);
 	 req.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");

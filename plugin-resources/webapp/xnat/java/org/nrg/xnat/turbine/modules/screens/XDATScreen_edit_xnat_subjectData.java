@@ -52,8 +52,8 @@ public class XDATScreen_edit_xnat_subjectData extends EditScreenA {
                 context.put("page_title","Edit archive subject");
             }
             
-            if (data.getParameters().getString("project")!=null){
-                context.put("project", data.getParameters().getString("project"));
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data))!=null){
+                context.put("project", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data)));
             }
         } catch (Exception e) {
         }

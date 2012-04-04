@@ -5,13 +5,13 @@
       #formLabel("User")
   	  <TD><input type="text" name="username" size="15"></TD>
     	#formLabel("Password")
-  	  <TD><input type="password" name="password" size="15"></TD>
+  	  <TD><input type="password" name="password" size="15" autocomplete="off"></TD>
 					      <td></td>
       <td align ="left">
         <font face="$ui.sansSerifFonts">
-        #foreach($key in $data.getParameters().getKeys())
+        #foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&$key!="username" &&$key!="exception")
-        	<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!data.getParameters().getString($key))">	
+        	<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
         	#end
         #end
           <input type="submit" value="Login">
@@ -19,7 +19,7 @@
       </td>
 			      <td align="left">&nbsp;</td>
       <td>
-        <a href="$link.setPage("ForgotLogin.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">Forgot login or password?<a>
+        <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?<a>
       </td>
     </tr>
    </table>

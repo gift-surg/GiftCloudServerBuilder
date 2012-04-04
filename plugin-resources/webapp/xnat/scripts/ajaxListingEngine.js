@@ -184,6 +184,7 @@ function SearchManager(_bundleID,_description,_divTitle,_divContent,_divOptions)
         email_url +="&message=" + message;
         email_url +="&from=" + from;
         email_url +="&search_xml=" + this.searchDOM.getXML();
+        email_url +="&XNAT_CSRF="+csrfToken;
         this._emailReq.send(email_url);
         
   }  
@@ -243,7 +244,7 @@ function SearchManager(_bundleID,_description,_divTitle,_divContent,_divOptions)
 	    
         this._xmlReq.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
    
-        this._xmlReq.send("remote-class=org.nrg.xnat.ajax.RequestSearchXML&remote-method=execute&bundleID=" + this.id);
+        this._xmlReq.send("remote-class=org.nrg.xnat.ajax.RequestSearchXML&remote-method=execute&bundleID=" + this.id + "&XNAT_CSRF="+csrfToken);
         
         this.divTitle.className="titleBarGrey";
     }
@@ -304,7 +305,7 @@ function SearchManager(_bundleID,_description,_divTitle,_divContent,_divOptions)
 	    
         this._optionsReq.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
    
-        this._optionsReq.send("remote-class=org.nrg.xnat.ajax.RequestSearchXML&remote-method=execute&bundleID=" + this.id + "&elementName=" + this.searchDOM.rootElementName);
+        this._optionsReq.send("remote-class=org.nrg.xnat.ajax.RequestSearchXML&remote-method=execute&bundleID=" + this.id + "&elementName=" + this.searchDOM.rootElementName + "&XNAT_CSRF="+csrfToken);
   }
   this.loadOptions=loadOptions;
   
@@ -350,7 +351,7 @@ function SearchManager(_bundleID,_description,_divTitle,_divContent,_divOptions)
         this._xmlReq.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
    
         var searchXML=this.searchDOM.getXML();
-        var queryString = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=init&search=" + searchXML;
+        var queryString = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=init&search=" + searchXML + "&XNAT_CSRF="+csrfToken;
         if (this.numToDisplay){
           queryString +="&rows=" +this.numToDisplay; 
         }
@@ -472,7 +473,7 @@ function SearchManager(_bundleID,_description,_divTitle,_divContent,_divOptions)
 	    
         this._xmlReq.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
    
-        this._xmlReq.send("remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=loadPage&search=" + this.id + "&page="+ num);
+        this._xmlReq.send("remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=loadPage&search=" + this.id + "&page="+ num + "&XNAT_CSRF="+csrfToken);
         
       }
     }

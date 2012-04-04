@@ -9,6 +9,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.utils.SaveItemHelper;
 
 
 /**
@@ -36,7 +37,7 @@ public class FixScanTypes {
 		}
 
 		if(allowSave){
-			if(expt.save(user,false,false)){
+			if(SaveItemHelper.authorizedSave(expt,user,false,false)){
 				MaterializedView.DeleteByUser(user);
 
 				if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){

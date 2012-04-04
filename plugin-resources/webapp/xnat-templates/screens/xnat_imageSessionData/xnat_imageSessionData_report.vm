@@ -97,11 +97,11 @@ function  toggleQuarantine(){
 		    }
 		    openModalPanel("quarantine_","Removing item from quarantine.");
 		    #if($item.instanceOf("xnat:subjectData"))
-		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()?activate=true",initCallback);
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()?activate=true&XNAT_CSRF="+csrfToken,initCallback);
     #elseif($item.instanceOf("xnat:derivedData"))
-		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()?activate=true",initCallback);
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()?activate=true&XNAT_CSRF="+csrfToken,initCallback);
     #else
-		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()?activate=true",initCallback);
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()?activate=true&XNAT_CSRF="+csrfToken,initCallback);
     #end
   }else{
     var initCallback={
@@ -123,11 +123,11 @@ function  toggleQuarantine(){
 		    }
 		    openModalPanel("activate_","Placing item in quarantine.");
 		    #if($item.instanceOf("xnat:subjectData"))
-		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()?quarantine=true",initCallback);
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()?quarantine=true&XNAT_CSRF="+csrfToken,initCallback);
     #elseif($item.instanceOf("xnat:derivedData"))
-		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()?quarantine=true",initCallback);
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()?quarantine=true&XNAT_CSRF="+csrfToken,initCallback);
     #else
-		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()?quarantine=true",initCallback);
+		      YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()?quarantine=true&XNAT_CSRF="+csrfToken,initCallback);
     #end
   }
 }

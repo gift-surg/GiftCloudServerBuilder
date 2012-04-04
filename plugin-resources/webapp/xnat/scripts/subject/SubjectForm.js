@@ -659,6 +659,7 @@ this.loadFieldDefinitionGroups=function(){
      url = url + "&remote-method=execute";
      url = url + "&search="+escape(search);
      url = url + "&allowMultiples=true";
+     url = url + "&XNAT_CSRF="+csrfToken;
 	  
 	 this.req.open("POST", serverRoot + "/servlet/AjaxServlet", false);
 	 this.req.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
@@ -747,7 +748,7 @@ this.save=function(callBack){
 	 
 	 callBack.req = req;
 	 
-	 req.send("remote-class=org.nrg.xnat.ajax.StoreSubject&remote-method=execute&subject=" + escape(this.subject.toXML("")));
+	 req.send("remote-class=org.nrg.xnat.ajax.StoreSubject&remote-method=execute&subject=" + escape(this.subject.toXML("")) + "&XNAT_CSRF="+csrfToken);
    
 	 
 	 if (req.readyState == 4) {

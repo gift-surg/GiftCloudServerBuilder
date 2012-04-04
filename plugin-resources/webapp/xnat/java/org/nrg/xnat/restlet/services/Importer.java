@@ -108,7 +108,7 @@ public class Importer extends SecureResource {
 			fw=this.getFileWritersAndLoadParams(entity);
 
 			//maintain parameters
-			loadParams(getQueryVariableForm());
+			loadQueryVariables();
 			
 			ImporterHandlerA importer;
 

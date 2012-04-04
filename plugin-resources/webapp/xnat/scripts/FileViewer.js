@@ -68,7 +68,7 @@ function FileViewer(_obj){
 			}
 			
 			openModalPanel("file","Deleting '" + item.file_name +"'");
-			YAHOO.util.Connect.asyncRequest('DELETE',item.uri,this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('DELETE',item.uri + '?XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 		}
    }
    
@@ -87,7 +87,7 @@ function FileViewer(_obj){
 			}
 			
 			openModalPanel("file","Deleting folder '" + item.file_name +"'");
-			YAHOO.util.Connect.asyncRequest('DELETE',item.uri,this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('DELETE',item.uri + '?XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 		}
    }
    
@@ -1125,7 +1125,7 @@ function UploadFileForm(_obj){
 					file_name=file_name.substring(1);
 				}
 				
-				var file_params="?file_upload=true";
+				var file_params="?file_upload=true&XNAT_CSRF=" + csrfToken;
 				
 				if(file_content!=""){
 					file_params+="&content="+file_content;
@@ -1429,7 +1429,7 @@ function AddFolderForm(_obj){
 					return;
 				}
 				
-				var file_params="?n=1";
+				var file_params="?n=1&XNAT_CSRF=" + csrfToken;
 				
 				if(file_content!=""){
 					file_params+="&content="+file_content;

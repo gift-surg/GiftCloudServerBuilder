@@ -10,6 +10,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
@@ -19,6 +20,7 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
@@ -41,11 +43,11 @@ public class ReconList extends QueryOrganizerResource {
 	public ReconList(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
-				String subID= (String)request.getAttributes().get("SUBJECT_ID");
+				String subID= (String)getParameter(request,"SUBJECT_ID");
 				if(subID!=null){
 				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 						.getId(), subID, user, false);
@@ -60,7 +62,7 @@ public class ReconList extends QueryOrganizerResource {
 					}
 					
 					if(sub!=null){
-					String exptID = (String) request.getAttributes().get(
+					String exptID = (String) getParameter(request,
 							"ASSESSED_ID");
 					session = XnatImagesessiondata
 							.getXnatImagesessiondatasById(exptID, user, false);
@@ -92,7 +94,7 @@ public class ReconList extends QueryOrganizerResource {
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 				}
 			}else{
-				String exptID= (String)request.getAttributes().get("ASSESSED_ID");
+				String exptID= (String)getParameter(request,"ASSESSED_ID");
 			session = XnatImagesessiondata.getXnatImagesessiondatasById(exptID,
 					user, false);
 				
@@ -231,8 +233,9 @@ public class ReconList extends QueryOrganizerResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 	            }
-				
-					recon.save(user,false,allowDataDeletion);
+
+		           Authorizer.getInstance().authorizeSave(session.getItem(), user);
+	            SaveItemHelper.authorizedSave(recon,user,false,allowDataDeletion);
 					
 					MaterializedView.DeleteByUser(user);
 				

@@ -26,18 +26,18 @@ public class DownloadSessionsAction2 extends SecureAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        String [] session_ids=data.getParameters().getStrings("sessions");
+        String [] session_ids=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("sessions",data));
         
-        String [] scanFormats=data.getParameters().getStrings("scan_format");
+        String [] scanFormats=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_format",data));
         
-        String [] scanTypes=data.getParameters().getStrings("scan_type");
-        String [] recons=data.getParameters().getStrings("recon");
-        String [] assessors=data.getParameters().getStrings("assessors");
+        String [] scanTypes=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_type",data));
+        String [] recons=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("recon",data));
+        String [] assessors=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("assessors",data));
 
-        String [] resources=data.getParameters().getStrings("resources");
+        String [] resources=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("resources",data));
 		//BEGIN:IOWA customization: to allow project and subject included in path
-        boolean projectIncludedInPath = "true".equalsIgnoreCase(data.getParameters().getString("projectIncludedInPath"));
-        boolean subjectIncludedInPath = "true".equalsIgnoreCase(data.getParameters().getString("subjectIncludedInPath"));
+        boolean projectIncludedInPath = "true".equalsIgnoreCase(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("projectIncludedInPath",data)));
+        boolean subjectIncludedInPath = "true".equalsIgnoreCase(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("subjectIncludedInPath",data)));
         String extraParam = "";
         if(projectIncludedInPath){
             extraParam += "&projectIncludedInPath=true";
@@ -140,7 +140,7 @@ public class DownloadSessionsAction2 extends SecureAction {
         fw.close();
         
         String catalogXML = server + "archive/catalogs/stored/" + id + ".xml";
-        if (data.getParameters().getString("download_option").equals("applet")){
+        if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("download_option",data)).equals("applet")){
             context.put("catalogXML", catalogXML);
             context.put("sessions", l);
             

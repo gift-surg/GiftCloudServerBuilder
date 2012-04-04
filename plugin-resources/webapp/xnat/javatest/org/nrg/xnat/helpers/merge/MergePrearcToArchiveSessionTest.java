@@ -20,6 +20,7 @@ import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
 
@@ -73,14 +74,14 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 		subject.setId(TEST_SUB_1);
 		subject.setProject(PROJECT);
 		subject.setLabel(TEST_SUB_1);
-		subject.save(user, false, false);
+		SaveItemHelper.authorizedSave(subject,user, false, false);
 		
 		mr=new XnatMrsessiondata((UserI)user);
 		mr.setId(MR);
 		mr.setProject(PROJECT);
 		mr.setLabel(MR);
 		mr.setSubjectId(TEST_SUB_1);
-		mr.save(user, false, false);
+		SaveItemHelper.authorizedSave(mr,user, false, false);
 	}
 	
 	@AfterClass

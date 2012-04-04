@@ -113,6 +113,7 @@ function verifyExptId(obj){
    var verifyExptURL = "remote-class=org.nrg.xdat.ajax.XMLSearch";
    verifyExptURL = verifyExptURL + "&remote-method=execute";
    verifyExptURL = verifyExptURL + "&search="+escape(search_xml);
+   verifyExptURL = verifyExptURL + "&XNAT_CSRF="+csrfToken;
    if (window.XMLHttpRequest) {
        var req = new XMLHttpRequest();
    } else if (window.ActiveXObject) {

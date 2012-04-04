@@ -95,7 +95,7 @@ function RadioSettingsManager(_dom,_obj){
 		};
 		this.disableDOM(true);
 		
-        YAHOO.util.Connect.asyncRequest('PUT',this.obj.URI + this._level,this.settingsCallback);
+        YAHOO.util.Connect.asyncRequest('PUT',this.obj.URI + this._level + '?XNAT_CSRF=' + csrfToken,this.settingsCallback);
 	};
 	
 	//on init

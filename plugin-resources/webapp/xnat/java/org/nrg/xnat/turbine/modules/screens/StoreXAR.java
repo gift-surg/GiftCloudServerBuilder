@@ -42,6 +42,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
@@ -72,7 +73,7 @@ public class StoreXAR extends RawScreen {
 
     @Override
     public void doOutput(RunData data)  {
-        String allowD = data.getParameters().getString("allowDataDeletion");
+        String allowD = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("allowDataDeletion",data));
         boolean allowDataDeletion = true;
         if (allowD==null || allowD.equalsIgnoreCase("true")){
             allowDataDeletion=true;
@@ -407,7 +408,7 @@ public class StoreXAR extends RawScreen {
 
                         for(ItemI item : items){
 
-                            item.save(user, false, true);
+                            SaveItemHelper.unauthorizedSave(item,user, false, true);
 
                         }
 

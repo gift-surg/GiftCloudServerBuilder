@@ -1,12 +1,16 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.guard;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xnat.restlet.representations.RESTLoginRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.BrowserDetector;
@@ -17,6 +21,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -78,6 +83,14 @@ public class XnatSecureGuard extends Filter {
 		final HttpServletRequest httpRequest = getHttpServletRequest(request);
 		final XDATUser sessionUser = getSessionUser(httpRequest);
 		if (sessionUser != null) {
+				//Check for a CsrfToken if necessary.
+				try {
+					//isCsrfTokenOk either returns true or throws an exception...
+					SecureAction.isCsrfTokenOk(httpRequest,false);
+				} catch (Exception e){
+					throw new RuntimeException(e);//LOL.
+				}
+			
 			attachUser(request, sessionUser);
 			return true;
 		} else {
@@ -88,6 +101,7 @@ public class XnatSecureGuard extends Filter {
 					final XDATUser user = authenticateBasic(challengeResponse);
 					if (user != null) {
 						attachUser(request, user);
+						httpRequest.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
 						return true;
 					}
 				}

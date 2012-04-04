@@ -57,7 +57,7 @@ public final class PrearcSessionListResource extends SecureResource {
 		super(context, request, response);
 
 		// Project is explicit in the request
-		requestedProject = (String)request.getAttributes().get(PROJECT_ATTR);
+		requestedProject = (String)getParameter(request,PROJECT_ATTR);
 
 		prearcRef = request.getResourceRef();
 		

@@ -30,6 +30,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.security.XnatLdapAuthenticator;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.XnatLdapAuthenticator.AuthenticationAttempt;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
@@ -395,7 +396,7 @@ public class XnatPipelineLauncher {
         wrk.setPipelineName(this.getPipelineName());
         wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
         wrk.setStatus("Queued");
-        wrk.save(user, false, true);
+            SaveItemHelper.authorizedSave(wrk,user,false,true);
     }
 
     /**
@@ -585,7 +586,7 @@ public class XnatPipelineLauncher {
         xnatPipelineLauncher.setParameter("project", imageSession.getProject());
         xnatPipelineLauncher.setParameter("cachepath", QCImageCreator.getQCCachePathForSession(imageSession.getProject()));
 
-        String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + data.getParameters().get("emailField");
+	String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
         String[] emails = emailsStr.trim().split(",");
         for (int i = 0; i < emails.length; i++) {
             xnatPipelineLauncher.notify(emails[i]);

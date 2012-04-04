@@ -9,6 +9,7 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -49,7 +50,7 @@ public class DirectScanResourceImpl extends DirectResourceModifierA{
 		
 		scan.setFile(resource);
 		
-		scan.save(user, false, false);
+		SaveItemHelper.authorizedSave(scan,user, false, false);
 		return true;
 	}
 

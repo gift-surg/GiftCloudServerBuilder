@@ -15,7 +15,6 @@ import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -41,21 +40,16 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 		super(context, request, response);
 	}
 
-	public void loadParams(Form f) throws ClientException {
-			for(final String key:f.getNames()){
-				if(key.equals(SRC)){
-					for(String src:f.getValuesArray(SRC)){
-						srcs.add(src);
-					}
-				}
-				else if (key.equals(ASYNC)) {
-					// async = f.getValues(SRC).equals("true") ? true : false;
-						if (f.getFirstValue(ASYNC).equals("false")) {
-							async = false;
-						}
-				}
-			}				
-	}
+	@Override
+	public void handleParam(String key,Object value) throws ClientException {
+		if(key.equals(SRC)){
+			srcs.add((String)value);
+		}
+		else if (key.equals(ASYNC)) {
+			boolean isFalse = isFalse(value);
+			async = !isFalse;
+		}	
+	}				
 
 	protected SessionDataTriple buildSessionDataTriple(String uri) throws MalformedURLException {
 		return SessionDataTriple.fromURI(uri);

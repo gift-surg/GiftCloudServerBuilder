@@ -24,9 +24,9 @@ public class PipelineScreen_default_launcher extends DefaultPipelineScreen {
 
     public void finalProcessing(RunData data, Context context) {
     	try {
-	        String projectId = data.getParameters().get("project");
-	        String pipelinePath = data.getParameters().get("pipeline");
-	        String schemaType = data.getParameters().get("schema_type");
+	        String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+	        String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline",data));
+	        String schemaType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("schema_type",data));
 	        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 	        if (schemaType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
 	        	ArcProjectPipeline pipelineData = (ArcProjectPipeline)arcProject.getPipelineByPath(pipelinePath);

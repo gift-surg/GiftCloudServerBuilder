@@ -141,12 +141,9 @@ public abstract class QueryOrganizerResource extends SecureResource {
 	public ArrayList<String> columns=null;
 	
 	public void populateQuery(QueryOrganizer qo){
-		Form queryForm = this.getQueryVariableForm();
 		
-		Map<String,String> qsParams=queryForm.getValuesMap();
-		
-		if(qsParams.containsKey("columns") && !qsParams.get("columns").equals("DEFAULT")){
-			columns=StringUtils.CommaDelimitedStringToArrayList(qsParams.get("columns"));
+		if(hasQueryVariable("columns") && !getQueryVariable("columns").equals("DEFAULT")){
+			columns=StringUtils.CommaDelimitedStringToArrayList(getQueryVariable("columns"));
 		}else{
 			columns=getDefaultFields(qo.getRootElement());
 		}
@@ -169,41 +166,36 @@ public abstract class QueryOrganizerResource extends SecureResource {
 		
 		if(this.fieldMapping.size()>0){
 			for(String key: fieldMapping.keySet()){
-				if(!key.equals("xsiType") && qsParams.containsKey(key)){
-					cc.add(this.processQueryCriteria(this.fieldMapping.get(key),qsParams.get(key)));
+				if(!key.equals("xsiType") && hasQueryVariable(key)){
+					cc.add(this.processQueryCriteria(this.fieldMapping.get(key),getQueryVariable(key)));
 				}
 			}
 		}
 		
-		for(String key:qsParams.keySet()){
+		for(String key:getQueryVariableKeys()){
 			if(key.indexOf("/")>-1){
-				cc.add(this.processQueryCriteria(key,qsParams.get(key)));
+				cc.add(this.processQueryCriteria(key,getQueryVariable(key)));
 			}
 		}
 		
 		if(isQueryVariable("req_format", "form", false))
 		{
-			Representation entity = this.getRequest().getEntity();
-			Form bodyForm= new Form(entity);
-			
-			Map<String,String> bForm=bodyForm.getValuesMap();
-			
 			if(this.fieldMapping.size()>0){
 				for(String key: fieldMapping.keySet()){
-					if(bForm.containsKey(key)){
-						cc.add(this.processQueryCriteria(this.fieldMapping.get(key),bForm.get(key)));
+					if(hasBodyVariable(key)){
+						cc.add(this.processQueryCriteria(this.fieldMapping.get(key),getBodyVariable(key)));
 					}
 				}
 			}
 			
-			for(String key:bForm.keySet()){
+			for(String key:getBodyVariableKeys()){
 				if(key.indexOf("/")>-1){
-					cc.add(this.processQueryCriteria(key,bForm.get(key)));
+					cc.add(this.processQueryCriteria(key,getBodyVariable(key)));
 				}
 			}
 			
-			if(bForm.containsKey("columns")){
-				columns=StringUtils.CommaDelimitedStringToArrayList(bForm.get("columns"));
+			if(hasBodyVariable("columns")){
+				columns=StringUtils.CommaDelimitedStringToArrayList(getBodyVariable("columns"));
 				for(String col:columns){
 					if(col.indexOf("/")>-1){
 						try {
@@ -286,18 +278,15 @@ public abstract class QueryOrganizerResource extends SecureResource {
 				return this.getQueryVariable("xsiType");
 			}
 
-			Form queryForm = this.getQueryVariableForm();
-			Map<String,String> qsParams=queryForm.getValuesMap();
-			
 			ArrayList<String> fields=new ArrayList<String>();
 			
-			for(String key:qsParams.keySet()){
+			for(String key:getQueryVariableKeys()){
 				if(key.indexOf("/")>-1){
 					fields.add(key);
 				}else if(this.fieldMapping.containsKey(key)){
 					fields.add(this.fieldMapping.get(key));
 				}else if(key.equals("columns")){
-					for(String col:StringUtils.CommaDelimitedStringToArrayList(qsParams.get("columns"))){
+					for(String col:StringUtils.CommaDelimitedStringToArrayList(getQueryVariable("columns"))){
 						if(col.indexOf("/")>-1){
 							fields.add(col);
 						}else if(this.fieldMapping.containsKey(col)){

@@ -39,8 +39,8 @@ public class FreesurferLauncher extends PipelineLauncher{
 	public boolean launch(RunData data, Context context, XnatMrsessiondata mr) {
 		try {
 			XnatPipelineLauncher xnatPipelineLauncher = XnatPipelineLauncher.GetLauncher(data, context, mr);
-		    String pipelineName = data.getParameters().get("freesurfer_pipelinename");
-		    String cmdPrefix = data.getParameters().get("cmdprefix");
+		    String pipelineName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("freesurfer_pipelinename",data));
+		    String cmdPrefix = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("cmdprefix",data));
 		    xnatPipelineLauncher.setPipelineName(pipelineName);
 		    xnatPipelineLauncher.setSupressNotification(true);
 		    String buildDir = PipelineFileUtils.getBuildDir(mr.getProject(), true);
@@ -49,10 +49,10 @@ public class FreesurferLauncher extends PipelineLauncher{
 		    xnatPipelineLauncher.setNeedsBuildDir(false);
 		    //Parameters for Freesurfer Launch
 		    if (TurbineUtils.HasPassedParameter("custom_command", data)) {
-	    		xnatPipelineLauncher.setParameter("custom_command",data.getParameters().get("custom_command"));
+	    		xnatPipelineLauncher.setParameter("custom_command",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("custom_command",data)));
 			}else {
 			    xnatPipelineLauncher.setParameter("sessionId", mr.getLabel());
-			    xnatPipelineLauncher.setParameter("isDicom", data.getParameters().get("isDicom"));
+			    xnatPipelineLauncher.setParameter("isDicom", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("isDicom",data)));
 			    xnatPipelineLauncher.setParameter("mprs",mprageScans);
 			}
 		    boolean rtn = xnatPipelineLauncher.launch(cmdPrefix);

@@ -153,7 +153,7 @@ Prearc.prototype.createRemoveRequest = function(name, path) {
       } else if (window.ActiveXObject) {
 				instance.removeReq = new ActiveXObject("Microsoft.XMLHTTP");
       }
-      instance.removeReq.open("DELETE", instance.removeURL + path, true);
+      instance.removeReq.open("DELETE", instance.removeURL + path + "?XNAT_CSRF="+csrfToken, true);
       instance.removeReq.onreadystatechange = instance.removeCallback;
       instance.removeReq.send(null);
     }
@@ -248,6 +248,7 @@ Prearc.prototype.moveSessionTo = function(session, destName) {
 	url = this.moveURL + '&to=' + destName + '&path=' + session;
 	url += '&to=' + destName;
 	url += '&path=' + session;
+	url += '&XNAT_CSRF='+csrfToken;
 	
 	if (window.XMLHttpRequest) {
 		this.moveReq = new XMLHttpRequest();

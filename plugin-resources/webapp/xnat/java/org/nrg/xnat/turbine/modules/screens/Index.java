@@ -32,8 +32,8 @@ public class Index extends SecureScreen {
         
         XDATUser user = TurbineUtils.getUser(data);
         
-        if(data.getParameters().get("node")!=null){
-        	context.put("node", data.getParameters().get("node"));
+        if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data))!=null){
+        	context.put("node", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data)));
         }
         
         ProjectAccessRequest.CreatePARTable(user);

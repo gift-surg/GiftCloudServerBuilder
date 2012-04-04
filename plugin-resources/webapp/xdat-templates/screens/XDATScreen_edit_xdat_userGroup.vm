@@ -112,7 +112,7 @@ $page.setVlinkColor($ui.vlink)
 		<TR>
 		   <TD COLSPAN=2 ALIGN=left>
 		      <input type="submit" name="eventSubmit_doPerform" value="Submit"/>
-				#if ($data.getParameters().getString("popup")=="true")
+				#if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
 				<input type="button" name="btnBack" value="Back" onClick="history.go(-1)"/>
 				#end
 		   </TD>

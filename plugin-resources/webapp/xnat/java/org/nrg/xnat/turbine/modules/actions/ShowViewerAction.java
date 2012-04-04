@@ -29,7 +29,7 @@ public class ShowViewerAction extends SecureAction {
     public void doPerform(RunData data, Context context) throws Exception {
         if (data.getParameters().containsKey("searchValue"))
         {
-            String s = data.getParameters().get("searchValue");
+            String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("searchValue",data));
             if (s==null || s.equalsIgnoreCase(""))
             {
                 data.setMessage("Please specify a search value.");
@@ -104,13 +104,13 @@ public class ShowViewerAction extends SecureAction {
         
         if (data.getParameters().containsKey("skipq")) {
 			context.put("skipq", "true");
-			context.put("id",data.getParameters().getString("id"));
+			context.put("id",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data)));
 			data.getParameters().remove("skipq");
 		}else {
-			String sessionId = data.getParameters().getString("session");
+			String sessionId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("session",data));
 			context.put("sessionId",sessionId);
-			if (data.getParameters().getString("startDisplayWith")!=null && !data.getParameters().getString("startDisplayWith").equalsIgnoreCase(""))
-				context.put("startDisplayWith",data.getParameters().getString("startDisplayWith"));
+			if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("startDisplayWith",data))!=null && !((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("startDisplayWith",data)).equalsIgnoreCase(""))
+				context.put("startDisplayWith",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("startDisplayWith",data)));
 		}
 	
 		data.setScreenTemplate("Viewer.vm");

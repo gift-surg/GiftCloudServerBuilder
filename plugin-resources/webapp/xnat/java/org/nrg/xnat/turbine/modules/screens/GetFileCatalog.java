@@ -75,10 +75,10 @@ public class GetFileCatalog extends RawScreen {
                  
                  CatCatalogBean catalog = catalogSet.catalog;
 
-                 catalog.setId(data.getParameters().getString("search_value"));
+                 catalog.setId(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
                  
                  try {
-                     final String identifier = data.getParameters().getString("search_element") + ":"+ data.getParameters().getString("search_field") + ":"+ data.getParameters().getString("search_value");
+                     final String identifier = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)) + ":"+ ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)) + ":"+ ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
                      
                      data.getSession().setAttribute(identifier, catalogSet.hash);
                      response.setContentType("text/xml");
@@ -156,7 +156,7 @@ public class GetFileCatalog extends RawScreen {
 //        CatCatalogBean catalog = catalogSet.catalog;
 //        
 //        try {
-//            final String identifier = data.getParameters().getString("search_element") + ":"+ data.getParameters().getString("search_field") + ":"+ data.getParameters().getString("search_value");
+//            final String identifier = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)) + ":"+ ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)) + ":"+ ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
 //            
 //            HttpServletResponse response = data.getResponse();
 //            data.getSession().setAttribute(identifier, catalogSet.hash);

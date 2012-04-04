@@ -24,6 +24,7 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.DateUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
@@ -99,23 +100,28 @@ public class ProjectListResource extends QueryOrganizerResource {
 				}
 				
 				if(item.getCurrentDBVersion()==null){
-					
-						try {
+
+					try {
 						project.initNewProject(user,allowDataDeletion,false);
-						} catch (Exception e) {
-							e.printStackTrace();
-							this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-						}
-						
+					} catch (Exception e) {
+						e.printStackTrace();
+						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+					}
+
 					final ValidationResults vr = project.validate();
-		            
-		            if (vr != null && !vr.isValid())
-		            {
-		            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
+
+					if (vr != null && !vr.isValid())
+					{
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
-		            }
+					}
+//					NOT NEEDED because this if block is only for new projects
+//					if(!user.canEdit(project)){
+//						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+//						return;
+//					}
 					
-						project.save(user,true,false);
+						SaveItemHelper.authorizedSave(project,user,true,false);
 						item =project.getItem().getCurrentDBVersion(false);
 						
 						XnatProjectdata postSave = new XnatProjectdata(item);
@@ -131,7 +137,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 		                }
 		                
 		                if (!accessibility.equals("private"))
-		                    project.initAccessibility(accessibility, true);
+		                    project.initAccessibility(accessibility, true,user);
 		                
 		                user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
 

@@ -2,8 +2,8 @@
 $page.setTitle("UserGroup Details")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
-#if ($data.getParameters().getString("popup"))
-	#set ($popup = $data.getParameters().getString("popup") )
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+	#set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 	#set ($popup = "false")
 #end
 <TABLE width="100%">
@@ -133,7 +133,7 @@ $page.setVlinkColor($ui.vlink)
 					</TR>
 				#end
 			</TABLE>
-#if ($data.getParameters().getString("popup")=="true")
+#if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
 						<input type="button" name="btnClose" ONCLICK="javascript:window.close()" value="Close"/>
                     #else
                         <input type="button" name="btnClose" ONCLICK="javascript:history.go(-1)" value="Back"/>

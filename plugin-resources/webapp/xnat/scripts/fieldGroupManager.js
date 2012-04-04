@@ -181,6 +181,7 @@ this.save=function(){
 		     postData = postData + "&remote-method=execute";
 		     postData = postData + "&xml="+this.group.toXML("");
 		     postData = postData + "&allowDataDeletion=false";
+		     postData = postData + "&XNAT_CSRF=" + csrfToken;
 			  
 			 var catCallback={
 				success:this.handleSuccessPost,

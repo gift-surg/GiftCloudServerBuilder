@@ -56,6 +56,7 @@ import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -551,7 +552,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -582,7 +583,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				
 				String id=expt.getId();
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+				SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -605,7 +606,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			
 			for (WrkWorkflowdata wrk : workflows){
 			    try {
-					DBAction.DeleteItem(wrk.getItem(),user);
+			    	SaveItemHelper.authorizedDelete(wrk.getItem(),user);
 				} catch (Exception e) {
 					logger.error("",e);
 				}
@@ -817,6 +818,22 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 	@Override
 	public void preSave() throws Exception{
 		super.preSave();
+		
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(StringUtils.IsEmpty(this.getLabel())){
+			throw new IllegalArgumentException();
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
+			throw new IllegalArgumentException("Labels cannot use special characters.");
+		}
 		
 		final XnatProjectdata proj = this.getPrimaryProject(false);
 		if(proj==null){

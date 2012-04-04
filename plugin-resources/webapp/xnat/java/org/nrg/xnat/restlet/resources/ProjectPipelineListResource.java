@@ -36,7 +36,7 @@ public class ProjectPipelineListResource extends SecureResource  {
 		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 		
-		pID= (String)request.getAttributes().get("PROJECT_ID");
+		pID= (String)getParameter(request,"PROJECT_ID");
 		if(pID!=null){
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
@@ -56,12 +56,10 @@ public class ProjectPipelineListResource extends SecureResource  {
 	public void handleDelete() {
 		//Remove the Pipeline identified by the path for the project and the datatype
 		if (proj != null) {
-			Form f = getRequest().getResourceRef().getQueryAsForm();
 			String pathToPipeline = null;
 			String datatype = null;
-			if(f!=null) {
-				pathToPipeline = f.getFirstValue("path");
-				datatype = f.getFirstValue("datatype");
+				pathToPipeline = this.getQueryVariable("path");
+				datatype = this.getQueryVariable("datatype");
 				if (pathToPipeline != null && datatype != null) {
 					pathToPipeline = pathToPipeline.trim();
 					datatype=datatype.trim();
@@ -102,9 +100,6 @@ public class ProjectPipelineListResource extends SecureResource  {
 			}else {
 				getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Expecting path and datatype as query parameters");
 			}
-		}else {
-			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Project Resource identified by " + pID  + " not found");
-		}
 	}
 
 	
@@ -127,14 +122,9 @@ public class ProjectPipelineListResource extends SecureResource  {
 		boolean isUserAuthorized = isUserAuthorized();
 		ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 		String comment = "existing";
-		boolean additional = false;
 		if (isUserAuthorized) {
-			Form f = getRequest().getResourceRef().getQueryAsForm();
-			if(f!=null) {
-				String additionalStr=f.getFirstValue("additional");
-				if (additionalStr != null)
-					additional = Boolean.parseBoolean(additionalStr);
-			}
+			boolean additional=this.isQueryVariableTrue("additional");
+			
 				//Check to see if the Project already has an entry in the ArcSpec.
 				//If yes, then return that entry. If not then construct a new ArcProject element and insert an attribute to say that its an already existing
 				//entry or not

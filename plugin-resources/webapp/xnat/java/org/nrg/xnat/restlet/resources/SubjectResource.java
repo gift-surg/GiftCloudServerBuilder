@@ -16,6 +16,7 @@ import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -42,12 +43,12 @@ public class SubjectResource extends ItemResource {
 	public SubjectResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			subID= (String)request.getAttributes().get("SUBJECT_ID");
+			subID= (String)getParameter(request,"SUBJECT_ID");
 
 		if(proj!=null)
 			existing=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);
@@ -112,7 +113,7 @@ public class SubjectResource extends ItemResource {
 										}
 										
 										((XnatProjectparticipant)pp).setLabel(newLabel);
-										((XnatProjectparticipant)pp).save(user,false,false);
+										SaveItemHelper.authorizedSave(((XnatProjectparticipant)pp),user,false,false);
 										
 										if(!this.isQueryVariableTrue(PRIMARY)){
 											this.returnDefaultRepresentation();
@@ -140,7 +141,7 @@ public class SubjectResource extends ItemResource {
 								sub.moveToProject(newProject,newLabel,user); 
 								
 								if(matched!=null){
-									DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", matched.getItem(), user);
+									SaveItemHelper.authorizedRemoveChild(sub.getItem(), "xnat:subjectData/sharing/share", matched.getItem(), user);
 									sub.removeSharing_share(index);
 								}
 							}else{
@@ -157,7 +158,7 @@ public class SubjectResource extends ItemResource {
 											pp.setProject(newProject.getId());
 											if(newLabel!=null)pp.setLabel(newLabel);
 											pp.setSubjectId(sub.getId());
-											pp.save(user, false, false);
+											SaveItemHelper.authorizedSave(pp,user, false, false);
 										}else{
 											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in the " + newProject.getId() + " project.");
 											return;
@@ -279,7 +280,7 @@ public class SubjectResource extends ItemResource {
 						return;
 		            }
 											
-					if(sub.save(user,false,this.isQueryVariableTrue("allowDataDeletion"))){
+					if(SaveItemHelper.authorizedSave(sub,user,false,this.isQueryVariableTrue("allowDataDeletion"))){
 						user.clearLocalCache();
 					MaterializedView.DeleteByUser(user);
 					}

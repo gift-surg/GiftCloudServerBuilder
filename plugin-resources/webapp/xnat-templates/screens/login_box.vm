@@ -17,15 +17,15 @@
     </tr>
     <tr>
     	#formLabel("Password")
-  	  <TD><input type="password" name="j_password"></TD>
+  	  <TD><input type="password" name="j_password" autocomplete="off"></TD>
     </tr>
     <tr>
 					      <td></td>
       <td align ="left">
         <font face="$ui.sansSerifFonts">
-        #foreach($key in $data.getParameters().getKeys())
+        #foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
           	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception" &&$key!="username" &&$key!="exception")
-            		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!data.getParameters().getString($key))">	
+            		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
           	#end
         #end
           <input type="submit" name="login" value="Login">

@@ -134,9 +134,9 @@ RestSharer = function(_array,_config) {
 				}
     			processing=true;
     			openModalPanel("a_share","Sharing data into " + this.config.project.label);
-    			var params=""
+    			var params="?XNAT_CSRF=" + csrfToken;
     			if(oRecord.getData("new_label")!=""){
-    				params="?label="+oRecord.getData("new_label");
+    				params+="&label="+oRecord.getData("new_label");
     				if(oRecord.getData("redirect")!=null){
     					this.new_label=oRecord.getData("new_label");
     				}

@@ -22,7 +22,7 @@ public class ScanTypeListing  extends SecureResource {
 	public ScanTypeListing(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-		String pID = (String) request.getAttributes().get("PROJECT_ID");
+		String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 

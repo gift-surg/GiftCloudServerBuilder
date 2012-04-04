@@ -40,6 +40,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
@@ -48,8 +49,8 @@ public class ArcPut extends RawScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(ArcPut.class);
     @Override
     protected void doOutput(RunData data) throws Exception {
-        String session = data.getParameters().getString("session");
-        String mr_session_id = data.getParameters().getString("mr_session_id");
+        String session = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("session",data));
+        String mr_session_id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("mr_session_id",data));
         HttpServletResponse response = data.getResponse();
         response.setContentType("text/xml");
         response.setHeader("Cache-Control", "no-cache");
@@ -218,7 +219,7 @@ public class ArcPut extends RawScreen {
                     FileUtils.MoveDir(destination, dest, true);
                     FileUtils.DeleteFile(destination);
                     try {
-                        tempMR.save(user,false,false);
+                    	SaveItemHelper.authorizedSave(tempMR,user,false,false);
                         data.setMessage("Files successfully uploaded.");
                     } catch (Exception e) {
                     	logger.error("",e);

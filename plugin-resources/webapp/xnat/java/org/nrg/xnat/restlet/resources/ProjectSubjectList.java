@@ -17,6 +17,7 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -35,7 +36,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 	public ProjectSubjectList(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 				
@@ -154,7 +155,7 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 					return;
 							}
 				
-				if(sub.save(user,false,false)){
+				if(SaveItemHelper.authorizedSave(sub,user,false,false)){
 					MaterializedView.DeleteByUser(user);
 						}
 

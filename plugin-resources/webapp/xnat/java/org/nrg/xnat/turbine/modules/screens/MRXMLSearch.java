@@ -19,6 +19,7 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
@@ -61,8 +62,8 @@ created in buildPDF.
 	*/
 	protected final void doOutput(RunData data) throws Exception
 	{
-	    String username = data.getParameters().getString("username");
-	    String password = data.getParameters().getString("password");
+	    String username = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("username",data));
+	    String password = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("password",data));
 	    XDATUser user = TurbineUtils.getUser(data);
         
         if(user==null){
@@ -76,8 +77,11 @@ created in buildPDF.
         if (user != null)
         {
     	    try {
+    	    	
+    	    	SecureAction.isCsrfTokenOk(data.getRequest(),false);
+    	    	
                 String dataType = "xnat:imageSessionData";
-                String id = data.getParameters().getString("id");
+                String id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
                 
                 GenericWrapperElement element = GenericWrapperElement.GetElement(dataType);
                 String functionName= element.getTextFunctionName();
@@ -116,7 +120,7 @@ created in buildPDF.
                         
                         
                         XnatImagesessiondata mr = (XnatImagesessiondata)BaseElement.GetGeneratedItem(item);
-                        String adjustPath=data.getParameters().getString("adjustPath");
+                        String adjustPath=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("adjustPath",data));
                         if (adjustPath ==null)
                         {
                             

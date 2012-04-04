@@ -14,6 +14,7 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
@@ -21,6 +22,7 @@ import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.search.CriteriaCollection;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PullScanDataFromHeaders;
@@ -44,12 +46,12 @@ public class ScanResource  extends ItemResource {
 	public ScanResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			String assessedID= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessedID= (String)getParameter(request,"ASSESSED_ID");
 			if(assessedID!=null){
 				if(session==null&& assessedID!=null){
 				session = (XnatImagesessiondata) XnatExperimentdata
@@ -66,7 +68,7 @@ public class ScanResource  extends ItemResource {
 					}
 				}
 
-				scanID= (String)request.getAttributes().get("SCAN_ID");
+				scanID= (String)getParameter(request,"SCAN_ID");
 				if(scanID!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 					this.getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -219,7 +221,9 @@ public class ScanResource  extends ItemResource {
 					return;
 	            }
 				
-					scan.save(user,false,allowDataDeletion);
+	            Authorizer.getInstance().authorizeSave(session.getItem(), user);
+	            
+	            SaveItemHelper.authorizedSave(scan,user,false,allowDataDeletion);
 					
 					MaterializedView.DeleteByUser(user);
 				
@@ -288,7 +292,7 @@ public class ScanResource  extends ItemResource {
 	                    }
 	                }
 	            }
-	            DBAction.DeleteItem(scan.getItem().getCurrentDBVersion(), user);
+	            SaveItemHelper.authorizedDelete(scan.getItem().getCurrentDBVersion(), user);
 	            
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);

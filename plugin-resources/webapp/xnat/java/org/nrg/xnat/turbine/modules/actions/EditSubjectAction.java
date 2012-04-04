@@ -29,8 +29,10 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 /**
@@ -77,9 +79,9 @@ public class EditSubjectAction extends SecureAction {
                 if (! message.endsWith("/addID : Required Field"))
                 {
             	    data.addMessage(message);
-            	    if (data.getParameters().getString("edit_screen") !=null)
+            	    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
             	    {
-            	        data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+            	        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
             	    }
                     if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
             	    return;
@@ -113,7 +115,7 @@ public class EditSubjectAction extends SecureAction {
       // System.out.println("EditSubjectAction: PRE DOB:" + found.getProperty("dob"));
             //System.out.println("EditSubjectAction: PRE YOB:" + found.getProperty("yob"));
             
-            if (data.getParameters().get("dob_estimated")!=null)
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("dob_estimated",data))!=null)
             {
             	final Date year = (Date)found.getProperty("demographics/dob");
                 found.setProperty("demographics/yob",new Integer(year.getYear() + 1900));
@@ -178,9 +180,9 @@ public class EditSubjectAction extends SecureAction {
                                                 
                         context.put("matches",matches);
                         TurbineUtils.SetEditItem(found,data);
-                        if (data.getParameters().getString("edit_screen") !=null)
+                        if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                         {
-                            data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                            data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                         }
                         if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
                         data.addMessage("Matched previous subject. Save aborted.");
@@ -195,9 +197,9 @@ public class EditSubjectAction extends SecureAction {
                             final ArrayList matches = BaseElement.WrapItems(items.getItems());
                             context.put("matches",matches);
                             TurbineUtils.SetEditItem(found,data);
-                            if (data.getParameters().getString("edit_screen") !=null)
+                            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                             {
-                                data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                                data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                             }
                             if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
                             data.addMessage("Matched previous subject. Save aborted.");
@@ -213,9 +215,9 @@ public class EditSubjectAction extends SecureAction {
                                 
                                 context.put("matches",matches);
                                 TurbineUtils.SetEditItem(found,data);
-                                if (data.getParameters().getString("edit_screen") !=null)
+                                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                                 {
-                                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                                 }
                                 if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
                                 data.addMessage("Matched previous subject. Save aborted.");
@@ -231,9 +233,9 @@ public class EditSubjectAction extends SecureAction {
                 TurbineUtils.SetEditItem(found,data);
                 if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
                 data.addMessage("Invalid create permissions for this item.");
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -257,13 +259,13 @@ public class EditSubjectAction extends SecureAction {
                 {
                     final int index = key.indexOf("=");
                     final String field = key.substring(index+1);
-                    final Object value = data.getParameters().getObject(key);
+                    final Object value = org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data);
                     logger.debug("FOUND REMOVE: " + field + " " + value);
                     final ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
                     if (items.size() > 0)
                     {
                     	final ItemI toRemove = items.getFirst();
-                        DBAction.RemoveItemReference(first.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
+                    	SaveItemHelper.unauthorizedRemoveChild(first.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
                         first.removeItem(toRemove);
                         removedReference = true;
                     }else{
@@ -276,9 +278,9 @@ public class EditSubjectAction extends SecureAction {
             {
                 data.getSession().setAttribute("edit_item",first);
                 if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -290,13 +292,17 @@ public class EditSubjectAction extends SecureAction {
                 TurbineUtils.SetEditItem(first,data);
                 context.put("vr",vr);
                 if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
             }else{
             	try {
-            		found.save(TurbineUtils.getUser(data),false,false);
+            		XnatSubjectdata sub=new XnatSubjectdata(found);
+            		if(!user.canEdit(sub)){
+            			error(new InvalidPermissionException("Unable to save subject " + sub.getId()),data);
+            		}
+            		SaveItemHelper.authorizedSave(sub,TurbineUtils.getUser(data),false,false);
             		
 					MaterializedView.DeleteByUser(user);
 					
@@ -312,9 +318,9 @@ public class EditSubjectAction extends SecureAction {
                     TurbineUtils.SetEditItem(found,data);
                     if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
                     
-                    if (data.getParameters().getString("edit_screen") !=null)
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                     {
-                        data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                     }
                     return;
             	}
@@ -336,9 +342,9 @@ public class EditSubjectAction extends SecureAction {
             data.setMessage("Unknown Error.");
             if(TurbineUtils.HasPassedParameter("destination", data))data.getParameters().add("destination", (String)TurbineUtils.GetPassedParameter("destination", data));
             TurbineUtils.SetEditItem(found,data);
-            if (data.getParameters().getString("edit_screen") !=null)
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
             {
-                data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
             }
         }
     }

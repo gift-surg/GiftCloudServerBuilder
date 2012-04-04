@@ -26,8 +26,8 @@ public class UserFavoriteResource extends SecureResource {
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			
-			dataType= (String)request.getAttributes().get("DATA_TYPE");
-			pID= (String)request.getAttributes().get("PROJECT_ID");
+			dataType= (String)getParameter(request,"DATA_TYPE");
+			pID= (String)getParameter(request,"PROJECT_ID");
 
 			
 			if(dataType.contains("'")){

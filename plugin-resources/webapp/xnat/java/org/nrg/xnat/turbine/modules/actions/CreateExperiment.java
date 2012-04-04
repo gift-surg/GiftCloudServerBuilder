@@ -28,13 +28,13 @@ public class CreateExperiment extends SecureAction {
         String project= null;
         String parent_expt_id= null;
         
-        if(data.getParameters().get("search_field")!=null)
+        if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data))!=null)
         {
-            if(data.getParameters().getString("search_field").equalsIgnoreCase("xnat:subjectData.ID"))
+            if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)).equalsIgnoreCase("xnat:subjectData.ID"))
             {
-                if(data.getParameters().get("search_value")!=null)
+                if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data))!=null)
                 {
-                    part_id= data.getParameters().get("search_value");
+                    part_id= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
                 }
             }
         }

@@ -138,9 +138,10 @@ public class MailRestlet extends SecureResource {
 
         if (MediaType.APPLICATION_WWW_FORM.equals(mediaType, true)) {
             if (RequestUtil.isMultiPartFormData(entity)) {
-                loadParams(new Form(entity));
+                loadBodyVariables();
+                loadQueryVariables();
             } else {
-                loadParams(getQueryVariableForm());
+                loadQueryVariables();
             }
         } else if (MediaType.MULTIPART_FORM_DATA.equals(mediaType, true)) {
             List<FileWriterWrapperI> files = getFileWritersAndLoadParams(entity, true);

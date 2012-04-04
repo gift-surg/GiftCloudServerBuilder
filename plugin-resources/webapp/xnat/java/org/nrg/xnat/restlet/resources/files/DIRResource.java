@@ -46,12 +46,12 @@ public class DIRResource extends SecureResource {
 			return;
 		}
 		
-		final String pID = (String) request.getAttributes().get("PROJECT_ID");
+		final String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
 
-		final String exptID = (String) request.getAttributes().get("EXPT_ID");
+		final String exptID = (String) getParameter(request,"EXPT_ID");
 		if (exptID != null) {
 			if(exptID!=null){
 				expt=XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
@@ -126,7 +126,7 @@ public class DIRResource extends SecureResource {
 							return null;
 						}
 						rep.addEntry(f);
-						this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",f.getName()));
+						this.setContentDisposition(String.format("%s.zip", f.getName()));
 						return rep;
 					}else{
 						return this.representFile(f, mt);
@@ -182,7 +182,7 @@ public class DIRResource extends SecureResource {
 							rep.addAll(fs.getMatches());
 						}
 			
-						this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
+						this.setContentDisposition(rep.getDownloadName());
 						return rep;
 					}else{
 

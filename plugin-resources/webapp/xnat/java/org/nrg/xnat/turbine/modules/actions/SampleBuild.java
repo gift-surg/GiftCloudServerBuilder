@@ -27,12 +27,12 @@ public class SampleBuild extends SecureAction
         try {
             ItemI data_item = TurbineUtils.GetItemBySearch(data);
             XnatMrsessiondata mr = new XnatMrsessiondata(data_item);
-            String pipelineName = data.getParameters().get("pipeline");
+            String pipelineName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline",data));
             if (pipelineName != null) {
                 if (!pipelineName.endsWith(".xml")) {
                     pipelineName += ".xml";
                 }
-                String xnat = data.getParameters().get("xnat");
+                String xnat = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("xnat",data));
                 XnatPipelineLauncher pipelineLauncher = new XnatPipelineLauncher(data,context);
                 pipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
                 pipelineLauncher.setAlwaysEmailAdmin(ArcSpecManager.GetInstance().getEmailspecifications_pipeline());
@@ -41,7 +41,7 @@ public class SampleBuild extends SecureAction
                 pipelineLauncher.setPipelineName(pipelineName);
                 pipelineLauncher.setParameter("sessionId",mr.getId());
                 pipelineLauncher.setParameter("xnat",xnat);
-                String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + data.getParameters().get("emailField");
+                String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
                 String[] emails = emailsStr.trim().split(",");
                 for (int i = 0 ; i < emails.length; i++)
                      pipelineLauncher.notify(emails[i]);

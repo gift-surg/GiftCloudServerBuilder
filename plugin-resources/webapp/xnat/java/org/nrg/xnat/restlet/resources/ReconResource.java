@@ -11,12 +11,14 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.restlet.Context;
@@ -38,12 +40,12 @@ public class ReconResource extends ItemResource {
 	public ReconResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			String assessedID= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessedID= (String)getParameter(request,"ASSESSED_ID");
 			if(assessedID!=null){
 				if(session==null&& assessedID!=null){
 				session = (XnatImagesessiondata) XnatExperimentdata
@@ -60,7 +62,7 @@ public class ReconResource extends ItemResource {
 					}
 				}
 
-				exptID= (String)request.getAttributes().get("RECON_ID");
+				exptID= (String)getParameter(request,"RECON_ID");
 				if(exptID!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 					this.getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -199,8 +201,9 @@ public class ReconResource extends ItemResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 	            }
-				
-					recon.save(user,false,allowDataDeletion);
+
+		           Authorizer.getInstance().authorizeSave(session.getItem(), user);
+	            SaveItemHelper.authorizedSave(recon,user,false,allowDataDeletion);
 					
 					MaterializedView.DeleteByUser(user);
 				}else{
@@ -255,7 +258,7 @@ public class ReconResource extends ItemResource {
 	                    }
 	                }
 	            }
-	            DBAction.DeleteItem(recon.getItem().getCurrentDBVersion(), user);
+	            SaveItemHelper.authorizedDelete(recon.getItem().getCurrentDBVersion(), user);
 	            
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);

@@ -10,10 +10,10 @@ public class Search extends SecureScreen {
 	@Override
 	protected void doBuildTemplate(RunData data, Context context)
 			throws Exception {
-		 if(data.getParameters().get("node")!=null){
-        	context.put("node", data.getParameters().get("node"));
+		 if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data))!=null){
+        	context.put("node", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data)));
          }
-		 if(data.getParameters().get("new_search")!=null){
+		 if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("new_search",data))!=null){
 	        	context.put("newSearch", "true");
 	         }
 	}

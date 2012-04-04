@@ -64,6 +64,7 @@ function EmailPopupForm(_search,_div){
 	        email_url +="&message=" + message;
 	        email_url +="&from=" + from;
 	        email_url +="&search_xml=" + this.emailer._search;
+	        email_url +="&XNAT_CSRF=" + csrfToken;
 	        
 	        YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/servlet/AjaxServlet',this.emailer.emailCallback,email_url,this.emailer);
 		}

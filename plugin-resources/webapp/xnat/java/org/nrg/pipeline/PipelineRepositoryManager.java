@@ -43,6 +43,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
@@ -155,7 +156,7 @@ public class PipelineRepositoryManager {
 							 XnatAbstractprotocol protocol = (XnatAbstractprotocol) studyProtocols.get(j);
 							 if (protocol.getDataType().equals(xsiType)) {
 								 try {
-									 DBAction.DeleteItem(protocol.getCurrentDBVersion(), user);
+									 SaveItemHelper.authorizedDelete(protocol.getCurrentDBVersion(), user);
 								 }catch(Exception e) {
 									 logger.error("Couldnt delete pipelines located at " + pipeline.getPath() + " for project " + pID );
 								 }
@@ -176,7 +177,7 @@ public class PipelineRepositoryManager {
 			 String path = pipeline.getLocation() ;
 			 if (pipelinePath.equals(path)) {
 				 try {
-                     DBAction.RemoveItemReference(projectPipeline.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user);
+                     SaveItemHelper.authorizedRemoveChild(projectPipeline.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user);
                      projectPipeline.getItem().removeItem(pipeline.getItem());
 					 //DBAction.DeleteItem(pipeline.getItem(), user);
 					 deleted = true;
@@ -207,7 +208,7 @@ public class PipelineRepositoryManager {
 				 String path = pipeline.getLocation() ;
 				 if (pipelinePath.equals(path)) {
 					 try {
-	                     DBAction.RemoveItemReference(projectDesc.getCurrentDBVersion(),null,descPipeline.getCurrentDBVersion(),user);
+	                     SaveItemHelper.authorizedRemoveChild(projectDesc.getCurrentDBVersion(),null,descPipeline.getCurrentDBVersion(),user);
 	                     projectDesc.getItem().removeItem(descPipeline.getItem());
 	                     
 						 deleted = true;

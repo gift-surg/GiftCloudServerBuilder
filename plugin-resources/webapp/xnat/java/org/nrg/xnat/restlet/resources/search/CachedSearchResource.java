@@ -35,7 +35,7 @@ public class CachedSearchResource extends SecureResource {
 	
 	public CachedSearchResource(Context context, Request request, Response response) {
 		super(context, request, response);
-			tableName=(String)request.getAttributes().get("CACHED_SEARCH_ID");
+			tableName=(String)getParameter(request,"CACHED_SEARCH_ID");
 			
 			if (this.getQueryVariable("offset")!=null){
 				try {

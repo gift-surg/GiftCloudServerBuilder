@@ -14,6 +14,7 @@ import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.schema.SchemaElement;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.PopulateItem;
@@ -24,6 +25,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 public class ManageEntryAccess extends ModifyItem {
@@ -38,7 +40,10 @@ public class ManageEntryAccess extends ModifyItem {
             }else{
                 i.setProperty("sharing_share_xnat_experimentda_id", first.getProperty("ID"));
             }
-            i.save(TurbineUtils.getUser(data),false,false);
+            
+            Authorizer.getInstance().authorizeSave(first, TurbineUtils.getUser(data));
+            
+            SaveItemHelper.authorizedSave(i, TurbineUtils.getUser(data),false,false);
         }
     }
     
@@ -52,10 +57,10 @@ public class ManageEntryAccess extends ModifyItem {
             String header = "ELEMENT_";
             int counter = 0;
             Hashtable hash = new Hashtable();
-            while (data.getParameters().get(header + counter) != null)
+            while (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(header + counter,data)) != null)
             {
-                String elementToLoad = data.getParameters().getString(header + counter++);
-                Integer numberOfInstances = data.getParameters().getIntObject(elementToLoad);
+                String elementToLoad = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(header + counter++,data));
+                Integer numberOfInstances = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger(elementToLoad,data));
                 if (numberOfInstances != null && numberOfInstances.intValue()!=0)
                 {
                     int subCount = 0;
@@ -73,9 +78,9 @@ public class ManageEntryAccess extends ModifyItem {
             }
             
             String screenName = null;
-            if (data.getParameters().getString("edit_screen") !=null && !data.getParameters().getString("edit_screen").equals(""))
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null && !((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)).equals(""))
             {
-                screenName = data.getParameters().getString("edit_screen").substring(0,data.getParameters().getString("edit_screen").lastIndexOf(".vm"));
+                screenName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)).substring(0,((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)).lastIndexOf(".vm"));
             }
             
             InvalidValueException error = null;
@@ -125,9 +130,9 @@ public class ManageEntryAccess extends ModifyItem {
 //            if (removedReference)
 //            {
 //                data.getSession().setAttribute(this.getReturnEditItemIdentifier(),first);
-//                if (data.getParameters().getString("edit_screen") !=null)
+//                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
 //                {
-//                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+//                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
 //                }
 //                return;
 //            }
@@ -138,9 +143,9 @@ public class ManageEntryAccess extends ModifyItem {
             {
                 data.getSession().setAttribute(this.getReturnEditItemIdentifier(),first);
                 context.put("vr",vr);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
             }else{
                 try {

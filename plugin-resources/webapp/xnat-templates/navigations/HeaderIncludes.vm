@@ -17,44 +17,47 @@
 		}
 	    
 		var serverRoot = "$content.getURI('')";
-window.available_elements=new Array();
-
-#if($data.getSession().getAttribute("user"))
-	#set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
-#end
-			#foreach ($typeObject in $typeObjects)
+		var csrfToken = "$!XNAT_CSRF";
+		window.available_elements=new Array();
+		
+		#if($data.getSession().getAttribute("user"))
+			#set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
+		#end
+		
+		#foreach ($typeObject in $typeObjects)
 			window.available_elements.push({singular:"$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",plural:"$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",			element_name:"$typeObject.getElementName()",actions:$typeObject.getElementSecurity().getListingActionsJSON(),"lbg":"$!typeObject.getLightColor()","dbg":"$!typeObject.getDarkColor()"});
-				#end
-				window.available_elements.getByName=function(name){
-				  for(var aeC=0;aeC<this.length;aeC++){
-				    if(this[aeC].element_name==name){
-				      return this[aeC];
-				    }
-				  }
-				}
+		#end
+		
+		window.available_elements.getByName=function(name){
+		  for(var aeC=0;aeC<this.length;aeC++){
+		    if(this[aeC].element_name==name){
+		      return this[aeC];
+		    }
+		  }
+		}
+		
+		if (typeof XNAT == "undefined" || !XNAT) {
+	    /* 
+	     * XNAT global namespace object, which will not be overwriten if 
+	     * already defined. Also define some other top level namespaces. 
+	     */
+		    var XNAT = {
+		         /* 
+		          * Parent namespace that templates can use to put their 
+		          * own namespace 
+		          */
+		          app: {}
+		          
+		    };
+		}
 				
-				if (typeof XNAT == "undefined" || !XNAT) {
-    /* 
-     * XNAT global namespace object, which will not be overwriten if 
-     * already defined. Also define some other top level namespaces. 
-     */
-    var XNAT = {
-         /* 
-          * Parent namespace that templates can use to put their 
-          * own namespace 
-          */
-          app: {}
-          
-    };
-}
-				
-				#if($project)
-				 #if($project.getId())
-				  window.projectScope="$!project.getId()";
-				 #else
-				  window.projectScope="$!project";
-				 #end
-				#end
+		#if($project)
+		 #if($project.getId())
+		  window.projectScope="$!project.getId()";
+		 #else
+		  window.projectScope="$!project";
+		 #end
+		#end
 				
 				
 	</script>
@@ -97,4 +100,18 @@ window.available_elements=new Array();
 
 <script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/LeftBarTreeView.js")"></script>
-
+<script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event-min.js")"></script>
+<script type="text/javascript">
+	YAHOO.util.Event.onDOMReady( function()
+	{
+		var myforms = document.getElementsByTagName("form");
+		for (var i=0; i<myforms.length; i++) {
+			var form = myforms[i];
+			var el = document.createElement("input");
+			el.type = "hidden";
+			el.name = "XNAT_CSRF";
+			el.value = "$!XNAT_CSRF";
+			form.appendChild(el);
+		}
+	});
+</script>

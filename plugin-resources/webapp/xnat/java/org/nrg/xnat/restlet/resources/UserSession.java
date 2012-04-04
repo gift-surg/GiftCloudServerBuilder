@@ -1,6 +1,8 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -24,8 +26,10 @@ public class UserSession extends SecureResource {
 		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 
 		// copy the user from the request into the session
-		getHttpSession().setAttribute(USER_ATTRIBUTE,
-				getRequest().getAttributes().get(USER_ATTRIBUTE));
+		getHttpSession().setAttribute(USER_ATTRIBUTE,getRequest().getAttributes().get(USER_ATTRIBUTE));
+		
+
+        getHttpSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
 	}
 
 	@Override

@@ -20,12 +20,12 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
     static Logger logger = Logger.getLogger(XDATRegisterUser.class);
 
     public void directRequest(RunData data,Context context,XDATUser user) throws Exception{
-		String nextPage = data.getParameters().getString("nextPage","");
-		String nextAction = data.getParameters().getString("nextAction","");
+		String nextPage = (String)TurbineUtils.GetPassedParameter("nextPage",data);
+		String nextAction = (String)TurbineUtils.GetPassedParameter("nextAction",data);
 
         data.setScreenTemplate("Index.vm");
         
-         if (data.getParameters().get("par")!=null){
+         if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("par",data))!=null){
          	AcceptProjectAccess action = new AcceptProjectAccess();
          	context.put("user", user);
          	action.doPerform(data, context);
@@ -61,7 +61,7 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
             msg +="<br>Lab: " + TurbineUtils.GetPassedParameter("lab", data);
         
         
-        String parID = data.getParameters().getString("par","");
+        String parID = (String)TurbineUtils.GetPassedParameter("par",data);
 		
 		if(!StringUtils.isEmpty(parID)){ 
 			ProjectAccessRequest par =ProjectAccessRequest.RequestPARById(Integer.valueOf(parID), null);
@@ -81,7 +81,7 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 			return true;
 		}
 		
-		String parID = data.getParameters().getString("par","");
+		String parID = (String)TurbineUtils.GetPassedParameter("par",data);
 		
 		if(!StringUtils.isEmpty(parID)){ 
 			ProjectAccessRequest par =ProjectAccessRequest.RequestPARById(Integer.valueOf(parID), null);

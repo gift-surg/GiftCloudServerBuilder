@@ -87,7 +87,7 @@ public final class XDATScreen_uploaded_xnat_imageSessionData extends
         
         String tag=null;
         if(data.getParameters().containsKey("tag")){
-            tag = data.getParameters().get("tag");
+            tag = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("tag",data));
         }else{
             tag = getStringIdentifierForPassedItem(data);
             data.getParameters().add("tag", tag);

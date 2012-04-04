@@ -61,11 +61,14 @@ public class UpdateExpirationCookie implements Filter {
 	private Cookie getRequestExpirationCookie (HttpServletRequest hq) {
 		Cookie[] requestCookies = hq.getCookies();
 		Cookie ret = null;
-		for (int i = 0; i < requestCookies.length; i++) {
-			Cookie c = requestCookies[i];
-			if (c.getName().equals(UpdateExpirationCookie.name)) {
-				ret = c;
-			}
+		// in case this request is coming from a curl call
+		if (requestCookies != null) {
+			for (int i = 0; i < requestCookies.length; i++) {
+				Cookie c = requestCookies[i];
+				if (c.getName().equals(UpdateExpirationCookie.name)) {
+					ret = c;
+				}
+			}	
 		}
 		return ret;
 	}

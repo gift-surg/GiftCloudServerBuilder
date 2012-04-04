@@ -168,12 +168,17 @@ function enableButtons (dialog) {
   }
 };
 
+/**
+ * If a user double-clicks a button in YUI's SimpleDialog 
+ * the callback associated with that button is run twice.
+ * So we have to disable the buttons after each click and 
+ * enable them again when the dialog is shown.
+ */
 function hideWarningDialog (dialog) {
   disableButtons(dialog);
   synchronizingCookies.dialogDisplay.set("false");
   dialog.hide();
 };
-
 function showWarningDialog(dialog) {
   enableButtons(dialog);
   synchronizingCookies.dialogDisplay.set("true");

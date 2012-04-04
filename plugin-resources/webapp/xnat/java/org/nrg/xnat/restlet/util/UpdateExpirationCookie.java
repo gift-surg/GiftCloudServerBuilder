@@ -16,19 +16,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import jj2000.j2k.util.StringFormatException;
-
 public class UpdateExpirationCookie implements Filter {
 	public static String name = "SESSION_EXPIRATION_TIME";
 
 	static class CookieTuple {
 		final boolean flag;
 		final int maxIdleTime;
-		CookieTuple(Cookie c, int maxIdleTime) throws NumberFormatException, StringFormatException {
+		CookieTuple(Cookie c, int maxIdleTime) throws NumberFormatException, IOException {
 			this.flag = parseFlag(c);
 			this.maxIdleTime = maxIdleTime;
 		}
-		boolean parseFlag(Cookie c) throws StringFormatException {
+		boolean parseFlag(Cookie c) throws IOException {
 			String[] values = c.getValue().split(",");
 			int numberFlag = Integer.parseInt(values[0]);
 			if (numberFlag == 0) {
@@ -38,7 +36,7 @@ public class UpdateExpirationCookie implements Filter {
 				return true;
 			}
 			else {
-				throw new StringFormatException("Expecting the first element of the tuple to be 0 or 1");
+				throw new IOException("Expecting the first element of the tuple to be 0 or 1");
 			}
 		}
 		

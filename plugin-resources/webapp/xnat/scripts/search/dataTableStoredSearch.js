@@ -4,7 +4,6 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 	this.onInit=new YAHOO.util.CustomEvent("init",this);
 	this.onComplete=new YAHOO.util.CustomEvent("complete",this);
 	
-
 	if(_obj!=undefined){
 		this.obj=_obj;
 		this.div_table_id=_div_table_id;

@@ -56,7 +56,7 @@ function fullConfigHandler() {
             data += control.id + '=' + encodeURIComponent(value);
         }
 
-        var putUrl = serverRoot + '/data/services/settings/initialize?stamp=' + (new Date()).getTime();
+        var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
         YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.initArcSpecCallback, data, this);
     }
 }
@@ -113,7 +113,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 			scope : this
 		};
 
-		var getUrl = this.settings_svc_url + '?format=json&stamp=' + (new Date()).getTime();
+		var getUrl = this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp=' + (new Date()).getTime();
 		YAHOO.util.Connect.asyncRequest('GET', getUrl, this.initCallback, null, this);
 	};
 
@@ -205,7 +205,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
                     var value = (control.type == 'checkbox' ? control.checked : control.value);
                     data += control.id + '=' + value;
                 }
-				YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url, this.updateCallback, data, this);
+				YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
 			} else {
 				showMessage('configurationTabs', 'Message', 'None of the site information appears to have changed.');
 			}

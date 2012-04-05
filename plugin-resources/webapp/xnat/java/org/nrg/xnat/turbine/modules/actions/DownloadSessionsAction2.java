@@ -36,14 +36,19 @@ public class DownloadSessionsAction2 extends SecureAction {
 
         String [] resources=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("resources",data));
 		//BEGIN:IOWA customization: to allow project and subject included in path
-        boolean projectIncludedInPath = "true".equalsIgnoreCase(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("projectIncludedInPath",data)));
-        boolean subjectIncludedInPath = "true".equalsIgnoreCase(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("subjectIncludedInPath",data)));
+        boolean projectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("projectIncludedInPath",data));
+        boolean subjectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("subjectIncludedInPath",data));
+        boolean simplified = "true".equalsIgnoreCase((String) TurbineUtils.GetPassedParameter("simplified", data));
+        
         String extraParam = "";
         if(projectIncludedInPath){
             extraParam += "&projectIncludedInPath=true";
         }
         if(subjectIncludedInPath){
             extraParam += "&subjectIncludedInPath=true";
+        }
+        if(simplified){
+            extraParam += "&structure=simplified";
         }
 		//END:
         
@@ -67,7 +72,7 @@ public class DownloadSessionsAction2 extends SecureAction {
                 		for(String scanFormat : scanFormats){
                             CatEntryBean entry = new CatEntryBean();
                             entry.setFormat("ZIP");
-                            String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType) + "/resources/" + URLEncoder.encode(scanFormat) + "/files?format=zip" + extraParam;
+                            String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType, "UTF-8") + "/resources/" + URLEncoder.encode(scanFormat, "UTF-8") + "/files?format=zip" + extraParam;
                             entry.setUri(uri);
                             l.add(uri);
                             scansCatalog.addEntries_entry(entry);
@@ -75,7 +80,7 @@ public class DownloadSessionsAction2 extends SecureAction {
                 	}else{
                         CatEntryBean entry = new CatEntryBean();
                         entry.setFormat("ZIP");
-                        String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType) + "/files?format=zip" + extraParam;
+                        String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType, "UTF-8") + "/files?format=zip" + extraParam;
                         entry.setUri(uri);
                         l.add(uri);
                         scansCatalog.addEntries_entry(entry);
@@ -90,7 +95,7 @@ public class DownloadSessionsAction2 extends SecureAction {
                 for(final String res : resources){
                     final CatEntryBean entry = new CatEntryBean();
                     entry.setFormat("ZIP");
-                    String uri=server + "data/experiments/" + session + "/resources/" + URLEncoder.encode(res) + "/files?format=zip" + extraParam;
+                    String uri=server + "data/experiments/" + session + "/resources/" + URLEncoder.encode(res, "UTF-8") + "/files?format=zip" + extraParam;
                     entry.setUri(uri);
                     l.add(uri);
                     scansCatalog.addEntries_entry(entry);
@@ -104,7 +109,7 @@ public class DownloadSessionsAction2 extends SecureAction {
                 for(String scanType : recons){
                     CatEntryBean entry = new CatEntryBean();
                     entry.setFormat("ZIP");
-                    String uri=server + "data/experiments/" + session + "/reconstructions/" + URLEncoder.encode(scanType) + "/files?format=zip" + extraParam;
+                    String uri=server + "data/experiments/" + session + "/reconstructions/" + URLEncoder.encode(scanType, "UTF-8") + "/files?format=zip" + extraParam;
                     entry.setUri(uri);
                     l.add(uri);
                     scansCatalog.addEntries_entry(entry);
@@ -118,7 +123,7 @@ public class DownloadSessionsAction2 extends SecureAction {
                 for(String scanType : assessors){
                     CatEntryBean entry = new CatEntryBean();
                     entry.setFormat("ZIP");
-                    String uri=server + "data/experiments/" + session + "/assessors/" + URLEncoder.encode(scanType) + "/files?format=zip" + extraParam;
+                    String uri=server + "data/experiments/" + session + "/assessors/" + URLEncoder.encode(scanType, "UTF-8") + "/files?format=zip" + extraParam;
                     entry.setUri(uri);
                     l.add(uri);
                     scansCatalog.addEntries_entry(entry);
@@ -140,7 +145,7 @@ public class DownloadSessionsAction2 extends SecureAction {
         fw.close();
         
         String catalogXML = server + "archive/catalogs/stored/" + id + ".xml";
-        if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("download_option",data)).equals("applet")){
+        if (((String)TurbineUtils.GetPassedParameter("download_option",data)).equals("applet")){
             context.put("catalogXML", catalogXML);
             context.put("sessions", l);
             

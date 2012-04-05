@@ -15,7 +15,6 @@ public class XDATScreen_delete_pipeline extends AdminEditScreenA {
 	@Override
 	public void finalProcessing(RunData data, Context context) {
 		// TODO Auto-generated method stub
-
 	}
-
 }
+

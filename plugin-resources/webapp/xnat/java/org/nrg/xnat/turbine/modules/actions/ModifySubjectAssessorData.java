@@ -26,7 +26,9 @@ import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 
 public class ModifySubjectAssessorData extends ModifyItem{
@@ -38,7 +40,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
     public void doPerform(RunData data, Context context) throws Exception {
         XFTItem found = null;
         try {
-            String element0 = data.getParameters().getString("element_0");
+            String element0 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("element_0",data));
             if (element0==null){
                 this.handleException(data, null, new Exception("Configuration Exception.<br><br> Please create an &lt;input&gt; with name 'ELEMENT_0' and value 'SOME XSI:TYPE' in your form.  This will tell the Submit action, which data type it is looking for."));
             }
@@ -74,13 +76,13 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     }
                     int index = key.indexOf("=");
                     String field = key.substring(index+1);
-                    Object value = data.getParameters().getObject(key);
+                    Object value = org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data);
                     logger.debug("FOUND REMOVE: " + field + " " + value);
                     ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
                     if (items.size() > 0)
                     {
                         ItemI toRemove = items.getFirst();
-                        DBAction.RemoveItemReference(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
+                        SaveItemHelper.unauthorizedRemoveChild(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data));
                         found.removeItem(toRemove);
                         removedReference = true;
                     }else{
@@ -92,9 +94,9 @@ public class ModifySubjectAssessorData extends ModifyItem{
             if (removedReference)
             {
                 TurbineUtils.SetEditItem(found,data);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
             }
@@ -115,8 +117,12 @@ public class ModifySubjectAssessorData extends ModifyItem{
             if (vr.isValid())
             {
                 try {
-                    
-                    found.save(TurbineUtils.getUser(data),false,allowDataDeletion());
+                    if(!TurbineUtils.getUser(data).canEdit(sa)){
+                    	error(new InvalidPermissionException("Unable to modify experient "+ sa.getId()),data);
+                    	return;
+                    }
+                	
+                    SaveItemHelper.authorizedSave(found,TurbineUtils.getUser(data),false,allowDataDeletion());
                     
 					MaterializedView.DeleteByUser(TurbineUtils.getUser(data));
 
@@ -173,7 +179,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
 
         try {
             if (first!=null){
-                String part_id = data.getParameters().getString("part_id");
+                String part_id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("part_id",data));
                 if (part_id==null){
                     if (first.getStringProperty("subject_ID")!=null){
                         part_id = first.getStringProperty("subject_ID");

@@ -11,6 +11,7 @@ import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.exception.InvalidItemException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -33,7 +34,7 @@ public class ProjectResource extends ItemResource {
 	public ProjectResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			pID= (String)request.getAttributes().get("PROJECT_ID");
+			pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
@@ -152,7 +153,7 @@ public class ProjectResource extends ItemResource {
 										return;
 									}
 								}
-								ap.save(user, false, false);
+								SaveItemHelper.authorizedSave(ap,user, false, false);
 								ArcSpecManager.Reset();
 							}
 						}else if(filepath.startsWith("prearchive_code/")){
@@ -172,7 +173,7 @@ public class ProjectResource extends ItemResource {
 											return;
 										}
 									}
-									ap.save(user, false, false);
+									SaveItemHelper.authorizedSave(ap,user, false, false);
 									ArcSpecManager.Reset();
 							}
 						}else if(filepath.startsWith("current_arc/")){
@@ -180,7 +181,7 @@ public class ProjectResource extends ItemResource {
 							if(!qc.equals("")){
 								ArcProject ap =project.getArcSpecification();
 								ap.setCurrentArc(qc);
-								ap.save(user, false, false);
+								SaveItemHelper.authorizedSave(ap,user, false, false);
 								ArcSpecManager.Reset();
 							}
 						}else{
@@ -221,7 +222,7 @@ public class ProjectResource extends ItemResource {
 							return;
 					}
 					
-					project.save(user,overrideSecurity,false);
+					SaveItemHelper.authorizedSave(project,user,overrideSecurity,false);
 					item =project.getItem().getCurrentDBVersion(false);
 					
 					XnatProjectdata postSave = new XnatProjectdata(item);
@@ -237,7 +238,7 @@ public class ProjectResource extends ItemResource {
 	                }
 	                
 	                if (!accessibility.equals("private"))
-	                    project.initAccessibility(accessibility, true);
+	                    project.initAccessibility(accessibility, true,user);
 	                
 	                user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
 

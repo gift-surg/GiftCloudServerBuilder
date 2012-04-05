@@ -1,17 +1,6 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.files;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
@@ -21,13 +10,7 @@ import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -46,11 +29,18 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.FileRepresentation;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
+import org.restlet.resource.*;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 /**
  * @author timo
@@ -90,7 +80,7 @@ public class FileList extends XNATCatalogTemplate {
 				}
 				
 				filepath = this.getRequest().getResourceRef().getRemainingPart();
-				if(filepath!=null && filepath.indexOf("?")>-1){
+				if(filepath!=null && filepath.contains("?")){
 					filepath = filepath.substring(0,filepath.indexOf("?"));
 				}
 				
@@ -200,7 +190,7 @@ public class FileList extends XNATCatalogTemplate {
 						        	fileName=fileName.substring(fileName.lastIndexOf('\\')+1);
 						        }
 						        
-						        String dest = null;
+					        String dest;
 					        if(StringUtils.isEmpty(filepath)){
 					        	if(fw.getType().equals(FileWriterWrapperI.UPLOAD_TYPE.INBODY)){
 					        		this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE,"In-body File posts must specify a file name in the uri.");
@@ -236,15 +226,12 @@ public class FileList extends XNATCatalogTemplate {
 						 e.printStackTrace();
 						 logger.error("",e);
 						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-						return;
 						 }
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid read permissions.");
-						return;
 					}
 				} catch (Exception e) {
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-					return;
 				}
 			}
 		}
@@ -334,21 +321,17 @@ public class FileList extends XNATCatalogTemplate {
 							 }
 						}else{
 							this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
-							return;
 							 }
 						}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
-							return;
 						}
 					
 					
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
-						return;
 					}
 				} catch (Exception e) {
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-					return;
 				}
 			}
 		}
@@ -486,7 +469,7 @@ public class FileList extends XNATCatalogTemplate {
                 cat.addEntries_entry(entry);
 			}
 			
-			this.setResponseHeader("Content-Disposition","inline;filename=files.xcat");
+			this.setContentDisposition("files.xcat", false);
 			
 			return new CatalogRepresentation(cat, mt,false);
 		}else if(isZIPRequest(mt)){
@@ -512,7 +495,7 @@ public class FileList extends XNATCatalogTemplate {
 			}
 			
 			final Map<String,String> valuesToReplace;
-			if(structure.equalsIgnoreCase("legacy")){
+			if(structure.equalsIgnoreCase("legacy") || structure.equalsIgnoreCase("simplified")){
 				valuesToReplace=new Hashtable<String,String>();
 			}else{
 				valuesToReplace=this.getReMaps();
@@ -530,7 +513,12 @@ public class FileList extends XNATCatalogTemplate {
 						pathForZip=uri;
 					}
 					
-	                final String relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String)row[collectionIndex]);
+	                final String relative;
+                    if (structure.equals("simplified")) {
+                        relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String)row[collectionIndex]).replace("/resources", "").replace("/files",  "");
+                    } else {
+                        relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String)row[collectionIndex]);
+                    }
 	                
 					rep.addEntry(relative, child);
 				}
@@ -549,8 +537,7 @@ public class FileList extends XNATCatalogTemplate {
 	
 	protected Representation handleSingleCatalog(MediaType mt) throws ElementNotFoundException{
 		File f=null;
-		XFTTable table = null;
-		table = new XFTTable();
+		XFTTable table = new XFTTable();
 		
 		String[] headers=CatalogUtils.FILE_HEADERS.clone();
 		String locator="URI";
@@ -589,7 +576,7 @@ public class FileList extends XNATCatalogTemplate {
 
 				String zipEntry=null;
 				
-				CatEntryI entry=null;
+				CatEntryI entry;
 				if(index!=null){
 					entry =CatalogUtils.getEntryByFilter(cat, new CatEntryFilterI(){
 						private int count=0;
@@ -638,8 +625,8 @@ public class FileList extends XNATCatalogTemplate {
 						f = new File(parentPath,entry.getUri());
 					}
 					
-					if(f!=null && f.exists()){
-						String fName=null;
+					if(f.exists()){
+						String fName;
 						if(zipEntry==null){
 							fName=f.getName().toLowerCase();
 						}else{
@@ -901,7 +888,7 @@ public class FileList extends XNATCatalogTemplate {
 			}
 		}
 		
-		String downloadName="download";
+		String downloadName;
 		if(security !=null){
 			downloadName=((ArchivableItem)security).getArchiveDirectoryName();
 		}else {
@@ -909,11 +896,11 @@ public class FileList extends XNATCatalogTemplate {
 		}
 		
 		if(mt.equals(MediaType.APPLICATION_ZIP)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".zip");
-		}else if(mt.equals(MediaType.APPLICATION_GNU_TAR)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".tar.gz");
-		}else if(mt.equals(MediaType.APPLICATION_TAR)){
-			this.setResponseHeader("Content-Disposition","filename=" + downloadName + ".tar");
+			this.setContentDisposition(downloadName + ".zip");
+ 		}else if(mt.equals(MediaType.APPLICATION_GNU_TAR)){
+			this.setContentDisposition(downloadName + ".tar.gz");
+ 		}else if(mt.equals(MediaType.APPLICATION_TAR)){
+			this.setContentDisposition(downloadName + ".tar");
 		}
 					
 		if(StringUtils.isEmpty(filepath) && index==null){
@@ -952,8 +939,6 @@ public class FileList extends XNATCatalogTemplate {
 							return null;
 						}
 						rep.addEntry(f.getName(),f);
-						
-						this.setContentDisposition(String.format("filename=\"%s.zip\";",f.getName()));
 						return rep;
 					}else{
 							return this.setFileRepresentation(f,mt);

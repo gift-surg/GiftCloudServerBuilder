@@ -30,6 +30,7 @@ import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.FailedLoginException;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
@@ -71,12 +72,12 @@ created in buildPDF.
     @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
 	protected final void doOutput(RunData data) 
 	{
-            String username = data.getParameters().getString("username");
-            String password = data.getParameters().getString("password");
-            String raw = data.getParameters().getString("raw");
-            String processed = data.getParameters().getString("proc");
-            String quality = data.getParameters().getString("quality");
-            String unzip = data.getParameters().getString("unzip");
+            String username = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("username",data));
+            String password = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("password",data));
+            String raw = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("raw",data));
+            String processed = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("proc",data));
+            String quality = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("quality",data));
+            String unzip = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("unzip",data));
             if (unzip==null){
                 unzip="false";
             }
@@ -91,14 +92,17 @@ created in buildPDF.
                 }
                 if (user != null)
                 {
-                        String id = data.getParameters().getString("id");
+                	
+                		SecureAction.isCsrfTokenOk(data.getRequest(),false);
+                	
+                        String id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("id",data));
 
                         HttpServletResponse response = data.getResponse();
                         response.setContentType(getContentType(data));
                         
                         java.util.Date today = java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime();
                         String fileName=id + "_" + (today.getMonth() + 1) + "_" + today.getDate() + "_" + (today.getYear() + 1900) + "_" + today.getHours() + "_" + today.getMinutes() + "_" + today.getSeconds() + ".zip";
-                		response.setHeader("Content-Disposition","inline;filename=" + fileName);
+                		TurbineUtils.setContentDisposition(response, fileName, false);
                 		
                         ZipI zip = new ZipUtils();
                         if (unzip.equalsIgnoreCase("true"))

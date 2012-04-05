@@ -26,7 +26,7 @@ public class PARResource extends SecureResource {
 	ProjectAccessRequest par=null;
 	public PARResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		String par_id = (String) request.getAttributes().get("PAR_ID");
+		String par_id = (String) getParameter(request,"PAR_ID");
 		Integer id = Integer.valueOf(par_id);
 		par = ProjectAccessRequest.RequestPARById(id, user);
 		if (par != null) {

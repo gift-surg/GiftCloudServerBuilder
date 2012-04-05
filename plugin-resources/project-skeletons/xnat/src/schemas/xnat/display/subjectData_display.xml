@@ -96,6 +96,9 @@
 			</Property>
 		</HTML-Link>
 	</DisplayField>
+	<DisplayField header="Subject" id="SHARED_LABEL" data-type="string" searchable="false">
+		<DisplayFieldElement name="Field1" schema-element="xnat:subjectData/sharing/share/label"/> 
+	</DisplayField>
 	<DisplayField id="SUB_PROJECT_IDENTIFIER" header="Subject" visible="true" searchable="false" data-type="string" xsi:type="SubQueryField">
 		<Content type="sql">sub_project_id</Content>
 		<HTML-Link>

@@ -5,9 +5,6 @@
   <classpathentry kind="src" path="src"/>
   <classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
   <classpathentry combineaccessrules="false" kind="src" path="/xdat"/>
-  <classpathentry combineaccessrules="false" kind="src" path="/nrg_notify"/>
-  <classpathentry combineaccessrules="false" kind="src" path="/nrg_mail"/>
-  <classpathentry combineaccessrules="false" kind="src" path="/nrg_framework"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-2.7.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar"/>
@@ -50,11 +47,11 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ecat4xnat-1.5.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.0.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>
@@ -75,7 +72,6 @@
   <classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.43u.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/inject/jars/com.springsource.javax.inject-1.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/isorelax/jars/isorelax-20041111.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/iText-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/itext-2.0.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar"/>

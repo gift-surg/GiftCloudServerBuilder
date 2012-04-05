@@ -78,6 +78,7 @@ import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileTracker;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
@@ -3160,7 +3161,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -3201,7 +3202,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+		        SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -3314,77 +3315,16 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
 		for(final XnatImagescandataI scan:this.getScans_scan()){
-			for(final XnatAbstractresourceI res: scan.getFile()){
-				final String uri;
-				if(res instanceof XnatResource){
-					uri=((XnatResource)res).getUri();
-				}else if(res instanceof XnatResourceseries){
-					uri=((XnatResourceseries)res).getPath();
-				}else{
-					continue;
-				}
-				
-				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
-			}
-		}
+			((XnatImagescandata)scan).validate(expectedPath);
 		
-		
-		for(final XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
-			for(final XnatAbstractresourceI res: recon.getOut_file()){
-				final String uri;
-				if(res instanceof XnatResource){
-					uri=((XnatResource)res).getUri();
-				}else if(res instanceof XnatResourceseries){
-					uri=((XnatResourceseries)res).getPath();
-				}else{
-					continue;
-				}
-				
-				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
-			}
 		}
 
 		for(final XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
-			for(final XnatAbstractresourceI res: recon.getOut_file()){
-				final String uri;
-				if(res instanceof XnatResource){
-					uri=((XnatResource)res).getUri();
-				}else if(res instanceof XnatResourceseries){
-					uri=((XnatResourceseries)res).getPath();
-				}else{
-					continue;
-				}
-				
-				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
-			}
+			((XnatReconstructedimagedata)recon).validate(expectedPath);
 		}
 
 		for(final XnatImageassessordataI assess:this.getAssessors_assessor()){
-			for(final XnatAbstractresourceI res: assess.getOut_file()){
-				final String uri;
-				if(res instanceof XnatResource){
-					uri=((XnatResource)res).getUri();
-				}else if(res instanceof XnatResourceseries){
-					uri=((XnatResourceseries)res).getPath();
-				}else{
-					continue;
-				}
-				
-				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
-			}
-			
-			for(final XnatAbstractresourceI res: assess.getResources_resource()){
-				final String uri;
-				if(res instanceof XnatResource){
-					uri=((XnatResource)res).getUri();
-				}else if(res instanceof XnatResourceseries){
-					uri=((XnatResourceseries)res).getPath();
-				}else{
-					continue;
-				}
-				
-				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
-			}
+			((XnatImageassessordata)assess).preSave();
 		}
 	}
 }

@@ -30,10 +30,10 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
-import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -353,7 +353,7 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
 	                    }
 	                }
 	                for(ItemI item : items){
-	                    item.save(user, false, true);
+	                    SaveItemHelper.unauthorizedSave(item,user, false, true);
 	                }
 				} catch (Exception e) {
 					throw new ServerException("ERROR:  Server-side exception");

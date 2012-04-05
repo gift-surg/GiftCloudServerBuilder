@@ -96,11 +96,11 @@ function reconEditor(_sessionID,_reconID,_options){
 						
 			if(this.recon.XnatReconstructedimagedataId){
 				this.panel.method='PUT';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/reconstructions/' + this.reconID + '?req_format=form';
+				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/reconstructions/' + this.reconID + '?req_format=form&XNAT_CSRF='+csrfToken;
 				td1.innerHTML+="<input type='hidden' name='xnat:reconstructedImageData/xnat_reconstructedimagedata_id' value='" + this.recon.XnatReconstructedimagedataId + "'/>";
 			}else{
 				this.panel.method='POST';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/reconstructions?req_format=form';
+				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/reconstructions?req_format=form&XNAT_CSRF='+csrfToken';
 			}
 			
 			//type
@@ -280,7 +280,7 @@ function reconDeletor(_options){
 			}
 			
 			openModalPanel("delete_recon","Delete reconstruction.");
-			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/reconstructions/' + this.options.recon.id +'?format=json',this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/reconstructions/' + this.options.recon.id +'?format=json&XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 		},this,this);
 		
 		this.deleteDialog.render();

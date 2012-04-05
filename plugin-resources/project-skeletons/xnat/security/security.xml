@@ -686,7 +686,7 @@
 				<xdat:element_action element_action_name="XDATScreen_upload_xnat_imageSessionData" display_name="Tagged Upload" sequence="5" grouping="Upload" image="Up.gif" popup="never" secureAccess="edit"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
-				<xdat:element_action element_action_name="download" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="always"/>
+				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:subjectData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="0" quarantine="0" pre_load="0" singular="Subject" plural="Subjects" accessible="1">

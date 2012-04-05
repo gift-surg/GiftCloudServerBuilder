@@ -37,10 +37,8 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		} catch (SessionException e) {
 			logger.error("", e);
 		} catch (SQLException e) {
-            // Just downgrade this message so it doesn't fill the logs before the prearchive is initialized.
-            if (e.getMessage().contains("relation \"xdat_search.prearchive\" does not exist")) {
-                logger.info("", e);
-            } else {
+            // Swallow this message so it doesn't fill the logs before the prearchive is initialized.
+            if (!e.getMessage().contains("relation \"xdat_search.prearchive\" does not exist")) {
                 logger.error("", e);
             }
 		} catch (Exception e) {

@@ -17,6 +17,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.srb.XNATDirectory;
 import org.nrg.xnat.srb.XNATSrbSearch;
@@ -314,7 +315,7 @@ public class BaseXnatResource extends AutoXnatResource {
     	}
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false);
     }
 
 	@Override

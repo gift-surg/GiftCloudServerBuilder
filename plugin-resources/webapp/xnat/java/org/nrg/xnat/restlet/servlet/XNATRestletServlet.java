@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 public class XNATRestletServlet extends ServerServlet {
@@ -39,7 +40,7 @@ public class XNATRestletServlet extends ServerServlet {
      */
     private String getAdminUser() throws Exception {
     	String admin = null;
-        List<String> logins = (List<String>) XDATUser.getAllLogins();
+        Collection<String> logins = (Collection<String>) XDATUser.getAllLogins();
     	for (String login : logins) {
     		XDATUser user = new XDATUser(login);
     		if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {

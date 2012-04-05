@@ -27,11 +27,11 @@ public class ScanDIRResource extends ScanResource {
     final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanDIRResource.class);
     public ScanDIRResource(Context context, Request request, Response response) {
 	super(context, request, response);
-		
+
 	this.getVariants().clear();
 	this.getVariants().add(new Variant(MediaType.APPLICATION_ZIP));
     }
-	
+
 
     @Override
 	public boolean allowPut() {
@@ -54,23 +54,23 @@ public class ScanDIRResource extends ScanResource {
 		}
 	    }
 	}
-		
+
 	if(scans.size()==0){
 	    this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 					 "Unable to find the specified scan(s).");
 	    return null;
 	}
-		
+
 	ZipRepresentation rep;
 	try {
 	    //prepare Maps for use in cleaning file paths and relativing them.
 	    final Map<String,String> session_mapping=new Hashtable<String,String>();
 	    session_mapping.put(session.getId(),session.getArchiveDirectoryName());
 	    session_mapping.put(session.getArchiveDirectoryName(),session.getArchiveDirectoryName());
-			
+
 	    final ArrayList<String> session_ids=new ArrayList<String>();
 	    session_ids.add(session.getArchiveDirectoryName());
-			
+
 	    Map<String,String> valuesToReplace=RestFileUtils.getReMaps(scans,null);
 	    try{
 		    rep = new ZipRepresentation(MediaType.APPLICATION_ZIP,session_ids,identifyCompression(null));
@@ -79,10 +79,10 @@ public class ScanDIRResource extends ScanResource {
 			this.setResponseStatus(e);
 			return null;
 		}
-						
+
 	    //this is the expected path to the SESSION_DIR
 	    final String rootPath=session.getArchivePath();
-			
+
 
 	    // create a directory in the temporary directory to hold our files
 	    File _tmp_working_dir = File.createTempFile("dicom_","",new File(System.getProperty("java.io.tmpdir")));
@@ -121,14 +121,14 @@ public class ScanDIRResource extends ScanResource {
 					dicomdir.addFile(tmp_dicom_dir);
 					// delete the file now to avoid buildup.
 					tmp_dicom_file.delete();
-				    } 
+				    }
 				}
 			    }
 			}
 		    }
-		
+
 		    rep.addEntry("DICOMDIR", dicomDIRFile);
-		    this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
+		    this.setContentDisposition(rep.getDownloadName());
 		    return rep;
 		}
 		finally {
@@ -138,7 +138,7 @@ public class ScanDIRResource extends ScanResource {
 	    finally {
 		tmp_working_dir.delete();
 	    }
-	    
+
 	}
 	catch (Throwable e) {
 	    logger.error("", e);

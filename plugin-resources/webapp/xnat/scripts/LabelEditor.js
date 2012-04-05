@@ -119,7 +119,7 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 					    if(confirm("Modifying the " + this.selector.config.header + " of an imaging session will result in the moving of files on the file server within the project's storage space.  Are you sure you want to make this change?")){
 							openModalPanel("modify_new_label","Modifying " + this.selector.config.header +", please wait...");
 
-				        	YAHOO.util.Connect.asyncRequest('PUT',this.selector.uri +"/" + XNAT.app._label.currentLabel +"/projects/" + this.selector.config.project +"?label=" + XNAT.app._label.selectedLabel +"&format=json",settingsCallback);
+				        	YAHOO.util.Connect.asyncRequest('PUT',this.selector.uri +"/" + XNAT.app._label.currentLabel +"/projects/" + this.selector.config.project +"?label=" + XNAT.app._label.selectedLabel +"&format=json&XNAT_CSRF=" + csrfToken,settingsCallback);
 					    }
 				    }
 				  }

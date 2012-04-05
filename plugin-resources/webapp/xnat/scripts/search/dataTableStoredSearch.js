@@ -3,7 +3,7 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 	//fired after Search XML has beens successfully loaded.
 	this.onInit=new YAHOO.util.CustomEvent("init",this);
 	this.onComplete=new YAHOO.util.CustomEvent("complete",this);
-
+	
 	if(_obj!=undefined){
 		this.obj=_obj;
 		this.div_table_id=_div_table_id;
@@ -15,6 +15,10 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 		this.loaderGIF=new XNATLoadingGIF(this.div_table_id);
 		this.loaderGIF.render();
 
+		var URL = this.obj.URL;
+		
+		URL += '?XNAT_CSRF=' + csrfToken;
+		
 		if(this.obj.XML){
 			this.load();
 		}else{
@@ -27,7 +31,7 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 				scope:this
 			};
 
-			YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',URL,this.initCallback,null,this);
 		}
 	};
 
@@ -35,6 +39,10 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 		this.loaderGIF=new XNATLoadingGIF(this.div_table_id);
 		this.loaderGIF.render();
 
+		var URL = this.obj.URL;
+		
+		URL += '?XNAT_CSRF=' + csrfToken;
+		
 		if(this.obj.XML){
 			this.load();
 		}else{
@@ -47,7 +55,7 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 				scope:this
 			};
 
-			YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',URL,this.initCallback,null,this);
 		}
 	};
 

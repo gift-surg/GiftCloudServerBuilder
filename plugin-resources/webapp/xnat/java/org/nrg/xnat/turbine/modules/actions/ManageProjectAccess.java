@@ -19,7 +19,9 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 
 public class ManageProjectAccess extends SecureAction {
@@ -27,21 +29,26 @@ public class ManageProjectAccess extends SecureAction {
 	   
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        //String accessibility = data.getParameters().getString("accessibility");
-        String p = data.getParameters().getString("project");
+        //String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
+        XDATUser user=TurbineUtils.getUser(data);
+        if(!user.canEdit(project)){
+        	error(new InvalidPermissionException("User cannot modify project " + project.getId()), data);
+        	return;
+        }
 
-        String accessibility = data.getParameters().getString("accessibility");
-        project.initAccessibility(accessibility, false);
+        String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
+        project.initAccessibility(accessibility, false,user);
         
         boolean sendmail=false;
-        if (null!=data.getParameters().getString("sendmail") && data.getParameters().getString("sendmail").equals("email"))
+        if (null!=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)) && ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)).equals("email"))
         	sendmail=true;
         
-        String collaborators = data.getParameters().getString("collaborators");
-        String members = data.getParameters().getString("members");
-        String owners = data.getParameters().getString("owners");
+        String collaborators = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("collaborators",data));
+        String members = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("members",data));
+        String owners = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("owners",data));
 
         List<String> ownersL= StringUtils.CommaDelimitedStringToArrayList(owners);
         List<String> membersL= StringUtils.CommaDelimitedStringToArrayList(members);
@@ -69,7 +76,7 @@ public class ManageProjectAccess extends SecureAction {
             				workflow.setPipelineName("New Owner: " + newUOM.getFirstname() + " " + newUOM.getLastname());
             				workflow.setStatus("Complete");
             				workflow.setLaunchTime(Calendar.getInstance().getTime());
-            				workflow.save(TurbineUtils.getUser(data), false, false);
+            				SaveItemHelper.authorizedSave(workflow,TurbineUtils.getUser(data), false, false);
             			} catch (Throwable e) {
             				logger.error("",e);
             			}
@@ -120,7 +127,7 @@ public class ManageProjectAccess extends SecureAction {
             				workflow.setPipelineName("New Member: " + newUOM.getFirstname() + " " + newUOM.getLastname());
             				workflow.setStatus("Complete");
             				workflow.setLaunchTime(Calendar.getInstance().getTime());
-            				workflow.save(TurbineUtils.getUser(data), false, false);
+            				SaveItemHelper.authorizedSave(workflow,TurbineUtils.getUser(data), false, false);
             			} catch (Throwable e) {
             				logger.error("",e);
             			}
@@ -171,7 +178,7 @@ public class ManageProjectAccess extends SecureAction {
             				workflow.setPipelineName("New Collaborator: " + newUOM.getFirstname() + " " + newUOM.getLastname());
             				workflow.setStatus("Complete");
             				workflow.setLaunchTime(Calendar.getInstance().getTime());
-            				workflow.save(TurbineUtils.getUser(data), false, false);
+            				SaveItemHelper.authorizedSave(workflow,TurbineUtils.getUser(data), false, false);
             			} catch (Throwable e) {
             				logger.error("",e);
             			}

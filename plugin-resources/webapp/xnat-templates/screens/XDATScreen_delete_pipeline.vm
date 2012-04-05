@@ -16,7 +16,7 @@ $page.setVlinkColor($ui.vlink)
 
 <TABLE width="100%">
 	<TR>
-		<TD>Are you sure you want to remove the pipeline $data.getParameters().get("path") from the repository? </TD>
+		<TD>Are you sure you want to remove the pipeline $turbineUtils.GetPassedParameter("path",$data) from the repository? </TD>
 	</TR>
 
 	<TR>
@@ -26,7 +26,7 @@ $page.setVlinkColor($ui.vlink)
 <input type="hidden" name="task" value="DELETE"/>
 <input type="hidden" name="search_element" value="pipe:pipelinedetails"/>
 <input type="hidden" name="search_field" value="pipe:pipelinedetails.path"/>
-<input type="hidden" name="search_value" value="$data.getParameters().get('path')"/>
+<input type="hidden" name="search_value" value="$turbineUtils.GetPassedParameter('path',$data)"/>
 
 </form>
 

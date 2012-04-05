@@ -34,6 +34,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 
 /**
  * The LDAPAuthenticator can be used to authenticate against an external LDAP HOST.
@@ -520,7 +521,7 @@ public class XnatLdapAuthenticator extends Authenticator {
 	public void updateStoredDN(final String newDN,XDATUser u){
 		try {
 			u.setQuarantinePath(newDN);
-			u.save(null, true, false, true, false);
+			SaveItemHelper.authorizedSave(u,null, true, false, true, false);
 		} catch (Exception e) {
 			logger.error(u.getUsername() + ":Failed to update stored DN for user. Proceeding...",e);
 		}
@@ -567,7 +568,7 @@ public class XnatLdapAuthenticator extends Authenticator {
 				if (authenticate(u, cred)){
 					if(u.getXdatUserId()==null){
 
-						u.save(null, true, false, true, false);
+						SaveItemHelper.authorizedSave(u,null, true, false, true, false);
 
 						u = new XDATUser(cred.getUsername());
 						u.setLoggedIn(true);

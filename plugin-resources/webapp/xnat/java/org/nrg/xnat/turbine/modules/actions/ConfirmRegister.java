@@ -30,9 +30,9 @@ public class ConfirmRegister extends SecureAction {
 
             ItemI temp = search.exec().getFirst();
             
-    		String nextPage = data.getParameters().getString("nextPage","");
-    		String nextAction = data.getParameters().getString("nextAction","");
-    		String par = data.getParameters().getString("par","");
+    		String nextPage = (String)TurbineUtils.GetPassedParameter("nextPage",data);
+    		String nextAction = (String)TurbineUtils.GetPassedParameter("nextAction",data);
+    		String par = (String)TurbineUtils.GetPassedParameter("par",data);
 
             if(!StringUtils.isEmpty(par)){
             	context.put("par", par);

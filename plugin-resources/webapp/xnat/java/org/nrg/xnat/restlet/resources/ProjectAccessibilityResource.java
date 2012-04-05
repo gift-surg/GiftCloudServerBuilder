@@ -4,6 +4,7 @@ package org.nrg.xnat.restlet.resources;
 import java.util.ArrayList;
 
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -20,13 +21,18 @@ public class ProjectAccessibilityResource extends SecureResource {
 	public ProjectAccessibilityResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
-			access=(String)request.getAttributes().get("ACCESS_LEVEL");
+			access=(String)getParameter(request,"ACCESS_LEVEL");
 
+			if(proj!=null)
 			this.getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+			else{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
+				
 		}
 
 	@Override
@@ -51,7 +57,7 @@ public class ProjectAccessibilityResource extends SecureResource {
 			
 				String currentAccess = proj.getPublicAccessibility();
 				if (!currentAccess.equals(access)){
-					proj.initAccessibility(access, true);
+					proj.initAccessibility(access, true,user);
 				}
 				
 				getResponse().setEntity(getRepresentation(getVariants().get(0)));

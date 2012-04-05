@@ -44,7 +44,7 @@ function HTMLSearchManager(_id,_desc){
 			scope:this
 		}
 		
-		var params = "remote-class=org.nrg.xnat.ajax.RequestSearchXML&remote-method=execute&bundleID=" + this.id;
+		var params = "remote-class=org.nrg.xnat.ajax.RequestSearchXML&remote-method=execute&bundleID=" + this.id + "&XNAT_CSRF="+csrfToken;
  		YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/servlet/AjaxServlet',this.initCallback,params,this);
 	};
 	
@@ -68,7 +68,7 @@ function HTMLSearchManager(_id,_desc){
 	this.preload=function(){
   		this.startTime = (new Date()).getTime();
 		//create search table
-        var queryString = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=init&search=" + this.searchXML;
+        var queryString = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=init&search=" + this.searchXML + "&XNAT_CSRF="+csrfToken;
         if (this.numToDisplay){
           queryString +="&rows=" +this.numToDisplay; 
         }
@@ -112,7 +112,7 @@ function HTMLSearchManager(_id,_desc){
 	
 	this.load=function(){
 		if (this.totalRecords > 0){
-			var params = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=loadPage&search=" + this.id + "&page=0";
+			var params = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=loadPage&search=" + this.id + "&page=0&XNAT_CSRF=" + csrfToken;
 			
 	        this.loadCallback={
 				success:this.completeLoad,
@@ -133,7 +133,7 @@ function HTMLSearchManager(_id,_desc){
 			if (_page==undefined){
 				_page=0;
 			}
-			var params = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=loadPage&search=" + this.id + "&page="+ _page;
+			var params = "remote-class=org.nrg.xnat.ajax.RequestSearchData&remote-method=loadPage&search=" + this.id + "&page="+ _page + "&XNAT_CSRF=" + csrfToken;
 			
 	        this.loadCallback={
 				success:this.completeLoad,

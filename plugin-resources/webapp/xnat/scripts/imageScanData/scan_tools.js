@@ -165,11 +165,11 @@ function ScanEditor(_sessionID,_scanID,_options){
 
 			if(this.scan.extension.XnatImagescandataId){
 				this.panel.method='PUT';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/scans/' + this.scanID + '?req_format=form';
+				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/scans/' + this.scanID + '?req_format=form&XNAT_CSRF='+csrfToken;
 				td1.innerHTML+="<input type='hidden' name='" + modality + "/xnat_imageScanData_id' value='" + this.scan.extension.XnatImagescandataId + "'/>";
 			}else{
 				this.panel.method='POST';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/scans?req_format=form';
+				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/scans?req_format=form&XNAT_CSRF='+csrfToken;
 			}
 
 			//modality
@@ -458,7 +458,7 @@ function scanDeletor(_options){
 			}
 
 			openModalPanel("delete_scan","Delete scan.");
-			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json',this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json&XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 		},this,this);
 
 		this.deleteDialog.render();

@@ -28,6 +28,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.xml.sax.SAXException;
@@ -297,7 +298,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     	FileUtils.MoveFile(catalog, newFile, true, true);
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false);
     }
     
     public void moveCatalogEntries(CatCatalogI cat,String existingRootPath,String newRootPath) throws IOException{

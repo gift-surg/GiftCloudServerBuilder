@@ -75,10 +75,10 @@ RestDeleter = function(_array,_config) {
     this.process=function(){
     	if(!this.stopped){
 			this.processing=true;
-    		var params="";
+    		var params="?XNAT_CSRF=" + csrfToken;
     		var rF=document.getElementById("removeFiles");
   			if(rF==null || rF.checked){
-    			params +="?removeFiles=true"
+    			params +="&removeFiles=true"
     		}
     		var matched=false;
 

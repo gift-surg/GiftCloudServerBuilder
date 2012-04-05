@@ -10,6 +10,7 @@ import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.PopulateItem;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -160,40 +161,83 @@ public class SettingsRestlet extends SecureResource {
         returnDefaultRepresentation();
     }
 
-    private void setPropertiesFromFormData() {
+    private void setPropertiesFromFormData() throws Exception {
         _log.debug("Setting arc spec property from body string: " + _form);
+        boolean dirtied = false;
         for (String property : _data.keySet()) {
             if (property.equals("siteId")) {
-                _arcSpec.setSiteId(_data.get("siteId"));
+                final String siteId = _data.get("siteId");
+                _arcSpec.setSiteId(siteId);
+                XFT.SetSiteID(siteId);
+                dirtied = true;
             } else if (property.equals("siteUrl")) {
-                _arcSpec.setSiteUrl(_data.get("siteUrl"));
+                final String siteUrl = _data.get("siteUrl");
+                _arcSpec.setSiteUrl(siteUrl);
+                XFT.SetSiteURL(siteUrl);
+                dirtied = true;
             } else if (property.equals("siteAdminEmail")) {
-                _arcSpec.setSiteAdminEmail(_data.get("siteAdminEmail"));
+                final String siteAdminEmail = _data.get("siteAdminEmail");
+                _arcSpec.setSiteAdminEmail(siteAdminEmail);
+                XFT.SetAdminEmail(siteAdminEmail);
+                dirtied = true;
             } else if (property.equals("smtpHost")) {
-                _arcSpec.setSmtpHost(_data.get("smtpHost"));
+                final String smtpHost = _data.get("smtpHost");
+                _arcSpec.setSmtpHost(smtpHost);
+                XFT.SetAdminEmailHost(smtpHost);
+                dirtied = true;
             } else if (property.equals("requireLogin")) {
-                _arcSpec.setRequireLogin(_data.get("requireLogin"));
+                final String requireLogin = _data.get("requireLogin");
+                _arcSpec.setRequireLogin(requireLogin);
+                XFT.SetRequireLogin(requireLogin);
+                dirtied = true;
             } else if (property.equals("enableNewRegistrations")) {
-                _arcSpec.setEnableNewRegistrations(_data.get("enableNewRegistrations"));
+                final String enableNewRegistrations = _data.get("enableNewRegistrations");
+                _arcSpec.setEnableNewRegistrations(enableNewRegistrations);
+                XFT.SetUserRegistration(enableNewRegistrations);
+                dirtied = true;
             } else if (property.equals("archivePath")) {
-                _arcSpec.getGlobalpaths().setArchivepath(_data.get("archivePath"));
+                final String archivePath = _data.get("archivePath");
+                _arcSpec.getGlobalpaths().setArchivepath(archivePath);
+                XFT.SetArchiveRootPath(archivePath);
+                dirtied = true;
             } else if (property.equals("prearchivePath")) {
-                _arcSpec.getGlobalpaths().setPrearchivepath(_data.get("prearchivePath"));
+                final String prearchivePath = _data.get("prearchivePath");
+                _arcSpec.getGlobalpaths().setPrearchivepath(prearchivePath);
+                XFT.SetPrearchivePath(prearchivePath);
+                dirtied = true;
             } else if (property.equals("cachePath")) {
-                _arcSpec.getGlobalpaths().setCachepath(_data.get("cachePath"));
+                final String cachePath = _data.get("cachePath");
+                _arcSpec.getGlobalpaths().setCachepath(cachePath);
+                XFT.SetCachePath(cachePath);
+                dirtied = true;
             } else if (property.equals("buildPath")) {
-                _arcSpec.getGlobalpaths().setBuildpath(_data.get("buildPath"));
+                final String buildPath = _data.get("buildPath");
+                _arcSpec.getGlobalpaths().setBuildpath(buildPath);
+                XFT.setBuildPath(buildPath);
+                dirtied = true;
             } else if (property.equals("ftpPath")) {
-                _arcSpec.getGlobalpaths().setFtppath(_data.get("ftpPath"));
+                final String ftpPath = _data.get("ftpPath");
+                _arcSpec.getGlobalpaths().setFtppath(ftpPath);
+                XFT.setFtpPath(ftpPath);
+                dirtied = true;
             } else if (property.equals("pipelinePath")) {
-                _arcSpec.getGlobalpaths().setPipelinepath(_data.get("pipelinePath"));
+                final String pipelinePath = _data.get("pipelinePath");
+                _arcSpec.getGlobalpaths().setPipelinepath(pipelinePath);
+                XFT.SetPipelinePath(pipelinePath);
+                dirtied = true;
             } else if (property.equals("dcmPort")) {
                 _arcSpec.setDcm_dcmPort(_data.get("dcmPort"));
+                dirtied = true;
             } else if (property.equals("dcmAe")) {
                 _arcSpec.setDcm_dcmAe(_data.get("dcmAe"));
+                dirtied = true;
             } else if (property.equals("dcmAppletLink")) {
                 _arcSpec.setDcm_appletLink(_data.get("dcmAppletLink"));
+                dirtied = true;
             }
+        }
+        if (dirtied) {
+            _arcSpec.save(user, false, false);
         }
     }
 

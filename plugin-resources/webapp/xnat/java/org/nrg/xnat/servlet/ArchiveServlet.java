@@ -262,7 +262,7 @@ public class ArchiveServlet extends HttpServlet {
     }
     
     protected void writeFile(File _return,HttpServletResponse res,String name) throws IOException{
-        res.setHeader("Content-Disposition","inline;filename=" + name);
+        TurbineUtils.setContentDisposition(res, name, false);
         
         OutputStream os = res.getOutputStream();
         java.io.FileInputStream in = new java.io.FileInputStream(_return);
@@ -377,7 +377,7 @@ public class ArchiveServlet extends HttpServlet {
             if(path.equals("*")){
                 ZipI zip = null;
                 res.setContentType("application/zip");
-                res.setHeader("Content-Disposition","inline;filename=" + value + ".zip");
+                TurbineUtils.setContentDisposition(res, value + ".zip", false);
                 OutputStream outStream = res.getOutputStream();
                 zip = new ZipUtils();
                 zip.setOutputStream(outStream,ZipOutputStream.DEFLATED);

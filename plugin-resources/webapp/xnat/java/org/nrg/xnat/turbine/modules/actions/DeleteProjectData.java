@@ -35,13 +35,14 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class DeleteProjectData extends SecureAction {
     static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeleteProjectData.class);
 
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        final String projectID = data.getParameters().getString("project");
+        final String projectID = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         final XDATUser user = (XDATUser)TurbineUtils.getUser(data);
         final XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(projectID, user, false);
         boolean preventProjectDelete=false;
@@ -76,7 +77,7 @@ public class DeleteProjectData extends SecureAction {
 	                                        }
 	                                    }
 
-                                    	DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user);
+	                                    SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
                                     }else{
                                     	preventSubjectDeleteByP=true;
                                     }
@@ -84,7 +85,7 @@ public class DeleteProjectData extends SecureAction {
                                 	preventSubjectDelete=true;
                                 	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
                                 		if(pp.getProject().equals(project.getId())){
-                                			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
+                                			SaveItemHelper.authorizedDelete(((XnatExperimentdataShare)pp).getItem(),user);
                                 		}
                                 	}
                                 }
@@ -106,7 +107,7 @@ public class DeleteProjectData extends SecureAction {
 		                                                    }
 		                                                }
 		                                            }
-		                                            DBAction.DeleteItem(((XnatImageassessordata)expt).getItem().getCurrentDBVersion(), user);
+		                                        	SaveItemHelper.authorizedDelete(((XnatImageassessordata)expt).getItem().getCurrentDBVersion(), user);
                                                 }else{
                                                 	preventSubjectDeleteByP=true;
                                                 }
@@ -114,7 +115,7 @@ public class DeleteProjectData extends SecureAction {
                                             	preventSubjectDelete=true;
                                             	for(XnatExperimentdataShareI pp : expt.getSharing_share()){
                                             		if(pp.getProject().equals(project.getId())){
-                                            			DBAction.DeleteItem(((XnatExperimentdataShare)pp).getItem(),user);
+                                            			SaveItemHelper.authorizedDelete(((XnatExperimentdataShare)pp).getItem(),user);
                                             		}
                                             	}
                                             }
@@ -132,7 +133,7 @@ public class DeleteProjectData extends SecureAction {
                     	if(!subject.getProject().equals(project.getId())){
                     		for(XnatProjectparticipantI pp : subject.getSharing_share()){
                         		if(pp.getProject().equals(project.getId())){
-                        			DBAction.DeleteItem(((XnatProjectparticipant)pp).getItem(),user);
+                        			SaveItemHelper.authorizedDelete(((XnatProjectparticipant)pp).getItem(),user);
                         		}
                         	}
                     	}else{
@@ -142,7 +143,7 @@ public class DeleteProjectData extends SecureAction {
                         		preventProjectDeleteByP=true;
                         	}else{
                         		if(user.canDelete(subject)){
-                            		DBAction.DeleteItem(subject.getItem().getCurrentDBVersion(), user);
+                        			SaveItemHelper.authorizedDelete(subject.getItem().getCurrentDBVersion(), user);
                         		}else{
                         			preventProjectDeleteByP=true;
                         		}
@@ -156,7 +157,7 @@ public class DeleteProjectData extends SecureAction {
     		MaterializedView.DeleteByUser(user);
     		
             if (TurbineUtils.HasPassedParameter("delete_project", data) && !preventProjectDelete && !preventProjectDeleteByP){
-                DBAction.DeleteItem(project.getItem().getCurrentDBVersion(), user);
+            	SaveItemHelper.authorizedDelete(project.getItem().getCurrentDBVersion(), user);
                 
                 //DELETE field mappings
                 ItemSearch is = ItemSearch.GetItemSearch("xdat:field_mapping", user);
@@ -165,7 +166,7 @@ public class DeleteProjectData extends SecureAction {
                 while (items.hasNext())
                 {
                     XFTItem item = (XFTItem)items.next();
-                    DBAction.DeleteItem(item, user);
+                    SaveItemHelper.authorizedDelete(item, user);
                 }
                 
                 //DELETE user.groupId
@@ -176,7 +177,7 @@ public class DeleteProjectData extends SecureAction {
                 while(groups.hasNext()){
                     XdatUserGroupid g = (XdatUserGroupid)groups.next();
                     try {
-                        DBAction.DeleteItem(g.getItem(), user);
+                    	SaveItemHelper.authorizedDelete(g.getItem(), user);
                     } catch (Throwable e) {
                         logger.error("",e);
                     }
@@ -190,7 +191,7 @@ public class DeleteProjectData extends SecureAction {
                 while(groups.hasNext()){
                     XdatUsergroup g = (XdatUsergroup)groups.next();
                     try {
-                        DBAction.DeleteItem(g.getItem(), user);
+                    	SaveItemHelper.authorizedDelete(g.getItem(), user);
                     } catch (Throwable e) {
                         logger.error("",e);
                     }
@@ -202,7 +203,7 @@ public class DeleteProjectData extends SecureAction {
                 {
                     ItemI bundle = (ItemI)bundles.next();
                     try {
-                        DBAction.DeleteItem(bundle.getItem(), user);
+                    	SaveItemHelper.authorizedDelete(bundle.getItem(), user);
                     } catch (Throwable e) {
                         logger.error("",e);
                     }
@@ -210,7 +211,7 @@ public class DeleteProjectData extends SecureAction {
                 
                 ArcProject p =project.getArcSpecification();
                 try {
-                    if (p!=null)DBAction.DeleteItem(p.getItem(), user);
+                    if (p!=null)SaveItemHelper.authorizedDelete(p.getItem(), user);
                 } catch (Throwable e) {
                     logger.error("",e);
                 }

@@ -28,17 +28,19 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 public class ProcessAccessRequest extends SecureAction {
     static Logger logger = Logger.getLogger(ProcessAccessRequest.class);
 
     public void doDenial(RunData data, Context context) throws Exception {
-        Integer id = data.getParameters().getInteger("id");
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         
         if(p==null || p.contains("'")){
         	error(new InvalidArgumentException(p),data);
@@ -48,13 +50,18 @@ public class ProcessAccessRequest extends SecureAction {
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
         if (other!=null && project !=null){
+        	if(!user.canDelete(project)){
+        		error(new InvalidPermissionException("Invalid permissions"),data);
+        		return;
+        	}
+        	
             XDATUser otherU = new XDATUser(other);
             
             for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
                 if (entry.getValue().getTag().equals(project.getId())){
                     for(XdatUserGroupid map:otherU.getGroups_groupid()){
                         if (map.getGroupid().equals(entry.getValue().getId())){   
-                            DBAction.DeleteItem(map.getItem(), user);
+                        	SaveItemHelper.authorizedDelete(map.getItem(), user);
                         }
                     }
                 }
@@ -94,11 +101,12 @@ public class ProcessAccessRequest extends SecureAction {
     }
     
     public void doApprove(RunData data, Context context) throws Exception {
-        Integer id = data.getParameters().getInteger("id");
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
+        XDATUser user = TurbineUtils.getUser(data);
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
-        String p = data.getParameters().getString("project");
-        String access_level = data.getParameters().getString("access_level");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
         if (StringUtils.isEmpty(access_level)){
         	access_level="member";
         }else{
@@ -106,27 +114,30 @@ public class ProcessAccessRequest extends SecureAction {
         			|| access_level.equalsIgnoreCase(BaseXnatProjectdata.OWNER_GROUP)
         			|| access_level.equalsIgnoreCase(BaseXnatProjectdata.COLLABORATOR_GROUP))){
         		error(new Exception("Unknown Access level:"+access_level), data);
+        		return;
         	}
         }
         
         if(p==null || p.contains("'")){
         	error(new InvalidArgumentException(p),data);
+        	return;
         }
         
-        XDATUser user = TurbineUtils.getUser(data);
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
-        
+                
         if (other!=null && project !=null){
+        	if(!user.canDelete(project)){
+        		error(new InvalidPermissionException("Invalid permissions"),data);
+        		return;
+        	}
+        	
             XDATUser otherU = new XDATUser(other);
-                        
-            boolean deletedOldPermission = false;
             
             for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
                 if (entry.getValue().getTag().equals(project.getId())){
                     for(XdatUserGroupid map:otherU.getGroups_groupid()){
                         if (map.getGroupid().equals(entry.getValue().getId())){   
-                            DBAction.DeleteItem(map.getItem(), user);
-                            deletedOldPermission=true;
+                            SaveItemHelper.authorizedDelete(map.getItem(), user);
                         }
                     }
                 }
@@ -148,7 +159,7 @@ public class ProcessAccessRequest extends SecureAction {
 				workflow.setPipelineName("New " + par.getLevel() + ": " + otherU.getFirstname() + " " + otherU.getLastname());
 				workflow.setStatus("Complete");
 				workflow.setLaunchTime(Calendar.getInstance().getTime());
-				workflow.save(user, false, false);
+				SaveItemHelper.authorizedSave(workflow,user, false, false);
 			} catch (Throwable e) {
 				logger.error("",e);
 			}

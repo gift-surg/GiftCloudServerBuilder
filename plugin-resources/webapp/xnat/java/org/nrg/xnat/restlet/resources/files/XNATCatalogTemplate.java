@@ -39,7 +39,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 			Response response,boolean allowAll) {
 		super(context, request, response);
 		
-		String resourceID= (String)request.getAttributes().get("RESOURCE_ID");
+		String resourceID= (String)getParameter(request,"RESOURCE_ID");
 
 		if(resourceID!=null){
 			resource_ids=new ArrayList<String>();

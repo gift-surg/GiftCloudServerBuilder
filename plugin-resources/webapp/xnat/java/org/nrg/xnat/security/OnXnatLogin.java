@@ -1,6 +1,7 @@
 package org.nrg.xnat.security;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 	      	item.setProperty("xdat:user_login.login_date",today);
 	      	item.setProperty("xdat:user_login.ip_address", request.getRemoteAddr());
 	      	item.save(null,true,false);
+	      	request.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
         }
         catch(Exception e){
         	logger.error(e);

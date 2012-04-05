@@ -1,7 +1,7 @@
 <!-- BEGIN /screens/xnat_subjectData/xnat_subjectData_edit_core_demographics.vm -->
 		<tr>
 			 #formLabel("YOB/DOB/Age")
-			 
+
 			 #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"))
 			  #set($hasDOB=true)
 			 #elseif($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"))
@@ -17,11 +17,11 @@
     <tr><td colspan="2">Please Select One</td></tr>
     <tr>
      <td nowrap><input type="radio" id="dob" name="dob_group" #if($hasDOB)defaultChecked checked#end onclick="selectDOBVariant(this);return true;"/>Date Of Birth</td>
-     
+
      <td rowspan="3" valign="top">
       <div id="DIV_DOB" #if($hasDOB)style="display:block"#else style="display:none"#end>
 				       <script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
-				       <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')"> 
+				       <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
 									       <input type="text" id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob")) value="$turbineUtils.formatDate($!om.getDateProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"MM/dd/yyyy")" #end/>
 									       <script type="text/javascript">
 									        insertCalendar(document.getElementById("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"Date Of Birth");
@@ -75,7 +75,7 @@
     }
       return true;
   }
-</script> 			   
+</script>
 				  </td>
 		</tr>
 		<tr>
@@ -83,7 +83,7 @@
 			 <td>
 			 #set($temp_gender=$!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender"))
 			<select name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender" >
-            		<option value="" #if ( "" ==  $temp_gender) SELECTED="true" #end>SELECT</option>
+            		<option value="" #if ( "" ==  $temp_gender) SELECTED="true" #end>(SELECT)</option>
             		#if ( "M" ==  $temp_gender || "F" ==  $temp_gender)
             			<option value="M" #if ( "M" ==  $temp_gender) SELECTED="true" #end>M</option>
             			<option value="F" #if ( "F" == $temp_gender ) SELECTED="true" #end>F</option>
@@ -98,7 +98,7 @@
 			 #set($temp_hand=$!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness"))
 			#formLabel("Handedness")
 			<td><select name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness" >
-            		<option value="" #if ( "" ==  $temp_hand) SELECTED="true" #end>SELECT</option>
+            		<option value="" #if ( "" ==  $temp_hand) SELECTED="true" #end>(SELECT)</option>
             		<option value="right" #if ( "right" == $temp_hand ) SELECTED="true" #end>Right</option>
             		<option value="left" #if ( "left" == $temp_hand ) SELECTED="true" #end>Left</option>
             		<option value="ambidextrous" #if ( "ambidextrous" == $temp_hand ) SELECTED="true" #end>Ambidextrous</option>

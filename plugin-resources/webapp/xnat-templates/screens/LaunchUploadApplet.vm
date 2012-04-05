@@ -48,7 +48,7 @@
         <tr id="scan_type_entry" style="display: none;">
             <th align="left"><label for="scan_type">Scan Type</label></th>
             <td><select id="scan_type" name="scan_type" style="width: 100%;" disabled=true>
-                <option>SELECT</option>
+                <option>(SELECT)</option>
                 <option value="mr">MR</option>
                 <option value="pet-fdg">PET with FDG tracer</option>
                 <option value="pet-pib">PET with PIB tracer</option>

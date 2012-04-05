@@ -16,11 +16,11 @@ selectbox.remove(j);
 
 function populateFullList(){
   var selectBox = document.getElementById("root_data_type");
-  
+
   removeAllOptions(selectBox);
-  
+
   selectBox.options[0]= new Option("(SELECT)","");
-  
+
   for(var i=0;i<all_elements.length;i++){
     selectBox.options[i + 1]= new Option(all_elements[i],all_elements[i]);
   }
@@ -29,7 +29,7 @@ function populateFullList(){
 	#if ($data.message)
 <DIV class="error">$data.message</DIV><br>
 #end
-<form name="form1" method="post" action="$link.setAction("CSVUpload1")"> 
+<form name="form1" method="post" action="$link.setAction("CSVUpload1")">
  <table border="0" >
    <tr>
     <td colspan="2"><DIV class="edit_header1">Step 1: Select the root data type to be inserted.</DIV></td>
@@ -43,10 +43,10 @@ function populateFullList(){
     <td> (This will be used to reload this spreadsheet template at a later date.)</td>
   </tr>
   <tr>
-    <td>Root Data Type: 
-    </td><td> 
+    <td>Root Data Type:
+    </td><td>
         <select ID="root_data_type" name="root_data_type">
-           <option value="BAD">SELECT</option>
+           <option value="BAD">(SELECT)</option>
 #foreach($elementName in $elements)
 								           <option value="$elementName">$elementName</option>
 							#end

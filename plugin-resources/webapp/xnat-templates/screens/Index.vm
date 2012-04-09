@@ -1,6 +1,17 @@
 #if ($data.message)
 <DIV class="warning">$data.message</DIV><br>
 #end
+#set($user_name = $data.getSession().getAttribute("user").getUsername())
+#set($loginarray=$data.getSession().getAttribute("user").getQueryResultsAsArrayList("SELECT xdat_user_login.login_date FROM xdat_user_login JOIN xdat_user ON xdat_user_login.user_xdat_user_id=xdat_user.xdat_user_id WHERE xdat_user.login='$user_name' ORDER BY xdat_user_login DESC LIMIT 2"))
+#set($time_counter = 0)
+#foreach($login in $loginarray)
+	#foreach($login_time in $login)
+		#if($time_counter==1)
+			<DIV style="text-align:right;">Last login: $turbineUtils.formatDate($login_time,"MM-dd-yyyy hh:mm")</DIV>
+		#end
+		#set($time_counter = $time_counter + 1)
+	#end
+#end
 #if(0 < $par_count)
 <div class="warning">You have been invited to join $par_count project(s).&nbsp;
 <button onclick="window.location='$content.getURI("/app/template/PARManager.vm")'">Review</button>

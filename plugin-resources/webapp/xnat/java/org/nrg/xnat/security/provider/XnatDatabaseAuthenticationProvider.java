@@ -6,8 +6,19 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 
 public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider{
 
+	private String displayName = "";
+	
 	@Override
     public boolean supports(Class<?> authentication) {
-        return XnatDatabaseUsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication) || UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        return XnatDatabaseUsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
+	
+	@Override
+	public String toString(){
+		return displayName;
+	}
+	
+	public void setName(String newName){
+		displayName = newName;
+	}
 }

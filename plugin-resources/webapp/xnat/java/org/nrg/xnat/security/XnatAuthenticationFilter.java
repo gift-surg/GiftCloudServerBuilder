@@ -2,19 +2,24 @@ package org.nrg.xnat.security;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
+import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.codec.Base64;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.authentication.AuthenticationProvider;
 
 public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
@@ -59,8 +64,15 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	}
 
 	public UsernamePasswordAuthenticationToken buildUPToken(String id, String username, String password){
-		if ("LDAP".equals(id)) {
-	        return new XnatLdapUsernamePasswordAuthenticationToken(username, password);
+		List<AuthenticationProvider> prov = XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class).getProviders();
+		AuthenticationProvider chosenProvider = null;
+		for(AuthenticationProvider p : prov){
+			if(p.toString().equals(id)){
+				chosenProvider = p;
+			}
+		}
+		if (chosenProvider instanceof XnatLdapAuthenticationProvider) {
+	        return new XnatLdapUsernamePasswordAuthenticationToken(username, password, id);
 	    }
 	    else {
 	        return new XnatDatabaseUsernamePasswordAuthenticationToken(username, password);

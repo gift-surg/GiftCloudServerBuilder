@@ -1,5 +1,6 @@
 package org.nrg.xnat.security.provider;
 
+import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -7,7 +8,9 @@ import org.springframework.security.ldap.authentication.*;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider{
-
+	
+	private String displayName = "";
+	
 	public XnatLdapAuthenticationProvider(LdapAuthenticator authenticator) {
 		super(authenticator);
 	}
@@ -18,12 +21,25 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider{
 
 	@Override
 	public boolean supports(Class<? extends Object> authentication) {
-	    return (XnatLdapUsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+		boolean supports = false;
+		if(XnatLdapUsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)){
+			supports = true;
+		}
+		return supports;
 	}
 	
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Authentication auth = super.authenticate(authentication);
 		return auth;
+	}
+	
+	@Override
+	public String toString(){
+		return displayName;
+	}
+	
+	public void setName(String newName){
+		displayName = newName;
 	}
 }

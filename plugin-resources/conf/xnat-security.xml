@@ -48,16 +48,22 @@
 		<security:custom-filter position="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
 	</security:http>
 	
-	<security:authentication-manager alias="authenticationManager">
+	<!--<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider ref="ldapAuthProvider"/>
 		<security:authentication-provider ref="sha2DatabaseAuthProvider"/>
 		<security:authentication-provider ref="sha2ObfuscatedDatabaseAuthProvider"/>
 		<security:authentication-provider ref="obfuscatedDatabaseAuthProvider"/>
 		<security:authentication-provider ref="plaintextDatabaseAuthProvider"/>
-	</security:authentication-manager>
+	</security:authentication-manager>-->
+
+	<bean id="customAuthenticationManager" class="org.nrg.xnat.security.XnatProviderManager">
+		<property name="properties" value="WEB-INF/conf/services.properties"/>
+	</bean>
+	
+	<security:authentication-manager/>
 
 	<bean id="customAuthenticationFilter" class="org.nrg.xnat.security.XnatAuthenticationFilter"
-	    p:authenticationManager-ref="authenticationManager"
+	    p:authenticationManager-ref="customAuthenticationManager"
         p:authenticationSuccessHandler-ref="logUserLogin"
 	    p:authenticationFailureHandler-ref="authFailure"/>
 
@@ -88,7 +94,7 @@
 	
 	<bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>
 
-	<bean class="org.springframework.security.ldap.DefaultSpringSecurityContextSource" id="ldapServer" p:userDn="${security.ldap.userdn}" p:password="${security.ldap.password}">
+<!-- 	<bean class="org.springframework.security.ldap.DefaultSpringSecurityContextSource" id="ldapServer" p:userDn="${security.ldap.userdn}" p:password="${security.ldap.password}">
         <constructor-arg value="${security.ldap.address}"/>
 	</bean>
 		
@@ -102,13 +108,14 @@
 	</bean>
 	
 	<bean class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch" id="ldapSearchBean">
-        <constructor-arg value="${security.ldap.search.base}"/> <!-- user-search-base -->
-        <constructor-arg value="${security.ldap.search.filter}"/> <!-- user-search-filter -->
+        <constructor-arg value="${security.ldap.search.base}"/>
+        <constructor-arg value="${security.ldap.search.filter}"/>
 		<constructor-arg ref="ldapServer"/>
 	</bean>
 
 	<bean class="org.nrg.xnat.security.XnatLdapAuthoritiesPopulator" id="ldapAuthoritiesPopulator"/>
 	
 	<bean class="org.nrg.xnat.security.XnatLdapContextMapper" id="ldapUserDetailsContextMapper"/>
+	 -->
 
 </beans>

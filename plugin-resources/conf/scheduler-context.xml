@@ -12,6 +12,8 @@
 	   <property name="cache" value="true"/>
 	   <property name="prefix" value=""/>
 	   <property name="suffix" value=".vm"/>
+	   <property name="dateToolAttribute" value="dateTool"/>
+	   <property name="numberToolAttribute" value="numberTool"/>
 	</bean>	
 
     <bean name="sessionXmlRebuilderJob" class="org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJob" />

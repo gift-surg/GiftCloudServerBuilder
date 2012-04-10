@@ -308,7 +308,6 @@ function syncSessionExpirationCookieWithLocal () {
   if (locals.expirationTime.flag !== cookieExpirationTime.flag) {
     locals.warningDisplayedOnce = false;
     locals.expirationTime.flag = cookieExpirationTime.flag;
-    console.log(cookieExpirationTime.flag + " " + locals.expirationTime.flag);
     locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime - synchronizingCookies.serverResponseTime.get());
   }
   else {
@@ -445,7 +444,7 @@ YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version?XNAT_CSRF=' + w
        	    };
 
 																				           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-       	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?format=json&stamp='+ (new Date()).getTime(),callback,null);
+       	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?XNAT_CSRF=" + window.csrfToken + "&format=json&stamp='+ (new Date()).getTime(),callback,null);
        }else{
     	   	    fnLoadComplete();
        }

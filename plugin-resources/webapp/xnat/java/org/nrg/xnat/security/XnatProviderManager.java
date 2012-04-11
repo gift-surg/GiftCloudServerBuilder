@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -99,6 +100,21 @@ public class XnatProviderManager extends ProviderManager {
         	String type = providerMap.get(prov).get("provider." + prov + ".type");
     		String title = providerMap.get(prov).get("provider." + prov + ".title"); 
         	if(type.equals("db")){
+        		int expiration = 0;
+        		Pattern complexity = null;
+        		try{
+        			expiration = Integer.parseInt(providerMap.get(prov).get("provider." + prov + ".passwordexpiration")); 
+        		}
+        		catch(Exception e){
+        			logger.error("Invalid password expiration value:",e);
+        		}
+        		try{
+        			complexity = Pattern.compile(providerMap.get(prov).get("provider." + prov + ".passwordcomplexity")); 
+        		}
+        		catch(Exception e){
+        			logger.error("Invalid password complexity value:",e);
+        		}
+        		
         		XnatDatabaseUserDetailsService detailsService = new XnatDatabaseUserDetailsService();
             	detailsService.setDataSource(XDAT.getDataSource());
         		
@@ -107,6 +123,8 @@ public class XnatProviderManager extends ProviderManager {
             	sha2DatabaseAuthProvider.setUserDetailsService(detailsService);
             	sha2DatabaseAuthProvider.setPasswordEncoder(encoder);
             	sha2DatabaseAuthProvider.setName(title);
+            	sha2DatabaseAuthProvider.setExpiration(expiration);
+            	sha2DatabaseAuthProvider.setComplexity(complexity);
             	tempProviders.add(sha2DatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
@@ -114,6 +132,8 @@ public class XnatProviderManager extends ProviderManager {
             	sha2ObfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
             	sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
             	sha2ObfuscatedDatabaseAuthProvider.setName(title);
+            	sha2ObfuscatedDatabaseAuthProvider.setExpiration(expiration);
+            	sha2ObfuscatedDatabaseAuthProvider.setComplexity(complexity);
             	tempProviders.add(sha2ObfuscatedDatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider obfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
@@ -121,6 +141,8 @@ public class XnatProviderManager extends ProviderManager {
             	obfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
             	obfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder3);
             	obfuscatedDatabaseAuthProvider.setName(title);
+            	obfuscatedDatabaseAuthProvider.setExpiration(expiration);
+            	obfuscatedDatabaseAuthProvider.setComplexity(complexity);
             	tempProviders.add(obfuscatedDatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider plaintextDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
@@ -128,6 +150,8 @@ public class XnatProviderManager extends ProviderManager {
             	plaintextDatabaseAuthProvider.setUserDetailsService(detailsService);
             	plaintextDatabaseAuthProvider.setPasswordEncoder(encoder4);
             	plaintextDatabaseAuthProvider.setName(title);
+            	plaintextDatabaseAuthProvider.setExpiration(expiration);
+            	plaintextDatabaseAuthProvider.setComplexity(complexity);
             	tempProviders.add(plaintextDatabaseAuthProvider);
         		
         	}

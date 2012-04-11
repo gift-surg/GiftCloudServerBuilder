@@ -12,6 +12,11 @@
     -->
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
+	<bean id="validator" class="org.nrg.xdat.security.RegExpValidator">
+		<property name="regexp" value="${provider.db.passwordcomplexity}"/>
+		<property name="message" value="${provider.db.passwordcomplexitymessage}"/>
+    </bean>
+
     <!-- Root Context: defines shared resources visible to all other web components -->
     <context:component-scan base-package="org.nrg.framework.services" />
     <context:component-scan base-package="org.nrg.xdat.services" />

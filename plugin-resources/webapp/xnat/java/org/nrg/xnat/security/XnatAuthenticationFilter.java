@@ -95,7 +95,7 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	}
 	
 	private static Map<String,String> cached_methods=Maps.newConcurrentMap();//this will prevent 20,000 curl scripts from hitting the db everytime
-	private static String retrieveAuthMethod(final String username){
+	public static String retrieveAuthMethod(final String username){
 		String auth=cached_methods.get(username);
 		if(auth==null){
 			List<XdatUserAuth> user_auths=XDAT.getXdatUserAuthService().getUsersByName(username);

@@ -19,4 +19,8 @@ public class XnatLdapUsernamePasswordAuthenticationToken extends UsernamePasswor
 	public String getProviderName(){
 		return providerName;
 	}
+	
+	public String toString(){
+		return getPrincipal()+providerName;
+	}
 }

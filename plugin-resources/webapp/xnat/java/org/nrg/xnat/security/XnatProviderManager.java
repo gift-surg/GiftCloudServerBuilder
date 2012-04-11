@@ -1,15 +1,20 @@
 package org.nrg.xnat.security;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nrg.xdat.XDAT;
@@ -17,34 +22,33 @@ import org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.ldap.core.ContextMapper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.SpringSecurityMessageSource;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.util.Assert;
-import java.util.Map;
-import java.util.Properties;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class XnatProviderManager extends ProviderManager {
-    private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
+    private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
+    private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
+
+	private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
 
     private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
@@ -52,6 +56,10 @@ public class XnatProviderManager extends ProviderManager {
     private boolean eraseCredentialsAfterAuthentication = false;
     private Properties properties;
     private List<String> loginOptions = new ArrayList<String>();
+
+	private static final FailedAttemptsManager failures= new FailedAttemptsManager();
+	private static Integer MAX_FAILED_LOGIN_ATTEMPTS=-1;
+	private static Integer LOCKOUT_DURATION=-60000;//in seconds
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -74,6 +82,15 @@ public class XnatProviderManager extends ProviderManager {
         			providerMap.get(name).put(key, (String) entry.getValue());	
         		}
         	}
+        }
+        
+        if(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_PROPERTY)!=null){
+        	MAX_FAILED_LOGIN_ATTEMPTS=Integer.valueOf(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_PROPERTY));
+        }
+        
+        if(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY)!=null){
+        	LOCKOUT_DURATION=Integer.valueOf(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY));
+        	if(LOCKOUT_DURATION>0)LOCKOUT_DURATION=-(LOCKOUT_DURATION); //LOCKOUT must be negative for date comparison to work
         }
     
      // Create providers
@@ -156,6 +173,9 @@ public class XnatProviderManager extends ProviderManager {
         Class<? extends Authentication> toTest = authentication.getClass();
         AuthenticationException lastException = null;
         Authentication result = null;
+        
+        final String auth_id=authentication.toString().intern();
+        failures.checkFailedLoginAttempts(auth_id);
 
         for (AuthenticationProvider provider : getProviders()) {
             if (!provider.supports(toTest)) {
@@ -197,7 +217,7 @@ public class XnatProviderManager extends ProviderManager {
                 lastException = e;
             }
         }
-
+        
         if (result != null) {
             if (eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
                 // Authentication is complete. Remove credentials and other secret data from authentication
@@ -206,6 +226,9 @@ public class XnatProviderManager extends ProviderManager {
 
             eventPublisher.publishAuthenticationSuccess(result);
             return result;
+        }else{
+        	//increment failed login attempt
+        	failures.addFailedLoginAttempt(auth_id);
         }
 
         // Parent was null, or didn't authenticate (or throw an exception).
@@ -232,4 +255,42 @@ public class XnatProviderManager extends ProviderManager {
         public void publishAuthenticationFailure(AuthenticationException exception, Authentication authentication) {}
         public void publishAuthenticationSuccess(Authentication authentication) {}
     }
+
+
+	private static class FailedAttemptsManager {
+		private Map<String,List<Date>> cached_attempts=Maps.newConcurrentMap();//cached failed login attempts... should be cleared when 
+		/**
+		 * Increments failed Login count
+		 * @param authentication
+		 *
+		 */
+		private synchronized void addFailedLoginAttempt(final String id){
+			if(MAX_FAILED_LOGIN_ATTEMPTS>0 && StringUtils.isNotEmpty(id)){
+				if(!cached_attempts.containsKey(id)){
+					cached_attempts.put(id, Lists.newArrayList(Calendar.getInstance().getTime()));
+				}else{
+					cached_attempts.get(id).add(Calendar.getInstance().getTime());
+				}
+			}
+		}
+		
+		private synchronized void checkFailedLoginAttempts(final String id) throws AuthenticationException{
+			if(MAX_FAILED_LOGIN_ATTEMPTS>0 && cached_attempts.containsKey(id)){
+				Iterator<Date> iter = cached_attempts.get(id).iterator();
+				int counter=0;
+				while(iter.hasNext()){
+					Date d=iter.next();
+					if(d.after(DateUtils.addSeconds(Calendar.getInstance().getTime(), LOCKOUT_DURATION))){
+						counter++;
+					}else{
+						cached_attempts.get(id).remove(d);
+					}
+				}
+				
+				if(counter>=MAX_FAILED_LOGIN_ATTEMPTS){
+					throw new LockedException("User exceeded maximum username/password attempts");
+				}
+			}
+		}
+	}
 }

@@ -82,8 +82,8 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
             }
 
             if (authenticationIsRequired(username)) {
-                UsernamePasswordAuthenticationToken authRequest =
-                	new XnatDatabaseUsernamePasswordAuthenticationToken(username, password);
+                UsernamePasswordAuthenticationToken authRequest = 
+                	XnatAuthenticationFilter.buildUPToken(XnatAuthenticationFilter.retrieveAuthMethod(username), username,password);
                 authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 
                 Authentication authResult;

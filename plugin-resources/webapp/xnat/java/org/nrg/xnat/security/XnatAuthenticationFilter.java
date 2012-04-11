@@ -78,7 +78,7 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	    return super.getAuthenticationManager().authenticate(authRequest);
 	}
 
-	public UsernamePasswordAuthenticationToken buildUPToken(String id, String username, String password){
+	public static UsernamePasswordAuthenticationToken buildUPToken(String id, String username, String password){
 		List<AuthenticationProvider> prov = XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class).getProviders();
 		AuthenticationProvider chosenProvider = null;
 		for(AuthenticationProvider p : prov){

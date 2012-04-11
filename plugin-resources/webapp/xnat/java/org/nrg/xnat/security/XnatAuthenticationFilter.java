@@ -1,8 +1,8 @@
 package org.nrg.xnat.security;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,16 +10,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.codec.Base64;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.authentication.AuthenticationProvider;
+
+import com.google.common.collect.Maps;
 
 public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
@@ -55,8 +59,19 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
                 }
             }
         }
+        
+        //SHOULD we be throwing an exception if the username is null?
+        
+        String auth_method=request.getParameter("login_method");
+        if(StringUtils.isEmpty(auth_method) && !StringUtils.isEmpty(username)){
+        	//try to guess the auth_method
+        	auth_method=retrieveAuthMethod(username);
+        	if(StringUtils.isEmpty(auth_method)){
+        		throw new BadCredentialsException("Missing login_method parameter.");
+        	}
+        }
 
-		UsernamePasswordAuthenticationToken authRequest = buildUPToken(request.getParameter("login_method"),username,password);
+		UsernamePasswordAuthenticationToken authRequest = buildUPToken(auth_method,username,password);
 	    
 	    setDetails(request, authRequest);
 
@@ -77,22 +92,18 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	    else {
 	        return new XnatDatabaseUsernamePasswordAuthenticationToken(username, password);
 	    }
-
 	}
-
-	public static Class[] args=new Class[]{String.class,String.class};
 	
-	public UsernamePasswordAuthenticationToken buildUPTokenFromClass(String username, String password, String classname){
-		try {
-			Class c=Class.forName("org.nrg.xnat.security.DatabaseUsernamePasswordAuthenticationToken");
-			Constructor constructor=c.getConstructor(args);
-			
-			String[] local_args=new String[]{username,password};
-			return (UsernamePasswordAuthenticationToken) constructor.newInstance((Object[])local_args);
-		} catch (Exception e) {
-			logger.error("", e);
-			return new XnatDatabaseUsernamePasswordAuthenticationToken(username, password);
+	private static Map<String,String> cached_methods=Maps.newConcurrentMap();//this will prevent 20,000 curl scripts from hitting the db everytime
+	private static String retrieveAuthMethod(final String username){
+		String auth=cached_methods.get(username);
+		if(auth==null){
+			List<XdatUserAuth> user_auths=XDAT.getXdatUserAuthService().getUsersByName(username);
+	    	if(user_auths.size()==1){
+	    		auth=user_auths.get(0).getAuthMethod();
+	    		cached_methods.put(username.intern(),auth.intern());
+	    	}
 		}
-
+		return auth;
 	}
 }

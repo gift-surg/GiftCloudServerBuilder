@@ -1,0 +1,103 @@
+#* @velocityproperties path= *#
+#* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
+#* @vtlvariable name="data" type="org.apache.turbine.util.RunData" *#
+#* @vtlvariable name="tabs" type="java.util.List<java.util.Properties>" *#
+#* @vtlvariable name="initialize" type="java.lang.Boolean" *#
+<!-- Start Configuration page, source file is plugin-resources/webapp/xnat-templates/screens/Configuration.vm -->
+<style>
+IMG{
+ border:0;
+}
+</style>
+<div class="yui-skin-sam">
+<div id="tp_fm" style="display:none"></div>
+<table width="98%" style="">
+    <tr>
+        <td valign="top" width="680">
+            <div class="edit_header1">Configuration</div><br/>
+
+#if($data.getSession().getAttribute("user").checkRole("Administrator"))
+            <script type="text/javascript" src="$content.getURI("scripts/yui/build/resize/resize-beta-min.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/yui/build/layout/layout-beta-min.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/search/tabManager.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/search/saveSearch.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/search/dataTableSearch.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/search/dataTableStoredSearch.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
+            <script type="text/javascript" src="$content.getURI("scripts/project/settingsTabMgmt.js")"></script>
+
+            <!-- BEGIN TABS AND CONTENT DISPLAY: Taken from xnat_projectData_summary_tabs.vm -->
+            <style>
+                span.spacer {
+                    height:12px;
+                    width:1px;
+                }
+            </style>
+            <div id="configuration_tabs_module" style="display:none">
+                <div id="configurationTabs" class="yui-navset">
+                    <ul class="yui-nav">
+                        <li class="selected"><a href="#siteInfo"><em>Site Information<span class="spacer"></span></em></a></li>
+                        <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>
+                        <li><a href="#registration"><em>Registration<span class="spacer"></span></em></a></li>
+                        <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
+                        #if(!$initialize != true)
+                            #foreach($tab in $tabs)
+                                <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+                            #end
+                        #end
+                    </ul>
+                    <div class="yui-content">   
+                        <div id="siteInfo">
+                            <p>#parse('screens/configuration/siteInfo.vm')</p>
+                        </div>
+                        <div id="fileSystem">
+                            <p>#parse('screens/configuration/fileSystem.vm')</p>
+                        </div>
+                        <div id="registration">
+                            <p>#parse('screens/configuration/registration.vm')</p>
+                        </div>
+                        <div id="dicomReceiver">
+                            <p>#parse('screens/configuration/dicomReceiver.vm')</p>
+                        </div>
+                        #if(!$initialize)
+                            #foreach($tab in $tabs)
+                                <div id="$tab.getProperty("divName")">
+                                    #set($path = "screens/configuration/${tab.getProperty('fileName')}")
+                                    <p>#parse($path)</p>
+                                </div>
+                            #end
+                        #end
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                #if(!$initialize)
+                    var initialize = false;
+                #else
+                    var initialize = true;
+                #end
+                configurationTabManagerInit(initialize);
+            </script>
+            <!-- END TABS AND CONTENT DISPLAY: Taken from xnat_projectData_summary_tabs.vm -->
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+#else
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <div id="congratsContainer" class="container" style="width:98%;margin:5px;background-color:#ff99cc;">
+                <div id="congratsBody" class="containerBody">
+                    <div class="containerItem edit_header2" style="white-space:normal;line-height:18px;font-size: larger;">Security Warning</DIV>
+                    <div class="containerItem" style="white-space:normal;">You do not have administrator access and can't access this page.</DIV>
+                </div>
+            </div>
+#end
+        </td>
+    </tr>
+</table>
+
+<!-- End Configuration page, source file is plugin-resources/webapp/xnat-templates/screens/Configuration.vm -->

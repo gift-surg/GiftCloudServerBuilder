@@ -9,10 +9,12 @@ import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -41,7 +43,7 @@ public class DirectScanResourceImpl extends ResourceModifierA{
 	 * @see org.nrg.xnat.helpers.resource.DirectResourceModifierA#buildDestinationPath()
 	 */
 	@Override
-	public String buildDestinationPath() throws InvalidArchiveStructure {
+	public String buildDestinationPath() throws InvalidArchiveStructure, UnknownPrimaryProjectException {
 		return FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "SCANS/" + scan.getId() +"/");
 	}
 
@@ -59,6 +61,7 @@ public class DirectScanResourceImpl extends ResourceModifierA{
 		scan.setFile(resource);
 		
 		scan.save(user, false, false,ci);
+		SaveItemHelper.authorizedSave(scan,user, false, false);
 		return true;
 	}
 

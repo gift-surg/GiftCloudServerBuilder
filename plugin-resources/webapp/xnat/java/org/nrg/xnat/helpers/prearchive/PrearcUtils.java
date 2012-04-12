@@ -1,22 +1,5 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -33,6 +16,17 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class PrearcUtils {
 	public static final String COMMON = "Unassigned";
@@ -256,9 +250,9 @@ public class PrearcUtils {
 	};
 
 	/**
-	 * Creates a new timestamp subdirectory of the given parent directory
-	 * @param parent directory that will contain the new timestamp subdirectory
-	 * @return timestamp directory
+	 * Creates a formatted timestamp using the {@link #TSDIR_MILLISECONDS_FORMAT} specification
+     * and the U.S. locale.
+	 * @return The formatted timestamp
 	 */
 	public static String makeTimestamp() {
 	    final SimpleDateFormat formatter = new SimpleDateFormat(TSDIR_MILLISECONDS_FORMAT, Locale.US);
@@ -268,8 +262,8 @@ public class PrearcUtils {
 
 	/**
 	 * Checks for obvious problems with a session XML: existence, permissions.
-	 * @param sessionDir Directory holding the session
-	 * @return
+	 * @param sessionXML The XML defining the session
+	 * @return The {@link PrearcStatus} for the session.
 	 */
 	public static PrearcStatus checkSessionStatus(final File sessionXML) {
 		if (!sessionXML.exists()) {
@@ -288,6 +282,49 @@ public class PrearcUtils {
 	
 	public static java.util.Date timestamp2Date (java.sql.Timestamp t) {
 		return new java.util.Date(t.getTime());
+	}
+	
+	/**
+	 * Create a blank session that will be used to populate a row in the prearchive table that will
+	 * be filled later.
+	 * 
+	 * No attempt is made to create the necessary folder structure in the prearchive directory on the
+	 * filesystem. 
+	 * 
+	 * The essential fields are set:
+	 * - folderName
+	 * - project
+	 * - url
+	 * - tag (the Study Instance UID)
+	 * @param project
+	 * @param sessionLabel
+	 * @param tag
+	 * @return
+	 */
+	public static SessionData blankSession (String project, String sessionLabel, String tag) throws IOException {
+		if (sessionLabel == null || tag == null) {
+			throw new IOException("Cannot create a SessionData object with a session label or study instance uid");
+		}
+		
+		final File root;
+        if (null == project) {
+            root = new File(ArcSpecManager.GetInstance().getGlobalPrearchivePath());
+        } else {
+            //root = new File(project.getPrearchivePath());
+        	root = new File (ArcSpecManager.GetInstance().getGlobalPrearchivePath() + "/" + project);
+        }
+        // doesn't currently exist only used to get pathname to create the URL
+        final File tsdir;
+        tsdir = new File(root, PrearcUtils.makeTimestamp());
+        
+        SessionData sess = new SessionData();
+        sess.setFolderName(sessionLabel);
+        sess.setName(sessionLabel);
+        sess.setTimestamp(tsdir.getName());
+        sess.setProject(project);
+        sess.setUrl((new File(tsdir,sessionLabel)).getAbsolutePath());
+        sess.setTag(tag);
+        return sess;
 	}
 	
 	public static void deleteProject (String project) throws SQLException, SessionException, Exception {

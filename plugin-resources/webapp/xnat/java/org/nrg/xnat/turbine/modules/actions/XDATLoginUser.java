@@ -14,10 +14,10 @@ public class XDATLoginUser extends
 
 	
 	public void doRedirect(RunData data, Context context,XDATUser user) throws Exception{
-		String nextPage = data.getParameters().getString("nextPage","");
-		String nextAction = data.getParameters().getString("nextAction","");
-		String par = data.getParameters().getString("par","");
-		String rest = data.getParameters().getString("rest_uri","");
+		String nextPage = (String)TurbineUtils.GetPassedParameter("nextPage",data);
+		String nextAction = (String)TurbineUtils.GetPassedParameter("nextAction",data);
+		String par = (String)TurbineUtils.GetPassedParameter("par",data);
+		String rest = (String)TurbineUtils.GetPassedParameter("rest_uri",data);
 		/*
 		 * If the setPage("template.vm") method has not
 		 * been used in the template to authenticate the

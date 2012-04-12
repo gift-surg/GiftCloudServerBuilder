@@ -21,6 +21,7 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.FileUtils.OldFileHandlerI;
 
@@ -273,6 +274,7 @@ public class BaseXnatResourceseries extends AutoXnatResourceseries {
     	
     	this.setPath(newFile.getAbsolutePath());
     	this.save(user, true, false,ci);
+    	SaveItemHelper.authorizedSave(this,user, true, false);
     }
 
 

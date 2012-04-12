@@ -1,6 +1,7 @@
 <script type="text/javascript" src="$content.getURI("scripts/xnat_projectData.js")"></script>
 <script type="text/javascript">
 window.projectTracker=new projectTracker();
+
 #set($all_project=$data.getSession().getAttribute("user").getCachedItems("xnat:projectData",null,false))
 #foreach($project in $all_project)
 window.projectTracker.add_project("$project.getId()","$!project.getSecondaryId().replace('\',"\\").replace('"',"\"")","$!project.getName().replace('\',"\\").replace('"',"\"")");

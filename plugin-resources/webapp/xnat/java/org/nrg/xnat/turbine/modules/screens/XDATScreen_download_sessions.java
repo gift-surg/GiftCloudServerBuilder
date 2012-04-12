@@ -7,6 +7,7 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.turbine.util.RunData;
@@ -26,13 +27,29 @@ public class XDATScreen_download_sessions extends SecureScreen {
     @Override
     protected void doBuildTemplate(RunData data, Context context)
             throws Exception {
-        String[] sessions = data.getParameters().getStrings("sessions");
-        if (sessions==null)
-        {
+        List<String> sessionList = null;
+        String[] sessions = ((String[])TurbineUtils.GetPassedObjects("sessions",data));
+        if (sessions == null) {
+            // If the sessions aren't directly embedded in the data, check for a search element.
+            String element = (String) TurbineUtils.GetPassedParameter("search_element", data);
+            String field = (String) TurbineUtils.GetPassedParameter("search_field", data);
+            String value = (String) TurbineUtils.GetPassedParameter("search_value", data);
             
+            // TODO: For now, hard-limit this to MR sessions.
+            if ("xnat:mrSessionData".equals(element) && "xnat:mrSessionData.ID".equals(field) && value != null && !"".equals(value)) {
+                sessionList = new ArrayList<String>();
+                sessionList.add(value);
+            }
+
+            // Add the targeted flag so that the page can display based on the single session-targeted action.
+            context.put("targeted", true);
         }else{
-            List<String> sessionList =java.util.Arrays.asList(sessions);
-            
+            // Add the targeted flag so that the page can display based on the multiple session-targeted action.
+            context.put("targeted", false);
+            sessionList = Arrays.asList(sessions);
+        }
+             
+        if (sessionList != null) {
             String sessionString = "";
             int counter = 0;
             for(String s : sessionList)
@@ -49,16 +66,16 @@ public class XDATScreen_download_sessions extends SecureScreen {
             	}
             }
             
-            String project = data.getParameters().getString("project");
+            String project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
             
-            String query=null;
+            String query;
             if (project==null)
             {
             	query= "SELECT expt.id,COALESCE(expt.label,expt.id) AS IDS,modality"+
             	" FROM xnat_imageSessionData isd"+
             	" LEFT JOIN xnat_experimentData expt ON expt.id=isd.id"+
             	" LEFT JOIN xnat_experimentData_share pp ON expt.id=pp.sharing_share_xnat_experimentda_id"+
-            	" WHERE isd.ID IN (" + sessionString +") " +
+            	" WHERE isd.ID IN (" + sessionString +") ORDER BY IDS" +
             	                    ";";
             }else{
             	if(!retrieveAllTags(TurbineUtils.getUser(data)).contains(project)){
@@ -72,7 +89,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
             	" FROM xnat_imageSessionData isd"+
             	" LEFT JOIN xnat_experimentData expt ON expt.id=isd.id"+
             	" LEFT JOIN xnat_experimentData_share pp ON expt.id=pp.sharing_share_xnat_experimentda_id AND pp.project='" + project + "'"+
-            	" WHERE isd.ID IN (" + sessionString +") " +
+            	" WHERE isd.ID IN (" + sessionString +") ORDER BY IDS" +
             	                    ";";
             }
                       
@@ -85,7 +102,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
             //SELECT SCANS
 
             query= "SELECT type,COUNT(*) FROM xnat_imagescandata " +
-                    " WHERE xnat_imagescandata.image_session_id IN (" + sessionString +") GROUP BY type;";
+                    " WHERE xnat_imagescandata.image_session_id IN (" + sessionString +") GROUP BY type ORDER BY type;";
             
             table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
             
@@ -95,7 +112,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
             //SELECT RECONS
 
             query= "SELECT type,COUNT(*) FROM xnat_reconstructedimagedata " +
-                    " WHERE xnat_reconstructedimagedata.image_session_id IN (" + sessionString +") GROUP BY type;";
+                    " WHERE xnat_reconstructedimagedata.image_session_id IN (" + sessionString +") GROUP BY type ORDER BY type;";
             
             table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
             
@@ -110,7 +127,7 @@ public class XDATScreen_download_sessions extends SecureScreen {
                     "LEFT JOIN xnat_experimentData expt ON img_ass.id=expt.id " +
                     "LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id  " +
                     " WHERE img_ass.imagesession_id IN (" + sessionString +") " +
-                    "GROUP BY element_name;";
+                    "GROUP BY element_name ORDER BY element_name;";
             
             table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
             

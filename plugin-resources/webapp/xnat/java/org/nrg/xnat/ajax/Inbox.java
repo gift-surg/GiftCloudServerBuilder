@@ -43,6 +43,7 @@ import org.nrg.PrearcImporter;
 import org.nrg.status.StatusMessage;
 import org.nrg.status.StatusMessage.Status;
 import org.nrg.status.StatusQueue;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.archive.PrearcImporterFactory;
@@ -68,8 +69,7 @@ public final class Inbox {
     private final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(Inbox.class);
 
     public void startImport(final HttpServletRequest req, final HttpServletResponse response, final ServletConfig config) {
-	final HttpSession session = req.getSession();
-	final XDATUser user = (XDATUser)session.getAttribute("user");
+	final XDATUser user = XDAT.getUserDetails();
 	final String login = user.getLogin();
 
 	log.debug("received import request for user " + login);
@@ -181,8 +181,7 @@ public final class Inbox {
     }
 
     public void monitorImport(final HttpServletRequest req, final HttpServletResponse response) {
-	final HttpSession session = req.getSession();
-	final XdatUser user = (XdatUser)session.getAttribute("user");
+	final XdatUser user = XDAT.getUserDetails();
 	final String login = user.getLogin();
 
 	log.debug("received monitor request for user " + login);
@@ -243,7 +242,7 @@ public final class Inbox {
 
     public void remove(final HttpServletRequest req, final HttpServletResponse response, final ServletConfig config) {
 	final HttpSession session = req.getSession();
-	final XdatUser user = (XdatUser)session.getAttribute("user");
+	final XdatUser user = XDAT.getUserDetails();
 	final String login = user.getLogin();
 
 	if (null == login) {
@@ -329,11 +328,8 @@ public final class Inbox {
 
     private final class FileSummary {
 	final long size;	// length in kb
-	final int nFiles;
-
 	FileSummary(final File f) {
 	    if (f.isDirectory()) {
-		int nFiles = 0;
 		long size = 0;		
 		final List<File> subdirs = new LinkedList<File>();
 		subdirs.add(f);
@@ -343,15 +339,12 @@ public final class Inbox {
 			if (file.isDirectory()) {
 			    subdirs.add(file);
 			} else {
-			    nFiles++;
 			    size += file.length()/1024;
 			}
 		    }
 		}
-		this.nFiles = nFiles;
 		this.size = size;
 	    } else {
-		this.nFiles = 0;
 		this.size = f.length()/1024;
 	    }
 	}
@@ -360,7 +353,7 @@ public final class Inbox {
 
     public void list(final HttpServletRequest req, final HttpServletResponse response) {
 	final HttpSession session = req.getSession();
-	final XdatUser user = (XdatUser)session.getAttribute("user");
+	final XdatUser user = XDAT.getUserDetails();
 	final String login = user.getLogin();
 
 	if (null == login) {

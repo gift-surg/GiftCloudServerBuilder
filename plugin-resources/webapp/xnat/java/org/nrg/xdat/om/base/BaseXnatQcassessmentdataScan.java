@@ -10,13 +10,14 @@ import java.util.Hashtable;
 import org.nrg.xdat.om.base.auto.AutoXnatQcassessmentdataScan;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
+import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
 
 /**
  * @author XDAT
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatQcassessmentdataScan extends AutoXnatQcassessmentdataScan {
+public abstract class BaseXnatQcassessmentdataScan extends AutoXnatQcassessmentdataScan implements ScanAssessorScanI{
 
 	public BaseXnatQcassessmentdataScan(ItemI item)
 	{
@@ -37,6 +38,10 @@ public abstract class BaseXnatQcassessmentdataScan extends AutoXnatQcassessmentd
 	public BaseXnatQcassessmentdataScan(Hashtable properties, UserI user)
 	{
 		super(properties,user);
+	}
+	
+	public String getSummary(){
+		return "Present";
 	}
 
 }

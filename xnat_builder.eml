@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="ant-1.6.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/ant/jars/ant-1.6.1.jar!/"/>
+	</lib>
+	<lib name="antlr-2.7.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/antlr/jars/antlr-2.7.6.jar!/"/>
+	</lib>
+	<lib name="antlr-runtime-3.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar!/"/>
+	</lib>
+	<lib name="apa-webcontent-1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/apa-webcontent/jars/apa-webcontent-1.1.jar!/"/>
+	</lib>
+	<lib name="avalon-framework-4.1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/avalon-framework/jars/avalon-framework-4.1.4.jar!/"/>
+	</lib>
+	<lib name="axis-1_3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/axis/jars/axis-1_3.jar!/"/>
+	</lib>
+	<lib name="axis.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/axis/jars/axis.jar!/"/>
+	</lib>
+	<lib name="axis-ant-1_3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/axis-ant/jars/axis-ant-1_3.jar!/"/>
+	</lib>
+	<lib name="axis-schema-1_3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/axis-schema/jars/axis-schema-1_3.jar!/"/>
+	</lib>
+	<lib name="batik-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/batik/jars/batik-1.jar!/"/>
+	</lib>
+	<lib name="com.springsource.net.sf.cglib-2.2.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/cglib/jars/com.springsource.net.sf.cglib-2.2.0.jar!/"/>
+	</lib>
+	<lib name="h2-1.2.147.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/com.h2database/jars/h2-1.2.147.jar!/"/>
+	</lib>
+	<lib name="commons-beanutils-1.6.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar!/"/>
+	</lib>
+	<lib name="commons-codec-1.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-codec/jars/commons-codec-1.5.jar!/"/>
+	</lib>
+	<lib name="commons-collections-3.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-collections/jars/commons-collections-3.0.jar!/"/>
+	</lib>
+	<lib name="commons-configuration-1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-configuration/jars/commons-configuration-1.6.jar!/"/>
+	</lib>
+	<lib name="commons-dbcp-1.2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.2.1.jar!/"/>
+	</lib>
+	<lib name="commons-digester-1.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-digester/jars/commons-digester-1.5.jar!/"/>
+	</lib>
+	<lib name="commons-discovery-0.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-discovery/jars/commons-discovery-0.2.jar!/"/>
+	</lib>
+	<lib name="commons-email-1.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-email/jars/commons-email-1.2.jar!/"/>
+	</lib>
+	<lib name="commons-fileupload-1.2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.2.1.jar!/"/>
+	</lib>
+	<lib name="commons-httpclient-3.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-httpclient/jars/commons-httpclient-3.1.jar!/"/>
+	</lib>
+	<lib name="commons-io-1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-io/jars/commons-io-1.4.jar!/"/>
+	</lib>
+	<lib name="commons-lang-2.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar!/"/>
+	</lib>
+	<lib name="commons-logging-1.0.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-logging/jars/commons-logging-1.0.4.jar!/"/>
+	</lib>
+	<lib name="commons-math-2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-math/jars/commons-math-2.1.jar!/"/>
+	</lib>
+	<lib name="commons-pool-1.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-pool/jars/commons-pool-1.2.jar!/"/>
+	</lib>
+	<lib name="cryptix-3.2.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/cryptix/jars/cryptix-3.2.0.jar!/"/>
+	</lib>
+	<lib name="dcm4che-core-2.0.25.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar!/"/>
+	</lib>
+	<lib name="dcm4che-image-2.0.25.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-image-2.0.25.jar!/"/>
+	</lib>
+	<lib name="dcm4che-imageio-2.0.25.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-imageio-2.0.25.jar!/"/>
+	</lib>
+	<lib name="dcm4che-imageio-rle-2.0.25.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar!/"/>
+	</lib>
+	<lib name="dcm4che-iod-2.0.25.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar!/"/>
+	</lib>
+	<lib name="dcm4che-net-2.0.25.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar!/"/>
+	</lib>
+	<lib name="dicom-xnat-mx-1.5.4-SNAPSHOT.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.4-SNAPSHOT.jar!/"/>
+	</lib>
+	<lib name="dicom-xnat-sop-1.5.4-SNAPSHOT.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.4-SNAPSHOT.jar!/"/>
+	</lib>
+	<lib name="dicom-xnat-util-1.5.4-SNAPSHOT.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.4-SNAPSHOT.jar!/"/>
+	</lib>
+	<lib name="DicomDB-3.0.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/DicomDB-3.0.2.jar!/"/>
+	</lib>
+	<lib name="DicomEdit-1.5.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/DicomEdit-1.5.2.jar!/"/>
+	</lib>
+	<lib name="DicomImageUtils-1.0.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar!/"/>
+	</lib>
+	<lib name="DicomUtils-1.1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar!/"/>
+	</lib>
+	<lib name="ecat4xnat-1.5.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/ecat4xnat-1.5.0.jar!/"/>
+	</lib>
+	<lib name="ExtAttr-2.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/ExtAttr-2.1.1.jar!/"/>
+	</lib>
+	<lib name="jai-codec-1.1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar!/"/>
+	</lib>
+	<lib name="jai-core-1.1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar!/"/>
+	</lib>
+	<lib name="PrearcImporter-1.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/PrearcImporter-1.5.1.jar!/"/>
+	</lib>
+	<lib name="SessionBuilders-1.5.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/SessionBuilders-1.5.4.jar!/"/>
+	</lib>
+	<lib name="dom4j-1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dom4j/jars/dom4j-1.4.jar!/"/>
+	</lib>
+	<lib name="ecs-1.4.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/ecs/jars/ecs-1.4.2.jar!/"/>
+	</lib>
+	<lib name="ehcache-core-2.4.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar!/"/>
+	</lib>
+	<lib name="excalibur-component-1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar!/"/>
+	</lib>
+	<lib name="excalibur-instrument-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/excalibur-instrument/jars/excalibur-instrument-1.0.jar!/"/>
+	</lib>
+	<lib name="excalibur-logger-1.0.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/excalibur-logger/jars/excalibur-logger-1.0.1.jar!/"/>
+	</lib>
+	<lib name="excalibur-pool-1.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/excalibur-pool/jars/excalibur-pool-1.2.jar!/"/>
+	</lib>
+	<lib name="fop-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/fop/jars/fop-1.jar!/"/>
+	</lib>
+	<lib name="java-getopt-1.0.13.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/gnu/jars/java-getopt-1.0.13.jar!/"/>
+	</lib>
+	<lib name="guava-10.0.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/guava/jars/guava-10.0.1.jar!/"/>
+	</lib>
+	<lib name="hibernate-commons-annotations-3.2.0.Final.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/hibernate/jars/hibernate-commons-annotations-3.2.0.Final.jar!/"/>
+	</lib>
+	<lib name="hibernate-core-3.6.3.Final.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/hibernate/jars/hibernate-core-3.6.3.Final.jar!/"/>
+	</lib>
+	<lib name="hibernate-jpa-2.0-api-1.0.0.Final.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/hibernate/jars/hibernate-jpa-2.0-api-1.0.0.Final.jar!/"/>
+	</lib>
+	<lib name="hsqldb-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/hsqldb/jars/hsqldb-1.jar!/"/>
+	</lib>
+	<lib name="httpclient-4.0-beta2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/httpclient/jars/httpclient-4.0-beta2.jar!/"/>
+	</lib>
+	<lib name="httpcore-4.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/httpcore/jars/httpcore-4.0.jar!/"/>
+	</lib>
+	<lib name="httpcore-nio-4.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/httpcore/jars/httpcore-nio-4.0.jar!/"/>
+	</lib>
+	<lib name="ij-1.43u.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/ij/jars/ij-1.43u.jar!/"/>
+	</lib>
+	<lib name="com.springsource.javax.inject-1.0.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/inject/jars/com.springsource.javax.inject-1.0.0.jar!/"/>
+	</lib>
+	<lib name="isorelax-20041111.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/isorelax/jars/isorelax-20041111.jar!/"/>
+	</lib>
+	<lib name="itext-2.0.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/iText/jars/itext-2.0.6.jar!/"/>
+	</lib>
+	<lib name="iTextXML-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/iTextXML/jars/iTextXML-1.jar!/"/>
+	</lib>
+	<lib name="jackson-core-asl-1.8.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar!/"/>
+	</lib>
+	<lib name="jackson-mapper-asl-1.8.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jackson/jars/jackson-mapper-asl-1.8.5.jar!/"/>
+	</lib>
+	<lib name="activation-1.0.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jaf/jars/activation-1.0.2.jar!/"/>
+	</lib>
+	<lib name="jakarta-regexp-1.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jakarta-regexp/jars/jakarta-regexp-1.2.jar!/"/>
+	</lib>
+	<lib name="javamail-1.4.3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/javamail/jars/javamail-1.4.3.jar!/"/>
+	</lib>
+	<lib name="com.springsource.javassist-3.10.0.GA.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/javassist/jars/com.springsource.javassist-3.10.0.GA.jar!/"/>
+	</lib>
+	<lib name="persistence-api-1.0.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/javax.persistence/jars/persistence-api-1.0.2.jar!/"/>
+	</lib>
+	<lib name="jaxen-1.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar!/"/>
+	</lib>
+	<lib name="jaxrpc-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jaxrpc/jars/jaxrpc-1.jar!/"/>
+	</lib>
+	<lib name="jcs-20030822.182132.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jcs/jars/jcs-20030822.182132.jar!/"/>
+	</lib>
+	<lib name="jdom-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jdom/jars/jdom-1.jar!/"/>
+	</lib>
+	<lib name="jndi-1.2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jndi/jars/jndi-1.2.1.jar!/"/>
+	</lib>
+	<lib name="json-20090211.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/json/jars/json-20090211.jar!/"/>
+	</lib>
+	<lib name="jsr173_1.0_api-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jsr173_1.0_api/jars/jsr173_1.0_api-1.jar!/"/>
+	</lib>
+	<lib name="jta-1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jta/jars/jta-1.1.jar!/"/>
+	</lib>
+	<lib name="junit-4.3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/junit/jars/junit-4.3.jar!/"/>
+	</lib>
+	<lib name="jython-2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/jython/jars/jython-2.1.jar!/"/>
+	</lib>
+	<lib name="log4j-1.2.15.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/log4j/jars/log4j-1.2.15.jar!/"/>
+	</lib>
+	<lib name="log4jr-server-0.1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/log4jr/jars/log4jr-server-0.1.0.jar!/"/>
+	</lib>
+	<lib name="logkit-1.0.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/logkit/jars/logkit-1.0.1.jar!/"/>
+	</lib>
+	<lib name="milton-api-1.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/milton/jars/milton-api-1.5.1.jar!/"/>
+	</lib>
+	<lib name="milton-servlet-1.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/milton/jars/milton-servlet-1.5.1.jar!/"/>
+	</lib>
+	<lib name="mockito-all-1.8.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/mockito/jars/mockito-all-1.8.0.jar!/"/>
+	</lib>
+	<lib name="msv-20070407.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/msv/jars/msv-20070407.jar!/"/>
+	</lib>
+	<lib name="relaxngDatatype-20070407.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar!/"/>
+	</lib>
+	<lib name="xsdlib-20070407.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/msv/jars/xsdlib-20070407.jar!/"/>
+	</lib>
+	<lib name="nrg-status-2.0.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar!/"/>
+	</lib>
+	<lib name="nrgutil-1.0.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/nrg/jars/nrgutil-1.0.0.jar!/"/>
+	</lib>
+	<lib name="apacheds-noarch-installer-1.5.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar!/"/>
+	</lib>
+	<lib name="apacheds-all-1.5.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar!/"/>
+	</lib>
+	<lib name="com.springsource.org.apache.xmlbeans-2.4.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.apache.xmlbeans/jars/com.springsource.org.apache.xmlbeans-2.4.0.jar!/"/>
+	</lib>
+	<lib name="cargo-core-api-module-1.0.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar!/"/>
+	</lib>
+	<lib name="cargo-core-api-util-1.0.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar!/"/>
+	</lib>
+	<lib name="jasypt-1.7.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.jasypt/jars/jasypt-1.7.1.jar!/"/>
+	</lib>
+	<lib name="utils-1.07.00.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/org.ostermiller/jars/utils-1.07.00.jar!/"/>
+	</lib>
+	<lib name="oro-2.0.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/oro/jars/oro-2.0.7.jar!/"/>
+	</lib>
+	<lib name="parser-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/parser/jars/parser-1.jar!/"/>
+	</lib>
+	<lib name="Pipeline-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/Pipeline-1.0.jar!/"/>
+	</lib>
+	<lib name="pipelineClient-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/pipelineClient-1.0.jar!/"/>
+	</lib>
+	<lib name="PipelineTools-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar!/"/>
+	</lib>
+	<lib name="pipelineWorkFlow-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar!/"/>
+	</lib>
+	<lib name="pipelineXNAT-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar!/"/>
+	</lib>
+	<lib name="XNATTools-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/XNATTools-1.0.jar!/"/>
+	</lib>
+	<lib name="pipelineBase-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar!/"/>
+	</lib>
+	<lib name="pipelineBuild-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar!/"/>
+	</lib>
+	<lib name="PlexiViewer-1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/PlexiViewer/jars/PlexiViewer-1.4.jar!/"/>
+	</lib>
+	<lib name="postgresql-9.0-801.jdbc4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar!/"/>
+	</lib>
+	<lib name="quartz-all-1.8.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar!/"/>
+	</lib>
+	<lib name="com.noelios.restlet-1.1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/restlet/jars/com.noelios.restlet-1.1.6.jar!/"/>
+	</lib>
+	<lib name="com.noelios.restlet.ext.servlet_2.5-1.1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/restlet/jars/com.noelios.restlet.ext.servlet_2.5-1.1.6.jar!/"/>
+	</lib>
+	<lib name="org.restlet-1.1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/restlet/jars/org.restlet-1.1.6.jar!/"/>
+	</lib>
+	<lib name="org.restlet.ext.fileupload_1.2-1.1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/restlet/jars/org.restlet.ext.fileupload_1.2-1.1.6.jar!/"/>
+	</lib>
+	<lib name="saaj-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/saaj/jars/saaj-1.jar!/"/>
+	</lib>
+	<lib name="saxon8-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/saxon8/jars/saxon8-1.jar!/"/>
+	</lib>
+	<lib name="saxon8-dom-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/saxon8-dom/jars/saxon8-dom-1.jar!/"/>
+	</lib>
+	<lib name="saxon8-xpath-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/saxon8-xpath/jars/saxon8-xpath-1.jar!/"/>
+	</lib>
+	<lib name="servletapi-2.3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/servletapi/jars/servletapi-2.3.jar!/"/>
+	</lib>
+	<lib name="jul-to-slf4j-1.5.8.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.5.8.jar!/"/>
+	</lib>
+	<lib name="slf4j-api-1.5.8.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar!/"/>
+	</lib>
+	<lib name="slf4j-jcl-1.5.8.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/slf4j/jars/slf4j-jcl-1.5.8.jar!/"/>
+	</lib>
+	<lib name="slf4j-log4j12-1.5.8.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar!/"/>
+	</lib>
+	<lib name="com.springsource.org.aopalliance-1.0.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/com.springsource.org.aopalliance-1.0.0.jar!/"/>
+	</lib>
+	<lib name="org.springframework.aop-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.aop-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.asm-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.asm-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.beans-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.beans-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.context-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.context-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.context.support-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.context.support-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.core-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.core-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.expression-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.expression-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.jdbc-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.jdbc-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.orm-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.orm-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.oxm-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.oxm-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.transaction-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.web-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.web-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="org.springframework.web.servlet-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-ldap-1.3.1.RELEASE-all.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-ldap-1.3.1.RELEASE-all.jar!/"/>
+	</lib>
+	<lib name="spring-security-acl-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-acl-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-aspects-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-aspects-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-cas-client-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-config-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-config-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-core-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-core-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-ldap-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-ldap-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-openid-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-openid-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-taglibs-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="spring-security-web-3.0.5.RELEASE.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-web-3.0.5.RELEASE.jar!/"/>
+	</lib>
+	<lib name="gsi-classes-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/srb/jars/gsi-classes-1.jar!/"/>
+	</lib>
+	<lib name="jargon-1.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/srb/jars/jargon-1.5.jar!/"/>
+	</lib>
+	<lib name="xnatsrb-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/srb/jars/xnatsrb-1.jar!/"/>
+	</lib>
+	<lib name="stratum-1.0-b5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/stratum/jars/stratum-1.0-b5.jar!/"/>
+	</lib>
+	<lib name="maven-torque-plugin-3.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/torque/jars/maven-torque-plugin-3.1.1.jar!/"/>
+	</lib>
+	<lib name="torque-3.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/torque/jars/torque-3.1.1.jar!/"/>
+	</lib>
+	<lib name="turbine-2.3.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/turbine/jars/turbine-2.3.1.jar!/"/>
+	</lib>
+	<lib name="velocity-1.3.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/velocity/jars/velocity-1.3.1.jar!/"/>
+	</lib>
+	<lib name="village-2.0-dev-20030825.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/village/jars/village-2.0-dev-20030825.jar!/"/>
+	</lib>
+	<lib name="wsdl4j-1.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/wsdl4j/jars/wsdl4j-1.5.1.jar!/"/>
+	</lib>
+	<lib name="xalan-2.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xalan/jars/xalan-2.5.1.jar!/"/>
+	</lib>
+	<lib name="xbean-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xbean/jars/xbean-1.jar!/"/>
+	</lib>
+	<lib name="xbean_xpath-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xbean_xpath/jars/xbean_xpath-1.jar!/"/>
+	</lib>
+	<lib name="xdat-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-1.jar!/"/>
+	</lib>
+	<lib name="xdat-arcget-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-arcget-1.jar!/"/>
+	</lib>
+	<lib name="xdat-arcput-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-arcput-1.jar!/"/>
+	</lib>
+	<lib name="xdat-arcread-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-arcread-1.jar!/"/>
+	</lib>
+	<lib name="xdat-arcsim-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar!/"/>
+	</lib>
+	<lib name="xdat-beans-1.0-source.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar!/"/>
+	</lib>
+	<lib name="xdat-beans-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar!/"/>
+	</lib>
+	<lib name="xdat-closeUserSession-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar!/"/>
+	</lib>
+	<lib name="xdat-createUserSession-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar!/"/>
+	</lib>
+	<lib name="xdat-downloader-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-downloader-1.0.jar!/"/>
+	</lib>
+	<lib name="xdat-getFile-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-getFile-1.jar!/"/>
+	</lib>
+	<lib name="xdat-getFileCatalog-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-getFileCatalog-1.jar!/"/>
+	</lib>
+	<lib name="xdat-refreshUserSession-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-refreshUserSession-1.jar!/"/>
+	</lib>
+	<lib name="xdat-restClient-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-restClient-1.jar!/"/>
+	</lib>
+	<lib name="xdat-search-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-search-1.jar!/"/>
+	</lib>
+	<lib name="xdat-store-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-store-1.jar!/"/>
+	</lib>
+	<lib name="xdat-storeXAR-1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-storeXAR-1.jar!/"/>
+	</lib>
+	<lib name="xerces-J_1.4.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xerces/jars/xerces-J_1.4.0.jar!/"/>
+	</lib>
+	<lib name="xercesImpl-2.4.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xerces/jars/xercesImpl-2.4.0.jar!/"/>
+	</lib>
+	<lib name="xml-apis-1.0.b2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar!/"/>
+	</lib>
+	<lib name="xmlrpc-1.2-b1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar!/"/>
+	</lib>
+	<lib name="xnatfs-1.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar!/"/>
+	</lib>
+</component>

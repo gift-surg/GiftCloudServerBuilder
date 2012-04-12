@@ -16,10 +16,12 @@ import org.nrg.xdat.om.XnatComputationdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.om.base.auto.AutoXnatReconstructedimagedata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -126,7 +128,7 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
     }
 
 
-	public File getExpectedSessionDir() throws InvalidArchiveStructure{
+	public File getExpectedSessionDir() throws InvalidArchiveStructure, UnknownPrimaryProjectException{
 		return this.getImageSessionData().getExpectedSessionDir();
 	}
 	@Override
@@ -136,6 +138,19 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
 			throw new Exception("Unable to identify image session for:" + this.getImageSessionId());
 		}
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
+		
+		validate(expectedPath);
+	}
+	
+	public void validate(String expectedPath) throws Exception{
+		
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
 		
 		for(final XnatAbstractresourceI res: this.getOut_file()){
 			final String uri;
@@ -149,5 +164,18 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
 			
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
+		
+		for(final XnatAbstractresourceI res: this.getIn_file()){
+			final String uri;
+			if(res instanceof XnatResource){
+				uri=((XnatResource)res).getUri();
+			}else if(res instanceof XnatResourceseries){
+				uri=((XnatResourceseries)res).getPath();
+			}else{
+				continue;
+	}
+			
+			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
+}
 	}
 }

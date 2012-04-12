@@ -1,15 +1,6 @@
 package org.nrg.xnat.restlet.services;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.status.StatusList;
@@ -21,6 +12,7 @@ import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
+import org.nrg.xnat.restlet.actions.PrearcImporterA;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.actions.importer.ImporterNotFoundException;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -28,20 +20,33 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.utils.UserUtils;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.restlet.util.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 public class Importer extends SecureResource {
 	private static final String CRLF = "\r\n";
 	private static final String HTTP_SESSION_LISTENER = "http-session-listener";
-    static org.apache.log4j.Logger logger = Logger.getLogger(Importer.class);
+	private static final String JAVA = "Java";
+	public static final String APPLET_FLAG = "applet";
+	private final Logger logger = LoggerFactory.getLogger(Importer.class);
+
 	public Importer(Context context, Request request, Response response) {
 		super(context, request, response);
 
@@ -50,6 +55,7 @@ public class Importer extends SecureResource {
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 	}
 
+	@Override
 	public boolean allowGet(){
 		return false;
 	}
@@ -84,21 +90,72 @@ public class Importer extends SecureResource {
 			params.put(key,value);
 		}
 	}
-
+	
 	@Override
 	public void handlePost() {
 		//build fileWriters
 		try {
-			Representation entity = this.getRequest().getEntity();
+		    final Request request = getRequest();
+		    if (logger.isDebugEnabled()) {
+		        final ClientInfo client = request.getClientInfo();
+		        final StringBuilder sb = new StringBuilder("handling POST from ");
+		        sb.append(client.getAddress()).append(":").append(client.getPort());
+		        sb.append(" ").append(client.getAgent());
+		        logger.debug(sb.toString());
+		    }
+		    
+			Representation entity = request.getEntity();
 
 			fw=this.getFileWritersAndLoadParams(entity);
 
 			//maintain parameters
-			loadParams(getQueryVariableForm());
+			loadQueryVariables();
+			
+			ImporterHandlerA importer;
 
-			if(fw.size()==0){
+			if(fw.size()==0 && handler != null && !handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY))
+			{
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
 				return;
+			}
+			else if (handler != null && fw.size() == 0) {
+				if (!handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY)) {
+					throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, "For a POST request with no file, the \"" + ImporterHandlerA.IMPORT_HANDLER_ATTR + "\" parameter can only be \"" + ImporterHandlerA.BLANK_PREARCHIVE_ENTRY + "\".", new IllegalArgumentException());
+				}
+				else {
+					try {				
+						importer = ImporterHandlerA.buildImporter(handler, 
+																  listenerControl, 
+																  user, 
+																  null, // FileWriterWrapperI is null because no files should have been uploaded. 
+																  params);
+					}
+					catch (Exception e) {
+						logger.error("",e);
+						throw new ServerException(e.getMessage(),e);
+					}
+					
+					if(httpSessionListener){
+						if(StringUtils.isEmpty(listenerControl)){
+							getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"'" + XNATRestConstants.TRANSACTION_RECORD_ID+ "' is required when requesting '" + HTTP_SESSION_LISTENER + "'.");
+							return;
+						}
+						final StatusList sq = new StatusList();
+						importer.addStatusListener(sq);
+
+						storeStatusList(listenerControl, sq);
+					}
+
+					response= importer.call();
+								
+					if(entity!=null && APPLICATION_XMIRC.equals(entity.getMediaType())){
+						returnString("OK", Status.SUCCESS_OK);
+						return;
+					}
+					
+					returnDefaultRepresentation();
+					return;
+				}
 			}
 
 			if(fw.size()>1){
@@ -106,25 +163,6 @@ public class Importer extends SecureResource {
 				return;
 			}
 
-//			XnatImagesessiondata session=null;
-//
-//			if(session_id!=null){
-//				session=XnatImagesessiondata.getXnatImagesessiondatasById(session_id, user, false);
-//			}
-//
-//			if(session==null){
-//				if(project_id!=null){
-//					session=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project_id, session_id, user, false);
-//				}
-//			}
-//
-//			if(session==null){
-//				if(project_id==null || subject_id==null || session_id==null){
-//					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "New sessions require a project, subject and session id.");
-//					return;
-//				}
-//			}
-			
 			if(handler==null && entity!=null){
 				if(APPLICATION_DICOM.equals(entity.getMediaType()) || 
 						APPLICATION_XMIRC.equals(entity.getMediaType()) || 
@@ -132,8 +170,9 @@ public class Importer extends SecureResource {
 					handler=ImporterHandlerA.GRADUAL_DICOM_IMPORTER;
 				}
 			}
-
-			ImporterHandlerA importer;
+			
+			this.addAppletFlagToParams();
+			
 			try {
 				importer = ImporterHandlerA.buildImporter(handler, listenerControl, user, fw.get(0), params);
 			} catch (SecurityException e) {
@@ -190,14 +229,63 @@ public class Importer extends SecureResource {
 		}
 	}
 
-		private void respondToException(Exception e, Status status) {
-			logger.error("",e);
-			if (this.requested_format!=null && this.requested_format.equalsIgnoreCase("HTML")){
-				response = new ArrayList<String>();
-				response.add(e.getMessage());
-				returnDefaultRepresentation();
-			}else{
-				this.getResponse().setStatus(status, e.getMessage());
+    protected void respondToException(Exception e, Status status) {
+		logger.error("",e);
+		if (this.requested_format!=null && this.requested_format.equalsIgnoreCase("HTML")) {
+			response = new ArrayList<String>();
+			response.add(e.getMessage());
+			returnDefaultRepresentation();
+		} else {
+			this.getResponse().setStatus(status, e.getMessage());
+		}
+	}
+
+	/**
+	 * Add an attribute that tells users of the global parameter 
+	 * if the file is being uploaded via the Upload Applet.
+	 * 
+	 * Determining whether a session was uploaded via the applet is 
+	 * done by inspecting the individual products of User Agent string.
+	 * 
+	 * Upload applet sessions seem to come in with a the first product is
+	 * is the browser string (Mozilla etc.) and the second, the operation
+	 * system identifier is "Java". So if the second product is "Java", 
+	 * the session came in from the Upload Applet. 
+	 * 
+	 * Another case when the name of a product is "Java" is when a Java
+	 * program makes calls to the REST API, for example, the functional
+	 * tests in the xnat_test package. In this case however, the first
+	 * product, the browser identifier is "Java" and not the second.  
+	 * 
+	 * TL;DR If the second product is "Java", the session came in via the 
+	 * upload applet
+	 * 
+	 */
+	private void addAppletFlagToParams() {
+		List<Product> ps = this.getRequest().getClientInfo().getAgentProducts();
+		String appletFound = "false";
+		if (ps.size() > 2) {
+			if (ps.get(1).getName().equals(Importer.JAVA)) {
+				appletFound = "true";	
+			}
+		}
+			
+		if (!params.containsKey(Importer.APPLET_FLAG)) {
+			this.params.put(Importer.APPLET_FLAG, appletFound);
+		}
+		else {
+			// the "applet" query string parameter has already been passed,
+			// don't override it. 
+		}
+ 	}
+	
+	public static Boolean getUploadFlag(Map<String, Object> params) {
+		if (params.containsKey(Importer.APPLET_FLAG)) {
+			String flag = (String) params.get(Importer.APPLET_FLAG);
+			return flag.equals("true");
+		}
+		else {
+			return new Boolean(false);
 			}
 		}
 

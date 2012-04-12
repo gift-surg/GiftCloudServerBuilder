@@ -40,10 +40,13 @@
             </DIV>
            </li>
            <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','ImageUpload').addPathInfo('project',$project.getId())">Upload Images</A>
+            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','LaunchUploadApplet').addPathInfo('project',$project.getId())">Upload Images</A>
            </li>
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','prearchives').addPathInfo('project',$project.getId())">View Prearchive</A>
+           </li>
+		   <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","scanTypeCleanup").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$!{project.getId()}").addPathInfo("popup","$!popup")">Scan Type Cleanup</A> 
            </li>
       </ul>
       <ul>
@@ -75,7 +78,7 @@ function toggleFavorites(){
 				      },
 			      scope:this
 		    }
-    YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()",initCallback);
+    YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
   }else{
     var initCallback={
 						      success:function(o){
@@ -87,7 +90,7 @@ function toggleFavorites(){
 				      },
 			      scope:this
 		    }
-    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()",initCallback);
+    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
   }
 }
 

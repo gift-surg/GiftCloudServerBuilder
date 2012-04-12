@@ -6,11 +6,8 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
-
-import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jcs.access.exception.InvalidArgumentException;
@@ -19,6 +16,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUserGroupid;
@@ -30,14 +28,13 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.DBAction;
-import org.nrg.xft.email.EmailUtils;
-import org.nrg.xft.email.EmailerI;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.security.UserI;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.nrg.xnat.utils.WorkflowUtils;
 
@@ -45,10 +42,10 @@ public class ProcessAccessRequest extends SecureAction {
     static Logger logger = Logger.getLogger(ProcessAccessRequest.class);
 
     public void doDenial(RunData data, Context context) throws Exception {
-        Integer id = data.getParameters().getInteger("id");
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         
         if(p==null || p.contains("'")){
         	error(new InvalidArgumentException(p),data);
@@ -63,14 +60,19 @@ public class ProcessAccessRequest extends SecureAction {
     	WorkflowUtils.save(wrk, c);
         
 		if (other!=null && project !=null){
+        	if(!user.canDelete(project)){
+        		error(new InvalidPermissionException("Invalid permissions"),data);
+        		return;
+        	}
+        	
 		    XDATUser otherU = new XDATUser(other);
 	        try {
 			    
 			    for (Map.Entry<String, UserGroup> entry:otherU.getGroups().entrySet()){
 			        if (entry.getValue().getTag().equals(project.getId())){
 			            for(XdatUserGroupid map:otherU.getGroups_groupid()){
-			                if (map.getGroupid().equals(entry.getValue().getId())){   
-			                    DBAction.DeleteItem(map.getItem(), user,c);
+			                if (map.getGroupid().equals(entry.getValue().getId())){  
+                        	SaveItemHelper.authorizedDelete(map.getItem(), user,c);
 			                }
 			            }
 			        }
@@ -95,39 +97,13 @@ public class ProcessAccessRequest extends SecureAction {
 		    template.merge(context,sw);
 		    String message= sw.toString();
 
-		    ArrayList<InternetAddress> to = new ArrayList();
-		    InternetAddress ia = new InternetAddress();
-		    ia.setAddress(otherU.getEmail());
-		    to.add(ia);
-
-		    ArrayList<InternetAddress> bcc = new ArrayList();
-		    if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
-		        ia = new InternetAddress();
-		        ia.setAddress(AdminUtils.getAdminEmailId());
-		        bcc.add(ia);
-		    }
-		    
-		    ArrayList<InternetAddress> cc = new ArrayList();
-		    ia = new InternetAddress();
-		    ia.setAddress(user.getEmail());
-		    cc.add(ia);
-		    
 		    String from = AdminUtils.getAdminEmailId();
 		    String subject = TurbineUtils.GetSystemName() + " Access Request for " + project.getName() + " Denied";
 
 		    try {
-		        EmailerI sm = EmailUtils.getEmailer();
-		        sm.setFrom(from);
-		        sm.setTo(to);
-		        sm.setCc(cc);
-		        sm.setBcc(bcc);
-		        sm.setSubject(subject);
-		        sm.setMsg(message);
-		        
-		        sm.send();
+            	XDAT.getMailService().sendHtmlMessage(from, otherU.getEmail(), user.getEmail(), AdminUtils.getAdminEmailId(), subject, message);
 		    } catch (Exception e) {
 		        logger.error("Unable to send mail",e);
-		        System.out.println("Error sending Email");
 		        throw e;
 		    }
 		}
@@ -141,11 +117,12 @@ public class ProcessAccessRequest extends SecureAction {
     }
     
     public void doApprove(RunData data, Context context) throws Exception {
-        Integer id = data.getParameters().getInteger("id");
+        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
+        XDATUser user = TurbineUtils.getUser(data);
         XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
-        String p = data.getParameters().getString("project");
-        String access_level = data.getParameters().getString("access_level");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
         if (StringUtils.isEmpty(access_level)){
         	access_level="member";
         }else{
@@ -153,23 +130,30 @@ public class ProcessAccessRequest extends SecureAction {
         			|| access_level.equalsIgnoreCase(BaseXnatProjectdata.OWNER_GROUP)
         			|| access_level.equalsIgnoreCase(BaseXnatProjectdata.COLLABORATOR_GROUP))){
         		error(new Exception("Unknown Access level:"+access_level), data);
+        		return;
         	}
         }
         
         if(p==null || p.contains("'")){
         	error(new InvalidArgumentException(p),data);
+        	return;
         }
         
-        XDATUser user = TurbineUtils.getUser(data);
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
-        
+                
+
 
         
         final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.APPROVE_PROJECT_REQUEST));
     	EventMetaI c=wrk.buildEvent();
     	WorkflowUtils.save(wrk, c);
         
-        if (other!=null && project !=null){
+        if (other!=null && project !=null){        
+        	if(!user.canDelete(project)){
+        		error(new InvalidPermissionException("Invalid permissions"),data);
+        		return;
+        	}
+
             XDATUser otherU;
 			try {
 				otherU = new XDATUser(other);
@@ -178,7 +162,7 @@ public class ProcessAccessRequest extends SecureAction {
 				    if (entry.getValue().getTag().equals(project.getId())){
 				        for(XdatUserGroupid map:otherU.getGroups_groupid()){
 				            if (map.getGroupid().equals(entry.getValue().getId())){   
-				                DBAction.DeleteItem(map.getItem(), user,c);
+                            SaveItemHelper.authorizedDelete(map.getItem(), user,c);
 				            }
 				        }
 				    }
@@ -218,39 +202,12 @@ public class ProcessAccessRequest extends SecureAction {
         Template template =Velocity.getTemplate("/screens/RequestProjectAccessApprovalEmail.vm");
         template.merge(context,sw);
         String message= sw.toString();
-
-        ArrayList<InternetAddress> to = new ArrayList();
-        InternetAddress ia = new InternetAddress();
-        ia.setAddress(otherUemail);
-        to.add(ia);
-
-        ArrayList<InternetAddress> bcc = new ArrayList();
-        if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
-	        ia = new InternetAddress();
-	        ia.setAddress(AdminUtils.getAdminEmailId());
-	        bcc.add(ia);
-        }
-        
-        ArrayList<InternetAddress> cc = new ArrayList();
-        ia = new InternetAddress();
-        ia.setAddress(user.getEmail());
-        cc.add(ia);
-        
-        String from = AdminUtils.getAdminEmailId();
+        String admin = AdminUtils.getAdminEmailId();
 
         try {
-            EmailerI sm = EmailUtils.getEmailer();
-            sm.setFrom(from);
-            sm.setTo(to);
-            sm.setCc(cc);
-            sm.setBcc(bcc);
-            sm.setSubject(subject);
-            sm.setMsg(message);
-            
-            sm.send();
+        	XDAT.getMailService().sendHtmlMessage(admin, otherUemail, user.getEmail(), admin, subject, message);
         } catch (Exception e) {
             logger.error("Unable to send mail",e);
-            System.out.println("Error sending Email");
             throw e;
         }
     }

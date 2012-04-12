@@ -54,7 +54,7 @@ public class QDECAction extends ListingAction{
         search.execute(new org.nrg.xdat.presentation.HTMLNoTagsAllFieldsPresenter(),TurbineUtils.getUser(data).getLogin());
         XFTTableI table = search.getPresentedTable();
         
-        String analysis_name = data.getParameters().get("analysis_name");
+        String analysis_name = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("analysis_name",data));
         analysis_name = getCamelCaps(analysis_name);
 
         Date now = Calendar.getInstance().getTime();
@@ -101,7 +101,7 @@ public class QDECAction extends ListingAction{
         //param.addNewValues().setUnique(userFolderPath +File.separator+"SUBJECTS_DIR");
 
         //Launch the job
-		String pipelineName = data.getParameters().get("hdn_pipelinename");
+		String pipelineName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("hdn_pipelinename",data));
         XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(data,context);
         xnatPipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
         xnatPipelineLauncher.setAlwaysEmailAdmin(ArcSpecManager.GetInstance().getEmailspecifications_pipeline());
@@ -155,17 +155,17 @@ public class QDECAction extends ListingAction{
             }
         }
         
-        String morph_measure = data.getParameters().get("morph_measure");
+        String morph_measure = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("morph_measure",data));
         ParameterData param = parameters.addNewParameter();
         param.setName("measurement");
         param.addNewValues().setUnique(morph_measure);
         
-        String morph_hemisphere = data.getParameters().get("morph_hemisphere");
+        String morph_hemisphere = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("morph_hemisphere",data));
         param = parameters.addNewParameter();
         param.setName("hemisphere");
         param.addNewValues().setUnique(morph_hemisphere);
         
-        String morph_fwhm = data.getParameters().get("morph_fwhm");
+        String morph_fwhm = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("morph_fwhm",data));
         param = parameters.addNewParameter();
         param.setName("smoothness");
         param.addNewValues().setUnique(morph_fwhm);
@@ -276,8 +276,8 @@ public class QDECAction extends ListingAction{
 	
 	private ArrayList<String> getContinousVariables(RunData data) {
 		ArrayList<String> rtn = new ArrayList<String>();
-        String continuousVar1 = data.getParameters().get("continuousVar1");
-        String continuousVar2 = data.getParameters().get("continuousVar2");
+        String continuousVar1 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("continuousVar1",data));
+        String continuousVar2 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("continuousVar2",data));
         if (continuousVar1 != null && !continuousVar1.equalsIgnoreCase("BAD")) {
         	rtn.add(continuousVar1);
         }
@@ -289,8 +289,8 @@ public class QDECAction extends ListingAction{
 
 	private ArrayList<String> getDiscreteVariables(RunData data) {
 		ArrayList<String> rtn = new ArrayList<String>();
-        String discreteVar1 = data.getParameters().get("discreteVar1");
-        String discreteVar2 = data.getParameters().get("discreteVar2");
+        String discreteVar1 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("discreteVar1",data));
+        String discreteVar2 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("discreteVar2",data));
         if (discreteVar1 != null && !discreteVar1.equalsIgnoreCase("BAD")) {
         	rtn.add(discreteVar1);
         }
@@ -305,7 +305,7 @@ public class QDECAction extends ListingAction{
 	
 
 	private String getSessionIdColumnName(RunData data) {
-		String hdn_id = data.getParameters().get("hdn_id_col");
+		String hdn_id = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("hdn_id_col",data));
 		return hdn_id;
 	}
 	

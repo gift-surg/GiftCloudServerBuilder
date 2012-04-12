@@ -162,7 +162,7 @@ this.save=function(){
 	
 	var new_xml=this.protocol.toXML("");
 	if(DEBUG){if(!confirm(new_xml)){return;}}
-	YAHOO.util.Connect.asyncRequest('PUT',serverRoot + '/REST/projects/' + this.opts.project +'/protocols/' + this.id + '?format=json&populateFromDB=false&timestamp=' + (new Date()).getTime(),catCallback,new_xml,this);
+	YAHOO.util.Connect.asyncRequest('PUT',serverRoot + '/REST/projects/' + this.opts.project +'/protocols/' + this.id + '?format=json&populateFromDB=false&timestamp=' + (new Date()).getTime() + '&XNAT_CSRF=' + csrfToken,catCallback,new_xml,this);
 }
 
 this.prepareCallback=function(o){
@@ -522,7 +522,7 @@ this.init=function(){
 	 }
 	  
 	 var url = serverRoot + "/servlet/AjaxServlet?remote-class=org.nrg.xnat.ajax.RequestProtocolDefinitionGroups";
-     url = url + "&remote-method=execute";
+     url = url + "&remote-method=execute&XNAT_CSRF="+csrfToken;
 	  
 	 this.req.open("GET", url, false);
 	 this.req.send(null);
@@ -590,6 +590,7 @@ this.init=function(){
 					     url = url + "&remote-method=execute";
 					     url = url + "&search="+search;
 					     url = url + "&allowMultiples=true";
+					     url = url + "&XNAT_CSRF="+csrfToken;
 						  
 						 this.req.open("GET", url, false);
 						 this.req.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");

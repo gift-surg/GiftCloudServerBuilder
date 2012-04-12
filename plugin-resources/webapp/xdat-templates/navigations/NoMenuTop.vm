@@ -3,7 +3,7 @@ $page.setBgColor($ui.bgcolor)
 <table cellspacing="0" width="100%">
    <tr valign="bottom" height="80">
 	<td>
-		<a href="$link.setPage("Index.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end"><img src="$content.getURI("images/logo.jpg")" border=0></a>
+		<a href="$link.setPage("Index.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end"><img src="$content.getURI("images/logo.jpg")" border=0></a>
 	</td>
 	<td align="right">
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")

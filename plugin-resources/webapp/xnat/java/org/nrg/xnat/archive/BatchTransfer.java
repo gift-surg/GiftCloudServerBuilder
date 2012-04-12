@@ -12,19 +12,17 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.nrg.viewer.QCImageCreator;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -33,7 +31,6 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.email.EmailUtils;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
@@ -41,7 +38,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
-
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class BatchTransfer extends Thread{
     final private Logger logger = Logger.getLogger(BatchTransfer.class);
@@ -71,8 +68,8 @@ public class BatchTransfer extends Thread{
     }
     
     public void execute(){
-        final Collection<String> messages = new LinkedList<String>();
-        final Collection<Collection<String>> errors = new LinkedList<Collection<String>>();
+		final List<String> messages = new LinkedList<String>();
+		final List<List<String>> errors = new LinkedList<List<String>>();
         
         EventMetaI ci=EventUtils.ADMIN_EVENT(user);
         
@@ -93,12 +90,14 @@ public class BatchTransfer extends Thread{
                     subCC.addClause("wrk:workFlowData.status","In Progress");
                     subCC.addClause("wrk:workFlowData.status","Queued");
                     cc.addClause(subCC);
-                    ArrayList al =WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false);
+					List<WrkWorkflowdata> al = WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false);
                     if (al.size()>0){
                         wkdata= (WrkWorkflowdata)al.get(al.size()-1);
-                        if(XFT.VERBOSE) System.out.println("FOUND Transfer Workflow:" + wkdata.getWrkWorkflowdataId());
+						if (XFT.VERBOSE)
+							System.out.println("FOUND Transfer Workflow:" + wkdata.getWrkWorkflowdataId());
                     }else{
-                    	if(XFT.VERBOSE)System.out.println("MISSING TRANSFER WORKFLOWDATA");
+						if (XFT.VERBOSE)
+							System.out.println("MISSING TRANSFER WORKFLOWDATA");
                         wkdata = new WrkWorkflowdata((UserI)user);
                         try {
                             wkdata.setId(partialMR.getId());
@@ -131,11 +130,13 @@ public class BatchTransfer extends Thread{
                     logger.error("",e);
                 }
                 
-                if(XFT.VERBOSE) System.out.print("Reading " + xml.getAbsolutePath() + "...");
+				if (XFT.VERBOSE)
+					System.out.print("Reading " + xml.getAbsolutePath() + "...");
                 SAXReader reader = new SAXReader(null);
                 long last = System.currentTimeMillis();
                 XFTItem item = reader.parse(xml.getAbsolutePath());
-                if(XFT.VERBOSE)System.out.println("done. (" + (System.currentTimeMillis()-last) + ")");
+				if (XFT.VERBOSE)
+					System.out.println("done. (" + (System.currentTimeMillis() - last) + ")");
                 
                 final XnatImagesessiondata session = (XnatImagesessiondata)BaseElement.GetGeneratedItem(item);
                 final XnatImagesessiondata tempMR = (XnatImagesessiondata)partialMR;
@@ -147,6 +148,7 @@ public class BatchTransfer extends Thread{
                 session.correctArchivePaths();
                 
                 session.save(user, false, false,ci);
+                SaveItemHelper.authorizedSave(session,user, false, false);
                 
 
 //                        logger.error("",e2);
@@ -194,16 +196,15 @@ public class BatchTransfer extends Thread{
                     partialMR.getItem().setUser(user);
                 }
                   
-                        
-                  
                 String currentarc =null;
                 try {
                     currentarc = partialMR.getCurrentArchiveFolder();
-                    if(XFT.VERBOSE)System.out.println("CURRENT ARC 1: " + currentarc);
+					if (XFT.VERBOSE)
+						System.out.println("CURRENT ARC 1: " + currentarc);
                 } catch (Throwable e) {
                     logger.error("Unable to identify current archive location",e);
 
-                    final Collection<String> error = new ArrayList<String>(2);
+					final List<String> error = new ArrayList<String>(2);
                     error.add(partialMR.getId());
                     error.add("Error transfering files.  Unable to identify current archive location.");
                     errors.add(error);
@@ -214,7 +215,8 @@ public class BatchTransfer extends Thread{
                 final StringBuilder arcPath = new StringBuilder(partialMR.getArchiveRootPath());
                 if (null != currentarc)
                     arcPath.append(currentarc);
-                if(XFT.VERBOSE)System.out.println("ARC: " + arcPath);
+				if (XFT.VERBOSE)
+					System.out.println("ARC: " + arcPath);
 
                 arcPath.append(partialMR.getArchiveDirectoryName());
                 arcPath.append(File.separator);
@@ -223,15 +225,17 @@ public class BatchTransfer extends Thread{
                     arcF.mkdirs();
                 }
                   
-
-                if(XFT.VERBOSE)System.out.print("Copying from " + dir.getAbsolutePath() + " to " + arcF.getAbsolutePath() + "...");
+				if (XFT.VERBOSE)
+					System.out.print("Copying from " + dir.getAbsolutePath() + " to " + arcF.getAbsolutePath() + "...");
                 try {
                     org.nrg.xft.utils.FileUtils.CopyDir(dir, arcF, true);
-                    if(XFT.VERBOSE)System.out.println("done.");
+					if (XFT.VERBOSE)
+						System.out.println("done.");
                 } catch (FileNotFoundException e) {
-                	if(XFT.VERBOSE)System.out.println("failed.");
+					if (XFT.VERBOSE)
+						System.out.println("failed.");
                     logger.error("",e);
-                    Collection<String> error = new ArrayList<String>(2);
+					List<String> error = new ArrayList<String>(2);
                     error.add(partialMR.getId());
                     error.add("Error transfering files.  Failed to create archive directory.");
                     errors.add(error);
@@ -248,11 +252,14 @@ public class BatchTransfer extends Thread{
                     logger.error("",e);
                 }
 
-                if(XFT.VERBOSE)System.out.print("Verifying copy...");
-                ArrayList fileerrors = FileUtils.CompareFile(dir, arcF, new ArrayList());
-                if(XFT.VERBOSE)System.out.println("done.");
+				if (XFT.VERBOSE)
+					System.out.print("Verifying copy...");
+				List<String> fileerrors = FileUtils.CompareFile(dir, arcF);
+				if (XFT.VERBOSE)
+					System.out.println("done.");
                 if (fileerrors.size()>0){
-                	if(XFT.VERBOSE)System.out.println("failed.");
+					if (XFT.VERBOSE)
+						System.out.println("failed.");
                     try {
                 	wkdata.setStatus("Failed");
                 	wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
@@ -262,12 +269,10 @@ public class BatchTransfer extends Thread{
                     }
                     StringBuffer sb = new StringBuffer();
                     sb.append("Archiving Failed.<BR>File Comparison Failed.<BR>");
-                    Iterator iter = fileerrors.iterator();
-                    while (iter.hasNext()){
-                	String s = (String) iter.next();
-                	sb.append(s + "<BR>");
+					for (String error : fileerrors) {
+						sb.append(error + "<BR>");
                     }
-                    Collection<String> error = new ArrayList<String>(2);
+					List<String> error = new ArrayList<String>(2);
                     error.add(partialMR.getId());
                     error.add(sb.toString());
                     errors.add(error);
@@ -275,7 +280,6 @@ public class BatchTransfer extends Thread{
                     continue;
                 }
 
-                  
 //                    try {
 //                        wkdata.setCurrentStepId("Session Validation");
 //                        wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
@@ -285,7 +289,8 @@ public class BatchTransfer extends Thread{
 //                    }
                   
                   if (partialMR instanceof XnatMrsessiondata) {
-                	  if(XFT.VERBOSE)System.out.print("Creating QC Images...");
+					if (XFT.VERBOSE)
+						System.out.print("Creating QC Images...");
                       try {
                           QCImageCreator qcImageCreator = new QCImageCreator((XnatMrsessiondata)partialMR, (XDATUser)user);
                           boolean _success = qcImageCreator.createQCImagesForScans();
@@ -342,9 +347,9 @@ public class BatchTransfer extends Thread{
                   _successful = true;
                   messages.add(partialMR.getId());
                   
-                  
                   try {
-                	  if(XFT.VERBOSE)System.out.print("Caching Uploaded Files...");
+					if (XFT.VERBOSE)
+						System.out.print("Caching Uploaded Files...");
                       String cachePath = partialMR.getCachePath();
                       if (!cachePath.endsWith(File.separator)){
                           cachePath+=File.separator;
@@ -368,18 +373,18 @@ public class BatchTransfer extends Thread{
                       File cacheXML=new File(cachePath);
                       org.nrg.xft.utils.FileUtils.MoveFile(prearcXML, cacheXML, true);
                       
-                      if(XFT.VERBOSE)System.out.println("done.");
+					if (XFT.VERBOSE)
+						System.out.println("done.");
                   } catch (FileNotFoundException e) {
                       logger.error("",e);
-                      if(XFT.VERBOSE)System.out.println("failed.");
+					if (XFT.VERBOSE)
+						System.out.println("failed.");
                   } catch (Throwable e) {
                       logger.error("",e);
-                      if(XFT.VERBOSE)System.out.println("failed.");
+					if (XFT.VERBOSE)
+						System.out.println("failed.");
                   }
                   
-                  
-                 
-
                   if (_successful){
                       try {
                           wkdata.setStatus("Complete");
@@ -404,30 +409,23 @@ public class BatchTransfer extends Thread{
             }
         }
         
-        try {
-            ArrayList<InternetAddress> to = new ArrayList<InternetAddress>(2);
-            to.add(new InternetAddress(AdminUtils.getAdminEmailId()));
-            to.add(new InternetAddress(user.getEmail()));
+		String[] to = new String[] { AdminUtils.getAdminEmailId(), user.getEmail() };
             String from = AdminUtils.getAdminEmailId();
             String subject = system + " update: Archiving Complete.";
             if (errors.size()>0)
                 subject += errors.size() + " errors";
             String message = getEmailCompletionMessage(user, messages,errors, system,admin_email);
-            EmailUtils.sendEmail(to, from, subject, message);
-        } catch (AddressException e) {
-            logger.error("",e);
-            String message = getEmailCompletionMessage(user, messages,errors, system,admin_email);
-            AdminUtils.sendAdminEmail((XDATUser)user,"Archiving Succeeded. Email to user failed.",message);
-        } catch (Exception e) {
-            logger.error("",e);
-            String message = getEmailCompletionMessage(user, messages,errors, system,admin_email);
-            AdminUtils.sendAdminEmail((XDATUser)user,"Archiving Succeeded. Email to user failed.",message);
+		try {
+			XDAT.getMailService().sendHtmlMessage(from, to, subject, message);
+		} catch (MessagingException exception) {
+			logger.error("Error sending email", exception);
         }
         
-        if(XFT.VERBOSE)System.out.println("Ending Batch Transfer Thread");
+		if (XFT.VERBOSE)
+			System.out.println("Ending Batch Transfer Thread");
     }
     
-    public String getEmailCompletionMessage(UserI user, Collection messages, Collection errors, String system, String admin_email) {
+	public String getEmailCompletionMessage(UserI user, List<String> messages, List<List<String>> errors, String system, String admin_email) {
         try {
             VelocityContext context = new VelocityContext();
             context.put("user",user);

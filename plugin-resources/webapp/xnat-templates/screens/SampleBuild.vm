@@ -1,4 +1,4 @@
-#set ($popup=$data.getParameters().getString("popup"))
+#set ($popup=$turbineUtils.GetPassedParameter("popup",$data))
 
 $page.setTitle("XDAT")
 $page.setLinkColor($ui.alink)
@@ -34,8 +34,8 @@ $page.setVlinkColor($ui.vlink)
     <p>&nbsp;</p>
     <p>
 
-<input type="hidden" name="pipeline" value=$data.getParameters().getString("pipeline")>
-<input type="hidden" name="xnat" value=$data.getParameters().getString("xnat")>
+<input type="hidden" name="pipeline" value=$turbineUtils.GetPassedParameter("pipeline",$data)>
+<input type="hidden" name="xnat" value=$turbineUtils.GetPassedParameter("xnat",$data)>
 
 #xdatPassItemFormFields($search_element $search_field $search_value $project)
 	    <input type="submit" name="eventSubmit_doPerform" value="Build" />

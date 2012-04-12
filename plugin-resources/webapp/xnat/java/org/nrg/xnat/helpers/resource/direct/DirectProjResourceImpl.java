@@ -11,6 +11,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -45,6 +46,7 @@ public class DirectProjResourceImpl extends ResourceModifierA {
 		proj.setResources_resource(resource);
 		
 		proj.save(user, false, false,ci);
+		SaveItemHelper.authorizedSave(proj,user, false, false);
 		return true;
 	}
 

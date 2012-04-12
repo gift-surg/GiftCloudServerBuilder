@@ -23,6 +23,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.TurbineException;
 import org.apache.turbine.util.parser.CookieParser;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.presentation.HTMLPresenter;
 import org.nrg.xdat.search.DisplaySearch;
@@ -44,7 +45,7 @@ public class RequestSearchData {
         String xmlString = req.getParameter("search");
         
         HttpSession session = req.getSession();
-        XDATUser user = ((XDATUser)session.getAttribute("user"));        
+        XDATUser user = XDAT.getUserDetails();    
 
         if (user!=null){
             StringReader sr = new StringReader(xmlString);
@@ -173,7 +174,7 @@ public class RequestSearchData {
         
         
         HttpSession session = req.getSession();
-        XDATUser user = ((XDATUser)session.getAttribute("user"));
+        XDATUser user = XDAT.getUserDetails();
         
         if (user!=null){
             

@@ -44,7 +44,7 @@ public class QuickSearchAction extends SecureAction {
      */
     public void doPerform(RunData data, Context context) {
         preserveVariables(data,context);
-        String s = data.getParameters().get("searchValue");
+        String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("searchValue",data));
         XDATUser user = TurbineUtils.getUser(data);
         if (s==null || s.equalsIgnoreCase(""))
         {

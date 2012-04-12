@@ -67,13 +67,16 @@ import org.xml.sax.SAXException;
 public class CatalogUtils {
     static Logger logger = Logger.getLogger(CatalogUtils.class);
 	
-	public static List<Object[]> getEntryDetails(CatCatalogI cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile, final CatEntryFilterI filter){
+	public static List<Object[]> getEntryDetails(CatCatalogI cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile, final CatEntryFilterI filter,XnatProjectdata proj,String locator){
 		final ArrayList<Object[]> al = new ArrayList<Object[]>();
 		for(final CatCatalogI subset:cat.getSets_entryset()){
-			al.addAll(getEntryDetails(subset,parentPath,uriPath,_resource,coll_tags,includeFile,filter));
+			al.addAll(getEntryDetails(subset,parentPath,uriPath,_resource,coll_tags,includeFile,filter,proj,locator));
 		}
 		
 		final int ri=(includeFile)?9:8;
+		
+		//final int ri=(includeFile)?14:13;
+		
 		for(final CatEntryI entry:cat.getEntries_entry()){
 			if(filter==null || filter.accept(entry)){
 				final Object[] row = new Object[ri];
@@ -85,13 +88,18 @@ public class CatalogUtils {
 	            }else{
 	            	row[1]=(f.length());
 	            }
-	            if(FileUtils.IsAbsolutePath(entry.getUri())){
-	                row[2]=uriPath+"/" + entry.getId();
-	            }else{
-	                row[2]=uriPath+"/" + entry.getUri();
-	            }
+	            if (locator.equalsIgnoreCase("URI")) {
+	            	if(FileUtils.IsAbsolutePath(entry.getUri())){
+		                row[2]=uriPath+"/" + entry.getId();
+		            }else{
+		                row[2]=uriPath+"/" + entry.getUri();
+		            }
+	            } else if (locator.equalsIgnoreCase("absolutePath")) {
+	                row[2]=entryPath;
+	            } else if (locator.equalsIgnoreCase("projectPath")) {
+	                row[2]=entryPath.substring(proj.getRootArchivePath().substring(0,proj.getRootArchivePath().lastIndexOf(proj.getId())).length());
+	            } 
 	            row[3]=_resource.getLabel();
-	            
 	            row[4]="";
 	            for(CatEntryMetafieldI meta: entry.getMetafields_metafield()){
 	            	if(!row[4].equals(""))row[4]=row[4] +",";

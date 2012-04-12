@@ -55,12 +55,12 @@ public class FileResource extends ItemResource {
 	public FileResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
 			}
 			
-			String subID= (String)request.getAttributes().get("SUBJECT_ID");
+			String subID= (String)getParameter(request,"SUBJECT_ID");
 			if(subID!=null){
 				if(this.proj!=null)
 				sub=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);
@@ -70,7 +70,7 @@ public class FileResource extends ItemResource {
 				}
 			}
 					
-			String assessid= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessid= (String)getParameter(request,"ASSESSED_ID");
 			if(assessid!=null){
 				assessed=XnatImagesessiondata.getXnatImagesessiondatasById(assessid, user, false);
 				
@@ -79,7 +79,7 @@ public class FileResource extends ItemResource {
 				}
 			}
 					
-			String exptID= (String)request.getAttributes().get("EXPT_ID");
+			String exptID= (String)getParameter(request,"EXPT_ID");
 			if(exptID!=null){
 				expt=XnatImagesessiondata.getXnatImagesessiondatasById(exptID, user, false);
 				
@@ -88,7 +88,7 @@ public class FileResource extends ItemResource {
 				}
 			}
 
-			String scanID= (String)request.getAttributes().get("SCAN_ID");
+			String scanID= (String)getParameter(request,"SCAN_ID");
 			if(scanID!=null && this.assessed!=null){
 					CriteriaCollection cc= new CriteriaCollection("AND");
 					cc.addClause("xnat:imageScanData/ID", scanID);
@@ -99,9 +99,9 @@ public class FileResource extends ItemResource {
 					}
 				}
 
-			type= (String)request.getAttributes().get("TYPE");
+			type= (String)getParameter(request,"TYPE");
 
-			String reconID= (String)request.getAttributes().get("RECON_ID");
+			String reconID= (String)getParameter(request,"RECON_ID");
 			if(reconID!=null){
 				CriteriaCollection cc= new CriteriaCollection("AND");
 				cc.addClause("xnat:reconstructedImageData/ID", reconID);
@@ -112,7 +112,7 @@ public class FileResource extends ItemResource {
 				}
 			}
 			
-			String resourceID= (String)request.getAttributes().get("RESOURCE_ID");
+			String resourceID= (String)getParameter(request,"RESOURCE_ID");
 			try {
 				Integer.parseInt(resourceID);
 			} catch (NumberFormatException e1) {
@@ -122,8 +122,8 @@ public class FileResource extends ItemResource {
         		return;
 			}
 			
-			index= (String)request.getAttributes().get("INDEX");
-			filename= (String)request.getAttributes().get("FILENAME");
+			index= (String)getParameter(request,"INDEX");
+			filename= (String)getParameter(request,"FILENAME");
 			
 			String query="SELECT res.xnat_abstractresource_id,format,description,content,label,uri ";
 			if(recon!=null){

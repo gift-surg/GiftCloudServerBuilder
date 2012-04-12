@@ -79,8 +79,8 @@ public class UserCacheResource extends SecureResource {
 		try {
 			
 			String userPath = UserUtils.getUserCacheUploadsPath(user);
-	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	        String pFILE = (String)getRequest().getAttributes().get("FILE");
+	        String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	        String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
@@ -88,7 +88,7 @@ public class UserCacheResource extends SecureResource {
 	        	
 	        } else if (pXNAME != null && pFILE == null) {
 	        	
-	        	if (getRequestedMediaType()==null ||  !(getRequestedMediaType().equals(MediaType.APPLICATION_ZIP) || getRequestedMediaType().equals(MediaType.APPLICATION_GNU_TAR))) {
+	        	if (isZIPRequest()) {
 	        		returnFileList(userPath,pXNAME);
 	        	} else {
 	        		returnZippedFiles(userPath,pXNAME);
@@ -96,7 +96,7 @@ public class UserCacheResource extends SecureResource {
 	        	
 	        } else if (pXNAME != null && pFILE != null) {
 	        	
-	        	if (getRequestedMediaType()==null ||  !(getRequestedMediaType().equals(MediaType.APPLICATION_ZIP) || getRequestedMediaType().equals(MediaType.APPLICATION_GNU_TAR))) {
+	        	if (isZIPRequest()) {
 	        		returnFile(userPath,pXNAME,pFILE);
 	        	} else {
 	        		returnZippedFiles(userPath,pXNAME,pFILE);
@@ -116,8 +116,8 @@ public class UserCacheResource extends SecureResource {
 		try {
 			
 			String userPath = UserUtils.getUserCacheUploadsPath(user);
-	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	        String pFILE = (String)getRequest().getAttributes().get("FILE");
+	        String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	        String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
@@ -143,8 +143,8 @@ public class UserCacheResource extends SecureResource {
 	public void handlePost() {
 		
 		String userPath = UserUtils.getUserCacheUploadsPath(user);
-	    String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	    String pFILE = (String)getRequest().getAttributes().get("FILE");
+	    String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	    String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	    if (pXNAME == null && pFILE == null) {
 	     	
@@ -199,8 +199,8 @@ public class UserCacheResource extends SecureResource {
 		try {
 			
 			String userPath = UserUtils.getUserCacheUploadsPath(user);
-	        String pXNAME = (String)getRequest().getAttributes().get("XNAME");
-	        String pFILE = (String)getRequest().getAttributes().get("FILE");
+	        String pXNAME = (String)getParameter(getRequest(),"XNAME");
+	        String pFILE = (String)getParameter(getRequest(),"FILE");
 	        
 	        if (pXNAME == null && pFILE == null) {
 	        	
@@ -698,13 +698,16 @@ public class UserCacheResource extends SecureResource {
 	private void sendZippedFiles(String userPath,String pXNAME,String fileName,ArrayList<File> fileList) throws ActionException {
 		
 		ZipRepresentation zRep;
-       	if (getRequestedMediaType()==null || !getRequestedMediaType().equals(MediaType.APPLICATION_GNU_TAR)) {
-       		zRep = new ZipRepresentation(MediaType.APPLICATION_ZIP,userPath,identifyCompression(null));
-       		this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",fileName));
-       	} else {
-       		zRep = new ZipRepresentation(MediaType.APPLICATION_GNU_TAR,userPath,identifyCompression(null));
-       		this.setContentDisposition(String.format("attachment; filename=\"%s.tar.gz\";",fileName));
-       	}
+		if(getRequestedMediaType()!=null && getRequestedMediaType().equals(MediaType.APPLICATION_GNU_TAR)){
+			zRep = new ZipRepresentation(MediaType.APPLICATION_GNU_TAR,userPath,ZipOutputStream.DEFLATED);
+			this.setContentDisposition(String.format("%s.tar.gz", fileName));
+		}else if(getRequestedMediaType()!=null && getRequestedMediaType().equals(MediaType.APPLICATION_TAR)){
+			zRep = new ZipRepresentation(MediaType.APPLICATION_TAR,userPath,ZipOutputStream.STORED);
+			this.setContentDisposition(String.format("%s.tar.gz", fileName));
+		}else{
+			zRep = new ZipRepresentation(MediaType.APPLICATION_ZIP,userPath,identifyCompression(null));
+			this.setContentDisposition(String.format("%s.zip", fileName));
+		}
 		zRep.addAllAtRelativeDirectory(userPath + File.separator + pXNAME,fileList);
 		this.getResponse().setEntity(zRep);
 		

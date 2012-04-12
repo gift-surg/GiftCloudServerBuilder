@@ -2,6 +2,7 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -18,6 +19,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
 import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
@@ -49,14 +51,35 @@ public class AddProject extends SecureAction {
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.getAddModifyAction("xnat:projectData", true)));
 	    	EventMetaI c=wrk.buildEvent();
 	    	
+            if(StringUtils.isEmpty(project.getId())){
+            	data.addMessage("Missing required field (Abbreviation).");
+				TurbineUtils.SetEditItem(found,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+            
+            XFTItem existing=project.getItem().getCurrentDBVersion(false);
+            if(existing!=null){
+            	data.addMessage("Project '" + project.getId() + "' already exists.");
+				TurbineUtils.SetEditItem(found,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+            
             try {
 				project.initNewProject(user,false,false,c);
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(found,data);
                 data.addMessage(e2.getMessage());
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
 			}
@@ -73,13 +96,13 @@ public class AddProject extends SecureAction {
             {
                 TurbineUtils.SetEditItem(project.getItem(),data);
                 context.put("vr",vr);
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
             }else{
             	try {
-            		project.save(TurbineUtils.getUser(data),false,false,c);
+            		SaveItemHelper.authorizedSave(project, TurbineUtils.getUser(data),false,false,c);
             		ItemI temp1 =project.getItem().getCurrentDBVersion(false);
             		if (temp1 != null)
             		{
@@ -90,9 +113,9 @@ public class AddProject extends SecureAction {
             		
             		data.setMessage("Error Saving item.");
                     TurbineUtils.SetEditItem(found,data);
-                    if (data.getParameters().getString("edit_screen") !=null)
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                     {
-                        data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                     }
                     return;
             	}
@@ -106,13 +129,13 @@ public class AddProject extends SecureAction {
 					
 					//postSave.initBundles(user);
 					
-					String accessibility=data.getParameters().getString("accessibility");
+                String accessibility=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
 					if (accessibility==null){
 					    accessibility="protected";
 					}
 					
 					if (!accessibility.equals("private"))
-					    project.initAccessibility(accessibility, true,c);
+                    project.initAccessibility(accessibility, true,user,c);
 					
 					user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
 					populater = PopulateItem.Populate(data,"arc:project",true);

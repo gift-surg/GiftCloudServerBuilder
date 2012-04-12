@@ -12,6 +12,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
 
@@ -40,12 +41,11 @@ public class FixScanTypes {
 	public Boolean call() throws Exception{
 		if(expt instanceof XnatImagesessiondata){
 			((XnatImagesessiondata)expt).fixScanTypes();
-			((XnatImagesessiondata)expt).defaultQuality("usable");
 		}
 		
 
 		if(allowSave){
-			if(expt.save(user,false,false,c)){
+			if(SaveItemHelper.authorizedSave(expt,user,false,false,c)){
 				MaterializedView.DeleteByUser(user);
 
 				if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){

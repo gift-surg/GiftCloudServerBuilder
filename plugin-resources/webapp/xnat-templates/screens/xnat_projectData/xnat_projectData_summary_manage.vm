@@ -42,3 +42,32 @@ window.quarantine=(new RadioSettingsManager(document.getElementById('quarantine_
 <script>
 window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_container'),{'URI':serverRoot+'/REST/projects/$project.getId()/prearchive_code/','radio_ids':['0_prearchive','4_prearchive','5_prearchive'],'current_value':'$prearc','button':'project_prearchive_save'}));
 </script>
+<table id="script_table">
+  <tr>
+    <td colspan="2" class="highlighted" id="script_container">
+      <DIV style="font-weight:700;">Anonymization Script</DIV>
+      <TABLE>
+	<TR><TD><input id="enable_anon_script" type="radio" name="anon_script" value="true"/></TD><TD>Enable</TD></TR>
+	<TR><TD><input id="disable_anon_script" type="radio" name="anon_script" value="false"/></TD><TD>Disable</TD></TR>
+	<TR><TD></TD><TD><textarea id="script_text_area" rows="20" cols="80"></textarea></TD></TR>
+	<TR><TD COLSPAN="2"><input type="button" id="anon_script_save" value="Save" disabled="true"/></TD></TR>
+      </TABLE>      
+    </td>
+  </tr>
+</table>
+<script>
+  var sg = new scriptGet(document.getElementById('script_container'),
+            { 
+	       'getStatus' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/status?format=json',
+	       'putStatus' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/status?activate=',
+	       'getScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script?format=json',
+	       'putScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script',
+	       'project' : '$project.getId()',
+	       'enable_radio' : 'enable_anon_script',
+	       'disable_radio' : 'disable_anon_script',
+	       'script_text_area' : 'script_text_area',
+	       'save_button' : 'anon_script_save'
+	    });
+  sg.get();	    
+</script>
+

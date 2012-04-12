@@ -22,6 +22,7 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -48,12 +49,12 @@ public class SubjectResource extends ItemResource {
 	public SubjectResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			subID= (String)request.getAttributes().get("SUBJECT_ID");
+			subID= (String)getParameter(request,"SUBJECT_ID");
 
 		if(proj!=null)
 			existing=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,user, false);
@@ -146,7 +147,7 @@ public class SubjectResource extends ItemResource {
 								EventMetaI c=BaseXnatSubjectdata.ChangePrimaryProject(user, sub, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.MODIFY_PROJECT));
 								
 								if(matched!=null){
-									DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", matched.getItem(), user,c);
+									SaveItemHelper.authorizedRemoveChild(sub.getItem(), "xnat:subjectData/sharing/share", matched.getItem(), user,c);
 									sub.removeSharing_share(index);
 								}
 							}else{
@@ -290,8 +291,9 @@ public class SubjectResource extends ItemResource {
 		            
 		            EventMetaI c=wrk.buildEvent();
 											
-					try {
-						if(sub.save(user,false,this.isQueryVariableTrue("allowDataDeletion"),c)){
+					try {					
+					if(SaveItemHelper.authorizedSave(sub,user,false,this.isQueryVariableTrue("allowDataDeletion"),c)){
+
 							WorkflowUtils.complete(wrk, c);
 							user.clearLocalCache();
 							MaterializedView.DeleteByUser(user);

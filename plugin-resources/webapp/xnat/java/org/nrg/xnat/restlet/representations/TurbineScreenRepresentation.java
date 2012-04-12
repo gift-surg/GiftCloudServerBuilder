@@ -17,6 +17,8 @@ import org.apache.turbine.services.template.TurbineTemplate;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.ServerData;
 import org.apache.turbine.util.TurbineException;
+import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.restlet.rundata.RestletRunData;
 import org.nrg.xnat.restlet.servlet.XNATRestletServlet;
@@ -96,9 +98,12 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
         // Set the ServerData.
         data.setServerData(new ServerData(request));
 		
-		if(data.getSession().getAttribute("user")==null){
-			data.getSession().setAttribute("user", user);
-			data.getSession().setAttribute("loggedin",true);
+		if(!XDAT.isAuthenticated()) {
+			try {
+				XDAT.setUserDetails(new XDATUserDetails(user));
+			} catch (Exception e) {
+				logger.error("",e);
+			}
 		}
 		
 		//RENAME script name /REST to /app

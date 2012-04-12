@@ -7,22 +7,20 @@ package org.nrg.xnat.turbine.modules.actions;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import javax.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.email.EmailUtils;
-import org.nrg.xft.email.EmailerI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
@@ -31,11 +29,11 @@ public class RequestAccess extends SecureAction {
 
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
 
-        String access_level = data.getParameters().getString("access_level");
-        String comments = data.getParameters().getString("comments");
+        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
+        String comments = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("comments",data));
 
         XDATUser user = TurbineUtils.getUser(data);
 
@@ -50,49 +48,46 @@ public class RequestAccess extends SecureAction {
         context.put("access_level",access_level);
         context.put("comments",comments);
         StringWriter sw = new StringWriter();
-        Template template =Velocity.getTemplate("/screens/RequestProjectAccessEmail.vm");
+        Template template;
+		try {
+			template = Velocity.getTemplate("/screens/RequestProjectAccessEmail.vm");
         template.merge(context,sw);
+		} catch (Exception exception) {
+            logger.error("Unable to send mail", exception);
+            throw exception;
+		}
+
         String message= sw.toString();
 
-        ArrayList<String> ownerEmails = project.getOwnerEmails();
+        ArrayList<String> ownerEmails;
+		try {
+			ownerEmails = project.getOwnerEmails();
+		} catch (Exception exception) {
+            logger.error("Unable to send mail", exception);
+            throw exception;
+		}
 
-        ArrayList<InternetAddress> to = new ArrayList();
-        Iterator iter = ownerEmails.iterator();
-        while (iter.hasNext())
-        {
-            String s = (String)iter.next();
-            InternetAddress ia = new InternetAddress();
-            ia.setAddress(s);
-            to.add(ia);
+		String[] to = null;
+        if (ownerEmails != null && ownerEmails.size() > 0) {
+        	to = ownerEmails.toArray(new String[] {});
         }
 
-        ArrayList<InternetAddress> bcc = new ArrayList();
+        String[] bcc = null;
         if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
-            InternetAddress ia = new InternetAddress();
-            ia.setAddress(AdminUtils.getAdminEmailId());
-            bcc.add(ia);
+        	bcc = new String[] { AdminUtils.getAdminEmailId() };
         }
         
         String from = AdminUtils.getAdminEmailId();
         String subject = TurbineUtils.GetSystemName() + " Access Request for " + project.getName();
 
         try {
-            EmailerI sm = EmailUtils.getEmailer();
-            sm.setFrom(from);
-            sm.setTo(to);
-            sm.setBcc(bcc);
-            sm.setSubject(subject);
-            sm.setMsg(message);
-            
-            sm.send();
-        } catch (Exception e) {
-            logger.error("Unable to send mail",e);
-            System.out.println("Error sending Email");
-            throw e;
+			XDAT.getMailService().sendHtmlMessage(from, to, null, bcc, subject, message);
+		} catch (MessagingException exception) {
+            logger.error("Unable to send mail", exception);
+            throw exception;
         }
         
         data.setMessage("Access request sent.");
         data.setScreenTemplate("Index.vm");
     }
-
 }

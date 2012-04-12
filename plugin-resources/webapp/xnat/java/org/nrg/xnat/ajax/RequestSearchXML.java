@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
@@ -29,7 +30,7 @@ public class RequestSearchXML {
         response.setHeader("Cache-Control", "no-cache");
         
         HttpSession session = req.getSession();
-        XDATUser user = ((XDATUser)session.getAttribute("user"));
+        XDATUser user = XDAT.getUserDetails();
         
 
         if (user!=null){

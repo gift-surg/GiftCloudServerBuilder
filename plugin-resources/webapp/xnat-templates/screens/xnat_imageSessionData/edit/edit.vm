@@ -41,8 +41,8 @@ $page.setVlinkColor($ui.vlink)
 #if ($data.message)
 <BR><BR><DIV class="error">$data.message</DIV><br>
 #end
-#if ($data.getParameters().getString("popup"))
-  #set ($popup = $data.getParameters().getString("popup") )
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+  #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 #else
   #set ($popup = "false")
 #end
@@ -63,7 +63,7 @@ $page.setVlinkColor($ui.vlink)
 #end
 #set($formName="Image Session #if($om.getId()) Modification Form #else Creation Form #end")
        <DIV class="edit_title">$formName</DIV><br>
-<form method="post" action="$target" name="form1" id="form1" onsubmit="return validateForm();">
+<form method="post" action="$target?XNAT_CSRF=$!XNAT_CSRF" name="form1" id="form1" onsubmit="return validateForm();">
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
     #if($om.getId())
                       #parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))

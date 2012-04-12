@@ -98,7 +98,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 		protected void setHasFreesurfer(XnatMrsessiondata mr,  Context context) {
 			String project = mr.getProject();
 			int hasFreesurfer = 0;
-			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
+			ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(project);
 			List<ArcProjectDescendantPipelineI> descPipelines = arcProject.getPipelinesForDescendant(mr.SCHEMA_ELEMENT_NAME);
 			for (int i = 0; i < descPipelines.size(); i++) {
 				ArcProjectDescendantPipeline aPipeline = (ArcProjectDescendantPipeline)descPipelines.get(i);
@@ -170,10 +170,10 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 				    context.put("user",TurbineUtils.getUser(data));
 				    if(XFT.VERBOSE)System.out.println("Loaded user object (org.nrg.xdat.security.XDATUser) as context parameter 'user'.");
 	            	context.put("element",org.nrg.xdat.schema.SchemaElement.GetElement(item.getXSIType()));
-	            	context.put("search_element",data.getParameters().getString("search_element"));
-	            	context.put("search_field",data.getParameters().getString("search_field"));
-	            	context.put("search_value",data.getParameters().getString("search_value"));
-	            	project = data.getParameters().getString("project");
+	            	context.put("search_element",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)));
+	            	context.put("search_field",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)));
+	            	context.put("search_value",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
+	            	project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
 	            	pipelinePath = (String)context.get("pipelinePath");
 
 	            	context.put("project",project);
@@ -245,7 +245,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
     }
 
     protected void setParameters(String pipeline) throws PipelineNotFoundException {
-        ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(project);
+        ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(project);
         ArcPipelinedataI pipelineData = null;
         if (arcProject == null) { //Project pipeline hasnt been set
         	PipePipelinedetails pipelineDetails = PipelineRepositoryManager.GetInstance().getPipeline(pipeline);

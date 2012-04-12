@@ -60,6 +60,7 @@ import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -71,7 +72,7 @@ import org.nrg.xnat.utils.WorkflowUtils;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements ArchivableItem {
+public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements ArchivableItem, MoveableI {
 
 	public BaseXnatExperimentdata(ItemI item)
 	{
@@ -435,73 +436,40 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	return generator.generateIdentifier();
     }
     
-    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
+    /**
+     * newlabel can be null defaults to this.getLabel(), if that is null this.getId()
+     * @param newProject
+     * @param newLabel
+     * @param user
+     * @throws Exception
+     */    
+     public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
+
     	if(!this.getProject().equals(newProject.getId()))
     	{
-    		if(!user.canEdit(this)){
+    		
+    		if (!MoverMaker.check(this, user)) {
     			throw new InvalidPermissionException(this.getXSIType());
     		}
-    		
     		String existingRootPath=this.getProjectData().getRootArchivePath();
     		
     		if(newLabel==null)newLabel = this.getLabel();
     		if(newLabel==null)newLabel = this.getId();
     		
+    		// newSessionDir = /ARCHIVE/proj_x/arc001
     		final File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
     		
+    		// Label defaults to this.getId()
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
     		
+    		
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    			String uri= null;
-    			if(abstRes instanceof XnatResource){
-    				uri=((XnatResource)abstRes).getUri();
-    			}else{
-    				uri=((XnatResourceseries)abstRes).getPath();
-    			}
-    			
-    			if(FileUtils.IsAbsolutePath(uri)){
-    				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-    				if(lastIndex>-1)
-    				{
-    					lastIndex+=1+current_label.length();
-    				}
-    				if(lastIndex==-1){
-    					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+this.getId().length();
-        				}
-    				}
-    				String existingSessionDir=null;
-    				if(lastIndex>-1){
-        				//in session_dir
-        				existingSessionDir=uri.substring(0,lastIndex);
-        			}else{
-        				//outside session_dir
-//        				newSessionDir = new File(newSessionDir,"RESOURCES");
-//        				newSessionDir = new File(newSessionDir,"RESOURCES/"+abstRes.getXnatAbstractresourceId());
-//        				int lastSlash=uri.lastIndexOf("/");
-//        				if(uri.lastIndexOf("\\")>lastSlash){
-//        					lastSlash=uri.lastIndexOf("\\");
-//        				}
-//        				existingSessionDir=uri.substring(0,lastSlash);
-        				//don't attempt to move sessions which are outside of the Session Directory.
-        				throw new Exception("Non-standard file location for file(s):" + uri);
-        			}
-        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,ci);
-    			}else{
-    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,ci);
-    			}
+    			MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user);
     		}
     		
-    		XFTItem current=this.getCurrentDBVersion(false);
-    		current.setProperty("project", newProject.getId());
-    		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false,ci); 
-    		
-    		this.setProject(newProject.getId());
-    		this.setLabel(newLabel);
+    		MoverMaker.writeDB(this, newProject, newLabel, user);
+    		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
     
@@ -519,6 +487,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     }
     
     public boolean hasProject(String proj_id){
+    if (this.getProject() == null) {
+    	return false;
+    }
 	if(this.getProject().equals(proj_id)){
 	    return true;
 	}else{
@@ -573,7 +544,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		return msg;
     	}
     	
-    	if(!expt.getProject().equals(proj.getId())){
+    	if(expt.getProject() != null && !expt.getProject().equals(proj.getId())){
 			try {
 				SecurityValues values = new SecurityValues();
 				values.put(this.getXSIType() + "/project", proj.getId());
@@ -588,6 +559,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
 						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
+						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -618,6 +590,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		        
 		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,c);
 				
+				SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
 				
@@ -706,10 +679,17 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * Gets root path to the primary project's archive space.
      * @return
      */
-    public String getArchiveRootPath(){
-        final String path= getPrimaryProject(false).getRootArchivePath();
-
-        return path;
+    public String getArchiveRootPath() throws UnknownPrimaryProjectException{
+    	XnatProjectdata p=getPrimaryProject(false);
+    	if(p!=null){
+    		return p.getRootArchivePath();
+    	}else{
+    		throw new UnknownPrimaryProjectException();
+    	}
+    }
+    
+    public static class UnknownPrimaryProjectException extends Exception{
+    	
     }
 
     /**
@@ -737,7 +717,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * @return 
      * @throws InvalidArchiveStructure
      */
-    public String getCurrentArchiveFolder() throws InvalidArchiveStructure{
+    public String getCurrentArchiveFolder() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
 
           final String arcpath = this.getArchiveRootPath();
           final File f = new File(arcpath);
@@ -793,7 +773,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * @return
      * @throws InvalidArchiveStructure
      */
-    public String getCurrentSessionFolder(boolean absolute) throws InvalidArchiveStructure{
+    public String getCurrentSessionFolder(boolean absolute) throws InvalidArchiveStructure,UnknownPrimaryProjectException{
         String session_path;
         
         final String currentarc = this.getCurrentArchiveFolder();
@@ -814,7 +794,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * This method looks for an existing session directory in the archive space.  If none is found, it returns the location where said directory would be created.
      * @return 
      */
-    public File getExpectedSessionDir() throws InvalidArchiveStructure{
+    public File getExpectedSessionDir() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
     	final File sessionDIR=this.getSessionDir();
     	
     	if(sessionDIR==null){
@@ -827,6 +807,22 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 	@Override
 	public void preSave() throws Exception{
 		super.preSave();
+		
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(StringUtils.IsEmpty(this.getLabel())){
+			throw new IllegalArgumentException();
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
+			throw new IllegalArgumentException("Labels cannot use special characters.");
+		}
 		
 		final XnatProjectdata proj = this.getPrimaryProject(false);
 		if(proj==null){
@@ -851,7 +847,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
 	
 	
-	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
+	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure,UnknownPrimaryProjectException {
 		return getExpectedSessionDir();
 	}
 	

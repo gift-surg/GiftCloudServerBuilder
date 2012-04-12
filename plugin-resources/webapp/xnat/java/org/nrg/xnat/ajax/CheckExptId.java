@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
@@ -21,7 +22,7 @@ public class CheckExptId {
     public void execute(HttpServletRequest req, HttpServletResponse response) throws IOException{
         String expt_id = req.getParameter("id");
         StringBuffer sb = new StringBuffer();
-        XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        XDATUser user = XDAT.getUserDetails();
         if (user!=null){
         sb.append("<matchingExperiments>");
         if (expt_id !=null && !expt_id.trim().equals("") && !(expt_id.contains("\\") || expt_id.contains("'")))

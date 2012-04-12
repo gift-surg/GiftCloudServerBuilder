@@ -18,12 +18,15 @@ import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatStudyprotocol;
 import org.nrg.xdat.security.ElementSecurity;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class ManageProjectPermissions extends SecureAction {
 
@@ -32,7 +35,12 @@ public class ManageProjectPermissions extends SecureAction {
         ParameterParser params = data.getParameters();
         String projectID = params.get("project");
         XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
-        UserI user = TurbineUtils.getUser(data);
+        XDATUser user = TurbineUtils.getUser(data);
+        
+        if(!user.canEdit(project)){
+        	error(new InvalidPermissionException("User cannot modify project: " + project.getId()),data);
+        	return;
+        }
         
         XFTTable users = XFTTable.Execute("SELECT login, xdat_user_id FROM xdat_user ORDER BY lastname || ', ' || firstname;", project.getDBName(), null);
         
@@ -76,12 +84,12 @@ public class ManageProjectPermissions extends SecureAction {
                     
                     Integer fieldMappingSetID=(Integer)elementAccesses.get(protocol);
                     
-                    Object create = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_c");
-                    Object read = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_r");
-                    Object edit = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_e");
-                    Object delete = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_d");
-                    Object activate = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_a");
-                    Object fieldMappingID = data.getParameters().get(tempUSER.getLogin() + "_" + protocol +"_id");
+                    Object create = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_c", data));
+                    Object read = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_r", data));
+                    Object edit = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_e",data));
+                    Object delete = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_d",data));
+                    Object activate = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_a",data));
+                    Object fieldMappingID = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(tempUSER.getLogin() + "_" + protocol +"_id",data));
                     
                     if (fieldMappingID=="")
                     {
@@ -126,7 +134,7 @@ public class ManageProjectPermissions extends SecureAction {
                             fm.setProperty("xdat_field_mapping_set_xdat_field_mapping_set_id", fieldMappingSetID);
 
                             fm.setComparisonType("equals");
-                            fm.save(user, false, false, true, false,ci);
+                            SaveItemHelper.authorizedSave(fm,user, false, false, true, false,ci);
                         }else if (fieldMappingSetID!=null){
                             XdatFieldMapping fm = new XdatFieldMapping((UserI)user);
                             
@@ -158,7 +166,7 @@ public class ManageProjectPermissions extends SecureAction {
                                 fm.setActiveElement(new Integer(1));
                             fm.setComparisonType("equals");
                             fm.setProperty("xdat_field_mapping_set_xdat_field_mapping_set_id", fieldMappingSetID);
-                            fm.save(user, false, false, true, false,ci);
+                            SaveItemHelper.authorizedSave(fm,user, false, false, true, false,ci);
                         }else{
                             XdatElementAccess ea = new XdatElementAccess((UserI)user);
                             XdatFieldMappingSet fms = new XdatFieldMappingSet((UserI)user);
@@ -198,7 +206,7 @@ public class ManageProjectPermissions extends SecureAction {
                             fm.setComparisonType("equals");
                             fms.setAllow(fm);
                             
-                            ea.save(user, false, false, true, false,ci);
+                            SaveItemHelper.authorizedSave(ea,user, false, false, true, false,ci);
                         }
                     }
                     

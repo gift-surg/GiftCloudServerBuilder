@@ -10,6 +10,7 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
+import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
@@ -19,6 +20,7 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.utils.WorkflowUtils;
@@ -41,12 +43,12 @@ public class ReconResource extends ItemResource {
 	public ReconResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 			
-			String assessedID= (String)request.getAttributes().get("ASSESSED_ID");
+			String assessedID= (String)getParameter(request,"ASSESSED_ID");
 			if(assessedID!=null){
 				if(session==null&& assessedID!=null){
 				session = (XnatImagesessiondata) XnatExperimentdata
@@ -63,7 +65,7 @@ public class ReconResource extends ItemResource {
 					}
 				}
 
-				exptID= (String)request.getAttributes().get("RECON_ID");
+				exptID= (String)getParameter(request,"RECON_ID");
 				if(exptID!=null){
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 					this.getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -254,8 +256,9 @@ public class ReconResource extends ItemResource {
 					        XnatAbstractresource resourceA = (XnatAbstractresource)om;
 					        resourceA.deleteWithBackup(session.getArchiveRootPath(),user,ci);
 					    }
-					}
-					DBAction.DeleteItem(recon.getItem().getCurrentDBVersion(), user,ci);
+					}	            
+					SaveItemHelper.authorizedDelete(recon.getItem().getCurrentDBVersion(), user,ci);
+
 					WorkflowUtils.complete(workflow, ci);
 					
 					user.clearLocalCache();

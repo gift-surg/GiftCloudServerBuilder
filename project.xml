@@ -16,6 +16,183 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-framework</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-mail</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-notify</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>spring-ldap</artifactId>
+			<version>1.3.1.RELEASE-all</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>com.springsource.org.aopalliance</artifactId>
+			<version>1.0.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.aop</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.asm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.beans</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.context</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.context.support</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.core</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.expression</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.oxm</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.jdbc</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>org.springframework.transaction</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>spring-security-ldap</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>spring-security-openid</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>spring</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.0</version>
@@ -96,7 +273,7 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>7.4.214.jdbc2</version>
+			<version>9.0-801.jdbc4</version>
 			<type>jar</type>
 			<properties>
 				<war.bundle>true</war.bundle>
@@ -217,7 +394,7 @@
 		<dependency>
 			<groupId>javamail</groupId>
 			<artifactId>javamail</artifactId>
-			<version>1.3.2</version>
+			<version>1.4.3</version>
 			<url>http://java.sun.com/products/javamail/</url>
 			<type>jar</type>
 			<properties>
@@ -355,6 +532,13 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.5</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-email</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>1.2</version>
+			<url>http://jakarta.apache.org/commons/sandbox/email</url>
 			<type>jar</type>
 		</dependency>
 		<!-- End Spring Framework dependencies -->

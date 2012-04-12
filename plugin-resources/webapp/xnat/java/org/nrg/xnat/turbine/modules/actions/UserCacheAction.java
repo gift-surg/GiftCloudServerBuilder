@@ -35,8 +35,8 @@ public class UserCacheAction extends SecureAction {
      */
 
     public void doPerform(RunData data, Context context) throws Exception {
-    	String folder = data.getParameters().get("folder");
-    	Boolean delete = new Boolean(data.getParameters().get("delete"));
+    	String folder = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("folder",data));
+    	Boolean delete = new Boolean(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("delete",data)));
     	if (folder != null) {
 	    	if (delete.booleanValue()) {
 	    		//doDelete(data,context);
@@ -47,7 +47,7 @@ public class UserCacheAction extends SecureAction {
     }
     
     public void doDownload(RunData data, Context context) throws Exception {
-    	String folder = data.getParameters().get("folder");
+    	String folder = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("folder",data));
     	if (folder != null) {
     		folder = folder.trim();
     		XDATUser user = TurbineUtils.getUser(data);
@@ -69,7 +69,7 @@ public class UserCacheAction extends SecureAction {
 		    	        try {
 		    	            HttpServletResponse response= data.getResponse();
 		    	    		response.setContentType(contentType);
-		    				response.setHeader("Content-Disposition","inline;filename=" + fileName);
+		    				TurbineUtils.setContentDisposition(response, fileName, false);
 		                    OutputStream outStream = response.getOutputStream();
 		                    
 		    				if ( isZip) {
@@ -111,8 +111,8 @@ public class UserCacheAction extends SecureAction {
     }
     
     public void doDelete(RunData data, Context context) throws Exception {
-    	String folder = data.getParameters().get("folder");
-    	Boolean delete = new Boolean(data.getParameters().get("delete"));
+    	String folder = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("folder",data));
+    	Boolean delete = new Boolean(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("delete",data)));
     	if (folder != null && delete != null) {
         	folder = folder.trim();
     		XDATUser user = TurbineUtils.getUser(data);

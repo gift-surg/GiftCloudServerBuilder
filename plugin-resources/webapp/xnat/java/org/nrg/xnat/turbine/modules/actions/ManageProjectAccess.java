@@ -18,8 +18,10 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
@@ -29,23 +31,28 @@ public class ManageProjectAccess extends SecureAction {
 	   
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        //String accessibility = data.getParameters().getString("accessibility");
-        String p = data.getParameters().getString("project");
+        //String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
         PersistentWorkflowI wrk = WorkflowUtils.buildOpenWorkflow(TurbineUtils.getUser(data), "xnat:projectData", project.getId(), project.getId(), newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS));
         EventMetaI c=wrk.buildEvent();        
+        XDATUser user=TurbineUtils.getUser(data);
+        if(!user.canEdit(project)){
+        	error(new InvalidPermissionException("User cannot modify project " + project.getId()), data);
+        	return;
+        }
 
-        String accessibility = data.getParameters().getString("accessibility");
-        project.initAccessibility(accessibility, false,c);
+        String accessibility = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
+        project.initAccessibility(accessibility, false,user,c);
         
         boolean sendmail=false;
-        if (null!=data.getParameters().getString("sendmail") && data.getParameters().getString("sendmail").equals("email"))
+        if (null!=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)) && ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("sendmail",data)).equals("email"))
         	sendmail=true;
         
-        String collaborators = data.getParameters().getString("collaborators");
-        String members = data.getParameters().getString("members");
-        String owners = data.getParameters().getString("owners");
+        String collaborators = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("collaborators",data));
+        String members = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("members",data));
+        String owners = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("owners",data));
 
         List<String> ownersL= StringUtils.CommaDelimitedStringToArrayList(owners);
         List<String> membersL= StringUtils.CommaDelimitedStringToArrayList(members);

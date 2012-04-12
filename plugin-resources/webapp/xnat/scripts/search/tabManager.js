@@ -22,6 +22,8 @@ function TabManager(_id){
   this.suppress_select=false;
 
   this.dataTables=new Array();
+  
+  this.csrfToken=null;
 
   this.init=function(array){
     if(array==undefined){
@@ -34,6 +36,9 @@ function TabManager(_id){
     this.render();
   };
 
+  this.setCsrfToken=function(str){
+	  this.csrfToken=str;
+  }
   this.isLoaded=function(str){
     return this.loaded.contains(str);
   };
@@ -178,8 +183,10 @@ function TabManager(_id){
 			  }, tempTab);
 
       var options=new Array();
-
-      tempTab.dt=new DataTableStoredSearch(_id+"_dt",obj);
+      var config = new Object();
+      config.csrfToken = this.csrfToken;
+      tempTab.dt=new DataTableStoredSearch(_id+"_dt",obj,config);
+      
 
       tempTab.dt.onComplete.subscribe(function(o){
 	  	 			this.resizeDataTable("resize",this);

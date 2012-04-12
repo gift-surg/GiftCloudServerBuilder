@@ -2,7 +2,7 @@
 $!template.setLayoutTemplate("/Popup.vm")
 <script type="text/javascript">
 function isAlphaNumeric(str) {
-  try {	
+  try {
 	  var numeric = str;
 	  for(var j=0; j<numeric.length; j++) {
 	     var alphaa = numeric.charAt(j);
@@ -17,25 +17,25 @@ function isAlphaNumeric(str) {
 }
 
 function checkform() {
-  var rtn = false; 
+  var rtn = false;
   var discreteVar1=document.getElementById('discreteVar1');
   var discreteVar2=document.getElementById('discreteVar2');
   var continuousVar1=document.getElementById('continuousVar1');
   var continuousVar2=document.getElementById('continuousVar2');
   var analysis_name=document.getElementById('analysis_name');
-  
+
   var msg = "";
   if (discreteVar1.value =="bad" && discreteVar2.value =="bad" && continuousVar1.value =="bad" && continuousVar2.value=="bad") {
     msg += "* select atleast one variable for the analysis\n";
   }
-  
+
   if (analysis_name.value=="") {
       msg += "* enter Analysis name\n";
   }
   if (msg == "") {
     var analysis_name_isAplhaNumeric = isAlphaNumeric(analysis_name.value);
     if (!analysis_name_isAplhaNumeric) {
-	alert("Please enter an alpha numeric value for analysis name");    
+	alert("Please enter an alpha numeric value for analysis name");
     }else {
 	    rtn = true;
     }
@@ -67,7 +67,7 @@ function checkform() {
     <td align="center">Variable 1:</td>
     <td>
 		<select name="discreteVar1" id="discreteVar1">
-		 <option value="bad">Select</option>
+		 <option value="bad">(SELECT)</option>
 		 #foreach($header in $discereteCols)
 		 <option value="$header">$header</option>
 		 #end
@@ -78,7 +78,7 @@ function checkform() {
   <tr>
     <td align="center">Variable 2:</td>
     <td><select name="discreteVar2" id="discreteVar2">
-		 <option value="bad">Select</option>
+		 <option value="bad">(SELECT)</option>
 		 #foreach($header in $discereteCols)
 		 <option value="$header">$header</option>
 		 #end
@@ -95,7 +95,7 @@ function checkform() {
     <td align="center">Variable 1:</td>
     <td>
 		<select name="continuousVar1" id="continuousVar1">
-		 <option value="bad">Select</option>
+		 <option value="bad">(SELECT)</option>
 		 #foreach($header in $continuousCols)
 		 <option value="$header">$header</option>
 		 #end
@@ -105,7 +105,7 @@ function checkform() {
   <tr>
     <td align="center">Variable 2:</td>
     <td><select name="continuousVar2" id="continuousVar2">
-		 <option value="bad">Select</option>
+		 <option value="bad">(SELECT)</option>
 		 #foreach($header in $continuousCols)
 		 <option value="$header">$header</option>
 		 #end

@@ -26,6 +26,7 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
@@ -154,7 +155,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
             throw new ValidationException(vr.toString());
         }else{
         	final XnatProjectdata proj = newmr.getProjectData();
-        	if(newmr.save(user,false,allowDataDeletion,c)){
+        	if(SaveItemHelper.authorizedSave(newmr,user,false,allowDataDeletion,c)){
 	try {
 				MaterializedView.DeleteByUser(user);
 
@@ -166,6 +167,7 @@ public class PullSessionDataFromHeaders implements Callable<Boolean> {
 					}
 			}
             
+  				SaveItemHelper.authorizedSave(workflow,user, false, false);
         }
         
         return Boolean.TRUE;

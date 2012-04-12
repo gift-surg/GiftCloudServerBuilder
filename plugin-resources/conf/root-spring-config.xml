@@ -1,7 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <!--
+        This extracts properties directly from the indicated properties file. If you want to encrypt properties,
+        e.g. for password security, see services-context.encrypted.sample.xml, which uses the jasypt library
+        to manage property encryption and decryption.
+    -->
+    <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
     <!-- Root Context: defines shared resources visible to all other web components -->
-    <!-- import resource="services/service-context.xml"/ -->
+    <context:component-scan base-package="org.nrg.framework.services" />
+    <context:component-scan base-package="org.nrg.xdat.services" />
+    <context:component-scan base-package="org.nrg.xdat.daos" />
+    <context:component-scan base-package="org.nrg.xft.services" />
+    <context:component-scan base-package="org.nrg.xft.daos" />
+    <context:component-scan base-package="org.nrg.xnat.helpers.merge"/>
+    <context:component-scan base-package="org.nrg.config.services"/>
+    <context:component-scan base-package="org.nrg.config.daos"/>
+    <context:component-scan base-package="org.nrg.notify.services" />
+    <context:component-scan base-package="org.nrg.notify.daos" />
 
+    <!-- Include top-level service configurations -->
+        <import resource="mail-services-config.xml" />
+    <import resource="notify-services-config.xml" />
+    <import resource="datasource-config.xml" />
+    <import resource="orm-config.xml" />
+
+    <bean id="coreXnatEntityPackages" class="org.nrg.framework.orm.hibernate.HibernateEntityPackageList">
+        <property name="items">
+            <list>
+                <value>org.nrg.xft.entities</value>
+                <value>org.nrg.xdat.entities</value>
+                <value>org.nrg.config.entities</value>
+            </list>
+        </property>
+    </bean>
+
+	<bean name="receivedFileUserProvider" class="org.nrg.xnat.utils.XnatUserProvider">
+		<constructor-arg value="admin"/>
+	</bean>
 </beans>

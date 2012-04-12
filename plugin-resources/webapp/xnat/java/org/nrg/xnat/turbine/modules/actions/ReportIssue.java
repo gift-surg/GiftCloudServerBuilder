@@ -5,15 +5,6 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Date;
-
-import javax.mail.internet.InternetAddress;
-import javax.servlet.ServletContext;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,15 +12,20 @@ import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.email.EmailUtils;
-import org.nrg.xft.email.EmailerI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.FileUtils;
+
+import java.io.File;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReportIssue extends SecureAction {
 	private static final Logger logger = Logger.getLogger(ReportIssue.class);
@@ -50,37 +46,31 @@ public class ReportIssue extends SecureAction {
 		final ParameterParser parameters = data.getParameters();
 		final String body = emailBody(user, parameters, data, context);
 
-		try {
-			final EmailerI mailer = EmailUtils.getEmailer();
+		String subject = TurbineUtils.GetSystemName() + " Issue Report from " + user.getLogin();
+		Map<String, File> attachments = getAttachmentMap(data.getSession().getId(), parameters);
 
-			mailer.setFrom(adminEmail);
-			mailer.setTo(Arrays.asList(new InternetAddress[] { new InternetAddress(adminEmail) }));
-			mailer.setSubject(TurbineUtils.GetSystemName() + " Issue Report from " + user.getLogin());
-			mailer.setMsg(body);
+		XDAT.getMailService().sendHtmlMessage(adminEmail, new String[] { adminEmail }, null, null, subject, body, null, attachments);
 
-			attachment(data.getSession().getId(), parameters, mailer);
-
-			mailer.send();
-		} catch (Exception e) {
-			logger.error("Unable to send mail", e);
-		}
 	}
 
-	private void attachment(String sessionId, ParameterParser parameters, EmailerI mailer) {
+	private Map<String, File> getAttachmentMap(String sessionId, ParameterParser parameters) {
+		Map<String, File> attachmentMap = new HashMap<String, File>();
+		
 		final FileItem fi = parameters.getFileItem("upload");
 		if (fi != null) {
 			final String cachePath = location(ArcSpecManager.GetInstance().getGlobalCachePath(), "issuereports", sessionId);
 			checkFolder(cachePath);
 
-			final File f = new File(location(cachePath, fi.getName()));
-			final String path = f.getAbsolutePath();
+			final File file = new File(location(cachePath, fi.getName()));
 			try {
-				fi.write(f);
-				mailer.addAttachment(path);
-			} catch (Exception e) {
-				logger.warn("Could not attach file, " + path, e);
+				fi.write(file);
+				attachmentMap.put(fi.getName(), file);
+			} catch (Exception exception) {
+				logger.warn("Could not attach file, " + file.getAbsolutePath(), exception);
 			}
 		}
+
+		return attachmentMap;
 	}
 
 	private String emailBody(XDATUser user, ParameterParser parameters, RunData data, Context context) throws Exception {

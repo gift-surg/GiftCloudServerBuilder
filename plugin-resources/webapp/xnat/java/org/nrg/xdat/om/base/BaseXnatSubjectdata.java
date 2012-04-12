@@ -54,7 +54,6 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
@@ -72,6 +71,7 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
@@ -83,7 +83,7 @@ import org.nrg.xnat.utils.WorkflowUtils;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements ArchivableItem{
+public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements ArchivableItem, MoveableI{
     protected ArrayList<ItemI> minLoadAssessors = null;
 
 	public BaseXnatSubjectdata(ItemI item)
@@ -1214,7 +1214,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
-    		if(!user.canEdit(this)){
+    		if (!MoverMaker.check(this, user)) {
     			throw new InvalidPermissionException(this.getXSIType());
     		}
     		
@@ -1226,56 +1226,16 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
     		
     		String current_label=this.getLabel();
+    		
     		if(current_label==null)current_label=this.getId();
-    		
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    			String uri= null;
-    			if(abstRes instanceof XnatResource){
-    				uri=((XnatResource)abstRes).getUri();
-    			}else{
-    				uri=((XnatResourceseries)abstRes).getPath();
-    			}
-    			
-    			if(FileUtils.IsAbsolutePath(uri)){
-    				int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
-    				if(lastIndex>-1)
-    				{
-    					lastIndex+=1+current_label.length();
-    				}
-    				if(lastIndex==-1){
-    					lastIndex=uri.lastIndexOf(File.separator + this.getId() + File.separator);
-        				if(lastIndex>-1)
-        				{
-        					lastIndex+=1+this.getId().length();
-        				}
-    				}
-    				String existingSessionDir=null;
-    				if(lastIndex>-1){
-        				//in session_dir
-        				existingSessionDir=uri.substring(0,lastIndex);
-        			}else{
-        				//outside session_dir
-        				newSessionDir = new File(newSessionDir,"RESOURCES");
-        				newSessionDir = new File(newSessionDir,"RESOURCES/"+abstRes.getXnatAbstractresourceId());
-        				int lastSlash=uri.lastIndexOf("/");
-        				if(uri.lastIndexOf("\\")>lastSlash){
-        					lastSlash=uri.lastIndexOf("\\");
-        				}
-        				existingSessionDir=uri.substring(0,lastSlash);
-        			}
-        			((XnatAbstractresource)abstRes).moveTo(newSessionDir,existingSessionDir,existingRootPath,user,ci);
-    			}else{
-    				((XnatAbstractresource)abstRes).moveTo(newSessionDir,null,existingRootPath,user,ci);
-    			}
+    			MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user);
+    			m.setResource((XnatAbstractresource) abstRes);
+    			m.call();
     		}
-    		
-    		XFTItem current=this.getCurrentDBVersion(false);
-    		current.setProperty("project", newProject.getId());
-    		current.setProperty("label", newLabel);    		
-    		current.save(user, true, false,ci); 
-    		
-    		this.setProject(newProject.getId());
-    		this.setLabel(newLabel);
+    		    		
+    		MoverMaker.writeDB(this, newProject, newLabel, user);
+    		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
     
@@ -1352,6 +1312,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				for(XnatProjectparticipantI pp : sub.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
 						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user,c);
+						SaveItemHelper.authorizedRemoveChild(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user);
 						match=index;
 						break;
 					}
@@ -1395,6 +1356,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		        }
 		        
 		        DBAction.DeleteItem(sub.getItem().getCurrentDBVersion(), user,c);
+		        SaveItemHelper.authorizedDelete(sub.getItem().getCurrentDBVersion(), user);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -1474,6 +1436,23 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 	public void preSave() throws Exception{
 		super.preSave();
 		
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(StringUtils.IsEmpty(this.getLabel())){
+			throw new IllegalArgumentException();
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
+			throw new IllegalArgumentException("Labels cannot use special characters.");
+		}
+		
+		
 		final XnatProjectdata proj = this.getPrimaryProject(false);
 		if(proj==null){
 			throw new Exception("Unable to identify project for:" + this.getProject());
@@ -1491,7 +1470,13 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				continue;
 			}
 			
-			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project: " + uri);
+			File u = new File(uri);
+			if (u.isFile()) {
+				FileUtils.ValidateUriAgainstRoot(u.getParent(),expectedPath,"URI references data outside of the project: " + uri);
+			}
+			else {
+				FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project: " + uri);
+			}
 		}
 		
 		for(final XnatSubjectassessordataI expt:this.getExperiments_experiment()){

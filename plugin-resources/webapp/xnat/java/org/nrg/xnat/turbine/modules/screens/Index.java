@@ -5,8 +5,6 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.Date;
-
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.ArcArchivespecification;
@@ -17,13 +15,16 @@ import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
+import java.util.Date;
+
 public class Index extends SecureScreen {
 
     @Override
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
         ArcArchivespecification arc= ArcSpecManager.GetInstance();
         if (arc==null || !arc.isComplete()){
-            this.doRedirect(data, "EditArcSpecs.vm");
+            context.put("initialize", true);
+            this.doRedirect(data, "Configuration.vm");
             return;
         }else{
             context.put("arc", arc);
@@ -31,8 +32,8 @@ public class Index extends SecureScreen {
         
         XDATUser user = TurbineUtils.getUser(data);
         
-        if(data.getParameters().get("node")!=null){
-        	context.put("node", data.getParameters().get("node"));
+        if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data))!=null){
+        	context.put("node", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data)));
         }
         
         ProjectAccessRequest.CreatePARTable(user);
@@ -54,6 +55,8 @@ public class Index extends SecureScreen {
         context.put("proj_count", user.getTotalCounts().get("xnat:projectData"));
 		
 		context.put("sub_count", user.getTotalCounts().get("xnat:subjectData"));
+		
+		context.put("user", user);
 		
 		Long isd_count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(*) FROM xnat_imageSessionData", "count", TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getUsername());
 		context.put("isd_count", isd_count);

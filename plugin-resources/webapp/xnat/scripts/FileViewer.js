@@ -24,7 +24,7 @@ function FileViewer(_obj){
 				scope:this
 			}
 		
-			YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/resources?all=true&format=json&file_stats=true&timestamp=' + (new Date()).getTime(),catCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/resources?all=true&format=json&file_stats=true&sortBy=category,cat_id,label&timestamp=' + (new Date()).getTime(),catCallback,null,this);
 		}else if(this.loading==1){
 			//in process
 		}else{
@@ -79,7 +79,7 @@ function FileViewer(_obj){
 		params+="&event_type=WEB_FORM";
 		params+="&event_action=File Deletion Dialog";
 		
-		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+"?"+params,this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+'?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
    
    this.removeCatalog=function(item){
@@ -105,7 +105,7 @@ function FileViewer(_obj){
 		params+="event_reason="+event_reason;
 		params+="&event_type=WEB_FORM";
 		params+="&event_action=Folder Deletion Dialog";
-		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+"?"+params,this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+ '?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
    
    this.getScan=function(sc, sid){
@@ -186,6 +186,10 @@ function FileViewer(_obj){
    
    this.showCounts=function(){
    		var scans,sCount,sSize;
+   		
+   		var scan_counts=new Object();
+   		var scan_resources=new Array();
+   		
    		for(var catC=0;catC<this.obj.categories.ids.length;catC++)
    		{
    			var catName=this.obj.categories.ids[catC];
@@ -203,9 +207,34 @@ function FileViewer(_obj){
 	   					dest.innerHTML+=" files, "
    						dest.innerHTML+=size_format(scans[sC].cats[scSC].file_size)
    						dest.innerHTML+=") ";
+	   					
+	   					if(catName=="scans"){
+	   						if(scan_counts[scans[sC].cats[scSC].label]==undefined){
+	   							scan_counts[scans[sC].cats[scSC].label]=new Object();
+	   							scan_counts[scans[sC].cats[scSC].label].label=scans[sC].cats[scSC].label;
+	   							scan_counts[scans[sC].cats[scSC].label].count=0;
+	   							scan_counts[scans[sC].cats[scSC].label].size=0;
+	   							scan_resources.push(scans[sC].cats[scSC].label);
+	   						}
+   							scan_counts[scans[sC].cats[scSC].label].count+=parseInt(scans[sC].cats[scSC].file_count);
+   							scan_counts[scans[sC].cats[scSC].label].size+=parseInt(scans[sC].cats[scSC].file_size);
+	   					}
 	   				}
    				}
    			}
+
+			var dest=document.getElementById("total_dicom_files");
+			if(dest!=null && dest !=undefined){
+   				dest.innerHTML="Totals: ";
+				for(var sC2=0;sC2<scan_resources.length;sC2++){
+					dest.innerHTML+=scan_counts[scan_resources[sC2]].label+" (";
+					dest.innerHTML+=scan_counts[scan_resources[sC2]].count;
+					dest.innerHTML+=" files, ";
+					dest.innerHTML+=size_format(scan_counts[scan_resources[sC2]].size);
+					dest.innerHTML+=") ";
+				}
+				
+			}
    			
    			scans=null;
    		}
@@ -365,7 +394,8 @@ function FileViewer(_obj){
 				var dType=document.createElement("select");
 				dType.id="download_type_select";
 				dType.options[0]=new Option("zip","zip",true,true);
-				dType.options[1]=new Option("tar.gz","tar.gz");
+				dType.options[1]=new Option("tar","tar");
+				dType.options[2]=new Option("tar.gz","tar.gz");
 				dType.style.marginRight="10px";
 				fTd2.appendChild(dType);
 				
@@ -1112,7 +1142,7 @@ function UploadFileForm(_obj){
 					file_name=file_name.substring(1);
 				}
 				
-				var file_params="?file_upload=true";
+				var file_params="?file_upload=true&XNAT_CSRF=" + csrfToken;
 				
 				if(file_content!=""){
 					file_params+="&content="+file_content;
@@ -1416,7 +1446,7 @@ function AddFolderForm(_obj){
 					return;
 				}
 				
-				var file_params="?n=1";
+				var file_params="?n=1&XNAT_CSRF=" + csrfToken;
 				
 				if(file_content!=""){
 					file_params+="&content="+file_content;

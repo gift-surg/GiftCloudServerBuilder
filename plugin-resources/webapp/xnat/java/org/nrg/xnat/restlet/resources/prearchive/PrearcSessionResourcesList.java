@@ -28,7 +28,7 @@ import org.restlet.resource.Variant;
  *
  */
 public class PrearcSessionResourcesList extends PrearcSessionResourceA {
-	private static final Object SCAN_ID = "SCAN_ID";
+	private static final String SCAN_ID = "SCAN_ID";
 
 	static Logger logger = Logger.getLogger(PrearcSessionResourcesList.class);
 
@@ -37,7 +37,7 @@ public class PrearcSessionResourcesList extends PrearcSessionResourceA {
 	public PrearcSessionResourcesList(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		scan_id = (String)request.getAttributes().get(SCAN_ID);
+		scan_id = (String)getParameter(request,SCAN_ID);
 	}
 
 

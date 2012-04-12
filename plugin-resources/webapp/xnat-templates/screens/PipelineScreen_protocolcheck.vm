@@ -83,7 +83,7 @@ The following parameters have been set for the protocol validation pipeline
 <input type="hidden" name="schema_type" value="$om.getXSIType()">
 <input type="hidden" name="param_cnt" value="6">
 <input type="hidden" name="pipeline_path" value="validation_tools/Validate.xml">
-
+<input type="hidden" name="launch_now" value="true">
 
 #insertCustomPipelineNotification("process")
 

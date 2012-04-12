@@ -3,43 +3,33 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTItem;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.Cookie;
 
 public class UploadApplet extends SecureScreen {
 	static Logger logger = LoggerFactory.getLogger(UploadApplet.class);
 	
 	@Override
 	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-		if(TurbineUtils.HasPassedParameter("project", data)){
-			context.put("project", TurbineUtils.GetPassedParameter("project", data));
-		}
-
-		if(TurbineUtils.HasPassedParameter("subject_id", data)){
-			context.put("subject_id", TurbineUtils.GetPassedParameter("subject_id", data));
-		}
-
-		if(TurbineUtils.HasPassedParameter("part_id", data)){
-			context.put("subject_id", TurbineUtils.GetPassedParameter("part_id", data));
-		}
-
-		if(TurbineUtils.HasPassedParameter("part", data)){
-			context.put("subject_id", TurbineUtils.GetPassedParameter("part", data));
-		}
-		
-		if(TurbineUtils.HasPassedParameter("session_id", data)){
-			context.put("expt_id", TurbineUtils.GetPassedParameter("session_id", data));
-		}
-		
-		if(TurbineUtils.HasPassedParameter("expt_id", data)){
-			context.put("expt_id", TurbineUtils.GetPassedParameter("expt_id", data));
-		}
-		
-		context.put("arc",ArcSpecManager.GetInstance());
+        Cookie[] cookies = data.getRequest().getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equalsIgnoreCase("jsessionid")) {
+                    context.put("jsessionid", cookie.getValue());
+                    break;
+                }
+            }
+        }
+        storeParameterIfPresent(data, context, "project");
+        storeParameterIfPresent(data, context, "subject_id", "part", "part_id");
+        storeParameterIfPresent(data, context, "session_id", "expt_id");
+        storeParameterIfPresent(data, context, "scan_date");
+        storeParameterIfPresent(data, context, "visit_id");
+        storeParameterIfPresent(data, context, "scan_type");
+		context.put("arc", ArcSpecManager.GetInstance());
 	}
 }

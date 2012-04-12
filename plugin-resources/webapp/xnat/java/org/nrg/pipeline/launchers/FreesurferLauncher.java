@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
@@ -39,20 +39,20 @@ public class FreesurferLauncher extends PipelineLauncher{
 	public boolean launch(RunData data, Context context, XnatMrsessiondata mr) {
 		try {
 			XnatPipelineLauncher xnatPipelineLauncher = XnatPipelineLauncher.GetLauncher(data, context, mr);
-		    String pipelineName = data.getParameters().get("freesurfer_pipelinename");
-		    String cmdPrefix = data.getParameters().get("cmdprefix");
+		    String pipelineName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("freesurfer_pipelinename",data));
+		    String cmdPrefix = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("cmdprefix",data));
 		    xnatPipelineLauncher.setPipelineName(pipelineName);
 		    xnatPipelineLauncher.setSupressNotification(true);
-		    String buildDir = FileUtils.getBuildDir(mr.getProject(), true);
+		    String buildDir = PipelineFileUtils.getBuildDir(mr.getProject(), true);
 		    buildDir +=  "fsrfer"  ;
 		    xnatPipelineLauncher.setBuildDir(buildDir);
 		    xnatPipelineLauncher.setNeedsBuildDir(false);
 		    //Parameters for Freesurfer Launch
 		    if (TurbineUtils.HasPassedParameter("custom_command", data)) {
-	    		xnatPipelineLauncher.setParameter("custom_command",data.getParameters().get("custom_command"));
+	    		xnatPipelineLauncher.setParameter("custom_command",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("custom_command",data)));
 			}else {
 			    xnatPipelineLauncher.setParameter("sessionId", mr.getLabel());
-			    xnatPipelineLauncher.setParameter("isDicom", data.getParameters().get("isDicom"));
+			    xnatPipelineLauncher.setParameter("isDicom", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("isDicom",data)));
 			    xnatPipelineLauncher.setParameter("mprs",mprageScans);
 			}
 		    boolean rtn = xnatPipelineLauncher.launch(cmdPrefix);

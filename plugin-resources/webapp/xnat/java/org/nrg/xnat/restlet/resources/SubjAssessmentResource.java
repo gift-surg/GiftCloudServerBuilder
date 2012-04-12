@@ -1,11 +1,16 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.restlet.resource.ResourceException;
+import org.nrg.dcm.CopyOp;
+import org.nrg.transaction.OperationI;
+import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.model.XnatProjectdataI;
@@ -16,6 +21,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.om.base.BaseXnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -28,6 +34,7 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.Rename;
@@ -37,6 +44,7 @@ import org.nrg.xnat.archive.Rename.LabelConflictException;
 import org.nrg.xnat.archive.Rename.ProcessingInProgress;
 import org.nrg.xnat.archive.ValidationException;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.FixScanTypes;
 import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
@@ -63,7 +71,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 	public SubjAssessmentResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
@@ -73,7 +81,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 			return;
 			}
 
-			subID= (String)request.getAttributes().get("SUBJECT_ID");
+			subID= (String)getParameter(request,"SUBJECT_ID");
 			if(subID!=null){
 			subject = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
 					.getId(), subID, user, false);
@@ -88,7 +96,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 				}
 			}
 			
-			exptID= (String)request.getAttributes().get("EXPT_ID");
+			exptID= (String)getParameter(request,"EXPT_ID");
 			if(exptID!=null){
 			if (proj != null) {
 				if (existing == null) {
@@ -120,6 +128,30 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 	@Override
 	public boolean allowPut() {
 		return true;
+	}
+	
+	private XnatSubjectdata getExistingSubject(XnatProjectdata proj, String subjectId){
+		// First check if the subject is associated with the project,
+		// if that fails check the global pool.
+		XnatSubjectdata s = XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subjectId, user, false);
+		if(s==null){
+			s = XnatSubjectdata.getXnatSubjectdatasById(subID, user,false);
+		}
+		return s;
+	}
+	
+	private XnatSubjectdata createSubject(XnatProjectdata proj, 
+										  String subjectId, 
+										  XDATUser user)  throws ResourceException, 
+										                         Exception {
+		XnatSubjectdata s = new XnatSubjectdata((UserI)user);
+		s.setProject(this.proj.getId());
+		s.setLabel(subjectId);
+		s.setId(XnatSubjectdata.CreateNewID());
+		if(!user.canCreate(s)){
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+		}
+		return s;
 	}
 
 	@Override
@@ -177,7 +209,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							}
 							
 							if(!user.canRead(expt)){
-								this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for experiments in this project.");
+								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Specified user account has insufficient priviledges for experiments in this project.");
 								return;
 							}
 
@@ -214,7 +246,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 								EventMetaI c=BaseXnatExperimentdata.ChangePrimaryProject(user, expt, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.MODIFY_PROJECT));
 
 								if(matched!=null){
-									DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user,c);
+									SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user,c);
 									expt.removeSharing_share(index);
 								}
 							}else{
@@ -353,6 +385,9 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 
 					PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(expt.getXSIType(), (existing==null))));
 					
+					
+					boolean modifiedSubject=false;
+					
 					if(existing==null){
 						if(!user.canCreate(expt)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in this project.");
@@ -378,12 +413,40 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for experiments in this project.");
 							return;
 						}
-
+						
+						if(this.getQueryVariable("subject_ID")!=null && !this.getQueryVariable("subject_ID").equals("") ){
+							if (!expt.getSubjectId().equals(this.getQueryVariable("subject_ID"))) {
+								XnatSubjectdata s = this.getExistingSubject(proj,
+																			this.getQueryVariable("subject_ID"));
+								if (s != null) {
+									// \"subject_ID\" can be overloaded on both the subject's label
+									// and XNAT unique subject identifier
+									if (!expt.getSubjectId().equals(s.getId())) {
+										// only accept subjects that are associated with this project
+										if (s.hasProject(proj.getId())){
+											modifiedSubject = true;
+											expt.setSubjectId(s.getId());
+										}
+									}
+								}
+								else {
+									try {
+										XnatSubjectdata new_s = this.createSubject(proj, this.getQueryVariable("subject_ID"), user);
+										new_s.save(user, false, true);
+										expt.setSubjectId(new_s.getId());
+										modifiedSubject = true;
+									} 
+									catch (ResourceException e) {
+										this.getResponse().setStatus(e.getStatus(), "Specified user account has insufficient create privileges for subjects in this project.");
+									} 	
+								}
+							}						
+						}
+						
 						if(this.getQueryVariable("label")!=null && !this.getQueryVariable("label").equals("") ){
 							if(!expt.getLabel().equals(existing.getLabel())){
 								expt.setLabel(existing.getLabel());
 						}
-
 							String label=this.getQueryVariable("label");
 
 							if(!label.equals(existing.getLabel())){
@@ -464,13 +527,34 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		            }
 					
 					try {
-						if(expt.save(user,false,allowDataDeletion,c)){
+						if(SaveItemHelper.authorizedSave(expt,user,false,allowDataDeletion,c)){
 							WorkflowUtils.complete(wrk, c);
 							user.clearLocalCache();
 							MaterializedView.DeleteByUser(user);
 
 							if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){
 								expt.quarantine(user);
+						}
+						if (modifiedSubject) {
+							// re-apply this project's edit script
+							try {
+								File tmpDir = new File(System.getProperty("java.io.tmpdir"), "anon_backup");
+								new CopyOp(new OperationI<Map<String,File>>() {
+												@Override
+												public void run(Map<String, File> a) throws Throwable {
+													ProjectAnonymizer p = new ProjectAnonymizer((XnatImagesessiondata) expt, 
+																								expt.getProject(),
+																								expt.getArchiveRootPath());
+													p.call();
+												}
+											}, 
+											tmpDir,
+											expt.getSessionDir() 
+											).run();
+							}
+							catch (TransactionException e) {
+								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+							}
 							}
 						}
 					} catch (Exception e1) {

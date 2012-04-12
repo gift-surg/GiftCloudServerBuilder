@@ -28,6 +28,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 /**
@@ -35,7 +36,7 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordata {
+public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordata{
 
 	public BaseXnatImageassessordata(ItemI item)
 	{
@@ -154,12 +155,28 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
     }
 
 
-	public File getExpectedSessionDir() throws InvalidArchiveStructure{
+	public File getExpectedSessionDir() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
 		return this.getImageSessionData().getExpectedSessionDir();
 	}
 
 	@Override
 	public void preSave() throws Exception{
+		if(StringUtils.IsEmpty(this.getId())){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(StringUtils.IsEmpty(this.getLabel())){
+			throw new IllegalArgumentException();
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
+			throw new IllegalArgumentException("Labels cannot use special characters.");
+		}
+		
 		if(this.getImageSessionData()==null){
 			throw new Exception("Unable to identify image session for:" + this.getImagesessionId());
 		}
@@ -219,6 +236,5 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
         }
         return rtn;
 	}
-
 
 }

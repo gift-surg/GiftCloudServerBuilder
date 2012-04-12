@@ -38,6 +38,7 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
@@ -136,9 +137,9 @@ public class ExptFileUpload extends SecureAction {
                     
                     System.out.println("File Upload Complete.");
                     data.setMessage("File Uploaded.");
-                    context.put("search_element",data.getParameters().getString("search_element"));
-                    context.put("search_field",data.getParameters().getString("search_field"));
-                    context.put("search_value",data.getParameters().getString("search_value"));
+                    context.put("search_element",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)));
+                    context.put("search_field",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)));
+                    context.put("search_value",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
                     context.put("uploadID",uploadID);
                     context.put("destination","ExptUploadConfirm.vm");
                     data.setScreenTemplate("FileUploadSummary.vm");
@@ -274,7 +275,7 @@ public class ExptFileUpload extends SecureAction {
         ItemI temp = TurbineUtils.GetItemBySearch(data,false);
         XnatImagesessiondata tempMR = (XnatImagesessiondata) org.nrg.xdat.base.BaseElement.GetGeneratedItem(temp);
         
-        String uploadID= data.getParameters().getString("uploadID");
+        String uploadID= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("uploadID",data));
 
         
         String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
@@ -388,8 +389,8 @@ public class ExptFileUpload extends SecureAction {
 	                FileUtils.MoveDir(dir, dest, true);
 	                FileUtils.DeleteFile(dir);
                 
-                    tempMR.save(TurbineUtils.getUser(data),false,false,c);
-                    PersistentWorkflowUtils.complete(wrk, c);
+                	SaveItemHelper.authorizedSave(tempMR,TurbineUtils.getUser(data),false,false,c);                    
+                	PersistentWorkflowUtils.complete(wrk, c);
                     data.setMessage("Files successfully uploaded.");
                 } catch (Exception e) {
                     PersistentWorkflowUtils.fail(wrk, c);

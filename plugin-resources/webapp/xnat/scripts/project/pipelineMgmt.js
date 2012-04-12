@@ -71,7 +71,7 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 //			   window.waitPanel.show();
 		           window.pipelineManager.initLoader.render();
 
-			   var post_url = serverRoot + "/REST/projects/" + window.pipelineManager.pID + "/pipelines?" + "format=json&path="+ record.getData('Path')+"&datatype=" +  record.getData('Datatype');
+			   var post_url = serverRoot + "/REST/projects/" + window.pipelineManager.pID + "/pipelines?" + "format=json&path="+ record.getData('Path')+"&datatype=" +  record.getData('Datatype') + '&XNAT_CSRF='+csrfToken;
 			   YAHOO.util.Connect.asyncRequest(
 			   	    'DELETE',
 			   	     post_url ,

@@ -14,6 +14,7 @@ import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -34,12 +35,12 @@ public class ProtocolResource extends ItemResource {
 	public ProtocolResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-		String pID = (String) request.getAttributes().get("PROJECT_ID");
+		String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
 
-		protID = (String) request.getAttributes().get("PROTOCOL_ID");
+		protID = (String) getParameter(request,"PROTOCOL_ID");
 
 		if (proj != null)
 			existing = (XnatDatatypeprotocol) XnatAbstractprotocol
@@ -102,7 +103,7 @@ public class ProtocolResource extends ItemResource {
 						protocol.setProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender",this.getQueryVariable("gender"));
 					}
 											
-					if(protocol.save(user,false,true,EventUtils.ADMIN_EVENT(user))){
+					if(SaveItemHelper.authorizedSave(protocol,user,false,true,EventUtils.ADMIN_EVENT(user))){
 						MaterializedView.DeleteByUser(user);
 					}
 					
@@ -135,8 +136,8 @@ public class ProtocolResource extends ItemResource {
 			}
 		
 			if(protocol!=null){
-				if (protocol!=null){				        
-			        DBAction.DeleteItem(protocol.getItem().getCurrentDBVersion(), user,EventUtils.ADMIN_EVENT(user));
+				if (protocol!=null){				        \
+					SaveItemHelper.authorizedDelete(protocol.getItem().getCurrentDBVersion(), user,EventUtils.ADMIN_EVENT(user));
 			    }
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -179,7 +180,7 @@ public class ProtocolResource extends ItemResource {
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/data-type", temp.getProperty("data-type"));
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
 					    }
-					    temp.save(user, false, false,EventUtils.ADMIN_EVENT(user));
+					    SaveItemHelper.authorizedSave(temp,user, false, false,EventUtils.ADMIN_EVENT(user));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

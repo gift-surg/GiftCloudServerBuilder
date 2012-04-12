@@ -12,6 +12,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 
 /**
@@ -48,6 +49,7 @@ public class DirectExptResourceImpl extends ResourceModifierA {
 		expt.setResources_resource(resource);
 		
 		expt.save(user, false, false,ci);
+		SaveItemHelper.authorizedSave(expt,user, false, false);
 		
 		return true;
 	}

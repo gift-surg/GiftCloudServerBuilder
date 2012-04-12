@@ -592,6 +592,23 @@
 							<xs:restriction base="xs:integer"/>
 						</xs:simpleType>
 					</xs:element>
+                    <xs:element name="employment" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Employment status:
+                                0: Employed
+                                1: Unemployed
+                                2: Retired
+                                3: Unknown or N/A
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:integer">
+                                <xs:minInclusive value="0"/>
+                                <xs:maxInclusive value="3"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
 					<xs:element name="education" minOccurs="0">
 						<xs:simpleType>
 							<xs:restriction base="xs:integer">

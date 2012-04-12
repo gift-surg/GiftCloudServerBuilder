@@ -32,7 +32,7 @@ else if(e) // Netscape/Firefox/Opera
  <TR>
   <TD></TD>
   <TD ROWSPAN="3" valign="top">
-  
+
 
  <TABLE ID="par_container" width="420" #if($pars.size()==0) STYLE="display:none;"#end>
   	  <TR>
@@ -53,7 +53,7 @@ else if(e) // Netscape/Firefox/Opera
      <input type="hidden" name="project" value="$om.getId()"/>
 		     <input type="hidden" name="id" value="$par.getUserId()"/>
      <input type="hidden" name="access_level" value="$par.getLevel()"/>
-     <input type="submit" name="eventSubmit_doDenial" value="DENY" />&nbsp;&nbsp;&nbsp;<input type="submit" name="eventSubmit_doApprove" value="APPROVE" /> 
+     <input type="submit" name="eventSubmit_doDenial" value="DENY" />&nbsp;&nbsp;&nbsp;<input type="submit" name="eventSubmit_doApprove" value="APPROVE" />
     </form>
     #end
    </TD>
@@ -87,7 +87,7 @@ else if(e) // Netscape/Firefox/Opera
              	scope:ProjectInvitation
            };
            ProjectInvitation.startRequest(email,access_level,"$om.getId()",inviteCallback);
-           
+
          }else{
            	document.getElementById("invite_email").value='';
          }
@@ -130,7 +130,7 @@ else if(e) // Netscape/Firefox/Opera
   	 </TABLE>
 </TD>
  </TR>
-<form method="post" action="$link.setAction("ManageProjectAccess")"> 
+<form method="post" action="$link.setAction("ManageProjectAccess")">
 <INPUT type="hidden" ID="owners" name="owners" value=""/>
 <INPUT type="hidden" ID="members" name="members" value=""/>
 <INPUT type="hidden" ID="collaborators" name="collaborators" value=""/>
@@ -174,12 +174,12 @@ width:500;
 width:700;
 #end
 }
-</STYLE> 
+</STYLE>
 <TABLE>
  <TR>
   <TD>
   	 <TABLE>
-  
+
 #if ($data.message)
  <TR>
   <TD COLSPAN="2"><DIV class="error">$data.message</DIV></TD>
@@ -200,7 +200,7 @@ width:700;
  <TR>
   	   <TD><DIV ID="ownersDIV" STYLE="height:100px;width:500px;overflow:auto;border-width:1px;border-style:solid;"></DIV>
   	   </TD><TD valign="top">
-  	 
+
   	</TD>
  </TR>
  <TR>
@@ -213,7 +213,7 @@ width:700;
   <TD COLSPAN="2">
     <TABLE CLASS="groupDisplay">
   	  <TR>
-  	   <TD valign="top">Study members can read, insert and modify subject and experiment data, but cannot delete content and cannot edit project settings.</TD> 
+  	   <TD valign="top">Study members can read, insert and modify subject and experiment data, but cannot delete content and cannot edit project settings.</TD>
   	   </TR>
   	 </TABLE>
   </TD>
@@ -221,7 +221,7 @@ width:700;
  <TR>
   	   <TD><DIV ID="memberDIV" STYLE="height:100px;width:500px;overflow:auto;border-width:1px;border-style:solid;"></DIV>
   	   </TD><TD valign="top">
-  	 
+
   	</TD>
  </TR>
  <TR>
@@ -272,7 +272,7 @@ width:700;
  <TR>
   <TD>
     LEVEL:&nbsp;<SELECT ID="level_select" name="level_select">
-      <OPTION VALUE="">SELECT</OPTION>
+      <OPTION VALUE="">(SELECT)</OPTION>
       <OPTION VALUE="owner">owner</OPTION>
       <OPTION VALUE="member">member</OPTION>
       <OPTION VALUE="collaborator">collaborator</OPTION>
@@ -282,7 +282,7 @@ width:700;
  <TR>
   <TD>
     <SELECT ID="user_select" name="user_select" SIZE=30 MULTIPLE>
-      
+
     </SELECT>
   </TD>
  </TR>
@@ -319,7 +319,7 @@ function addUser(email,user_name){
   userO.push(email);
   userO.push(user_name);
   allUsers.push(userO);
-  
+
   addEmail(email);
 }
 
@@ -338,8 +338,8 @@ function addMember(email){
       	}
       	document.getElementById("invite_email").value='';
       drawMembers();
-      modified = true;	
-      	return true;	
+      modified = true;
+      	return true;
    }
 }
 
@@ -391,7 +391,7 @@ function containsEmail(email){
        return true;
      }
   }
-  
+
   return false;
 }
 
@@ -403,7 +403,7 @@ function containsMember(email){
        return true;
      }
   }
-  
+
   return false;
 }
 
@@ -415,7 +415,7 @@ function containsCollaborator(email){
        return true;
      }
   }
-  
+
   return false;
 }
 
@@ -427,7 +427,7 @@ function containsOwner(email){
        return true;
      }
   }
-  
+
   return false;
 }
 
@@ -495,18 +495,18 @@ function getUsername(email){
       temp += allUsers[userCount][1] + " ";
     }
   }
-  
+
   return temp;
 }
 
 function selectUser(){
   var user_select = document.getElementById("user_select");
   var level_select = document.getElementById("level_select");
-   
+
   if (level_select.selectedIndex>0)
   {
     var level= level_select.options[level_select.selectedIndex].value;
-    
+
     for(var optionCount=0;optionCount<user_select.options.length;optionCount++)
     {
       if(user_select.options[optionCount].selected){
@@ -517,7 +517,7 @@ function selectUser(){
           addMember(useremail);
         else if (level=="collaborator")
           addCollaborator(useremail);
-          
+
         user_select.options[optionCount].selected=false;
       }
     }
@@ -592,4 +592,3 @@ drawOwners();
 drawMembers();
 drawCollaborators();
 </script>
-					

@@ -31,6 +31,7 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.search.CriteriaCollection;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineActions extends SecureAction{
@@ -45,13 +46,13 @@ public class PipelineActions extends SecureAction{
     }
     
     public void doLaunch(RunData data, Context context)  throws Exception {
-            String project = data.getParameters().get("project");
-            String step = data.getParameters().get("pipelineStep");
-            boolean isDescendant = data.getParameters().getBoolean("isdescendant");
+            String project = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+            String step = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipelineStep",data));
+            boolean isDescendant = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("isdescendant",data));
             ItemI data_item = TurbineUtils.GetItemBySearch(data);
             XnatPipelineLauncher xnatPipelineLauncher = getGenericCommonParameters(data,context, project, step, data_item);
             LinkedHashMap<ArcPipelineparameterdataI,ArrayList> paramHash = null;
-           // String launcherPrefix = data.getParameters().get("launcherPrefix");
+           // String launcherPrefix = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("launcherPrefix",data));
             org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
             cc.addClause("wrk:workflowData.ID",data_item.getProperty("ID"));
             cc.addClause("wrk:workflowData.data_type",data_item.getXSIType());
@@ -74,19 +75,19 @@ public class PipelineActions extends SecureAction{
                 Iterator paramIter = paramHash.keySet().iterator();
                 while (paramIter.hasNext()) {
                     ArcPipelineparameterdataI aParameter = (ArcPipelineparameterdataI)paramIter.next();
-                    String parameterTrueName = data.getParameters().get(paramStr + aParameter.getName() +":truename");
+                    String parameterTrueName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(paramStr + aParameter.getName() +":truename",data));
                     int valueCnt = paramHash.get(aParameter).size();
                     if (valueCnt > 1) {
                         for (int i=0; i <valueCnt;i++) {
                             String dataParam = paramStr + aParameter.getName() + ":"+i;
                             if (TurbineUtils.HasPassedParameter(dataParam, data)){
-                               xnatPipelineLauncher.setParameter(parameterTrueName, data.getParameters().getString(dataParam));
+                               xnatPipelineLauncher.setParameter(parameterTrueName, ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(dataParam,data)));
                             }
                         }
                     }else {
                         String dataParam = paramStr + aParameter.getName();
                         if (TurbineUtils.HasPassedParameter(dataParam, data)){
-                           xnatPipelineLauncher.setParameter(parameterTrueName, data.getParameters().getString(dataParam));
+                           xnatPipelineLauncher.setParameter(parameterTrueName, ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(dataParam,data)));
                         }
                     }
                 }
@@ -120,7 +121,7 @@ public class PipelineActions extends SecureAction{
         xnatPipelineLauncher.setParameter("xnatserver", ArcSpecManager.GetInstance().getSiteId());
         xnatPipelineLauncher.setParameter("mailhost", ArcSpecManager.GetInstance().getSmtpHost());
 
-        String emailsStr =  data.getParameters().get("emailField");
+        String emailsStr =  ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
         if (emailsStr != null) {
             String[] emails = emailsStr.trim().split(",");
             for (int i = 0 ; i < emails.length; i++)
@@ -130,9 +131,9 @@ public class PipelineActions extends SecureAction{
     }
     
     public void doBuild(RunData data, Context context) throws Exception{
-        String projectId = data.getParameters().get("projectId");
-        int totalSessionsToBuild = data.getParameters().getInt("param:control:total");
-        String step = data.getParameters().get("step");
+        String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("projectId",data));
+        int totalSessionsToBuild = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("param:control:total",data));
+        String step = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("step",data));
         data.getParameters().remove("step");
         try {
             int selectedCount = 0;
@@ -164,15 +165,15 @@ public class PipelineActions extends SecureAction{
                     xnatPipelineLauncher.launch();
                 }
             }
-            String destinationPage = data.getParameters().get("destinationpage");
+            String destinationPage = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("destinationpage",data));
             System.out.println("BuildPipelineActions::doBuild Destination page is " + destinationPage);
-            System.out.println(data.getParameters().get("search_value"));
-            System.out.println(data.getParameters().get("search_element"));
-            System.out.println(data.getParameters().get("search_field"));
+            System.out.println(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
+            System.out.println(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)));
+            System.out.println(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)));
             System.out.println("BuildPipelineActions::doBuild END");
 
             if (destinationPage != null) {
-                data.setRedirectURI(TurbineUtils.GetRelativeServerPath(data)+ "/app/template/" + destinationPage + "/search_field/" + data.getParameters().get("search_field") +  "/search_value/" +  data.getParameters().get("search_value")  + "/search_element/" +  data.getParameters().get("search_element"));
+                data.setRedirectURI(TurbineUtils.GetRelativeServerPath(data)+ "/app/template/" + destinationPage + "/search_field/" + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)) +  "/search_value/" +  ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data))  + "/search_element/" +  ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)));
                 //data.setScreenTemplate(destinationPage);
             }else {
                 String msg = "<p><b>The build process was successfully launched.  Status email will be sent upon its completion.</b></p>";
@@ -205,7 +206,7 @@ public class PipelineActions extends SecureAction{
         xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
         xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
 
-        String emailsStr =  data.getParameters().get("emailField");
+        String emailsStr =  ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
         if (emailsStr != null) {
             String[] emails = emailsStr.trim().split(",");
             for (int i = 0 ; i < emails.length; i++)
@@ -293,9 +294,9 @@ public class PipelineActions extends SecureAction{
             String key = (String)keys.next();
             if (key.startsWith(pattern)) {
                 if (replace != null)
-                    rtn.put(org.apache.commons.lang.StringUtils.replace(key,replace,""),data.getParameters().get(key));
+                    rtn.put(org.apache.commons.lang.StringUtils.replace(key,replace,""),((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data)));
                 else 
-                    rtn.put(key,data.getParameters().get(key));
+                    rtn.put(key,((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data)));
             }
         }
         return rtn;

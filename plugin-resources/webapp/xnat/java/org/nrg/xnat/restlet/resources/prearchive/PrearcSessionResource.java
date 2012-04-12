@@ -3,15 +3,8 @@
  */
 package org.nrg.xnat.restlet.resources.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.action.ActionException;
@@ -41,8 +34,10 @@ import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -73,13 +68,11 @@ public final class PrearcSessionResource extends SecureResource {
             Response response) {
         super(context, request, response);
 
-        final Map<String,Object> attrs = getRequest().getAttributes();
-
         // Project, timestamp, session are explicit in the request
-        final String p = (String)attrs.get(PROJECT_ATTR);
+        final String p = (String)getParameter(request,PROJECT_ATTR);
         project = p.equalsIgnoreCase(PrearcUtils.COMMON) ? null : p;
-        timestamp = (String)attrs.get(SESSION_TIMESTAMP);
-        session = (String)attrs.get(SESSION_LABEL);
+        timestamp = (String)getParameter(request,SESSION_TIMESTAMP);
+        session = (String)getParameter(request,SESSION_LABEL);
 
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.APPLICATION_ZIP));
@@ -109,8 +102,9 @@ public final class PrearcSessionResource extends SecureResource {
     @Override
     public void handlePost(){
         try {
-            loadParams(this.getBodyAsForm());
-            loadParams(this.getQueryVariableForm());
+            loadBodyVariables();
+            loadQueryVariables();
+            
             final Representation entity=this.getRequest().getEntity();
             if(entity!=null){
                 final String json = entity.getText();

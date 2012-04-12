@@ -31,16 +31,19 @@ public class AdminProjectAccess extends SecureAction {
             if (access!=null && !access.equals("")){
                 XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(pId, user, false);
                 
-                String currentAccess = p.getPublicAccessibility();
+                if(user.canEdit(p)){
+                    String currentAccess = p.getPublicAccessibility();
+                    
                 
-                
-                if (!currentAccess.equals(access)){
+                    if (!currentAccess.equals(access)){
                     PersistentWorkflowI wrk=WorkflowUtils.buildProjectWorkflow(user, p,newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.MODIFY_PROJECT_ACCESS));
                     EventMetaI c=wrk.buildEvent();
-                    if(p.initAccessibility(access, true,c)){
+                    if(p.initAccessibility(access, true,user,c)){
                     	WorkflowUtils.complete(wrk, c);
                     }
+                    }
                 }
+                
             }
             
             counter++;

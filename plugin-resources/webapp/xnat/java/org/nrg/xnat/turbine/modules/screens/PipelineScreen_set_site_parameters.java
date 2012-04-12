@@ -11,7 +11,7 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.InputParameters;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.InputParameters.Parameter;
 import org.nrg.pipeline.xmlbeans.PipelineData.Documentation.InputParameters.Parameter.Values;
@@ -24,6 +24,7 @@ import org.nrg.xdat.turbine.modules.screens.AdminEditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 
@@ -43,7 +44,7 @@ public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 			PipePipelinedetails pipelineDetails = (PipePipelinedetails)context.get("pipeline");
 			context.remove("pipeline");
 			String pathToPipeline = pipelineDetails.getPath();
-			PipelineDocument pipelineDoc = FileUtils.GetDocument(pathToPipeline);
+			PipelineDocument pipelineDoc = PipelineFileUtils.GetDocument(pathToPipeline);
 			pipelineDetails.setDescription(pipelineDoc.getPipeline().getDescription());
 			if (pipelineDoc.getPipeline().isSetDocumentation()) {
 				if (pipelineDoc.getPipeline().getDocumentation().isSetInputParameters()) {
@@ -71,7 +72,7 @@ public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 				try {
             		PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
             		pipelineRepository.setPipeline(pipelineDetails);
-            		pipelineRepository.save(user, false, true,EventUtils.ADMIN_EVENT(user));
+            		SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.ADMIN_EVENT(user));
             		PipelineRepositoryManager.Reset();
     				data.setMessage("The pipeline has been added to the repository");
     				data.setScreenTemplate("ClosePage.vm");

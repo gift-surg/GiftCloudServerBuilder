@@ -5,12 +5,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 
 public class XDATForgotLogin extends org.nrg.xdat.turbine.modules.actions.XDATForgotLogin {
 
 
     public void additionalProcessing(RunData data, Context context,XDATUser user) throws Exception{
-		String par = data.getParameters().getString("par","");
+		String par = (String)TurbineUtils.GetPassedParameter("par",data);
 
         if(!StringUtils.isEmpty(par)){
          	AcceptProjectAccess action = new AcceptProjectAccess();

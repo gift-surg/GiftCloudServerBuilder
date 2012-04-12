@@ -23,7 +23,7 @@ public abstract class EditImageAssessorScreen extends EditScreenA {
 		if (!StringUtils.IsEmpty(search_element)) {
 			final GenericWrapperElement se = GenericWrapperElement.GetElement(search_element);
 			if (se.instanceOf(XnatImagesessiondata.SCHEMA_ELEMENT_NAME)) {
-				final String search_value = data.getParameters().getString("search_value");
+				final String search_value = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
 				if (!StringUtils.IsEmpty(search_value)) {
 					final XnatImagesessiondata imageSession = new XnatImagesessiondata(TurbineUtils.GetItemBySearch(data));
 

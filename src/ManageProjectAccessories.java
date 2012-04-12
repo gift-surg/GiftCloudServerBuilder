@@ -8,12 +8,14 @@ import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.ElementSecurity;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.commandPrompt.CommandPromptTool;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 //Copyright 2007 Washington University School of Medicine All Rights Reserved
@@ -108,7 +110,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                     protocol.setProperty("xnat:datatypeProtocol/xnat_projectdata_id",p.getId());
                     protocol.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/data-type", protocol.getProperty("data-type"));
                     protocol.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
-                    protocol.save(getUser(), false, false,c);
+                    SaveItemHelper.authorizedSave(protocol,getUser(), false, false,c);
 
                     p.setStudyprotocol(protocol);
 
@@ -131,7 +133,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                             protocol.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
                             p.setStudyprotocol(protocol);
 
-                            protocol.save(getUser(), false, false,c);
+                            SaveItemHelper.authorizedSave(protocol,getUser(), false, false,c);
 
                         }
                     }
@@ -150,7 +152,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                 	projectAccess="private";
                 }
 
-                p.initAccessibility(projectAccess, true,c);
+                p.initAccessibility(projectAccess, true,getUser(),c);
 
                 ArcProject arcP = new ArcProject((UserI)getUser());
                 arcP.setId(p.getId());
@@ -186,7 +188,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                         arcP.setProperty("arc:project/paths/buildPath", ArcSpecManager.GetInstance().getGlobalBuildPath() + p.getId()+"/");
                     }
 
-                    arcP.save(getUser(), true, false,c);
+                    SaveItemHelper.authorizedSave( arcP,getUser(), true, false,c);
                 }
             }
         } catch (Exception e) {

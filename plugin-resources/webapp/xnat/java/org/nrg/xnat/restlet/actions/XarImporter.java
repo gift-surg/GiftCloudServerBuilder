@@ -34,10 +34,10 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
-import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -248,8 +248,8 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
                     if (session!=null)
 						try {
 							dest_path = FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "SCANS/" + uploadID +"/");
-						} catch (InvalidArchiveStructure e) {
-							throw new ServerException("Server Error:  Invalid Archive Structure");
+						} catch (Exception e) {
+							throw new ServerException(e.getMessage());
 						}
 					else{
                     	throw new ClientException("All XNAT xml documents must reference a valid Imaging Session.");
@@ -278,8 +278,8 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
                     if (session!=null)
 						try {
 							dest_path = FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "PROCESSED/" + uploadID +"/");
-						} catch (InvalidArchiveStructure e) {
-							throw new ServerException("Server Error:  Invalid Archive Structure");
+						} catch (Exception e) {
+							throw new ServerException(e.getMessage());
 						}
 					else{
                     	throw new ClientException("All XNAT xml documents must reference a valid Imaging Session.");
@@ -312,8 +312,8 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
                     if (session!=null)
 						try {
 							dest_path = FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "ASSESSORS/" + uploadID +"/");
-						} catch (InvalidArchiveStructure e) {
-							throw new ServerException("Server Error:  Invalid Archive Structure");
+						} catch (Exception e) {
+							throw new ServerException(e.getMessage());
 						}
 					else{
                     	throw new ClientException("All XNAT xml documents must reference a valid Imaging Session.");

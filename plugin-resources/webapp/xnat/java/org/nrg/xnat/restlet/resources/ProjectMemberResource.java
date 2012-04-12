@@ -27,6 +27,7 @@ import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
@@ -54,12 +55,12 @@ public class ProjectMemberResource extends SecureResource {
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 		
-			gID =(String)request.getAttributes().get("GROUP_ID");
+			gID =(String)getParameter(request,"GROUP_ID");
 			CriteriaCollection cc = new CriteriaCollection("OR");
 			cc.addClause("xdat:userGroup/ID", gID);
 			cc.addClause("xdat:userGroup/ID", pID + "_" +gID);
@@ -80,7 +81,7 @@ public class ProjectMemberResource extends SecureResource {
 			
 			
 
-			String tempValue =(String)request.getAttributes().get("USER_ID");
+			String tempValue =(String)getParameter(request,"USER_ID");
 			try {
 				String[] ids=null;
 				if(tempValue.indexOf(",")>-1){
@@ -224,9 +225,7 @@ public class ProjectMemberResource extends SecureResource {
 					if (newUsers.size()>0){
 						//CURRENT USER
 
-						String email="false";
-						Form f = getRequest().getResourceRef().getQueryAsForm();
-						if(f!=null)email=f.getFirstValue("sendemail");
+						String email=(this.isQueryVariableTrue("sendemail"))?"true":"false";
 						
 			            
 						boolean sendmail=Boolean.parseBoolean(email);

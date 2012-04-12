@@ -10,6 +10,7 @@
 													       <A href="" ONCLICK="restDelete();return false;"><div class="ic"><img border="0" src="$content.getURI("images/delete.gif")"/></div><div class="ic_spacer">&nbsp;</div>Delete</A>
 													      </li>
 													      #end
+														  #parse($turbineUtils.getTemplateName("actionsBoxAddons","$om.getXSIType()",$!project))
 													     </ul>
      </DIV>
     </DIV>

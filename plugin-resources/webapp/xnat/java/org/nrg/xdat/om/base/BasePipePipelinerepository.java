@@ -35,6 +35,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 /**
@@ -143,7 +144,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 				}
 			}
 		}
-		return rtn;
+		return rtn;	
 	}
 
 
@@ -261,6 +262,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 		}
 		if (save) {
 			arcProject.save(user, false, true,EventUtils.ADMIN_EVENT(user));
+			SaveItemHelper.authorizedSave(arcProject,user, false, true);
 		}
 		}catch(Exception e) {
 			success = false;
@@ -442,20 +444,20 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 	}
 
 	public ArcProject getAdditionalPipelines(XnatProjectdata project) throws Exception{
-		ArcProject arcProject = new ArcProject();
+		//ArcProject arcProject = new ArcProject();
 		ArcProject rtn = new ArcProject();
 		if (project == null) return new ArcProject();
 		Hashtable<String, ArrayList<ArcPipelinedata>>  pipelinesHash = getPipelinesForProject(project);
-		ArcProject arcProjectFromSpec = ArcSpecManager.GetInstance().getProjectArc(project.getId());
+		ArcProject arcProjectFromSpec = ArcSpecManager.GetFreshInstance().getProjectArc(project.getId());
 		if (arcProjectFromSpec == null) return createNewArcProject(project);
-
-		arcProject.setItem((XFTItem)arcProjectFromSpec.getItem().clone());
-		rtn.setItem((XFTItem)arcProjectFromSpec.getItem().clone());
+		rtn.setId(arcProjectFromSpec.getId());
+		//arcProject.setItem((XFTItem)arcProjectFromSpec.getItem().clone());
+		//rtn.setItem((XFTItem)arcProjectFromSpec.getItem().clone());
 		
 		//Clear all the existing pipelines as we want only the additional pipelines that are applicable for this project
-		rtn.removeAllPipelines();
+		//rtn.removeAllPipelines();
 		if (pipelinesHash != null && pipelinesHash.size() > 0) { //There are some site   pipelines
-			List<ArcProjectPipelineI> projectSelectedPipelines = arcProject.getPipelines_pipeline();
+			List<ArcProjectPipelineI> projectSelectedPipelines = arcProjectFromSpec.getPipelines_pipeline();
 			//Gather only those pipelines which have not been selected.
 			ArrayList<ArcPipelinedata> additionalPipelines = new ArrayList<ArcPipelinedata>();
 			ArrayList<ArcPipelinedata> pipelines = pipelinesHash.get(project.SCHEMA_ELEMENT_NAME);
@@ -475,7 +477,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			while (keys.hasMoreElements()) {
 				String xsiType = keys.nextElement();
 				ArrayList<ArcPipelinedata> descpipelines =  pipelinesHash.get(xsiType);
-				List<ArcProjectDescendantPipelineI> projectSelectedDescPipelines = arcProject.getPipelinesForDescendant(xsiType);
+				List<ArcProjectDescendantPipelineI> projectSelectedDescPipelines = arcProjectFromSpec.getPipelinesForDescendant(xsiType);
 				ArrayList<ArcPipelinedata> additionalDescPipelines = new ArrayList<ArcPipelinedata>();
 				if (descpipelines != null) {
 					for (int j = 0; j < descpipelines.size() ; j++) {

@@ -12,13 +12,15 @@ import org.nrg.xdat.om.ValProtocoldataScanCheck;
 import org.nrg.xdat.om.base.auto.AutoValProtocoldata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
+import org.nrg.xnat.scanAssessors.ScanAssessorI;
+import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
 
 /**
  * @author XDAT
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseValProtocoldata extends AutoValProtocoldata {
+public abstract class BaseValProtocoldata extends AutoValProtocoldata implements ScanAssessorI{
 
 	public BaseValProtocoldata(ItemI item)
 	{
@@ -57,5 +59,16 @@ public abstract class BaseValProtocoldata extends AutoValProtocoldata {
 		if (rtn == null) throw new NullPointerException("Couldnt find scan protocol validation for scan id " + scanId);
 		return rtn;
 	}
+	
+	public ScanAssessorScanI getScanById(String id){
+		return this.getScanProtocolValidation(id);
+	}
+	
+	public String getHeader(){
+		return "Protocol Val";
+	}
 
+	public int getPrecedence(){
+		return 0;
+	}
 }

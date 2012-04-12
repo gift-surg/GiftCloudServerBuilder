@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.nrg.status.StatusList;
 import org.nrg.status.StatusMessage;
 import org.nrg.status.StatusMessage.Status;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue;
 import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
 import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
@@ -35,7 +36,7 @@ public class SQListenerRepresentation extends SecureResource {
 	public SQListenerRepresentation(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		transaction_id= (String)request.getAttributes().get("TRANSACTION_ID");
+		transaction_id= (String)getParameter(request,"TRANSACTION_ID");
 		
 		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -99,7 +100,7 @@ public class SQListenerRepresentation extends SecureResource {
 		Form form = new Form(entity);
 		
 		try {
-			final StatusMessage msg=buildMessage(buildStatus(form.getFirstValue("status")),form.getFirstValue("message"));
+			final StatusMessage msg=buildMessage(buildStatus(TurbineUtils.escapeParam(form.getFirstValue("status"))),TurbineUtils.escapeParam(form.getFirstValue("message")));
 			
 			retrieveStatusQueue().notify(msg);
 		} catch (InvalidArgumentException e) {

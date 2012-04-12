@@ -1,0 +1,94 @@
+<!-- Title: File System -->
+<table id="mgmt_container">
+    <tr>
+        <td>
+            <div id="file_system_mgmt_div">
+                <table>
+                    <tr>
+                        <th align="left">Archive Location</th>
+                        <td><input size="50" type="text" id="archivePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Location where files are permanently archived.</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Pre-archive Location</th>
+                        <td><input size="50" type="text" id="prearchivePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Location where files are temporarily stored before they are archived.</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Cache Location</th>
+                        <td><input size="50" type="text" id="cachePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Location where deleted files are copied to (to prevent accidental deletion of files).</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Build Location</th>
+                        <td><input size="50" type="text" id="buildPath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Directory where temporarily processing information should be stored. This folder should exist, but not have any files or sub-directories in it.</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">FTP Location</th>
+                        <td><input size="50" type="text" id="ftpPath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Directory where FTP Server will store files. This folder should exist, but not have any files or sub-directories in it. (Use and installation of the XNAT FTP Server is optional, but this field must be set).</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Pipeline Installation Location</th>
+                        <td><input size="50" type="text" id="pipelinePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Location of XNAT Pipeline engine. By default, the pipeline engine is already installed in XNAT_HOME/pipeline. This location should be matched here. Change this to a different setting only if you have re-installed the Pipeline engine in another location.</td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<input type="button" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>&nbsp;
+<input type="button" value="Reset" name="eventSubmit_doReset" id="reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
+
+<script language="javascript">
+function configurationFileSystemTabChange(obj) {
+    if(obj.newValue.get("href")=="#fileSystem") {
+        if(window.fileSystemManager==undefined) {
+            window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
+        }
+    }
+}
+
+function addFileSystemMgmtMonitor(){
+    if(window.configurationTabView.get("activeTab").get("href")=="#fileSystem") {
+        if(window.fileSystemManager==undefined) {
+            window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
+        }
+    } else {
+        window.configurationTabView.subscribe("activeTabChange", configurationFileSystemTabChange);
+    }
+}
+
+YAHOO.util.Event.onDOMReady(addFileSystemMgmtMonitor);
+var fileSystemControls = ['archivePath', 'prearchivePath', 'cachePath', 'buildPath', 'ftpPath', 'pipelinePath'];
+</script>

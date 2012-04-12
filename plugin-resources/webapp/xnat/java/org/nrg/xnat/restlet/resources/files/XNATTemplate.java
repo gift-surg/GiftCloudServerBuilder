@@ -26,6 +26,7 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -62,7 +63,7 @@ public class XNATTemplate extends SecureResource {
 	public XNATTemplate(Context context, Request request, Response response) {
 		super(context, request, response);
 
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
@@ -73,7 +74,7 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-			String subID= (String)request.getAttributes().get("SUBJECT_ID");
+			String subID= (String)getParameter(request,"SUBJECT_ID");
 			if(subID!=null){
 				if(this.proj!=null)
 				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
@@ -94,7 +95,7 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-		String assessid = (String) request.getAttributes().get(
+		String assessid = (String) getParameter(request,
 				"ASSESSED_ID");
 			if(assessid!=null){
 			for(String s: StringUtils.CommaDelimitedStringToArrayList(assessid)){
@@ -127,9 +128,9 @@ public class XNATTemplate extends SecureResource {
 			}
 		}
 
-			type= (String)request.getAttributes().get("TYPE");
+			type= (String)getParameter(request,"TYPE");
 
-			String exptID= (String)request.getAttributes().get("EXPT_ID");
+			String exptID= (String)getParameter(request,"EXPT_ID");
 			if(exptID!=null){
 			for(String s: StringUtils.CommaDelimitedStringToArrayList(exptID)){
 				XnatExperimentdata expt = XnatExperimentdata.getXnatExperimentdatasById(s,
@@ -186,7 +187,7 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-			String scanID= (String)request.getAttributes().get("SCAN_ID");
+			String scanID= (String)getParameter(request,"SCAN_ID");
 		if (scanID != null && this.assesseds.size()>0) {
 			scanID=URLDecoder.decode(scanID);
 			CriteriaCollection cc = new CriteriaCollection("OR");
@@ -247,7 +248,7 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-			String reconID= (String)request.getAttributes().get("RECON_ID");
+			String reconID= (String)getParameter(request,"RECON_ID");
 		if (reconID != null && assesseds.size()>0) {
 			reconID=URLDecoder.decode(reconID);
 			CriteriaCollection cc = new CriteriaCollection("OR");
@@ -411,7 +412,7 @@ public class XNATTemplate extends SecureResource {
 				recon.setOut_file(catResource);
 			}
 
-			recon.save(user, false, false,ci);
+			SaveItemHelper.authorizedSave(recon,user, false, false,ci);
 			return true;
 		} else if (scans.size()>0) {
 			XnatImagescandata scan=scans.get(0);
@@ -464,7 +465,7 @@ public class XNATTemplate extends SecureResource {
 
 			scan.setFile(catResource);
 
-			scan.save(user, false, false,ci);
+			SaveItemHelper.authorizedSave(scan,user, false, false,ci);
 			return true;
 		} else if (expts.size()>0) {
 //			experiment
@@ -528,12 +529,12 @@ public class XNATTemplate extends SecureResource {
 					iad.setOut_file(catResource);
 				}
 
-				iad.save(user, false, false,ci);
+				SaveItemHelper.authorizedSave(iad,user, false, false,ci);
 
 			}else{
 				session.setResources_resource(catResource);
 
-				session.save(user, false, false,ci);
+				SaveItemHelper.authorizedSave(session,user, false, false,ci);
 			}
 			return true;
 		}else if(sub!=null){
@@ -571,7 +572,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			sub.setResources_resource(catResource);
 
-			sub.save(user, false, false,ci);
+			SaveItemHelper.authorizedSave(sub,user, false, false,ci);
 			return true;
 		}else if(proj!=null){
 			String dest_path=null;
@@ -607,7 +608,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			proj.setResources_resource(catResource);
 
-			proj.save(user, false, false,ci);
+			SaveItemHelper.authorizedSave(proj,user, false, falsee,ci);
 			return true;
 		}
 		return true;

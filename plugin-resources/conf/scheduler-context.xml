@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/jdbc  http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+		xmlns:context="http://www.springframework.org/schema/context">
+	
+	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+  		<property name="resourceLoaderPath" value="/xnat-templates/screens/"/>
+	</bean>
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+	   <property name="cache" value="true"/>
+	   <property name="prefix" value=""/>
+	   <property name="suffix" value=".vm"/>
+	</bean>	
 
     <bean name="sessionXmlRebuilderJob" class="org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJob" />
 
@@ -11,6 +24,7 @@
             <map>
                 <entry key="job.bean.name" value="sessionXmlRebuilderJob" />
                 <entry key="interval" value="5" />
+                <entry key="user" value-ref="receivedFileUserProvider" />
             </map>
         </property>
     </bean>
@@ -32,5 +46,8 @@
             <value>applicationContext</value>
         </property>
     </bean>
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.nrg.xnat.security.controllers"/>
 
 </beans>

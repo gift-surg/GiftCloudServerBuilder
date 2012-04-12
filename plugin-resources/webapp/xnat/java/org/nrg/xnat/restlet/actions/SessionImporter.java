@@ -3,14 +3,6 @@
  */
 package org.nrg.xnat.restlet.actions;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
@@ -23,9 +15,8 @@ import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
-import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
+import org.nrg.xnat.helpers.merge.SiteWideAnonymizer;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.URIManager;
@@ -34,8 +25,17 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
+import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class SessionImporter extends ImporterHandlerA implements Callable<List<String>> {
 
@@ -60,10 +60,8 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	 * 
 	 * @param listenerControl
 	 * @param u
-	 * @param session
-	 * @param overwrite:   'append' means overwrite, but preserve un-modified content (don't delete anything)
-	 *                      'delete' means delete the pre-existing content.
-	 * @param additionalValues: should include project, subject_ID and label (if session is null)
+     * @param fw
+     * @param params
 	 */
 	public SessionImporter(final Object listenerControl, final XDATUser u, final FileWriterWrapperI fw, final Map<String,Object> params){
 		super(listenerControl, u, fw, params);
@@ -232,6 +230,9 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				
 			try {
 				final FinishImageUpload finisher=ListenerUtils.addListeners(this, new FinishImageUpload(this.uID, user, session,destination, allowDataDeletion,overwrite,true));
+				XnatImagesessiondata s = new XNATSessionPopulater(user, session.getSessionDir(), session.getProject(), false).populate();
+				SiteWideAnonymizer site_wide = new SiteWideAnonymizer(s, true);
+				site_wide.call();
 				if(finisher.isAutoArchive()){
 					return new ArrayList<String>(){{add(finisher.call());}};
 				}else{
@@ -267,7 +268,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	public List<String> returnURLs(final List<PrearcSession> sessions)throws ActionException{
 		List<String> _return= new ArrayList<String>();
 		for(final PrearcSession ps: sessions){
-			_return.add(ps.getUrl().toString());
+			_return.add(ps.getUrl());
 		}
 		return _return;
 	}
@@ -276,11 +277,11 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		for(final PrearcSession ps:sessions){
 
 			try {
-				Map<String,Object> sess=PrearcUtils.parseURI(ps.getUrl().toString());
+				Map<String,Object> session = PrearcUtils.parseURI(ps.getUrl());
 				try {
-					PrearcUtils.addSession(user, (String) sess.get(URIManager.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.addSession(user, (String) session.get(UriParserUtils.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				} catch (SessionException e) {
-					PrearcUtils.resetStatus(user, (String) sess.get(URIManager.PROJECT_ID), (String) sess.get(PrearcUtils.PREARC_TIMESTAMP), (String) sess.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.resetStatus(user, (String) session.get(UriParserUtils.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				}
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);

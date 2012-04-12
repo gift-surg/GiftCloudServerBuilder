@@ -46,12 +46,12 @@ public class DIRResource extends SecureResource {
 			return;
 		}
 		
-		final String pID = (String) request.getAttributes().get("PROJECT_ID");
+		final String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
 
-		final String exptID = (String) request.getAttributes().get("EXPT_ID");
+		final String exptID = (String) getParameter(request,"EXPT_ID");
 		if (exptID != null) {
 			if(exptID!=null){
 				expt=XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
@@ -116,7 +116,7 @@ public class DIRResource extends SecureResource {
 				}else if (src.size()==1 && !src.get(0).isDirectory()){
 					final File f=src.get(0);
 					// TODO:  Need to add XAR output here?  (Probably not for single-file zipping)
-					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) )){
+					if(isZIPRequest(mt)){
 						final ZipRepresentation rep;
 						try{
 							rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName(),identifyCompression(null));
@@ -126,7 +126,7 @@ public class DIRResource extends SecureResource {
 							return null;
 						}
 						rep.addEntry(f);
-						this.setContentDisposition(String.format("attachment; filename=\"%s.zip\";",f.getName()));
+						this.setContentDisposition(String.format("%s.zip", f.getName()));
 						return rep;
 					}else{
 						return this.representFile(f, mt);
@@ -151,7 +151,7 @@ public class DIRResource extends SecureResource {
 						dest.add(set);
 					}
 			
-					if((mt.equals(MediaType.APPLICATION_ZIP)) || (mt.equals(MediaType.APPLICATION_GNU_TAR) || (mt.equals(APPLICATION_XAR)) )){
+					if((isZIPRequest(mt) || (mt.equals(APPLICATION_XAR)) )){
 						final ZipRepresentation rep;
 						try{
 							rep=new ZipRepresentation(mt,(expt).getArchiveDirectoryName(),identifyCompression(null));
@@ -182,7 +182,7 @@ public class DIRResource extends SecureResource {
 							rep.addAll(fs.getMatches());
 						}
 			
-						this.setContentDisposition(String.format("attachment; filename=\"%s\";",rep.getDownloadName()));
+						this.setContentDisposition(rep.getDownloadName());
 						return rep;
 					}else{
 

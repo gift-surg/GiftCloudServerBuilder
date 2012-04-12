@@ -1,13 +1,14 @@
 package org.nrg.xnat.helpers.prearchive;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * DatabaseSession is an abstraction over how a session is represented in the 
@@ -165,9 +166,8 @@ public enum DatabaseSession {
 		public void writeSession (SessionData s, Object o) {
 			s.setUrl(o);
 		}
-	}
-	,
-	AUTOARCHIVE ("autoarchive", ColType.BOOL, true) {
+	},
+	AUTOARCHIVE ("autoarchive", ColType.VARCHAR, true) {
 		@Override
 		public Object readSession (SessionData s) {
 			return s.getAutoArchive();
@@ -176,8 +176,37 @@ public enum DatabaseSession {
 		public void writeSession (SessionData s, Object o) {
 			s.setAutoArchive(o);
 		}
+	},
+	PREVENT_ANON ("prevent_anon", ColType.BOOL, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getPreventAnon();
 	}
-	;
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setPreventAnon(o);
+		}
+	},
+	PREVENT_AUTO_COMMIT ("prevent_auto_commit", ColType.BOOL, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getPreventAutoCommit();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setPreventAutoCommit(o);
+		}
+	},
+	SOURCE ("SOURCE", ColType.VARCHAR, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getSource();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setSource(o);
+		}
+	};
 	
 	/**
 	 * ColType provides a simple mapping from Java objects to java.sql.* objects   
@@ -253,7 +282,7 @@ public enum DatabaseSession {
 			@Override
 			public void setInsertStatement(int columnIndex, PreparedStatement s, Object o) throws SQLException {
 				if (o != null) {
-					s.setString(columnIndex, ((String)o).toString());
+					s.setString(columnIndex, o.toString());
 				}
 				else {
 					s.setNull(columnIndex, java.sql.Types.VARCHAR);
@@ -261,12 +290,12 @@ public enum DatabaseSession {
 			}
 			@Override
 			@SuppressWarnings("unchecked")
-			public <T extends Object> T getFromResult(int columnIndex, ResultSet r) throws SQLException {
+			public <T> T getFromResult(int columnIndex, ResultSet r) throws SQLException {
 				return (T) r.getString(columnIndex);
 			}
 			@Override
 			public String typeToString(Object o) {
-				return null == o ? null : DatabaseSession.singleQuote(((String)o).toString()); 
+				return null == o ? null : DatabaseSession.singleQuote(o.toString());
 			} 
 			@Override
 			public String resultToString (int columnIndex, ResultSet r) throws SQLException {
@@ -295,7 +324,7 @@ public enum DatabaseSession {
 			}
 			@Override
 			@SuppressWarnings("unchecked")
-			public <T extends Object> T getFromResult(int columnIndex, ResultSet r) throws SQLException {
+			public <T> T getFromResult(int columnIndex, ResultSet r) throws SQLException {
 				return (T) r.getTimestamp(columnIndex);
 			}
 			@Override
@@ -326,7 +355,7 @@ public enum DatabaseSession {
 			@SuppressWarnings("unchecked")
 			public <T> T getFromResult(int columnIndex, ResultSet r)
 					throws SQLException {
-				Boolean res = (Boolean) r.getBoolean(columnIndex);
+				Boolean res = r.getBoolean(columnIndex);
 				if (r.wasNull()) {
 					return null;
 				} 
@@ -344,7 +373,48 @@ public enum DatabaseSession {
 
 			@Override
 			public String typeToString(Object o) {
-				return null == o ? null : DatabaseSession.singleQuote(((Boolean)o).toString());
+				return null == o ? null : DatabaseSession.singleQuote(o.toString());
+			}
+		},
+		INTEGER {
+			@Override
+			public void setInsertStatement(int columnIndex, PreparedStatement s, Object o) throws SQLException {
+				if (o != null) {
+					if (o instanceof Integer) {
+						s.setInt(columnIndex, (Integer) o);
+					}
+				}
+				else {
+					s.setNull(columnIndex, Types.INTEGER);
+				}
+
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T getFromResult(int columnIndex, ResultSet r)
+					throws SQLException {
+				Integer res = r.getInt(columnIndex);
+				if (r.wasNull()) {
+					return null;
+				}
+				else {
+					return (T) res;
+				}
+			}
+
+			@Override
+			public String resultToString(int columnIndex, ResultSet r) throws SQLException {
+                String result = getFromResult(columnIndex, r);
+                if (result == null) {
+                    return "";
+                }
+                return result;
+			}
+
+			@Override
+			public String typeToString(Object o) {
+				return null == o ? null : DatabaseSession.singleQuote(o.toString());
 			}
 		};
 		/**
@@ -535,9 +605,8 @@ public enum DatabaseSession {
 	 * If there are no constraints a SQL statement that gets all the rows
 	 * will be generated.
 	 * 
-	 * @param sql
-	 * @param operator
-	 * @return
+	 * @param sql An array of strings containing SQL constraints
+	 * @return A complete SQL statement constructed from the submitted constraints.
 	 */
 	public static String findSessionSql (String[] sql) {
 		String selectAll = "SELECT * FROM " + PrearcDatabase.tableWithSchema; 
@@ -552,24 +621,25 @@ public enum DatabaseSession {
 	
 	/**
 	 * Generate SQL to find a row where that matches the given session and project
-	 * @param sess
-	 * @param proj
-	 * @return
+	 * @param session The session ID on which to search
+     * @param timestamp The timestamp on which to search
+	 * @param project The project ID on which to search
+     * @return A complete SQL statement constructed from the submitted criteria.
 	 */
-	public static String findSessionSql (String sess, String timestamp, String proj) {
-		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
+	public static String findSessionSql (String session, String timestamp, String project) {
+		return "SELECT * FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(session,timestamp,project);
 	}
 		
 	/**
 	 * Count the number of sessions that match the given arguments.
-	 * @param sess
-	 * @param timestamp
-	 * @param proj
-	 * @return
+     * @param session The session ID on which to search
+     * @param timestamp The timestamp on which to search
+     * @param project The project ID on which to search
+     * @return A complete SQL statement constructed from the submitted criteria.
 	 */
-	public static String countSessionSql (String sess, String timestamp, String proj) {
-		String s = "SELECT COUNT(*) FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
-		return s;
+	public static String countSessionSql (String session, String timestamp, String project) {
+		String statement = "SELECT COUNT(*) FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(session, timestamp, project);
+		return statement;
 	}
 	
 	public static String countSessionSql (final String sess, final String timestamp, final String proj, final String suid) {

@@ -143,7 +143,7 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
 			           };
 			           openModalPanel("share","Un-sharing subject...");
 			           var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
-			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/'+ label +'?format=json';
+			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/'+ label +'?format=json&XNAT_CSRF='+csrfToken;
    				        YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
 		   	   		    }
    	   		     

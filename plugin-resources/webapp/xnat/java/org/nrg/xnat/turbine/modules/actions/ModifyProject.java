@@ -5,6 +5,7 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -20,9 +21,11 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xnat.utils.WorkflowUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class ModifyProject extends SecureAction {
     static Logger logger = Logger.getLogger(ModifyItem.class);
@@ -43,12 +46,22 @@ public class ModifyProject extends SecureAction {
 
             XFTItem item = populater.getItem();
             XnatProjectdata  project = new XnatProjectdata(item);
-            
+                       
 
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
 	    	EventMetaI c=wrk.buildEvent();
 
         try {
+            if(StringUtils.isEmpty(project.getId())){
+            	data.addMessage("Missing required field (Abbreviation).");
+				TurbineUtils.SetEditItem(item,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+            
             if (error!=null)
             {
                 data.addMessage(error.getMessage());
@@ -57,21 +70,25 @@ public class ModifyProject extends SecureAction {
                 return;
             }
 
+            if(!user.canEdit(project)){
+            	error(new InvalidPermissionException("User cannot modify project " + project.getId()), data);
+            	return;
+            }
             
             try {
 				project.initNewProject(user,false,true,c);
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(item,data);
                 data.addMessage(e2.getMessage());
-                if (data.getParameters().getString("edit_screen") !=null)
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
-                    data.setScreenTemplate(data.getParameters().getString("edit_screen"));
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
 			}
             
             
-            item.save(user, false, false,c);
+            SaveItemHelper.authorizedSave(item,user, false, false,c);
             
             XnatProjectdata postSave = new XnatProjectdata(item);
             postSave.getItem().setUser(user);
@@ -82,13 +99,13 @@ public class ModifyProject extends SecureAction {
             user.clearLocalCache();
             //postSave.initBundles(user);
             
-            String accessibility=data.getParameters().getString("accessibility");
+            String accessibility=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
             if (accessibility==null){
                 accessibility="protected";
             }
             
             if (!accessibility.equals("private"))
-                project.initAccessibility(accessibility, true,c);
+                project.initAccessibility(accessibility, true,user,c);
             
            // p.initBundles((XDATUser)user);
             

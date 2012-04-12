@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.event.EventMetaI;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xnat.utils.WorkflowUtils;
@@ -24,13 +25,18 @@ public class ProjectAccessibilityResource extends SecureResource {
 	public ProjectAccessibilityResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-			String pID= (String)request.getAttributes().get("PROJECT_ID");
+			String pID= (String)getParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
-			access=(String)request.getAttributes().get("ACCESS_LEVEL");
+			access=(String)getParameter(request,"ACCESS_LEVEL");
 
+			if(proj!=null)
 			this.getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+			else{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
+				
 		}
 
 	@Override

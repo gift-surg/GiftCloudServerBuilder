@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.display.DisplayField;
 import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
 import org.nrg.xdat.model.XnatFielddefinitiongroupI;
@@ -26,13 +27,14 @@ import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 
 public class ResetProjectBundle {
     private Logger logger = Logger.getLogger(ResetProjectBundle.class);
 
     public void execute(HttpServletRequest req, HttpServletResponse response,ServletConfig sc) throws IOException{
         String protocolID = req.getParameter("protocol");
-        XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        XDATUser user = XDAT.getUserDetails();
         if (user!=null){
             XnatDatatypeprotocol protocol = XnatDatatypeprotocol.getXnatDatatypeprotocolsByXnatAbstractprotocolId(protocolID, user, true);
             XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(protocol.getProject(), user, false);
@@ -94,6 +96,7 @@ public class ResetProjectBundle {
         	if(xss!=null && modified){
                 try {
                     xss.save(user, true, true,EventUtils.ADMIN_EVENT(user));
+                    SaveItemHelper.unauthorizedSave(xss,user, true, true);
                     
                     //XdatStoredSearch.ReplacePreLoadedSearch(xss);
                     

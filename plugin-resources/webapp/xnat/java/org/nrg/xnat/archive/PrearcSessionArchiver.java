@@ -24,6 +24,7 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -39,6 +40,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
@@ -105,7 +107,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final String project;
 	private final Map<String,Object> params;
 	
-	private final File srcDIR;
+	private final PrearcSession prearcSession;
 
 	private final boolean allowDataDeletion;//should the process delete data from an existing resource
 	private final boolean overwrite;//should process proceed if the session already exists
@@ -113,7 +115,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final boolean waitFor;
 	
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
@@ -122,13 +124,31 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
 		this.overwrite=(overwrite==null)?false:overwrite;
 		this.overwrite_files=(overwrite_files==null)?false:overwrite_files;
+		this.prearcSession=prearcSession;
 		this.srcDIR=srcDIR;
 		this.waitFor=waitFor;
 	}
 
-	public PrearcSessionArchiver(final PrearcSession session,	final XDATUser user, final Map<String,Object> params, boolean allowDataDeletion,final boolean overwrite, final boolean waitFor, final Boolean overwrite_files)
+	public PrearcSessionArchiver(final PrearcSession session,	
+								 final XDATUser user, 
+								 final Map<String,Object> params, 
+								 boolean allowDataDeletion,
+								 final boolean overwrite, 
+								 final boolean waitFor, 
+								 final Boolean overwrite_files)
 	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, session.getSessionDir(),  session.getProject(), false)).populate(),session.getSessionDir(), user, session.getProject(), params, allowDataDeletion,overwrite, waitFor,overwrite_files);
+		this((new XNATSessionPopulater(user, 
+									   session.getSessionDir(),  
+									   session.getProject(), 
+									   false)).populate(),
+			  session, 
+			  user, 
+			  session.getProject(), 
+			  params, 
+			  allowDataDeletion,
+			  overwrite, 
+			  waitFor,
+			  overwrite_files);
 	}
 
 	public XnatImagesessiondata getSrc(){
@@ -136,7 +156,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	}
 
 	public File getSrcDIR(){
-		return srcDIR;
+		return prearcSession.getSessionDir();
 	}
 
 
@@ -251,6 +271,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			subject.setId(newID);
 			try {
 				subject.save(user, false, false,c);
+				SaveItemHelper.authorizedSave(subject,user, false, false);
 			} catch (Exception e) {
 				failed("unable to save new subject " + newID);
 				throw new ServerException("Unable to save new subject " + subject, e);
@@ -267,9 +288,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	/**
 	 * Retrieves the archive session directory for the given session.
 	 * @return archive session directory
+	 * @throws UnknownPrimaryProjectException 
 	 * @throws ArchivingException
 	 */
-	private File getArcSessionDir() throws ServerException{
+	private File getArcSessionDir() throws ServerException, UnknownPrimaryProjectException{
 		final File currentArcDir;
 		try {
 			final String path = src.getCurrentArchiveFolder();
@@ -448,7 +470,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 			final File arcSessionDir = getArcSessionDir();
 
-			if(existing!=null)checkForConflicts(src,srcDIR,existing,arcSessionDir);
+			if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
 
 			if(arcSessionDir.exists()){
 				this.setStep("Merging", workflow,c);
@@ -468,7 +490,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			final EventMetaI savetime=workflow.buildEvent();
 			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
 				public void save(XnatImagesessiondata merged) throws Exception {					
-					if(merged.save(user,false,false,savetime)){
+					if(SaveItemHelper.authorizedSave(merged,user,false,false)){
 						user.clearLocalCache();
 						try {
 							MaterializedView.DeleteByUser(user);
@@ -493,11 +515,19 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				}
 			};
 
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),srcDIR,src,src.getPrearchivepath(),arcSessionDir,existing,arcSessionDir.getAbsolutePath(),overwrite, (allowDataDeletion)?allowDataDeletion:overwrite_files,saveImpl,user,workflow.buildEvent()))
-				.call();
+			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),
+																			 this.prearcSession.getSessionDir(),
+																			 src,
+																			 src.getPrearchivepath(),
+																			 arcSessionDir,
+																			 existing,
+																			 arcSessionDir.getAbsolutePath(),
+																			 overwrite, 
+																			 (allowDataDeletion)?allowDataDeletion:overwrite_files,
+																			 saveImpl,user,workflow.buildEvent())).call();
 
-			org.nrg.xft.utils.FileUtils.DeleteFile(new File(srcDIR.getAbsolutePath()+".xml"));
-			org.nrg.xft.utils.FileUtils.DeleteFile(srcDIR);
+			org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));
+			org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession.getSessionDir());
 
 			try {
 				workflow.setStepDescription(PersistentWorkflowUtils.COMPLETE);

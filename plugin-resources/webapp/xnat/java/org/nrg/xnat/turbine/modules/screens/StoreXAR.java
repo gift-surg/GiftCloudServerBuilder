@@ -47,6 +47,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
@@ -390,7 +391,8 @@ public class StoreXAR extends RawScreen {
                         		PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, item.getItem(), SecureAction.newEventInstance(data,EventUtils.CATEGORY.DATA, EventUtils.STORE_XAR));
                         		EventMetaI c=wrk.buildEvent();
                                 try {
-									item.save(user, false, true,c);
+									SaveItemHelper.unauthorizedSave(item,user, false, true,c);
+
 									WorkflowUtils.complete(wrk, c);
 								} catch (Exception e) {
 									WorkflowUtils.fail(wrk, c);

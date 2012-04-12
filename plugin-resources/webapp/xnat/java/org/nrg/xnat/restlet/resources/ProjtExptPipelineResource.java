@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.pipeline.utils.FileUtils;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
@@ -60,13 +60,13 @@ public class ProjtExptPipelineResource extends SecureResource {
 	public ProjtExptPipelineResource(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		String pID = (String) request.getAttributes().get("PROJECT_ID");
+		String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getXnatProjectdatasById(pID, user, false);
 
-			step = (String) request.getAttributes().get("STEP_ID");
+			step = (String) getParameter(request,"STEP_ID");
 			if (step != null) {
-				String exptID = (String) request.getAttributes().get("EXPT_ID");
+				String exptID = (String) getParameter(request,"EXPT_ID");
 				if (exptID != null) {
 					expt = XnatExperimentdata.getXnatExperimentdatasById(
 							exptID, user, false);
@@ -91,9 +91,8 @@ public class ProjtExptPipelineResource extends SecureResource {
 	public Representation getRepresentation(Variant variant) {
 		if(proj!=null && step!=null){
 			ArcPipelinedata arcPipeline = null;
-			ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
+			ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 			//arcProject.setItem(arcProject.getCurrentDBVersion());
-			Form f = getRequest().getResourceRef().getQueryAsForm();
 			try {
 				if (expt == null) { // Look for Project level pipeline
 					arcPipeline = (ArcPipelinedata)arcProject.getPipeline(step);
@@ -190,11 +189,9 @@ public class ProjtExptPipelineResource extends SecureResource {
 						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 					}
 				}else{
-					ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(proj.getId());
+					ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(proj.getId());
 					//arcProject.setItem(arcProject.getCurrentDBVersion());
-					Form f = getRequest().getResourceRef().getQueryAsForm();
-					String match = null;
-					if(f!=null)match=f.getFirstValue("match");
+					String match = this.getQueryVariable("match");
 					if (match == null) match = "EXACT";
 
 					try {
@@ -234,7 +231,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 		xnatPipelineLauncher.setExternalId(expt.getProject());
 		xnatPipelineLauncher.setDataType(expt.getXSIType());
 
-		String buildDir = FileUtils.getBuildDir(expt.getProject(), true);
+		String buildDir = PipelineFileUtils.getBuildDir(expt.getProject(), true);
 		buildDir +=   "archive_trigger"  ;
 		xnatPipelineLauncher.setBuildDir(buildDir);
 		xnatPipelineLauncher.setNeedsBuildDir(false);

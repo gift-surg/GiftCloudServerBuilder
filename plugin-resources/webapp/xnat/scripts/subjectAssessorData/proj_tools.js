@@ -102,7 +102,7 @@ function SubjectLoader(_options){
 		    this.list= eval("(" + o.responseText +")").ResultSet.Result;
 			this.onLoadComplete.fire();
 		    
-		    if(this.options.selects!=undefined){
+		    if(this.options != undefined && this.options.selects != undefined) {
 		    	for(var selectC=0;selectC<this.options.selects.length;selectC++){
 		    		var selectBox=this.options.selects[selectC];
 		    		if(this.options.defaultValue!=undefined){
@@ -113,7 +113,11 @@ function SubjectLoader(_options){
 		    	}
 		    }
 		}catch(e){
+			if (o.status != 200) {
 			this.displayError("ERROR " + o.status+ ": Failed to parse subject list.");
+            } else {
+                this.displayError("EXCEPTION: " + e.toString());
+            }
 		}
 		
 	};
@@ -290,7 +294,7 @@ function ProjectEditor(_config){
 						  if(confirm("Modifying the primary project of an imaging session will result in the moving of files on the file server into the new project's storage space.  Are you sure you want to make this change?")){
 						       openModalPanel("modify_project","Modifying project, please wait...");
 	
-				               YAHOO.util.Connect.asyncRequest('PUT',this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json",settingsCallback);
+				               YAHOO.util.Connect.asyncRequest('PUT',this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json&XNAT_CSRF=" + csrfToken,settingsCallback);
 					      }else{
 					    	   this.cancel();
 					      }
@@ -420,7 +424,7 @@ function SubjectEditor(_config){
 						  if(confirm("Modifying the subject of an experiment may result in the moving of files on the file server into the new subject's storage space.  Are you sure you want to make this change?")){
 						       openModalPanel("modify_subject","Modifying subject, please wait...");
 						        
-				               YAHOO.util.Connect.asyncRequest('PUT',serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + this.selector.new_subject + "/experiments/" + window.currentLabel + "?format=json",settingsCallback);
+				               YAHOO.util.Connect.asyncRequest('PUT',serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + this.selector.new_subject + "/experiments/" + window.currentLabel + "?format=json&XNAT_CSRF=" + csrfToken,settingsCallback);
 					      }else{
 					    	   this.cancel();
 					      }
@@ -572,7 +576,7 @@ function LabelEditor(_config){
 					    if(confirm("Modifying the " + this.selector.config.header + " of an imaging session will result in the moving of files on the file server within the project's storage space.  Are you sure you want to make this change?")){
 							openModalPanel("modify_new_label","Modifying " + this.selector.config.header +", please wait...");
 
-				        	YAHOO.util.Connect.asyncRequest('PUT',this.selector.config.uri +"?label=" + window.selectedLabel +"&format=json",settingsCallback);
+				        	YAHOO.util.Connect.asyncRequest('PUT',this.selector.config.uri +"?label=" + window.selectedLabel +"&format=json&XNAT_CSRF=" + csrfToken,settingsCallback);
 					    }
 				    }
 				  }

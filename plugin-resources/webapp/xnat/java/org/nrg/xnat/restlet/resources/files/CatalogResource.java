@@ -20,6 +20,7 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.restlet.representations.CatalogRepresentation;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
@@ -210,8 +211,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 						
 						try {
 							resource.deleteWithBackup(rootPath, user, ci);
-
-							DBAction.RemoveItemReference(this.parent.getItem(), xmlPath, resource.getItem(), user,ci);
+						SaveItemHelper.authorizedRemoveChild(this.parent.getItem(), xmlPath, resource.getItem(), user,ci);
 
 							PersistentWorkflowUtils.complete(workflow,ci);
 						} catch (Exception e) {

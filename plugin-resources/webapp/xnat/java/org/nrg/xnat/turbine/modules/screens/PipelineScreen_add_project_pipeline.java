@@ -36,17 +36,17 @@ public class PipelineScreen_add_project_pipeline extends SecureReport {
 
     public void doBuildTemplate(RunData data, Context context) {
 	    logger.debug("BEGIN SECURE REPORT :" + this.getClass().getName());
-	    String projectId = data.getParameters().get("project");
-	    String pipelinePath = data.getParameters().get("pipeline_path");
-	    String dataType = data.getParameters().get("dataType");
-	    boolean edit = data.getParameters().getBoolean("edit");
+	    String projectId = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
+	    String pipelinePath = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("pipeline_path",data));
+	    String dataType = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("dataType",data));
+	    boolean edit = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("edit",data));
 	    String templateFile = null;
 	    context.put("pipeline_path", pipelinePath);
 	    context.put("dataType", dataType);
 	    try {
 	    	context.put("edit", edit);
 	    	if (edit) {
-				ArcProject arcProject = ArcSpecManager.GetInstance().getProjectArc(projectId);
+				ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
 	    		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
 					ArcProjectPipeline newPipeline = arcProject.getPipelineEltByPath(pipelinePath);
 					templateFile = newPipeline.getCustomwebpage();

@@ -15,7 +15,7 @@ public class RequestProjectAccess extends SecureScreen {
 
     @Override
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        String p = data.getParameters().getString("project");
+        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         XnatProjectdataI project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
         context.put("project", project);

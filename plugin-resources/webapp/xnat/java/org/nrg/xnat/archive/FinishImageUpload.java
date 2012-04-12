@@ -3,31 +3,23 @@
  */
 package org.nrg.xnat.archive;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusPublisherI;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -36,7 +28,13 @@ import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author Timothy R Olsen
@@ -77,14 +75,34 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 					.call();
 				}else{
 					if (PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.ARCHIVING)) {
-						return PrearcDatabase.archive(session, allowDataDeletion, overwrite,isOverwriteFiles(session,destination), user, getListeners());
+                        boolean delete = allowDataDeletion, append = overwrite;
+
+                        final SessionData sessionData = session.getSessionData();
+                        if (sessionData != null) {
+                            PrearchiveCode code = sessionData.getAutoArchive();
+                        switch (code) {
+                            case Manual:
+                                delete = false;
+                                append = false;
+                                break;
+                            case AutoArchive:
+                                delete = false;
+                                append = true;
+                                break;
+                            case AutoArchiveOverwrite:
+                                delete = true;
+                                append = true;
+                                break;
+                            }
+                        }
+						return PrearcDatabase.archive(session, delete, append, isOverwriteFiles(session,destination), user, getListeners());
 					}else{
 						throw new ServerException("Unable to lock session for archiving.");
 					}
 				}}
 			else{
 				populateAdditionalFields(session.getSessionDir());
-				return session.getUrl().toString();
+				return session.getUrl();
 			}
 
 		} catch (ActionException e) {
@@ -117,10 +135,6 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 
 	/**
 	 * This method will allow users to pass xml path as parameters.  The values supplied will be copied into the loaded session.
-	 *
-	 * @throws ElementNotFoundException
-	 * @throws FieldNotFoundException
-	 * @throws InvalidValueException
 	 */
 	private void populateAdditionalFields(final File sessionDIR) throws ActionException{
 		//prepare params by removing non xml path names
@@ -161,23 +175,16 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		}
 	}
 	
-	private static boolean isAutoArchive(final Map<String,Object> params){
-		String aa = (String)params.get(RequestUtil.AA);
-		
-		if(aa==null){
-			aa = (String)params.get(RequestUtil.AUTO_ARCHIVE);
-		}
-		
-		
-		if(aa!=null && aa.toString().equalsIgnoreCase(RequestUtil.TRUE)){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	
-	public boolean isAutoArchive() throws SQLException, SessionException, Exception{
+	public boolean isAutoArchive() throws SQLException, SessionException, Exception {
 		return isAutoArchive(session,destination);
+    }
+		
+    public String getSource() throws Exception {
+        final SessionData sessionData = session.getSessionData();
+        if (sessionData != null) {
+            return sessionData.getSource();
+        }
+        return null;
 	}
 	
 	private static boolean isAutoArchive(final PrearcSession session, final URIManager.DataURIA destination) throws SQLException, SessionException, Exception{
@@ -185,9 +192,14 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		if(session.getProject()==null){
 			return false;
 		}
-		if (session.getSessionData() != null && session.getSessionData().getAutoArchive() != null) {
-			return session.getSessionData().getAutoArchive(); 
+
+        final SessionData sessionData = session.getSessionData();
+        if (sessionData != null) {
+            PrearchiveCode sessionAutoArcSetting = sessionData.getAutoArchive();
+        if (sessionAutoArcSetting != null && (sessionAutoArcSetting == PrearchiveCode.AutoArchive || sessionAutoArcSetting == PrearchiveCode.AutoArchiveOverwrite)) {
+            return true;
 		}
+        }
 						
 		if(destination !=null && destination instanceof URIManager.ArchiveURI){
 			return true;
@@ -205,6 +217,21 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 		return false;
 	}
 	
+    private static boolean isAutoArchive(final Map<String,Object> params){
+        String aa = (String)params.get(RequestUtil.AA);
+
+        if(aa==null){
+            aa = (String)params.get(RequestUtil.AUTO_ARCHIVE);
+        }
+
+
+        if(aa!=null && aa.toString().equalsIgnoreCase(RequestUtil.TRUE)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 	private static boolean isOverwriteFiles(final Map<String,Object> params){
 		String of = (String)params.get(RequestUtil.OVERWRITE_FILES);
 						
@@ -225,8 +252,16 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			return true;
 		}
 						
+        final SessionData sessionData = session.getSessionData();
+        if (sessionData != null) {
+            PrearchiveCode sessionAutoArcSetting = sessionData.getAutoArchive();
+        if (sessionAutoArcSetting != null && sessionAutoArcSetting == PrearchiveCode.AutoArchiveOverwrite) {
+            return true;
+        }
+        }
+						
 		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());
-		if(code!=null && code.equals(5)){
+		if(code!=null && code.equals(PrearchiveCode.AutoArchiveOverwrite.getCode())){
 			return true;
 		}
 		

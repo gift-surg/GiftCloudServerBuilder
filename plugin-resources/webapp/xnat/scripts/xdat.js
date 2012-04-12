@@ -1,4 +1,4 @@
-var supported = (document.getElementById || document.all); 
+var supported = (document.getElementById || document.all);
 
 if (supported)
 {
@@ -14,10 +14,13 @@ if (supported)
 	}
 }
 
-function popupWSize(url,h,w)
+function popupWSize(url,h,w,name)
 {
 	if (! window.focus)return true;
-	window.open(url, "", "width=" + w + ",height=" + h + ",status=yes,resizable=yes,scrollbars=yes,toolbar=yes");
+    if (!name) {
+        name="";
+    }
+	window.open(url, name, "width=" + w + ",height=" + h + ",status=yes,resizable=yes,scrollbars=yes,toolbar=yes");
 	return false;
 }
 
@@ -75,19 +78,19 @@ function IsNumeric(sText)
    var IsNumber=true;
    var Char;
 
- 
-   for (i = 0; i < sText.length && IsNumber == true; i++) 
-      { 
-      Char = sText.charAt(i); 
-      if (ValidChars.indexOf(Char) == -1) 
+
+   for (i = 0; i < sText.length && IsNumber == true; i++)
+      {
+      Char = sText.charAt(i);
+      if (ValidChars.indexOf(Char) == -1)
          {
          IsNumber = false;
          }
       }
    return IsNumber;
-   
+
 }
-   
+
 
 //FUNCTION USED TO TOGGLE SPANS VISIBILITY
 function blocking(i)
@@ -99,14 +102,14 @@ function blocking(i)
 	}
 	var plusLocation = serverRoot+ "/images/plus.jpg";
 	var minusLocation = serverRoot+ "/images/minus.jpg";
-	
+
 	imgShow = (shown[i]) ? minusLocation : plusLocation;
 
 	var imgCode = 'IMG' + i;
-	
+
 	if (document.getElementById)
 	{
-	 	//COMMON 
+	 	//COMMON
 		var current = document.getElementById('span'+i).style.display;
 		if (current == 'block')
 		{
@@ -129,7 +132,7 @@ function blocking(i)
 			document.images[imgCode].src= minusLocation;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -180,13 +183,13 @@ function viewer(sessionId)
 function view(sessionId,exptCode) {
 	if (exptCode==''){
 		viewer(sessionId);
-	}	
+	}
 	else {
 		var link = serverRoot+ "/app/action/ShowViewerAction/popup/true";
 		link = link + "/search_element/xnat:mrSessionData/search_field/xnat:mrSessionData.ID/search_value/" + sessionId.toString() + "/startDisplayWith/" + exptCode.toString();
 		window.open(link, '', 'width=320,height=420,status=yes,resizable=yes,scrollbars=no');
 	}
-	return false;	
+	return false;
 }
 
 //SHOW ITEM IMAGE VIEWER FOR SUBJECT
@@ -194,7 +197,7 @@ function viewPart(part_id) {
 	var link = serverRoot+ "/app/action/ShowViewerAction/popup/true";
 	link = link + "/skipq/true/id/" + part_id.toString();
 	window.open(link, '', 'width=320,height=420,status=yes,resizable=yes,scrollbars=no');
-	return false;	
+	return false;
 }
 
 //SHOW EMAIL SCREEN
@@ -227,7 +230,7 @@ var maxYear=2100;
 
 function isInteger(s){
 	var i;
-    for (i = 0; i < s.length; i++){   
+    for (i = 0; i < s.length; i++){
         // Check that current character is number.
         var c = s.charAt(i);
         if (((c < "0") || (c > "9"))) return false;
@@ -241,7 +244,7 @@ function stripCharsInBag(s, bag){
     var returnString = "";
     // Search through string's characters one by one.
     // If character is not in bag, append to returnString.
-    for (i = 0; i < s.length; i++){   
+    for (i = 0; i < s.length; i++){
         var c = s.charAt(i);
         if (bag.indexOf(c) == -1) returnString += c;
     }
@@ -258,7 +261,7 @@ function DaysArray(n) {
 		this[i] = 31
 		if (i==4 || i==6 || i==9 || i==11) {this[i] = 30}
 		if (i==2) {this[i] = 29}
-   } 
+   }
    return this
 }
 
@@ -331,7 +334,7 @@ temp[c].substring(1,temp[c].length);
                 newVal += temp[c].substring(0,1).toUpperCase() +
 temp[c].substring(1,temp[c].length);
         }
-        
+
         return newVal;
 }
 String.prototype.trim = function () {
@@ -342,7 +345,7 @@ String.prototype.trim = function () {
 String.prototype.startsWith = function(str) {
 	if (this.indexOf(str)==0){
 		return true;
-	}else{	
+	}else{
 		return false;
 	}
 }
@@ -350,7 +353,7 @@ String.prototype.startsWith = function(str) {
 String.prototype.endsWith = function(str) {
 	if (this.lastIndexOf(str)==(this.length-str.length)){
 		return true;
-	}else{	
+	}else{
 		return false;
 	}
 }
@@ -361,7 +364,7 @@ Array.prototype.contains = function(str) {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -453,7 +456,7 @@ function validateDate(sel){
        }
       }
    }
-   
+
    if(!isValidDate(month+"/" + day + "/" + year))
    {
      for(var childNodeCount=0;childNodeCount<childNodes.length;childNodeCount++)
@@ -467,9 +470,9 @@ function validateDate(sel){
    }else{
      if(img_div!=undefined)img_div.innerHTML="<img src=\"" + serverRoot+ "/images/checkmarkGreen.gif\"/>";
    }
-   
+
   }
-  
+
   /**********************************************
    * Inserts a YUI Calendar to handle date validation & selection
    */
@@ -479,62 +482,66 @@ function validateDate(sel){
   	button.type="button";
   	button.value=">";
   	button.id="cal_"+input.id;
-  	
+
   	//CREATE CALENDAR CONTAINER
 	var calendarContainer = document.createElement("DIV");
 	calendarContainer.className="yui-skin-sam";
 	calendarContainer.style.display="inline";
-	
+
 	//INSERT INTO DOM
 	if(input.nextSibling==undefined){
 		input.parentNode.appendChild(calendarContainer);
 	}else{
 		input.parentNode.insertBefore(calendarContainer,input.nextSibling);
 	}
-	
+
 	calendarContainer.appendChild(button);
-	
+
 	var calendarDIV= document.createElement("DIV");
 	calendarContainer.appendChild(calendarDIV);
 	calendarDIV.style.position="absolute";
-	
-	var cal1 = new YAHOO.widget.Calendar("cal1",calendarDIV,{context:["cal_"+input.id,"tr","tl"],title:_title,navigator:true,close:true,visible:false}); 
+
+      try {
+          var cal1 = new YAHOO.widget.Calendar("cal1", calendarDIV, {context:["cal_" + input.id, "tr", "tl"], title:_title, navigator:true, close:true, visible:false});
+      } catch (e) {
+          alert("Found exception creating calendar: " + e);
+      }
 
     cal1.text_input = input;
     input.calendar=cal1;
-    
+
     button.calendar=cal1;
     button.onclick=function(){
     	this.calendar.show();
     	return false;
     }
-    
+
     cal1.hider=button;
-        
-    cal1.handleSelect = function(type,args,obj) { 
-        var dates = args[0]; 
-		var date = dates[0]; 
-		var year = date[0], month = date[1], day = date[2]; 
-		
+
+    cal1.handleSelect = function(type,args,obj) {
+        var dates = args[0];
+		var date = dates[0];
+		var year = date[0], month = date[1], day = date[2];
+
 		this.text_input.value = month + "/" + day + "/" + year;
 		this.text_input.calendar.hide();
     }
-    
-    
+
+
    input.onchange=function(){
    	   if(this.value!=""){
    	   	this.value=this.value.replace(/[-]/,"/");
    	   	this.value=this.value.replace(/[.]/,"/");
    	   	if(isValidDate(this.value)){
-   	   	 this.calendar.select(this.value); 
-         var selectedDates = this.calendar.getSelectedDates(); 
-         if (selectedDates.length > 0) { 
-            var firstDate = selectedDates[0]; 
-            this.calendar.cfg.setProperty("pagedate", (firstDate.getMonth()+1) + "/" + firstDate.getFullYear()); 
-            this.calendar.render(); 
-         } else { 
-            alert("Invalid date. MM/DD/YYYY"); 
-         } 
+   	   	 this.calendar.select(this.value);
+         var selectedDates = this.calendar.getSelectedDates();
+         if (selectedDates.length > 0) {
+            var firstDate = selectedDates[0];
+            this.calendar.cfg.setProperty("pagedate", (firstDate.getMonth()+1) + "/" + firstDate.getFullYear());
+            this.calendar.render();
+         } else {
+            alert("Invalid date. MM/DD/YYYY");
+         }
    	   	}else{
    	   		alert("Invalid date. MM/DD/YYYY");
    	   		this.value="";
@@ -542,18 +549,18 @@ function validateDate(sel){
    	   	}
    	   }
 	}
- 					    
+
  	cal1.selectEvent.subscribe(cal1.handleSelect, cal1, true);
- 
-    cal1.render(); 
+
+    cal1.render();
     cal1.hide();
-    
+
     if(input.value!=""){
    	   	 input.onchange();
 	}
   }
 
-  
+
   function parseForm(formId){
   	var oForm,oElement, oName, oValue, oDisabled,
             data='', item = 0,
@@ -572,7 +579,7 @@ function validateDate(sel){
 		else{
 			return;
 		}
-  		
+
   		// Iterate over the form elements collection to construct the
 		// label-value pairs.
 		for (i=0,len=oForm.elements.length; i<len; ++i){
@@ -639,7 +646,7 @@ function validateDate(sel){
 				}
 			}
 		}
-		
+
 		return data.toString();
   }
 
@@ -652,7 +659,7 @@ if(obj!=null){
 			// here for legacy reasons.
 			obj = (document.getElementById(obj));
 	  }
-	  
+
 	  if(obj.appendedImage==undefined){
 	    obj.appendedImage = document.createElement("img");
 	    obj.appendedImage.style.marginLeft="5pt";
@@ -675,7 +682,7 @@ if(obj!=null){
 			// here for legacy reasons.
 			obj = (document.getElementById(obj));
 	  }
-	  
+
 	  if(obj.appendedImage!=undefined){
 	  	obj.appendedImage.parentNode.removeChild(obj.appendedImage);
 	    obj.appendedImage=null;
@@ -683,31 +690,31 @@ if(obj!=null){
 	}
 }
 
-window.modals=new Object();  
-  
+window.modals=new Object();
+
 function openModalPanel(id,msg,parentPanel){
 	  if(id==undefined)id="wait";
 	  if(window.modals[id]==undefined){
-		  window.modals[id]=new YAHOO.widget.Panel(id,     
-	          { 
-	          	   width:"240px",    
-	               fixedcenter:true,    
-	               close:true,    
-	               draggable:false,    
-	               zindex:4,   
-	               modal:true,   
-	               visible:false  
-	          }    
-	      );   
+		  window.modals[id]=new YAHOO.widget.Panel(id,
+	          {
+	          	   width:"240px",
+	               fixedcenter:true,
+	               close:true,
+	               draggable:false,
+	               zindex:4,
+	               modal:true,
+	               visible:false
+	          }
+	      );
 	      if(parentPanel!=undefined){
 	   	      parentPanel.hide();
 	          window.modals[id].parentPanel=parentPanel;
 	      }
 	      window.modals[id].setHeader(msg);
-	      window.modals[id].setBody('<img src="' + serverRoot + '/images/rel_interstitial_loading.gif" />');   
-	      window.modals[id].render(document.body);	  	
+	      window.modals[id].setBody('<img src="' + serverRoot + '/images/rel_interstitial_loading.gif" />');
+	      window.modals[id].render(document.body);
 	  }
-	  
+
 	  window.modals[id].show();
 }
 
@@ -724,5 +731,25 @@ function closeModalPanel(id){
 }
 
 function displayError(msg){
-    alert(msg);	
+    alert(msg);
+}
+
+function showMessage(divId, title, body) {
+    var dialog = new YAHOO.widget.SimpleDialog("dialog", {
+        width:"20em",
+        close:false,
+        fixedcenter:true,
+        constraintoviewport:true,
+        modal:true,
+        icon:YAHOO.widget.SimpleDialog.ICON_WARN,
+        visible:true,
+        draggable:false,
+        buttons: [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }]
+    });
+
+    dialog.render(document.getElementById(divId));
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.bringToTop();
+    dialog.show();
 }

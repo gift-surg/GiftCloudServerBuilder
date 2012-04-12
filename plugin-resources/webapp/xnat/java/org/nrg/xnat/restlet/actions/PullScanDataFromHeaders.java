@@ -22,6 +22,7 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.XNATSessionBuilder;
 import org.nrg.xnat.exceptions.MultipleScanException;
@@ -106,8 +107,8 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
             throw new ValidationException(vr.toString());
         }else{
         	final XnatImagesessiondata mr=tempMR.getImageSessionData();
-        	final XnatProjectdata proj = mr.getProjectData();
-        	if(newscan.save(user,false,allowDataDeletion,c)){
+        	final XnatProjectdata proj = mr.getProjectData();\
+        	if(SaveItemHelper.authorizedSave(newscan,user,false,allowDataDeletion,c)){
 				try {
 				MaterializedView.DeleteByUser(user);
 
@@ -118,6 +119,7 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 						logger.error("",e);
 					}
 			}
+  				SaveItemHelper.authorizedSave(workflow,user, false, false);
         }
 
         return Boolean.TRUE;

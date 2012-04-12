@@ -58,11 +58,11 @@ public class GetFile extends RawScreen {
     protected final void doOutput(RunData data)
     {
         long startTime = Calendar.getInstance().getTimeInMillis();
-             String search_element = data.getParameters().getString("search_element");
-             String search_field = data.getParameters().getString("search_field");
-             String search_value = data.getParameters().getString("search_value");
-             String key = data.getParameters().getString("key");
-             Integer fileId = data.getParameters().getInteger("file");
+             String search_element = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data));
+             String search_field = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data));
+             String search_value = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
+             String key = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("key",data));
+             Integer fileId = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("file",data));
              XDATUser user = null;
              String log = "";
              HttpSession httpSession = data.getRequest().getSession();
@@ -114,7 +114,7 @@ public class GetFile extends RawScreen {
                      if (o instanceof File){
                          File f = (File)o;
                          if (f.exists()){
-                             data.getResponse().setHeader("Content-Disposition","inline;filename=" + f.getName());
+                             TurbineUtils.setContentDisposition(data.getResponse(), f.getName(), false);
                              java.io.FileInputStream in = new java.io.FileInputStream(f);
                              logger.debug(f.getName() + log + "," + (Calendar.getInstance().getTimeInMillis()-startTime));
                              int len;
@@ -126,7 +126,7 @@ public class GetFile extends RawScreen {
                      }else if (o instanceof SRBFile){
                          SRBFile f = (SRBFile)o;
                          if (f.exists()){
-                             data.getResponse().setHeader("Content-Disposition","inline;filename=" + f.getName());
+                             TurbineUtils.setContentDisposition(data.getResponse(), f.getName(), false);
 
                              byte[] tempBUF = new byte[FileUtils.LARGE_DOWNLOAD];
                              SRBFileInputStream is = new SRBFileInputStream(f);

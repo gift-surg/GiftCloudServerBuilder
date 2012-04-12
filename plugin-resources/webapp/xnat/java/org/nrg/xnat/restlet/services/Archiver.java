@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -12,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
 import org.nrg.status.StatusListenerI;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
@@ -30,16 +31,16 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.prearchive.BatchPrearchiveActionsA;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.Lists;
 
 public class Archiver extends BatchPrearchiveActionsA  {
 	private static final String REDIRECT2 = "redirect";
@@ -63,33 +64,31 @@ public class Archiver extends BatchPrearchiveActionsA  {
 	String overwriteV=null;
 	String overwriteFILES=null;
 	String timestamp=null;
-	String[] sessionFolder=null;
+	List<String> sessionFolder=Lists.newArrayList();
 	String dest=null;
 	String redirect=null;
 			
 	@Override
-	public void loadParams(Form f) {
-			for(final String key:f.getNames()){
-			if(f.getFirstValue(key)!=null){
+	public void handleParam(final String key,final Object value) throws ClientException {
+			if(value !=null){
 				if(key.equals(PROJECT)){
-					additionalValues.put("project",project_id);
+				additionalValues.put("project",value);
 				}else if(key.equals(PrearcUtils.PREARC_TIMESTAMP)){
-					timestamp=f.getFirstValue(PrearcUtils.PREARC_TIMESTAMP);
+				timestamp=(String)value;
 				}else if(key.equals(PrearcUtils.PREARC_SESSION_FOLDER)){
-					sessionFolder=f.getValuesArray(PrearcUtils.PREARC_SESSION_FOLDER);
+				sessionFolder.add((String)value);
 				}else if(key.equals(OVERWRITE_FILES)){
-					overwriteFILES=f.getFirstValue(OVERWRITE_FILES);
+				overwriteFILES=(String)value;
 				}else if(key.equals(OVERWRITE)){
-					overwriteV=f.getFirstValue(OVERWRITE);
+				overwriteV=(String)value;
 				}else if(key.equals(DEST)){
-					dest=f.getFirstValue(DEST);
+				dest=(String)value;
 				}else if(key.equals(SRC)){
-					srcs=Arrays.asList(f.getValuesArray(SRC));
+				srcs.add((String)value);
 				}else if(key.equals(REDIRECT2)){
-					redirect=f.getFirstValue(REDIRECT2);
+				redirect=(String)value;
 				}else{
-					additionalValues.put(key,f.getFirstValue(key));
-				}
+				additionalValues.put(key,value);
 			}
 		}
 	}
@@ -98,13 +97,8 @@ public class Archiver extends BatchPrearchiveActionsA  {
 	public void handlePost() {		
 		//build fileWriters
 		try {					
-			Representation entity = this.getRequest().getEntity();
-													
-			if (RequestUtil.isMultiPartFormData(entity)) {
-				loadParams(new Form(entity));
-			}
-			
-			loadParams(getQueryVariableForm());			
+			loadBodyVariables();
+			loadQueryVariables();
 			
 			
 			boolean allowDataDeletion=false;
@@ -255,6 +249,9 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					return;
 				}
 			}
+		} catch (ActionException e) {
+			logger.error("",e);
+			this.getResponse().setStatus(e.getStatus(), e.getMessage());
 		} catch (ResourceException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());

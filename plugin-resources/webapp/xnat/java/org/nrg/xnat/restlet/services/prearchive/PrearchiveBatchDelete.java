@@ -35,15 +35,11 @@ public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
 
 	@Override
 	public void handlePost() {
-		Representation entity = this.getRequest().getEntity();
-		
 		try {
-			if (RequestUtil.isMultiPartFormData(entity)) {
-				loadParams(new Form(entity));
-			}
+			loadBodyVariables();
 
 			//maintain parameters
-			loadParams(getQueryVariableForm());
+			loadQueryVariables();
 		} catch (ClientException e) {
 			this.getResponse().setStatus(e.getStatus(),e);
 			return;

@@ -24,8 +24,8 @@ public class CachedSearchColumnResource extends SecureResource {
 	public CachedSearchColumnResource(Context context, Request request, Response response) {
 		super(context, request, response);
 			
-		tableName=(String)request.getAttributes().get("CACHED_SEARCH_ID");
-		columnName=(String)request.getAttributes().get("COLUMN");
+		tableName=(String)getParameter(request,"CACHED_SEARCH_ID");
+		columnName=(String)getParameter(request,"COLUMN");
 					
 		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));

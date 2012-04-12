@@ -17,6 +17,10 @@ width:1px;
 					<li><a href="#tab4"><em>Pipelines<span class="spacer"></span></em></a></li>
   #end
 #end
+            #foreach($tab in $tabs)
+                <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+            #end
+
   </ul>
  <div class="yui-content">   
 			<div id="tab1">
@@ -36,6 +40,12 @@ width:1px;
 					</div>
  #end
 #end
+            #foreach($tab in $tabs)
+                <div id="$tab.getProperty("divName")">
+                    #set($path = "screens/xnat_projectData/${tab.getProperty('fileName')}")
+                    <p>#parse($path)</p>
+                </div>
+            #end
 
   </div> 
 </div>

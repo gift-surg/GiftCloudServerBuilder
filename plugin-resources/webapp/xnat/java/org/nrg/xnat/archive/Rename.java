@@ -38,13 +38,15 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 
 @SuppressWarnings("serial")
 public class Rename  implements Callable<File>{
-	enum STEP{PREPARING,PREPARE_SQL,COPY_DIR,EXECUTE_SQL,DELETE_OLD_DIR,COMPLETE};
+	enum STEP{PREPARING,PREPARE_SQL,COPY_DIR,ANONYMIZE,EXECUTE_SQL,DELETE_OLD_DIR,COMPLETE};
 	static org.apache.log4j.Logger logger = Logger.getLogger(Rename.class);
 	private static final String SUCCESSFUL_RENAMES = "successful_renames";
 	private static final String FAILED_RENAME = "failed_rename";
@@ -89,6 +91,8 @@ public class Rename  implements Callable<File>{
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	
 	
 	/**
 	 * Rename the label for the corresponding session and modify the file URIs for the adjusted path.
@@ -174,9 +178,18 @@ public class Rename  implements Callable<File>{
 				generateURISQL(i, expected, newArchive, cache, user);
 
 				this.updateStep(workflow, setStep(STEP.COPY_DIR));
-				
-				if(moveFiles)org.nrg.xft.utils.FileUtils.CopyDir(oldSessionDir, newSessionDir,false);	
 
+				if(moveFiles)org.nrg.xft.utils.FileUtils.CopyDir(oldSessionDir, newSessionDir,false);	
+				
+				if(i instanceof XnatImagesessiondata){
+					this.updateStep(workflow, setStep(STEP.ANONYMIZE));
+					new ProjectAnonymizer(newLabel,
+										 (XnatImagesessiondata) i, 
+										  proj.getId(), 
+										  ((XnatImagesessiondata) i).getArchivePath(((XnatImagesessiondata) i).getArchiveRootPath())
+										  ).call();
+				}
+				
 				this.updateStep(workflow, setStep(STEP.EXECUTE_SQL));
 				//Execute SQL
 				executeSQL(cache,user,XFT.buildLogFileName(i));

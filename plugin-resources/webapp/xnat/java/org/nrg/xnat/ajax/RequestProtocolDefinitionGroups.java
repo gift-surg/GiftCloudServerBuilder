@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
@@ -20,7 +21,7 @@ public class RequestProtocolDefinitionGroups {
     static org.apache.log4j.Logger logger = Logger.getLogger(RequestProtocolDefinitionGroups.class);
 
     public void execute(HttpServletRequest req, HttpServletResponse response) throws IOException{
-        XDATUser user = (XDATUser)req.getSession().getAttribute("user");
+        XDATUser user = XDAT.getUserDetails();
 
         response.setContentType("text/xml");
         response.setHeader("Cache-Control", "no-cache");

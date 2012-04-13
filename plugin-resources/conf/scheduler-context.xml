@@ -12,6 +12,8 @@
 	   <property name="cache" value="true"/>
 	   <property name="prefix" value=""/>
 	   <property name="suffix" value=".vm"/>
+	   <property name="dateToolAttribute" value="dateTool"/>
+	   <property name="numberToolAttribute" value="numberTool"/>
 	</bean>	
 
     <bean name="sessionXmlRebuilderJob" class="org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJob" />
@@ -35,11 +37,33 @@
         <property name="jobDetail" ref="sessionXmlRebuilderJobBean" />
         <property name="repeatInterval" value="60000" />
     </bean>
+    
+   	<bean name="disableInactiveUsersJob" class="org.nrg.xnat.security.DisableInactiveUsersJob" />
+
+    <bean name="disableInactiveUsersJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="org.nrg.schedule.DelegatingJobBean" />
+        <property name="name" value="disable-inactive-users"/>
+        <property name="group" value="users-jobs"/>
+        <property name="jobDataAsMap">
+            <map>
+          		<entry key="job.bean.name" value="disableInactiveUsersJob" />
+                <entry key="inactivityBeforeLockout" value="${security.inactivity_before_lockout}" />
+            </map>
+        </property>
+    </bean>
+    
+   	<bean id="disableInactiveUsersTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobName" value="disable-inactive-users-trigger" />
+        <property name="jobGroup" value="users-triggers"/>
+        <property name="jobDetail" ref="disableInactiveUsersJobBean" />
+        <property name="repeatInterval" value="86400000" />
+    </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="sessionXmlRebuilderTrigger" />
+                <ref bean="disableInactiveUsersTrigger" />
             </list>
         </property>
         <property name="applicationContextSchedulerContextKey">

@@ -31,9 +31,12 @@ public class XnatObfuscatedPasswordEncoder extends
     
     public boolean isPasswordValid(String encPass, String rawPass,
             Object salt) {
-        String pass1 = encPass;
-        String pass2 = encodePassword(rawPass, salt);
-
-        return pass1.equals(pass2);
+    	boolean isPasswordValid = false;
+    	if(encPass!=null && rawPass!=null){
+	        String pass1 = encPass;
+	        String pass2 = encodePassword(rawPass, salt);
+	        isPasswordValid = pass1.equals(pass2);
+    	}
+        return isPasswordValid;
     }
 }

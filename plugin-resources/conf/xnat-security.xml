@@ -32,8 +32,10 @@
     <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
           p:loginFormUrl="/app/template/Login.vm"/>
 
-	<security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
-        <security:http-basic/>
+
+
+    	<security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
+	  <security:http-basic/>
     	<security:logout logout-url="/app/action/LogoutUser" />
         <security:intercept-url pattern="/app/template/Login.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Register.vm" access="permitAll" requires-channel="${security.channel}"/>
@@ -45,21 +47,38 @@
         <security:intercept-url pattern="/scripts/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/style/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="${security.channel}"/>
-		<security:custom-filter position="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
+	<security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
+	<security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="customBasicAuthenticationFilter"/>
 	</security:http>
 	
-	<security:authentication-manager alias="authenticationManager">
+	<!--<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider ref="ldapAuthProvider"/>
 		<security:authentication-provider ref="sha2DatabaseAuthProvider"/>
 		<security:authentication-provider ref="sha2ObfuscatedDatabaseAuthProvider"/>
 		<security:authentication-provider ref="obfuscatedDatabaseAuthProvider"/>
 		<security:authentication-provider ref="plaintextDatabaseAuthProvider"/>
-	</security:authentication-manager>
+	</security:authentication-manager>-->
 
-	<bean id="customAuthenticationFilter" class="org.nrg.xnat.security.XnatAuthenticationFilter"
-	    p:authenticationManager-ref="authenticationManager"
-        p:authenticationSuccessHandler-ref="logUserLogin"
-	    p:authenticationFailureHandler-ref="authFailure"/>
+	<bean id="customAuthenticationManager" name="org.springframework.security.authenticationManager" class="org.nrg.xnat.security.XnatProviderManager">
+		<property name="properties" value="WEB-INF/conf/services.properties"/>
+	</bean>
+	
+	<bean id="customAuthenticationFilter" class="org.nrg.xnat.security.XnatAuthenticationFilter">
+	       <property name="authenticationManager" ref="customAuthenticationManager" />
+	       <property name="authenticationSuccessHandler" ref="logUserLogin" />
+	       <property name="authenticationFailureHandler" ref="authFailure" />
+	</bean>
+
+	<bean id="customAuthenticationFilter2" class="org.nrg.xnat.security.XnatAuthenticationFilter">
+	       <property name="authenticationManager" ref="customAuthenticationManager" />
+	       <property name="authenticationSuccessHandler" ref="logUserLogin" />
+	       <property name="authenticationFailureHandler" ref="authFailure" />
+	</bean>
+
+	<bean id="customBasicAuthenticationFilter" class="org.nrg.xnat.security.XnatBasicAuthenticationFilter">
+	       <property name="authenticationManager" ref="customAuthenticationManager" />
+	       <property name="authenticationEntryPoint" ref="loginUrlAuthenticationEntryPoint" />
+	</bean>
 
 	<bean id="sha2DatabaseAuthProvider" class="org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider"
 	    p:userDetailsService-ref="customDatabaseService"
@@ -88,7 +107,7 @@
 	
 	<bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>
 
-	<bean class="org.springframework.security.ldap.DefaultSpringSecurityContextSource" id="ldapServer" p:userDn="${security.ldap.userdn}" p:password="${security.ldap.password}">
+<!-- 	<bean class="org.springframework.security.ldap.DefaultSpringSecurityContextSource" id="ldapServer" p:userDn="${security.ldap.userdn}" p:password="${security.ldap.password}">
         <constructor-arg value="${security.ldap.address}"/>
 	</bean>
 		
@@ -102,13 +121,14 @@
 	</bean>
 	
 	<bean class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch" id="ldapSearchBean">
-        <constructor-arg value="${security.ldap.search.base}"/> <!-- user-search-base -->
-        <constructor-arg value="${security.ldap.search.filter}"/> <!-- user-search-filter -->
+        <constructor-arg value="${security.ldap.search.base}"/>
+        <constructor-arg value="${security.ldap.search.filter}"/>
 		<constructor-arg ref="ldapServer"/>
 	</bean>
 
 	<bean class="org.nrg.xnat.security.XnatLdapAuthoritiesPopulator" id="ldapAuthoritiesPopulator"/>
 	
 	<bean class="org.nrg.xnat.security.XnatLdapContextMapper" id="ldapUserDetailsContextMapper"/>
+	 -->
 
 </beans>

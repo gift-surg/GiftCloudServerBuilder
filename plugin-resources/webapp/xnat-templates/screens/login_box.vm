@@ -3,7 +3,9 @@
     <tr>
       #formLabel("Login via")
 	  <td>
-			#set( $login_methods = ["Database","LDAP"])
+			##set( $login_methods = ["Database","LDAP"])
+			##$login_methods is now customizable and is added to the context in Login.java in xdat.
+			
 			#if($login_methods && $login_methods.size()==0)
 				#xdatTextBox("login_method" $item "" $vr)
 			#else

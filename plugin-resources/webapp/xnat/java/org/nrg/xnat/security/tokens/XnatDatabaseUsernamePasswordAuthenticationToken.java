@@ -9,4 +9,7 @@ public class XnatDatabaseUsernamePasswordAuthenticationToken extends UsernamePas
 		super(principal, credentials);
 	}
 
+	public String toString(){
+		return getPrincipal().toString();
+	}
 }

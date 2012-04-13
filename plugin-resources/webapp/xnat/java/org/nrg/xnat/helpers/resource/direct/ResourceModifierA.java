@@ -15,9 +15,11 @@ import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -152,7 +154,7 @@ public abstract class ResourceModifierA {
 			addResource((XnatResourcecatalog)abst, type, user);
 		}else{
 			if((! (ci instanceof UpdateMeta)) || ((UpdateMeta)ci).getUpdate()){
-				abst.save(user, false, false,ci);
+				SaveItemHelper.authorizedSave(abst,user, false, false,ci);
 			}
 		}
 		
@@ -190,7 +192,7 @@ public abstract class ResourceModifierA {
         return formatter.format(Calendar.getInstance().getTime());
 	}
 	
-	protected abstract String buildDestinationPath() throws InvalidArchiveStructure;
+	protected abstract String buildDestinationPath() throws InvalidArchiveStructure,UnknownPrimaryProjectException;
 	protected abstract XnatAbstractresourceI getResourceById(final Integer i, final String type);
 	protected abstract XnatAbstractresourceI getResourceByLabel(final String lbl, final String type);
 	

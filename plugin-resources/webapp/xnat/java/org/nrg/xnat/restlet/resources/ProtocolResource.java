@@ -136,7 +136,7 @@ public class ProtocolResource extends ItemResource {
 			}
 		
 			if(protocol!=null){
-				if (protocol!=null){				        \
+				if (protocol!=null){				        
 					SaveItemHelper.authorizedDelete(protocol.getItem().getCurrentDBVersion(), user,EventUtils.ADMIN_EVENT(user));
 			    }
 			    user.clearLocalCache();

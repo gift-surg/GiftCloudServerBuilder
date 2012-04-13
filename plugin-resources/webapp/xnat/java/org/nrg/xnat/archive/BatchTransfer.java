@@ -147,8 +147,7 @@ public class BatchTransfer extends Thread{
                 session.fixScanTypes();
                 session.correctArchivePaths();
                 
-                session.save(user, false, false,ci);
-                SaveItemHelper.authorizedSave(session,user, false, false);
+                SaveItemHelper.authorizedSave(session,user, false, false,ci);
                 
 
 //                        logger.error("",e2);

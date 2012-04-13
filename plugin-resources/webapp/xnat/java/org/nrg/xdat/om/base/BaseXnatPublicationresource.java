@@ -285,7 +285,6 @@ public class BaseXnatPublicationresource extends AutoXnatPublicationresource {
     	}
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false,c);
-    	SaveItemHelper.authorizedSave(this,user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false,c);
     }
 }

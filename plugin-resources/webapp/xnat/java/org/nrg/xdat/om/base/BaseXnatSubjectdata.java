@@ -54,6 +54,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
@@ -1229,12 +1230,12 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		
     		if(current_label==null)current_label=this.getId();
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    			MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user);
+    			MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user,ci);
     			m.setResource((XnatAbstractresource) abstRes);
     			m.call();
     		}
     		    		
-    		MoverMaker.writeDB(this, newProject, newLabel, user);
+    		MoverMaker.writeDB(this, newProject, newLabel, user,ci);
     		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
@@ -1311,8 +1312,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				int match = -1;
 				for(XnatProjectparticipantI pp : sub.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user,c);
-						SaveItemHelper.authorizedRemoveChild(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(sub.getItem(), "xnat:subjectData/sharing/share", ((XnatProjectparticipant)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -1355,8 +1355,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(sub.getItem().getCurrentDBVersion(), user,c);
-		        SaveItemHelper.authorizedDelete(sub.getItem().getCurrentDBVersion(), user);
+		        SaveItemHelper.authorizedDelete(sub.getItem().getCurrentDBVersion(), user,c);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -1493,7 +1492,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		EventMetaI c=wrk.buildEvent();
 		
 		try {
-			subject.save(user, overrideSecurity, allowItemRemoval,c);
+			SaveItemHelper.authorizedSave(subject,user, overrideSecurity, allowItemRemoval,c);
 			WorkflowUtils.complete(wrk, c);
 		} catch (Exception e) {
 			WorkflowUtils.fail(wrk, c);
@@ -1506,7 +1505,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		EventMetaI c=wrk.buildEvent();
 		PersistentWorkflowUtils.save(wrk, c);
 		try {
-			((XnatProjectparticipant)pp).save(user,false,false,c);
+			SaveItemHelper.authorizedSave(((XnatProjectparticipant)pp),user,false,false,c);
 			PersistentWorkflowUtils.complete(wrk, c);
 		} catch (Exception e) {
 			logger.error("",e);

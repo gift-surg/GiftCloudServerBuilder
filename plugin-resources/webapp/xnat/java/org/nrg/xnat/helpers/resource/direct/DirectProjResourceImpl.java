@@ -45,8 +45,7 @@ public class DirectProjResourceImpl extends ResourceModifierA {
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
 		proj.setResources_resource(resource);
 		
-		proj.save(user, false, false,ci);
-		SaveItemHelper.authorizedSave(proj,user, false, false);
+		SaveItemHelper.authorizedSave(proj,user, false, false,ci);
 		return true;
 	}
 

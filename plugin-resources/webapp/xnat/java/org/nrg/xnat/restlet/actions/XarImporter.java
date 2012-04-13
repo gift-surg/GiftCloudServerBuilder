@@ -361,7 +361,7 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
 	                	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, item.getItem(), EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), EventUtils.STORE_XAR, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
                 		EventMetaI c=wrk.buildEvent();
                         try {
-							item.save(user, false, true,c);
+                        	SaveItemHelper.unauthorizedSave(item, user, false, true,c);
 							WorkflowUtils.complete(wrk, c);
 						} catch (Exception e) {
 							WorkflowUtils.fail(wrk, c);

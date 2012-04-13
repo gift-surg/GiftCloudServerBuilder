@@ -63,7 +63,7 @@ public class ProjectAccessibilityResource extends SecureResource {
 				if (!currentAccess.equals(access)){
 					PersistentWorkflowI wrk=WorkflowUtils.buildProjectWorkflow(user, proj,newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS,EventUtils.MODIFY_PROJECT_ACCESS+" ("+ access + ")"));
                     EventMetaI c=wrk.buildEvent();
-                    if(proj.initAccessibility(access, true,c)){
+                    if(proj.initAccessibility(access, true,user,c)){
                     	WorkflowUtils.complete(wrk, c);
                     }
 				}

@@ -288,8 +288,7 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     	FileUtils.MoveFile(catalog, newFile, true, true);
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false,ci);
-    	SaveItemHelper.authorizedSave(this,user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false,ci);
     }
     
     public void moveCatalogEntries(CatCatalogI cat,String existingRootPath,String newRootPath) throws IOException{

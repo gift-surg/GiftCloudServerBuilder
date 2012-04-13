@@ -52,7 +52,7 @@ public class ItemPropBuilderTest extends BaseXDATTestCase{
 		subj.setProject(getProject().getId());
 		subj.setProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/race", "y");
 		
-		SaveItemHelper.Save(subj, user, false, true, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(subj, user, false, true, EventUtils.TEST_EVENT(user));
 		
 		return subj;
 	}
@@ -67,7 +67,7 @@ public class ItemPropBuilderTest extends BaseXDATTestCase{
 		XnatSubjectdata subj=getSubject();
 		
 		subj.setProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/race", "x");
-		SaveItemHelper.Save(subj, user, false, false, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(subj, user, false, false, EventUtils.TEST_EVENT(user));
 		
 		XFTItem mod=subj.getItem().getCurrentDBVersion();
 		FlattenedItemI fi=ItemMerger.merge(ItemPropBuilder.build(mod, FlattenedItemA.GET_ALL, new ArrayList<FlattenedItemModifierI>()));
@@ -99,12 +99,12 @@ public class ItemPropBuilderTest extends BaseXDATTestCase{
 		mr.setSubjectId(subj1.getId());
 		mr.setProperty("xnat:mrSessionData/investigator/ID", "x1");
 		mr.setProperty("xnat:mrSessionData/investigator/lastname", "v1");
-		SaveItemHelper.Save(mr, user, false, true, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(mr, user, false, true, EventUtils.TEST_EVENT(user));
 		
 		Thread.sleep(1);
 
 		mr.setProperty("xnat:mrSessionData/investigator/lastname", "v2");
-		SaveItemHelper.Save(mr, user, false, false, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(mr, user, false, false, EventUtils.TEST_EVENT(user));
 		
 		Thread.sleep(1);
 		
@@ -137,22 +137,22 @@ public class ItemPropBuilderTest extends BaseXDATTestCase{
 		mr.setSubjectId(subj1.getId());
 		mr.setProperty("xnat:mrSessionData/scans/scan[@xsi:type=xnat:mrScanData][0]/ID", "x1");
 		mr.setProperty("xnat:mrSessionData/scans/scan[@xsi:type=xnat:mrScanData][0]/type", "v1");
-		SaveItemHelper.Save(mr, user, false, true, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(mr, user, false, true, EventUtils.TEST_EVENT(user));
 		
 		Thread.sleep(1);
 
 		mr.setProperty("xnat:mrSessionData/scans/scan[@xsi:type=xnat:mrScanData][0]/type", "v2");
-		SaveItemHelper.Save(mr, user, false, false, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(mr, user, false, false, EventUtils.TEST_EVENT(user));
 		
 		Thread.sleep(1);
 
 		mr.setProperty("xnat:mrSessionData/scans/scan[@xsi:type=xnat:mrScanData][0]/type", "v3");
-		SaveItemHelper.Save(mr, user, false, false, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(mr, user, false, false, EventUtils.TEST_EVENT(user));
 		
 		Thread.sleep(1);
 
 		mr.setProperty("xnat:mrSessionData/scans/scan[@xsi:type=xnat:mrScanData][0]/type", "v4");
-		SaveItemHelper.Save(mr, user, false, false, EventUtils.TEST_EVENT(user));
+		SaveItemHelper.authorizedSave(mr, user, false, false, EventUtils.TEST_EVENT(user));
 		
 		Thread.sleep(1);
 		

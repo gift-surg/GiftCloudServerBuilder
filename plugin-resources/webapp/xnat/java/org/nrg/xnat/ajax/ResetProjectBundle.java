@@ -95,8 +95,7 @@ public class ResetProjectBundle {
         	
         	if(xss!=null && modified){
                 try {
-                    xss.save(user, true, true,EventUtils.ADMIN_EVENT(user));
-                    SaveItemHelper.unauthorizedSave(xss,user, true, true);
+                    SaveItemHelper.unauthorizedSave(xss,user, true, true,EventUtils.ADMIN_EVENT(user));
                     
                     //XdatStoredSearch.ReplacePreLoadedSearch(xss);
                     

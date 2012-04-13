@@ -2999,8 +2999,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     	return customfields;
     }
     
-    public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI c) throws Exception{
-    public void moveToProject(final XnatProjectdata newProject, final String label , final XDATUser user) throws Exception{
+    public void moveToProject(final XnatProjectdata newProject, final String label , final XDATUser user,final EventMetaI c) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
     		if (!MoverMaker.check(this, user)) {
@@ -3022,7 +3021,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 					new ProjectAnonymizer(base,newProject.getId(), base.getArchivePath(existingRootPath)).call();
 					for(XnatImagescandataI scan: getScans_scan()){
 		    			for(XnatAbstractresourceI abstRes: scan.getFile()){
-		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user);
+		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user,c);
 		    				m.setResource((XnatAbstractresource)abstRes);
 		    				m.call();
 		    			}
@@ -3030,7 +3029,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		    		
 		    		for(XnatReconstructedimagedataI recon:base.getReconstructions_reconstructedimage()){
 		    			for(XnatAbstractresourceI abstRes: recon.getOut_file()){
-		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user);
+		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user,c);
 		    				m.setResource((XnatAbstractresource)abstRes);
 		    				m.call();
 		    			}
@@ -3038,12 +3037,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		    		
 		    		for(XnatImageassessordataI assessor:base.getAssessors_assessor()){
 		    			for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
-		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user);
+		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user,c);
 		    				m.setResource((XnatAbstractresource)abstRes);
 		    				m.call();
 		    			}
 		    		}
-		    		BaseXnatImagesessiondata.super.moveToProject(newProject, newLabel, user);
+		    		BaseXnatImagesessiondata.super.moveToProject(newProject, newLabel, user,c);
 				}
 			}, new File(rootBackup, "src_backup"), fs);
     		
@@ -3162,8 +3161,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
-						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -3204,8 +3202,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		            if(msg!=null)return msg;
 		        }
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,c);
-		        SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
+		        SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user,c);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);

@@ -139,20 +139,6 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		}
 		return s;
 	}
-	
-	private XnatSubjectdata createSubject(XnatProjectdata proj, 
-										  String subjectId, 
-										  XDATUser user)  throws ResourceException, 
-										                         Exception {
-		XnatSubjectdata s = new XnatSubjectdata((UserI)user);
-		s.setProject(this.proj.getId());
-		s.setLabel(subjectId);
-		s.setId(XnatSubjectdata.CreateNewID());
-		if(!user.canCreate(s)){
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-		}
-		return s;
-	}
 
 	@Override
 	public void handlePut() {
@@ -431,9 +417,16 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 								}
 								else {
 									try {
-										XnatSubjectdata new_s = this.createSubject(proj, this.getQueryVariable("subject_ID"), user);
-										new_s.save(user, false, true);
-										expt.setSubjectId(new_s.getId());
+										this.subject = new XnatSubjectdata((UserI)user);
+										this.subject.setProject(this.proj.getId());
+										this.subject.setLabel(this.getQueryVariable("subject_ID"));
+										this.subject.setId(XnatSubjectdata.CreateNewID());
+										if(!user.canCreate(this.subject)){
+											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priveledges for subjects in this project.");
+											return;
+										}
+										BaseXnatSubjectdata.save(this.subject, false, true,user,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.AUTO_CREATE_SUBJECT));
+										expt.setSubjectId(this.subject.getId());
 										modifiedSubject = true;
 									} 
 									catch (ResourceException e) {

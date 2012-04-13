@@ -12,10 +12,12 @@ import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -237,7 +239,7 @@ public class SettingsRestlet extends SecureResource {
             }
         }
         if (dirtied) {
-            _arcSpec.save(user, false, false);
+            SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,EventUtils.ADMIN_EVENT(user));
         }
     }
 
@@ -246,7 +248,7 @@ public class SettingsRestlet extends SecureResource {
         XFTItem item = populator.getItem();
         item.setUser(user);
         ArcArchivespecification arc = new ArcArchivespecification(item);
-        arc.save(user, false, false);
+        SaveItemHelper.unauthorizedSave(arc, user, false, false,EventUtils.ADMIN_EVENT(user));
         ArcSpecManager.Reset();
     }
 

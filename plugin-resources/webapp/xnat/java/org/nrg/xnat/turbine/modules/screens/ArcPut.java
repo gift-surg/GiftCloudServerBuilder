@@ -231,7 +231,6 @@ public class ArcPut extends RawScreen {
                     try {
                     	SaveItemHelper.authorizedSave(tempMR,user,false,false,ci);
                     	
-                        tempMR.save(user,false,false,ci);
                         data.setMessage("Files successfully uploaded.");
                         PersistentWorkflowUtils.complete(workflow,ci);
                     } catch (Exception e) {

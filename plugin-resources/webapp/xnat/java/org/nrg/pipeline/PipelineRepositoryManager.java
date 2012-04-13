@@ -198,8 +198,7 @@ public class PipelineRepositoryManager {
 			 String path = pipeline.getLocation() ;
 			 if (pipelinePath.equals(path)) {
 				 try {
-					 DBAction.DeleteItem(pipeline.getItem(), user,c);
-                     SaveItemHelper.authorizedRemoveChild(projectPipeline.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user);
+                     SaveItemHelper.authorizedRemoveChild(projectPipeline.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user,c);
                      projectPipeline.getItem().removeItem(pipeline.getItem());
 					 //DBAction.DeleteItem(pipeline.getItem(), user);
 					 deleted = true;
@@ -230,8 +229,7 @@ public class PipelineRepositoryManager {
 				 String path = pipeline.getLocation() ;
 				 if (pipelinePath.equals(path)) {
 					 try {
-						 DBAction.DeleteItem(pipeline.getCurrentDBVersion(), user,c);
-	                     SaveItemHelper.authorizedRemoveChild(projectDesc.getCurrentDBVersion(),null,descPipeline.getCurrentDBVersion(),user);
+	                     SaveItemHelper.authorizedRemoveChild(projectDesc.getCurrentDBVersion(),null,descPipeline.getCurrentDBVersion(),user,c);
 	                     projectDesc.getItem().removeItem(descPipeline.getItem());
 	                     
 						 deleted = true;

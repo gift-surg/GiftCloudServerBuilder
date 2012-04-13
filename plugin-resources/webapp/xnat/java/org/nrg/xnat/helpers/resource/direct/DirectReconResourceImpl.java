@@ -63,8 +63,7 @@ public class DirectReconResourceImpl extends ResourceModifierA {
 			recon.setOut_file(resource);
 		}
 		
-		recon.save(user, false, false,ci);
-		SaveItemHelper.authorizedSave(recon,user, false, false);
+		SaveItemHelper.authorizedSave(recon,user, false, false,ci);
 		return true;
 	}
 

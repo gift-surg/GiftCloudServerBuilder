@@ -317,8 +317,7 @@ public class BaseXnatResource extends AutoXnatResource {
     	}
     	
     	this.setUri(newFile.getAbsolutePath());
-    	this.save(user, true, false,ci);
-    	SaveItemHelper.authorizedSave(this,user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false,ci);
     }
 
 	@Override

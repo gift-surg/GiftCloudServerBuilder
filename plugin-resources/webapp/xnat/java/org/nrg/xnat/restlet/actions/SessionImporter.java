@@ -279,9 +279,9 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			try {
 				Map<String,Object> session = PrearcUtils.parseURI(ps.getUrl());
 				try {
-					PrearcUtils.addSession(user, (String) session.get(UriParserUtils.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.addSession(user, (String) session.get(URIManager.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				} catch (SessionException e) {
-					PrearcUtils.resetStatus(user, (String) session.get(UriParserUtils.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
+					PrearcUtils.resetStatus(user, (String) session.get(URIManager.PROJECT_ID), (String) session.get(PrearcUtils.PREARC_TIMESTAMP), (String) session.get(PrearcUtils.PREARC_SESSION_FOLDER),true);
 				}
 			} catch (InvalidPermissionException e) {
 				logger.error("",e);

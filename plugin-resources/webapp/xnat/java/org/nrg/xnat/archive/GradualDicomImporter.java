@@ -272,13 +272,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
         tsdir = new File(root, PrearcUtils.makeTimestamp());
         
-        final String session;
+        String session;
         if (params.containsKey(URIManager.EXPT_LABEL)) {
             session = (String)params.get(URIManager.EXPT_LABEL);
             logger.trace("using provided experiment label {}", params.get(URIManager.EXPT_LABEL));
         } else {
             session = dicomObjectIdentifier.getSessionLabel(o);
         }
+        
         if (Strings.isNullOrEmpty(session)) {
             session = "dicom_upload";
         }

@@ -118,7 +118,7 @@ public class MoveFiles extends SecureResource {
 				loadParams(new Form(entity));
 			}
 			
-			loadParams(getQueryVariableForm());			
+			loadQueryVariables();		
 			
 			if(StringUtils.isNotEmpty(src)){
 				if(StringUtils.isEmpty(dest)){

@@ -465,10 +465,10 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		
     		
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
-    			MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user);
+    			MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user,ci);
     		}
     		
-    		MoverMaker.writeDB(this, newProject, newLabel, user);
+    		MoverMaker.writeDB(this, newProject, newLabel, user,ci);
     		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
@@ -558,8 +558,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
-						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -588,9 +587,8 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 					this.deleteFiles(user,c);
 				}
 		        
-		        DBAction.DeleteItem(expt.getItem().getCurrentDBVersion(), user,c);
 				
-				SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user);
+				SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user,c);
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
 				
@@ -875,7 +873,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		EventMetaI c=wrk.buildEvent();
 		PersistentWorkflowUtils.save(wrk, c);
 		try {
-			((XnatExperimentdataShare)pp).save(user,false,false,c);
+			SaveItemHelper.authorizedSave(((XnatExperimentdataShare)pp),user,false,false,c);
 			PersistentWorkflowUtils.complete(wrk, c);
 		} catch (Exception e) {
 			logger.error("",e);

@@ -107,7 +107,7 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
             throw new ValidationException(vr.toString());
         }else{
         	final XnatImagesessiondata mr=tempMR.getImageSessionData();
-        	final XnatProjectdata proj = mr.getProjectData();\
+        	final XnatProjectdata proj = mr.getProjectData();
         	if(SaveItemHelper.authorizedSave(newscan,user,false,allowDataDeletion,c)){
 				try {
 				MaterializedView.DeleteByUser(user);
@@ -119,7 +119,6 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 						logger.error("",e);
 					}
 			}
-  				SaveItemHelper.authorizedSave(workflow,user, false, false);
         }
 
         return Boolean.TRUE;

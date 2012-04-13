@@ -39,6 +39,7 @@ import org.nrg.xft.presentation.ItemJSONBuilder;
 import org.nrg.xft.presentation.ItemMerger;
 import org.nrg.xft.presentation.ItemPropBuilder;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.itemBuilders.FullFileHistoryBuilder;
@@ -1175,7 +1176,7 @@ public abstract class SecureResource extends Resource {
 		EventMetaI c=wrk.buildEvent();
 		
 		try {
-			if(sub.save(user,false,false,c)){
+			if(SaveItemHelper.authorizedSave(sub,user,false,false,c)){
 				WorkflowUtils.complete(wrk, c);
 				MaterializedView.DeleteByUser(user);
 			}
@@ -1190,7 +1191,7 @@ public abstract class SecureResource extends Resource {
 		EventMetaI c=wrk.buildEvent();
 		
 		try {
-			if(sub.save(user,false,false,c)){
+			if(SaveItemHelper.authorizedSave(sub,user,false,false,c)){
 				WorkflowUtils.complete(wrk, c);
 				MaterializedView.DeleteByUser(user);
 			}

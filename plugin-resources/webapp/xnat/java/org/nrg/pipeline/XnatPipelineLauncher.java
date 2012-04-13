@@ -373,16 +373,6 @@ public class XnatPipelineLauncher {
             arguments.add(paramArg.toString());
         }
 
-            //REMOVED DUE to dateTime milliseconds inconsistency
-//            WrkWorkflowdata wrk = new WrkWorkflowdata();
-//            wrk.setDataType(this.getDataType());
-//            wrk.setId(this.getId());
-//            wrk.setExternalid(this.getExternalId());
-//            wrk.setPipelineName(this.getPipelineName());
-//            wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
-//            wrk.setStatus("Queued");
-//            wrk.save(user,false,true,DBItemCache.DEFAULT_MESSAGE);
-
         // MODIFIED BY TO 09/22/09
         String pwd = user.getPrimaryPassword();
         if (pwd != null) {
@@ -400,29 +390,16 @@ public class XnatPipelineLauncher {
     }
 
     private void initiateWorkflowEntry() throws Exception {
-        WrkWorkflowdata wrk = new WrkWorkflowdata();
-        wrk.setDataType(this.getDataType());
-        wrk.setId(this.getId());
-        wrk.setExternalid(this.getExternalId());
-        wrk.setPipelineName(this.getPipelineName());
-        wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
-        wrk.setStatus("Queued");
-            SaveItemHelper.authorizedSave(wrk,user,false,true);
-            ProcessLauncher processLauncher = new ProcessLauncher();
-            processLauncher.setCommand(command + " " + pcommand);
-            processLauncher.start();
-            if (waitFor) {
-              while (processLauncher.isAlive()) { } //wait for the thread to end
-              success = processLauncher.getExitStatus();
-            }
-            if (!success) {
-              logger.error("Couldnt launch " + command + " -pwd ******" );
-            }
-        }catch (Exception e) {
-            logger.error(e.getMessage() + " for command " + command + " -pwd ******* " ,e);
-            success = false;
-        }
-        return success;
+//REMOVED DUE to dateTime milliseconds inconsistency
+//            WrkWorkflowdata wrk = new WrkWorkflowdata();
+//            wrk.setDataType(this.getDataType());
+//            wrk.setId(this.getId());
+//            wrk.setExternalid(this.getExternalId());
+//            wrk.setPipelineName(this.getPipelineName());
+//            wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
+//            wrk.setStatus("Queued");
+//            wrk.save(user,false,true,DBItemCache.DEFAULT_MESSAGE);
+
     }
 
     /**

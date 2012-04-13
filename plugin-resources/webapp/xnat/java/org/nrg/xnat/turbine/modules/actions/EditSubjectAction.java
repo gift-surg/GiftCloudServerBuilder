@@ -321,7 +321,7 @@ public class EditSubjectAction extends SecureAction {
             		if(!user.canEdit(sub)){
             			error(new InvalidPermissionException("Unable to save subject " + sub.getId()),data);
             		}
-            		SaveItemHelper.authorizedSave(sub,TurbineUtils.getUser(data),false,false);            		
+            		SaveItemHelper.authorizedSave(sub,TurbineUtils.getUser(data),false,false,ci);            		
             		PersistentWorkflowUtils.complete(wrk,ci);
             		
 					MaterializedView.DeleteByUser(user);

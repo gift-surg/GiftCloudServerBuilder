@@ -60,8 +60,7 @@ public class DirectScanResourceImpl extends ResourceModifierA{
 		
 		scan.setFile(resource);
 		
-		scan.save(user, false, false,ci);
-		SaveItemHelper.authorizedSave(scan,user, false, false);
+		SaveItemHelper.authorizedSave(scan,user, false, false,ci);
 		return true;
 	}
 

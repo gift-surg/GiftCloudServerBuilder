@@ -608,7 +608,7 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			proj.setResources_resource(catResource);
 
-			SaveItemHelper.authorizedSave(proj,user, false, falsee,ci);
+			SaveItemHelper.authorizedSave(proj,user, false, false,ci);
 			return true;
 		}
 		return true;

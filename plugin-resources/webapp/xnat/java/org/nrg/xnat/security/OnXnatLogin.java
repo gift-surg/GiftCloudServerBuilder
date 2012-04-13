@@ -14,6 +14,8 @@ import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +53,8 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 	      	item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
 	      	item.setProperty("xdat:user_login.login_date",today);
 	      	item.setProperty("xdat:user_login.ip_address", request.getRemoteAddr());
-	      	item.save(null,true,false);
+	      	SaveItemHelper.authorizedSave(item,null,true,false, EventUtils.ADMIN_EVENT(user));
+	      	
 	      	request.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
         }
         catch(Exception e){

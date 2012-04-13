@@ -8,6 +8,7 @@ import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -37,7 +38,7 @@ public class DirectExptResourceImpl extends ResourceModifierA {
 	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#buildDestinationPath()
 	 */
 	@Override
-	public String buildDestinationPath() throws InvalidArchiveStructure {
+	public String buildDestinationPath() throws InvalidArchiveStructure,UnknownPrimaryProjectException {
 		return FileUtils.AppendRootPath(expt.getCurrentSessionFolder(true),"/RESOURCES/");
 	}
 
@@ -48,8 +49,7 @@ public class DirectExptResourceImpl extends ResourceModifierA {
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
 		expt.setResources_resource(resource);
 		
-		expt.save(user, false, false,ci);
-		SaveItemHelper.authorizedSave(expt,user, false, false);
+		SaveItemHelper.authorizedSave(expt,user, false, false,ci);
 		
 		return true;
 	}

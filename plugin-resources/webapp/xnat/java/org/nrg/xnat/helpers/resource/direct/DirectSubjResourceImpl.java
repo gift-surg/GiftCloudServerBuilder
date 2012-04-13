@@ -48,8 +48,7 @@ public class DirectSubjResourceImpl extends ResourceModifierA {
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {		
 		sub.setResources_resource(resource);
 		
-		sub.save(user, false, false,ci);
-		SaveItemHelper.authorizedSave(sub,user, false, false);
+		SaveItemHelper.authorizedSave(sub,user, false, false,ci);
 		return true;
 	}
 

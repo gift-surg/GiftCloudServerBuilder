@@ -71,8 +71,7 @@ public class DirectAssessResourceImpl extends ResourceModifierA {
 			iad.setOut_file(resource);
 		}
 		
-		iad.save(user, false, false,ci);
-		SaveItemHelper.authorizedSave(iad,user, false, false);
+		SaveItemHelper.authorizedSave(iad,user, false, false,ci);
 		return true;
 	}
 

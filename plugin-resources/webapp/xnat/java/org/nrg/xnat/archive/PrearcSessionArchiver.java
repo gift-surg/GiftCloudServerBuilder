@@ -115,7 +115,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	private final boolean waitFor;
 	
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final File srcDIR,final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
@@ -125,7 +125,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		this.overwrite=(overwrite==null)?false:overwrite;
 		this.overwrite_files=(overwrite_files==null)?false:overwrite_files;
 		this.prearcSession=prearcSession;
-		this.srcDIR=srcDIR;
 		this.waitFor=waitFor;
 	}
 
@@ -270,8 +269,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 			subject.setId(newID);
 			try {
-				subject.save(user, false, false,c);
-				SaveItemHelper.authorizedSave(subject,user, false, false);
+				SaveItemHelper.authorizedSave(subject,user, false, false,c);
 			} catch (Exception e) {
 				failed("unable to save new subject " + newID);
 				throw new ServerException("Unable to save new subject " + subject, e);
@@ -490,7 +488,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			final EventMetaI savetime=workflow.buildEvent();
 			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
 				public void save(XnatImagesessiondata merged) throws Exception {					
-					if(SaveItemHelper.authorizedSave(merged,user,false,false)){
+					if(SaveItemHelper.authorizedSave(merged,user,false,false,c)){
 						user.clearLocalCache();
 						try {
 							MaterializedView.DeleteByUser(user);

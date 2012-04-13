@@ -165,7 +165,6 @@ public class BaseXnatDicomseries extends AutoXnatDicomseries {
     	for(XnatDicomseriesImageI img : this.getImageset_image()){
     		((XnatDicomseriesImage)img).moveTo(newSessionDir, existingSessionDir, rootPath, user,ci);
     	}
-    	this.save(user, true, false,ci);
-    	SaveItemHelper.authorizedSave(this,user, true, false);
+    	SaveItemHelper.authorizedSave(this,user, true, false,ci);
     }
 }

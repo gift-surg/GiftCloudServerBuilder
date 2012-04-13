@@ -13,5 +13,5 @@ public interface ArchivableItem extends ItemI{
 	public String getXSIType();
 	public String getId();
 	public String getProject();
-	public String getArchiveRootPath();
+	public String getArchiveRootPath() throws UnknownPrimaryProjectException;
 }

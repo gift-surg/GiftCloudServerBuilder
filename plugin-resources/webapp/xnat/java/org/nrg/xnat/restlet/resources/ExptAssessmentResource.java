@@ -171,7 +171,7 @@ public class ExptAssessmentResource extends ItemResource {
 								EventMetaI c=BaseXnatExperimentdata.ChangePrimaryProject(user, assessor, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.MODIFY_PROJECT));
 
 								if(matched!=null){
-									SaveItemHelper.authorizedRemoveChild(assessor.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user);
+									SaveItemHelper.authorizedRemoveChild(assessor.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user,EventUtils.ADMIN_EVENT(user));
 									assessor.removeSharing_share(index);
 								}
 							}else{

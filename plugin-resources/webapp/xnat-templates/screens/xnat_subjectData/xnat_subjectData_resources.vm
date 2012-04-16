@@ -23,7 +23,7 @@
   var obj=new Object();
   obj.uri=serverRoot + "/REST/projects/$!om.getProject()/subjects/$!om.getId()";
   
-  #if ($item.canEdit(data.getSession().getAttribute("user")))
+  #if ($item.canEdit($data.getSession().getAttribute("user")))
 							      obj.canEdit=true;
 						    #else
 							      obj.canEdit=false;

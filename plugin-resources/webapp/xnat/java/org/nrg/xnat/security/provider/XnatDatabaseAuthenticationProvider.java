@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider{
 
 	private String displayName = "";
+	private String ID = "";
 	private int expiration = -1;
 	private Pattern complexity;
 	
@@ -26,19 +27,12 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
 		displayName = newName;
 	}
 	
-	public void setExpiration(int exp){
-		expiration = exp;
+	public void setID(String newID){
+		ID = newID;
 	}
 	
-	public int getExpiration(){
-		return expiration;
+	public String getID(){
+		return ID;
 	}
-	
-	public void setComplexity(Pattern c){
-		complexity = c;
-	}
-	
-	public Pattern getComplexity(){
-		return complexity;
-	}
+
 }

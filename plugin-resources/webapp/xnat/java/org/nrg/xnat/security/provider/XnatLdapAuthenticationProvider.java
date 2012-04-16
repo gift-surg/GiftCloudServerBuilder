@@ -10,6 +10,7 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider{
 	
 	private String displayName = "";
+	private String ID = "";
 	
 	public XnatLdapAuthenticationProvider(LdapAuthenticator authenticator) {
 		super(authenticator);
@@ -41,5 +42,13 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider{
 	
 	public void setName(String newName){
 		displayName = newName;
+	}
+	
+	public void setID(String newID){
+		ID = newID;
+	}
+	
+	public String getID(){
+		return ID;
 	}
 }

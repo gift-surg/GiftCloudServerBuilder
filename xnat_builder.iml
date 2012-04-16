@@ -1,3 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module classpath="eclipse" classpath-dir="$MODULE_DIR$" type="JAVA_MODULE" version="4" />
+<module classpath="eclipse" classpath-dir="$MODULE_DIR$" type="JAVA_MODULE" version="4">
+  <component name="DBNavigator.Module.ConnectionManager">
+    <connections />
+  </component>
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset1" name="Xml Application Context" removed="false">
+          <file>file://$MODULE_DIR$/plugin-resources/conf/mail-services-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/mail-services-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/notify-services-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/xnat-security.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/orm-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/services-context.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/framework-services-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/framework-services-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/datasource-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/notify-services-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/mail-services-config.encrypted.sample.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/scheduler-context.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/mail-services-config.smtps.sample.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/xdat-services-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/xnat-security.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/xdat-services-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/root-spring-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/scheduler-context.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/services-context.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/orm-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/root-spring-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/anon-script-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/mail-services-config.encrypted.sample.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/mail-services-config.smtps.sample.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/src/conf/mail-services-config.xml</file>
+          <file>file://$MODULE_DIR$/deployments/genfi/conf/dicom-import-context.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/dicom-import-context.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/datasource-config.xml</file>
+          <file>file://$MODULE_DIR$/plugin-resources/conf/anon-script-config.xml</file>
+          <file>file://$MODULE_DIR$/projects/genfi/src/conf/mail-services-config.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+  </component>
+</module>
 

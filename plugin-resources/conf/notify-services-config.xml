@@ -9,19 +9,10 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <!-- Load the NRG Notify basic application context. -->
-    <context:component-scan base-package="org.nrg.notify.services" />
-    <context:component-scan base-package="org.nrg.notify.daos" />
-
-    <bean id="nrgNotificationEntityPackages" class="org.nrg.framework.orm.hibernate.HibernateEntityPackageList">
-        <property name="items">
-            <list>
-                <value>org.nrg.notify.entities</value>
-            </list>
-        </property>
-    </bean>
-
+    <import resource="classpath:/META-INF/configuration/nrg-notify-context.xml" />
+    
     <!-- This requires the mailService bean to be configured elsewhere. -->
-    <bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:mailService-ref="mailService" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
+    <bean id="mailChannelRenderer" class="org.nrg.notify.renderers.NrgMailChannelRenderer" p:fromAddress="${mailserver.admin}" p:subjectPrefix="${mailserver.prefix}"/>
     
     <util:map id="renderers" value-type="org.nrg.notify.renderers.ChannelRenderer">
         <entry key="htmlMail" value-ref="mailChannelRenderer" />

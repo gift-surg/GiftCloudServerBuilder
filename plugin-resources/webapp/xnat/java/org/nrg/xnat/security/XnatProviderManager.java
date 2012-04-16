@@ -48,7 +48,9 @@ import com.google.common.collect.Maps;
 public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
     private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
-
+    private static final String SECURITY_PASSWORD_COMPLEXITY_PROPERTY = "security.password_complexity";
+    private static final String SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY = "security.password_complexity_message";
+    
 	private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
 
     private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
@@ -62,13 +64,16 @@ public class XnatProviderManager extends ProviderManager {
 	private static Integer MAX_FAILED_LOGIN_ATTEMPTS=-1;
 	private static Integer LOCKOUT_DURATION=-60000;//in seconds
     
+	private static String PASSWORD_COMPLEXITY="";
+	private static String PASSWORD_COMPLEXITY_MESSAGE="";
+	
     @Override
     public void afterPropertiesSet() throws Exception {
         if (properties == null) {
             throw new IllegalArgumentException("The list of authentication providers cannot be set to null.");
         }
         String commaDeliniatedProviders = properties.getProperty("provider.providers.enabled");
-        String[] providerArray=commaDeliniatedProviders.split(",");
+        String[] providerArray=commaDeliniatedProviders.split("[\\s,]+");
         HashMap<String, HashMap<String, String>> providerMap = new HashMap<String, HashMap<String, String>>();
         for(String prov : providerArray){
         	providerMap.put(prov, new HashMap<String, String>());
@@ -93,28 +98,23 @@ public class XnatProviderManager extends ProviderManager {
         	LOCKOUT_DURATION=Integer.valueOf(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY));
         	if(LOCKOUT_DURATION>0)LOCKOUT_DURATION=-(LOCKOUT_DURATION); //LOCKOUT must be negative for date comparison to work
         }
+        
+        if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY)!=null){
+        	PASSWORD_COMPLEXITY=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY);
+        }
+        
+        if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY)!=null){
+        	PASSWORD_COMPLEXITY_MESSAGE=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY);
+        }
     
      // Create providers
         List<AuthenticationProvider> tempProviders = new ArrayList<AuthenticationProvider>();
         for(String prov: providerArray){
+        	String name = providerMap.get(prov).get("provider." + prov + ".name");
+        	String id = providerMap.get(prov).get("provider." + prov + ".id");
         	String type = providerMap.get(prov).get("provider." + prov + ".type");
-    		String title = providerMap.get(prov).get("provider." + prov + ".title"); 
+    		 
         	if(type.equals("db")){
-        		int expiration = 0;
-        		Pattern complexity = null;
-        		try{
-        			expiration = Integer.parseInt(providerMap.get(prov).get("provider." + prov + ".passwordexpiration")); 
-        		}
-        		catch(Exception e){
-        			logger.error("Invalid password expiration value:",e);
-        		}
-        		try{
-        			complexity = Pattern.compile(providerMap.get(prov).get("provider." + prov + ".passwordcomplexity")); 
-        		}
-        		catch(Exception e){
-        			logger.error("Invalid password complexity value:",e);
-        		}
-        		
         		XnatDatabaseUserDetailsService detailsService = new XnatDatabaseUserDetailsService();
             	detailsService.setDataSource(XDAT.getDataSource());
         		
@@ -122,43 +122,39 @@ public class XnatProviderManager extends ProviderManager {
             	ShaPasswordEncoder encoder = new ShaPasswordEncoder(256);
             	sha2DatabaseAuthProvider.setUserDetailsService(detailsService);
             	sha2DatabaseAuthProvider.setPasswordEncoder(encoder);
-            	sha2DatabaseAuthProvider.setName(title);
-            	sha2DatabaseAuthProvider.setExpiration(expiration);
-            	sha2DatabaseAuthProvider.setComplexity(complexity);
+            	sha2DatabaseAuthProvider.setName(name);
+            	sha2DatabaseAuthProvider.setID(id);
             	tempProviders.add(sha2DatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
             	XnatObfuscatedPasswordEncoder encoder2 = new XnatObfuscatedPasswordEncoder(true);
             	sha2ObfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
             	sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
-            	sha2ObfuscatedDatabaseAuthProvider.setName(title);
-            	sha2ObfuscatedDatabaseAuthProvider.setExpiration(expiration);
-            	sha2ObfuscatedDatabaseAuthProvider.setComplexity(complexity);
+            	sha2ObfuscatedDatabaseAuthProvider.setName(name);
+            	sha2ObfuscatedDatabaseAuthProvider.setID(id);
             	tempProviders.add(sha2ObfuscatedDatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider obfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
             	XnatObfuscatedPasswordEncoder encoder3 = new XnatObfuscatedPasswordEncoder();
             	obfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
             	obfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder3);
-            	obfuscatedDatabaseAuthProvider.setName(title);
-            	obfuscatedDatabaseAuthProvider.setExpiration(expiration);
-            	obfuscatedDatabaseAuthProvider.setComplexity(complexity);
+            	obfuscatedDatabaseAuthProvider.setName(name);
+            	obfuscatedDatabaseAuthProvider.setID(id);
             	tempProviders.add(obfuscatedDatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider plaintextDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
             	PlaintextPasswordEncoder encoder4 = new PlaintextPasswordEncoder();
             	plaintextDatabaseAuthProvider.setUserDetailsService(detailsService);
             	plaintextDatabaseAuthProvider.setPasswordEncoder(encoder4);
-            	plaintextDatabaseAuthProvider.setName(title);
-            	plaintextDatabaseAuthProvider.setExpiration(expiration);
-            	plaintextDatabaseAuthProvider.setComplexity(complexity);
+            	plaintextDatabaseAuthProvider.setName(name);
+            	plaintextDatabaseAuthProvider.setID(id);
             	tempProviders.add(plaintextDatabaseAuthProvider);
         		
         	}
         	else if (type.equals("ldap")){
         		try{
 	        		String address = providerMap.get(prov).get("provider." + prov + ".address");       		
-	        		XnatLdapContextMapper ldapUserDetailsContextMapper = new XnatLdapContextMapper();
+	        		XnatLdapUserDetailsMapper ldapUserDetailsContextMapper = new XnatLdapUserDetailsMapper(id);
 	            	XnatLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new XnatLdapAuthoritiesPopulator();
 	            	DefaultSpringSecurityContextSource ldapServer = new DefaultSpringSecurityContextSource(address);
 	            	ldapServer.setUserDn(providerMap.get(prov).get("provider." + prov + ".userdn"));
@@ -170,7 +166,8 @@ public class XnatProviderManager extends ProviderManager {
 	            	ldapBindAuthenticator.setUserSearch(ldapSearchBean);
 	            	XnatLdapAuthenticationProvider ldapAuthProvider = new XnatLdapAuthenticationProvider(ldapBindAuthenticator, ldapAuthoritiesPopulator);
 	            	ldapAuthProvider.setUserDetailsContextMapper(ldapUserDetailsContextMapper);
-	            	ldapAuthProvider.setName(title);
+	            	ldapAuthProvider.setName(name);
+	            	ldapAuthProvider.setID(id);
 	            	tempProviders.add(ldapAuthProvider);
         		}
         		catch(Exception e){
@@ -200,7 +197,7 @@ public class XnatProviderManager extends ProviderManager {
         
         final String auth_id=authentication.toString().intern();
         failures.checkFailedLoginAttempts(auth_id);
-
+        
         for (AuthenticationProvider provider : getProviders()) {
             if (!provider.supports(toTest)) {
                 continue;

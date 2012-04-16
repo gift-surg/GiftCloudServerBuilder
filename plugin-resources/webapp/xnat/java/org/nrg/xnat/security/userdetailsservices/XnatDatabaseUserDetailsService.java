@@ -11,6 +11,6 @@ public class XnatDatabaseUserDetailsService extends JdbcDaoImpl implements UserD
 	
 	@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
-		return (XDAT.getXdatUserAuthService()).getUserDetailsByNameAndAuth(username, "localdb");
+		return (XDAT.getXdatUserAuthService()).getUserDetailsByNameAndAuth(username, "localdb","");
     }
 }

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <!--
         This extracts properties directly from the indicated properties file. If you want to encrypt properties,
@@ -12,9 +12,9 @@
     -->
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
-    <bean id="validator" class="org.nrg.xdat.security.RegExpValidator">
-        <property name="regexp" value="${security.password_complexity}"/>
-        <property name="message" value="${security.password_complexity_message}"/>
+	<bean id="validator" class="org.nrg.xdat.security.RegExpValidator">
+		<property name="regexp" value="${security.password_complexity}"/>
+		<property name="message" value="${security.password_complexity_message}"/>
     </bean>
 
     <!-- Root Context: defines shared resources visible to all other web components -->
@@ -30,7 +30,7 @@
     <!-- Include top-level service configurations -->
     <import resource="datasource-config.xml" />
     <import resource="orm-config.xml" />
-    <import resource="mail-services-config.xml" />
+        <import resource="mail-services-config.xml" />
     <import resource="notify-services-config.xml" />
 
     <bean id="coreXnatEntityPackages" class="org.nrg.framework.orm.hibernate.HibernateEntityPackageList">

@@ -34,8 +34,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 					"("+
 					"SELECT xdat_user.login, xdat_user.xdat_user_id, MAX(xdat_user_login.login_date) AS last_login FROM xdat_user_login RIGHT JOIN xdat_user ON xdat_user_login.user_xdat_user_id=xdat_user.xdat_user_id GROUP BY xdat_user.login,xdat_user.xdat_user_id"+
 					") y "+ //get last login times for each user
-				"ON y.xdat_user_id=xdat_user_meta_data.meta_data_id"+
-				") x "+ //get dates that each user was created
+				"ON y.xdat_user_id=xdat_user_meta_data.meta_data_id AND y.xdat_user_id NOT IN (SELECT xdat_user_xdat_user_id FROM xdat_r_xdat_role_type_assign_xdat_user WHERE xdat_r_xdat_role_type_assign_xdat_user.xdat_role_type_role_name = 'Administrator')"+
+				") x "+ //get dates that each non-admin user was created
 			"ON x.login=xdat_user.login AND ((x.activation_date<(now()- INTERVAL '"+secondsBeforeLockout+" seconds')) AND ((x.last_login IS NULL) OR x.last_login<(now()- INTERVAL '"+secondsBeforeLockout+" seconds'))) AND xdat_user.enabled=1"+
 			")");//disable the user if user was not created and did not log in within the last 'secondsBeforeLockout' seconds and is currently enabled
 		}

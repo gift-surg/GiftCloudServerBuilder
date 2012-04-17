@@ -397,7 +397,7 @@
 										<xs:attribute name="visit" type="xs:string"> <!--  foreign key to visitData -->
 											<xs:annotation>
 												<xs:appinfo>
-													<xdat:field baseElement="xnat:visitData" baseCol="id"/>
+													<xdat:field baseElement="xnat:pVisitData" baseCol="id"/>
 												</xs:appinfo>
 											</xs:annotation>
 										</xs:attribute>	
@@ -513,7 +513,7 @@
 		<xs:attribute name="visit" type="xs:string"> <!--  foreign key to visitData -->
 			<xs:annotation>
 				<xs:appinfo>
-					<xdat:field baseElement="xnat:visitData" baseCol="id"/>
+					<xdat:field baseElement="xnat:pVisitData" baseCol="id"/>
 				</xs:appinfo>
 			</xs:annotation>
 		</xs:attribute>	

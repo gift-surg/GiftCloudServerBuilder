@@ -356,7 +356,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
 
             var parameters = '{"visitId":"' + this.visitSelect.value + '","scanType":"' + this.scanTypeSelect.value + '"}';
             //noinspection JSUnresolvedVariable
-            YAHOO.util.Connect.asyncRequest('POST', serverRoot + '/data/services/protocols/project/' + this.projectBox.value + '/subject/' + this.subjectBox.value + '/generate/sessionId', launchCallback, parameters);
+            YAHOO.util.Connect.asyncRequest('POST', serverRoot + '/data/services/protocols/project/' + this.projectBox.value + '/subject/' + this.subjectBox.value + '/generate/sessionId?XNAT_CSRF='+csrfToken, launchCallback, parameters);
         } else {
             document.getElementById('gojuice').disabled = false;
         }

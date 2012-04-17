@@ -27,6 +27,7 @@ public class CreateExperiment extends SecureAction {
         String part_id = null;
         String project= null;
         String parent_expt_id= null;
+        String visit= null;
         
         if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data))!=null)
         {
@@ -61,6 +62,11 @@ public class CreateExperiment extends SecureAction {
         if (TurbineUtils.HasPassedParameter("project", data)){
             project= (String)TurbineUtils.GetPassedParameter("project", data);
             context.put("project", project);
+        }
+        
+        if (TurbineUtils.HasPassedParameter("visit", data)){
+        	visit= (String)TurbineUtils.GetPassedParameter("visit", data);
+        	context.put("visit", visit);
         }
         
         String dataType = (String)TurbineUtils.GetPassedParameter("data_type", data);

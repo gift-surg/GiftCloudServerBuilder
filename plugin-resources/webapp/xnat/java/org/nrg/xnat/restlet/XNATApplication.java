@@ -248,6 +248,14 @@ public class XNATApplication extends Application {
         router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);
         router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits/{VISIT_ID}", ProjectSubjectVisitsRestlet.class);
         router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/generate/{TYPE}", ProjectSubjectVisitsRestlet.class);
+        
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/visits/{VISIT_ID}",VisitResource.class); //use this to get or delete a visit. Deletion will automatically dis-associate all experiments associated with the deleted visit.
+        attachArchiveURI(router,"/visits/{VISIT_ID}",VisitResource.class); //for consistency with the URI result returned by ProjSubVisitList. only GET. DELETE on this URI does not work (you need to pass the project to delete)
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits",ProjSubVisitList.class); ///GET returns a list of the subject's visits. POST will create a new visit and define the new ID and label.
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits/{VISIT_ID}",SubjVisitResource.class); //GET returns the visit. PUT to creates or updates a visit using the passed in Label. DELETE removes the visit as in VisitResource.
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/visits/{VISIT_ID}/experiments",ExptVisitListResource.class);  //GET to return a list of experiments.
+        attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits/{VISIT_ID}/experiments",ExptVisitListResource.class);  //GET to return a list of experiments.
+
 	}
 
     /**

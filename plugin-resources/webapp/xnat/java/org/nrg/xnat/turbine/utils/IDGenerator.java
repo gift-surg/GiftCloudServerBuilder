@@ -39,6 +39,8 @@ public class IDGenerator implements IDGeneratorI {
 			site +="_S";
 		}else if(tableName.equalsIgnoreCase("xnat_experimentData")){
 			site +="_E";
+		}else if(tableName.equalsIgnoreCase("xnat_pvisitData")){
+			site +="_V";
 		}
 		
 		String temp_id=null;

@@ -1,7 +1,7 @@
 function restLister(_info){
 	this.info=_info;
 	this.loaded=0;
-		
+
 	this.init=function(){
 		if(this.loaded==0){
 			this.loaded=1;
@@ -10,16 +10,16 @@ function restLister(_info){
 				failure:this.handleFailure,
 				scope:this
 			};
-		
-			YAHOO.util.Connect.asyncRequest('GET',info.uri + '/resources?all=true&format=json&file_stats=true&timestamp=' + (new Date()).getTime(),scanCallback,null,this);
-		} 
+
+			YAHOO.util.Connect.asyncRequest('GET',info.uri + '/resources?XNAT_CSRF=' + window.csrfToken + '&all=true&format=json&file_stats=true&timestamp=' + (new Date()).getTime(),scanCallback,null,this);
+		}
 	}
-		
-	this.handleFailure=function(o){		
+
+	this.handleFailure=function(o){
 		alert("Error loading resources");
 		this.loaded=0;
 	}
-	
+
 	this.processScans=function(o){
 		this.info.scans = new Array();
 		var contents = eval("(" + o.responseText +")").ResultSet.Result;
@@ -28,7 +28,7 @@ function restLister(_info){
 				this.info.scans.push(contents[i]);
 			}
 		}
-		
+
 		for(var i=0;i<this.info.scans.length;i++){
 			var fileCallback={
 				success:this.processFiles,
@@ -36,10 +36,10 @@ function restLister(_info){
 			    scope:this
 			};
 			var fileuri=this.info.uri + "/" + this.info.category + "/" + this.info.scans[i].cat_id + "/out/resources/" + this.info.scans[i].xnat_abstractresource_id;
-			YAHOO.util.Connect.asyncRequest('GET',fileuri + '/files?all=true&format=json&timestamp=' + (new Date()).getTime(),fileCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',fileuri + '/files?XNAT_CSRF=' + window.csrfToken + '&all=true&format=json&timestamp=' + (new Date()).getTime(),fileCallback,null,this);
 		}
 	}
-		
+
 	this.getScan=function(cid) {
 		for(var j=0;j<this.info.scans.length;j++){
 			if (this.info.scans[j].xnat_abstractresource_id==cid) {
@@ -48,7 +48,7 @@ function restLister(_info){
 		}
 		return null;
 	}
-	
+
 	this.processFiles=function(o){
 		var allFiles = eval("(" + o.responseText +")").ResultSet.Result;
 		var cid = allFiles[0].cat_ID;//same for each element in allFiles

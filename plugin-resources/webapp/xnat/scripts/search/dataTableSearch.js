@@ -45,7 +45,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       }catch(e){}
     }
 
-    var params="format=json&cache=true";
+    var params="XNAT_CSRF=" + window.csrfToken + "&format=json&cache=true";
     if(obj!=undefined && obj.reload!=undefined){
       this.purge();
       params+="&refresh=true";
@@ -55,10 +55,10 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	document.getElementById(this.div_table_id+"_p").innerHTML="";
       }catch(e){}
     }
-    
+
     params += '&XNAT_CSRF='+csrfToken;
-    
-    
+
+
     YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/search?'+params,this.initCallback,this.xml,this);
   };
 
@@ -185,14 +185,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	window.location=serverRoot+"/app/template/Login.vm";
       }
       /**
-       * If the returnes status is 500, one of the sortBy settings in the cookie was incorrect. In this case 
+       * If the returnes status is 500, one of the sortBy settings in the cookie was incorrect. In this case
        * just ignore the cookie and re-run the request.
        */
       else if (o.status == 500) {
 	var url = that.searchURI+"?format=xList&offset="+ ((page-1)*that.config.rowsPerPage) + "&limit="+that.config.rowsPerPage;
-	
+
 	url += '&XNAT_CSRF=' + csrfToken;
-	
+
 	YAHOO.util.Connect.asyncRequest('GET', url, initCallback,null,that);
       }
       else{
@@ -210,9 +210,9 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
     document.getElementById(this.div_table_id).innerHTML = "";
     var url2 = this.searchURI+"?format=xList"+this.generateRequest(page);
-    
+
 	url2 += '&XNAT_CSRF=' + csrfToken;
-	
+
     YAHOO.util.Connect.asyncRequest('GET',url2,initCallback,null,this);
   };
 
@@ -588,14 +588,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     tempInput.value=_searchXML;
 
     tempForm.appendChild(tempInput);
-    
-    
+
+
     var cs = document.createElement("input");
 	cs.type = "hidden";
 	cs.name = "XNAT_CSRF";
 	cs.value = csrfToken;
 	tempForm.appendChild(cs);
-    
+
 
     if(divContent!=undefined)
       divContent.appendChild(tempForm);

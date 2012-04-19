@@ -2,13 +2,13 @@ function SearchFieldManager(div_id){
 	this.fieldSets = new Array();
 	this.fieldMap=new Object();
 	this.versionMap=new Object();
-	
+
 	if(div_id){
 		this.div=document.getElementById(div_id);
 	}
 	this.onLoad=new YAHOO.util.CustomEvent("load",this);
 	this.onFieldAdd=new YAHOO.util.CustomEvent("on-field-add",this);
-	
+
 	this.init=function(init_elements){
 		this.render();
 		if(init_elements!=undefined){
@@ -17,10 +17,10 @@ function SearchFieldManager(div_id){
 			}
 		}
 	}
-	
+
 	this.render=function(){
 		this.div.innerHTML="";
-		
+
 		var element_list=document.createElement("div");
 		element_list.appendChild(document.createElement("label"));
 		element_list.childNodes[0].innerHTML="Possible Elements:&nbsp;";
@@ -40,7 +40,7 @@ function SearchFieldManager(div_id){
 				}
 			}
 		element_list.appendChild(this.selectBox);
-		
+
 //		var addBut=document.createElement("button");
 //		addBut.innerHTML="<img border=\"0\" src=\""+serverRoot +"/images/plus.gif\"/>";
 //		addBut.selector=this.selectBox;
@@ -51,24 +51,24 @@ function SearchFieldManager(div_id){
 //			}
 //		}
 //		element_list.appendChild(addBut);
-		
+
 		var field_tabs_container=document.createElement("div");
 		field_tabs_container.style.height="500px";
 		field_tabs_container.style.overflow="auto";
-		
+
 		var field_tabs=document.createElement("div");
-		
+
 		field_tabs_container.appendChild(field_tabs);
-				
+
 		this.div.appendChild(element_list);
 		this.div.appendChild(document.createElement("br"));
 		this.div.appendChild(field_tabs_container);
-		
+
 		this.tabView=new YAHOO.widget.TabView(field_tabs,{height:"500px"});
 	}
-	
+
 	this.loaded=new Array();
-	
+
 	this.removeSelectOption=function(element_name){
 		var selectBox=document.getElementById("sf_pe");
 		for(var oC=0;oC<selectBox.childNodes.length;oC++){
@@ -78,24 +78,24 @@ function SearchFieldManager(div_id){
 			}
 		}
 	}
-	
-	
+
+
 	this.load=function(element_name){
 		if(!this.loaded.contains(element_name)){
 			this.loaded.push(element_name);
-			
+
 			var fieldCallback={
 				success:this.processResults,
 				failure:this.initFailure,
 				scope:this,
 				argument:element_name
 			}
-			
+
 			openModalPanel("load_fields","Loading field information.");
-			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+element_name +'?format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+element_name +'?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
 		}
 	}
-	
+
 	this.processResults=function(o){
 		closeModalPanel("load_fields");
 		var resultset= eval("(" + o.responseText +")");
@@ -103,33 +103,33 @@ function SearchFieldManager(div_id){
 		this.fieldMap[o.argument]= resultset.ResultSet.Result;
 		this.onLoad.fire({element_name:o.argument,list:this.fieldMap[o.argument]});
 	}
-	
+
 	this.renderFields=function(element_name){
 		if(!this.loaded.contains(element_name)){
 			this.loaded.push(element_name);
-			
+
 			this.removeSelectOption(element_name);
-			
+
 			if(this.tabView){
 				var tempTab=new YAHOO.widget.Tab({
 			  	    label:window.available_elements.getByName(element_name).singular + '&nbsp;<span style="height:12px;width:1px;">&nbsp;</span>',
 			  	    content:'<div id="'+element_name + '_fields_dt">Preparing Results</div>',
-			  	    active:true});			  	 
+			  	    active:true});
 			    this.tabView.addTab(tempTab);
-				
+
 				var dataSource = new YAHOO.util.DataSource(serverRoot +'/REST/search/elements/'+element_name +'?');
 		   		dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 		   		dataSource.responseSchema = {
 		     		resultsList : 'ResultSet.Result', // String pointer to result data
-		     		fields: ["FIELD_ID","HEADER","SUMMARY","TYPE","REQUIRES_VALUE"] 
+		     		fields: ["FIELD_ID","HEADER","SUMMARY","TYPE","REQUIRES_VALUE"]
 		   		};
-		   		
+
 		   		var dtConfig= new Object();
 		   		dtConfig.initialRequest="format=json";
 		   		//dtConfig.scrollable=true;
 				//dtConfig.height="500px";
 				dtConfig.visible=false;
-	
+
 				var newfieldsColumnDefs=[
 				  {key:"button",label:"Add",width:28,formatter:function(el, oRecord, oColumn, oData) {
 			el.innerHTML=el.innerHTML = "<button type=\"button\" class=\"yui-dt-button\"><img border=\"0\" src=\""+serverRoot +"/images/plus.gif\"/></button>";
@@ -145,13 +145,13 @@ function SearchFieldManager(div_id){
 						    elCell.toolTip=new YAHOO.widget.Tooltip(oRecord.getId()+"."+oColumn.key,{container:this,context:elCell,text:oData.replace(/'/g,""),preventoverlap:false});
 						}
 					}}];
-	   			   		
- 				var dataTable = new YAHOO.widget.DataTable(element_name + '_fields_dt',newfieldsColumnDefs,dataSource,dtConfig);  
+
+ 				var dataTable = new YAHOO.widget.DataTable(element_name + '_fields_dt',newfieldsColumnDefs,dataSource,dtConfig);
  				dataTable.sfm=this;
-   
-		        dataTable.subscribe("buttonClickEvent", function(oArgs){   
-		         	 var but = oArgs.target;   
-		             var oRecord = this.getRecord(but); 
+
+		        dataTable.subscribe("buttonClickEvent", function(oArgs){
+		         	 var but = oArgs.target;
+		             var oRecord = this.getRecord(but);
 		             if(oRecord.getData("REQUIRES_VALUE")=="true"){
 		             	alert("This property requires a value to determine the proper result.  Support for this has not been added yet. Please check back at a later date.");
 		             }else{
@@ -165,15 +165,15 @@ function SearchFieldManager(div_id){
 			}
 		}
 	}
-	
+
 	this.initFailure=function(o){
 		//alert("FAILED to load xml.")
 	};
-	
+
 	this.completeInit=function(o){
 		var loadResults= eval("(" + o.responseText +")");
 		this.fieldSets.push(loadResults.ResultSet);
 		this.render();
 	};
-	
+
 }

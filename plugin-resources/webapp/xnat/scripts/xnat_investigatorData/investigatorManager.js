@@ -7,14 +7,14 @@ function InvestigatorManager(){
 			failure:this.initFailure,
 			scope:this
 		}
-		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/investigators?format=json',this.initCallback,null,this);
+
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/investigators?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 	};
-	
+
 	this.initFailure=function(o){
 		this.alert("ERROR " + o.status+ ": Failed to load investigator list.");
 	};
-	
+
 	this.completeInit=function(o){
 		try{
 		    this.investigatorResultSet=ResultSet= eval("(" + o.responseText +")");
@@ -24,15 +24,15 @@ function InvestigatorManager(){
 			this.alert("ERROR " + o.status+ ": Failed to parse investigator list.");
 		}
 	}
-	
+
 	this.insert=function(investigator){
 		var parasm="investigator_xml="+investigator.toXML("");
 		YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/investigators/' + investigator.lastname +'?format=json&XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 	}
-	
+
 	this.populateSelect=function(_select,_selectedID){
 	  	_select.options[0]=new Option("SELECT","");
-	  	
+
 	  	for(var investCounter=0;investCounter<this.investigators.length;investCounter++){
 	  		var tempInvestigator=this.investigators[investCounter];
 	  		var investString=tempInvestigator.lastname+", "+tempInvestigator.firstname;

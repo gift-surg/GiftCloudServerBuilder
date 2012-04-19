@@ -4,28 +4,28 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 	this.submitButton=_submit_button;
 	this.defaultProject=_defaultProject;
 	this.defaultSubject=_defaultSubject;
-  
+
 	this.init=function(){
-		
+
 		//load from search xml from server
 		this.initCallback={
 			success:this.completeInit,
 			failure:this.initFailure,
 			scope:this
 		}
-		
+
 		var params="";
-		
+
 		params += "&owner=true";
 		params += "&member=true";
-				
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?format=json&timestamp=' + (new Date()).getTime() + params,this.initCallback,null,this);
+
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime() + params,this.initCallback,null,this);
 	};
-		
+
 	this.initFailure=function(o){
 		this.displayError("ERROR " + o.status+ ": Failed to load project list.");
 	};
-	
+
 	this.completeInit=function(o){
 		try{
 		    this.projectResultSet= eval("(" + o.responseText +")");
@@ -38,14 +38,14 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			this.displayError("ERROR : Failed to render project list: " + e.toString());
 		}
 	};
-	
+
 	this.renderProjects=function(){
 		if(this.projectResultSet.ResultSet.Result.length==0){
-			
+
 		}else{
 			this.projBox=document.getElementById(this.projectSelect);
 			this.projBox.options[0]=new Option("SELECT","");
-				
+
 			for(var pC=0;pC<this.projectResultSet.ResultSet.Result.length;pC++){
 				var defaultSelected=(this.projectResultSet.ResultSet.Result[pC].id==this.defaultProject)?true:false;
 				var opt=new Option(this.projectResultSet.ResultSet.Result[pC].secondary_id,this.projectResultSet.ResultSet.Result[pC].id,defaultSelected,defaultSelected);
@@ -54,11 +54,11 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 					this.projBox.selectedIndex=(this.projBox.options.length-1);
 				}
 			}
-			
+
 			this.projBox.disabled=false;
-			
+
 			this.projBox.manager=this;
-			
+
 			this.projBox.onchange=function(o){
 				if(this.selectedIndex>0){
 					this.manager.projID=this.options[this.selectedIndex].value;
@@ -66,13 +66,13 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 					this.manager.loadExpts();
 				}
 			}
-					
+
 			if(this.projBox.selectedIndex>0){
 				this.projBox.onchange();
 			}
 		}
 	}
-	
+
 	this.loadSubjects=function(o){
 	  try{
 		var subjCallback={
@@ -88,7 +88,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 				    		return 0;
 				    	}
 				    });
-				   
+
 				}catch(e){
 					o.argument.displayError("ERROR " + o.status+ ": Failed to parse subject list.");
 				}
@@ -104,24 +104,24 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 
 		if(this.subjBox!=undefined){
 			this.subjBox.disabled=true;
-			
+
 			while(this.subjBox.length>0){
 				this.subjBox.remove(0);
 			}
 		}
-		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/subjects?format=json&timestamp=' + (new Date()).getTime(),subjCallback);
+
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/subjects?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),subjCallback);
 	  }catch(e){
 	  	alert('failed to load subjects');
 	  }
 	}
-	
-	
+
+
 	this.renderSubjects=function(o){
 		this.subjBox=document.getElementById(this.subjSelect);
 		this.subjBox.options[0]=new Option("SELECT","");
 			this.subjBox.options[0].style.color="black";
-			
+
 		var matched=false;
 		for(var sC=0;sC<this.subjectResultSet.ResultSet.Result.length;sC++){
 			var defaultSelected=(this.subjectResultSet.ResultSet.Result[sC].ID==this.defaultSubject || this.subjectResultSet.ResultSet.Result[sC]["label"]==this.defaultSubject)?true:false;
@@ -136,7 +136,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			}
 		}
 		this.subjBox.disabled=false;
-		
+
 		if(!matched && (this.defaultSubject!="NULL" && this.defaultSubject!="null" && this.defaultSubject!="" && this.defaultSubject!=null)){
 			var opt=new Option(this.defaultSubject,this.defaultSubject,true,true);
 			this.subjBox.options[sC+1]=opt;
@@ -145,7 +145,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			this.subjBox.selectedIndex=(this.subjBox.options.length-1);
 			if (YAHOO.env.ua.gecko > 0)this.subjBox.style.color="red";
 		}
-		
+
         this.subjBox.submitButton = this.submitButton;
 		if(eval("window.confirmValues")!=undefined){
 			this.subjBox.onchange=function(){
@@ -153,7 +153,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 				confirmValues(false);
                 checkSubmitButton(this.selectedIndex, this.submitButton);
 			}
-			
+
 			confirmValues(false);
             checkSubmitButton(this.selectedIndex, this.submitButton);
 		}else{
@@ -163,7 +163,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			}
 		}
 	}
-	
+
 	this.loadExpts=function(o){
 	  try{
 		var subjCallback={
@@ -179,7 +179,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 					if(window.psm!=undefined)window.psm.exptResultSet=new Array();
 					if(o.argument.displayError!=undefined)o.argument.displayError("ERROR " + o.status+ ": Failed to parse expt list.");
 				}
-					
+
 				if(verifyExptId!=undefined && verifyExptId!=null){
 					verifyExptId();
 			}
@@ -187,8 +187,8 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			failure:function(o){alert("Failed to load expts.")},
 			argument:this
 		}
-		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/experiments?format=json&timestamp=' + (new Date()).getTime(),subjCallback);
+
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/experiments?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),subjCallback);
 	  }catch(e){
 	  	alert('failed to load expts');
 	  }
@@ -210,7 +210,7 @@ function fixSessionID(val)
         for(var c=0; c < temp.length; c++) {
                 newVal += '' + temp[c];
         }
-        
+
         newVal = newVal.replace(/[&]/,"_");
         newVal = newVal.replace(/[?]/,"_");
         newVal = newVal.replace(/[<]/,"_");
@@ -241,14 +241,14 @@ function fixSessionID(val)
         newVal = newVal.replace(/[\]]/,"_");
         newVal = newVal.replace(/[{]/,"_");
         newVal = newVal.replace(/[}]/,"_");
-        
+
         if(newVal!=temp){
       	  alert("Removing invalid characters in session.");
         }
         return newVal;
 }
 
-function verifyExptId(obj){        
+function verifyExptId(obj){
  try{
  	if(elementName!=undefined){
 	   	var pS=document.getElementById(elementName+"/project");
@@ -256,27 +256,27 @@ function verifyExptId(obj){
 	     	var p = pS.options[pS.selectedIndex].value;
 	     	var match=null,veid=false;
 	     	if(document.getElementById(elementName+"/label")!=null){
-			
+
 		     	var temp_label=document.getElementById(elementName+"/label").value.trim();
 		     	temp_label=fixSessionID(temp_label);
 		     	document.getElementById(elementName+"/label").value=temp_label;
-		   
+
 		    	if(temp_label!='' && window.psm.exptResultSet!=undefined){
 		     		for(var aSc=0;aSc<window.psm.exptResultSet.length;aSc++)
 		     		{
-		       
+
 		       			if(window.psm.exptResultSet[aSc].label==temp_label){
 		         			match=window.psm.exptResultSet[aSc];
 		         			break;
 		       			}
 		     		}
 		    	}
-		   
+
 			    if(match!=null){
-			    	
+
 			         document.getElementById(elementName+"/ID").value=match.id;
 			         document.getElementById(elementName+"/label").verified=true;
-			         
+
 			         document.getElementById("label_msg").innerHTML="* Matches existing session.  Continuing could modify that session.  <ul><li>Select append to only add new content to existing session.</li><li>Select overwrite to overwrite existing content.</li></ul>";
 			         if(document.getElementById("label_opts").innerHTML=="")document.getElementById("label_opts").innerHTML="<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
 			         veid=true;
@@ -285,10 +285,10 @@ function verifyExptId(obj){
 			         document.getElementById(elementName+"/label").verified=true;
 			         document.getElementById("label_msg").innerHTML="";
 			         document.getElementById("label_opts").innerHTML="";
-			         
+
 			         veid=true;
 			    }
-		   
+
 		    	return veid;
 		}
 	   	}else{

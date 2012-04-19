@@ -12,7 +12,6 @@ document.title = "Session: $!item.getProperty('label')";
 			#if($item.needsActivation())
 			<div id="quarantine_div" class="error" style="background-color:#FFCC33;">This session is in quarantine.&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="toggleQuarantine();">Activate</a></div><br>
 			#end
-			<div id="lock_div" class="warning" style="display:none"></div>
 			#parse($turbineUtils.getTemplateName("_title",$om.getXSIType(),$project))
 					<STYLE>
 					TH.underscore{

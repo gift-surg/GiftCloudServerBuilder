@@ -77,7 +77,7 @@ function FileViewer(_obj){
 		var params="";		
 		params+="event_reason="+event_reason;
 		params+="&event_type=WEB_FORM";
-		params+="&event_action=File Deletion Dialog";
+		params+="&event_action=File Deleted";
 		
 		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+'?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
@@ -104,7 +104,7 @@ function FileViewer(_obj){
 		var params="";		
 		params+="event_reason="+event_reason;
 		params+="&event_type=WEB_FORM";
-		params+="&event_action=Folder Deletion Dialog";
+		params+="&event_action=Folder Deleted";
 		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+ '?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
    
@@ -1120,78 +1120,7 @@ function UploadFileForm(_obj){
 		this.panel.setBody(div);
 		
 		this.panel.selector=this;
-		var buttons=[{text:"Upload",handler:{fn:function(){
-				var coll_select=document.getElementById("upload_collection");
-		  	    if(coll_select.disabled==true){
-		  	    	alert("Please select a folder for this file.");
-		  	    	return;
-		  	    }
-		  	    
-		  	    if(document.getElementById("local_file").value==""){
-		  	    	alert("Please select a file to upload.");
-		  	    	return;
-		  	    }
-		  	    
-				var collection_name=coll_select.options[coll_select.selectedIndex].value;
-				
-				var file_tags=document.getElementById("file_tags").value.trim();
-				var file_format=document.getElementById("file_format").value.trim();
-				var file_content=document.getElementById("file_content").value.trim();
-				var file_name=document.getElementById("file_name").value.trim();
-				if(file_name[0]=="/"){
-					file_name=file_name.substring(1);
-				}
-				
-				var file_params="?file_upload=true&XNAT_CSRF=" + csrfToken;
-				
-				if(file_content!=""){
-					file_params+="&content="+file_content;
-				}
-				if(file_format!=""){
-					file_params+="&format="+file_format;
-				}
-				if(file_tags!=""){
-					file_params+="&tags="+file_tags;
-				}
-	  			
-				var file_dest = this.selector.obj.uri;
-				if(collection_name==""){
-					file_dest=this.selector.obj.uri+"/files";
-				}else{
-					file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
-				}
-				
-				if(file_name!=""){
-					file_dest +="/"+ file_name;
-				}
-				
-				if(document.getElementById("local_file").value.endsWith(".zip")
-				  || document.getElementById("local_file").value.endsWith(".gz")
-				  || document.getElementById("local_file").value.endsWith(".xar")){
-					if(confirm("Would you like the contents of this archive file to be extracted on the server?")){
-						file_params+="&extract=true";
-					}
-				}
-				
-				file_dest+=file_params;
-				var form = document.getElementById("file_upload");
-				YAHOO.util.Connect.setForm(form,true);
-				
-				var callback={
-					upload:function(obj1){
-	    				window.viewer.refreshCatalogs("file");
-	    				this.cancel();
-					},
-					scope:this
-				}
-				openModalPanel("file","Uploading File.")
-				
-				var method = 'POST';
-				if(file_name!=""){
-					method='PUT';
-				}
-				YAHOO.util.Connect.asyncRequest(method,file_dest,callback);
-			}},isDefault:true},
+		var buttons=[{text:"Upload",handler:{fn:this.uploadFile},isDefault:true},
 			{text:"Close",handler:{fn:function(){
 				this.cancel();
 			}}}];
@@ -1200,6 +1129,66 @@ function UploadFileForm(_obj){
 		
 		this.panel.render("page_body");
 		this.panel.show();
+	}
+
+	this.uploadFile=function(){
+		var coll_select=document.getElementById("upload_collection");
+  	    if(coll_select.disabled==true){
+  	    	alert("Please select a folder for this file.");
+  	    	return;
+  	    }
+  	    
+  	    if(document.getElementById("local_file").value==""){
+  	    	alert("Please select a file to upload.");
+  	    	return;
+  	    }
+  	    
+		var collection_name=coll_select.options[coll_select.selectedIndex].value;
+		
+		var file_tags=document.getElementById("file_tags").value.trim();
+		var file_format=document.getElementById("file_format").value.trim();
+		var file_content=document.getElementById("file_content").value.trim();
+		var file_name=document.getElementById("file_name").value.trim();
+		if(file_name[0]=="/"){
+			file_name=file_name.substring(1);
+		}
+		
+		var file_params="?file_upload=true&XNAT_CSRF=" + csrfToken;
+		
+		if(file_content!=""){
+			file_params+="&content="+file_content;
+		}
+		if(file_format!=""){
+			file_params+="&format="+file_format;
+		}
+		if(file_tags!=""){
+			file_params+="&tags="+file_tags;
+		}
+			
+		var file_dest = this.selector.obj.uri;
+		if(collection_name==""){
+			file_dest=this.selector.obj.uri+"/files";
+		}else{
+			file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
+		}
+		
+		if(file_name!=""){
+			file_dest +="/"+ file_name;
+		}
+		
+		if(document.getElementById("local_file").value.endsWith(".zip")
+		  || document.getElementById("local_file").value.endsWith(".gz")
+		  || document.getElementById("local_file").value.endsWith(".xar")){
+			if(confirm("Would you like the contents of this archive file to be extracted on the server?")){
+				file_params+="&extract=true";
+			}
+		}
+		
+		file_dest+=file_params;
+		
+		var justification=new XNAT.app.requestJustification("add_file","File Upload Dialog",XNAT.app._uploadFile,this);
+		justification.file_dest=file_dest;
+		justification.file_name=file_name;
 	}
 }
    
@@ -1423,80 +1412,7 @@ function AddFolderForm(_obj){
 		this.panel.setBody(div);
 		
 		this.panel.selector=this;
-		var buttons=[{text:"Create",handler:{fn:function(){
-				var coll_select=document.getElementById("folder_collection");
-		  	    if(coll_select.disabled==true){
-		  	    	alert("Please select a folder for this file.");
-		  	    	return;
-		  	    }
-		  	    
-		  	    if(coll_select.value==""){
-		  	    	alert("Please identify a folder name.");
-		  	    	return;
-		  	    }
-		  	    
-				var collection_name=coll_select.value;
-				
-				var file_tags=document.getElementById("folder_tags").value.trim();
-				var file_format=document.getElementById("folder_format").value.trim();
-				var file_content=document.getElementById("folder_content").value.trim();
-				var folder_level=document.getElementById("folder_level");
-				if(folder_level!=null && folder_level.selectedIndex==0){
-					alert("Please select a level");
-					return;
-				}
-				
-				var file_params="?n=1&XNAT_CSRF=" + csrfToken;
-				
-				if(file_content!=""){
-					file_params+="&content="+file_content;
-				}
-				if(file_format!=""){
-					file_params+="&format="+file_format;
-				}
-				if(file_tags!=""){
-					file_params+="&tags="+file_tags;
-				}
-	  			
-	  			
-				if(folder_level==null || folder_level.options[folder_level.selectedIndex].value=="resources"){
-					var file_dest = this.selector.obj.uri+"/resources/"+ collection_name;
-				}else{
-					var folder_item=document.getElementById("folder_item");
-					if(folder_item.selectedIndex==0){
-						alert("Please select an item.");
-						return;
-					}
-					file_dest =this.selector.obj.uri+"/" +
-						 folder_level.options[folder_level.selectedIndex].value+ "/"+ 
-						 folder_item.options[folder_item.selectedIndex].value+ "/"+ 
-						 "resources/"+ 
-						 collection_name;
-				}				
-				
-				file_dest+=file_params;
-								
-				var callback={
-					success:function(obj1){
-						closeModalPanel("file");
-	    				window.viewer.refreshCatalogs("file");
-	    				this.cancel();
-					},
-					failure:function(obj1){
-						closeModalPanel("file");
-						if(obj1.status==409){
-							alert('Specified resource already exists.');
-						}else{
-	    					alert(obj1.toString());
-						}
-	    				this.cancel();
-					},
-					scope:this
-				}
-				openModalPanel("file","Creating folder.")
-				
-				YAHOO.util.Connect.asyncRequest('PUT',file_dest,callback);
-			}},isDefault:true},
+		var buttons=[{text:"Create",handler:{fn:this.addFolder},isDefault:true},
 			{text:"Close",handler:{fn:function(){
 				this.cancel();
 			}}}];
@@ -1506,4 +1422,117 @@ function AddFolderForm(_obj){
 		this.panel.render("page_body");
 		this.panel.show();
 	}
+	
+	this.addFolder=function (){
+		var coll_select=document.getElementById("folder_collection");
+	    if(coll_select.disabled==true){
+	    	alert("Please select a folder for this file.");
+	    	return;
+	    }
+	    
+	    if(coll_select.value==""){
+	    	alert("Please identify a folder name.");
+	    	return;
+	    }
+	    
+		var collection_name=coll_select.value;
+		
+		var file_tags=document.getElementById("folder_tags").value.trim();
+		var file_format=document.getElementById("folder_format").value.trim();
+		var file_content=document.getElementById("folder_content").value.trim();
+		var folder_level=document.getElementById("folder_level");
+		if(folder_level!=null && folder_level.selectedIndex==0){
+			alert("Please select a level");
+			return;
+		}
+		
+		var file_params="?n=1&XNAT_CSRF=" + csrfToken;
+		
+		if(file_content!=""){
+			file_params+="&content="+file_content;
+		}
+		if(file_format!=""){
+			file_params+="&format="+file_format;
+		}
+		if(file_tags!=""){
+			file_params+="&tags="+file_tags;
+		}
+			
+			
+		if(folder_level==null || folder_level.options[folder_level.selectedIndex].value=="resources"){
+			var file_dest = this.selector.obj.uri+"/resources/"+ collection_name;
+		}else{
+			var folder_item=document.getElementById("folder_item");
+			if(folder_item.selectedIndex==0){
+				alert("Please select an item.");
+				return;
+			}
+			file_dest =this.selector.obj.uri+"/" +
+				 folder_level.options[folder_level.selectedIndex].value+ "/"+ 
+				 folder_item.options[folder_item.selectedIndex].value+ "/"+ 
+				 "resources/"+ 
+				 collection_name;
+		}				
+		
+		file_dest+=file_params;
+		var justification=new XNAT.app.requestJustification("add_folder","Folder Creation Dialog",XNAT.app._addFolder,this);
+		justification.file_dest=file_dest;
+	}
+	
+	
+}
+
+
+XNAT.app._uploadFile=function(arg1,arg2,container){	 
+	var event_reason=container.dialog.event_reason;
+	var form = document.getElementById("file_upload");
+	YAHOO.util.Connect.setForm(form,true);
+	
+	var callback={
+		upload:function(obj1){
+			window.viewer.refreshCatalogs("add_file");
+			this.cancel();
+		},
+		scope:this
+	}
+	openModalPanel("add_file","Uploading File.")
+	
+	var method = 'POST';
+	if(container.file_name!=""){
+		method='PUT';
+	}
+	
+
+	var params="&event_reason="+event_reason;
+	params+="&event_type=WEB_FORM";
+	params+="&event_action=File(s) uploaded";
+	YAHOO.util.Connect.asyncRequest(method,container.file_dest+params,callback);
+}
+
+XNAT.app._addFolder=function(arg1,arg2,container){	   
+	var event_reason=container.dialog.event_reason;
+	var callback={
+		success:function(obj1){
+			closeModalPanel("add_folder");
+			window.viewer.refreshCatalogs("add_folder");
+			this.cancel();
+		},
+		failure:function(obj1){
+			closeModalPanel("add_folder");
+			if(obj1.status==409){
+				alert('Specified resource already exists.');
+			}else{
+				alert(obj1.toString());
+			}
+			this.cancel();
+		},
+		scope:this
+	}
+	openModalPanel("add_folder","Creating folder.");
+	
+	var params="&event_reason="+event_reason;
+	params+="&event_type=WEB_FORM";
+	params+="&event_action=Folder Created";
+	
+	YAHOO.util.Connect.asyncRequest('PUT',container.file_dest+params,callback);
 }

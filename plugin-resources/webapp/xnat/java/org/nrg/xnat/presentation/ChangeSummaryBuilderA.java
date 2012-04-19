@@ -2,6 +2,7 @@ package org.nrg.xnat.presentation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.nrg.xft.presentation.FlattenedItem;
@@ -139,6 +141,19 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 				}
 			}
 			return summary;
+		}
+
+		public JSONObject toJSON() throws JSONException {
+			JSONObject o = new JSONObject();
+			o.put("date", getDate());
+			
+			JSONArray a = new JSONArray();
+			o.put("changes", a);
+			for(ItemEventI ie: getEvents()){
+				a.put(ie.toJSON());
+			}
+			
+			return o;
 		}
 	}
 	
@@ -464,7 +479,9 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 			o.put("objectHeader", object.objectHeader);
 			o.put("objectLabel", object.objectLabel);
 			o.put("action", action);
-			o.put("field", field.toJSON());
+			if(field!=null){
+				o.put("field", field.toJSON());
+			}
 			
 			return o;
 		}

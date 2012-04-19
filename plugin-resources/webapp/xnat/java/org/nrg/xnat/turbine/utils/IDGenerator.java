@@ -43,7 +43,7 @@ public class IDGenerator implements IDGeneratorI {
 		
 		String temp_id=null;
 		
-		XFTTable table = org.nrg.xft.search.TableSearch.Execute("SELECT " + column + " FROM " + tableName + " WHERE " + column + " LIKE '" + site + "%';", null, null);
+		XFTTable table = org.nrg.xft.search.TableSearch.Execute("SELECT DISTINCT " + column + " FROM (SELECT " + column + " FROM " + tableName + " WHERE " + column + " LIKE '" + site + "%' UNION SELECT DISTINCT " + column + " FROM " + tableName + "_history WHERE " + column + " LIKE '" + site + "%') SRCH;", null, null);
         ArrayList al =table.convertColumnToArrayList(column.toLowerCase());
         
         if (al.size()>0 || claimedIDs.size()>0){

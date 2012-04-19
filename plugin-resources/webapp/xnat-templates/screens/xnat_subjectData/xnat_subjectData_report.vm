@@ -73,12 +73,6 @@ function summaryIndexChanged(){
 function summaryTabManagerInit(){
     window.summaryTabView = new YAHOO.widget.TabView('subjectSummary');   
     window.subject_summary_module = new YAHOO.widget.Module("subject_summary_module",{visible:false,zIndex:5});   
-	
-window.summaryTabView.addTab( new YAHOO.widget.Tab({   
-    label: 'History',   
-    dataSrc: serverRoot+'/REST/subjects/$om.getId()?format=html&requested_screen=WorkflowHistorySummary&includeFiles=false',   
-    cacheData: false
-}));   
     
     window.subject_summary_module.show(); 		    
     

@@ -171,17 +171,22 @@ public class FileList extends XNATCatalogTemplate {
 						}
 					}
 					
-					boolean updateStats=isQueryVariableFalse("update-stats");
+					boolean skipUpdateStats=isQueryVariableFalse("update-stats");
 					
 					boolean isNew=false;
-					if(wrk==null && updateStats){
+					if(wrk==null && !skipUpdateStats){
 						isNew=true;
 						wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, getSecurityItem().getItem(), newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.UPLOAD_FILE));
 					}
 					
-					final EventMetaI i=wrk.buildEvent();
+					final EventMetaI i;
+					if(wrk==null){
+						i=EventUtils.ADMIN_EVENT(user);
+					}else{
+						i=wrk.buildEvent();
+					}
 					
-					UpdateMeta um= new UpdateMeta(i,(updateStats)?false:true);
+					UpdateMeta um= new UpdateMeta(i,!(skipUpdateStats));
 					
 					try {
 						this.buildResourceModifier(overwrite,um).addFile(getFileWriters(),resourceIdentifier,type, filepath, this.buildResourceInfo(um),overwrite);

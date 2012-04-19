@@ -2,6 +2,8 @@
 package org.nrg.xnat.restlet.resources;
 
 import com.noelios.restlet.http.HttpConstants;
+
+import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.DefaultFileItemFactory;
@@ -43,7 +45,10 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.itemBuilders.FullFileHistoryBuilder;
+import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
+import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
 import org.nrg.xnat.restlet.representations.*;
+import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
 import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ChangeSummary;
 import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ItemEventI;
 import org.nrg.xnat.presentation.DateBasedSummaryBuilder;
@@ -1055,29 +1060,13 @@ public abstract class SecureResource extends Resource {
 	}
 	
 	public Representation buildChangesets(XFTItem item, MediaType mt) throws Exception{
-		Map<Date,ChangeSummary> changes=DateBasedSummaryBuilder.build(
-				Arrays.asList(
-						ItemMerger.merge(
-							ItemPropBuilder.build(item, FlattenedItemA.GET_ALL,Arrays.asList(new FullFileHistoryBuilder())))),null);
-			
-			JSONObject wrapper = new JSONObject();
-			JSONArray objects=new JSONArray();
-			
-			for(Map.Entry<Date,ChangeSummary> entry: changes.entrySet()){
-				JSONObject o = new JSONObject();
-				o.put("date", entry.getKey());
-				
-				JSONArray a = new JSONArray();
-				o.put("events", a);
-				for(ItemEventI ie: entry.getValue().getEvents()){
-					a.put(ie.toJSON());
-				}
-				
-				objects.put(o);
-			}
-			wrapper.put("changesets", objects);
-			
-			return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, wrapper);
+		String files=this.getQueryVariable("includeFiles");
+		String details=this.getQueryVariable("includeDetails");
+		final boolean includeFiles=(StringUtils.isEmpty(files))?false:Boolean.valueOf(files.toString());
+		final boolean includedetails=(StringUtils.isEmpty(details))?false:Boolean.valueOf(details.toString());
+		
+		
+		return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, (new WorkflowBasedHistoryBuilder(item,item.getStringProperty("ID"),user,includeFiles,includedetails)).toJSON());
 	}
 	
 	public Integer getEventId(){

@@ -98,10 +98,18 @@
 
 
 #macro (xdatStringBox $name $item $defaultValue $vr)
-	#xdatStringBoxOnChange($name $item $defaultValue "" $vr)
+	#xdatStringBoxOnChange($name $item $defaultValue "" $vr "")
+#end
+
+#macro (xdatStringBox $name $item $defaultValue $vr $classes)
+	#xdatStringBoxOnChange($name $item $defaultValue "" $vr $classes)
 #end
 
 #macro (xdatStringBoxOnChange $name $item $defaultValue $onChange $vr)
+	#xdatStringBoxOnChange($name $item $defaultValue  $onChange $vr "")
+#end
+
+#macro (xdatStringBoxOnChange $name $item $defaultValue $onChange $vr $classes)
 	#if ($vr)
 		#if($vr.getField($name))
 			<font color="red">&#8658</font>
@@ -112,10 +120,10 @@
 			<input id="$name" type="hidden" name="$name" value="$item.getStringProperty($name)" #if($!onChange != "") onchange="$!{onChange}(this)" #end/>
 			$item.getProperty($name)
 		#else
-			<input id="$name" type="text" name="$name" value="$item.getStringProperty($name)" #if($!onChange != "") onchange="$!{onChange}(this)" #end/>
+			<input id="$name" class="$!classes" type="text" name="$name" value="$item.getStringProperty($name)" #if($!onChange != "") onchange="$!{onChange}(this)" #end/>
 		#end
 	#else
-		<input id="$name" type="text" name="$name" value="$defaultValue" #if($!onChange != "") onchange="$!{onChange}(this)" #end/>
+		<input id="$name" class="$!classes" type="text" name="$name" value="$defaultValue" #if($!onChange != "") onchange="$!{onChange}(this)" #end/>
 	#end
 #end
 

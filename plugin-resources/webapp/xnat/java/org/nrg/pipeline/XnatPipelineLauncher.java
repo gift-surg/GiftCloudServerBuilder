@@ -29,11 +29,13 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.DBItemCache;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.security.XnatLdapAuthenticator;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.XnatLdapAuthenticator.AuthenticationAttempt;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class XnatPipelineLauncher {
     static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);
@@ -390,16 +392,16 @@ public class XnatPipelineLauncher {
     }
 
     private void initiateWorkflowEntry() throws Exception {
-//REMOVED DUE to dateTime milliseconds inconsistency
-//            WrkWorkflowdata wrk = new WrkWorkflowdata();
-//            wrk.setDataType(this.getDataType());
-//            wrk.setId(this.getId());
-//            wrk.setExternalid(this.getExternalId());
-//            wrk.setPipelineName(this.getPipelineName());
-//            wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
-//            wrk.setStatus("Queued");
-//            wrk.save(user,false,true,DBItemCache.DEFAULT_MESSAGE);
-
+//        WrkWorkflowdata wrk = new WrkWorkflowdata((UserI)user);
+//        wrk.setDataType(this.getDataType());
+//        wrk.setId(this.getId());
+//        wrk.setExternalid(this.getExternalId());
+//        wrk.setCategory(EventUtils.CATEGORY.DATA);
+//        wrk.setType(EventUtils.TYPE.PROCESS);
+//        wrk.setPipelineName(this.getPipelineName());
+//        wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
+//        wrk.setStatus("Queued");
+//        WorkflowUtils.save(wrk, wrk.buildEvent());
     }
 
     /**

@@ -1,6 +1,8 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.turbine.modules.screens;
 
+import java.util.Calendar;
+
 import org.apache.turbine.util.RunData;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -37,6 +39,7 @@ public class XDATScreen_edit_xnat_qcManualAssessorData
 					// set defaults for new qc assessors
 					qcAccessor.setImagesessionId(search_value);
 					qcAccessor.setId(XnatExperimentdata.CreateNewID());
+					qcAccessor.setLabel(imageSession.getLabel() + "_"+ Calendar.getInstance().getTimeInMillis());
 					qcAccessor.setProject(imageSession.getProject());
 					
 					for (XnatImagescandataI imageScan: imageSession.getScans_scan()){

@@ -8,11 +8,16 @@ import java.util.Map;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
+import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
 
 
 public class WorkflowHistorySummary extends SecureReport {
@@ -47,5 +52,4 @@ public class WorkflowHistorySummary extends SecureReport {
 		}
 		
 	}
-
 }

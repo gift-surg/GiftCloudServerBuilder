@@ -160,6 +160,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 				}
 			}
 		} catch (Throwable e) {
+			logger.error("",e);
 			if(backupDIR!=null){
 				rollback(backupDIR,destDIR,rootBackup);
 			}else{

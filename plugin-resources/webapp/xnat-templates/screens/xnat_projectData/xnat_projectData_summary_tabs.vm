@@ -71,11 +71,6 @@ function summaryTabManagerInit(){
     #end
 #end
 
-	window.summaryTabView.addTab( new YAHOO.widget.Tab({   
-    label: 'History',   
-    dataSrc: serverRoot+'/REST/projects/$om.getId()?format=html&requested_screen=WorkflowHistorySummary&includeFiles=false',   
-    cacheData: false
-}));   
 
     window.project_summary_module = new YAHOO.widget.Module("project_summary_module",{visible:false,zIndex:5});
     

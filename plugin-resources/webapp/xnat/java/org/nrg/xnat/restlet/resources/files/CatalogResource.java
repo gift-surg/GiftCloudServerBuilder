@@ -149,6 +149,12 @@ public class CatalogResource extends XNATCatalogTemplate {
 									wrk=(WrkWorkflowdata)CollectionUtils.get(wrks, 0);
 									if(!"xnat_tools/AutoRun.xml".equals(wrk.getPipelineName())){
 										wrk=null;
+									}else{
+										if(StringUtils.IsEmpty(wrk.getCategory())){
+											wrk.setCategory(EventUtils.CATEGORY.DATA);
+											wrk.setType(EventUtils.TYPE.PROCESS);
+											WorkflowUtils.save(wrk, wrk.buildEvent());
+										}
 									}
 								}
 							}
@@ -211,7 +217,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 						
 						try {
 							resource.deleteWithBackup(rootPath, user, ci);
-						SaveItemHelper.authorizedRemoveChild(this.parent.getItem(), xmlPath, resource.getItem(), user,ci);
+							SaveItemHelper.authorizedRemoveChild(this.parent.getItem(), xmlPath, resource.getItem(), user,ci);
 
 							PersistentWorkflowUtils.complete(workflow,ci);
 						} catch (Exception e) {

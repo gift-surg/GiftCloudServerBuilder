@@ -59,6 +59,7 @@ XNAT.app.locker= {
 		params+="&event_type=WEB_FORM";
 		params+="&event_action=Lock Item";
 		params+="&_lock=true";
+		params+="&XNAT_CSRF="+csrfToken;
 
 		YAHOO.util.Connect.asyncRequest('PUT',XNAT.app.current_uri+"?"+params,initCallback,null,this);
    },
@@ -89,6 +90,7 @@ XNAT.app.locker= {
 		params+="&event_type=WEB_FORM";
 		params+="&event_action=Unlock Item";
 		params+="&_unlock=true";
+		params+="&XNAT_CSRF="+csrfToken;
 
 		YAHOO.util.Connect.asyncRequest('PUT',XNAT.app.current_uri+"?"+params,initCallback,null,this);
 	}

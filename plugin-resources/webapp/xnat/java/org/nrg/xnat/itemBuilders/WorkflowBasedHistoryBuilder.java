@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
@@ -204,7 +206,7 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 								"SELECT DISTINCT id FROM (SELECT sad.id FROM xnat_subjectassessordata sad WHERE subject_id='%1$s' UNION " +
 								"SELECT iad.id FROM xnat_subjectassessordata sad LEFT JOIN xnat_imageassessordata iad ON sad.id=iad.imagesession_id WHERE iad.id IS NOT NULL AND subject_id='%1$s' UNION " +
 								"SELECT sad.id FROM xnat_subjectassessordata_history sad WHERE subject_id='%1$s' UNION " +
-								"SELECT iad.id FROM xnat_subjectassessordata sad LEFT JOIN xnat_imageassessordata_history iad ON sad.id=iad.imagesession_id WHERE iad.id IS NOT NULL AND subject_id='%1$s' UNION" +
+								"SELECT iad.id FROM xnat_subjectassessordata sad LEFT JOIN xnat_imageassessordata_history iad ON sad.id=iad.imagesession_id WHERE iad.id IS NOT NULL AND subject_id='%1$s' UNION " +
 								"SELECT iad.id FROM xnat_subjectassessordata_history sad LEFT JOIN xnat_imageassessordata_history iad ON sad.id=iad.imagesession_id WHERE iad.id IS NOT NULL AND subject_id='%1$s') SRCH;",id), i.getDBName(), user.getLogin()).toArrayListOfLists();
 						for(List expt:expts){
 							ids.add((String)expt.get(0));
@@ -330,5 +332,38 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 			}
 			return level;
 		}
+	}
+
+	public JSONObject toJSON() throws Exception{
+		Map<Number,WorkflowView> changes=call();
+
+		JSONObject wrapper=new JSONObject();
+		JSONArray objects=new JSONArray();
+		
+		for(Map.Entry<Number,WorkflowBasedHistoryBuilder.WorkflowView> entry: changes.entrySet()){
+			JSONObject o = new JSONObject();
+			o.put("event_id", entry.getKey());
+			o.put("event_action", entry.getValue().getMessage());
+			o.put("event_date", entry.getValue().getDate());
+			o.put("event_user", entry.getValue().getUsername());
+			if(entry.getValue().getWorkflow()!=null){
+				o.put("event_type", entry.getValue().getWorkflow().getType());
+				o.put("event_reason", entry.getValue().getWorkflow().getJustification());
+				o.put("event_category", entry.getValue().getWorkflow().getCategory());
+				o.put("event_status", entry.getValue().getWorkflow().getStatus());
+			}
+			
+			JSONArray a = new JSONArray();
+			o.put("changesets", a);
+			for(ChangeSummaryBuilderA.ChangeSummary cs: entry.getValue().getChangeSummaries()){
+				a.put(cs.toJSON());
+			}
+			
+			objects.put(o);
+		}
+		
+		wrapper.put("events", objects);
+		
+		return wrapper;
 	}
 }

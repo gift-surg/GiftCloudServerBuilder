@@ -29,7 +29,7 @@ RestDeleter = function(_array,_config) {
 	  	   	  	this.trArray.push(tr);
   	    	}
   	    } 
-		var NUMSPACES=this.config.defaultHeight/25;
+		var NUMSPACES=(this.config.defaultHeight/25)-4;
 		for (var j=0; j<NUMSPACES; j++){
 			var tr=tb.appendChild(document.createElement("tr"));
 			var td1=tr.appendChild(document.createElement("td"));
@@ -39,6 +39,17 @@ RestDeleter = function(_array,_config) {
 		var td1=tr.appendChild(document.createElement("td"));
 		td1.innerHTML="Are you sure you want to permanently remove this data from the archive?<br />(Data shared into this project will be un-shared, rather than deleted.)";
 		td1.style.color="red";
+
+		var tr=tb.appendChild(document.createElement("tr"));
+		var td1=tr.appendChild(document.createElement("td"));
+		var lblDiv=td1.appendChild(document.createElement("div"));
+		lblDiv.innerHTML="Justification:";
+		var sel = td1.appendChild(document.createElement("textarea"));
+		sel.cols="48";
+		sel.rows="4";
+		sel.id="del_event_reason";
+		sel.name="del_event_reason";
+		td1.appendChild(sel);
 		
 	    var myButtons = [ { text:"Cancel", handler:this.handleCancel, isDefault:true }, { text:"Delete", handler:{fn:this.handleDelete, scope:this} } ];
 		this.popup.cfg.queueProperty("buttons", myButtons);
@@ -46,7 +57,11 @@ RestDeleter = function(_array,_config) {
 	
 	
 	this.handleDelete=function(){
-
+		if(document.getElementById("del_event_reason").value==""){
+			alert("Please specify a justification for this operation.");
+			return;
+		}
+			
 		this.process();
 	}
 	
@@ -80,6 +95,10 @@ RestDeleter = function(_array,_config) {
   			if(rF==null || rF.checked){
     			params +="&removeFiles=true"
     		}
+  			params+="&event_reason="+document.getElementById("del_event_reason").value;
+  			params+="&event_type=WEB_FORM";
+  			params+="&event_action=Deletion";
+  			
     		var matched=false;
 
     		for(var traC=0;traC<this.trArray.length;traC++){
@@ -105,7 +124,6 @@ RestDeleter = function(_array,_config) {
 				  	   	  	this.currentTR.pDivColor.style.color="black";
 				  	   	  	this.currentTR.pDivColor.innerHTML="&nbsp;error&nbsp;";
 				    		alert("ERROR " + o.status+ ": Failed to delete " + this.currentTR.entry.label);
-							//this.popup.firstButton.textContent="Close";
 						},
 						scope:this
 					}
@@ -124,28 +142,12 @@ RestDeleter = function(_array,_config) {
 	    		}else{
 		    		window.location.reload();
 	    		}
-			//this.popup.firstButton.textContent="Close";
     		}
     	}else{
     		closeModalPanel("stopAction");
-			//this.popup.firstButton.textContent="Close";
     	}
     }
     
-     
-  /*this.beforeInit=function(obj){
-  	var msg="Are you sure you want to permanently remove this data ";
-  	var rF=document.getElementById("removeFiles");
-  	if(rF==null || rF.checked){
-  		msg+="(including files) ";
-  	}
-  	msg+="from the archive?\r\n\r\n(Data shared into this project will be un-shared, rather than deleted)";
- 	if(confirm(msg)){
- 		return true;
- 	}else{
- 		return false;
- 	}	
-  }*/
 };
 
 YAHOO.extend(RestDeleter, BasePopup, {

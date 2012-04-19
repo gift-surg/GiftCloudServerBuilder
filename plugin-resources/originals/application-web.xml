@@ -19,6 +19,10 @@
     <listener-class>org.apache.turbine.services.session.SessionListener</listener-class>
   </listener>
 -->
+    <!-- HttpSessionEventPublisher enables session counting for the concurrent session filter --> 
+    <listener>
+        <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+    </listener> 
 	<context-param>
         <param-name>org.restlet.component</param-name>
         <param-value>org.nrg.xnat.restlet.XNATComponent</param-value>

@@ -32,11 +32,35 @@
     <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
           p:loginFormUrl="/app/template/Login.vm"/>
 
+    <bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
+        <property name="sessionRegistry" ref="sessionRegistry" />
+        <property name="expiredUrl" value="/app/template/Login.vm" />
+    </bean>
+    <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+    <bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
+        <constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+        <property name="maximumSessions" value="10"/>
+        <property name="exceptionIfMaximumExceeded" value="true"/>
+    </bean>
+    <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+        <constructor-arg index="0" value="/app/template/Login.vm"/>
+        <constructor-arg index="1">
+            <list>
+                <ref bean="xnatLogoutHandler"/>
+                <ref bean="securityContextLogoutHandler"/>
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl" value="/app/action/LogoutUser" />
+    </bean>
+    <bean id="securityContextLogoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+        <property name="invalidateHttpSession" value="true" />
+    </bean>  
+    <bean id="xnatLogoutHandler" class="org.nrg.xnat.security.XnatLogoutHandler">
+        <property name="sessionRegistry" ref="sessionRegistry" />
+    </bean>
 
-
-    	<security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
+    <security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
 	  <security:http-basic/>
-    	<security:logout logout-url="/app/action/LogoutUser" />
         <security:intercept-url pattern="/app/template/Login.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Register.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/ForgotLogin.vm" access="permitAll" requires-channel="${security.channel}"/>
@@ -49,6 +73,9 @@
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="${security.channel}"/>
 	<security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
 	<security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="customBasicAuthenticationFilter"/>
+	<security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
+	<security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
+	<security:session-management session-authentication-strategy-ref="sas"/>
 	</security:http>
 	
 	<!--<security:authentication-manager alias="authenticationManager">
@@ -67,17 +94,20 @@
 	       <property name="authenticationManager" ref="customAuthenticationManager" />
 	       <property name="authenticationSuccessHandler" ref="logUserLogin" />
 	       <property name="authenticationFailureHandler" ref="authFailure" />
+	       <property name="sessionAuthenticationStrategy" ref="sas" />
 	</bean>
 
 	<bean id="customAuthenticationFilter2" class="org.nrg.xnat.security.XnatAuthenticationFilter">
 	       <property name="authenticationManager" ref="customAuthenticationManager" />
 	       <property name="authenticationSuccessHandler" ref="logUserLogin" />
 	       <property name="authenticationFailureHandler" ref="authFailure" />
+	       <property name="sessionAuthenticationStrategy" ref="sas" />
 	</bean>
 
 	<bean id="customBasicAuthenticationFilter" class="org.nrg.xnat.security.XnatBasicAuthenticationFilter">
 	       <property name="authenticationManager" ref="customAuthenticationManager" />
 	       <property name="authenticationEntryPoint" ref="loginUrlAuthenticationEntryPoint" />
+	       <property name="sessionAuthenticationStrategy" ref="sas" />
 	</bean>
 
 	<bean id="sha2DatabaseAuthProvider" class="org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider"

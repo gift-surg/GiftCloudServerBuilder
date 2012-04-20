@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Washington University
+ * Copyright (c) 2011,2012 Washington University
  */
 package org.nrg.dcm;
 
@@ -25,7 +25,9 @@ import static org.dcm4che2.data.UID.VerificationSOPClass;
 import static org.dcm4che2.data.UID.XMLEncoding;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 import javax.inject.Provider;
@@ -42,14 +44,17 @@ import org.nrg.xnat.DicomObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
  * 
  */
 public class DicomSCP {
-    private static final String SERVICE_NAME = "XNAT_DICOM";
+    private static final String DEVICE_NAME = "XNAT_DICOM";
 
     // Verification service can only use LE encoding
     private static final String[] VERIFICATION_SOP_TS = {
@@ -71,32 +76,42 @@ public class DicomSCP {
 
     private final Executor executor;
     private final Device device;
-    private final XDATUser user;
-    private final NetworkApplicationEntity ae;
-    private final CStoreService cstore;
+    private final Multimap<NetworkApplicationEntity,DicomService> aes = LinkedHashMultimap.create();
 
-    public DicomSCP(final XDATUser user,
-            final Executor executor,
-            final Device device,
-            final NetworkApplicationEntity ae,
-            final DicomObjectIdentifier<XnatProjectdata> identifier)
-    throws IOException {
+    public DicomSCP(final Executor executor, final Device device) {
         this.executor = executor;
         this.device = device;
-        this.user = user;
-        this.ae = ae;
-        cstore = new CStoreService(ae, identifier, user);
-        initTransferCapability(ae, cstore);
+    }
+
+    public int getPort() {
+        return device.getNetworkConnection()[0].getPort();
     }
     
-    public DicomSCP(final Provider<XDATUser> userProvider,
-            final Executor executor,
-            final Device device,
-            final NetworkApplicationEntity ae,
-            final DicomObjectIdentifier<XnatProjectdata> identifier)
-    throws IOException {
-        this(userProvider.get(), executor, device, ae, identifier);
+    public DicomSCP setService(final String aeTitle, final DicomService service) {
+        if (Strings.isNullOrEmpty(aeTitle)) {
+            throw new IllegalArgumentException("can only add service to named AE");
+        }
+        NetworkApplicationEntity ae = null;
+        for (final NetworkApplicationEntity iae : aes.keySet()) {
+            if (aeTitle.equals(iae.getAETitle())) {
+                ae = iae;
+                break;
+            }
+        }
+        if (null == ae) {
+            ae = new NetworkApplicationEntity();
+            ae.setNetworkConnection(device.getNetworkConnection());
+            ae.setAssociationAcceptor(true);
+            ae.setAETitle(aeTitle);
+        }
+        aes.put(ae, service);
+        return this;
     }
+    
+    public DicomSCP setCStoreService(final CStoreService.Specifier spec) {
+        return setService(spec.getAETitle(), spec.build());
+    }
+    
 
     /**
      * Set the hostname for the SCP. This may be used to
@@ -104,51 +119,87 @@ public class DicomSCP {
      * @param hostname
      * @return this
      */
-    public DicomSCP setHostname(final String hostname) {
+    public DicomSCP setHostname(final String hostname, final String aeTitle) {
         // TODO: check state. is this possible?
-        ae.getNetworkConnection()[0].setHostname(hostname);
+        for (final NetworkApplicationEntity ae : aes.keySet()) {
+            if (null == aeTitle || aeTitle.equals(ae.getAETitle())) {
+                ae.getNetworkConnection()[0].setHostname(hostname);
+            }
+        }
         return this;
     }
     
-    /**
-     * Set the DicomFileNamer used to build file names
-     * @param namer
-     * @return this
-     */
-    public DicomSCP setNamer(final DicomFileNamer namer) {
-        cstore.setNamer(namer);
-        return this;
+    public DicomSCP setHostname(final String hostname) {
+        return setHostname(hostname, null);
     }
+
     
     public void start() throws IOException {
-        logger.info("starting DICOM SCP {} on {}:{} as user {}",
+        logger.info("starting DICOM SCP on {}:{}",
                 new Object[] {
-                device.getNetworkApplicationEntity()[0].getAETitle(),
                 device.getNetworkConnection()[0].getHostname(),
                 device.getNetworkConnection()[0].getPort(),
-                user.getUsername()
         });
+        if (logger.isDebugEnabled()) {
+            logger.debug("Application Entities: ");
+            for (final NetworkApplicationEntity ae : aes.keySet()) {
+                logger.debug("{}: {}", ae.getAETitle(), aes.get(ae));
+            }
+        }
+
+        final VerificationService cecho = new VerificationService();
+
+        for (final NetworkApplicationEntity ae : aes.keySet()) {
+            logger.trace("Setting up AE {}", ae.getAETitle());
+            final List<TransferCapability> tcs = Lists.newArrayList();
+            ae.register(cecho);
+            tcs.add(new TransferCapability(VerificationSOPClass,
+                    VERIFICATION_SOP_TS, TransferCapability.SCP));
+            for (final DicomService service : aes.get(ae)) {
+                logger.trace("adding {}", service);
+                ae.register(service);
+                for (final String sopClass : service.getSopClasses()) {
+                    tcs.add(new TransferCapability(sopClass, TSUIDS,
+                            TransferCapability.SCP));
+                }
+            }
+
+            ae.setTransferCapability(tcs.toArray(new TransferCapability[0]));
+        }
+        device.setNetworkApplicationEntity(aes.keySet().toArray(new NetworkApplicationEntity[0]));
         device.startListening(executor);
     }
 
     public void stop() {
         logger.info("stopping DICOM SCP");
         device.stopListening();
+        for (final NetworkApplicationEntity ae : aes.keySet()) {
+            for (final DicomService service : aes.get(ae)) {
+                ae.unregister(service);
+            }
+            ae.setTransferCapability(new TransferCapability[0]);
+        }
     }
 
-    private void initTransferCapability(final NetworkApplicationEntity ae,
-            final DicomService... services) {
-        final List<TransferCapability> tcs = Lists.newArrayList();
-        tcs.add(new TransferCapability(VerificationSOPClass,
-                VERIFICATION_SOP_TS, TransferCapability.SCP));
-        for (final DicomService service : services) {
-            for (final String sopClass : service.getSopClasses()) {
-                tcs.add(new TransferCapability(sopClass, TSUIDS,
-                        TransferCapability.SCP));
-            }
-        }
 
-        ae.setTransferCapability(tcs.toArray(new TransferCapability[0]));
+    public static DicomSCP create(final Executor executor, final int port,
+            final Iterable<CStoreService.Specifier> cStoreSpecs) {
+        final NetworkConnection nc = new NetworkConnection();
+        nc.setPort(port);
+
+        final Device device = new Device(DEVICE_NAME);
+        device.setNetworkConnection(nc);
+        
+        final DicomSCP scp = new DicomSCP(executor, device);
+        for (final CStoreService.Specifier spec : cStoreSpecs) {
+            scp.setCStoreService(spec);
+        }
+        return scp;
+    }
+    
+    public static DicomSCP create(final Executor executor, final int port,
+            final CStoreService.Specifier...cStoreSpecs) {
+        return create(executor, port, Arrays.asList(cStoreSpecs));
     }
 
     /**
@@ -163,23 +214,34 @@ public class DicomSCP {
      * @return new DicomSCP
      * @throws IOException
      */
-    public static DicomSCP create(final Provider<XDATUser> userProvider,
-            final Executor executor,
-            final String aeTitle, final int port,
+    public static DicomSCP create(final Executor executor, final int port,
+            final Provider<XDATUser> userProvider,
+            final String aeTitle,
             DicomObjectIdentifier<XnatProjectdata> identifier) throws IOException {
-        final NetworkConnection nc = new NetworkConnection();
-        nc.setPort(port);
+        return create(executor, port, new CStoreService.Specifier(aeTitle, userProvider, identifier));        
+    }
 
-        final NetworkApplicationEntity ae = new NetworkApplicationEntity();
-        ae.setNetworkConnection(nc);
-        ae.setAssociationAcceptor(true);
-        ae.register(new VerificationService());
-        ae.setAETitle(aeTitle);
 
-        final Device device = new Device(SERVICE_NAME);
-        device.setNetworkConnection(nc);
-        device.setNetworkApplicationEntity(ae);
-
-        return new DicomSCP(userProvider, executor, device, ae, identifier);
+    /**
+     * Creates a new DICOM C-STORE SCP.
+     * @param executor thread provider for server
+     * @param port TCP port number
+     * @param userProvider provides XNAT user who owns all of the services
+     * @param cstores Map of AE title to DicomObjectIdentifier for C-STORE services
+     * @return
+     * @throws IOException
+     */
+    public static DicomSCP create(final Executor executor,
+            final int port,
+            final Provider<XDATUser> userProvider,
+            final Map<String,DicomObjectIdentifier<XnatProjectdata>> cstores)
+    throws IOException {
+        final Logger logger = LoggerFactory.getLogger(DicomSCP.class);
+        final List<CStoreService.Specifier> specs = Lists.newArrayList();
+        for (final Map.Entry<String,DicomObjectIdentifier<XnatProjectdata>> me : cstores.entrySet()) {
+            logger.trace("preparing C-STORE service specifier for {}", me);
+            specs.add(new CStoreService.Specifier(me.getKey(), userProvider, me.getValue()));
+        }
+        return create(executor, port, specs);
     }
 }

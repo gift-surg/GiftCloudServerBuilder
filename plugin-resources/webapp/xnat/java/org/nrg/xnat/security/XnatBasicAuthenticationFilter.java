@@ -20,12 +20,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.NullRememberMeServices;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 	private AuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
     private RememberMeServices rememberMeServices = new NullRememberMeServices();
     private boolean ignoreFailure = false;
+    private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
     
 	private boolean authenticationIsRequired(String username) {
         // Only reauthenticate if username doesn't match SecurityContextHolder and user isn't authenticated
@@ -90,6 +93,10 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
                 try {
                     authResult = getAuthenticationManager().authenticate(authRequest);
+                    
+                    sessionStrategy.onAuthentication(authResult, request, response);
+                    
+                    
                 } catch (AuthenticationException failed) {
                     // Authentication failed
                     if (debug) {
@@ -126,4 +133,17 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
         chain.doFilter(request, response);
 	}
+	
+    /**
+     * The session handling strategy which will be invoked immediately after an authentication request is
+     * successfully processed by the <tt>AuthenticationManager</tt>. Used, for example, to handle changing of the
+     * session identifier to prevent session fixation attacks.
+     *
+     * @param sessionStrategy the implementation to use. If not set a null implementation is
+     * used.
+     */
+    public void setSessionAuthenticationStrategy(SessionAuthenticationStrategy sessionStrategy) {
+        this.sessionStrategy = sessionStrategy;
+    }
+	
 }

@@ -154,7 +154,6 @@
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.jdbc-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.orm-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.oxm-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.security.core-3.0.4.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>

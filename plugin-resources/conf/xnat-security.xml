@@ -42,22 +42,20 @@
         <property name="maximumSessions" value="10"/>
         <property name="exceptionIfMaximumExceeded" value="true"/>
     </bean>
+
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
         <constructor-arg index="0" value="/app/template/Login.vm"/>
         <constructor-arg index="1">
             <list>
-                <ref bean="xnatLogoutHandler"/>
                 <ref bean="securityContextLogoutHandler"/>
             </list>
         </constructor-arg>
         <property name="filterProcessesUrl" value="/app/action/LogoutUser" />
     </bean>
+
     <bean id="securityContextLogoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
         <property name="invalidateHttpSession" value="true" />
     </bean>  
-    <bean id="xnatLogoutHandler" class="org.nrg.xnat.security.XnatLogoutHandler">
-        <property name="sessionRegistry" ref="sessionRegistry" />
-    </bean>
 
     <security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
 	  <security:http-basic/>

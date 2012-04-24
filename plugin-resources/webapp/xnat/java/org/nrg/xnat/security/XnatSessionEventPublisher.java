@@ -6,7 +6,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
+import org.nrg.xnat.restlet.resources.SecureResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -84,16 +86,22 @@ public class XnatSessionEventPublisher implements HttpSessionListener, ServletCo
     	
     	String sessionId = event.getSession().getId();
         
+    	
     	Log log = LogFactory.getLog(LOGGER_NAME);
         
-    	//Remember, you will often get a sessionID for anonymous or guest. skip those. right?
       	java.util.Date today = java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime();
      	try {
-	      	JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
-	      	java.sql.Timestamp stamp = new java.sql.Timestamp(today.getTime());		
-			template.execute("UPDATE xdat_user_login SET logout_date='" + stamp +"' WHERE session_id='" + sessionId + "';");
+
+        	XDATUser user = (XDATUser) event.getSession().getAttribute(SecureResource.USER_ATTRIBUTE);
+        	if(user != null){
+	        	String userId = user.getID().toString();	     		
+	     		JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
+		      	java.sql.Timestamp stamp = new java.sql.Timestamp(today.getTime());
+		      	//sessionId's aren't guaranteed to be unique forever. But, the likelyhood of sessionId and userId not forming a unique combo with a null logout_date is slim.
+				template.execute("UPDATE xdat_user_login SET logout_date='" + stamp +"' WHERE logout_date is null and session_id='" + sessionId + "' and user_xdat_user_id='" + userId + "';");
+        	}
       	} catch (Exception e){
-      		//remember, you get session ID's for guest sessions. Those won't be in the table. Fail silently.
+      		//remember, anonymous gets a session, too. Those won't be in the table. Fail silently.
       	}
         HttpSessionDestroyedEvent e = new HttpSessionDestroyedEvent(event.getSession());
         if (log.isDebugEnabled()) {

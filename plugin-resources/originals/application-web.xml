@@ -19,18 +19,22 @@
     <listener-class>org.apache.turbine.services.session.SessionListener</listener-class>
   </listener>
 -->
-    <!-- HttpSessionEventPublisher enables session counting for the concurrent session filter --> 
+    <!-- HttpSessionEventPublisher enables session counting for the concurrent session filter, XnatSessionEventPublisher requires the contextAttribute parameter --> 
+    <context-param>
+        <param-name>contextAttribute</param-name>
+        <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.spring-mvc</param-value>
+    </context-param>
     <listener>
-        <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+        <listener-class>org.nrg.xnat.security.XnatSessionEventPublisher</listener-class>
     </listener> 
-	<context-param>
+    <context-param>
         <param-name>org.restlet.component</param-name>
         <param-value>org.nrg.xnat.restlet.XNATComponent</param-value>
-	</context-param>
-	<!-- Add the Servlet context path to routes: DEFAULT=true 
-		If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify this parameter BUT....
-		DO NOT MODIFY THIS FILE.  Instead, modify the file in your project directory xnat/projects/xnat/src/web-conf/web-projectMerge.xml
-	-->
+    </context-param>
+    <!-- Add the Servlet context path to routes: DEFAULT=true 
+         If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify this parameter BUT....
+         DO NOT MODIFY THIS FILE.  Instead, modify the file in your project directory xnat/projects/xnat/src/web-conf/web-projectMerge.xml
+    -->
     <context-param>
         <param-name>org.restlet.autoWire</param-name>
         <param-value>true</param-value>

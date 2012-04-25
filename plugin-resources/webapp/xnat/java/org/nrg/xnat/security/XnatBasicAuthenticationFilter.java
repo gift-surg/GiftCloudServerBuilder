@@ -144,6 +144,6 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
      */
     public void setSessionAuthenticationStrategy(SessionAuthenticationStrategy sessionStrategy) {
         this.sessionStrategy = sessionStrategy;
-}
+    }
 	
 }

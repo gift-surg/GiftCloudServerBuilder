@@ -65,9 +65,9 @@ public class XnatProviderManager extends ProviderManager {
 	private static Integer MAX_FAILED_LOGIN_ATTEMPTS=-1;
 	private static Integer LOCKOUT_DURATION=-60000;//in seconds
     
-    private static String PASSWORD_COMPLEXITY="";
-    private static String PASSWORD_COMPLEXITY_MESSAGE="";
-
+	private static String PASSWORD_COMPLEXITY="";
+	private static String PASSWORD_COMPLEXITY_MESSAGE="";
+	
     @Override
     public void afterPropertiesSet() throws Exception {
         if (properties == null) {
@@ -101,20 +101,20 @@ public class XnatProviderManager extends ProviderManager {
         }
     
         if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY)!=null){
-            PASSWORD_COMPLEXITY=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY);
+        	PASSWORD_COMPLEXITY=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY);
         }
-
+        
         if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY)!=null){
-            PASSWORD_COMPLEXITY_MESSAGE=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY);
+        	PASSWORD_COMPLEXITY_MESSAGE=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY);
         }
-
+    
      // Create providers
         List<AuthenticationProvider> tempProviders = new ArrayList<AuthenticationProvider>();
         for(String prov: providerArray){
-            String name = providerMap.get(prov).get("provider." + prov + ".name");
-            String id = providerMap.get(prov).get("provider." + prov + ".id");
+        	String name = providerMap.get(prov).get("provider." + prov + ".name");
+        	String id = providerMap.get(prov).get("provider." + prov + ".id");
         	String type = providerMap.get(prov).get("provider." + prov + ".type");
-
+    		 
         	if(type.equals("db")){
         		XnatDatabaseUserDetailsService detailsService = new XnatDatabaseUserDetailsService();
             	detailsService.setDataSource(XDAT.getDataSource());
@@ -123,32 +123,32 @@ public class XnatProviderManager extends ProviderManager {
             	ShaPasswordEncoder encoder = new ShaPasswordEncoder(256);
             	sha2DatabaseAuthProvider.setUserDetailsService(detailsService);
             	sha2DatabaseAuthProvider.setPasswordEncoder(encoder);
-                sha2DatabaseAuthProvider.setName(name);
-                sha2DatabaseAuthProvider.setID(id);
+            	sha2DatabaseAuthProvider.setName(name);
+            	sha2DatabaseAuthProvider.setID(id);
             	tempProviders.add(sha2DatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
             	XnatObfuscatedPasswordEncoder encoder2 = new XnatObfuscatedPasswordEncoder(true);
             	sha2ObfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
             	sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
-                sha2ObfuscatedDatabaseAuthProvider.setName(name);
-                sha2ObfuscatedDatabaseAuthProvider.setID(id);
+            	sha2ObfuscatedDatabaseAuthProvider.setName(name);
+            	sha2ObfuscatedDatabaseAuthProvider.setID(id);
             	tempProviders.add(sha2ObfuscatedDatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider obfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
             	XnatObfuscatedPasswordEncoder encoder3 = new XnatObfuscatedPasswordEncoder();
             	obfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
             	obfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder3);
-                obfuscatedDatabaseAuthProvider.setName(name);
-                obfuscatedDatabaseAuthProvider.setID(id);
+            	obfuscatedDatabaseAuthProvider.setName(name);
+            	obfuscatedDatabaseAuthProvider.setID(id);
             	tempProviders.add(obfuscatedDatabaseAuthProvider);
             	
             	XnatDatabaseAuthenticationProvider plaintextDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
             	PlaintextPasswordEncoder encoder4 = new PlaintextPasswordEncoder();
             	plaintextDatabaseAuthProvider.setUserDetailsService(detailsService);
             	plaintextDatabaseAuthProvider.setPasswordEncoder(encoder4);
-                plaintextDatabaseAuthProvider.setName(name);
-                plaintextDatabaseAuthProvider.setID(id);
+            	plaintextDatabaseAuthProvider.setName(name);
+            	plaintextDatabaseAuthProvider.setID(id);
             	tempProviders.add(plaintextDatabaseAuthProvider);
         		
                 AliasTokenAuthenticationProvider aliasTokenAuthenticationProvider = new AliasTokenAuthenticationProvider();
@@ -159,7 +159,7 @@ public class XnatProviderManager extends ProviderManager {
         	else if (type.equals("ldap")){
         		try{
 	        		String address = providerMap.get(prov).get("provider." + prov + ".address");       		
-                    XnatLdapUserDetailsMapper ldapUserDetailsContextMapper = new XnatLdapUserDetailsMapper(id);
+	        		XnatLdapUserDetailsMapper ldapUserDetailsContextMapper = new XnatLdapUserDetailsMapper(id);
 	            	XnatLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new XnatLdapAuthoritiesPopulator();
 	            	DefaultSpringSecurityContextSource ldapServer = new DefaultSpringSecurityContextSource(address);
 	            	ldapServer.setUserDn(providerMap.get(prov).get("provider." + prov + ".userdn"));
@@ -171,8 +171,8 @@ public class XnatProviderManager extends ProviderManager {
 	            	ldapBindAuthenticator.setUserSearch(ldapSearchBean);
 	            	XnatLdapAuthenticationProvider ldapAuthProvider = new XnatLdapAuthenticationProvider(ldapBindAuthenticator, ldapAuthoritiesPopulator);
 	            	ldapAuthProvider.setUserDetailsContextMapper(ldapUserDetailsContextMapper);
-                    ldapAuthProvider.setName(name);
-                    ldapAuthProvider.setID(id);
+	            	ldapAuthProvider.setName(name);
+	            	ldapAuthProvider.setID(id);
 	            	tempProviders.add(ldapAuthProvider);
         		}
         		catch(Exception e){

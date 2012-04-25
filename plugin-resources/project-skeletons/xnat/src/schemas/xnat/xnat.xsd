@@ -73,6 +73,10 @@
 	<xs:element name="FieldDefinitionSet" type="xnat:fieldDefinitionGroup"/>
 	<xs:element name="ResourceCatalog" type="xnat:resourceCatalog"/>
 	<xs:element name="QCManualAssessment" type="xnat:qcManualAssessorData"/>
+	<xs:element name="Generic" type="xnat:genericData"/>
+	<xs:element name="PVisit" type="xnat:pVisitData"/>
+	
+
 	<xs:complexType name="projectData">
 		<xs:annotation>
 			<xs:documentation>A collection of subject involved in a unit of research</xs:documentation>
@@ -396,6 +400,14 @@
 												</xs:appinfo>
 											</xs:annotation>
 										</xs:attribute>
+										<xs:attribute name="visit" type="xs:string"> <!--  foreign key to visitData -->
+											<xs:annotation>
+												<xs:appinfo>
+													<xdat:field baseElement="xnat:pVisitData" baseCol="id"/>
+												</xs:appinfo>
+											</xs:annotation>
+										</xs:attribute>	
+										<xs:attribute name="protocol" type="xs:string" use="optional"/>	
 									</xs:extension>
 								</xs:simpleContent>
 							</xs:complexType>
@@ -503,7 +515,15 @@
 				</xs:appinfo>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="visit_id" type="xs:string" use="optional"/>
+		<xs:attribute name="visit_id" type="xs:string" use="optional"/>  <!--  Left here for legacy visit impl. -->
+		<xs:attribute name="visit" type="xs:string"> <!--  foreign key to visitData -->
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field baseElement="xnat:pVisitData" baseCol="id"/>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>	
+		<xs:attribute name="protocol" type="xs:string" use="optional"/>	
 		<xs:attribute name="label" type="xs:string">
 			<xs:annotation>
 				<xs:appinfo>
@@ -512,6 +532,32 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:complexType name="genericData">
+		<xs:complexContent>
+			<xs:extension base="xnat:experimentData">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="pVisitData">
+		<xs:complexContent>
+			<xs:extension base="xnat:genericData">
+				<xs:sequence>
+					<xs:element name="subject_ID" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<xdat:field baseElement="xnat:subjectData" baseCol="id"/>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="visit_type" type="xs:string" minOccurs="0"/>
+					<xs:element name="visit_name" type="xs:string" minOccurs="0"/> <!-- interval... -->
+				</xs:sequence>
+				<xs:attribute name="closed" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="abstractSubjectMetadata">
 		<xs:annotation>
 			<xs:appinfo>

@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
-		http://www.springframework.org/schema/jdbc  http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
-		xmlns:context="http://www.springframework.org/schema/context">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       			           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	
-	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-  		<property name="resourceLoaderPath" value="/xnat-templates/screens/"/>
-	</bean>
-	
-	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-	   <property name="cache" value="true"/>
-	   <property name="prefix" value=""/>
-	   <property name="suffix" value=".vm"/>
-	   <property name="dateToolAttribute" value="dateTool"/>
-	   <property name="numberToolAttribute" value="numberTool"/>
-	</bean>	
-
     <bean name="sessionXmlRebuilderJob" class="org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJob" />
 
     <bean name="sessionXmlRebuilderJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
@@ -59,19 +47,44 @@
         <property name="repeatInterval" value="86400000" />
     </bean>
 
+   	<bean name="clearExpiredAliasTokensJob" class="org.nrg.xnat.security.alias.ClearExpiredAliasTokensJob" />
+
+    <bean name="clearExpiredAliasTokensJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="org.nrg.schedule.DelegatingJobBean" />
+        <property name="name" value="clear-expired-alias-tokens"/>
+        <property name="group" value="users-jobs"/>
+        <property name="jobDataAsMap">
+            <map>
+          		<entry key="job.bean.name" value="clearExpiredAliasTokensJob" />
+                <entry key="tokenTimeout" value="${security.token_timeout}" />
+                <entry key="queries">
+                    <util:list value-type="java.lang.String">
+                        <value><![CDATA[DELETE FROM xhbm_alias_token_validipaddresses WHERE alias_token in (SELECT id FROM xhbm_alias_token WHERE created < NOW() - INTERVAL '%s')]]></value>
+                        <value><![CDATA[DELETE FROM xhbm_alias_token WHERE created < NOW() - INTERVAL '%s']]></value>
+                    </util:list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+   	<bean id="clearExpiredAliasTokensTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobName" value="clear-expired-alias-tokens-trigger" />
+        <property name="jobGroup" value="users-triggers"/>
+        <property name="jobDetail" ref="clearExpiredAliasTokensJobBean" />
+        <property name="repeatInterval" value="60000" />
+    </bean>
+
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="sessionXmlRebuilderTrigger" />
                 <ref bean="disableInactiveUsersTrigger" />
+                <ref bean="clearExpiredAliasTokensTrigger" />
             </list>
         </property>
         <property name="applicationContextSchedulerContextKey">
             <value>applicationContext</value>
         </property>
     </bean>
-
-	<context:annotation-config />
-	<context:component-scan base-package="org.nrg.xnat.security.controllers"/>
 
 </beans>

@@ -1,42 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:security="http://www.springframework.org/schema/security"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true"/>
+    <context:annotation-config />
+
+    <context:component-scan base-package="org.nrg.xnat.security.controllers"/>
 
     <util:list id="decisionVoters">
-				<ref bean="roleVoter"/>
-				<ref bean="authenticatedVoter"/>
+        <ref bean="roleVoter"/>
+        <ref bean="authenticatedVoter"/>
     </util:list>
-	
+
     <bean class="org.springframework.security.access.vote.UnanimousBased" id="unanimousBased" p:decisionVoters-ref="decisionVoters"/>
 
     <bean class="org.springframework.security.access.vote.RoleVoter" id="roleVoter" p:rolePrefix="ROLE_"/>
-	
-	<bean class="org.springframework.security.access.vote.AuthenticatedVoter" id="authenticatedVoter"/>
 
-	 <bean class="org.nrg.xnat.security.OnXnatLogin" id="logUserLogin"/>
-	 
-	 <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" id="authFailure">
-	 	<constructor-arg value="/app/template/Login.vm" />
-	 </bean> 
-	
+    <bean class="org.springframework.security.access.vote.AuthenticatedVoter" id="authenticatedVoter"/>
+
+    <bean class="org.nrg.xnat.security.OnXnatLogin" id="logUserLogin"/>
+
+    <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" id="authFailure">
+        <constructor-arg value="/app/template/Login.vm" />
+    </bean> 
+
     <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
-          p:loginFormUrl="/app/template/Login.vm"/>
+        p:loginFormUrl="/app/template/Login.vm"/>
 
+    <bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
+        <property name="sessionRegistry" ref="sessionRegistry" />
+        <property name="expiredUrl" value="/app/template/Login.vm" />
+    </bean>
+    <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+    <bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
+        <constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+        <property name="maximumSessions" value="10"/>
+        <property name="exceptionIfMaximumExceeded" value="true"/>
+    </bean>
+    <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+        <constructor-arg index="0" value="/app/template/Login.vm"/>
+        <constructor-arg index="1">
+            <list>
+                <ref bean="xnatLogoutHandler"/>
+                <ref bean="securityContextLogoutHandler"/>
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl" value="/app/action/LogoutUser" />
+    </bean>
+    <bean id="securityContextLogoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+        <property name="invalidateHttpSession" value="true" />
+    </bean>  
+    <bean id="xnatLogoutHandler" class="org.nrg.xnat.security.XnatLogoutHandler">
+        <property name="sessionRegistry" ref="sessionRegistry" />
+    </bean>
 
-
-    	<security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
-	  <security:http-basic/>
-    	<security:logout logout-url="/app/action/LogoutUser" />
+    <security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
+        <security:http-basic/>
         <security:intercept-url pattern="/app/template/Login.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Register.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/ForgotLogin.vm" access="permitAll" requires-channel="${security.channel}"/>
@@ -47,88 +74,39 @@
         <security:intercept-url pattern="/scripts/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/style/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="${security.channel}"/>
-	<security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
-	<security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="customBasicAuthenticationFilter"/>
-	</security:http>
-	
-	<!--<security:authentication-manager alias="authenticationManager">
-		<security:authentication-provider ref="ldapAuthProvider"/>
-		<security:authentication-provider ref="sha2DatabaseAuthProvider"/>
-		<security:authentication-provider ref="sha2ObfuscatedDatabaseAuthProvider"/>
-		<security:authentication-provider ref="obfuscatedDatabaseAuthProvider"/>
-		<security:authentication-provider ref="plaintextDatabaseAuthProvider"/>
-	</security:authentication-manager>-->
+        <security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
+        <security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="customBasicAuthenticationFilter"/>
+        <security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
+        <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
+        <security:session-management session-authentication-strategy-ref="sas"/>
+    </security:http>
 
-	<bean id="customAuthenticationManager" name="org.springframework.security.authenticationManager" class="org.nrg.xnat.security.XnatProviderManager">
-		<property name="properties" value="WEB-INF/conf/services.properties"/>
-	</bean>
-	
-	<bean id="customAuthenticationFilter" class="org.nrg.xnat.security.XnatAuthenticationFilter">
-	       <property name="authenticationManager" ref="customAuthenticationManager" />
-	       <property name="authenticationSuccessHandler" ref="logUserLogin" />
-	       <property name="authenticationFailureHandler" ref="authFailure" />
-	</bean>
+    <bean id="customAuthenticationManager" name="org.springframework.security.authenticationManager" class="org.nrg.xnat.security.XnatProviderManager">
+        <property name="properties" value="WEB-INF/conf/services.properties"/>
+    </bean>
 
-	<bean id="customAuthenticationFilter2" class="org.nrg.xnat.security.XnatAuthenticationFilter">
-	       <property name="authenticationManager" ref="customAuthenticationManager" />
-	       <property name="authenticationSuccessHandler" ref="logUserLogin" />
-	       <property name="authenticationFailureHandler" ref="authFailure" />
-	</bean>
+    <bean id="customAuthenticationFilter" class="org.nrg.xnat.security.XnatAuthenticationFilter">
+        <property name="authenticationManager" ref="customAuthenticationManager" />
+        <property name="authenticationSuccessHandler" ref="logUserLogin" />
+        <property name="authenticationFailureHandler" ref="authFailure" />
+        <property name="sessionAuthenticationStrategy" ref="sas" />
+    </bean>
 
-	<bean id="customBasicAuthenticationFilter" class="org.nrg.xnat.security.XnatBasicAuthenticationFilter">
-	       <property name="authenticationManager" ref="customAuthenticationManager" />
-	       <property name="authenticationEntryPoint" ref="loginUrlAuthenticationEntryPoint" />
-	</bean>
+    <bean id="customAuthenticationFilter2" class="org.nrg.xnat.security.XnatAuthenticationFilter">
+        <property name="authenticationManager" ref="customAuthenticationManager" />
+        <property name="authenticationSuccessHandler" ref="logUserLogin" />
+        <property name="authenticationFailureHandler" ref="authFailure" />
+        <property name="sessionAuthenticationStrategy" ref="sas" />
+    </bean>
 
-	<bean id="sha2DatabaseAuthProvider" class="org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider"
-	    p:userDetailsService-ref="customDatabaseService"
-	    p:passwordEncoder-ref="shaPasswordEncoder" />
-	
-	<bean id="sha2ObfuscatedDatabaseAuthProvider" class="org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider"
-	    p:userDetailsService-ref="customDatabaseService"
-	    p:passwordEncoder-ref="sha2ObfuscatedPasswordEncoder" />
+    <bean id="customBasicAuthenticationFilter" class="org.nrg.xnat.security.XnatBasicAuthenticationFilter">
+        <property name="authenticationManager" ref="customAuthenticationManager" />
+        <property name="authenticationEntryPoint" ref="loginUrlAuthenticationEntryPoint" />
+        <property name="sessionAuthenticationStrategy" ref="sas" />
+    </bean>
 
-	<bean id="obfuscatedDatabaseAuthProvider" class="org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider"
-	    p:userDetailsService-ref="customDatabaseService"
-	    p:passwordEncoder-ref="obfuscatedPasswordEncoder" />
-	
-	<bean id="plaintextDatabaseAuthProvider" class="org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider"
-	    p:userDetailsService-ref="customDatabaseService"
-	    p:passwordEncoder-ref="plaintextPasswordEncoder" />
+    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
 
-	<bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">  
-        <constructor-arg value="256" />  
-    </bean> 
-	<bean id="sha2ObfuscatedPasswordEncoder" class="org.nrg.xnat.security.XnatObfuscatedPasswordEncoder">
-		<constructor-arg value="true" />
-	</bean>
-    <bean id="obfuscatedPasswordEncoder" class="org.nrg.xnat.security.XnatObfuscatedPasswordEncoder"/>
-	<bean id="plaintextPasswordEncoder" class="org.springframework.security.authentication.encoding.PlaintextPasswordEncoder"/>
-	
-	<bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>
-
-<!-- 	<bean class="org.springframework.security.ldap.DefaultSpringSecurityContextSource" id="ldapServer" p:userDn="${security.ldap.userdn}" p:password="${security.ldap.password}">
-        <constructor-arg value="${security.ldap.address}"/>
-	</bean>
-		
-	<bean class="org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider" id="ldapAuthProvider" p:userDetailsContextMapper-ref="ldapUserDetailsContextMapper">
-		<constructor-arg ref="ldapBindAuthenticator"/>
-		<constructor-arg ref="ldapAuthoritiesPopulator"/>
-	</bean>
-	
-	<bean class="org.springframework.security.ldap.authentication.BindAuthenticator" id="ldapBindAuthenticator" p:userSearch-ref="ldapSearchBean">
-		<constructor-arg ref="ldapServer"/>
-	</bean>
-	
-	<bean class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch" id="ldapSearchBean">
-        <constructor-arg value="${security.ldap.search.base}"/>
-        <constructor-arg value="${security.ldap.search.filter}"/>
-		<constructor-arg ref="ldapServer"/>
-	</bean>
-
-	<bean class="org.nrg.xnat.security.XnatLdapAuthoritiesPopulator" id="ldapAuthoritiesPopulator"/>
-	
-	<bean class="org.nrg.xnat.security.XnatLdapContextMapper" id="ldapUserDetailsContextMapper"/>
-	 -->
+    <bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>
 
 </beans>

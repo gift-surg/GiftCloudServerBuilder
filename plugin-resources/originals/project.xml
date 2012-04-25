@@ -57,6 +57,15 @@
 			</properties>
 		</dependency>
 		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+		</dependency>
+		<dependency>
 			<groupId>spring</groupId>
 			<artifactId>spring-ldap</artifactId>
 			<version>1.3.1.RELEASE-all</version>
@@ -651,6 +660,15 @@
 			<groupId>dcm</groupId>
 			<artifactId>jai-core</artifactId>
 			<version>1.1.4</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
+			<artifactId>jai_imageio</artifactId>
+			<version>1.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1697,7 +1715,7 @@
 		<dependency>
 			<groupId>pipeline</groupId>
 			<artifactId>pipelineClient</artifactId>
-			<version>1.0</version>
+			<version>1.6.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

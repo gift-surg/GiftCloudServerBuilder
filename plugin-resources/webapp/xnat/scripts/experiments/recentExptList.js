@@ -23,7 +23,7 @@ function MinExptList(_div, _options){
 			params += "&recent=true";
 		}
 		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments?format=json' + params,this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments?XNAT_CSRF=' + window.csrfToken + '&format=json' + params,this.initCallback,null,this);
 	};
 	
 	this.initFailure=function(o){

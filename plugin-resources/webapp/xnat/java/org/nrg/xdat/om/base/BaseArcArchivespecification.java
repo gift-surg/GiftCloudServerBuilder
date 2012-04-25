@@ -8,10 +8,16 @@ package org.nrg.xdat.om.base;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.nrg.mail.api.NotificationSubscriberProvider;
+import org.nrg.mail.api.NotificationType;
+import org.nrg.xdat.model.ArcArchivespecificationNotificationTypeI;
+
 import org.nrg.xdat.model.ArcPathinfoI;
 import org.nrg.xdat.model.ArcProjectI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.base.auto.AutoArcArchivespecification;
+import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
@@ -20,16 +26,18 @@ import org.nrg.xft.security.UserI;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseArcArchivespecification extends AutoArcArchivespecification {
+public abstract class BaseArcArchivespecification extends AutoArcArchivespecification implements NotificationSubscriberProvider {
 
 	public BaseArcArchivespecification(ItemI item)
 	{
 		super(item);
+        injectProvider();
 	}
 
 	public BaseArcArchivespecification(UserI user)
 	{
 		super(user);
+        injectProvider();
 	}
 
 	/*
@@ -41,6 +49,21 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
 	public BaseArcArchivespecification(Hashtable properties, UserI user)
 	{
 		super(properties,user);
+        injectProvider();
+    }
+
+    public String[] getSubscribers(NotificationType notificationType) {
+        for (ArcArchivespecificationNotificationTypeI type : getNotificationTypes_notificationType()) {
+            if (type.getNotificationType().equalsIgnoreCase(notificationType.id())) {
+                String[] addresses = type.getEmailAddresses().split("[\\s]*,[\\s]*");
+                if (ArrayUtils.isEmpty(addresses)) {
+                    return null;
+                }
+                return addresses;
+            }
+        }
+
+        return null;
 	}
 
     public  String getGlobalArchivePath(){
@@ -291,5 +314,14 @@ public abstract class BaseArcArchivespecification extends AutoArcArchivespecific
         }
 
         return true;
+    }
+
+    /**
+     * This is very low-rent dependency injection.
+     */
+    private void injectProvider() {
+        if (AdminUtils.getNotificationSubscriberProvider() == null) {
+            AdminUtils.setNotificationSubscriberProvider(this);
+}
     }
 }

@@ -14,10 +14,20 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DirContextAdapter;
 
 public class XnatLdapContextMapper implements UserDetailsContextMapper {
+	private String authMethodId="";
+	
+	public XnatLdapContextMapper(){
+		super();
+	}
+	
+	public XnatLdapContextMapper(String authMethodId){
+		super();
+		this.authMethodId = authMethodId;
+	}
 	
     public UserDetails mapUserFromContext(DirContextOperations ctx, String username, Collection<GrantedAuthority> authorities) {
     	String email = ctx.getObjectAttribute("mail").toString();
-    	XDATUserDetails user = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(username, "ldap", email);
+    	XDATUserDetails user = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(username, "ldap", authMethodId, email);
 		return user;   }
 
     public void mapUserToContext(UserDetails user, DirContextAdapter ctx) {

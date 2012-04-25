@@ -45,7 +45,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       }catch(e){}
     }
 
-    var params="format=json&cache=true";
+    var params="XNAT_CSRF=" + window.csrfToken + "&format=json&cache=true";
     if(obj!=undefined && obj.reload!=undefined){
       this.purge();
       params+="&refresh=true";

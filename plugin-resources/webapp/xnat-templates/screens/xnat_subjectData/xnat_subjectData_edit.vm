@@ -4,7 +4,7 @@
 		  <TD>
     <INPUT TYPE="hidden" NAME="popup" VALUE="$popup"/>
 
-     <font face="$ui.sansSerifFonts" size="4"><b>$!page_title</b></font>
+            <span style="font-family: $ui.sansSerifFonts; font-size: medium; "><b>$!page_title</b></span>
 
 	<br><br>
 #if ($data.message)

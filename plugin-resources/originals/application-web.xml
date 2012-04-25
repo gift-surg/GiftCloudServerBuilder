@@ -19,34 +19,30 @@
     <listener-class>org.apache.turbine.services.session.SessionListener</listener-class>
   </listener>
 -->
-	<context-param>
+    <!-- HttpSessionEventPublisher enables session counting for the concurrent session filter, XnatSessionEventPublisher requires the contextAttribute parameter --> 
+    <context-param>
+        <param-name>contextAttribute</param-name>
+        <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.spring-mvc</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.nrg.xnat.security.XnatSessionEventPublisher</listener-class>
+    </listener> 
+    <context-param>
         <param-name>org.restlet.component</param-name>
         <param-value>org.nrg.xnat.restlet.XNATComponent</param-value>
-	</context-param>
-	<!-- Add the Servlet context path to routes: DEFAULT=true 
-		If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify this parameter BUT....
-		DO NOT MODIFY THIS FILE.  Instead, modify the file in your project directory xnat/projects/xnat/src/web-conf/web-projectMerge.xml
-	-->
-    <context-param>
-            <param-name>org.restlet.autoWire</param-name>
-            <param-value>true</param-value>
     </context-param>
-    <!-- Specifies the location of Spring application context files -->
+    <!-- Add the Servlet context path to routes: DEFAULT=true 
+         If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify this parameter BUT....
+         DO NOT MODIFY THIS FILE.  Instead, modify the file in your project directory xnat/projects/xnat/src/web-conf/web-projectMerge.xml
+    -->
     <context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
-			/WEB-INF/conf/root-spring-config.xml
-			/WEB-INF/conf/xnat-security.xml
-		</param-value>
+        <param-name>org.restlet.autoWire</param-name>
+        <param-value>true</param-value>
     </context-param>
-	<listener>
+    <listener>
 		<listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
 	</listener>
-    <!-- Creates the Spring Container shared by all Servlets and Filters -->
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-	<servlet>
+    <servlet>
 		<servlet-name>@TURBINE_APP_NAME@</servlet-name>
 		<servlet-class>org.apache.turbine.Turbine</servlet-class>
 		<init-param>
@@ -64,7 +60,9 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>/WEB-INF/conf/*-context.xml</param-value>
+            <param-value>/WEB-INF/conf/root-spring-config.xml
+/WEB-INF/conf/xnat-security.xml
+/WEB-INF/conf/*-context.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -175,7 +173,7 @@
         <url-pattern>/spring/*</url-pattern>
     </servlet-mapping>
     
-	<!-- END XNAT CUSTOMIZATIONS -->
+<!-- END XNAT CUSTOMIZATIONS -->
 	<servlet-mapping>
 		<servlet-name>@TURBINE_APP_NAME@</servlet-name>
 		<url-pattern>/app/*</url-pattern>
@@ -285,7 +283,11 @@
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
+	<init-param>
+			<param-name>contextAttribute</param-name>
+			<param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.spring-mvc</param-value>
+		</init-param>
+  </filter>
 	<filter>
 	  <filter-name>updateExpirationCookie</filter-name>
 	  <filter-class>org.nrg.xnat.restlet.util.UpdateExpirationCookie</filter-class>

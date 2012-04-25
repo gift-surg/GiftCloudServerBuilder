@@ -85,7 +85,7 @@ function LeftBarTreeView(_config){
 	    };
 	    
 																			           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?format=json&recent=true&stamp='+ (new Date()).getTime(),callback,null);		
+	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&recent=true&stamp='+ (new Date()).getTime(),callback,null);
 	 		
  	},this);
  	
@@ -114,7 +114,7 @@ function LeftBarTreeView(_config){
 	    };
 	    
 																			           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?format=json&favorite=true&stamp='+ (new Date()).getTime(),callback,null);		
+	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&favorite=true&stamp='+ (new Date()).getTime(),callback,null);
 	 		
  	},this);
  	
@@ -270,8 +270,8 @@ function LeftBarTreeView(_config){
       argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
     };
     
-																		           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?format=json&stamp='+ (new Date()).getTime(),callback,null);		
+																		           //YAHOO.util.Connect.ayncRequest('GET',this.obj.URL,this.initCallback,null,this);
+    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp='+ (new Date()).getTime(),callback,null);
 
  }
 }

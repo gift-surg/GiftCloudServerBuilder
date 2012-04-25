@@ -6,11 +6,18 @@ import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationTo
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
-public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider{
+public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider implements XnatAuthenticationProvider {
 
-	private String displayName = "";
-	private int expiration = -1;
-	private Pattern complexity;
+    /**
+     * Indicates whether the provider should be visible to and selectable by users. <b>false</b> usually indicates an
+     * internal authentication provider, e.g. token authentication.
+     *
+     * @return <b>true</b> if the provider should be visible to and usable by users.
+     */
+    @Override
+    public boolean isVisible() {
+        return true;
+    }
 	
 	@Override
     public boolean supports(Class<?> authentication) {
@@ -19,6 +26,11 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
 	
 	@Override
 	public String toString(){
+		return getName();
+	}
+
+    @Override
+    public String getName() {
 		return displayName;
 	}
 	
@@ -26,19 +38,17 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
 		displayName = newName;
 	}
 	
-	public void setExpiration(int exp){
-		expiration = exp;
+	public void setID(String newID){
+		ID = newID;
 	}
 	
-	public int getExpiration(){
-		return expiration;
+    @Override
+	public String getID(){
+		return ID;
 	}
 	
-	public void setComplexity(Pattern c){
-		complexity = c;
-	}
-	
-	public Pattern getComplexity(){
-		return complexity;
-	}
+    private String displayName = "";
+    private String ID = "";
+    private int expiration = -1;
+    private Pattern complexity;
 }

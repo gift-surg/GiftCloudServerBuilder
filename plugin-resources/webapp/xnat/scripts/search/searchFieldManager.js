@@ -92,7 +92,7 @@ function SearchFieldManager(div_id){
 			}
 			
 			openModalPanel("load_fields","Loading field information.");
-			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+element_name +'?format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+element_name +'?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
 		}
 	}
 	

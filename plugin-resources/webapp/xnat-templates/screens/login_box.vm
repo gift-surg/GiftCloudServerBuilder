@@ -1,18 +1,24 @@
+#* @vtlvariable name="login_methods" type="java.util.List" *#
 <form name="form1" method="post" action="$content.getURI('')/j_spring_security_check">
-  <table>
+    #set($showLoginMethodRow = true)
+    #if($login_methods && $login_methods.size() == 1)
+        <input type="hidden" id="login_method" name="login_method" value="$login_methods.get(0)"/>
+        #set($showLoginMethodRow = false)
+    #end
+<table>
+    #if ($showLoginMethodRow)
     <tr>
-      #formLabel("Login via")
-	  <td>
-			##set( $login_methods = ["Database","LDAP"])
-			##$login_methods is now customizable and is added to the context in Login.java in xdat.
-			
-			#if($login_methods && $login_methods.size()==0)
-				#xdatTextBox("login_method" $item "" $vr)
-			#else
-				#xdatSelectBoxWDefault("login_method" $item $login_methods $vr)
-			#end
+        #formLabel("Login via")
+	    <td>
+            ##$login_methods is customizable and is added to the context in Login.java in xdat.
+            #if($login_methods && $login_methods.size() == 0)
+                #xdatTextBox("login_method" $item "" $vr)
+            #elseif($login_methods && $login_methods.size() > 1)
+                #xdatSelectBoxWDefault("login_method" $item $login_methods $vr)
+            #end
 		</td>
     </tr>
+    #end
     <tr>
       #formLabel("User")
   	  <TD><input type="text" id="username" name="j_username"></TD>

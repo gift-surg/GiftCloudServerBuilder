@@ -56,6 +56,19 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
  </TD>
  <TD></TD>
 </TR>
++#if($visit)
++   $item.setProperty("$item.getXSIType()/visit",$visit)
++#else
++  #set($visit=$item.getProperty("visit"))
++#end
++
++#if($visit)
++<TR>
++  <TH ALIGN="left">Visit: </TH>
++  <TD><input type="text" id="$item.getXSIType()/visit" name="$item.getXSIType()/visit" value="$!visit" disabled="true"/></TD>
++  <TD></TD>
++</TR>
++#end
 #end
 </TABLE>
 		

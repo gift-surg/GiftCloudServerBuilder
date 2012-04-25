@@ -20,10 +20,10 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.client.XNATPipelineLauncher;
 import org.nrg.viewer.QCImageCreator;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.security.Authenticator.Credentials;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -31,9 +31,9 @@ import org.nrg.xft.XFT;
 import org.nrg.xft.db.DBItemCache;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
-import org.nrg.xnat.security.XnatLdapAuthenticator;
 import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xnat.security.XnatLdapAuthenticator.AuthenticationAttempt;
+import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
 
@@ -276,7 +276,7 @@ public class XnatPipelineLauncher {
      * contained in the script when launched externally. These are passed in
      * directly to the {@link XNATPipelineLauncher#main(String[])} instead of
      * implicitly through the launcher script.
-     * 
+     *
      * @return The pipeline configuration arguments.
      */
     private List<String> getPipelineConfigurationArguments() {
@@ -297,7 +297,7 @@ public class XnatPipelineLauncher {
             // TODO: Do something useful in here
             e.printStackTrace();
         }
-        
+
         return arguments;
     }
 
@@ -305,10 +305,12 @@ public class XnatPipelineLauncher {
      * This builds all of the command-line arguments that are standard between
      * in-process and external launch mode. Use the {@link #convertArgumentListToCommandLine(List)}
      * method to convert the returned list to a command line.
-     * 
+     *
      * @return
      */
     private List<String> getCommandLineArguments() {
+        AliasToken token = XDAT.getContextService().getBean(AliasTokenService.class).issueTokenForUser(user);
+
         List<String> arguments = new ArrayList<String>();
         arguments.add("-pipeline");
         arguments.add(pipelineName);
@@ -317,7 +319,9 @@ public class XnatPipelineLauncher {
         arguments.add("-host");
         arguments.add(host);
         arguments.add("-u");
-        arguments.add(user.getUsername());
+        arguments.add(token.getAlias());
+        arguments.add("-pwd");
+        arguments.add(Long.toString(token.getSecret()));
         arguments.add("-dataType");
         arguments.add(dataType);
 
@@ -373,19 +377,6 @@ public class XnatPipelineLauncher {
                 paramArg.deleteCharAt(paramArg.length() - 1);
             }
             arguments.add(paramArg.toString());
-        }
-
-        // MODIFIED BY TO 09/22/09
-        String pwd = user.getPrimaryPassword();
-        if (pwd != null) {
-            arguments.add("-pwd");
-            arguments.add(escapeSpecialShellCharacters(user.getPrimaryPassword()));
-        } else {
-            AuthenticationAttempt attempt = XnatLdapAuthenticator.RetrieveCachedAttempt(new Credentials(user.getUsername(), ""));
-            if (attempt != null) {
-                arguments.add("-pwd");
-                arguments.add(escapeSpecialShellCharacters(attempt.cred.getPassword()));
-            }
         }
 
         return arguments;
@@ -591,7 +582,7 @@ public class XnatPipelineLauncher {
         xnatPipelineLauncher.setParameter("project", imageSession.getProject());
         xnatPipelineLauncher.setParameter("cachepath", QCImageCreator.getQCCachePathForSession(imageSession.getProject()));
 
-	String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
+        String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
         String[] emails = emailsStr.trim().split(",");
         for (int i = 0; i < emails.length; i++) {
             xnatPipelineLauncher.notify(emails[i]);

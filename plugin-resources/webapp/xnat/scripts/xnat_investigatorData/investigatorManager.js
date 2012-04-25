@@ -8,7 +8,7 @@ function InvestigatorManager(){
 			scope:this
 		}
 		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/investigators?format=json',this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/investigators?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 	};
 	
 	this.initFailure=function(o){

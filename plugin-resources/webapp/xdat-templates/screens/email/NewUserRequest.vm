@@ -1,0 +1,23 @@
+<html>
+	<head><title>New User Request</title></head>
+	<body>
+		<b>New User Request</b><br><br>
+		<b>Date:</b> $time<br>
+		<b>Site:</b> $system<br>
+		<b>Host:</b> $server<br>
+		<b>Username:</b> $username<br>
+		<b>Firstname:</b> $firstname<br>
+		<b>Lastname:</b> $lastname<br>
+		<b>Phone:</b> $phone<br>
+		<b>Lab:</b> $lab<br>
+		<b>Email:</b> $email<br><br><br>
+
+		This account has been created but will be disabled until you enable the account.<br><br><br>
+
+		<a href="$server/app/action/DisplayItemAction/search_value/$username/search_element/xdat:user/search_field/xdat:user.login">Review and Enable</a><br><br><br>
+
+		<b>User Comments:</b> $comments<br><br><br>
+		$time,$username,$firstname,$lastname,$phone,$lab,$email
+	</body>
+</html>
+

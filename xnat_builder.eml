@@ -323,8 +323,8 @@
 	<lib name="Pipeline-1.0.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/Pipeline-1.0.jar!/"/>
 	</lib>
-	<lib name="pipelineClient-1.0.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/pipelineClient-1.0.jar!/"/>
+	<lib name="pipelineClient-1.6.0-SNAPSHOT.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/pipelineClient-1.6.0-SNAPSHOT.jar!/"/>
 	</lib>
 	<lib name="PipelineTools-1.0.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar!/"/>
@@ -429,6 +429,7 @@
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.5.RELEASE.jar!/"/>
 	</lib>
 	<lib name="org.springframework.web-3.0.5.RELEASE.jar" scope="COMPILE">
+		<srcroot url="jar://$MAVEN_REPOSITORY$/org/springframework/org.springframework.web/3.0.5.RELEASE/org.springframework.web-3.0.5.RELEASE-sources.jar!/"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/org.springframework.web-3.0.5.RELEASE.jar!/"/>
 	</lib>
 	<lib name="org.springframework.web.servlet-3.0.5.RELEASE.jar" scope="COMPILE">
@@ -450,6 +451,7 @@
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-config-3.0.5.RELEASE.jar!/"/>
 	</lib>
 	<lib name="spring-security-core-3.0.5.RELEASE.jar" scope="COMPILE">
+		<srcroot url="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-core/3.0.5.RELEASE/spring-security-core-3.0.5.RELEASE-sources.jar!/"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-core-3.0.5.RELEASE.jar!/"/>
 	</lib>
 	<lib name="spring-security-ldap-3.0.5.RELEASE.jar" scope="COMPILE">
@@ -462,6 +464,7 @@
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.5.RELEASE.jar!/"/>
 	</lib>
 	<lib name="spring-security-web-3.0.5.RELEASE.jar" scope="COMPILE">
+		<srcroot url="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-web/3.0.5.RELEASE/spring-security-web-3.0.5.RELEASE-sources.jar!/"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/spring/jars/spring-security-web-3.0.5.RELEASE.jar!/"/>
 	</lib>
 	<lib name="gsi-classes-1.jar" scope="COMPILE">
@@ -547,6 +550,12 @@
 	</lib>
 	<lib name="xdat-search-1.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-search-1.jar!/"/>
+	</lib>
+	<lib name="commons-net-3.1.jar" scope="COMPILE">
+		<srcroot url="jar://$MODULE_DIR$/plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar!/"/>
+		<relative-module-src project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar!/"/>
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-net/jars/commons-net-3.1.jar!/"/>
+		<relative-module-javadoc project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar!/"/>
 	</lib>
 	<lib name="xdat-store-1.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-store-1.jar!/"/>

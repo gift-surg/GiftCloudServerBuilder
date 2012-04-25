@@ -1,16 +1,36 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.files;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
+import org.nrg.dcm.Dcm2Jpg;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.om.*;
+import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -29,18 +49,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.*;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
+import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 
 /**
  * @author timo
@@ -91,6 +104,7 @@ public class FileList extends XNATCatalogTemplate {
 				this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
+				this.getVariants().add(new Variant(MediaType.IMAGE_JPEG));
 			} catch (Exception e) {
 	            logger.error("",e);
 			}
@@ -633,6 +647,18 @@ public class FileList extends XNATCatalogTemplate {
 							fName=zipEntry.toLowerCase();
 						}
 							
+						if (mt.equals(MediaType.IMAGE_JPEG) && Dcm2Jpg.isDicom(f)) {
+							try {
+								byte[] jpeg = Dcm2Jpg.convert(f);
+								ByteArrayInputStream bais = new ByteArrayInputStream(jpeg);
+								return new InputRepresentation(bais, mt);
+							}
+							catch (IOException e) {
+								this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to convert this file to jpeg : " + e.getMessage());
+								return new StringRepresentation("");
+							}
+						}
+						
 						mt=buildMediaType(mt,fName);
 						
 						if(zipEntry!=null){
@@ -652,8 +678,10 @@ public class FileList extends XNATCatalogTemplate {
 								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,e.getMessage());
 								return new StringRepresentation("");
 							}
-						}else{
-							return this.setFileRepresentation(f,mt);
+						}
+						
+						else{
+							return this.getFileRepresentation(f,mt);
 						}
 						
 					}else{
@@ -696,7 +724,7 @@ public class FileList extends XNATCatalogTemplate {
 				}
 				
 				if(f!=null && f.exists()){
-					return this.setFileRepresentation(f,mt);
+					return this.getFileRepresentation(f,mt);
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find file.");
 					return new StringRepresentation("");
@@ -941,7 +969,7 @@ public class FileList extends XNATCatalogTemplate {
 						rep.addEntry(f.getName(),f);
 						return rep;
 					}else{
-							return this.setFileRepresentation(f,mt);
+						return this.getFileRepresentation(f,mt);
 					}
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find file.");
@@ -954,7 +982,18 @@ public class FileList extends XNATCatalogTemplate {
 		}
 	}
 	
-	private FileRepresentation setFileRepresentation(File f, MediaType mt) {
+	private FileRepresentation getFileRepresentation(File f, MediaType mt) {
+		FileRepresentation fr = null;
+		try {
+			fr = this.setFileRepresentation(f, mt);
+		}
+		catch (IOException e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to return file as " + mt.getName());
+		}
+		return fr;	
+	}
+	
+	private FileRepresentation setFileRepresentation(File f, MediaType mt) throws IOException {
 		this.setResponseHeader("Cache-Control", "must-revalidate");
 		return representFile(f,mt);
 	}

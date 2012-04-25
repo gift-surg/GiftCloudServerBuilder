@@ -51,6 +51,7 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 	      	item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
 	      	item.setProperty("xdat:user_login.login_date",today);
 	      	item.setProperty("xdat:user_login.ip_address", request.getRemoteAddr());
+	      	item.setProperty("xdat:user_login.session_id", request.getSession().getId());
 	      	item.save(null,true,false);
 	      	request.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
         }

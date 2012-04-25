@@ -11,11 +11,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 
 public class XnatLdapUserDetailsMapper extends LdapUserDetailsMapper {
+	private String authMethodId="";
+	
+	public XnatLdapUserDetailsMapper(){
+		super();
+	}
+	
+	public XnatLdapUserDetailsMapper(String authMethodId){
+		super();
+		this.authMethodId = authMethodId;
+	}
 
 	static org.apache.log4j.Logger logger = Logger.getLogger(XnatLdapUserDetailsMapper.class);
     public XDATUserDetails mapUserFromContext(DirContextOperations ctx, String username, Collection<GrantedAuthority> authorities) {
         UserDetails user = super.mapUserFromContext(ctx, username, authorities);
-        XdatUserAuth userAuth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "ldap");
+        XdatUserAuth userAuth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "ldap", authMethodId);
         try {
 			return new XDATUserDetails(userAuth.getXdatUsername());
 		} catch (Exception e) {

@@ -10,6 +10,7 @@ import org.nrg.xdat.om.XnatDeriveddata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatPvisitdata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
@@ -24,6 +25,7 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 	public static final String RECON_DATA=XnatReconstructedimagedata.SCHEMA_ELEMENT_NAME;
 	public static final String DERIVED_DATA=XnatDeriveddata.SCHEMA_ELEMENT_NAME;
 	public static final String PROJECT_DATA=XnatProjectdata.SCHEMA_ELEMENT_NAME;
+	public static final String VISIT_DATA=XnatPvisitdata.SCHEMA_ELEMENT_NAME;
 	
 	private Map<String,Map<String,String>> shortcuts=new Hashtable<String,Map<String,String>>();
 	private Map<String,Map<String,String>> readonly=new Hashtable<String,Map<String,String>>();
@@ -77,6 +79,7 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		//experiments
 		this.addShortCut(EXPERIMENT_DATA, "ID", "xnat:experimentdata/id");
 		this.addShortCut(EXPERIMENT_DATA, "visit_id", "xnat:experimentdata/visit_id");
+		this.addShortCut(EXPERIMENT_DATA, "visit", "xnat:experimentdata/visit");
 		this.addShortCut(EXPERIMENT_DATA, "date", "xnat:experimentdata/date");
 		this.addShortCut(EXPERIMENT_DATA, "time", "xnat:experimentdata/time");
 		this.addShortCut(EXPERIMENT_DATA, "note", "xnat:experimentdata/note");
@@ -205,6 +208,21 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 		this.addShortCut(PROJECT_DATA, "pi_firstname", "xnat:projectData/PI/firstname");
 		this.addShortCut(PROJECT_DATA, "pi_lastname", "xnat:projectData/PI/lastname");
 		this.addShortCut(PROJECT_DATA, "note", "xnat:projectData/fields/field[name=note]/field");
+		
+		//visit
+		this.addShortCut(VISIT_DATA, "ID", "xnat:pvisitData/ID");
+		this.addShortCut(VISIT_DATA, "visit_type", "xnat:pvisitData/visit_type");
+		this.addShortCut(VISIT_DATA, "visit_name", "xnat:pvisitData/visit_name");
+		this.addShortCut(VISIT_DATA, "closed", "xnat:pvisitData/closed");
+		this.addShortCut(VISIT_DATA, "project", "xnat:pvisitdata/project");
+		this.addShortCut(VISIT_DATA, "date", "xnat:pvisitdata/date");
+		this.addShortCut(VISIT_DATA, "xsiType", "xnat:pvisitdata/extension_item/element_name",true);
+		this.addShortCut(VISIT_DATA, "label", "xnat:pvisitdata/label");
+		this.addShortCut(VISIT_DATA, "insert_date", "xnat:pvisitdata/meta/insert_date",true);
+		this.addShortCut(VISIT_DATA, "insert_user", "xnat:pvisitdata/meta/insert_user/login",true);
+		this.addShortCut(VISIT_DATA, "last_modified", "xnat:pvisitdata/meta/last_modified",true);
+		this.addShortCut(VISIT_DATA, "subject_ID", "xnat:pvisitdata/subject_id");
+		
 	}
 	
 	public void addShortCut(final String xsiType,final String key, final String path){

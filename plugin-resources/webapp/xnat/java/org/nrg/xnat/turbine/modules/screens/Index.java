@@ -46,7 +46,7 @@ public class Index extends SecureScreen {
             context.put("par_count", parcount);
         }
         
-        Date lastLogin = user.getLastLogin();
+        Date lastLogin = user.getPreviousLogin();
         if (lastLogin!=null)
         {
             context.put("last_login",lastLogin);

@@ -13,8 +13,8 @@
     <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
 
 	<bean id="validator" class="org.nrg.xdat.security.RegExpValidator">
-		<property name="regexp" value="${provider.db.passwordcomplexity}"/>
-		<property name="message" value="${provider.db.passwordcomplexitymessage}"/>
+		<property name="regexp" value="${security.password_complexity}"/>
+		<property name="message" value="${security.password_complexity_message}"/>
     </bean>
 
     <!-- Root Context: defines shared resources visible to all other web components -->
@@ -26,14 +26,12 @@
     <context:component-scan base-package="org.nrg.xnat.helpers.merge"/>
     <context:component-scan base-package="org.nrg.config.services"/>
     <context:component-scan base-package="org.nrg.config.daos"/>
-    <context:component-scan base-package="org.nrg.notify.services" />
-    <context:component-scan base-package="org.nrg.notify.daos" />
 
     <!-- Include top-level service configurations -->
-        <import resource="mail-services-config.xml" />
-    <import resource="notify-services-config.xml" />
     <import resource="datasource-config.xml" />
     <import resource="orm-config.xml" />
+        <import resource="mail-services-config.xml" />
+    <import resource="notify-services-config.xml" />
 
     <bean id="coreXnatEntityPackages" class="org.nrg.framework.orm.hibernate.HibernateEntityPackageList">
         <property name="items">

@@ -658,6 +658,15 @@
 		</dependency>
 		<dependency>
 			<groupId>dcm</groupId>
+			<artifactId>jai_imageio</artifactId>
+			<version>1.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>dcm</groupId>
 			<artifactId>ExtAttr</artifactId>
 			<version>2.1.1</version>
 			<properties>
@@ -1697,7 +1706,7 @@
 		<dependency>
 			<groupId>pipeline</groupId>
 			<artifactId>pipelineClient</artifactId>
-			<version>1.0</version>
+			<version>1.6.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

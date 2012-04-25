@@ -11,7 +11,7 @@ function restLister(_info){
 				scope:this
 			};
 		
-			YAHOO.util.Connect.asyncRequest('GET',info.uri + '/resources?all=true&format=json&file_stats=true&timestamp=' + (new Date()).getTime(),scanCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',info.uri + '/resources?XNAT_CSRF=' + window.csrfToken + '&all=true&format=json&file_stats=true&timestamp=' + (new Date()).getTime(),scanCallback,null,this);
 		} 
 	}
 		
@@ -36,7 +36,7 @@ function restLister(_info){
 			    scope:this
 			};
 			var fileuri=this.info.uri + "/" + this.info.category + "/" + this.info.scans[i].cat_id + "/out/resources/" + this.info.scans[i].xnat_abstractresource_id;
-			YAHOO.util.Connect.asyncRequest('GET',fileuri + '/files?all=true&format=json&timestamp=' + (new Date()).getTime(),fileCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',fileuri + '/files?XNAT_CSRF=' + window.csrfToken + '&all=true&format=json&timestamp=' + (new Date()).getTime(),fileCallback,null,this);
 		}
 	}
 		

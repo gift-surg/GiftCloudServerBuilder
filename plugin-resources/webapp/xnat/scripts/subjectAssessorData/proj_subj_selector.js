@@ -19,7 +19,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 		params += "&owner=true";
 		params += "&member=true";
 				
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?format=json&timestamp=' + (new Date()).getTime() + params,this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime() + params,this.initCallback,null,this);
 	};
 		
 	this.initFailure=function(o){
@@ -110,7 +110,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			}
 		}
 		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/subjects?format=json&timestamp=' + (new Date()).getTime(),subjCallback);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/subjects?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),subjCallback);
 	  }catch(e){
 	  	alert('failed to load subjects');
 	  }
@@ -188,7 +188,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 			argument:this
 		}
 		
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/experiments?format=json&timestamp=' + (new Date()).getTime(),subjCallback);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.projID +'/experiments?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),subjCallback);
 	  }catch(e){
 	  	alert('failed to load expts');
 	  }

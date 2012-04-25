@@ -90,7 +90,7 @@ function SearchXMLManager(_xml){
 			}
 
 			openModalPanel("load_cv","Loading column values.");
-			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/' + this.tableName+'/'+oColumn.key +'?format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/' + this.tableName+'/'+oColumn.key +'?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
 
 		}else{
 			this.renderFilterForm2(element_name, field_id, oColumn);
@@ -316,7 +316,7 @@ function SearchXMLManager(_xml){
 						argument:element_name
 				}
 					openModalPanel("load_fields","Loading data-type information.");
-					YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+element_name +'?format=json',fieldCallback,null,this);
+					YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+element_name +'?XNAT_CSRF=' + window.csrfToken + '&format=json',fieldCallback,null,this);
 				}else{
 					sm.fillVersionBox(element_name);
 			}
@@ -738,7 +738,7 @@ function SearchXMLManager(_xml){
 			failure:function(o){alert("Failed to load available fields.");},
 			scope:this
 		}
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+ ce.toCommaString() +'?format=json',fcb,null,this);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+ ce.toCommaString() +'?XNAT_CSRF=' + window.csrfToken + '&format=json',fcb,null,this);
 	}
 
 	this.shouldShowLabels=false;

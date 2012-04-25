@@ -12,6 +12,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
+import org.nrg.mail.api.MailMessage;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -47,10 +48,18 @@ public class ReportIssue extends SecureAction {
 		final String body = emailBody(user, parameters, data, context);
 
 		String subject = TurbineUtils.GetSystemName() + " Issue Report from " + user.getLogin();
+        // TODO: Need to figure out how to handle attachments in notifications.
 		Map<String, File> attachments = getAttachmentMap(data.getSession().getId(), parameters);
 
-		XDAT.getMailService().sendHtmlMessage(adminEmail, new String[] { adminEmail }, null, null, subject, body, null, attachments);
-
+		// XDAT.getMailService().sendHtmlMessage(adminEmail, new String[] { adminEmail }, null, null, subject, body, null, attachments);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(MailMessage.PROP_FROM, adminEmail);
+        properties.put(MailMessage.PROP_SUBJECT, subject);
+        properties.put(MailMessage.PROP_HTML, body);
+        if (attachments != null && attachments.size() > 0) {
+            properties.put(MailMessage.PROP_ATTACHMENTS, attachments);
+        }
+        XDAT.getNotificationService().createNotification("Issue", properties);
 	}
 
 	private Map<String, File> getAttachmentMap(String sessionId, ParameterParser parameters) {

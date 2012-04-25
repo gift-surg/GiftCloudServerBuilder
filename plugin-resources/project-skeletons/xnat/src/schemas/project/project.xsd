@@ -44,6 +44,28 @@
 						<xs:attribute name="page_email" type="xs:boolean" default="true"/>
 					</xs:complexType>
 				</xs:element>
+                <xs:element name="notification_types" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0">
+                            <xs:element name="notification_type" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        <xdat:field uniqueComposite="VALUE">
+                                            <xdat:relation uniqueComposite="VALUE"/>
+                                        </xdat:field>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="email_addresses" type="xs:string" use="optional"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 				<xs:element name="dcm" minOccurs="0">
 					<xs:complexType>
 						<xs:attribute name="dcm_host" type="xs:string" use="optional"/>

@@ -81,7 +81,7 @@ function ScanEditor(_sessionID,_scanID,_options){
 
 			openModalPanel("load_scan","Loading Scan Details.");
 
-			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments/' + this.sessionID +'/scans/' + this.scanID + '?format=xml',this.initCallback,null,this);
+			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments/' + this.sessionID +'/scans/' + this.scanID + '?XNAT_CSRF=' + window.csrfToken + '&format=xml',this.initCallback,null,this);
   		}else{
   			this.modalitySelector=new scanInit();
   			this.modalitySelector.onResponse.subscribe(function(){
@@ -238,9 +238,9 @@ function ScanEditor(_sessionID,_scanID,_options){
 				scope:this
 			}
 			if(this.options.project==undefined){
-				YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/scan_types?format=json',this.initCallback,null,this);
+				YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/scan_types?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 	   		}else{
-				YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.options.project + '/scan_types?format=json',this.initCallback,null,this);
+				YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.options.project + '/scan_types?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 	   		}
 
 			//quality
@@ -371,7 +371,7 @@ function loadScans(session_id,project,tbody_id){
 	}
 	openModalPanel("scan_summary","Loading scan summary.");
 
-	YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments/' + session_id +'/scans?format=json',this.initCallback,null,this);
+	YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments/' + sesion_id +'/scans?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 }
 
 function completeScanLoad(obj1){
@@ -598,7 +598,7 @@ function ScanSet(_options,_scans){
 		if(this.options.msg!=undefined){
 			openModalPanel("scan_summary",this.options.msg);
 		}
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments/' + this.options.session_id +'/?format=json&full=true',this.initCallback,null,this);
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/experiments/' + this.options.session_id +'/?XNAT_CSRF=' + window.csrfToken + '&format=json&full=true',this.initCallback,null,this);
 	}
 
 	this.completeScanLoad=function (obj1){
@@ -869,7 +869,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 								scope:this
 							}
 							openModalPanel("scan_type_loading","Loading Scan Types...");
-							YAHOO.util.Connect.asyncRequest('GET',this.uri +'&format=json',this.initCallback,null,this);
+							YAHOO.util.Connect.asyncRequest('GET',this.uri +'&XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 						}else{
 							this.populateAll();
 						}

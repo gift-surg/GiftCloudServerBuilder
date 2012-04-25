@@ -57,7 +57,7 @@
             <map>
           		<entry key="job.bean.name" value="clearExpiredAliasTokensJob" />
                 <entry key="tokenTimeout" value="${security.token_timeout}" />
-                <entry key="+">
+                <entry key="queries">
                     <util:list value-type="java.lang.String">
                         <value><![CDATA[DELETE FROM xhbm_alias_token_validipaddresses WHERE alias_token in (SELECT id FROM xhbm_alias_token WHERE created < NOW() - INTERVAL '%s')]]></value>
                         <value><![CDATA[DELETE FROM xhbm_alias_token WHERE created < NOW() - INTERVAL '%s']]></value>

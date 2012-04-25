@@ -2,7 +2,8 @@ package org.nrg.xnat.security.alias;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
-import org.nrg.xnat.security.alias.entities.AliasToken;
+import org.nrg.xdat.entities.AliasToken;
+import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

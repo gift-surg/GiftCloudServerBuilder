@@ -48,6 +48,9 @@ public class ClearExpiredAliasTokensJob implements JobInterface {
             _log.debug("Executing alias token sweep function");
         }
         JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
+        if (_queries == null) {
+            throw new JobExecutionException("No queries defined for the expired alias tokens job: you must provide queries to clear expired tokens");
+        }
         for (String format : _queries) {
             final String query = String.format(format, _timeout);
             if (_log.isDebugEnabled()) {

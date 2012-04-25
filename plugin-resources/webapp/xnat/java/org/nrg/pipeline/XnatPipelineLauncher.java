@@ -24,17 +24,14 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.security.Authenticator.Credentials;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
-import org.nrg.xnat.security.XnatLdapAuthenticator;
 import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xnat.security.XnatLdapAuthenticator.AuthenticationAttempt;
-import org.nrg.xnat.security.alias.AliasTokenService;
-import org.nrg.xnat.security.alias.entities.AliasToken;
+import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class XnatPipelineLauncher {

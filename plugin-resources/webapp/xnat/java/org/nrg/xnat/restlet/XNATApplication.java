@@ -15,6 +15,7 @@ import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
 import org.nrg.xnat.restlet.resources.files.FileList;
 import org.nrg.xnat.restlet.resources.protocols.ProjectSubjectVisitsRestlet;
+import org.nrg.xnat.restlet.services.AliasTokenRestlet;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.services.RemoteLoggingRestlet;

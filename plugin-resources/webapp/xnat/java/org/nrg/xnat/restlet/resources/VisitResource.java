@@ -5,6 +5,11 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatPvisitdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -60,10 +65,35 @@ public class VisitResource  extends ItemResource{
 			if(proj == null){
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to identify project. Please use the project/visit URI");
 			}
+			
 			if(visit!=null){
-				String msg=visit.delete(proj, user, false);
-				if(msg!=null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);
+				PersistentWorkflowI wrk;
+				try {
+					wrk = WorkflowUtils.buildOpenWorkflow(user, visit.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.getDeleteAction(visit.getXSIType())));
+					EventMetaI c=wrk.buildEvent();
+					
+					try {
+						String msg=visit.delete(proj, user, this.isQueryVariableTrue("removeFiles"),c);
+						if(msg!=null){
+							WorkflowUtils.fail(wrk, c);
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);
+							return;
+						}else{
+							WorkflowUtils.complete(wrk, c);
+						}
+					} catch (Exception e) {
+						try {
+							WorkflowUtils.fail(wrk, c);
+						} catch (Exception e1) {
+							logger.error("",e1);
+						}
+						logger.error("",e);
+						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+						return;
+					}
+				} catch (EventRequirementAbsent e1) {
+					logger.error("",e1);
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,e1.getMessage());
 					return;
 				}
 			}

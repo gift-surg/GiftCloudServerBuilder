@@ -5,25 +5,21 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.sql.SQLException;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
-import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -43,7 +39,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
      * @see org.apache.turbine.modules.actions.VelocityAction#doPerform(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
      */
     public void doPerform(RunData data, Context context) throws Exception {
-        XFTItem found = null;
+       XFTItem found = null;
         try {
             String element0 = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("element_0",data));
             if (element0==null){
@@ -59,70 +55,84 @@ public class ModifySubjectAssessorData extends ModifyItem{
                 handleException(data,(XFTItem)found,populater.getError());
                 return;
             }
-
-            XFTItem dbVersion = found.getCurrentDBVersion();
             
-            final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), found,newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(found.getXSIType(), dbVersion==null)));
-	    	EventMetaI c=wrk.buildEvent();
             try {
                 preProcess(found,data,context);
             } catch (RuntimeException e1) {
                 logger.error("",e1);
             }
-            
-            
-            boolean removedReference = false;
-            Object[] keysArray = data.getParameters().getKeys();
-            try {
-				for (int i=0;i<keysArray.length;i++)
-				{
-				    String key = (String)keysArray[i];
-				    if (key.toLowerCase().startsWith("remove_"))
-				    {
-				        int index = key.indexOf("=");
-				        String field = key.substring(index+1);
-                    Object value = org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data);
-				        logger.debug("FOUND REMOVE: " + field + " " + value);
-				        ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
-				        if (items.size() > 0)
-				        {
-				            ItemI toRemove = items.getFirst();
-                        SaveItemHelper.unauthorizedRemoveChild(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data),c);
-				            found.removeItem(toRemove);
-				            removedReference = true;
-				        }else{
-				            logger.debug("ITEM NOT FOUND:" + key + "="+ value);
-				        }
-				    }
-				}
-			} catch (Exception e1) {
-				WorkflowUtils.fail(wrk, c);
-				throw e1;
-			}
 
-            if (removedReference)
-            {
-                TurbineUtils.SetEditItem(found,data);
-                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+            XFTItem dbVersion = found.getCurrentDBVersion();
+            if(dbVersion==null){
+            	if(StringUtils.isNotEmpty(found.getStringProperty("project")) && StringUtils.isNotEmpty(found.getStringProperty("label"))){
+            		//check for match by label
+                	XnatExperimentdata expt=XnatExperimentdata.GetExptByProjectIdentifier(found.getStringProperty("project"), found.getStringProperty("label"), TurbineUtils.getUser(data), false);
+                	if(expt!=null){
+                        logger.error("Duplicate experiment with label "+ found.getStringProperty("label"));
+                        data.setMessage("Please use a unique session ID.  "+ found.getStringProperty("label") +" is already in use.");
+                        handleException(data,(XFTItem)found,null);
+                	}
+            	}
+            }
+            
+            PersistentWorkflowI wrk=null;
+            if(dbVersion!=null){
+            	wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), found,newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(found.getXSIType(), dbVersion==null)));
+    	    	EventMetaI c=wrk.buildEvent();
+                boolean removedReference = false;
+                Object[] keysArray = data.getParameters().getKeys();
+                try {
+    				for (int i=0;i<keysArray.length;i++)
+    				{
+    				    String key = (String)keysArray[i];
+    				    if (key.toLowerCase().startsWith("remove_"))
+    				    {
+    				        int index = key.indexOf("=");
+    				        String field = key.substring(index+1);
+                        Object value = org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(key,data);
+    				        logger.debug("FOUND REMOVE: " + field + " " + value);
+    				        ItemCollection items =ItemSearch.GetItems(field,value,TurbineUtils.getUser(data),false);
+    				        if (items.size() > 0)
+    				        {
+    				            ItemI toRemove = items.getFirst();
+                            SaveItemHelper.unauthorizedRemoveChild(dbVersion.getItem(),null,toRemove.getItem(),TurbineUtils.getUser(data),c);
+    				            found.removeItem(toRemove);
+    				            removedReference = true;
+    				        }else{
+    				            logger.debug("ITEM NOT FOUND:" + key + "="+ value);
+    				        }
+    				    }
+    				}
+    			} catch (Exception e1) {
+    				WorkflowUtils.fail(wrk, c);
+    				throw e1;
+    			}
+
+                if (removedReference)
                 {
-                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                    TurbineUtils.SetEditItem(found,data);
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                    {
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                    }
+                    WorkflowUtils.complete(wrk, c);
+                    return;
                 }
-                WorkflowUtils.complete(wrk, c);
-                return;
+            }else{
+            	found.setProperty("ID", XnatExperimentdata.CreateNewID());
+            	
+            	wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), found,newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(found.getXSIType(), dbVersion==null)));
             }
             
             XnatSubjectassessordata sa = (XnatSubjectassessordata)BaseElement.GetGeneratedItem(found);
             
-            XnatSubjectdata s = sa.getSubjectData();
-            if ((sa.getId()==null || sa.getId().equals("")) && s!=null){
-                sa.setId(XnatExperimentdata.CreateNewID());
-            }
             
             if (sa.getProject()!=null){
                 data.getParameters().setString("project", sa.getProject());
             }
             
             ValidationResults vr = found.validate();
+            EventMetaI c=wrk.buildEvent();
             
             if (vr.isValid())
             {
@@ -141,17 +151,10 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     
                     WorkflowUtils.complete(wrk, c);
                     
-					MaterializedView.DeleteByUser(TurbineUtils.getUser(data));
-
-                    
             		try {
             			MaterializedView.DeleteByUser(TurbineUtils.getUser(data));
             		} catch (DBPoolException e) {
-            			e.printStackTrace();
-            		} catch (SQLException e) {
-            			e.printStackTrace();
-            		} catch (Exception e) {
-            			e.printStackTrace();
+                        logger.error("",e);
             		}
 
                     found = found.getCurrentDBVersion(false);

@@ -1,48 +1,36 @@
 package org.nrg.xnat.restlet.resources;
 
-import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nrg.dcm.CopyOp;
-import org.nrg.transaction.OperationI;
-import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
-import org.nrg.xdat.model.XnatProjectdataI;
-import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
-import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatPvisitdata;
-import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.archive.Rename;
-import org.nrg.xnat.archive.ValidationException;
 import org.nrg.xnat.archive.Rename.DuplicateLabelException;
 import org.nrg.xnat.archive.Rename.FolderConflictException;
 import org.nrg.xnat.archive.Rename.LabelConflictException;
 import org.nrg.xnat.archive.Rename.ProcessingInProgress;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
-import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
-import org.nrg.xnat.restlet.actions.FixScanTypes;
-import org.nrg.xnat.restlet.actions.PullSessionDataFromHeaders;
-import org.nrg.xnat.restlet.actions.TriggerPipelines;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -50,9 +38,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
-import org.xml.sax.SAXException;
 
 public class SubjVisitResource extends QueryOrganizerResource {
 
@@ -165,7 +151,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 	@Override
 	public void handlePut() {
 		XFTItem item = null;			
-
+		PersistentWorkflowI wrk= null;
 		try {
 			XFTItem template=null;
 			if (existing!=null){
@@ -242,6 +228,9 @@ public class SubjVisitResource extends QueryOrganizerResource {
 					}
 				}
 			}
+			
+			wrk= WorkflowUtils.buildOpenWorkflow(user, visit.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(visit.getXSIType(), (existing==null))));
+			
 
 			//MATCH SUBJECT
 			if(this.subject!=null){
@@ -281,7 +270,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priveledges for subjects in this project.");
 							return;
 						}
-						this.subject.save(user, false, true);
+						SaveItemHelper.authorizedSave(this.subject, user, false, true, wrk.buildEvent());
 						visit.setSubjectId(this.subject.getId());
 					}
 				}
@@ -330,7 +319,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 						else {
 							try {
 								XnatSubjectdata new_s = this.createSubject(proj, this.getQueryVariable("subject_ID"), user);
-								new_s.save(user, false, true);
+								SaveItemHelper.authorizedSave(new_s, user, false, false, wrk.buildEvent());
 								visit.setSubjectId(new_s.getId());
 							} 
 							catch (ResourceException e) {
@@ -353,7 +342,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 							return;
 						}
 
-						Rename renamer = new Rename(proj,existing,label,user);
+						Rename renamer = new Rename(proj,existing,label,user ,getReason(),getEventType());
 						try {
 							renamer.call();
 						} catch (ProcessingInProgress e) {
@@ -408,33 +397,37 @@ public class SubjVisitResource extends QueryOrganizerResource {
 				return;
 			}
 
-			if(visit.save(user,false,allowDataDeletion)){
+			if(SaveItemHelper.authorizedSave(visit,user,false,allowDataDeletion,wrk.buildEvent())){
 				user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
 
 				if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){
 					visit.quarantine(user);
 				}
+				
+				WorkflowUtils.complete(wrk, wrk.buildEvent());
 			}
 
-			if(this.getQueryVariable("activate")!=null && this.getQueryVariable("activate").equals("true")){
-				if(user.canActivate(visit.getItem()))visit.activate(user);
-				else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-			}
-
-			if(this.getQueryVariable("quarantine")!=null && this.getQueryVariable("quarantine").equals("true")){
-				if(user.canActivate(visit.getItem()))visit.quarantine(user);
-				else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.");
-			}
+			postSaveManageStatus(visit);
 
 			this.returnString(visit.getId(),(existing==null)?Status.SUCCESS_CREATED:Status.SUCCESS_OK);
 			
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			logger.error("",e);
+				try {
+					if(wrk!=null)
+					WorkflowUtils.fail(wrk, wrk.buildEvent());
+				} catch (Exception e1) {
+				}
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);
+			try {
+				if(wrk!=null)
+				WorkflowUtils.fail(wrk, wrk.buildEvent());
+			} catch (Exception e1) {
+			}
 		}
 	}
 
@@ -450,9 +443,33 @@ public class SubjVisitResource extends QueryOrganizerResource {
 			return;
 		}
 
-		String msg=existing.delete(proj, user,false);
-		if(msg!=null){
-			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);
+		PersistentWorkflowI wrk;
+		try {
+			wrk = WorkflowUtils.buildOpenWorkflow(user, existing.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.getDeleteAction(existing.getXSIType())));
+			EventMetaI c=wrk.buildEvent();
+			
+			try {
+				String msg=existing.delete(proj, user, this.isQueryVariableTrue("removeFiles"),c);
+				if(msg!=null){
+					WorkflowUtils.fail(wrk, c);
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);
+					return;
+				}else{
+					WorkflowUtils.complete(wrk, c);
+				}
+			} catch (Exception e) {
+				try {
+					WorkflowUtils.fail(wrk, c);
+				} catch (Exception e1) {
+					logger.error("",e1);
+				}
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				return;
+			}
+		} catch (EventRequirementAbsent e1) {
+			logger.error("",e1);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,e1.getMessage());
 			return;
 		}
 	}

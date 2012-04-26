@@ -26,6 +26,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
@@ -35,6 +36,7 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 
 public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable {
@@ -120,7 +122,7 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
     	return generator.generateIdentifier();
     }
 	
-    public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles){
+    public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles,EventMetaI c){
     	BaseXnatPvisitdata visit=this;
     	if(this.getItem().getUser()!=null){
     		visit=new BaseXnatPvisitdata(this.getCurrentDBVersion(true));
@@ -147,7 +149,7 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
 				int match = -1;
 				for(XnatExperimentdataShareI pp : visit.getSharing_share()){
 					if(pp.getProject().equals(proj.getId())){
-						DBAction.RemoveItemReference(visit.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user);
+						SaveItemHelper.authorizedRemoveChild(visit.getItem(), "xnat:experimentData/sharing/share", ((XnatExperimentdataShare)pp).getItem(), user,c);
 						match=index;
 						break;
 					}
@@ -175,7 +177,7 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
 				}
 							
 				if(removeFiles){
-					this.deleteFiles();
+					this.deleteFiles(user,c);
 				}
 				
 				String visitId=visit.getId();
@@ -221,7 +223,7 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
 	   	                    XnatExperimentdata frank = XnatExperimentdata.getXnatExperimentdatasById(exptID.toString(), user, true);    
 	   	                    if(org.apache.commons.lang.StringUtils.equalsIgnoreCase(frank.getVisit(), visitId)){
 	   	                    	frank.setProperty("xnat:experimentdata/visit", null);
-		                        frank.save(user, true, true);
+	   	                    	SaveItemHelper.authorizedSave(frank, user, true, false, c);
 	   	                    } else {
 	   	                    	//the visit must be in the shared project, then. So, we need to clear that out...
 	   	                    	//TODO: implement this.
@@ -242,12 +244,11 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
 					e.printStackTrace();
 				}
 					
-				
-		        DBAction.DeleteItem(visit.getItem().getCurrentDBVersion(), user);
+
+				SaveItemHelper.authorizedDelete(visit.getItem().getCurrentDBVersion(), user,c);
 				
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
-				deleteWorkflowEntries(visitId, user);
 				
 			} catch (SQLException e) {
 				logger.error("",e);

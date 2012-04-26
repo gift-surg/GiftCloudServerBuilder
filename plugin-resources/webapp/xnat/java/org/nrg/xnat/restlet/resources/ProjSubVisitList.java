@@ -17,17 +17,19 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
-import org.nrg.xnat.restlet.actions.TriggerPipelines;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -112,6 +114,7 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 	@Override
 	public void handlePost() {
 	        XFTItem item = null;
+			PersistentWorkflowI wrk= null;
 
 			try {
 			item=this.loadItem(null,true);
@@ -160,6 +163,8 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 						return;
 					}
 
+					wrk= WorkflowUtils.buildOpenWorkflow(user, visit.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(visit.getXSIType(), true)));
+					
 					//MATCH SUBJECT
 					if(this.subject!=null){
 						visit.setSubjectId(this.subject.getId());
@@ -185,7 +190,7 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 								this.subject.setProject(this.proj.getId());
 								this.subject.setLabel(visit.getSubjectId());
 								this.subject.setId(XnatSubjectdata.CreateNewID());
-								this.subject.save(user, false, true);
+								SaveItemHelper.authorizedSave(this.subject, user, false, true, wrk.buildEvent());
 								visit.setSubjectId(this.subject.getId());
 							}
 						}
@@ -249,31 +254,17 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 		            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
 		            }
-	
-					if(visit.save(user,false,allowDataDeletion)){
+
+					if(SaveItemHelper.authorizedSave(visit,user,false,allowDataDeletion,wrk.buildEvent())){
 						MaterializedView.DeleteByUser(user);
 	
 						if(this.proj.getArcSpecification().getQuarantineCode().equals(1)){
 							visit.quarantine(user);
 						}
+						WorkflowUtils.complete(wrk, wrk.buildEvent());
 					}
-	
-					if(this.getQueryVariable("activate")!=null && this.getQueryVariable("activate").equals("true")){
-						if(user.canActivate(visit.getItem()))visit.activate(user);
-						else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for visits in this project.");
-					}
-	
-					if(this.getQueryVariable("quarantine")!=null && this.getQueryVariable("quarantine").equals("true")){
-						if(user.canActivate(visit.getItem()))visit.quarantine(user);
-						else this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for visits in this project.");
-					}
-					
-					if(user.canEdit(visit.getItem())){
-						if(this.isQueryVariableTrue(XNATRestConstants.TRIGGER_PIPELINES) || this.containsAction(XNATRestConstants.TRIGGER_PIPELINES)){
-							TriggerPipelines tp = new TriggerPipelines(visit,true,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
-							tp.call();
-						}
-					}
+
+					postSaveManageStatus(visit);
 	
 					this.returnSuccessfulCreateFromList(visit.getId());
 				}else{
@@ -282,9 +273,19 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			logger.error("",e);
-			} catch (Exception e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			try {
+				if(wrk!=null)
+				WorkflowUtils.fail(wrk, wrk.buildEvent());
+			} catch (Exception e1) {
+			}
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);
+			try {
+				if(wrk!=null)
+				WorkflowUtils.fail(wrk, wrk.buildEvent());
+			} catch (Exception e1) {
+			}
 		}
 	}
 	

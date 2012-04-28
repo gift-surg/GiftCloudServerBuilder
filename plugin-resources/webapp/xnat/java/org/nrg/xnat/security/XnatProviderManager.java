@@ -51,7 +51,8 @@ public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
     private static final String SECURITY_PASSWORD_COMPLEXITY_PROPERTY = "security.password_complexity";
     private static final String SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY = "security.password_complexity_message";
-
+	private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
+	
 	private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
 
     private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
@@ -67,6 +68,8 @@ public class XnatProviderManager extends ProviderManager {
     
 	private static String PASSWORD_COMPLEXITY="";
 	private static String PASSWORD_COMPLEXITY_MESSAGE="";
+	
+	private static Integer PASSWORD_EXPIRATION=-1;
 	
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -106,6 +109,10 @@ public class XnatProviderManager extends ProviderManager {
         
         if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY)!=null){
         	PASSWORD_COMPLEXITY_MESSAGE=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY);
+        }
+        
+        if(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY)!=null){
+        	PASSWORD_EXPIRATION=Integer.valueOf(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY));
         }
     
      // Create providers
@@ -282,7 +289,10 @@ public class XnatProviderManager extends ProviderManager {
         public void publishAuthenticationSuccess(Authentication authentication) {}
     }
 
-
+    public int getExpirationInterval(){
+    	return PASSWORD_EXPIRATION;
+    }
+    
 	private static class FailedAttemptsManager {
 		private Map<String,List<Date>> cached_attempts=Maps.newConcurrentMap();//cached failed login attempts... should be cleared when 
 		/**

@@ -67,6 +67,8 @@
         <security:intercept-url pattern="/app/template/Login.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Register.vm" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/ForgotLogin.vm" access="permitAll" requires-channel="${security.channel}"/>
+		<security:intercept-url pattern="/app/template/ChangePassword.vm" access="permitAll" requires-channel="${security.channel}"/>
+		<security:intercept-url pattern="/app/action/XDATChangePassword" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/action/XDATForgotLogin" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/action/XDATRegisterUser" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Error.vm" access="permitAll" requires-channel="${security.channel}"/>
@@ -76,6 +78,7 @@
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="${security.channel}"/>
         <security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
         <security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="customBasicAuthenticationFilter"/>
+		<security:custom-filter after="BASIC_AUTH_FILTER" ref="expiredPasswordFilter"/>
         <security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
         <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
         <security:session-management session-authentication-strategy-ref="sas"/>
@@ -105,6 +108,9 @@
         <property name="sessionAuthenticationStrategy" ref="sas" />
     </bean>
 
+	<bean id="expiredPasswordFilter" class="org.nrg.xnat.security.XnatExpiredPasswordFilter">
+	</bean>
+	
     <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
 
     <bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>

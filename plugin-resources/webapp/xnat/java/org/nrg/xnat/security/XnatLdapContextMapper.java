@@ -6,6 +6,7 @@ import javax.naming.NamingException;
 
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
@@ -27,7 +28,7 @@ public class XnatLdapContextMapper implements UserDetailsContextMapper {
 	
     public UserDetails mapUserFromContext(DirContextOperations ctx, String username, Collection<GrantedAuthority> authorities) {
     	String email = ctx.getObjectAttribute("mail").toString();
-    	XDATUserDetails user = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(username, "ldap", authMethodId, email);
+    	XDATUserDetails user = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(username, XdatUserAuthService.LDAP, authMethodId, email);
 		return user;   }
 
     public void mapUserToContext(UserDetails user, DirContextAdapter ctx) {

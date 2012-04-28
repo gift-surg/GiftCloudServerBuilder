@@ -46,6 +46,26 @@
         <property name="jobDetail" ref="disableInactiveUsersJobBean" />
         <property name="repeatInterval" value="86400000" />
     </bean>
+    
+    <bean name="resetFailedLoginsJob" class="org.nrg.xnat.security.ResetFailedLoginsJob" />
+
+    <bean name="resetFailedLoginsJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="org.nrg.schedule.DelegatingJobBean" />
+        <property name="name" value="reset-failed-logins"/>
+        <property name="group" value="users-jobs"/>
+        <property name="jobDataAsMap">
+            <map>
+          		<entry key="job.bean.name" value="resetFailedLoginsJob" />
+            </map>
+        </property>
+    </bean>
+    
+   	<bean id="resetFailedLoginsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobName" value="reset-failed-logins-trigger" />
+        <property name="jobGroup" value="users-triggers"/>
+        <property name="jobDetail" ref="resetFailedLoginsJobBean" />
+        <property name="repeatInterval" value="${security.max_failed_logins_lockout_duration}" />
+    </bean>
 
    	<bean name="clearExpiredAliasTokensJob" class="org.nrg.xnat.security.alias.ClearExpiredAliasTokensJob" />
 
@@ -79,6 +99,7 @@
             <list>
                 <ref bean="sessionXmlRebuilderTrigger" />
                 <ref bean="disableInactiveUsersTrigger" />
+                <ref bean="resetFailedLoginsTrigger" />
                 <ref bean="clearExpiredAliasTokensTrigger" />
             </list>
         </property>

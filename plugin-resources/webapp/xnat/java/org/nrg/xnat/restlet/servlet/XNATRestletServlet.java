@@ -16,6 +16,7 @@ import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
@@ -104,18 +105,18 @@ public class XNATRestletServlet extends ServerServlet {
      */
     private void updateAuthTable(){
         JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
-        List<XdatUserAuth> unmapped = template.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth WHERE auth_method='localdb')", new RowMapper<XdatUserAuth>() {
+        List<XdatUserAuth> unmapped = template.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth WHERE auth_method='"+XdatUserAuthService.LOCALDB+"')", new RowMapper<XdatUserAuth>() {
             @Override
             public XdatUserAuth mapRow(final ResultSet resultSet, final int i) throws SQLException {
                 final String login = resultSet.getString("login");
                 final boolean enabled = resultSet.getInt("enabled") == 1;
-                return new XdatUserAuth(login, "localdb", enabled, true, true, true, AuthorityUtils.NO_AUTHORITIES, login);
+                return new XdatUserAuth(login, XdatUserAuthService.LOCALDB, enabled, true, true, true, AuthorityUtils.NO_AUTHORITIES, login,0);
             }
         });
         for (XdatUserAuth userAuth : unmapped) {
             XDAT.getXdatUserAuthService().create(userAuth);
         }
-        template.execute("UPDATE xhbm_xdat_user_auth SET password_updated=current_timestamp WHERE auth_method='localdb' AND password_updated IS NULL");   
+        template.execute("UPDATE xhbm_xdat_user_auth SET password_updated=current_timestamp WHERE auth_method='"+XdatUserAuthService.LOCALDB+"' AND password_updated IS NULL");   
     }
 
     @Override

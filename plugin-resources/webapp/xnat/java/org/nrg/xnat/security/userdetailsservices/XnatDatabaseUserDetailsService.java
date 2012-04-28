@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nrg.xdat.XDAT;
 import org.nrg.xnat.security.PasswordExpiredException;
 import org.nrg.xnat.security.XnatProviderManager;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,9 +22,11 @@ import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 
 public class XnatDatabaseUserDetailsService extends JdbcDaoImpl implements UserDetailsService{
 	
+	public static final String DB_PROVIDER = "";
+	
 	@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, PasswordExpiredException {
-		UserDetails user = (XDAT.getXdatUserAuthService()).getUserDetailsByNameAndAuth(username, "localdb","");
+		UserDetails user = (XDAT.getXdatUserAuthService()).getUserDetailsByNameAndAuth(username, XdatUserAuthService.LOCALDB, DB_PROVIDER);
         return user;
     }
 }

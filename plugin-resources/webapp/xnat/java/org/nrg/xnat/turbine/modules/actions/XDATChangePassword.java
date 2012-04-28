@@ -32,6 +32,7 @@ import org.nrg.xdat.security.RegExpValidator;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.search.ItemSearch;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -98,7 +99,7 @@ public class XDATChangePassword extends VelocitySecureAction {
 	                toSave.setProperty("primary_password", password);
 	                toSave.setProperty("email", oldUser.getProperty("email"));
 					try {
-						XDATUser.ModifyUser(oldUser, toSave);
+						XDATUser.ModifyUser(oldUser, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
 					} catch (Exception e) {
 						logger.error("Error Storing User", e);
 						return;
@@ -167,12 +168,12 @@ public class XDATChangePassword extends VelocitySecureAction {
 	                toSave.setProperty("primary_password", password);
 	                toSave.setProperty("email", user.getProperty("email"));
 					try {
-						XDATUser.ModifyUser(user, toSave);
+						XDATUser.ModifyUser(user, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
 					} catch (Exception e) {
 						logger.error("Error Storing User", e);
 						return;
 					}
-					SaveItemHelper.authorizedSave(toSave, TurbineUtils.getUser(data),true,false,true,false);
+					SaveItemHelper.authorizedSave(toSave, TurbineUtils.getUser(data),true,false,true,false, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
 	                TurbineUtils.setUser(data, user);
 			    	
 					XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "localdb", "");

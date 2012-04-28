@@ -16,6 +16,7 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xft.utils.AuthUtils;
+import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;

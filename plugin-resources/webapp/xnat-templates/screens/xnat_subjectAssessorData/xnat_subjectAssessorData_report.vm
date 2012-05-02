@@ -25,7 +25,7 @@ document.title = "EXPT: $!item.getProperty('label')";
 					#set($project=$om.getProject())
 					#end
 <BR>
-<table width="100%" align="left" border="0">
+<table width="100%" border="0">
 				<tr>
 		  <td align=left>
 			#parse($turbineUtils.getTemplateName("_details",$om.getXSIType(),$project))

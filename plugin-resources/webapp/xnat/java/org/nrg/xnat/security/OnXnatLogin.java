@@ -13,6 +13,7 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.SaveItemHelper;
@@ -52,7 +53,7 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 	      	XFTItem item = XFTItem.NewItem("xdat:user_login",user);
 	      	item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
 	      	item.setProperty("xdat:user_login.login_date",today);
-	      	item.setProperty("xdat:user_login.ip_address", request.getRemoteAddr());
+	      	item.setProperty("xdat:user_login.ip_address", AccessLogger.GetRequestIp(request));
 	      	item.setProperty("xdat:user_login.session_id", request.getSession().getId());
 	      	SaveItemHelper.authorizedSave(item,null,true,false, EventUtils.ADMIN_EVENT(user));
 	      	

@@ -16,6 +16,7 @@ import org.nrg.mail.api.MailMessage;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
+import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.PoolDBUtils;
@@ -90,7 +91,7 @@ public class ReportIssue extends SecureAction {
 
 		context.put("user_agent", data.getRequest().getHeader(HTTP_USER_AGENT));
 		context.put("xnat_host", data.getRequest().getHeader(HTTP_HOST));
-		context.put("remote_addr", data.getRequest().getRemoteAddr());
+		context.put("remote_addr", AccessLogger.GetRequestIp(data.getRequest()));
 		context.put("server_info", data.getServletContext().getServerInfo());
 
 		context.put("os_name", System.getProperty(JAVA_OS_NAME));

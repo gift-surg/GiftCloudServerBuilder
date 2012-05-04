@@ -14,6 +14,7 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.XFT;
 import org.nrg.xft.search.ItemSearch;
 
 public class ConfirmRegister extends SecureAction {
@@ -42,6 +43,9 @@ public class ConfirmRegister extends SecureAction {
 		    }else if (!StringUtils.isEmpty(nextPage) && !nextPage.equals(org.apache.turbine.Turbine.getConfiguration().getString("template.home")) ) {
             	context.put("nextPage", nextPage);
 			}
+            
+		    context.put("showReason", XFT.SHOW_REASON);
+		    context.put("requireReason", XFT.REQUIRE_REASON);
 
             context.put("turbineUtils",TurbineUtils.GetInstance());
             

@@ -22,10 +22,8 @@
 	    
 		var serverRoot = "$content.getURI('')";
 		var csrfToken = "$!XNAT_CSRF";
-		#if($showReason)
 		var showReason = $showReason;
 		var requireReason = $requireReason;
-		#end
 		window.available_elements=new Array();
 		
 		#if($data.getSession().getAttribute("user"))

@@ -100,7 +100,7 @@ BEGIN  FOR my_record IN SELECT * FROM (SELECT COUNT (c.relname) AS view_count FR
 LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE     c.relkind IN (\'v\') AND n.nspname 
 NOT IN (\'pg_catalog\', \'pg_toast\') AND pg_catalog.pg_table_is_visible(c.oid) LIMIT 1) AS COUNT_TABLE  LOOP   counter := my_record.view_count;  
 END LOOP;  RETURN (counter); END; '  LANGUAGE 'plpgsql' VOLATILE;"/>
-	<SQLFunction name="getsortedstring" content="CREATE OR REPLACE FUNCTION getsortedstring(&quot;varchar&quot;, int4)   RETURNS sortedstrings AS 'DECLARE  sorted_strings sortedStrings%ROWTYPE; 
+	<SQLFunction name="getsortedstring" content="CREATE OR REPLACE FUNCTION getsortedstring(&quot;varchar&quot;, int4)   RETURNS sortedstrings AS E'DECLARE  sorted_strings sortedStrings%ROWTYPE; 
 BEGIN  sorted_strings.strings:=$1;  sorted_strings.sort_order:=$2;  return sorted_strings; END;'   LANGUAGE 'plpgsql' VOLATILE;"/>
 	<SQLFunction name="removeviews" content="CREATE OR REPLACE FUNCTION removeviews()   RETURNS varchar AS E' DECLARE  viewName name;  viewCounter int8; 
 BEGIN  SELECT INTO viewName getnextview();  SELECT INTO viewCounter viewCount();  WHILE (viewCounter > 0)   LOOP   

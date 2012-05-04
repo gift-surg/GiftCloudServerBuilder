@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xft.XFT;
@@ -314,7 +315,7 @@ public class XnatProviderManager extends ProviderManager {
 					XDAT.getXdatUserAuthService().update(ua);
 				}
 			}
-		}
+		} 
 		
 		public void clearCount(final Authentication auth) {
 			if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
@@ -330,9 +331,14 @@ public class XnatProviderManager extends ProviderManager {
 	public static XdatUserAuth getUserByAuth(Authentication authentication) {
 		if(authentication==null){
 			return null;
-				}
+		}
 		
-		final String u=(String)authentication.getPrincipal();
+		final String u;
+		if(authentication.getPrincipal() instanceof String){
+			u=(String)authentication.getPrincipal();
+		}else{
+			u=((XDATUserDetails)authentication.getPrincipal()).getLogin();
+		}
 		final String method;
 		final String provider;
 		if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){

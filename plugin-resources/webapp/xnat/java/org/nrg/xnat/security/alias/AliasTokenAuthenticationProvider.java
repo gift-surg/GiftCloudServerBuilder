@@ -3,6 +3,7 @@ package org.nrg.xnat.security.alias;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
+import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -102,8 +103,8 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
             throw new BadCredentialsException("The submitted token was invalid", userDetails);
         }
 
-        String alias = (String) authentication.getPrincipal();
-        long secret = (Long) authentication.getCredentials();
+        String alias = ((AliasTokenAuthenticationToken) authentication).getAlias();
+        long secret = ((AliasTokenAuthenticationToken) authentication).getSecret();
         String userId = getService().validateToken(alias, secret);
         if (StringUtils.isBlank(userId) || !userId.equals(userDetails.getUsername())) {
             throw new BadCredentialsException("The submitted token was invalid", userDetails);

@@ -6,10 +6,12 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.turbine.util.TurbineException;
+import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xnat.restlet.representations.RESTLoginRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -21,7 +23,6 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -52,7 +53,7 @@ public class XnatSecureGuard extends Filter {
 			return new RESTLoginRepresentation(MediaType.TEXT_HTML, request, null);
 		} catch (TurbineException e) {
 			logger.error("",e);
-			return new StringRepresentation("An error has occured. Unable to load login page.");
+			return new StringRepresentation("An error has occurred. Unable to load login page.");
 		}
 	}
 
@@ -75,6 +76,13 @@ public class XnatSecureGuard extends Filter {
 	protected XDATUser getUser(String login) throws Exception {
 		return new XDATUser(login);
 	}
+
+    private AliasTokenService getAliasTokenService() {
+        if (_aliasTokenService == null) {
+            _aliasTokenService = XDAT.getContextService().getBean(AliasTokenService.class);
+        }
+        return _aliasTokenService;
+    }
 
 	private boolean authenticate(Request request, Response response) {
 		// THIS BREAKS THE TRADITIONAL REST MODEL
@@ -124,11 +132,12 @@ public class XnatSecureGuard extends Filter {
 	}
 
 	private XDATUser authenticateBasic(ChallengeResponse challengeResponse) {
-		XDATUser user = null;
-		try {
 			final String username = challengeResponse.getIdentifier();
 			final String password = new String(challengeResponse.getSecret());
 
+        XDATUser user;
+
+        try {
 			user = getUser(username);
 			if(!Authenticator.Authenticate(user, new Authenticator.Credentials(username, password))){
 				user=null;
@@ -136,6 +145,16 @@ public class XnatSecureGuard extends Filter {
 		} catch (Exception e) {
 			user = null;
 		}
+
+        if (user == null && AliasToken.isAliasFormat(username)) {
+            AliasToken token = getAliasTokenService().locateToken(username);
+            try {
+                user = new XDATUser(token.getXdatUserId());
+            } catch (Exception exception) {
+                user = null;
+            }
+        }
+
 		return user;
 	}
 
@@ -159,4 +178,5 @@ public class XnatSecureGuard extends Filter {
 		}
 	}
 
+    private AliasTokenService _aliasTokenService;
 }

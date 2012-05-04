@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
@@ -25,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
@@ -105,7 +105,7 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
             if(user_auths.size()==1){
                 auth=user_auths.get(0).getAuthMethod();
                 cached_methods.put(username.intern(),auth.intern());
-            } else if (PATTERN_UUID.matcher(username).matches()) {
+            } else if (AliasToken.isAliasFormat(username)) {
                 auth = "token";
                 cached_methods.put(username.intern(), auth.intern());
             }
@@ -120,6 +120,5 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         return _service;
     }
 
-    private static final Pattern PATTERN_UUID = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
     private AliasTokenService _service;
 }

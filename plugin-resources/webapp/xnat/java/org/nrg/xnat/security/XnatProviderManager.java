@@ -211,8 +211,6 @@ public class XnatProviderManager extends ProviderManager {
         Class<? extends Authentication> toTest = authentication.getClass();
         AuthenticationException lastException = null;
         Authentication result = null;
-        
-        final String auth_id=authentication.toString().intern();
 
         for (AuthenticationProvider provider : getProviders()) {
             if (!provider.supports(toTest)) {

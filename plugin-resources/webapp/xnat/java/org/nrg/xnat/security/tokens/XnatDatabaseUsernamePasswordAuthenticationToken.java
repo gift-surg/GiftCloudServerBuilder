@@ -10,6 +10,9 @@ public class XnatDatabaseUsernamePasswordAuthenticationToken extends UsernamePas
 	}
 
 	public String toString(){
-		return getPrincipal().toString();
+		if(getPrincipal()!=null)
+			return getPrincipal().toString();
+		else
+			return "";
 	}
 }

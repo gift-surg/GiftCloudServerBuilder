@@ -334,7 +334,7 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 		}
 	}
 
-	public JSONObject toJSON() throws Exception{
+	public JSONObject toJSON(String dateFormat) throws Exception{
 		Map<Number,WorkflowView> changes=call();
 
 		JSONObject wrapper=new JSONObject();
@@ -344,7 +344,13 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 			JSONObject o = new JSONObject();
 			o.put("event_id", entry.getKey());
 			o.put("event_action", entry.getValue().getMessage());
-			o.put("event_date", entry.getValue().getDate());
+			if(entry.getValue().getDate()!=null){
+				if(dateFormat==null){
+					o.put("event_date", entry.getValue().getDate().getTime());
+				}else{
+					o.put("event_date", DateUtils.format(entry.getValue().getDate(), dateFormat));
+				}
+			}
 			o.put("event_user", entry.getValue().getUsername());
 			if(entry.getValue().getWorkflow()!=null){
 				o.put("event_type", entry.getValue().getWorkflow().getType());
@@ -356,7 +362,7 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 			JSONArray a = new JSONArray();
 			o.put("changesets", a);
 			for(ChangeSummaryBuilderA.ChangeSummary cs: entry.getValue().getChangeSummaries()){
-				a.put(cs.toJSON());
+				a.put(cs.toJSON(dateFormat));
 			}
 			
 			objects.put(o);

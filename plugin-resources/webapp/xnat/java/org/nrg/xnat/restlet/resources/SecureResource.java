@@ -1065,8 +1065,7 @@ public abstract class SecureResource extends Resource {
 		final boolean includeFiles=(StringUtils.isEmpty(files))?false:Boolean.valueOf(files.toString());
 		final boolean includedetails=(StringUtils.isEmpty(details))?false:Boolean.valueOf(details.toString());
 		
-		
-		return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, (new WorkflowBasedHistoryBuilder(item,item.getStringProperty("ID"),user,includeFiles,includedetails)).toJSON());
+		return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, (new WorkflowBasedHistoryBuilder(item,item.getStringProperty("ID"),user,includeFiles,includedetails)).toJSON(this.getQueryVariable("dateFormat")));
 	}
 	
 	public Integer getEventId(){

@@ -143,9 +143,15 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 			return summary;
 		}
 
-		public JSONObject toJSON() throws JSONException {
+		public JSONObject toJSON(final String dateFormat) throws JSONException {
 			JSONObject o = new JSONObject();
-			o.put("date", getDate());
+			if(getDate()!=null){
+				if(dateFormat==null){
+					o.put("date", getDate().getTime());
+				}else{
+					o.put("date", DateUtils.format(getDate(), dateFormat));
+				}
+			}
 			
 			JSONArray a = new JSONArray();
 			o.put("changes", a);

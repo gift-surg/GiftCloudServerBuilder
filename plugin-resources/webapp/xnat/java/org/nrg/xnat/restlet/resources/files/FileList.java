@@ -156,6 +156,22 @@ public class FileList extends XNATCatalogTemplate {
 						}else if(security.getItem().instanceOf("xnat:experimentData")){
 							securityId=((XnatExperimentdata)security).getId();
 							proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+						}else if(parent.getItem().instanceOf("xnat:subjectData")){
+							securityId=((XnatSubjectdata)parent).getId();
+							proj = ((XnatSubjectdata)parent).getPrimaryProject(false);
+						}else if(security.getItem().instanceOf("xnat:subjectData")){
+							securityId=((XnatSubjectdata)security).getId();
+							proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+						}
+					}else{
+						if(parent.getItem().instanceOf("xnat:experimentData")){
+							securityId=((XnatExperimentdata)parent).getId();
+						}else if(security.getItem().instanceOf("xnat:experimentData")){
+							securityId=((XnatExperimentdata)security).getId();
+						}else if(parent.getItem().instanceOf("xnat:subjectData")){
+							securityId=((XnatSubjectdata)parent).getId();
+						}else if(security.getItem().instanceOf("xnat:subjectData")){
+							securityId=((XnatSubjectdata)security).getId();
 						}
 					}
 					

@@ -72,6 +72,15 @@ XNAT.app.ConfirmWJustification=function(_yuioptions){
 	}
 }
 
+XNAT.app.passThrough=function(_function,scope){
+	this.onCompletion=new YAHOO.util.CustomEvent("complete",this);
+	this.onCompletion.subscribe(_function, this, scope);
+	
+	this.fire=function(){
+		this.onCompletion.fire();
+	}
+}
+
 XNAT.app.requestJustification=function(_id,_header,_function,scope){
 	this.id=_id;
 	this.onCompletion=new YAHOO.util.CustomEvent("complete",this);

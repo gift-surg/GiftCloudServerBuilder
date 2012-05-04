@@ -12,8 +12,8 @@ import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -207,6 +207,22 @@ public class CatalogResource extends XNATCatalogTemplate {
 							}else if(security.getItem().instanceOf("xnat:experimentData")){
 								securityId=((XnatExperimentdata)security).getId();
 								proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+							}else if(parent.getItem().instanceOf("xnat:subjectData")){
+								securityId=((XnatSubjectdata)parent).getId();
+								proj = ((XnatSubjectdata)parent).getPrimaryProject(false);
+							}else if(security.getItem().instanceOf("xnat:subjectData")){
+								securityId=((XnatSubjectdata)security).getId();
+								proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+							}
+						}else{
+							if(parent.getItem().instanceOf("xnat:experimentData")){
+								securityId=((XnatExperimentdata)parent).getId();
+							}else if(security.getItem().instanceOf("xnat:experimentData")){
+								securityId=((XnatExperimentdata)security).getId();
+							}else if(parent.getItem().instanceOf("xnat:subjectData")){
+								securityId=((XnatSubjectdata)parent).getId();
+							}else if(security.getItem().instanceOf("xnat:subjectData")){
+								securityId=((XnatSubjectdata)security).getId();
 							}
 						}
 						
@@ -229,6 +245,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 						return;
 					}
 				} catch (Exception e) {
+					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 					return;
 				}

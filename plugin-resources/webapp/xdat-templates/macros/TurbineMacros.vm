@@ -1496,20 +1496,24 @@ $!turbineUtils.escapeJS($s)
 
 
 #macro(auditTable $reason $action)
+	#if($showReason)
 	<TABLE>
 		#auditBoxes("1" "" $reason $action)
 	</TABLE>
+	#end
 #end
 
 #macro(auditBoxes $span $align $reason $action)
+	#if($showReason)
 	<TR>
 		<TD colspan="$span" align="$align">
 			<input type="hidden" name="event_action" value="$!action"/>
 			<input type="hidden" name="event_type" value="WEB_FORM"/>
 			<div class="justification">Justification (Why are you completing this form?)<BR/>
-				<textarea rows="3" cols="70" id="event_reason" name="event_reason" class="required">$!reason</textarea>
+				<textarea rows="3" cols="70" id="event_reason" name="event_reason" #if($requireReason) class="required" #end>$!reason</textarea>
 			</div>
 		</TD>	
 	</TR>
+	#end
 #end
 

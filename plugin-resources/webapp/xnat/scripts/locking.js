@@ -37,7 +37,7 @@ XNAT.app.locker= {
 	},
    
    _lock:function(arg1,arg2,container){	   
-		var event_reason=container.dialog.event_reason;
+		var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 		var initCallback={
 			success:function(obj1){
 				closeModalPanel("lock_");
@@ -66,10 +66,15 @@ XNAT.app.locker= {
 
    
 	unlock:function(){	
-		var justification=new XNAT.app.requestJustification("lock_","Unlock Item",this._unlock,this);
+		if(showReason){
+			var justification=new XNAT.app.requestJustification("lock_","Unlock Item",this._unlock,this);
+		}else{
+			_unlock();
+		}
 	},
 	
-	_unlock:function(){
+	_unlock:function(arg1,arg2,container){
+		var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 		var initCallback={
 				success:function(o){
 					closeModalPanel("lock_");

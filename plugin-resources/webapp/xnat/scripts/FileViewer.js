@@ -54,13 +54,19 @@ function FileViewer(_obj){
 		alert("Error loading files");
 	}
 	   
-	this.removeFile=function(item){	
-		var justification=new XNAT.app.requestJustification("file","File Deletion Dialog",this._removeFile,this);
-		justification.item=item;		
+	this.removeFile=function(item){		
+		if(showReason){
+			var justification=new XNAT.app.requestJustification("file","File Deletion Dialog",this._removeFile,this);
+			justification.item=item;	
+		}else{
+			var passthrough= new XNAT.app.passThrough(this._removeFile,this);
+			passthrough.item=item;
+			passthrough.fire();
+		}
 	}
    
    this._removeFile=function(arg1,arg2,container){	   
-		var event_reason=container.dialog.event_reason;
+		var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 		this.initCallback={
 			success:function(obj1){
 	    		this.refreshCatalogs("file");
@@ -82,13 +88,19 @@ function FileViewer(_obj){
 		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+'?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
    
-   this.removeCatalog=function(item){
-		var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeCatalog,this);
-		justification.item=item;		
+   this.removeCatalog=function(item){	
+		if(showReason){
+			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeCatalog,this);
+			justification.item=item;	
+		}else{
+			var passthrough= new XNAT.app.passThrough(this._removeCatalog,this);
+			passthrough.item=item;
+			passthrough.fire();
+		}
    }
    
    this._removeCatalog=function(arg1,arg2,container){
-		var event_reason=container.dialog.event_reason;
+		var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 		this.initCallback={
 			success:function(obj1){
   				this.refreshCatalogs("file");
@@ -1185,10 +1197,17 @@ function UploadFileForm(_obj){
 		}
 		
 		file_dest+=file_params;
+		if(showReason){
+			var justification=new XNAT.app.requestJustification("add_file","File Upload Dialog",XNAT.app._uploadFile,this);
+			justification.file_dest=file_dest;
+			justification.file_name=file_name;
+		}else{
+			var passthrough= new XNAT.app.passThrough(XNAT.app._uploadFile,this);
+			passthrough.file_dest=file_dest;
+			passthrough.file_name=file_name;
+			passthrough.fire();
+		}
 		
-		var justification=new XNAT.app.requestJustification("add_file","File Upload Dialog",XNAT.app._uploadFile,this);
-		justification.file_dest=file_dest;
-		justification.file_name=file_name;
 	}
 }
    
@@ -1475,8 +1494,15 @@ function AddFolderForm(_obj){
 		}				
 		
 		file_dest+=file_params;
-		var justification=new XNAT.app.requestJustification("add_folder","Folder Creation Dialog",XNAT.app._addFolder,this);
-		justification.file_dest=file_dest;
+		if(showReason){
+			var justification=new XNAT.app.requestJustification("add_folder","Folder Creation Dialog",XNAT.app._addFolder,this);
+			justification.file_dest=file_dest;
+		}else{
+			var passthrough= new XNAT.app.passThrough(XNAT.app._addFolder,this);
+			passthrough.file_dest=file_dest;
+			passthrough.fire();
+		}
+		
 	}
 	
 	
@@ -1484,7 +1510,7 @@ function AddFolderForm(_obj){
 
 
 XNAT.app._uploadFile=function(arg1,arg2,container){	 
-	var event_reason=container.dialog.event_reason;
+	var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 	var form = document.getElementById("file_upload");
 	YAHOO.util.Connect.setForm(form,true);
 	
@@ -1510,7 +1536,7 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 }
 
 XNAT.app._addFolder=function(arg1,arg2,container){	   
-	var event_reason=container.dialog.event_reason;
+	var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 	var callback={
 		success:function(obj1){
 			closeModalPanel("add_folder");

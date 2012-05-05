@@ -704,7 +704,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-mx</artifactId>
-			<version>1.5.4-SNAPSHOT</version>
+			<version>1.6.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -713,7 +713,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-sop</artifactId>
-			<version>1.5.4-SNAPSHOT</version>
+			<version>1.6.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -722,16 +722,16 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-util</artifactId>
-			<version>1.5.4-SNAPSHOT</version>
+			<version>1.6.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>dcm</groupId>
+			<groupId>ecat</groupId>
 			<artifactId>ecat4xnat</artifactId>
-			<version>1.5.0</version>
+			<version>1.6.0-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

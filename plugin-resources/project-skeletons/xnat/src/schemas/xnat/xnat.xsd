@@ -860,6 +860,11 @@
 							<xs:documentation>DICOM Patient's Name (0010,0010)</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="dcmPatientBirthDate" type="xs:date" minOccurs="0">
+					        <xs:annotation>
+						        <xs:documentation>DICOM Patient's Birth Date (0010,0030)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 				<xs:attribute name="session_type" type="xs:string" use="optional"/>
 				<xs:attribute name="modality" type="xs:string"/>
@@ -1026,7 +1031,6 @@
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:element>
-								<xs:element name="scanTime" type="xs:time" minOccurs="0"/>
 								<xs:element name="imageType" type="xs:string" minOccurs="0"/>
 								<xs:element name="scanSequence" type="xs:string" minOccurs="0"/>
 								<xs:element name="seqVariant" type="xs:string" minOccurs="0"/>
@@ -1952,7 +1956,6 @@
 						<xs:complexType>
 							<xs:sequence>
 								<xs:element name="orientation" type="xs:integer" minOccurs="0"/>
-								<xs:element name="scanTime" type="xs:time" minOccurs="0"/>
 								<xs:element name="addParam" type="xnat:addField" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
 										<xs:appinfo>
@@ -2956,6 +2959,11 @@ rebinning, 6=FORE)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="validation" type="xnat:validationData" minOccurs="0"/>
+			<xs:element name="startTime" type="xs:time" minOccurs="0">
+			        <xs:annotation>
+				        <xs:documentation>Time the scan started</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="ID" type="xs:string" use="required">
 			<xs:annotation>
@@ -3034,7 +3042,6 @@ rebinning, 6=FORE)</xs:documentation>
 										<xs:documentation>Number identifying the single continuous gathering of data over a period of time resulting in this image</xs:documentation>
 									</xs:annotation>
 								</xs:element>
-								<xs:element name="scanTime" type="xs:time" minOccurs="0"/>
 								<xs:element name="imageType" type="xs:string" minOccurs="0"/>
 								<xs:element name="options" type="xs:string" minOccurs="0"/>
 								<xs:element name="collectionDiameter" minOccurs="0">
@@ -3656,7 +3663,6 @@ rebinning, 6=FORE)</xs:documentation>
 										<xs:documentation>Power of the illuminator in microwatts at corneal plane</xs:documentation>
 									</xs:annotation>
 								</xs:element>
-								<xs:element name="scanTime" type="xs:time" minOccurs="0"/>
 								<xs:element name="imageType" type="xs:string" minOccurs="0"/>
 							</xs:sequence>
 						</xs:complexType>

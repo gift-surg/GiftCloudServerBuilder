@@ -42,7 +42,7 @@
     <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
     <bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
         <constructor-arg name="sessionRegistry" ref="sessionRegistry" />
-        <property name="maximumSessions" value="10"/>
+        <property name="maximumSessions" value="${security.sessions.concurrent_max}"/>
         <property name="exceptionIfMaximumExceeded" value="true"/>
     </bean>
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">

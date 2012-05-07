@@ -22,7 +22,7 @@
 	</bean>
 	
 	<bean id="historicValidator" class="org.nrg.xdat.security.HistoricPasswordValidator">
-		<property name="durationInDays" value="365"/>
+		<property name="durationInDays" value="${security.password_history}"/>
     </bean>
     
 	<bean id="regexValidator" class="org.nrg.xdat.security.RegExpValidator">

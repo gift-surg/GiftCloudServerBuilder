@@ -13,6 +13,7 @@
   </tr>
   
   #set ($scanCounter = 0)
+  #set ($scanWFiles = 0)
   #foreach($scan in $om.getSortedScans())
     #set ($scanID =$!scan.getProperty("ID"))
 	
@@ -43,6 +44,7 @@
         <div id="scans_$!scan.getId()_stats">
           <a onclick="window.viewer.init();">Show Counts</a>
         </div>
+			#set ($scanWFiles = $scanWFiles+1)
         #else (0 files, 0.00MB)
         #end
       </td>
@@ -58,6 +60,16 @@
     </tr>
 	#set ($scanCounter= $scanCounter + 1)
   #end	
+  #if($scanWFiles>0)
+       <tr>
+               <td colspan="4" align="right">
+               </td>
+               <td NOWRAP >
+                       <span ID="total_dicom_files" style="position:relative;">
+						<a onclick="window.viewer.init();">Total Counts</a></span>
+               </td>
+       </tr>
+    #end
 </table>
 <BR/>
 <BR/>

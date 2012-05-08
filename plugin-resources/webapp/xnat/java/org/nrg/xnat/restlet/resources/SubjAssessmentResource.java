@@ -369,7 +369,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						}
 					}
 
-					PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(expt.getXSIType(), (existing==null))));
+					
 					
 					
 					boolean modifiedSubject=false;
@@ -495,7 +495,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equals("true")){
 						allowDataDeletion=true;
 					}
-					
+					PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(expt.getXSIType(), (existing==null))));
 					EventMetaI c=wrk.buildEvent();
 					
 					if(this.isQueryVariableTrue(XNATRestConstants.FIX_SCAN_TYPES) || this.containsAction(XNATRestConstants.FIX_SCAN_TYPES)){

@@ -243,7 +243,7 @@ public class SubjectResource extends ItemResource {
 					}
 					}
 					
-					PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, sub.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(sub.getXSIType(), (existing==null))));
+					
 					if(existing==null){
 						if(!user.canCreate(sub)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in this project.");
@@ -288,7 +288,7 @@ public class SubjectResource extends ItemResource {
 		            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
 		            }
-		            
+		            PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, sub.getItem(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(sub.getXSIType(), (existing==null))));
 		            EventMetaI c=wrk.buildEvent();
 											
 					try {					

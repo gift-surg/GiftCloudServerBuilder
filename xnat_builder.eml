@@ -104,15 +104,6 @@
 	<lib name="dcm4che-net-2.0.25.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar!/"/>
 	</lib>
-	<lib name="dicom-xnat-mx-1.5.4-SNAPSHOT.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.5.4-SNAPSHOT.jar!/"/>
-	</lib>
-	<lib name="dicom-xnat-sop-1.5.4-SNAPSHOT.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.5.4-SNAPSHOT.jar!/"/>
-	</lib>
-	<lib name="dicom-xnat-util-1.5.4-SNAPSHOT.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.5.4-SNAPSHOT.jar!/"/>
-	</lib>
 	<lib name="DicomDB-3.0.2.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/DicomDB-3.0.2.jar!/"/>
 	</lib>
@@ -124,9 +115,6 @@
 	</lib>
 	<lib name="DicomUtils-1.1.0.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar!/"/>
-	</lib>
-	<lib name="ecat4xnat-1.5.0.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/ecat4xnat-1.5.0.jar!/"/>
 	</lib>
 	<lib name="ExtAttr-2.1.1.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/xnat_builder_1_6dev/plugin-resources/repository/dcm/jars/ExtAttr-2.1.1.jar!/"/>

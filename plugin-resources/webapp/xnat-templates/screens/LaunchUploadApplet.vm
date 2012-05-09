@@ -12,15 +12,21 @@
             <td colspan="2">&nbsp;</td>
         </tr>
         <tr>
-            <td colspan="2"><h3>Launch Upload Applet</h3></td>
+            <td colspan="2"><h3>Upload Image Sessions</h3></td>
         </tr>
         <tr>
             <td valign="top" align="left" colspan="2">
                 <div style="width:500px">
-                    DICOM and ECAT files can be uploaded via an online upload tool. Please
-                    select a project and subject for which you want to upload a session.
+                    DICOM and ECAT files can be uploaded using this online upload tool. Begin by selecting the project,
+                    subject, and date for the session you wish to upload and then click the <b>Launch Uploader</b>
+                    button. You will need Java installed in order and operational to use the uploader.
+                    <a href="http://www.java.com/en/download/testjava.jsp" target="_blank">Check here</a> to verify that
+                    your Java is working.
                 </div>
             </td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
         </tr>
         <tr>
             <th align="left"><label for="project">Project</label></th>
@@ -33,10 +39,16 @@
             </select></td>
         </tr>
         <tr>
-            <th align="left"><label for="scan_date">Scan Date</label></th>
+            <th align="left"><label for="session_date">Session Date</label></th>
             <td>
-                <input type="text" id="scan_date" name="scan_date"/>
-                <script type="text/javascript">insertCalendar(document.getElementById("scan_date"), "Scan Date");</script>
+                <input type="text" id="session_date" name="session_date"/>
+                <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "Session Date");</script>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input type="checkbox" id="no_session_date" name="no_session_date"/> <label for="no_session_date">I don't know the date or my session doesn't have a date</label>
             </td>
         </tr>
         <tr id="visit_entry" style="display: none;">
@@ -45,9 +57,9 @@
                 <option>(Select a subject)</option>
             </select></td>
         </tr>
-        <tr id="scan_type_entry" style="display: none;">
-            <th align="left"><label for="scan_type">Scan Type</label></th>
-            <td><select id="scan_type" name="scan_type" style="width: 100%;" disabled=true>
+        <tr id="session_type_entry" style="display: none;">
+            <th align="left"><label for="session_type">Session Type</label></th>
+            <td><select id="session_type" name="session_type" style="width: 100%;" disabled=true>
                 <option>(SELECT)</option>
                 <option value="mr">MR</option>
                 <option value="pet-fdg">PET with FDG tracer</option>
@@ -58,7 +70,7 @@
         <script type="text/javascript">
             #set($project = $om.getProject())
             #set($part_id = $om.getId())
-            window.projectSubjectVisitManager = new ProjectSubjectVisitSelector("project", "part_id", "gojuice", "$!project", "$!part_id");
+            window.projectSubjectVisitManager = new ProjectSubjectVisitSelector("$!project", "$!part_id");
             window.projectSubjectVisitManager.init();
         </script>
         <tr>
@@ -76,8 +88,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <div style="width:500px">There are <A HREF="$link.setPage("AlternateImageUpload.vm")">alternate ways
-                    to upload images</a> available, but the upload applet is the preferred method.</A></div>
+                <div style="width:500px">Looking for other ways to upload images? <a href="$link.setPage("AlternateImageUpload.vm")">Click here.</a></div>
             </td>
         </tr>
     </table>

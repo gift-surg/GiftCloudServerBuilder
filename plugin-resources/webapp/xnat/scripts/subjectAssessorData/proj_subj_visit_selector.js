@@ -5,22 +5,16 @@ var visits = new Array("1", "2", "3");
 var oneDay = 24 * 60 * 60 * 1000;
 
 /**
- * @param _proj_select
- * @param _subj_select
- * @param _submit_button
  * @param _defaultProject
  * @param _defaultSubject
  */
-function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button, _defaultProject, _defaultSubject) {
-    this.projectSelect = _proj_select;
-    this.subjSelect = _subj_select;
-    this.submitButton = _submit_button;
+function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
     this.defaultProject = _defaultProject;
     this.defaultSubject = _defaultSubject;
     this.visitSpan = document.getElementById('visit_entry');
     this.visitSelect = document.getElementById('visit_id');
-    this.scanTypeSpan = document.getElementById('scan_type_entry');
-    this.scanTypeSelect = document.getElementById('scan_type');
+    this.sessionTypeSpan = document.getElementById('session_type_entry');
+    this.sessionTypeSelect = document.getElementById('session_type');
 
     this.init = function () {
 
@@ -52,6 +46,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
         }
         try {
             this.renderProjects();
+            this.rigDateControls();
         } catch (e) {
             this.displayError("ERROR : Failed to render project list: " + e.toString());
         }
@@ -62,7 +57,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
         if (this.projectResultSet.ResultSet.Result.length == 0) {
 
         } else {
-            this.projectBox = document.getElementById(this.projectSelect);
+            this.projectBox = document.getElementById("project");
             this.projectBox.options[0] = new Option("SELECT", "");
 
             //noinspection JSUnresolvedVariable
@@ -84,7 +79,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
                 if (this.selectedIndex > 0) {
                     this.manager.projectID = this.options[this.selectedIndex].value;
                     this.manager.loadSubjects();
-                    this.manager.checkVisitAndScanType();
+                    this.manager.checkVisitAndSessionType();
                 }
             };
 
@@ -94,25 +89,34 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
         }
 
         // This whole construct is so that the calendar can find its way back to the manager object.
-        var scanDateCalendar = document.getElementById("cal_scan_date");
-        scanDateCalendar.calendar.selectEvent.subscribe(function () {
+        var sessionDateCalendar = document.getElementById("cal_session_date");
+        sessionDateCalendar.calendar.selectEvent.subscribe(function () {
             //noinspection JSUnresolvedVariable
             window.projectSubjectVisitManager.manageLaunchUploaderButton();
-        }, scanDateCalendar, false);
+        }, sessionDateCalendar, false);
     };
 
-    this.checkVisitAndScanType = function () {
+    this.rigDateControls = function () {
+        var noSessionDate = document.getElementById("no_session_date");
+        noSessionDate.manager = this;
+        noSessionDate.onclick = function() {
+            document.getElementById("session_date").disabled = this.checked;
+            this.manager.manageLaunchUploaderButton();
+        }
+    };
+
+    this.checkVisitAndSessionType = function () {
         if (this.projectID != undefined && this.projectID.indexOf("DIAN") == 0) {
-            this.scanTypeSpan.style.display = '';
-            this.scanTypeSelect.disabled = false;
+            this.sessionTypeSpan.style.display = '';
+            this.sessionTypeSelect.disabled = false;
             this.visitSpan.style.display = '';
             this.visitSelect.options.length = 1;
             this.visitSelect.options[0] = new Option("(Select a subject)", "");
             this.visitSelect.options[0].style.color = "black";
             this.visitSelect.disabled = true;
         } else {
-            this.scanTypeSpan.style.display = 'none';
-            this.scanTypeSelect.disabled = true;
+            this.sessionTypeSpan.style.display = 'none';
+            this.sessionTypeSelect.disabled = true;
             this.visitSpan.style.display = 'none';
             this.visitSelect.disabled = true;
         }
@@ -166,13 +170,13 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
     };
 
     this.renderSubjects = function () {
-        this.subjectBox = document.getElementById(this.subjSelect);
+        this.subjectBox = document.getElementById("part_id");
         this.subjectBox.options[0] = new Option("SELECT", "");
         this.subjectBox.options[0].style.color = "black";
 
         //noinspection JSUnresolvedVariable
         if (this.subjectResultSet.ResultSet.Result.length == 0) {
-            this.showMessage('No subjects found', 'The selected project has no subjects recorded yet. You should create a subject with which to associate uploaded scan data.', true);
+            this.showMessage('No subjects found', 'The selected project has no subjects recorded yet. You should create a subject with which to associate uploaded session data.', true);
             return;
         }
 
@@ -210,7 +214,6 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
             }
         }
 
-        this.subjectBox.submitButton = this.submitButton;
         this.subjectBox.manager = this;
         this.subjectBox.onchange = function () {
             if (YAHOO.env.ua.gecko > 0) {
@@ -222,7 +225,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
                     this.manager.loadVisits();
                 }
             }
-            document.getElementById("scan_date").value = '';
+            document.getElementById("session_date").value = '';
             this.manager.manageLaunchUploaderButton();
         }
     };
@@ -266,7 +269,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
     };
 
     this.renderVisits = function () {
-        this.scanTypeSpan.style.display = '';
+        this.sessionTypeSpan.style.display = '';
         this.visitSpan.style.display = '';
 
         this.visitSelect.options[0] = new Option("SELECT", "");
@@ -294,7 +297,6 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
         }
 
         this.visitSelect.disabled = false;
-        this.visitSelect.submitButton = this.submitButton;
         this.visitSelect.manager = this;
         this.visitSelect.onchange = function () {
             if (YAHOO.env.ua.gecko > 0) {
@@ -302,10 +304,9 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
             }
             this.manager.manageLaunchUploaderButton();
         };
-        this.scanTypeSelect.disabled = false;
-        this.scanTypeSelect.submitButton = this.submitButton;
-        this.scanTypeSelect.manager = this;
-        this.scanTypeSelect.onchange = function () {
+        this.sessionTypeSelect.disabled = false;
+        this.sessionTypeSelect.manager = this;
+        this.sessionTypeSelect.onchange = function () {
             if (YAHOO.env.ua.gecko > 0) {
                 this.style.color = this.options[this.selectedIndex].style.color;
             }
@@ -321,7 +322,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
      * @param activate Indicates whether to activate the launch uploader button. Set to null to force validity tests.
      */
     this.manageLaunchUploaderButton = function (activate) {
-        var button = document.getElementById(this.submitButton);
+        var button = document.getElementById("gojuice");
         if (button) {
             if (activate == null) {
                 activate = this.validateVisitCriteria();
@@ -354,7 +355,7 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
                 argument:this
             };
 
-            var parameters = '{"visitId":"' + this.visitSelect.value + '","scanType":"' + this.scanTypeSelect.value + '"}';
+            var parameters = '{"visitId":"' + this.visitSelect.value + '","sessionType":"' + this.sessionTypeSelect.value + '"}';
             //noinspection JSUnresolvedVariable
             YAHOO.util.Connect.asyncRequest('POST', serverRoot + '/data/services/protocols/project/' + this.projectBox.value + '/subject/' + this.subjectBox.value + '/generate/sessionId?XNAT_CSRF='+csrfToken, launchCallback, parameters);
         } else {
@@ -368,10 +369,11 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
      * later, but requires adding new members to the calendar control, I think.
      */
     this.validateVisitCriteria = function () {
-        var scanDate = document.getElementById("scan_date").value;
+        var sessionDate = document.getElementById("session_date").value;
+        var noSessionDate = document.getElementById("no_session_date").checked;
 
         // If any of these are true, what project this is doesn't matter.
-        if (this.projectBox.selectedIndex == 0 || this.subjectBox.selectedIndex == 0 || !scanDate) {
+        if (this.projectBox.selectedIndex == 0 || this.subjectBox.selectedIndex == 0 || (!sessionDate && !noSessionDate)) {
             return false;
         }
         if (this.projectBox.value.indexOf("DIAN") == 0) {
@@ -382,19 +384,19 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
 
             // Get the selected visit and compare it to the date.
             var visit = visits[this.visitSelect.value];
-            if (!this.isValidVisit(scanDate, visit)) {
-                // If that fails, go ahead and fail without checking the visit/scan compatibility.
+            if (!this.isValidVisit(sessionDate, visit)) {
+                // If that fails, go ahead and fail without checking the visit/session compatibility.
                 return false;
             }
 
-            if (this.scanTypeSelect.selectedIndex == 0) {
+            if (this.sessionTypeSelect.selectedIndex == 0) {
                 return false;
             }
 
-            var scanType = this.scanTypeSelect.value;
+            var sessionType = this.sessionTypeSelect.value;
 
-            // For valid scan check, we need a selected scan type and visit.
-            return this.isValidScan(scanType, visit);
+            // For valid session check, we need a selected session type and visit.
+            return this.isValidSession(sessionType, visit);
         } else {
             return true;
         }
@@ -453,16 +455,16 @@ function ProjectSubjectVisitSelector(_proj_select, _subj_select, _submit_button,
         return date;
     };
 
-    this.isValidScan = function (scanType, visit) {
-        if (!scanType || !visit) {
+    this.isValidSession = function (sessionType, visit) {
+        if (!sessionType || !visit) {
             return false;
         }
 
-        var scans = visit['scans'];
-        if (scans == null || scans.length == 0 || scans.indexOf(scanType) == -1) {
+        var sessions = visit['sessions'];
+        if (sessions == null || sessions.length == 0 || sessions.indexOf(sessionType) == -1) {
             return true;
         }
-        this.showMessage("Scan already exists", "A scan of the indicated type already exists for this session. You can only add one scan each of type MR, PET (FDG tracer), and PET (PIB tracer).", true);
+        this.showMessage("Session already exists", "A session of the indicated type already exists for this visit. You can only add one session each of type MR, PET (FDG tracer), and PET (PIB tracer).", true);
         return false;
     };
 

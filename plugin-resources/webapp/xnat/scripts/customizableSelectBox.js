@@ -21,7 +21,7 @@ function CustomSelectBox(_input,_settings){
 		this.select.manager=this;
 		
 		this.select.onchange=function(obj){
-			if(this.options[this.selectedIndex].text=="More"){
+			if(this.options[this.selectedIndex].text=="View more options..."){
 				if(this.manager.settings.all_values==undefined){
 					 this.initCallback={
 						success:function(obj){
@@ -37,7 +37,7 @@ function CustomSelectBox(_input,_settings){
 				}else{						
 					this.populate();
 				}
-			}else if(this.options[this.selectedIndex].text=="Custom"){
+			}else if(this.options[this.selectedIndex].text=="Add custom entry..."){
 				var creator=new CustomValueCreator({});
 				creator.select=this;
 				creator.onResponse.subscribe(function(obj1,obj2){
@@ -84,11 +84,11 @@ function CustomSelectBox(_input,_settings){
 					}
 				}
 				if(this.manager.settings.uri!=undefined){
-					this.options[this.options.length]=new Option("More","");
+					this.options[this.options.length]=new Option("View more options...","");
 				}
 			}
 			
-			this.options[this.options.length]=new Option("Custom","");
+			this.options[this.options.length]=new Option("Add custom entry...","");
 		}
 		
 		this.select.populate(null,_default);

@@ -3,9 +3,14 @@
  <DIV ID="mylogger"></DIV>
 <TABLE width="100%" >
 <TR>
-	<TD><hr></TD>
+	<TD colspan="2"><hr></TD>
 </TR>
-<TR>
+<TR> 
+    <TD>
+        #if ($sessionWarning)
+            <DIV class="sessionWarning">$sessionWarning</DIV><br>
+        #end
+    </TD>
 	<TD valign="bottom" align="right">
 		<a target="_blank" href="http://www.xnat.org/">
 		<img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>

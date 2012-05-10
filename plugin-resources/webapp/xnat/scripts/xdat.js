@@ -542,6 +542,8 @@ function validateDate(sel){
          } else {
             alert("Invalid date. MM/DD/YYYY");
          }
+   	    }else if(this.value == "NULL"){
+   	    	//don't do anything, they're trying to clear out the value.
    	   	}else{
    	   		alert("Invalid date. MM/DD/YYYY");
    	   		this.value="";

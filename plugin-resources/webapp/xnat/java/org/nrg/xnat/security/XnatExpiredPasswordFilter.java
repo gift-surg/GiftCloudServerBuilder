@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,13 +31,14 @@ import org.springframework.web.filter.GenericFilterBean;
 public class XnatExpiredPasswordFilter extends GenericFilterBean {
 	private final String changePasswordPath = "/app/template/ChangePassword.vm";
 	private final String changePasswordDestination = "/app/action/XDATChangePassword";
+	private final String logoutPath = "/app/action/LogoutUser";
 	
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) res;
-        XDATUserDetails user = (XDATUserDetails)request.getSession().getAttribute("user");
-        if(user!=null && !request.getRequestURI().contains(changePasswordPath) && !request.getRequestURI().contains(changePasswordDestination)){
+        XDATUser user = (XDATUser)request.getSession().getAttribute("user");
+        if(user!=null && !request.getRequestURI().contains(changePasswordPath) && !request.getRequestURI().contains(changePasswordDestination) && !request.getRequestURI().contains(logoutPath)){
         	String username = user.getUsername();
 
 	        boolean isExpired=true;

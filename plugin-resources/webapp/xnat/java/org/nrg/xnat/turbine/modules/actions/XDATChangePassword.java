@@ -76,127 +76,44 @@ public class XDATChangePassword extends VelocitySecureAction {
 	String password = (String)TurbineUtils.GetPassedParameter(CGI_PASSWORD, data);
 	if((username!=null) &&!StringUtils.isEmpty(username)){
 		if(!username.equals("guest")){
-			PasswordValidatorChain validator = XDAT.getContextService().getBean(PasswordValidatorChain.class);
-	        if(validator.isValid(password,null)){
-				if (StringUtils.isEmpty(username))
-				{
-					return;
-				}else{
-					if(username.contains("/")){
-						username=username.substring(username.lastIndexOf("/")+1);
-					}
-					if(username.contains("\\")){
-						username=username.substring(username.lastIndexOf("\\")+1);
-					}
+			if (StringUtils.isEmpty(username))
+			{
+				return;
+			}else{
+				if(username.contains("/")){
+					username=username.substring(username.lastIndexOf("/")+1);
 				}
-			
-				try
-				{
-					XDATUser oldUser = TurbineUtils.getUser(data);
-					
-	                XFTItem toSave = XFTItem.NewItem("xdat:user", oldUser);
-	                toSave.setProperty("login", oldUser.getLogin());
-	                toSave.setProperty("primary_password", password);
-	                toSave.setProperty("email", oldUser.getProperty("email"));
-					try {
-						XDATUser.ModifyUser(oldUser, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
-					} catch (Exception e) {
-						logger.error("Error Storing User", e);
-						return;
-					}
-					XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(oldUser.getUsername(), "localdb", "");
-					auth.setPasswordUpdated(new java.util.Date());
-					XDAT.getXdatUserAuthService().update(auth);
-	
+				if(username.contains("\\")){
+					username=username.substring(username.lastIndexOf("\\")+1);
 				}
-				catch (Exception e)
-				{
-		            log.error("",e);
+			}
 		
-		            AccessLogger.LogActionAccess(data, "Failed Login by '" + username +"': " +e.getMessage());
-		            
-		            if(username.toLowerCase().contains("script"))
-		            {
-		            	e= new Exception("Illegal username &lt;script&gt; usage.");
-						AdminUtils.sendAdminEmail("Possible Cross-site scripting attempt blocked", StringEscapeUtils.escapeHtml(username));
-		            	logger.error("",e);
-		                data.setScreenTemplate("Error.vm");
-		                data.getParameters().setString("exception", e.toString());
-		                return;
-		            }
-		
-						// Set Error Message and clean out the user.
-		            if(e instanceof SQLException){
-						data.setMessage("An error has occurred.  Please contact a site administrator for assistance.");
-		            }else{
-						data.setMessage(e.getMessage());
-		            }
-		            
-					String loginTemplate =  org.apache.turbine.Turbine.getConfiguration().getString("template.login");
-		
-					if (StringUtils.isNotEmpty(loginTemplate))
-					{
-						// We're running in a templating solution
-						data.setScreenTemplate(loginTemplate);
-					}
-					else
-					{
-						data.setScreen(org.apache.turbine.Turbine.getConfiguration().getString("screen.login"));
-					}
-				}
-	        }
-	        else{
-	        	invalidInformation(data, context, validator.getMessage());
-	        }
-		}
-		else{
-			invalidInformation(data, context, "Guest account password must be managed in the administration section.");
-		}
-	}
-	else if(alias!=null && secret!=null){
-		PasswordValidatorChain validator = XDAT.getContextService().getBean(PasswordValidatorChain.class);
-        if(validator.isValid(password,null)){
 			try
 			{
+				XDATUser oldUser = TurbineUtils.getUser(data);
 				
-
-				String userID = XDAT.getContextService().getBean(AliasTokenService.class).validateToken(alias,Long.parseLong(secret));
-		    	if(userID!=null){
-		    		XDATUser user = new XDATUser(userID);
-		    		XFTItem toSave = XFTItem.NewItem("xdat:user", user);
-	                toSave.setProperty("login", user.getLogin());
-	                toSave.setProperty("primary_password", password);
-	                toSave.setProperty("email", user.getProperty("email"));
-					try {
-						XDATUser.ModifyUser(user, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
-					} catch (Exception e) {
-						logger.error("Error Storing User", e);
-						return;
-					}
-					SaveItemHelper.authorizedSave(toSave, TurbineUtils.getUser(data),true,false,true,false, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
-	                TurbineUtils.setUser(data, user);
-			    	
-					XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "localdb", "");
-					auth.setPasswordUpdated(new java.util.Date());
-					XDAT.getXdatUserAuthService().update(auth);	
-	                
-					Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
-	                grantedAuthorities.add(new GrantedAuthorityImpl("ROLE_USER"));
-			    	Authentication authentication = new AliasTokenAuthenticationToken(alias, Long.parseLong(secret));
-			    	SecurityContext securityContext = SecurityContextHolder.getContext();
-			    	securityContext.setAuthentication(authentication);
-			    	data.setMessage("Password changed.");
-		    	}
-		    	else{
-		        	invalidInformation(data, context, "Invalid token.");
-		        }
+                XFTItem toSave = XFTItem.NewItem("xdat:user", oldUser);
+                toSave.setProperty("login", oldUser.getLogin());
+                toSave.setProperty("primary_password", password);
+                toSave.setProperty("email", oldUser.getProperty("email"));
+				try {
+					XDATUser.ModifyUser(oldUser, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+				}
+				catch (Exception e) {
+					invalidInformation(data, context, e.getMessage());
+					logger.error("Error Storing User", e);
+					return;
+				}
+				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(oldUser.getUsername(), "localdb", "");
+				auth.setPasswordUpdated(new java.util.Date());
+				XDAT.getXdatUserAuthService().update(auth);
 
 			}
 			catch (Exception e)
 			{
 	            log.error("",e);
 	
-	            AccessLogger.LogActionAccess(data, "Failed Login by alias '" + alias +"': " +e.getMessage());
+	            AccessLogger.LogActionAccess(data, "Failed Login by '" + username +"': " +e.getMessage());
 	            
 	            if(username.toLowerCase().contains("script"))
 	            {
@@ -227,10 +144,84 @@ public class XDATChangePassword extends VelocitySecureAction {
 					data.setScreen(org.apache.turbine.Turbine.getConfiguration().getString("screen.login"));
 				}
 			}
-        }
-        else{
-        	invalidInformation(data, context, validator.getMessage());
-        }
+		}
+		else{
+			invalidInformation(data, context, "Guest account password must be managed in the administration section.");
+		}
+	}
+	else if(alias!=null && secret!=null){
+		
+		try
+		{
+			
+
+			String userID = XDAT.getContextService().getBean(AliasTokenService.class).validateToken(alias,Long.parseLong(secret));
+	    	if(userID!=null){
+	    		XDATUser user = new XDATUser(userID);
+	    		XFTItem toSave = XFTItem.NewItem("xdat:user", user);
+                toSave.setProperty("login", user.getLogin());
+                toSave.setProperty("primary_password", password);
+                toSave.setProperty("email", user.getProperty("email"));
+				try {
+					XDATUser.ModifyUser(user, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+				} catch (Exception e) {
+					logger.error("Error Storing User", e);
+					return;
+				}
+				SaveItemHelper.authorizedSave(toSave, TurbineUtils.getUser(data),true,false,true,false, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+                TurbineUtils.setUser(data, user);
+		    	
+				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "localdb", "");
+				auth.setPasswordUpdated(new java.util.Date());
+				XDAT.getXdatUserAuthService().update(auth);	
+                
+				Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+                grantedAuthorities.add(new GrantedAuthorityImpl("ROLE_USER"));
+		    	Authentication authentication = new AliasTokenAuthenticationToken(alias, Long.parseLong(secret));
+		    	SecurityContext securityContext = SecurityContextHolder.getContext();
+		    	securityContext.setAuthentication(authentication);
+		    	data.setMessage("Password changed.");
+	    	}
+	    	else{
+	        	invalidInformation(data, context, "Invalid token.");
+	        }
+
+		}
+		catch (Exception e)
+		{
+            log.error("",e);
+
+            AccessLogger.LogActionAccess(data, "Failed Login by alias '" + alias +"': " +e.getMessage());
+            
+            if(username.toLowerCase().contains("script"))
+            {
+            	e= new Exception("Illegal username &lt;script&gt; usage.");
+				AdminUtils.sendAdminEmail("Possible Cross-site scripting attempt blocked", StringEscapeUtils.escapeHtml(username));
+            	logger.error("",e);
+                data.setScreenTemplate("Error.vm");
+                data.getParameters().setString("exception", e.toString());
+                return;
+            }
+
+				// Set Error Message and clean out the user.
+            if(e instanceof SQLException){
+				data.setMessage("An error has occurred.  Please contact a site administrator for assistance.");
+            }else{
+				data.setMessage(e.getMessage());
+            }
+            
+			String loginTemplate =  org.apache.turbine.Turbine.getConfiguration().getString("template.login");
+
+			if (StringUtils.isNotEmpty(loginTemplate))
+			{
+				// We're running in a templating solution
+				data.setScreenTemplate(loginTemplate);
+			}
+			else
+			{
+				data.setScreen(org.apache.turbine.Turbine.getConfiguration().getString("screen.login"));
+			}
+		}
 	}
 	else{
 		invalidInformation(data, context, "You must must be authenticated or have a token to change this password.");

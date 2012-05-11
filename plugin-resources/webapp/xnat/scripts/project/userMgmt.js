@@ -204,7 +204,7 @@ function UserManager(user_mgmt_div_id, pID){
 				else
 					confirmMsg+=" does not correspond to a currently registered accounts.  This user ";
 
-				if (!confirm(confirmMsg + 'may have an account under another email address.  Select cancel to enter a different account.  Or, press OK to send an email inviting this user.')){
+				if (!confirm(confirmMsg + 'may have an account under another email address.  Select Cancel to hault all emails so you can edit your email list and try again. Or, press OK to send an email inviting this user.')){
 					document.getElementById("invite_email").value='';
 					return false;
 				}

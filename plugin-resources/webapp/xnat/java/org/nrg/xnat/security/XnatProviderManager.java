@@ -50,6 +50,7 @@ public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY = "security.password_complexity_message";
 	private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
 
+    private static final String REQUIRE_EVENT_NAME = "audit.require_event_name";
     private static final String REQUIRE_CHANGE_JUSTIFICATION = "audit.require_change_justification";
     private static final String SHOW_CHANGE_JUSTIFICATION = "audit.show_change_justification";
 	
@@ -97,6 +98,11 @@ public class XnatProviderManager extends ProviderManager {
         
         if(properties.getProperty(REQUIRE_CHANGE_JUSTIFICATION)!=null){
         	XFT.REQUIRE_REASON=Boolean.valueOf(properties.getProperty(REQUIRE_CHANGE_JUSTIFICATION));
+        }
+        
+        //variable used to configure whether this site requires event name.  I'm not sure if this is the right place to do this, but it will work until there is a better place established.
+        if(properties.getProperty(REQUIRE_EVENT_NAME)!=null){
+        	XFT.REQUIRE_EVENT_NAME=Boolean.valueOf(properties.getProperty(REQUIRE_EVENT_NAME));
         }
         
         if(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_PROPERTY)!=null){

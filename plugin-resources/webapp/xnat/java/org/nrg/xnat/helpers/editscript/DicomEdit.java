@@ -189,7 +189,7 @@ public final class DicomEdit extends SecureResource {
 		}
 		switch (scope) {
 		case PROJECT :   ret = "/projects/" + project_id; break; 
-		case SITE_WIDE : ret = "/"; break;
+		case SITE_WIDE : ret = "/script"; break;
 		default :        ret = ""; break;
 		}
 		return ret;

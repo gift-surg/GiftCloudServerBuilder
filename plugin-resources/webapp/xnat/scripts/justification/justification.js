@@ -1,3 +1,9 @@
+// Copyright (c) 2012 Radiologics, Inc
+// Author: Timothy R. Olsen <tim@radiologics.com>
+//
+// used to inject justification.  This was built to be easily incorporated into legacy code where dialogs were needed.
+
+
 
 XNAT.app.ConfirmWJustification=function(_yuioptions){
 	this.yuioptions=_yuioptions;
@@ -94,30 +100,4 @@ XNAT.app.requestJustification=function(_id,_header,_function,scope){
 	this.dialog.onResponse.subscribe(_function,this,scope);
 
 	this.dialog.render();
-}
-
-//example pass-through function
-function sample(){
-	var event_reason=this.dialog.event_reason;
-
-	this.initCallback={
-		success:function(obj1){
-			closeModalPanel(this.id);
-			this.onCompletion.fire();
-		},
-		failure:function(o){
-			closeModalPanel(this.id);
-			this.displayError("ERROR " + o.status);
-		},
-		scope:this
-	}
-	
-	var params="";
-	
-	params+="&event_reason="+event_reason;
-	params+="&event_type=WEB_FORM";
-	params+="&event_action="+this.header;
-
-	openModalPanel(this.id,this.header);
-	YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json'+params,this.initCallback,null,this);
 }

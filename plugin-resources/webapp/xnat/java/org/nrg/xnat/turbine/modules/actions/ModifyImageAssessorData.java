@@ -1,3 +1,4 @@
+//Copyright 2012 Radiologics, Inc.  All Rights Reserved
 package org.nrg.xnat.turbine.modules.actions;
 
 import org.apache.turbine.util.RunData;

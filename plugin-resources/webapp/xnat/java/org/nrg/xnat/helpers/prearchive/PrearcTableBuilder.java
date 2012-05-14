@@ -129,7 +129,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			
 			data.setStatus(PrearcUtils.checkSessionStatus(sessionXML));
 
-			if(!sessionXML.exists()){
+			if(!sessionXML.exists() || sessionXML.length() == 0){
 				if(project!=null){
 					session=new XnatImagesessiondataBean();
 					session.setProject(project);

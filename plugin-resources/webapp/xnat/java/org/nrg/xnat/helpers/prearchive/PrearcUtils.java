@@ -277,6 +277,10 @@ public class PrearcUtils {
 			logger().error("cannot read {}" + sessionXML);
 			return PrearcStatus.ERROR;
 		}
+		if (sessionXML.length() == 0) {
+			logger().error("{} is empty" + sessionXML);
+			return PrearcStatus.ERROR;
+		}
 		return null;
 	}
 	

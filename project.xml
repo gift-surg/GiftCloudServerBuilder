@@ -49,9 +49,9 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>spring</groupId>
-			<artifactId>com.springsource.org.aopalliance</artifactId>
-			<version>1.0.0</version>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

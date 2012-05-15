@@ -12,7 +12,7 @@ $page.setTitle("Viewer: $om.Id")
     <tr  bgcolor="white">
         <td style="border-style:none;"  valign="top" align="left" colspan="2">
 				<APPLET NAME="PLEXIVIEWER" CODE="org.nrg.plexiViewer.lite.applet.PlexiViewerApplet"
-					CODEBASE="$!appletPath" ARCHIVE="ij-1.39b.jar, PlexiViewerLite.jar, xdat-beans-1.0.jar, log4j-1.2.15.jar, commons-lang-2.5.jar"
+					CODEBASE="$!appletPath" ARCHIVE="ij-1.43u.jar, PlexiViewerLite.jar, xdat-beans-1.0.jar, log4j-1.2.15.jar, commons-lang-2.5.jar"
 					width=250 height=200>
 					<PARAM NAME="sessionId" VALUE="$om.Id">
 					#if ($startDisplayWith)

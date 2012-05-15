@@ -6,7 +6,7 @@ $page.setTitle("Download: $om.Id")
     <tr  bgcolor="white">
         <td style="border-style:none;"  valign="top" align="left" colspan="2">
 				<APPLET CODE="org.nrg.xnat.fileManager.DownloaderApplet"
-					CODEBASE="$appletPath" ARCHIVE="log4j-1.2.15.jar,xdat-beans-1.0.jdk1.3.jar,xdat-downloader-1.1.jar"
+					CODEBASE="$appletPath" ARCHIVE="log4j-1.2.15.jar, xdat-beans-1.0.jar, xdat-downloader-1.1.jar"
 					width="500" height="500">
 					#set($exptCount=0)
 					#foreach($pp in $om.getParticipants_participant())

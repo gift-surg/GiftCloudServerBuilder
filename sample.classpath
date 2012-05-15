@@ -8,6 +8,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-2.7.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/aopalliance/jars/aopalliance-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/apa-webcontent/jars/apa-webcontent-1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/avalon-framework/jars/avalon-framework-4.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/axis/jars/axis-1_3.jar"/>
@@ -15,22 +16,28 @@
   <classpathentry kind="lib" path="plugin-resources/repository/axis-ant/jars/axis-ant-1_3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/axis-schema/jars/axis-schema-1_3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/batik/jars/batik-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/cglib/jars/com.springsource.net.sf.cglib-2.2.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/cglib/jars/cglib-2.2.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/com.h2database/jars/h2-1.2.147.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-collections/jars/commons-collections-3.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-digester/jars/commons-digester-1.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-discovery/jars/commons-discovery-0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-email/jars/commons-email-1.2.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-httpclient/jars/commons-httpclient-3.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-io/jars/commons-io-1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-logging/jars/commons-logging-1.0.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-pool/jars/commons-pool-1.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/cryptix/jars/cryptix-3.2.0.jar"/>
@@ -44,10 +51,9 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.0.2.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-1.5.2.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-2.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.1.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
@@ -55,6 +61,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar"/>
@@ -72,8 +79,8 @@
   <classpathentry kind="lib" path="plugin-resources/repository/httpcore/jars/httpcore-4.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/httpcore/jars/httpcore-nio-4.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.43u.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/inject/jars/com.springsource.javax.inject-1.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/isorelax/jars/isorelax-20041111.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/iText-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/itext-2.0.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar"/>
@@ -81,7 +88,8 @@
   <classpathentry kind="lib" path="plugin-resources/repository/jaf/jars/activation-1.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jakarta-regexp/jars/jakarta-regexp-1.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/javamail/jars/javamail-1.4.3.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/javassist/jars/com.springsource.javassist-3.10.0.GA.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/javassist/jars/javassist-3.16.1-GA.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/javax/jars/javax.inject-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/javax.persistence/jars/persistence-api-1.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jaxrpc/jars/jaxrpc-1.jar"/>
@@ -102,6 +110,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/msv-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.0.0-SNAPSHOT.jar"/>
@@ -113,7 +122,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/Transaction-0.0.1-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/org.apache.xmlbeans/jars/com.springsource.org.apache.xmlbeans-2.4.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/org.apache.xmlbeans/jars/xmlbeans-2.4.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.jasypt/jars/jasypt-1.7.1.jar"/>
@@ -121,7 +130,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/oro/jars/oro-2.0.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/parser/jars/parser-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/Pipeline-1.0.jar"/>
-  <!-- <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.0.jar"/> -->
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>
@@ -144,7 +153,6 @@
   <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-jcl-1.5.8.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/com.springsource.org.aopalliance-1.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.beans-3.0.5.RELEASE.jar"/>
@@ -169,19 +177,23 @@
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-web-3.0.5.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/gsi-classes-1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.5.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon_v1.5.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/stratum/jars/stratum-1.0-b5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/torque/jars/maven-torque-plugin-3.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/torque/jars/torque-3.1.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/torque/plugins/maven-torque-plugin-3.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/turbine/jars/turbine-2.3.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/turbine/plugins/maven-turbine-plugin-1.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.3.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.4-dev.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/village/jars/village-2.0-dev-20030825.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/wsdl4j/jars/wsdl4j-1.5.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xalan/jars/xalan-2.5.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xbean/jars/xbean-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xbean_xpath/jars/xbean_xpath-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcget-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
@@ -200,6 +212,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-storeXAR-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xerces-J_1.4.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xercesImpl-2.4.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xercesImpl/jars/xercesImpl-2.4.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar"/>

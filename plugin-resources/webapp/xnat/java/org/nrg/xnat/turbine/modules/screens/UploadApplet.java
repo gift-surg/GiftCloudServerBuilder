@@ -4,6 +4,7 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,13 @@ public class UploadApplet extends SecureScreen {
         storeParameterIfPresent(data, context, "project");
         storeParameterIfPresent(data, context, "subject_id", "part", "part_id");
         storeParameterIfPresent(data, context, "session_id", "expt_id");
-        storeParameterIfPresent(data, context, "scan_date");
         storeParameterIfPresent(data, context, "visit_id");
         storeParameterIfPresent(data, context, "scan_type");
+        if (TurbineUtils.HasPassedParameter("session_date", data)) {
+            context.put("session_date", TurbineUtils.GetPassedParameter("session_date", data));
+        } else if (TurbineUtils.HasPassedParameter("no_session_date", data)) {
+            context.put("session_date", "no_session_date");
+        }
 		context.put("arc", ArcSpecManager.GetInstance());
 	}
 }

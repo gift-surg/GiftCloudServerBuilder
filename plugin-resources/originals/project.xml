@@ -749,7 +749,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomUtils</artifactId>
-			<version>1.1.0</version>
+			<version>1.2.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -776,7 +776,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomEdit</artifactId>
-			<version>1.5.2</version>
+			<version>2.1.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1235,9 +1235,9 @@
 		<!-- END XDAT Dependencies -->
 		<!-- Begin Spring Framework dependencies -->
 		<dependency>
-			<groupId>spring</groupId>
-			<artifactId>com.springsource.org.aopalliance</artifactId>
-			<version>1.0.0</version>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1612,7 +1612,7 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<dependency>
+        <dependency>
 			<groupId>cglib</groupId>
 			<artifactId>com.springsource.net.sf.cglib</artifactId>
 			<version>2.2.0</version>
@@ -1622,9 +1622,9 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>inject</groupId>
-			<artifactId>com.springsource.javax.inject</artifactId>
-			<version>1.0.0</version>
+			<groupId>javax</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1650,8 +1650,8 @@
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>
-			<artifactId>com.springsource.javassist</artifactId>
-			<version>3.10.0.GA</version>
+			<artifactId>javassist</artifactId>
+			<version>3.16.1-GA</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1741,7 +1741,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>com.springsource.org.apache.xmlbeans</artifactId>
+			<artifactId>xmlbeans</artifactId>
 			<version>2.4.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>

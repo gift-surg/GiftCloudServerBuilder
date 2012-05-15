@@ -48,7 +48,7 @@
         <tr>
             <td>&nbsp;</td>
             <td>
-                <input type="checkbox" id="no_session_date" name="no_session_date"/> <label for="no_session_date">I don't know the date or my session doesn't have a date</label>
+                <input type="checkbox" id="no_session_date" name="no_session_date" value="true"/> <label for="no_session_date">I don't know the date or my session doesn't have a date</label>
             </td>
         </tr>
         <tr id="visit_entry" style="display: none;">

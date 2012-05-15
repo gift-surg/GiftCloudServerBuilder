@@ -165,6 +165,7 @@ public class XDATChangePassword extends VelocitySecureAction {
 				try {
 					XDATUser.ModifyUser(user, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
 				} catch (Exception e) {
+					invalidInformation(data, context, e.getMessage());
 					logger.error("Error Storing User", e);
 					return;
 				}

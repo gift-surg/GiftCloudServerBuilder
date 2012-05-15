@@ -61,12 +61,7 @@ XNAT.app.scans={};
       }
       return false;
     }
- #set($scanTypes = $data.getSession().getAttribute("user").getQueryResultsAsArrayList("select DISTINCT isd.type from xnat_mrsessiondata mr LEFT JOIN xnat_experimentData expt ON mr.id=expt.id LEFT JOIN xnat_imagescandata isd ON mr.id=isd.image_session_id LEFT JOIN xdat_meta_element xme ON isd.extension=xme.xdat_meta_element_id WHERE expt.project='$project' AND xme.element_name='xnat:mrScanData'"))
-   #if($scanTypes.size()>0)
-    #foreach($scanT in $scanTypes)
-      options.types[getDefaultScanXSIType()].values.push({"value":"$!scanT.get(0)","display":"$!scanT.get(0)"});
-    #end
-  #end
+
   
 #if($allowDataDeletion)
    options.allowDataDeletion="$allowDataDeletion";

@@ -1,3 +1,9 @@
+// Copyright (c) 2012 Radiologics, Inc
+// Author: Timothy R. Olsen <tim@radiologics.com>
+//
+// facilitates locking and unlocking data objects via REST.
+
+
 XNAT.app.locker= {
 	msg:"lock_div",
 	icon:"lock_a",

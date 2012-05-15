@@ -55,7 +55,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 				logger.error(e);
 			}
 	        
-			if(username!=null & isExpired){
+			if(username!=null & isExpired & !username.equals("guest")){
 				response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
 			}
 			else{

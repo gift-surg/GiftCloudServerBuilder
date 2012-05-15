@@ -1,3 +1,9 @@
+// Copyright (c) 2012 Radiologics, Inc
+// Author: Timothy R. Olsen <tim@radiologics.com>
+//
+// general js included in footer of page to execute javascript after page load.
+// initially, this focused on injecting new form submit handling like required fields, null fields, etc
+
 
 if(XNAT==undefined)XNAT=new Object();
 if(XNAT.forms==undefined)XNAT.forms=new Object();

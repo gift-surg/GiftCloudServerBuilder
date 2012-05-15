@@ -77,6 +77,7 @@
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="${security.channel}"/>
         <security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
         <security:custom-filter after="BASIC_AUTH_FILTER" ref="customBasicAuthenticationFilter"/>
+		<security:custom-filter before="REMEMBER_ME_FILTER" ref="arcSpecFilter"/>
 		<security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="expiredPasswordFilter"/>
         <security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
         <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
@@ -101,6 +102,11 @@
     </bean>
 
 	<bean id="expiredPasswordFilter" class="org.nrg.xnat.security.XnatExpiredPasswordFilter"/>
+	
+	<bean id="arcSpecFilter" class="org.nrg.xnat.security.XnatArcSpecFilter">
+        <property name="configurationPath" value="/app/template/Configuration.vm"/>
+        <property name="nonAdminErrorPath" value="/app/template/Unconfigured.vm"/>
+    </bean>
 	
     <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
 

@@ -21,14 +21,6 @@ public class Index extends SecureScreen {
 
     @Override
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        ArcArchivespecification arc= ArcSpecManager.GetInstance();
-        if (arc==null || !arc.isComplete()){
-            context.put("initialize", true);
-            this.doRedirect(data, "Configuration.vm");
-            return;
-        }else{
-            context.put("arc", arc);
-        }
         
         XDATUser user = TurbineUtils.getUser(data);
         

@@ -49,13 +49,13 @@ public class XMLPathShortcuts implements XMLPathShortcutsI{
 
 		this.addShortCut(IMAGE_SCAN_DATA, "xnat_imagescandata_id", "xnat:imageScanData/xnat_imagescandata_id",true);
 
+		this.addShortCut(IMAGE_SCAN_DATA, "scanTime","xnat:imageScanData/startTime");
 		this.addShortCut(IMAGE_SCAN_DATA, "coil", "xnat:mrScanData/coil");
 		this.addShortCut(IMAGE_SCAN_DATA, "fieldStrength", "xnat:mrScanData/fieldStrength");
 		this.addShortCut(IMAGE_SCAN_DATA, "marker", "xnat:mrScanData/marker");
 		this.addShortCut(IMAGE_SCAN_DATA, "stabilization", "xnat:mrScanData/stabilization");
 
 		this.addShortCut(IMAGE_SCAN_DATA, "orientation","xnat:petScanData/parameters/orientation");
-		this.addShortCut(IMAGE_SCAN_DATA, "scanTime","xnat:petScanData/parameters/scanTime");
 		this.addShortCut(IMAGE_SCAN_DATA, "originalFileName","xnat:petScanData/parameters/originalFileName");
 		this.addShortCut(IMAGE_SCAN_DATA, "systemType","xnat:petScanData/parameters/systemType");
 		this.addShortCut(IMAGE_SCAN_DATA, "fileType","xnat:petScanData/parameters/fileType");

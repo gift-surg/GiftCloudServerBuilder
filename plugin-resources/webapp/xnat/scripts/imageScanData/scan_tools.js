@@ -646,7 +646,7 @@ function ScanSet(_options,_scans){
 		    tempScan.setProperty("type",tempScans[slC].type);
 		    tempScan.setProperty("quality",tempScans[slC].quality);
 		    tempScan.setProperty("note",tempScans[slC].note);
-		    if(tempScans[slC].parameters_scantime!=undefined)tempScan.setProperty("parameters/scanTime",tempScans[slC].parameters_scantime);
+		    tempScan.setProperty("startTime",tempScans[slC].extension.Starttime)
 		    if(tempScans[slC].parameters_imagetype!=undefined)tempScan.setProperty("parameters/imageType",tempScans[slC].parameters_imagetype);
 		    if(tempScans[slC].parameters_seqsequence!=undefined)tempScan.setProperty("parameters/scanSequence",tempScans[slC].parameters_scansequence);
 		    if(tempScans[slC].parameters_seqvariant!=undefined)tempScan.setProperty("parameters/seqVariant",tempScans[slC].parameters_seqvariant);
@@ -1054,14 +1054,14 @@ function scanListingEditor(_tbody,_scanSet,_options){
 					subtbody.appendChild(subtr);
 				}
 
-				if(scan.Parameters_scantime!=undefined && scan.Parameters_scantime!=""){
+				if(scan.extension.Starttime!=undefined && scan.extension.Starttime!=""){
 					var subtr=document.createElement("tr");
 					var subtd1=document.createElement("th");
 					subtd1.align="left";
 					var subtd2=document.createElement("td");
 
 					subtd1.innerHTML="Time";
-					subtd2.innerHTML=scan.Parameters_scantime;
+					subtd2.innerHTML=scan.extension.Starttime;
 
 					subtr.appendChild(subtd1);
 					subtr.appendChild(subtd2);

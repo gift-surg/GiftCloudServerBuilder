@@ -5,6 +5,7 @@
 					  	  	  	  	  	  <td align="left">
 					  	  	  	  	  	    <A target="_blank" HREF="$content.getURI("/REST/experiments/$om.getId()/scans/$scan.getId()/resources/SNAPSHOTS/files?file_content=ORIGINAL&index=0")" > <IMG SRC="$content.getURI("/REST/experiments/$om.getId()/scans/$scan.getId()/resources/SNAPSHOTS/files?file_content=THUMBNAIL&index=0")"> </A>
 					  	  	  	  	  	  </td>
+
 		          </tr>
 			#if($scan.getProperty("quality"))
 					  	  	  	  	  <tr>
@@ -13,6 +14,13 @@
 						  	  	  	  	  	  <td align="left">$!scan.getProperty("quality")</td>
 					  	  	  	  	  </tr>
 				#end
+#if($scan.getProperty("startTime"))
+	<tr>
+	<td></td>
+	<td>Start Time</td>
+	<td align="left">$!scan.getProperty("startTime")</td>
+	</tr>
+#end
 							#if($scan.getProperty("condition"))
 					  	  	  	  	  <tr>
 						  	  	  	  	  	  <td></td>

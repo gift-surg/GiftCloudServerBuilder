@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
 import org.nrg.dcm.CopyOp;
 import org.nrg.transaction.*;
 import org.nrg.xdat.base.BaseElement;
@@ -99,13 +102,16 @@ import edu.sdsc.grid.io.GeneralFile;
  */
 @SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata {
-	public static final String SCAN_ABBR="scan";
-	public static final String RECON_ABBR="recon";
-	public static final String ASSESSOR_ABBR="assess";
-	public static final String RESOURCES_ABBR="uploads";
-	public static final String MISC_ABBR="misc";
+    public static final String SCAN_ABBR="scan";
+    public static final String RECON_ABBR="recon";
+    public static final String ASSESSOR_ABBR="assess";
+    public static final String RESOURCES_ABBR="uploads";
+    public static final String MISC_ABBR="misc";
+
+    private static final Map<String,String> CUSTOM_SCAN_FIELDS =
+        ImmutableMap.of("Scan Time", "startTime");
 	
-	private String lowerCaseSessionId = null;
+    private String lowerCaseSessionId = null;
 
     private FileTracker _files = new FileTracker();
     private Hashtable fileGroups=new Hashtable();
@@ -2994,9 +3000,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
 
     public Map<String,String> getCustomScanFields(String project){
-    	final Map<String,String> customfields= new Hashtable<String,String>();
-    	    	
-    	return customfields;
+        return Maps.newLinkedHashMap(CUSTOM_SCAN_FIELDS);
     }
     
     public void moveToProject(final XnatProjectdata newProject, final String label , final XDATUser user,final EventMetaI c) throws Exception{

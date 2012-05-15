@@ -109,7 +109,6 @@ public class BaseXnatPetsessiondata extends AutoXnatPetsessiondata {
     public Map<String,String> getCustomScanFields(String project){
     	Map<String,String> customheaders= super.getCustomScanFields(project);
     	
-    	customheaders.put("Scan Time","parameters/scanTime");
     	customheaders.put("Original File Name","parameters/originalFileName");
     	customheaders.put("System Type","parameters/systemType");
     	customheaders.put("File Type","parameters/fileType");

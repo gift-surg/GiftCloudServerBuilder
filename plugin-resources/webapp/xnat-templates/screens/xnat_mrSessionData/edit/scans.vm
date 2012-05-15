@@ -68,7 +68,7 @@
     tempScan.setProperty("quality","$!turbineUtils.escapeJS($!scan.getQuality())");
     tempScan.setProperty("note","$!turbineUtils.escapeJS($!scan.getNote())");
     tempScan.setProperty("series_description","$!turbineUtils.escapeJS($!scan.getSeriesDescription())");
-    tempScan.setProperty("parameters/scanTime","$!turbineUtils.escapeJS($!scan.getParameters_scantime())");
+    tempScan.setProperty("startTime","$!turbineUtils.escapeJS($!scan.getStarttime())");
 		    tempScan.setProperty("parameters/imageType","$!turbineUtils.escapeJS($!scan.getParameters_imagetype())");
 		    tempScan.setProperty("parameters/scanSequence","$!turbineUtils.escapeJS($!scan.getParameters_scansequence())");
 		    tempScan.setProperty("parameters/seqVariant","$!turbineUtils.escapeJS($!scan.getParameters_seqvariant())");

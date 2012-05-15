@@ -36,7 +36,7 @@
 			  #end
 			  </td>
 			<td>
-				$!om.getSortedScans().get($scani).getProperty("parameters/scanTime")
+				$!om.getSortedScans().get($scani).getProperty("startTime")
 			</td>
 			<td>	<!-- align="left" -->
 			$scanTypes

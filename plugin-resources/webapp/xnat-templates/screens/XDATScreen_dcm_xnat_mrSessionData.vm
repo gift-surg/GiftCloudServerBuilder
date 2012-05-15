@@ -92,7 +92,7 @@ $page.setVlinkColor($ui.vlink)
 <TH>ti</TH>
 <TH>flip</TH>
 <TH>sequence</TH>
-<TH>scanTime</TH>
+<TH>startTime</TH>
 <TH>imageType</TH>
 <TH>scanSequence</TH>
 <TH>seqVariant</TH>
@@ -117,7 +117,7 @@ $page.setVlinkColor($ui.vlink)
 <TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/ti")</TD>
 <TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/flip")</TD>
 <TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/sequence")</TD>
-<TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/scanTime")</TD>
+<TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("startTime")</TD>
 <TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/imageType")</TD>
 <TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/scanSequence")</TD>
 <TD>$!om.getSortedScans().get($xnat_mrScanData_3_COUNTER).getProperty("parameters/seqVariant")</TD>

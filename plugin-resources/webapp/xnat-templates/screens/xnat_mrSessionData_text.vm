@@ -33,7 +33,7 @@ TI (ms):     $!scan.Parameters_ti
 Flip:        $!scan.Parameters_flip
 Sequence:    $!scan.Parameters_sequence
 Origin:      $!scan.Parameters_origin
-Time:        $!scan.Parameters_scantime
+Time:        $!scan.startTime
 Note:        $!scan.Note
 
 #end

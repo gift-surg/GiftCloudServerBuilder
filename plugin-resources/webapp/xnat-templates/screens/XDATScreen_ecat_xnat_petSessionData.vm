@@ -87,7 +87,7 @@ $page.setVlinkColor($ui.vlink)
 		<span ID="span$!scanCounter" style="position:relative; display:none;">
 <TABLE>
 													<TR><TD>Orientation</TD><TD>$!dynamic.getProperty("parameters/orientation")</TD></TR>
-													<TR><TD>Scan Time</TD><TD>$!dynamic.getProperty("parameters/scanTime")</TD></TR>
+													<TR><TD>Scan Time</TD><TD>$!dynamic.getProperty("startTime")</TD></TR>
 													<TR><TD>Original File Name</TD><TD>$!dynamic.getStringProperty("parameters/originalFileName")</TD></TR>
 													<TR><TD>System Type</TD><TD>$!dynamic.getProperty("parameters/systemType")</TD></TR>
 													<TR><TD>File Type</TD><TD>$!dynamic.getProperty("parameters/fileType")</TD></TR>
@@ -184,7 +184,7 @@ $page.setVlinkColor($ui.vlink)
 		<span ID="span$!scanCounter" style="position:relative; display:none;">
 <TABLE>
 													<TR><TD>Orientation</TD><TD>$!trans.getProperty("parameters/orientation")</TD></TR>
-													<TR><TD>Scan Time</TD><TD>$!trans.getProperty("parameters/scanTime")</TD></TR>
+													<TR><TD>Start Time</TD><TD>$!trans.getProperty("startTime")</TD></TR>
 													<TR><TD>Original File Name</TD><TD>$!trans.getStringProperty("parameters/originalFileName")</TD></TR>
 													<TR><TD>System Type</TD><TD>$!trans.getProperty("parameters/systemType")</TD></TR>
 													<TR><TD>File Type</TD><TD>$!trans.getProperty("parameters/fileType")</TD></TR>

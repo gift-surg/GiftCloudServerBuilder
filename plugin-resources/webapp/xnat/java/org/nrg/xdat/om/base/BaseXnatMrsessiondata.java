@@ -221,7 +221,6 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
     	customheaders.put("parameters/ti","");
     	customheaders.put("parameters/flip","");
     	customheaders.put("parameters/sequence","");
-    	customheaders.put("parameters/scanTime","");
     	customheaders.put("parameters/imageType","");
     	customheaders.put("parameters/scanSequence","");
     	customheaders.put("parameters/seqVariant","");
@@ -232,5 +231,3 @@ public class BaseXnatMrsessiondata extends AutoXnatMrsessiondata {
     }
     
 }
-
-

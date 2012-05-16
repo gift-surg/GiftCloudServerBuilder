@@ -112,7 +112,9 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
                     if (ignoreFailure) {
                         chain.doFilter(request, response);
                     } else {
-                        getAuthenticationEntryPoint().commence(request, response, failed);
+                        //getAuthenticationEntryPoint().commence(request, response, failed);
+                    	//throw failed;
+                    	response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                     }
 
                     return;

@@ -29,7 +29,7 @@
     <bean class="org.nrg.xnat.security.OnXnatLogin" id="logUserLogin"/>
 
     <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" id="authFailure">
-        <constructor-arg value="/app/template/Login.vm" />
+        <constructor-arg value="/app/template/Login.vm?failed=true" />
     </bean> 
 
     <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"

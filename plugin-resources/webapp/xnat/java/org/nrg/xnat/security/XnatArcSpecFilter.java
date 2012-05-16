@@ -16,9 +16,10 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.springframework.web.filter.GenericFilterBean;
 
 public class XnatArcSpecFilter extends GenericFilterBean {
-	private Properties properties;
 	private String configurationPath = "";	
 	private String nonAdminErrorPath = "";
+	private String changePasswordPath = "";
+	private String changePasswordDestination = "";
 	
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -40,12 +41,12 @@ public class XnatArcSpecFilter extends GenericFilterBean {
 	    	String referer = request.getHeader("Referer");
 	    	String uri = request.getRequestURI();
 	    	
-	    	if(uri.endsWith(configurationPath) || uri.endsWith(nonAdminErrorPath)){
-	    		//If you're already on the configuration page or error page, continue on without redirect.
+	    	if(uri.endsWith(configurationPath) || uri.endsWith(nonAdminErrorPath) || uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)){
+	    		//If you're already on the configuration page, error page, or expired password page, continue on without redirect.
 	    		chain.doFilter(req, res);
 	    	}
-	    	else if(referer!=null && (referer.endsWith(configurationPath) || referer.endsWith(nonAdminErrorPath)) && !uri.contains("/app/template") && !uri.contains("/app/screen") && !uri.endsWith(".vm")){
-	    		//If you're on a request within the configuration page (or error page), continue on without redirect. This checks that the referer is the configuration page and that 
+	    	else if(referer!=null && (referer.endsWith(configurationPath) || referer.endsWith(nonAdminErrorPath) || referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination)) && !uri.contains("/app/template") && !uri.contains("/app/screen") && !uri.endsWith(".vm")){
+	    		//If you're on a request within the configuration page (or error page or expired password page), continue on without redirect. This checks that the referer is the configuration page and that 
 	    		// the request is not for another page (preventing the user from navigating away from the Configuration page via the menu bar).
 	    		chain.doFilter(req, res);
 	    	}
@@ -73,5 +74,12 @@ public class XnatArcSpecFilter extends GenericFilterBean {
 	
 	public void setNonAdminErrorPath(String path) {
         this.nonAdminErrorPath = path;
+    }
+	
+	public void setChangePasswordPath(String path) {
+        this.changePasswordPath = path;
+    }
+	public void setChangePasswordDestination(String path) {
+        this.changePasswordDestination = path;
     }
 }

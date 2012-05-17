@@ -13,6 +13,7 @@ import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.springframework.security.core.codec.Base64;
 import org.springframework.web.filter.GenericFilterBean;
 
 public class XnatArcSpecFilter extends GenericFilterBean {
@@ -35,7 +36,16 @@ public class XnatArcSpecFilter extends GenericFilterBean {
         }
         else if(user==null){
         	//Do not direct users to the configuration page if they are not logged in.
-        	chain.doFilter(req, res);
+
+        	String header = request.getHeader("Authorization");
+        	if(header!=null && header.startsWith("Basic ")){
+        		//Users that authenticated using basic authentication receive an error message informing them that the arc spec is not set.
+        		response.sendError(HttpServletResponse.SC_FORBIDDEN, "Site has not yet been configured.");
+        	}
+        	else{
+        		//User is not authenticated through basic authentication either.
+        		chain.doFilter(req, res);
+        	}
         }
 	    else{
 	    	String referer = request.getHeader("Referer");

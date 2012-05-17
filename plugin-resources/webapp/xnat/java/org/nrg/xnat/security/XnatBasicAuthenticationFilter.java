@@ -114,7 +114,7 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
                     } else {
                         //getAuthenticationEntryPoint().commence(request, response, failed);
                     	//throw failed;
-                    	response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    	response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Login attempt failed. Please try again.");
                     }
 
                     return;

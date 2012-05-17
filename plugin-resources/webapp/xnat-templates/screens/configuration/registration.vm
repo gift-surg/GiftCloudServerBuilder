@@ -8,6 +8,7 @@
                         <th align="left">Require Login?</th>
                         <td><input type="checkbox" id="requireLogin" onchange="window.registrationManager.dirtyForm();" disabled /></td>
                     </tr>
+                    
                     <tr>
                         <td colspan="2">If true, then only registered users will be able to access your site. If false, anyone visiting your site will automatically be logged in as 'guest' with access to public data.</td>
                     </tr>

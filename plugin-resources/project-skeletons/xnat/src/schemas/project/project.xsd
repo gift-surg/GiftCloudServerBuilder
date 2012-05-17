@@ -88,6 +88,7 @@
 			<xs:attribute name="smtp_host" type="xs:string" use="optional"/>
 			<xs:attribute name="require_login" type="xs:boolean" use="optional"/>
 			<xs:attribute name="enable_new_registrations" type="xs:boolean" use="optional"/>
+			<xs:attribute name="enable_csrf_token" type="xs:boolean" use="optional"/>
 			<xs:attribute name="quarantine_code" type="xs:integer" use="optional">
 				<xs:annotation>
 					<xs:documentation>Whether image data for this project should be placed in quarantine</xs:documentation>

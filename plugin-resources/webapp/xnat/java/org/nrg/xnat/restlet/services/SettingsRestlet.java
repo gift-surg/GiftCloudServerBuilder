@@ -118,6 +118,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("dcmPort", _arcSpec.getDcm_dcmPort());
         settings.put("dcmAe", _arcSpec.getDcm_dcmAe());
         settings.put("dcmAppletLink", _arcSpec.getDcm_appletLink());
+        settings.put("enableCsrfToken", _arcSpec.getEnableCsrfToken());
 
         return settings;
     }
@@ -236,6 +237,11 @@ public class SettingsRestlet extends SecureResource {
             } else if (property.equals("dcmAppletLink")) {
                 _arcSpec.setDcm_appletLink(_data.get("dcmAppletLink"));
                 dirtied = true;
+            } else if (property.equals("enableCsrfToken")) {
+                final String enableCsrfToken = _data.get("enableCsrfToken");
+                _arcSpec.setEnableCsrfToken(enableCsrfToken);
+                XFT.SetEnableCsrfToken(enableCsrfToken);
+                dirtied = true;
             }
         }
         if (dirtied) {
@@ -274,6 +280,7 @@ public class SettingsRestlet extends SecureResource {
         addSpecifiedProperty(data, "arc:archivespecification/dcm/dcm_ae", "dcmAe");
         addSpecifiedProperty(data, "arc:archivespecification/dcm/applet_link", "dcmAppletLink");
         addSpecifiedProperty(data, "arc:archivespecification/dcm/dcm_port", "dcmPort");
+        addSpecifiedProperty(data, "arc:archivespecification/enable_csrf_token", "enableCsrfToken");
         return data;
     }
 

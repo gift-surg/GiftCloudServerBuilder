@@ -43,6 +43,27 @@
                     <tr>
                         <td colspan="2">The address of the SMTP server to be used to send email from the system.</td>
                     </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Applet Link</th>
+                        <td><input type="checkbox" id="dcmAppletLink" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Should a prominent link to the applet show up on the left bar of the index page?</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Enable CSRF Token?</th>
+                        <td><input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" enabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Should a the site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</td>
+                    </tr>
+                    
                 </table>
             </div>
         </td>
@@ -72,5 +93,5 @@ function addSiteInfoMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost'];
+var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost', 'dcmAppletLink', 'enableCsrfToken'];
 </script>

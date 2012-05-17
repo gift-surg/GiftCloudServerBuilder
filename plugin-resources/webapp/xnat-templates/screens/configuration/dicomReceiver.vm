@@ -24,13 +24,7 @@
                     <tr>
                         <td colspan="2" style="line-height:4px">&nbsp;</td>
                     </tr>
-                    <tr>
-                        <th align="left">Applet Link</th>
-                        <td><input type="checkbox" id="dcmAppletLink" onchange="window.dicomReceiverManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Should a prominent link to the applet show up on the left bar of the index page?</td>
-                    </tr>
+
                 </table>
             </div>
         </td>
@@ -60,5 +54,5 @@ function addDicomReceiverMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addDicomReceiverMgmtMonitor);
-var dicomReceiverControls = ['dcmPort', 'dcmAe', 'dcmAppletLink'];
+var dicomReceiverControls = ['dcmPort', 'dcmAe'];
 </script>

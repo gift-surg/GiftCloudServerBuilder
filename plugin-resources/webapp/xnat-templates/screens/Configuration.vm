@@ -39,7 +39,6 @@ IMG{
                         <li class="selected"><a href="#siteInfo"><em>Site Information<span class="spacer"></span></em></a></li>
                         <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>
                         <li><a href="#registration"><em>Registration<span class="spacer"></span></em></a></li>
-                        <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
                         #if(!$initialize != true)
                             #foreach($tab in $tabs)
                                 <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
@@ -55,9 +54,6 @@ IMG{
                         </div>
                         <div id="registration">
                             <p>#parse('screens/configuration/registration.vm')</p>
-                        </div>
-                        <div id="dicomReceiver">
-                            <p>#parse('screens/configuration/dicomReceiver.vm')</p>
                         </div>
                         #if(!$initialize)
                             #foreach($tab in $tabs)

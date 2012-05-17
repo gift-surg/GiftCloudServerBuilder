@@ -190,6 +190,14 @@ public class ArcSpecManager {
                 if (arcSpec.getDcm_appletLink()==null){
                     arcSpec.setDcm_appletLink(Boolean.TRUE);
                 }
+                
+                if (arcSpec.getEnableCsrfToken()!=null){
+                    XFT.SetEnableCsrfToken(arcSpec.getEnableCsrfToken().toString());
+                }else{
+                    arcSpec.setEnableCsrfToken(XFT.GetEnableCsrfToken());
+                }
+                
+                
             }
 
             try {
@@ -270,7 +278,7 @@ public class ArcSpecManager {
         if (XFT.getBuildPath()!=null && !XFT.getBuildPath().equals("")) {
             arcSpec.setProperty("globalPaths/buildPath", XFT.getBuildPath());
         }
-
+        arcSpec.setRequireLogin(XFT.GetEnableCsrfToken());
         return arcSpec;
     }
 

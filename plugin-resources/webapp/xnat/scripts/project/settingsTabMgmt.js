@@ -14,9 +14,7 @@ function fullConfigHandler() {
     }
 
     var missing = new Array();
-    if(window.dicomReceiverManager==undefined) {
-        missing.push('DICOM Receiver');
-    }
+
     if(window.registrationManager==undefined) {
         missing.push('Registration');
     }
@@ -45,7 +43,7 @@ function fullConfigHandler() {
             scope : this
         };
 
-        var arcSpecControls = [ 'siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost', 'archivePath', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath', 'requireLogin', 'enableNewRegistrations', 'dcmAe', 'dcmAppletLink', 'dcmPort' ];
+        var arcSpecControls = [ 'siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost', 'archivePath', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath', 'requireLogin', 'enableNewRegistrations', 'dcmAe', 'dcmAppletLink', 'dcmPort', 'enableCsrfToken' ];
         var data = '';
         for (var index = 0; index < arcSpecControls.length; index++) {
             var control = document.getElementById(arcSpecControls[index]);

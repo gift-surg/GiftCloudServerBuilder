@@ -12,6 +12,7 @@ document.title = "Session: $!item.getProperty('label')";
 			#if($item.needsActivation())
 			<div id="quarantine_div" class="error" style="background-color:#FFCC33;">This session is in quarantine.&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="toggleQuarantine();">Activate</a></div><br>
 			#end
+		#addCustomScreens($om.getXSIType() "report/errors") 
 			#parse($turbineUtils.getTemplateName("_title",$om.getXSIType(),$project))
 					<STYLE>
 					TH.underscore{
@@ -26,6 +27,7 @@ document.title = "Session: $!item.getProperty('label')";
 					#set($project=$mr.getProject())
 					#end
 <BR>
+		#addCustomScreens($om.getXSIType() "report/alert") 
 			#parse("/screens/workflow_alert.vm")
 <table width="100%" border="0">
 				<tr>
@@ -33,18 +35,21 @@ document.title = "Session: $!item.getProperty('label')";
 			#parse($turbineUtils.getTemplateName("_details",$om.getXSIType(),$project))
 	    </td>
   				</tr>
+		#addCustomScreens($om.getXSIType() "report/postDetails")
   				<tr>
   					 <td colspan=2>
 			#parse("/screens/ReportProjectSpecificFields.vm")
 	  </td>
 	 </tr>
 	 #parse("/screens/qc_summary.vm")
+		#addCustomScreens($om.getXSIType() "report/preScreens") 
  	<tr>
 					  <td align=left colspan=2 valign=top>
 					<BR/><BR/>
 #parse($turbineUtils.getTemplateName("_scans",$om.getXSIType(),$project))
 					  </td>
 				 </tr>
+		#addCustomScreens($om.getXSIType() "report/postScreens") 
 				 <tr>
 	  <td align=left colspan=2 valign=top><BR/><BR/></td>
  </tr>
@@ -52,6 +57,7 @@ document.title = "Session: $!item.getProperty('label')";
 	#set ($scanCounter = 101)
 #parse($turbineUtils.getTemplateName("_reconstructions",$om.getXSIType(),$project))
 
+		#addCustomScreens($om.getXSIType() "report/postRecons") 
  <!--TEST 2-->
 	#set ($scanCounter = 202)
 <tr>
@@ -59,11 +65,13 @@ document.title = "Session: $!item.getProperty('label')";
 			#parse("/screens/workflow_summary.vm")
 	</td>
 </tr>
+		#addCustomScreens($om.getXSIType() "report/postWorkflowSummary") 
 				<tr>
 					 <td align=left colspan=2 valign=top>
 #parse($turbineUtils.getTemplateName("_assessments",$om.getXSIType(),$project))
  </td>
 </tr>
+		#addCustomScreens($om.getXSIType() "report/postAssessments") 
 			</table>
 				<script type="text/javascript">
 var image_session_id="$om.getId()";

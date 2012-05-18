@@ -1,0 +1,13 @@
+<!-- Sequence: 5 -->
+			<li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("LaunchUploadApplet.vm")">Images</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XMLUpload.vm")">XML</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_uploadCSV.vm")">Spreadsheet</a>
+           </li>
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_prearchives.vm")">Go to prearchive</a>
+           </li>

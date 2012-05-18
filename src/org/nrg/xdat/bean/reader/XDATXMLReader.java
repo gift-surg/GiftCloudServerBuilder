@@ -115,7 +115,7 @@ public class XDATXMLReader extends DefaultHandler {
                         try {
                             item.setDataField(local,value);
                         } catch (BaseElement.UnknownFieldException e1) {
-                            logger.equals(e1);
+                            logger.error("",e1);
                         } catch (IllegalArgumentException e1) {
                             throw new SAXException("Invalid value for attribute '" + local +"'");
                         }
@@ -175,7 +175,7 @@ public class XDATXMLReader extends DefaultHandler {
                                     try {
                                         item.setDataField(local,value);
                                     } catch (BaseElement.UnknownFieldException e1) {
-                                        logger.equals(e1);
+                                        logger.error("",e1);
                                     } catch (IllegalArgumentException e1) {
                                         throw new SAXException("Invalid value for attribute '" + local +"'");
                                     }

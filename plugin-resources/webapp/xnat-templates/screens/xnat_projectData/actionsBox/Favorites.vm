@@ -1,0 +1,37 @@
+<!-- Sequence: 10 -->
+
+	           <li class="yuimenuitem">
+            <a id="favorite_a" class="yuimenuitemlabel" href="" onclick="toggleFavorites();return false;">
+            #if($data.getSession().getAttribute("user").isFavorite("Project","$project.getId()"))Remove from Favorites#else Add to Favorites#end</A>
+           </li>
+			
+<SCRIPT language="javascript">
+function toggleFavorites(){
+  window.currentStatus="$data.getSession().getAttribute("user").isFavorite("Project","$project.getId()")";
+  if(window.currentStatus=="true"){
+    var initCallback={
+						      success:function(o){
+						    	    document.getElementById("favorite_a").innerHTML="Add To Favorites";
+						    	    window.currentStatus="false";
+      },
+			      failure:function(o){
+			      
+				      },
+			      scope:this
+		    }
+    YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
+  }else{
+    var initCallback={
+						      success:function(o){
+						    	    document.getElementById("favorite_a").innerHTML="Remove From Favorites";
+						    	    window.currentStatus="true";
+      },
+			      failure:function(o){
+			      
+				      },
+			      scope:this
+		    }
+    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
+  }
+}
+</SCRIPT>

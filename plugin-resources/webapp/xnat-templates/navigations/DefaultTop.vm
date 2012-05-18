@@ -12,11 +12,12 @@
 #if($project)
   #set($projectString="/project/$project")
 #end
+
 <DIV>
 <DIV class="yui-skin-sam">
  <table cellspacing="0" border="0" width="800px">
   <tr valign="bottom">
-   <td align="left" width="252" rowspan="3"><a href="$link.setPage("Index.vm")" onmouseover="return true;"><img src="$content.getURI("images/logo.jpg")" border=0></a>&nbsp;&nbsp;</td>
+   <td class="logo_img" align="left" rowspan="3"><a href="$link.setPage("Index.vm")" onmouseover="return true;">#parse("/screens/Logo.vm")</a>&nbsp;&nbsp;</td>
    <td align="left" valign="top" NOWRAP>
 #if($data.getSession().getAttribute("user").getUsername()=="guest")
      <font color="red">Guest</font>&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Login.vm")">(Login)</A>
@@ -42,158 +43,7 @@ $navigation.setTemplate("XNATQuickSearch.vm")
     <DIV id="topMenuBar" class="yuimenubar yuimenubarnav" style="display:none">
      <DIV class="bd">
       <ul class="first-of-type">
-       <li class="yuimenubaritem first-of-type"><A class="yuimenubaritemlabel" href="$link.setPage("Index.vm")">Home</A></li>
-#if($data.getSession().getAttribute("user").getUsername()=="guest")
-
-	#elseif($data.getSession().getAttribute("user").getUsername())
-       <li class="yuimenuitem first-of-type"> 
-        <a class="yuimenuitemlabel" href="#new">New</a>
-        <DIV ID="new" class="yuimenu">
-         <DIV class="bd">
-          <ul class="first-of-type">
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_xnat_projectData.vm")">Project</a>
-           </li>
-            #if ($data.getSession().getAttribute("user").canCreateElement("xnat:subjectData", "xnat:subjectData/project"))
-				#if($project)
-					#if($project.getId())
-						#if($data.getSession().getAttribute("user").canCreate("xnat:subjectData/project",$project.getId()))
-							<li class="yuimenuitem">
-							    <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","xnat:subjectData")/project/$!project.getId()">Subject</a>
-							</li>
-						#end
-					#else
-						#if($data.getSession().getAttribute("user").canCreate("xnat:subjectData/project",$project))
-							<li class="yuimenuitem">
-							    <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","xnat:subjectData")$!projectString">Subject</a>
-							</li>
-						#end
-					#end
-				#else
-					<li class="yuimenuitem">
-					    <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","xnat:subjectData")">Subject</a>
-					</li>
-				#end
-            #end
-                        
-  #renderTopListType("xnat:mrSessionData")
-  #renderTopListType("xnat:petSessionData")
-  #renderTopListType("xnat:ctSessionData")
-  #if($project)
-			    #if($project.getId())
-              <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm").addPathInfo('project',$project.getId())">More</A>
-               </li>
-    #else
-              <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm").addPathInfo('project',$project)">More</A>
-               </li>
-    #end
-  #else
-              <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm")">More</A>
-               </li>
-  #end
-          </ul>
-         </DIV>
-        </DIV>
-       </li>
-       <li class="yuimenuitem first-of-type"> 
-        <a class="yuimenuitemlabel" href="#upload">Upload</a>
-        <DIV ID="upload" class="yuimenu">
-         <DIV class="bd">
-          <ul class="first-of-type">
-				           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("LaunchUploadApplet.vm")">Images</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XMLUpload.vm")">XML</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_uploadCSV.vm")">Spreadsheet</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_prearchives.vm")">Go to prearchive</a>
-           </li>
-           <li class="yuimenuitem">
-           <a class="yuimenuitemlabel" href="#information"> 
-	                    Archive Headers 
-	                </a> 
-	 
-	                <!-- A submenu --> 
-	 
-                <div id="information" class="yuimenu"> 
-	                    <div class="bd">                                         
-	                        <ul>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","1")">One Day</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","7")">One Week</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","30")">One Month</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","365")">All</a>
-           </li>       
-
-	                        </ul>                     
-	                    </div> 
-	                </div>  
-           </li>
-          </ul>
-         </DIV>
-        </DIV>
-       </li>
-       #if($data.getSession().getAttribute("user").checkRole("Administrator"))
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="#adminbox">Administer</a>
-            <DIV ID="adminbox" class="yuimenu">
-             <DIV class="bd">
-              <ul class="first-of-type">
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin.vm")" >Users</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_dataTypes.vm")" >Data types</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_email.vm")" >Email</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_manage_pipeline.vm")">Pipelines</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin_options.vm")" >More options...</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("Configuration.vm")">Configuration</a>
-           </li>
-              </ul>
-             </DIV>
-            </DIV>
-           </li>
-		        #end
-#end
-       <li class="yuimenuitem first-of-type"> 
-        <a class="yuimenuitemlabel" href="#tools">Tools</a>
-        <DIV ID="tools" class="yuimenu">
-         <DIV class="bd">
-          <ul class="first-of-type">
-				           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="http://docs.xnat.org/XNAT+Desktop">XNAT Desktop (XND)</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="http://nrg.wustl.edu/projects/DICOM/DicomBrowser.jsp">DICOM Browser</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="http://docs.xnat.org/XNAT+Tools#XNAT%20Client%20Tools-Developed%20by%20NRG-XNAT%20web%20services%20client%20tools%20%28NRG%29">Command Prompt Tools</a>
-           </li>
-          </ul>
-         </DIV>
-        </DIV>
-       </li>
+		#addGlobalCustomScreens("topBar")       
       </ul>
      </DIV>
     </DIV>

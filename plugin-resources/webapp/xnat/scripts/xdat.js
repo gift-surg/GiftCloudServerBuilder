@@ -525,6 +525,7 @@ function validateDate(sel){
 
 		this.text_input.value = month + "/" + day + "/" + year;
 		this.text_input.calendar.hide();
+		try{this.text_input.onblur();}catch(e){};
     }
 
 

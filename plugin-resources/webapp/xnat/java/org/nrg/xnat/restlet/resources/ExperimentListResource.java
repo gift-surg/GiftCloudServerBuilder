@@ -121,6 +121,71 @@ public class ExperimentListResource  extends QueryOrganizerResource {
 					String[] headers = {"id","label","project","date","status","element_name","type_desc","insert_date","activation_date","last_modified","workflow_date","pipeline_name","action_date"};
 					table.initTable(headers);
 				}
+			}else if(this.getQueryVariable("needQC")!=null){
+				params.put("title", "Recent Experiments");
+				//this uses an ugly hack to try to enforces security via the SQL statement.  It generates the statement for the subject data type.  It then uses the same permissions on the experimentData type.  This assumes that experiments and subjects have the same permissions defined (which is currently always the case).  But, this could be an issue in the future.
+				org.nrg.xft.search.QueryOrganizer qo = new org.nrg.xft.search.QueryOrganizer("xnat:subjectData",user,ViewManager.ALL);
+				qo.addField("xnat:subjectData/ID");			
+				
+				try {
+				String query= qo.buildQuery();
+				
+				String idField=qo.translateXMLPath("xnat:subjectData/ID");
+	
+					boolean limit=false;
+				int days = 0;
+				if(this.getQueryVariable("recent")!=null){
+					String daysS=this.getQueryVariable("recent");
+					try {
+						days= Integer.parseInt(daysS);
+					} catch (NumberFormatException e) {
+							limit=true;
+						days=60;
+					}
+				}
+				
+				//experiments
+				query=StringUtils.ReplaceStr(query, idField, "id");
+				query=StringUtils.ReplaceStr(query, "xnat_subjectData", "xnat_experimentData");
+				query=StringUtils.ReplaceStr(query, "xnat_projectParticipant", "xnat_experimentData_share");
+				query=StringUtils.ReplaceStr(query, "subject_id", "sharing_share_xnat_experimentda_id");
+				
+				query="SELECT * FROM (" +
+						"SELECT DISTINCT ON (expt.id) expt.id, expt.label,expt.project,date,status, xme.element_name, COALESCE(es.code,es.singular,es.element_name) AS TYPE_DESC,insert_date,activation_date,last_modified,workflow_date,pipeline_name, CASE WHEN (CASE WHEN last_modified>insert_date THEN last_modified ELSE insert_date END)>(CASE WHEN workflow_date>activation_date THEN workflow_date ELSE activation_date END) THEN (CASE WHEN last_modified>insert_date THEN last_modified ELSE insert_date END) ELSE (CASE WHEN workflow_date>activation_date THEN workflow_date ELSE activation_date END) END  AS action_date, first_scan_id,u.login AS insert_user, sub.label AS subject_label, sub.id AS subject_id " +
+						"FROM xnat_experimentData expt " +
+						"LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id " +
+						"LEFT JOIN xdat_element_security es ON xme.element_name=es.element_name " +
+						"LEFT JOIN xnat_experimentData_meta_data emd ON expt.experimentData_info=emd.meta_data_id " +
+						"LEFT JOIN xdat_user u ON emd.insert_user_xdat_user_id=u.xdat_user_id " +
+						"LEFT JOIN (   " +
+							"SELECT DISTINCT ON (id) id,current_step_launch_time AS workflow_date,pipeline_name " +
+							"FROM wrk_workflowdata " +
+							"WHERE status='Complete' " +
+							"ORDER BY id,current_step_launch_time " +
+						") wrkflw ON expt.id=wrkflw.id " +
+						"RIGHT JOIN (" +
+							query +
+						") perm ON expt.id=perm.id " +
+						"RIGHT JOIN xnat_imageSessionData isd ON perm.id=isd.id " +
+						"LEFT JOIN xnat_subjectAssessorData sad ON perm.id=sad.id " +
+						"LEFT JOIN xnat_subjectData sub ON sad.subject_id=sub.id " +
+						"LEFT JOIN (" +
+							"SELECT DISTINCT ON (isd.id) isd.ID AS SESSION_ID, scan.ID AS FIRST_SCAN_ID, MANUAL_QC.ID AS MANUAL_QC_ID FROM xnat_imagesessiondata isd LEFT JOIN xnat_imagescanData scan ON isd.id=scan.image_session_id LEFT JOIN ( 	SELECT DISTINCT ON (iad.imagesession_id) iad.id, iad.imagesession_id FROM xnat_imageAssessorData iad LEFT JOIN xnat_experimentdata expt ON iad.id=expt.id 	LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id WHERE xme.element_name='xnat:qcManualAssessorData') MANUAL_QC ON isd.id=MANUAL_QC.imagesession_id" +
+						") FIRST_SCAN ON isd.id=FIRST_SCAN.SESSION_ID " +
+						"WHERE (MANUAL_QC_ID IS NULL) " +
+					")SEARCH WHERE id IS NOT NULL ORDER BY action_date DESC";
+					
+				
+					if(limit)query+=" LIMIT 60";
+
+				table=XFTTable.Execute(query, user.getDBName(), userName);
+				} catch (IllegalAccessException e) {
+					logger.error("",e);
+					e.printStackTrace();
+					table=new XFTTable();
+					String[] headers = {"id","label","project","date","status","element_name","type_desc","insert_date","activation_date","last_modified","workflow_date","pipeline_name","action_date"};
+					table.initTable(headers);
+				}
 			}else{
 				params.put("title", "Matching experiments");
 				String rootElementName=this.getRootElementName();

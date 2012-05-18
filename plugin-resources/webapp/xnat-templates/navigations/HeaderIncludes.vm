@@ -24,6 +24,13 @@
 		var csrfToken = "$!XNAT_CSRF";
 		var showReason = $showReason;
 		var requireReason = $requireReason;
+		
+		XNAT.app.showLeftBar=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"));
+		XNAT.app.showLeftBarProjects=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-projects","true"));
+		XNAT.app.showLeftBarFavorites=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-favorites","true"));
+		XNAT.app.showLeftBarSearch=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-search","true"));
+		XNAT.app.showLeftBarBrowse=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-browse","true"));
+		  
 		window.available_elements=new Array();
 		
 		#if($data.getSession().getAttribute("user"))

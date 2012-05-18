@@ -42,7 +42,7 @@ width:1px;
 #end
             #foreach($tab in $tabs)
                 <div id="$tab.getProperty("divName")">
-                    #set($path = "screens/xnat_projectData/${tab.getProperty('fileName')}")
+                    #set($path = "screens/xnat_projectData/tabs/${tab.getProperty('fileName')}")
                     <p>#parse($path)</p>
                 </div>
             #end

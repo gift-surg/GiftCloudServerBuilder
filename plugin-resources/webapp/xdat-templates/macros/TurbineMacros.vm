@@ -189,7 +189,7 @@
 
   ## The hidden box is necessary to submit a "false" value if the checkbox is unchecked
   ## If the checkbox is checked, its true value will override the hidden's "false" value
-  <input type="checkbox" name="$name" value="1" #if($value) CHECKED #end />
+  <input ID="$name" type="checkbox" name="$name" value="1" #if($value) CHECKED #end />
   <input type="hidden" name="$name" value="0" />
 #end
 
@@ -240,6 +240,27 @@
   #else
   <input type="radio" name="$name" value="1"/>&nbsp;yes
   <input type="radio" name="$name" value="0"/>&nbsp;no
+  #end
+#end
+
+
+#macro (xdatBooleanRadioYesNoWithoutDefaultWONClick $name $item $vr $onchange)
+#if ($vr)
+  #if($vr.getField($name))
+    <font color="red">&#8658</font>
+  #end
+#end
+  #set($value = "$!item.getBooleanProperty($name)")
+
+  #if ($value == "true")
+  <input type="radio" name="$name" value="1" ONCLICK="return $!{onchange}(true);" CHECKED/>&nbsp;yes
+  <input type="radio" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
+  #elseif ($value == "false")
+  <input type="radio" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
+  <input type="radio" name="$name" value="0" ONCLICK="return $!{onchange}(false);" CHECKED/>&nbsp;no
+  #else
+  <input type="radio" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
+  <input type="radio" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
   #end
 #end
 
@@ -339,7 +360,8 @@
   #end
 #end
 
-#macro (xdatSelectBoxWSingleValue $name $item $possibleValues $vr)
+
+#macro (xdatSelectBoxWSingleValueLbl $lbl $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
     <font color="red">&#8658</font>
@@ -355,7 +377,7 @@
     #else
     <table cellpadding="0" cellspacing="0" align="left"><tr><td align="left">
       <SELECT id="SEL_$name" name="SEL_$name" ONCHANGE="setSelectValue(this);">
-        <OPTION VALUE="">(SELECT)</OPTION>
+        <OPTION VALUE="">$lbl</OPTION>
         #foreach ($pValue in $possibleValues)
         <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
         #end
@@ -393,6 +415,10 @@
       <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/>
     #end
   #end
+#end
+
+#macro (xdatSelectBoxWSingleValue $name $item $possibleValues $vr)
+	#xdatSelectBoxWSingleValueLbl("(SELECT)" $name $item $possibleValues $vr)
 #end
 
 #macro (xdatSelectBoxWSingleValueWID $name $item $possibleValues $vr $id)
@@ -440,7 +466,7 @@
   #end
 #end
 
-#macro (xdatSimpleSelectBox $name $item $possibleValues $vr)
+#macro (xdatSimpleSelectBoxLbl $lbl $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
     <font color="red">&#8658</font>
@@ -454,13 +480,41 @@
       <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
       <SELECT ID="$name" name="$name">
-        <OPTION VALUE="">(SELECT)</OPTION>
+        <OPTION VALUE="">$!lbl</OPTION>
         #foreach ($pValue in $possibleValues)
         <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
         #end
       </SELECT>
     #end
   #end
+#end
+
+
+#macro (xdatSimpleSelectBoxLblWKeyValue $lbl $name $item $possibleValues $vr)
+#if ($vr)
+  #if($vr.getField($name))
+    <font color="red">&#8658</font>
+  #end
+#end
+  #if($item.isPKField($name) && (!$vr.getField($name)))
+    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    $item.getProperty($name)
+  #else
+    #if ($possibleValues.size()==0)
+      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+    #else
+      <SELECT ID="$name" name="$name">
+        <OPTION VALUE="">$!lbl</OPTION>
+        #foreach ($pValue in $possibleValues)
+        <OPTION VALUE="$pValue.get(0)" #if($pValue.get(0).equals($item.getProperty($name))) SELECTED #end>$pValue.get(1)</OPTION>
+        #end
+      </SELECT>
+    #end
+  #end
+#end
+
+#macro (xdatSimpleSelectBox $name $item $possibleValues $vr)
+	xdatSimpleSelectBoxLbl("(SELECT)" $name $item $possibleValues $vr)
 #end
 
 #macro (xdatIntegerValueSelectBox $name $item $possibleValues $offset $vr)
@@ -759,14 +813,7 @@
         #foreach ($minute in [ 0..59 ])
               <option value="$minute" #if ( $minute == $!expt_date.getMinutes() ) SELECTED="true" #end>$minute</option>
         #end
-      </select>:
-
-      <select name="${name}.seconds">
-        <option value="bad">(SELECT)</option>
-        #foreach ($minute in [ 0..59 ])
-              <option value="$minute" #if ( $minute == $!expt_date.getSeconds() ) SELECTED="true" #end>$minute</option>
-        #end
-      </select>(s)
+      </select>
 
     #else
       <select name="${name}.month">
@@ -806,14 +853,7 @@
         #foreach ($minute in [ 0..59 ])
               <option value="$minute">$minute</option>
         #end
-      </select>:
-
-      <select name="${name}.seconds">
-        <option value="bad">(SELECT)</option>
-        #foreach ($minute in [ 0..59 ])
-              <option value="$minute">$minute</option>
-        #end
-      </select>(s)
+      </select>
 
     #end
       </font>
@@ -827,7 +867,7 @@
     <font color="red">&#8658</font>
   #end
 #end
-#set ($hours=[["00","12AM",0],["01","1AM",1],["02","2AM",2],["03","3AM",3],["04","4AM",4],["05","5AM",5],["06","6AM",6],["07","7AM",7],["08","8AM",8],["09","9AM",9],["10","10AM",10],["11","11AM",11],["12","12PM",12],["13","1PM",13],["14","2PM",14],["15","3PM",15],["16","4PM",16],["17","5PM",17],["18","6PM",18],["19","7PM",19],["20","8PM",20],["21","9PM",21],["22","10PM",22],["23","11PM",23]]	)
+#set ($hours=[["08","8AM",8],["09","9AM",9],["10","10AM",10],["11","11AM",11],["12","12PM",12],["13","1PM",13],["14","2PM",14],["15","3PM",15],["16","4PM",16],["17","5PM",17],["18","6PM",18],["19","7PM",19],["20","8PM",20],["21","9PM",21],["22","10PM",22],["23","11PM",23],["00","12AM",0],["01","1AM",1],["02","2AM",2],["03","3AM",3],["04","4AM",4],["05","5AM",5],["06","6AM",6],["07","7AM",7]]	)
         <font face="$ui.sansSerifFonts">
         #if($!item.getDateProperty($name))
       #set ($expt_date = $!item.getDateProperty($name))
@@ -841,17 +881,14 @@
       <select id="${name}.minutes" name="${name}.minutes">
         <option value="">MM</option>
         #foreach ($minute in [ 0..59 ])
-              <option value="$minute" #if ( $minute == $!expt_date.getMinutes() ) SELECTED="true" #end>$minute</option>
-        #end
-      </select>:
-
-      <select id="${name}.seconds" name="${name}.seconds">
-        <option value="">SS</option>
-        #foreach ($minute in [ 0..59 ])
-              <option value="$minute" #if ( $minute == $!expt_date.getSeconds() ) SELECTED="true" #end>$minute</option>
+           #if($minute<10)
+           		#set($minuteD="0$minute")
+           #else
+           		#set($minuteD="$minute")
+           #end
+              <option value="$minute" #if ( $minute == $!expt_date.getMinutes() ) SELECTED="true" #end>$minuteD</option>
         #end
       </select>
-
       #else
       <select id="${name}.hours" name="${name}.hours">
         <option value="">HH</option>
@@ -863,14 +900,12 @@
       <select id="${name}.minutes" name="${name}.minutes">
         <option value="">MM</option>
         #foreach ($minute in [ 0..59 ])
-              <option value="$minute">$minute</option>
-        #end
-      </select>:
-
-      <select id="${name}.seconds" name="${name}.seconds">
-        <option value="">SS</option>
-        #foreach ($minute in [ 0..59 ])
-              <option value="$minute">$minute</option>
+           #if($minute<10)
+           		#set($minuteD="0$minute")
+           #else
+           		#set($minuteD="$minute")
+           #end
+              <option value="$minute">$minuteD</option>
         #end
       </select>
       #end
@@ -1517,3 +1552,38 @@ $!turbineUtils.escapeJS($s)
 	#end
 #end
 
+##Used to load globally scoped VM files and inject them into parent VMs.
+#macro(addGlobalCustomScreens $subFolder)
+	#foreach($screenProps in $turbineUtils.getTemplates($subFolder))
+		#set($templateFileName=$screenProps.getProperty("path"))
+		#if($data.getSession().getAttribute("user").getUsername()=="guest")
+			#if($turbineUtils.toBoolean($screenProps.getProperty("allowGuest"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($screenProps.getProperty("adminOnly"))
+			#if($turbineUtils.toBoolean($data.getSession().getAttribute("user").checkRole("Administrator"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($data.getSession().getAttribute("user").getUsername())
+				#parse("/screens/$templateFileName")
+		#end
+	#end
+#end
+
+##Used to load  VM files for specfic data-types and their extensions and inject them into parent VMs.
+#macro(addCustomScreens $dataType $subFolder)
+	#foreach($screenProps in $turbineUtils.getTemplates($dataType,$subFolder))
+		#set($templateFileName=$screenProps.getProperty("path"))
+		#if($data.getSession().getAttribute("user").getUsername()=="guest")
+			#if($turbineUtils.toBoolean($screenProps.getProperty("allowGuest"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($screenProps.getProperty("adminOnly"))
+			#if($turbineUtils.toBoolean($data.getSession().getAttribute("user").checkRole("Administrator"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($data.getSession().getAttribute("user").getUsername())
+				#parse("/screens/$templateFileName")
+		#end
+	#end
+#end

@@ -10,6 +10,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
+import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -44,10 +45,8 @@ public class ConfirmRegister extends SecureAction {
             	context.put("nextPage", nextPage);
 			}
             
-		    context.put("showReason", XFT.SHOW_REASON);
-		    context.put("requireReason", XFT.REQUIRE_REASON);
 
-            context.put("turbineUtils",TurbineUtils.GetInstance());
+	        SecureScreen.loadAdditionalVariables(data, context);
             
             if (temp==null)
             {

@@ -57,109 +57,117 @@ function LeftBarTreeView(_config){
  	}
  	
  	root.treeManager=this;
- 	//define project node
- 	this.projNode=new YAHOO.widget.TextNode({label:"Projects",ID:"proj"},root,this.open_array.contains("proj"));
- 	 	
- 	var apNode=new YAHOO.widget.TextNode({label:"Recent",ID:"projectData.r",
- 	title:"Projects visited in the last 30 days."},this.projNode,this.open_array.contains("projectData.r"));
- 	apNode.setDynamicLoad(function(node, fnLoadComplete){
- 		var callback={
-	      success:function(oResponse){
-	        var oResults = eval("(" + oResponse.responseText + ")"); 
-	        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {  
-	           for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {   
-	               var cpNode=new YAHOO.widget.TextNode({label:oResults.ResultSet.Result[ssC].secondary_id,
-                     		ID:"ss."+oResults.ResultSet.Result[ssC].id,
-                     		href:serverRoot + '/app/template/XDATScreen_report_xnat_projectData.vm/search_element/xnat:projectData/search_field/xnat:projectData.ID/search_value/' + oResults.ResultSet.Result[ssC].id,
-                     		TITLE:oResults.ResultSet.Result[ssC].name},oResponse.argument.node,false);
-                   
- 				   cpNode.isLeaf=true;
-	           }   
-	        } 
-	        oResponse.argument.fnLoadComplete();
-	      },
-	      failure:function(oResponse){
-	        oResponse.argument.fnLoadComplete();
-	      },
-	      argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
-	    };
-	    
-																			           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&recent=true&stamp='+ (new Date()).getTime(),callback,null);
-	 		
- 	},this);
- 	
- 	var fpNode=new YAHOO.widget.TextNode({label:"Favorite",ID:"projectData.f",
- 	title:"Projects added to your list of favorites."},this.projNode,this.open_array.contains("projectData.f"));
- 	fpNode.setDynamicLoad(function(node, fnLoadComplete){
- 		var callback={
-	      success:function(oResponse){
-	        var oResults = eval("(" + oResponse.responseText + ")"); 
-	        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {  
-	           for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {   
-	               var cpNode=new YAHOO.widget.TextNode({label:oResults.ResultSet.Result[ssC].secondary_id,
-                     		ID:"ss."+oResults.ResultSet.Result[ssC].id,
-                     		href:serverRoot + '/app/template/XDATScreen_report_xnat_projectData.vm/search_element/xnat:projectData/search_field/xnat:projectData.ID/search_value/' + oResults.ResultSet.Result[ssC].id,
-                     		TITLE:oResults.ResultSet.Result[ssC].name},oResponse.argument.node,false);
-                   
- 				   cpNode.isLeaf=true;
-	           }   
-	        } 
-	        oResponse.argument.fnLoadComplete();
-	      },
-	      failure:function(oResponse){
-	        oResponse.argument.fnLoadComplete();
-	      },
-	      argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
-	    };
-	    
-																			           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
-	    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&favorite=true&stamp='+ (new Date()).getTime(),callback,null);
-	 		
- 	},this);
- 	
- 	var opNode=new YAHOO.widget.TextNode({label:"My projects",ID:"projectData.my",
- 	URL:serverRoot +'/REST/projects?format=search_xml&accessible=true',
- 	title:"Projects you have access to.",
- 	isLeaf:true},this.projNode,false);
- 	opNode.isLeaf=true;
- 	this.tree.searches.push(opNode.data.ID);
- 	 	
- 	//VIEW ALL
- 	var cpNode=new YAHOO.widget.TextNode({label:"Other projects",
- 	ID:"projectData.a",
- 	URL:serverRoot +'/REST/projects?format=search_xml&accessible=false',
- 	title:"Projects you don't have access to, but are available upon request."},this.projNode,false);
- 	cpNode.isLeaf=true;
- 	this.tree.searches.push(cpNode.data.ID);
- 	
- 	//define stored searches node
- 	this.ssNode=new YAHOO.widget.TextNode({label:"Stored Searches",ID:"ss"},root,this.open_array.contains("ss"));
- 	this.ssNode.setDynamicLoad(this.loadStoredSearches,this);
- 	
- 	if(window.available_elements!=undefined){
-	 	//define data node
- 		function sortByElementName(a,b)
- 		{
- 			var aName = a.element_name.toLowerCase();
- 			var bName = b.element_name.toLowerCase();
- 			if (aName < bName){
- 		        return -1;
- 		     }else if (aName > bName){
- 		       return  1;
- 		     }else{
- 		       return 0;
- 		     }
- 		}
- 		window.available_elements.sort(sortByElementName);
-	 	this.dataNode=new YAHOO.widget.TextNode({label:"Data",ID:"d"},root,this.open_array.contains("d"));
-	 	for(var esC=0;esC<window.available_elements.length;esC++){
-	 		var es=window.available_elements[esC];
-	 		var cpNode=new YAHOO.widget.TextNode({label:es.plural,
-	 		ID:"d."+es.element_name,
-	 		URL:serverRoot +'/REST/search/saved/@' + es.element_name + ''},this.dataNode,false);
- 			cpNode.isLeaf=true;
- 			this.tree.searches.push(cpNode.data.ID);
+ 	if(XNAT.app.showLeftBarProjects){
+	 	//define project node
+	 	this.projNode=new YAHOO.widget.TextNode({label:"Projects",ID:"proj"},root,this.open_array.contains("proj"));
+	 	 	
+	 	var apNode=new YAHOO.widget.TextNode({label:"Recent",ID:"projectData.r",
+	 	title:"Projects visited in the last 30 days."},this.projNode,this.open_array.contains("projectData.r"));
+	 	apNode.setDynamicLoad(function(node, fnLoadComplete){
+	 		var callback={
+		      success:function(oResponse){
+		        var oResults = eval("(" + oResponse.responseText + ")"); 
+		        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {  
+		           for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {   
+		               var cpNode=new YAHOO.widget.TextNode({label:oResults.ResultSet.Result[ssC].secondary_id,
+	                     		ID:"ss."+oResults.ResultSet.Result[ssC].id,
+	                     		href:serverRoot + '/app/template/XDATScreen_report_xnat_projectData.vm/search_element/xnat:projectData/search_field/xnat:projectData.ID/search_value/' + oResults.ResultSet.Result[ssC].id,
+	                     		TITLE:oResults.ResultSet.Result[ssC].name},oResponse.argument.node,false);
+	                   
+	 				   cpNode.isLeaf=true;
+		           }   
+		        } 
+		        oResponse.argument.fnLoadComplete();
+		      },
+		      failure:function(oResponse){
+		        oResponse.argument.fnLoadComplete();
+		      },
+		      argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
+		    };
+		    
+																				           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
+		    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&recent=true&stamp='+ (new Date()).getTime(),callback,null);
+		 		
+	 	},this);
+
+	 	if(XNAT.app.showLeftBarFavorites){
+		 	var fpNode=new YAHOO.widget.TextNode({label:"Favorite",ID:"projectData.f",
+		 	title:"Projects added to your list of favorites."},this.projNode,this.open_array.contains("projectData.f"));
+		 	fpNode.setDynamicLoad(function(node, fnLoadComplete){
+		 		var callback={
+			      success:function(oResponse){
+			        var oResults = eval("(" + oResponse.responseText + ")"); 
+			        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {  
+			           for (var ssC=0; ssC<oResults.ResultSet.Result.length;  ssC++) {   
+			               var cpNode=new YAHOO.widget.TextNode({label:oResults.ResultSet.Result[ssC].secondary_id,
+		                     		ID:"ss."+oResults.ResultSet.Result[ssC].id,
+		                     		href:serverRoot + '/app/template/XDATScreen_report_xnat_projectData.vm/search_element/xnat:projectData/search_field/xnat:projectData.ID/search_value/' + oResults.ResultSet.Result[ssC].id,
+		                     		TITLE:oResults.ResultSet.Result[ssC].name},oResponse.argument.node,false);
+		                   
+		 				   cpNode.isLeaf=true;
+			           }   
+			        } 
+			        oResponse.argument.fnLoadComplete();
+			      },
+			      failure:function(oResponse){
+			        oResponse.argument.fnLoadComplete();
+			      },
+			      argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
+			    };
+			    
+																					           //YAHOO.util.Connect.asyncRequest('GET',this.obj.URL,this.initCallback,null,this);
+			    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects?XNAT_CSRF=' + window.csrfToken + '&format=json&favorite=true&stamp='+ (new Date()).getTime(),callback,null);
+			 		
+		 	},this);
+	 	}
+	 	
+	 	var opNode=new YAHOO.widget.TextNode({label:"My projects",ID:"projectData.my",
+	 	URL:serverRoot +'/REST/projects?format=search_xml&accessible=true',
+	 	title:"Projects you have access to.",
+	 	isLeaf:true},this.projNode,false);
+	 	opNode.isLeaf=true;
+	 	this.tree.searches.push(opNode.data.ID);
+	 	 	
+	 	//VIEW ALL
+	 	var cpNode=new YAHOO.widget.TextNode({label:"Other projects",
+	 	ID:"projectData.a",
+	 	URL:serverRoot +'/REST/projects?format=search_xml&accessible=false',
+	 	title:"Projects you don't have access to, but are available upon request."},this.projNode,false);
+	 	cpNode.isLeaf=true;
+	 	this.tree.searches.push(cpNode.data.ID);
+ 	}
+
+ 	if(XNAT.app.showLeftBarSearch){
+	 	//define stored searches node
+	 	this.ssNode=new YAHOO.widget.TextNode({label:"Stored Searches",ID:"ss"},root,this.open_array.contains("ss"));
+	 	this.ssNode.setDynamicLoad(this.loadStoredSearches,this);
+ 	}
+
+ 	if(XNAT.app.showLeftBarBrowse){
+	 	if(window.available_elements!=undefined){
+		 	//define data node
+	 		function sortByElementName(a,b)
+	 		{
+	 			var aName = a.element_name.toLowerCase();
+	 			var bName = b.element_name.toLowerCase();
+	 			if (aName < bName){
+	 		        return -1;
+	 		     }else if (aName > bName){
+	 		       return  1;
+	 		     }else{
+	 		       return 0;
+	 		     }
+	 		}
+	 		window.available_elements.sort(sortByElementName);
+		 	this.dataNode=new YAHOO.widget.TextNode({label:"Data",ID:"d"},root,this.open_array.contains("d"));
+		 	for(var esC=0;esC<window.available_elements.length;esC++){
+		 		var es=window.available_elements[esC];
+		 		var cpNode=new YAHOO.widget.TextNode({label:es.plural,
+		 		ID:"d."+es.element_name,
+		 		URL:serverRoot +'/REST/search/saved/@' + es.element_name + ''},this.dataNode,false);
+	 			cpNode.isLeaf=true;
+	 			this.tree.searches.push(cpNode.data.ID);
+		 	}
 	 	}
  	}
  	

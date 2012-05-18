@@ -8,15 +8,17 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 		<!-- DEFAULT -->
 <table height="100%" border="0" >
   <tr ID="DefaultTopTR">
-    <td height="60" colspan="2">
+    <td height="60" #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultTop.vm")
       <div id="tp_fm"></div>
     </td>
   </tr>
   <tr>
+	#if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true")))
     <td class="leftBar" align="left" valign="top">
       $navigation.setTemplate("/DefaultLeft.vm")
     </td>
+	#end
     <td width="*" align="left" valign="top">
       $navigation.setTemplate("/Breadcrumb.vm")
       <div id="layout_content2" style="display:none;">Loading...</DIV>
@@ -28,7 +30,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
     </td>
   </tr>
   <tr ID="DefaultBottomTR" height="*">
-    <td height="*" valign="bottom" colspan="2">
+    <td height="*" valign="bottom" #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultBottom.vm")
     </td>
   </tr>

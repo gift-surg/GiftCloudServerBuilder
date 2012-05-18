@@ -70,7 +70,7 @@ public class XDATScreen_report_xnat_projectData extends SecureReport {
            }
 
             setDefaultTabs("xnat_projectData_summary_details", "xnat_projectData_summary_management", "xnat_projectData_summary_manage", "xnat_projectData_summary_pipeline", "xnat_projectData_summary_history");
-            cacheTabs(context, "xnat_projectData");
+            cacheTabs(context, "xnat_projectData/tabs");
         } catch (XFTInitException e) {
             logger.error("",e);
         } catch (ElementNotFoundException e) {

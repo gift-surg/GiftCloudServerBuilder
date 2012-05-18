@@ -1,7 +1,7 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 
 
-          #parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
+#parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
 <script type="text/javascript">
 var elementName="$!item.getXSIType()";
 window.currentID="$!om.getId()";

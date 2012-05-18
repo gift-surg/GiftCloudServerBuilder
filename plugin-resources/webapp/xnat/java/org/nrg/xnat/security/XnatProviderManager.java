@@ -207,6 +207,7 @@ public class XnatProviderManager extends ProviderManager {
 		try {
 			URL url = getClass().getResource(path);
 			properties.load(url.openStream());
+			XFT.PROPS=properties;
 		} catch (IOException e) {
 			logger.error(e);
 		}

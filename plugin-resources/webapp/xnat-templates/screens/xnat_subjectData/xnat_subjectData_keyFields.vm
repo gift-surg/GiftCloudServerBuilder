@@ -1,7 +1,7 @@
 <tr>
 			  #formLabel("Accession #")
-						  <TD>$!subject.getId()</TD>
-							</tr>
+				<TD>$!subject.getId()</TD>
+</tr>
 													<tr>
 			  #formLabel("Date Added")
 									  <TD>$!subject.InsertDate ($!subject.InsertUser.Login)</TD>

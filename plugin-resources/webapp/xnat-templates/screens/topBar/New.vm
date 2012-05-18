@@ -1,0 +1,12 @@
+<!-- Sequence: 5 -->
+<li class="yuimenuitem first-of-type"> 
+        <a class="yuimenuitemlabel" href="#new">New</a>
+        <DIV ID="new" class="yuimenu">
+         <DIV class="bd">
+          <ul class="first-of-type">
+		#addGlobalCustomScreens("topBar/New")  
+           
+          </ul>
+         </DIV>
+        </DIV>
+       </li>

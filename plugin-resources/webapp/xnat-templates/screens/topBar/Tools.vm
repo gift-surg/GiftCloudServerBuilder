@@ -1,0 +1,13 @@
+<!-- Title: Tools -->
+<!-- Sequence: 20 -->
+<!-- allowGuest:true -->
+       <li class="yuimenuitem first-of-type"> 
+        <a class="yuimenuitemlabel" href="#tools">Tools</a>
+        <DIV ID="tools" class="yuimenu">
+         <DIV class="bd">
+          <ul class="first-of-type">
+		#addGlobalCustomScreens("topBar/Tools")  
+          </ul>
+         </DIV>
+        </DIV>
+       </li>

@@ -5,8 +5,10 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
@@ -49,6 +51,7 @@ public class XDATScreen_add_experiment extends SecureScreen {
 
         String part_id = null;
         String project= null;
+        XnatSubjectdata subj=null;
 
         if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data))!=null)
         {
@@ -61,7 +64,7 @@ public class XDATScreen_add_experiment extends SecureScreen {
             }
         }
 
-        if (part_id!=null){
+        if (StringUtils.isEmpty(part_id)){
             if (TurbineUtils.HasPassedParameter("subject_id", data)){
                 part_id= (String)TurbineUtils.GetPassedParameter("subject_id", data);
             }
@@ -72,11 +75,15 @@ public class XDATScreen_add_experiment extends SecureScreen {
 
         if (part_id!=null){
                 context.put("part_id", part_id);
+                subj=XnatSubjectdata.getXnatSubjectdatasById(part_id, TurbineUtils.getUser(data), false);
+                context.put("part_label",subj.getLabel());
         }
 
-        if (TurbineUtils.HasPassedParameter("project", data)){
+        if (TurbineUtils.HasPassedParameter("project", data) && !((String)TurbineUtils.GetPassedParameter("project", data)).equals("null")){
             project= (String)TurbineUtils.GetPassedParameter("project", data);
             context.put("project", project);
+        }else if (subj!=null){
+        	context.put("project",subj.getProject());
         }
 
     }

@@ -23,6 +23,8 @@ IMG{
 	</STYLE>
 <DIV class="yui-skin-sam" style="">
 <div id="tp_fm" style="display:none"></div>
+		#addCustomScreens($om.getXSIType() "report/alerts")
+		#addCustomScreens($om.getXSIType() "report/errors")
  <TABLE width="98%" style="">
   <TR>
 	   <TD valign="top" width="680">
@@ -42,8 +44,9 @@ IMG{
 <script type="text/javascript" src="$content.getURI("scripts/search/dataTableStoredSearch.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
 <!-- BEGIN SET AND PARSE SUMMARY TABS -->
+		#addCustomScreens($om.getXSIType() "report/preContent")
 #set($summary_tabs=$turbineUtils.getTemplateName("_summary_tabs","xnat:projectData",$project.getId()))
-#parse($summary_tabs)
+#parse($turbineUtils.getTemplateName("_summary_tabs","xnat:projectData",$project.getId()))
 <!-- END SET AND PARSE SUMMARY TABS -->
 	   </TD>
 	   <TD valign="top" width="120" align="left">
@@ -52,9 +55,12 @@ IMG{
 	   <TD>
    </TD>
 	  </TR>
+		#addCustomScreens($om.getXSIType() "report/preData")
 	  <TR>
 	   <TD colspan="3">
 #parse($turbineUtils.getTemplateName("_bundle_tabs","xnat:projectData",$project.getId()))
+
+		#addCustomScreens($om.getXSIType() "report/postData")
 #else
 <!--can't read data-->
 #parse($turbineUtils.getTemplateName("_summary_tabs","xnat:projectData",$project.getId()))

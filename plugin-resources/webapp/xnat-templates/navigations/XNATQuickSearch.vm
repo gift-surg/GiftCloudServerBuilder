@@ -30,12 +30,17 @@ function submitQuickSearch(){
     		   document.getElementById('quickSearchForm').submit();
 }
 
-function advancedSearch(){
-		       window.location="$link.setPage("XDATScreen_search_wizard1.vm")";
-}
+#if($turbineUtils.toBoolean($configProps.getProperty("UI.allow_advanced_search","true")))
+    function advancedSearch(){
+    	window.location="$link.setPage("XDATScreen_search_wizard1.vm")";
+    }
+#end
 //-->
 </script>
 <FORM id="quickSearchForm" method="post" action="$link.setAction("QuickSearchAction")">
 <input style="font-family:'arial'; font-style:normal; font-weight:normal; font-size:10px;" maxlength="40" size="20" type="text" name="searchValue" value="$!field">&nbsp;<INPUT type="button" style="line-height:10px;font-size:9px;" VALUE="Search" ONCLICK="submitQuickSearch();"/>
-&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" onclick="advancedSearch();">Advanced</A>
+
+#if($turbineUtils.toBoolean($configProps.getProperty("UI.allow_advanced_search","true")))
+	&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" onclick="advancedSearch();">Advanced</A>
+#end
 				</FORM>

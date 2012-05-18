@@ -8,6 +8,7 @@ import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusListenerI;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
@@ -17,6 +18,7 @@ import org.nrg.xnat.restlet.XNATApplication;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -1591,7 +1593,15 @@ public final class PrearcDatabase {
             }
         }.run();
     }
-
+    
+    public static ArrayList<ArrayList<Object>> buildRows(final XDATUser user, final String requestedProject) throws Exception{
+		final ArrayList<String> projects = PrearcUtils.getProjects(user, requestedProject);
+		
+		final String [] _proj = new String[projects.size()];
+	
+		return PrearcDatabase.buildRows(projects.toArray(_proj));
+    }
+    	
     private static ArrayList<ArrayList<Object>> convertRStoList(ResultSet rs) throws SQLException{
         ArrayList<ArrayList<Object>> ao = new ArrayList<ArrayList<Object>>();
         while(rs.next()) {

@@ -3,13 +3,17 @@ $page.setBgColor($ui.bgcolor)
 <table cellspacing="0" width="100%">
    <tr valign="bottom" height="80">
 	<td>
-		<a href="$link.setPage("Index.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end"><img src="$content.getURI("images/logo.jpg")" border=0></a>
+		<a href="$link.setPage("Index.vm")#if($data.getParameters().getString('par'))/par/$data.getParameters().getString('par')#end">#parse("/screens/Logo.vm")</a>
 	</td>
 	<td align="right">
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")
+     <font color="red">Guest</font>&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Login.vm")">(Login)</A>
+     &nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Register.vm")">(Register)</A>
 	#elseif($data.getSession().getAttribute("user").getUsername())
 	User: $!data.getSession().getAttribute("user").getUsername()
-<A CLASS="text" style="font-weight:550" HREF="$link.setAction("LogoutUser")">(Logout)</A>
+     <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setAction("LogoutUser")">(Logout)</A>
+      <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("XDATScreen_MyXNAT.vm")">(Edit)</A>
+      <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("ReportIssue.vm")">(Report a problem)</A>
 	#end
 	</td>
    </tr>

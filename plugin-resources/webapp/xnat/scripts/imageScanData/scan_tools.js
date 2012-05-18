@@ -866,6 +866,22 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				scan.type_input = document.createElement('select');
 				scan.type_input.options[0]=new Option("(SELECT)","");
 
+				if(scan.extension.Type){
+					var _stM=false;
+					for(var tC=0;tC<this.scanSet.options.types[modality].values.length;tC++){
+						if(this.scanSet.options.types[modality].values[tC].value==scan.extension.Type){
+							_stM=true;
+						}						
+					}
+					
+					if(!_stM){
+						var _tO=new Object();
+						_tO.value=scan.extension.Type;
+						_tO.display=scan.extension.Type;
+						this.scanSet.options.types[modality].values.push(_tO);
+					}					
+				}
+				
 				for(var tC=0;tC<this.scanSet.options.types[modality].values.length;tC++){
 					var type=this.scanSet.options.types[modality].values[tC];
 					scan.type_input.options[scan.type_input.options.length]=new Option(type.value,type.display,(type.value==scan.extension.Type)?true:false,(type.value==scan.extension.Type)?true:false);

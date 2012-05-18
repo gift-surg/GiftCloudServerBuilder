@@ -1,0 +1,13 @@
+<!-- Sequence: 15 -->
+#if($data.getSession().getAttribute("user").checkRole("Administrator"))
+           <li class="yuimenuitem">
+            <a class="yuimenuitemlabel" href="#adminbox">Administer</a>
+            <DIV ID="adminbox" class="yuimenu">
+             <DIV class="bd">
+              <ul class="first-of-type">
+		#addGlobalCustomScreens("topBar/Administer")       
+              </ul>
+             </DIV>
+            </DIV>
+           </li>
+		        #end

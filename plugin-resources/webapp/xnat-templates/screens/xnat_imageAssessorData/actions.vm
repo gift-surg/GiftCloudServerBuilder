@@ -1,17 +1,9 @@
 				#elementActionsBoxNoEnd($element $search_field $search_value $data.getSession().getAttribute("user") $item)
-	      <li class="yuimenuitem">
-													       <A href="" ONCLICK="showFiles();return false;"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("scripts/yui/build/treeview/assets/img/folders/cf.gif")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>Manage Files</A>
-													      </li>
-													      	#if ($item.canDelete($user))
-													      <li class="yuimenuitem lockable">
-													       <A href="" ONCLICK="restDelete();return false;"><div class="ic"><img border="0" src="$content.getURI("images/delete.gif")"/></div><div class="ic_spacer">&nbsp;</div>Delete</A>
-													      </li>
-													      #end
-													     </ul>
+
+		#addCustomScreens("$element" "actionsBox") 
      </DIV>
     </DIV>
  <script type="text/javascript" src="$content.getURI("scripts/BasePopup.js")"></script>
-<script type="text/javascript" src="$content.getURI("scripts/restDeleter.js")"></script>
 <style type="text/css">   
   .icon-of { display:block; height: 19px; padding-left: 20px; background: transparent url($content.getURI("scripts/yui/build/treeview/assets/img/folders/of.gif")) no-repeat;}   
   .icon-f { display:block; font-size:9px; height: 17px; padding-left: 4px;}   
@@ -25,16 +17,6 @@
    _a.push({"label": window.available_elements.getByName("$om.getXSIType()").singular +" $!om.getLabel() ($!om.getId())","ru":"/REST/projects/$project/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()","redirect":serverRoot+"/REST/projects/$project/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()",canRead:true,checked:true,xsiType:window.available_elements.getByName("$om.getXSIType()").singular,date:"$!om.getDate()",primary_label:"$!om.getIdentifier($project)"});
    													_a.push({"label": window.available_elements.getByName("$om.getImageSessionData().getXSIType()").singular +" $!om.getImageSessionData().getIdentifier($project) ($!om.getImageSessionData().getId())","ru":"/REST/projects/$project/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()","redirect":serverRoot+"/REST/projects/$project/subjects/$om.getImageSessionData().getSubjectId()",canRead:true,checked:true,xsiType:window.available_elements.getByName("$om.getImageSessionData().getXSIType()").singular,date:"$!om.getImageSessionData().getDate()",primary_label:"$!om.getImageSessionData().getIdentifier($project)",allowDelete:false});
 													   													_a.push({"label": "Subject $!om.getImageSessionData().getSubjectData.getIdentifier($project) ($!om.getImageSessionData().getSubjectData().getId())","ru":"/REST/projects/$project/subjects/$om.getImageSessionData().getSubjectData().getId()","redirect":serverRoot+"/REST/projects/$project",canRead:true,checked:true,xsiType:"Subject",date:"",primary_label:"$!om.getImageSessionData().getSubjectData().getIdentifier($project)",allowDelete:false});
-													
-				function restDelete(){
-				var expt=null;
-				  #if($project)
-				  
-				  #else
-				    #set($project=$om.getProject())
-				  #end
-													   window.deleter=new RestDeleter(_a,{defaultHeight:450,defaultWidth:600});
-   window.deleter.init();
-				}
+
 				</script>
 				

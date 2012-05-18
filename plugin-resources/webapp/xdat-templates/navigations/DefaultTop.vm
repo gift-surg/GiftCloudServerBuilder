@@ -10,7 +10,7 @@
 #end
 <table cellspacing="0" border="0">
    <tr valign="bottom">
-	<td align="left" width="200"><a href="$link.setPage("Index.vm")" onmouseover="return true;"><img src="$content.getURI("images/logo.jpg")" border=0></a></td>
+	<td align="left" class="logo_img"><a href="$link.setPage("Index.vm")" onmouseover="return true;">#parse("/screens/Logo.vm")</a></td>
 <td>
 <ul class="topMenu" style="white-space: nowrap;">
 <li style="cursor:pointer;" class="topMenu" ONCLICK="location.href='$link.setPage("Index.vm")';" ONMOUSEOVER="this.style.backgroundColor='FFFFFF';" ONMOUSEOUT="this.style.backgroundColor=this.parentNode.style.backgroundColor;">Home</li>

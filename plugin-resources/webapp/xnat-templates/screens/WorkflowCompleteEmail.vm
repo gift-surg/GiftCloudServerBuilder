@@ -1,4 +1,4 @@
-<div id="logo" align="center"><img src="$server/images/logo.jpg"/></div>
+<div id="logo" align="center">#parse("/screens/Logo_Email.vm")</div>
 <hr>
 <div id="content">
 Dear $!user.getFirstname() $!user.getLastname()<br><br>

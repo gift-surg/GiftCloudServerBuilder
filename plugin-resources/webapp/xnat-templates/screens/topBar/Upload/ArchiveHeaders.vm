@@ -1,0 +1,28 @@
+<!-- Sequence: 10 -->
+           <li class="yuimenuitem">
+           <a class="yuimenuitemlabel" href="#information"> 
+	                    Archive Headers 
+	                </a> 
+	 
+	                <!-- A submenu --> 
+	 
+                <div id="information" class="yuimenu"> 
+	                    <div class="bd">                                         
+	                        <ul>
+                               <li class="yuimenuitem">
+                                <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","1")">One Day</a>
+                               </li>
+                               <li class="yuimenuitem">
+                                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","7")">One Week</a>
+                               </li>
+                               <li class="yuimenuitem">
+                                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","30")">One Month</a>
+                               </li>
+                               <li class="yuimenuitem">
+                                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_ArchiveHeaders.vm").addPathInfo("numdays","365")">All</a>
+                               </li>       
+
+	                        </ul>                     
+	                    </div> 
+	                </div>  
+           </li>

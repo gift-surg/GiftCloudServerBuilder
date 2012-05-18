@@ -8,92 +8,13 @@
            </li>
       </ul>
       <ul>
-#if($data.getSession().getAttribute("user").canEdit($project))
-				           <li class="yuimenuitem"> 
-            <a class="yuimenuitemlabel" href="#insertbox">Add</a>
-            <DIV ID="insertbox" class="yuimenu">
-             <DIV class="bd">
-              <ul class="first-of-type">
-              <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_edit_xnat_subjectData.vm").addPathInfo('project',$project.getId())">Subject</A>
-              </li>
-              #foreach($dataType in $exptCounts.keySet())
-               #set($ed=$!data.getSession().getAttribute("user").getBrowseableElementDisplay($dataType))	
-          	     <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_edit_${ed.getSQLName()}.vm").addPathInfo('project',$project.getId())">$ed.getSchemaElement().getSingularDescription()</A>
-               </li>
-              #end
-              #set($key="xnat:mrSessionData")
-              #if(!$exptCounts.containsKey($key))
-               #set($ed=$!data.getSession().getAttribute("user").getBrowseableElementDisplay($key))	
-          	     #if($ed)
-          	     <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_edit_${ed.getSQLName()}.vm").addPathInfo('project',$project.getId())">$ed.getSchemaElement().getSingularDescription()</A>
-               </li>
-               #end
-              #end
-              <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_add_experiment.vm").addPathInfo('project',$project.getId())">More</A>
-               </li>
-              </ul>
-             </DIV>
-            </DIV>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','LaunchUploadApplet').addPathInfo('project',$project.getId())">Upload Images</A>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','prearchives').addPathInfo('project',$project.getId())">View Prearchive</A>
-           </li>
-		   <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","scanTypeCleanup").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$!{project.getId()}").addPathInfo("popup","$!popup")">Scan Type Cleanup</A> 
-           </li>
-      </ul>
-      <ul>
-#end
-	           <li class="yuimenuitem">
-            <a id="favorite_a" class="yuimenuitemlabel" href="" onclick="toggleFavorites();return false;">
-            #if($data.getSession().getAttribute("user").isFavorite("Project","$project.getId()"))Remove from Favorites#else Add to Favorites#end</A>
-           </li>
-	           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","xml_file").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$!{project.getId()}").addPathInfo("popup","$!popup")">Download XML</A>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("ProjectDownloadAction").addPathInfo('project',$project.getId())">Download Images</A>
-           </li>
+		
+	#addCustomScreens("xnat:projectData" "actionsBox")
+	
       </ul>
      </DIV>
     </DIV>
-<SCRIPT language="javascript">
-function toggleFavorites(){
-  window.currentStatus="$data.getSession().getAttribute("user").isFavorite("Project","$project.getId()")";
-  if(window.currentStatus=="true"){
-    var initCallback={
-						      success:function(o){
-						    	    document.getElementById("favorite_a").innerHTML="Add To Favorites";
-						    	    window.currentStatus="false";
-      },
-			      failure:function(o){
-			      
-				      },
-			      scope:this
-		    }
-    YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
-  }else{
-    var initCallback={
-						      success:function(o){
-						    	    document.getElementById("favorite_a").innerHTML="Remove From Favorites";
-						    	    window.currentStatus="true";
-      },
-			      failure:function(o){
-			      
-				      },
-			      scope:this
-		    }
-    YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
-  }
-}
-
+<SCRIPT>
 YAHOO.util.Event.onContentReady("actionsMenu", function () {
     var actionsMenu = new YAHOO.widget.Menu("actionsMenu", { autosubmenudisplay: true,scrollincrement:5,position:"static",maxheight:150});
     // Render the MenuBar instance

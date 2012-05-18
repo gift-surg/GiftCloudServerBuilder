@@ -1,4 +1,4 @@
-<div id="logo" align="center"><img src="$server/images/logo.jpg"/></div>
+<div id="logo" align="center">#parse("/screens/Logo_Email.vm")</div>
 <hr>
 <div id="content">The upload process you initiated at $date has completed.<br>
 <br>Please <a href="$server/app/action/XDATActionRouter/xdataction/data_management">return to the site</a> and continue inserting your project.

@@ -5,8 +5,11 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.search.DisplaySearch;
@@ -15,6 +18,7 @@ import org.nrg.xdat.turbine.modules.actions.ListingAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
 public class DownloadSessionsAction extends ListingAction {
+	static Logger logger = Logger.getLogger(DownloadSessionsAction.class);
 
     @Override
     public String getDestinationScreenName(RunData data) {
@@ -35,12 +39,20 @@ public class DownloadSessionsAction extends ListingAction {
             throw new Exception("Invalid User.");
         }
         
-        String sessionIDHeader ="session_id";
+        //exceptable display field ids for the session ID
+        List<String> sessionIDHeaders =Arrays.asList("session_id","expt_id","id");
         
-        if (search.getRootElement().getFullXMLName().equals("xnat:mrSessionData")){
-            
-        }else{
-            
+        String sessionIDHeader=null;
+        for(String key:sessionIDHeaders){
+        	if(table.getColumnIndex(key)!=null){
+        		sessionIDHeader=key;
+        		break;
+        	}
+        }
+        
+        if(sessionIDHeader==null){
+        	logger.error("Missing expected display field for " + search.getRootElement().getFullXMLName() +" download feature (SESSION_ID, EXPT_ID, or ID)");
+        	throw new Exception("Missing expected ID display field.");
         }
         
         table.resetRowCursor();

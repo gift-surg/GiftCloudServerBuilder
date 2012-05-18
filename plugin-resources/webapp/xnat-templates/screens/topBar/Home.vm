@@ -1,0 +1,3 @@
+<!-- Sequence: 1 -->
+<!-- allowGuest:true -->
+<li class="yuimenubaritem first-of-type"><A class="yuimenubaritemlabel" href="$link.setPage("Index.vm")">Home</A></li>

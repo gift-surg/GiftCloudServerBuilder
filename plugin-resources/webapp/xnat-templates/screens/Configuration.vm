@@ -35,6 +35,7 @@ IMG{
             </style>
             <div id="configuration_tabs_module" style="display:none">
                 <div id="configurationTabs" class="yui-navset">
+					
                     <ul class="yui-nav">
                         <li class="selected"><a href="#siteInfo"><em>Site Information<span class="spacer"></span></em></a></li>
                         <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>

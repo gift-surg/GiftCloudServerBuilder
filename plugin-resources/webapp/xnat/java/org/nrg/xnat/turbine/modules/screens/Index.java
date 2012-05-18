@@ -12,6 +12,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
@@ -52,5 +53,12 @@ public class Index extends SecureScreen {
 		
 		Long isd_count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(*) FROM xnat_imageSessionData", "count", TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getUsername());
 		context.put("isd_count", isd_count);
+		
+		//count prearc entries
+		try {
+			context.put("prearc_count",PrearcDatabase.buildRows(user, null).size());
+		} catch (Throwable e) {
+			logger.error("",e);
+		}
     }
 }

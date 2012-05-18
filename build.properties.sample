@@ -92,3 +92,8 @@ xdat.security.ldap.userdn=CN=LDAP,OU=Service Accounts,OU=Users,DC=service,DC=dom
 xdat.security.ldap.password=PASSWORD
 xdat.security.ldap.search.base=OU=Staff,OU=Users
 xdat.security.ldap.search.filter=(sAMAccountName={0})
+
+#  'xdat.enable_csrf_token' must be set to 'true' or 'false'.  It governs whether or not POST, PUT, & DELETEs
+#  are protected by a csrf token.  If true, a CSRF token will be required.  If false,
+#  the test for a valid token are skipped.
+xdat.enable_csrf_token=true

@@ -1,7 +1,11 @@
 # WINDOWS USERS: The '\' character is not supported by Maven.  Do not use the '\' character in your file paths.
 # Replace any '\' characters with the '/'.  The '/' works as a file path separator on UNIX and WINDOWS.
 
-maven.appserver.home = /usr/share/tomcat6
+# NOTE: All file paths should be absolute, not relative to the xnat_builder folder. This means that, if your
+# pipeline or modules folder is in the same relative folder as your xnat_builder folder, you should still use 
+# the full path to those folders instead of ../pipeline or ../modules.
+
+maven.appserver.home = TOMCAT_HOME
 
 xdat.project.name=xnat
 xdat.project.template=xnat
@@ -11,57 +15,59 @@ xdat.project.db.connection.string=jdbc:postgresql://localhost/xnat
 xdat.project.db.user=USERNAME
 xdat.project.db.password=PASSWORD
 
-#IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
-#Location where image data will be stored.
-# eg. /tmp/ARCHIVE
+# IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
+# Location where image data will be stored, e.g. /tmp/archive.
+# As with all folder locations, these paths should be absolute, not relative to your xnat_builder location.
 xdat.archive.location=/Library/XNAT/archive
 
-#Location where image data may be stored temporarily before it is stored into the archive.
-# eg. /tmp/PREARCHIVE
+# Location where image data is stored temporarily before it is moved into the archive, e.g. /tmp/prearchive.
 xdat.prearchive.location=/Library/XNAT/prearchive
 
-#Location where cached image data should be stored
-# eg. /tmp/CACHE
+# Location where cached image data is stored, e.g. /tmp/cache.
 xdat.cache.location=/Library/XNAT/cache
 
-#Location for ftp data
+# Location for ftp data
 xdat.ftp.location=/Library/XNAT/ftp
 
-#Location for build data.
+# Location for build data.
 xdat.build.location=/Library/XNAT/build
 
-#Location of pipeline.
-#If you have pipeline installed outside of xnat, un-comment this property to set it automatically.
-#xdat.pipeline.location=/Library/XNAT/pipeline
+# Location of your pipeline installation.
+# If you have pipeline installed outside of your xnat_builder folder, un-comment this property to set it
+# the appropriate location. As with all folder locations, these paths should be absolute, not relative to
+# your xnat_builder location.
+# xdat.pipeline.location=/Library/XNAT/pipeline
 
-# Mail server, port, and protocol. Standard SMTP port is 25 or 587, Google SMTPS port is 465
+# Mail server, port, and protocol. Standard SMTP port is 25 or 587, Google SMTPS port is 465. See the
+# sample configuration files in plugin-resources/conf for examples in how to set up SMTPS servers, as well
+# as encrypted mail service credentials.
 xdat.mail.server=mail.server
 xdat.mail.port=25
 xdat.mail.protocol=smtp
 
-# Mail server credentials, values are only required for servers with authentication turned on.
+# Mail server credentials. These values are only required for mail servers with authentication turned on.
 xdat.mail.username=
 xdat.mail.password=
 
-#email address of administrator.
+# The email address for the XNAT system administrator.
 xdat.mail.admin=administrator@xnat.org
 
 # Prefix to the subject line for system emails.
 xdat.mail.prefix=XNAT
 
-# e.g. http://localhost:8080/xnat
+# The URL for your XNAT server installation, e.g. http://localhost:8080/xnat
 xdat.url=URL
 
-#  'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be
-#  prompted to login when visiting the site.  If true, users will be required to login.  If false,
-#  users will be automatically logged in using an XNAT guest account.
+# 'xdat.require_login' must be set to 'true' or 'false'.  It governs whether or not users will be
+# prompted to login when visiting the site.  If true, users will be required to login.  If false,
+# users will be automatically logged in using an XNAT guest account.
 xdat.require_login=true
 
-#  'xdat.enable_new_registrations' must be set to 'true' or 'false'.  Users are provided with a
-#  link on the Login.vm page to register for a new account.  If this variable is true, that newly
-#  registered account will be automatically enabled and the user will be allowed to immediately login.
-#  If this is false, then an email will be sent to the admin (xdat.admin_email) requesting that the
-#  account be enabled, and the user will be unable to login until the account is enabled.
+# 'xdat.enable_new_registrations' must be set to 'true' or 'false'.  Users are provided with a
+# link on the Login.vm page to register for a new account.  If this variable is true, that newly
+# registered account will be automatically enabled and the user will be allowed to immediately login.
+# If this is false, then an email will be sent to the admin (xdat.admin_email) requesting that the
+# account be enabled, and the user will be unable to login until the account is enabled.
 xdat.enable_new_registrations=false
 
 # The modules location setting indicates where custom modules are located. The setup/update scripts

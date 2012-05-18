@@ -110,6 +110,18 @@ $!template.setLayoutTemplate("NoMenu.vm")
    
    
  <TR>
+   <TH align="left">Enable CSRF Token? (MOVE ME! EditArcSpecs.vm)</TH>
+   <TD>
+			   #xdatBooleanRadio("arc:ArchiveSpecification/enable_csrf_token" $arc.getItem() true $vr)
+			   </TD>
+  </TR>
+  <TR>
+   <TD colspan="2">If true, FINISH ME!!!
+   </TD>
+ </TR>
+   
+   
+ <TR>
    <TH align="left">Require Login?</TH>
    <TD>
 			   #xdatBooleanRadio("arc:ArchiveSpecification/require_login" $arc.getItem() true $vr)

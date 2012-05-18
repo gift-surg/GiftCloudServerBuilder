@@ -43,7 +43,7 @@ function fullConfigHandler() {
             scope : this
         };
 
-        var arcSpecControls = [ 'siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost', 'archivePath', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath', 'requireLogin', 'enableNewRegistrations', 'dcmAe', 'dcmAppletLink', 'dcmPort', 'enableCsrfToken' ];
+        var arcSpecControls = [ 'siteId', 'siteUrl', 'siteAdminEmail', 'dcmAppletLink', 'enableCsrfToken', 'archivePath', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath', 'requireLogin', 'enableNewRegistrations' ];
         var data = '';
         for (var index = 0; index < arcSpecControls.length; index++) {
             var control = document.getElementById(arcSpecControls[index]);
@@ -69,7 +69,6 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('siteInfo_save_button').onclick = fullConfigHandler;
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
-        document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
         showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
 }

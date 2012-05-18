@@ -37,16 +37,6 @@
                         <td colspan="2" style="line-height:4px">&nbsp;</td>
                     </tr>
                     <tr>
-                        <th align="left"><label for="smtpHost">SMTP Host (Server)</label></th>
-                        <td><input size="30" type="text" id="smtpHost" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">The address of the SMTP server to be used to send email from the system.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
                         <th align="left">Applet Link</th>
                         <td><input type="checkbox" id="dcmAppletLink" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
                     </tr>
@@ -93,5 +83,5 @@ function addSiteInfoMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'smtpHost', 'dcmAppletLink', 'enableCsrfToken'];
+var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'dcmAppletLink', 'enableCsrfToken'];
 </script>

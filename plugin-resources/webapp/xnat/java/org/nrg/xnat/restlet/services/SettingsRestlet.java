@@ -242,6 +242,11 @@ public class SettingsRestlet extends SecureResource {
                 _arcSpec.setEnableCsrfToken(enableCsrfToken);
                 XFT.SetEnableCsrfToken(enableCsrfToken);
                 dirtied = true;
+            } else if (property.equals("enableCsrfToken")) {
+                final String enableCsrfToken = _data.get("enableCsrfToken");
+                _arcSpec.setEnableCsrfToken(enableCsrfToken);
+                XFT.SetEnableCsrfToken(enableCsrfToken);
+                dirtied = true;
             }
         }
         if (dirtied) {

@@ -17,8 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.codec.Base64;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.NullRememberMeServices;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -26,7 +24,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 	private AuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
-    private RememberMeServices rememberMeServices = new NullRememberMeServices();
     private boolean ignoreFailure = false;
     private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
     
@@ -104,9 +101,6 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
                     }
 
                     SecurityContextHolder.getContext().setAuthentication(null);
-
-                    rememberMeServices.loginFail(request, response);
-
                     onUnsuccessfulAuthentication(request, response, failed);
 
                     if (ignoreFailure) {
@@ -126,9 +120,6 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
                 }
 
                 SecurityContextHolder.getContext().setAuthentication(authResult);
-
-                rememberMeServices.loginSuccess(request, response, authResult);
-
                 onSuccessfulAuthentication(request, response, authResult);
             }
         }

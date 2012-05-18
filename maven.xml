@@ -1577,6 +1577,7 @@
                             <ant:arg value="${pipeline.dir}\setup.bat"/>
                             <ant:arg value="${xdat.mail.admin}"/>
                             <ant:arg value="${xdat.mail.server}"/>
+                            <ant:arg value="${xdat.url}"/>
                         </ant:exec>
                     </j:if>
                     <j:if test="${!context.getVariable('os.name').startsWith('Windows')}">
@@ -1589,6 +1590,7 @@
                         <ant:exec executable="${pipeline.dir}/setup.sh" failonerror="true">
                             <ant:arg value="${xdat.mail.admin}"/>
                             <ant:arg value="${xdat.mail.server}"/>
+                            <ant:arg value="${xdat.url}"/>
                         </ant:exec>
                     </j:if>
                 </j:if>

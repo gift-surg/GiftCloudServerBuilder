@@ -67,7 +67,7 @@ public class XnatProviderManager extends ProviderManager {
 	private static String PASSWORD_COMPLEXITY="";
 	private static String PASSWORD_COMPLEXITY_MESSAGE="";
 	
-	private static Integer PASSWORD_EXPIRATION=-1;
+	private static String PASSWORD_EXPIRATION="-1";
 	
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -123,7 +123,7 @@ public class XnatProviderManager extends ProviderManager {
         }
         
         if(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY)!=null){
-        	PASSWORD_EXPIRATION=Integer.valueOf(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY));
+        	PASSWORD_EXPIRATION=properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY);
         }
     
      // Create providers
@@ -300,7 +300,7 @@ public class XnatProviderManager extends ProviderManager {
         public void publishAuthenticationSuccess(Authentication authentication) {}
     }
 
-    public int getExpirationInterval(){
+    public String getExpirationInterval(){
     	return PASSWORD_EXPIRATION;
     }
     

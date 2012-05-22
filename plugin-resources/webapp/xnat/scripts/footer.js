@@ -125,43 +125,53 @@ YAHOO.util.Event.onDOMReady( function()
 {
 	var myforms = document.getElementsByTagName("form");
 	for (var i=0; i<myforms.length; i++) {
-		//function to hide forms while they are being submitted, unless they have a noHide class
-		if(!YAHOO.util.Dom.hasClass(myforms[i],'noHide')){
-			YAHOO.util.Event.on(myforms[i],"submit",function(env,var2){
+        var myForm = myforms[i];
+        if(!myForm.ID) {
+            myForm.ID = "form" + forms++;
+        }
+
+        //function to hide forms while they are being submitted, unless they have a noHide class
+		if(!YAHOO.util.Dom.hasClass(myForm,'noHide')){
+			YAHOO.util.Event.on(myForm,"submit",function(env,var2){
     			concealContent("Submitting... Please wait.");
     		});
 		}
 		
 		//function to add validation to any form elements with specific classes (required, etc)
-		YAHOO.util.Event.on(myforms[i],"submit",function(env,var2){
-			var validators=XNAT.forms[this.ID];
-			XNAT.forms[this.ID]._ok=true;
-			for(var iVc=0;iVc<validators.length;iVc++){
-				if(!validators[iVc].validate()){
-					XNAT.forms[this.ID]._ok=false;
-					this.focus=validators[iVc].box;
-				}
-			}
-			
-			if(!XNAT.forms[this.ID]._ok){
-				YAHOO.util.Event.stopEvent(env);
-				showContent();
-				this.focus.focus();
-			}
-		});
-		
-		//take the statically defined onsubmit action and add it as a yui event instead
-		var subFunction = myforms[i].onsubmit;
-		myforms[i].onsubmit = null;
-		YAHOO.util.Event.on(myforms[i],"submit",function(env,var2){
-			if(!subFunction()){
+        YAHOO.util.Event.on(myForm, "submit", function (env, var2) {
+            var validators = XNAT.forms[this.ID];
+            XNAT.forms[this.ID]._ok = true;
+            for (var iVc = 0; iVc < validators.length; iVc++) {
+                if (!validators[iVc].validate()) {
+                    XNAT.forms[this.ID]._ok = false;
+                    this.focus = validators[iVc].box;
+                }
+            }
+
+            if (!XNAT.forms[this.ID]._ok) {
+                YAHOO.util.Event.stopEvent(env);
+                showContent();
+                this.focus.focus();
+            }
+        });
+
+        //take the statically defined onsubmit action and add it as a yui event instead
+		var subFunction = myForm.onsubmit;
+		myForm.onsubmit = null;
+		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
+            var result = subFunction();
+            if (result == undefined) {
+                result = true;
+            }
+            if(!result){
 				YAHOO.util.Event.stopEvent(env);
 				showContent();
 			}
 		});
 		
 		//function to replace empty strings with NULL in form elements with a nullable class
-		YAHOO.util.Event.on(myforms[i],"submit",function(env,var2){
+		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
+            if (this.ID) {
 			if(XNAT.forms[this.ID]._ok){
 				for(var iFc=0;iFc<this.length;iFc++){
 					if(YAHOO.util.Dom.hasClass(this[iFc],'nullable')){
@@ -171,6 +181,7 @@ YAHOO.util.Event.onDOMReady( function()
 					}
 				}
 			}
+            }
 		});
 	}
 });

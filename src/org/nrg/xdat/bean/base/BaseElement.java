@@ -230,6 +230,7 @@ public abstract class BaseElement{
     }
     public void setDataField(String xmlPath,String s) throws UnknownFieldException
     {
+    	if(!"schemaLocation".equals(xmlPath))
         throw new UnknownFieldException(xmlPath);
     }
     public void setReferenceField(String xmlPath,BaseElement s) throws UnknownFieldException

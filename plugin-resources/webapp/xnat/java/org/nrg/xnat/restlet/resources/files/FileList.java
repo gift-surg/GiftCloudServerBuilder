@@ -253,7 +253,7 @@ public class FileList extends XNATCatalogTemplate {
 	public void handleDelete(){
 		if(resource!=null && this.parent!=null && this.security!=null){
 			try {
-				if(user.canEdit(this.security)){
+				if(user.canDelete(this.security)){
 					
 					if(proj==null){
 						if(parent.getItem().instanceOf("xnat:experimentData")){

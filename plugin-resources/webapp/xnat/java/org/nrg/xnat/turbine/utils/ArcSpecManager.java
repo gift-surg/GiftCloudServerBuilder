@@ -278,7 +278,7 @@ public class ArcSpecManager {
         if (XFT.getBuildPath()!=null && !XFT.getBuildPath().equals("")) {
             arcSpec.setProperty("globalPaths/buildPath", XFT.getBuildPath());
         }
-        arcSpec.setRequireLogin(XFT.GetEnableCsrfToken());
+        arcSpec.setEnableCsrfToken(XFT.GetEnableCsrfToken());
         return arcSpec;
     }
 

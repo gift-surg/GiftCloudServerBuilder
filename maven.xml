@@ -659,6 +659,7 @@
         <ant:replace file="${xdat.instance.NEW}" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%USER%" value="${xdat.project.db.user}"/>
         <ant:replace file="${xdat.instance.NEW}" token="%PASSWORD%" value="${xdat.project.db.password}"/>
+        <ant:replace file="${xdat.instance.NEW}" token="%ENABLE_CSRF_TOKEN%" value="${xdat.enable_csrf_token}"/>
         <j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
             <ant:echo>FIXING &amp; SSL</ant:echo>
             <ant:replace file="${xdat.instance.NEW}" token="&amp;ssl=true" value="&amp;amp;ssl=true"/>
@@ -692,6 +693,7 @@
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%DB_URL%" value="${xdat.project.db.connection.string}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%USER%" value="${xdat.project.db.user}"/>
         <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%PASSWORD%" value="${xdat.project.db.password}"/>
+        <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="%ENABLE_CSRF_TOKEN%" value="${xdat.enable_csrf_token}"/>
         <j:if test="${context.getVariable('xdat.project.db.connection.string').endsWith('&amp;ssl=true')}">
             <ant:echo>FIXING &amp; SSL</ant:echo>
             <ant:replace file="${xdat.project.xdat.NEW}/src/InstanceSettings.xml" token="&amp;ssl=true" value="&amp;amp;ssl=true"/>

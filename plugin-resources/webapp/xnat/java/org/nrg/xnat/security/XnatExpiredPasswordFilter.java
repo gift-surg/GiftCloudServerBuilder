@@ -66,23 +66,29 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     username = alias.getXdatUserId();
                 }
                 boolean isExpired=true;
-                try{
-                    List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval()+" seconds')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
-                        public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            return rs.getBoolean(1);
-                        }
-                    });
-                    isExpired = expired.get(0);
-                }
-                catch(Exception e){
-                    logger.error(e);
-                }
-                request.getSession().setAttribute("expired", isExpired);
-                if(username!=null && isExpired && !username.equals("guest")){
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Your password has expired. Please try again after changing your password.");
+                String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
+                if(interval.equals("-1")){
+                	chain.doFilter(request, response);
                 }
                 else{
-                    chain.doFilter(request, response);
+	                try{
+	                    List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
+	                        public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+	                            return rs.getBoolean(1);
+	                        }
+	                    });
+	                    isExpired = expired.get(0);
+	                }
+	                catch(Exception e){
+	                    logger.error(e);
+	                }
+	                request.getSession().setAttribute("expired", isExpired);
+	                if(username!=null && isExpired && !username.equals("guest")){
+	                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Your password has expired. Please try again after changing your password.");
+	                }
+	                else{
+	                    chain.doFilter(request, response);
+	                }
                 }
             }
             else{
@@ -106,23 +112,29 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                 String username = user.getUsername();
 
                 boolean isExpired=true;
-                try{
-                    List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval()+" seconds')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
-                        public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            return rs.getBoolean(1);
-                        }
-                    });
-                    isExpired = expired.get(0);
-                }
-                catch(Exception e){
-                    logger.error(e);
-                }
-                request.getSession().setAttribute("expired", isExpired);
-                if(username!=null && isExpired && !username.equals("guest")){
-                    response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+                String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
+                if(interval.equals("-1")){
+                	chain.doFilter(request, response);
                 }
                 else{
-                    chain.doFilter(request, response);
+	                try{
+	                    List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
+	                        public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+	                            return rs.getBoolean(1);
+	                        }
+	                    });
+	                    isExpired = expired.get(0);
+	                }
+	                catch(Exception e){
+	                    logger.error(e);
+	                }
+	                request.getSession().setAttribute("expired", isExpired);
+	                if(username!=null && isExpired && !username.equals("guest")){
+	                    response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+	                }
+	                else{
+	                    chain.doFilter(request, response);
+	                }
                 }
             }
         }

@@ -68,7 +68,7 @@
 </table>
 
 <input type="button" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
+<input type="button" value="Reset" name="eventSubmit_doReset" id="fileSystem_reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
 
 <script language="javascript">
 function configurationFileSystemTabChange(obj) {

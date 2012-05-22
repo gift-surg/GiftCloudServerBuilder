@@ -93,13 +93,35 @@ function SettingsTabManager(settingsTabDivId, settings) {
 	this.settings_tab_table_div.id = "settings_tab_table";
 	this.settings_tab_mgmt_div.appendChild(this.settings_tab_table_div);
 	this.settings_svc_url = serverRoot + '/data/services/settings/';
-	this.resetButton = document.getElementById("reset_button");
-	if (this.resetButton) {
-		this.resetButton.disabled = true;
-	}
+
+	
 
     this.dirtyFlag = false;
 
+    this.enableResetButtons = function() {
+    	if(document.getElementById("siteInfo_reset_button")){
+    		document.getElementById("siteInfo_reset_button").disabled = false;
+    	}
+    	if(document.getElementById("fileSystem_reset_button")){
+    		document.getElementById("fileSystem_reset_button").disabled = false;
+    	}
+    	if(document.getElementById("registration_reset_button")){
+    		document.getElementById("registration_reset_button").disabled = false;
+    	}
+    };
+    this.disableResetButtons = function() {
+    	if(document.getElementById("siteInfo_reset_button")){
+    		document.getElementById("siteInfo_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("fileSystem_reset_button")){
+    		document.getElementById("fileSystem_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("registration_reset_button")){
+    		document.getElementById("registration_reset_button").disabled = true;
+    	}
+    };
+    
+    this.disableResetButtons();
 	this.init = function() {
 		this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
 		this.initLoader.render();
@@ -163,9 +185,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 	this.resetForm = function() {
 		this.setFormDisabled(false);
         this.dirtyFlag = false;
-		if (this.resetButton) {
-			this.resetButton.disabled = true;
-		}
+		this.disableResetButtons();
         for (var index = 0; index < this.controls.length; index++) {
             var control = this.controls[index];
 			if (control.type == 'text') {
@@ -179,9 +199,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 
 	this.dirtyForm = function() {
         this.dirtyFlag = true;
-		if (this.resetButton) {
-			this.resetButton.disabled = false;
-		}
+		this.enableResetButtons();
 	};
 
 	this.saveTabSettings = function() {

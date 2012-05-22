@@ -198,7 +198,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 		if(resources.size()>0 && this.parent!=null && this.security!=null){
 			for(XnatAbstractresource resource:resources){
 				try {
-					if(user.canEdit(this.security)){
+					if(user.canDelete(this.security)){
 						String securityId=null;
 						if(proj==null){
 							if(parent.getItem().instanceOf("xnat:experimentData")){

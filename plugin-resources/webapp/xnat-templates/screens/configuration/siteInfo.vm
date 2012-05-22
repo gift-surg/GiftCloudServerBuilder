@@ -61,7 +61,7 @@
 </table>
 
 <input type="button" value="Save" name="eventSubmit_doPerform" id="siteInfo_save_button" onclick="window.siteInfoManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="reset_button" onclick="window.siteInfoManager.resetForm();" disabled/>
+<input type="button" value="Reset" name="eventSubmit_doReset" id="siteInfo_reset_button" onclick="window.siteInfoManager.resetForm();" disabled/>
 
 <script language="javascript">
 function configurationSiteInfoTabChange(obj) {

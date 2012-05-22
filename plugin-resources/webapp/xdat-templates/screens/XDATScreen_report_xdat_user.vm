@@ -59,9 +59,8 @@ $page.setVlinkColor($ui.vlink)
 				#if ($actions.size() > 0)
 					<TABLE>
 					
-						#set($bgcolor="#DCDCDC")
 					<TR><TD align="center">
-					<table bgcolor="$bgcolor" STYLE="border-width:1px;border-color:black;border-style:solid;">
+					<table class="dark" STYLE="border-width:1px;border-color:black;border-style:solid;">
 						<tr>
 							<th STYLE="border-bottom-width:1px;border-bottom-color:black;border-bottom-style:solid;">Actions</th>
 						</tr>

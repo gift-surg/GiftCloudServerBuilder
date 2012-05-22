@@ -8,14 +8,7 @@
 				</TR>
 			</TABLE>
 			<BR><BR>
-					<STYLE>
-					TH.underscore{
-					border-bottom-width:2px;
-					border-bottom-color:rgb(255,153,51);
-					border-bottom-style:solid;
-					}
-					</STYLE>
-					
+				
 							 #set($hasOtherProjects=false)
 							 #if($pScope)
 					<div id="proj_expts" style="display:none">

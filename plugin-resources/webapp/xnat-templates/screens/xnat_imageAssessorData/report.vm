@@ -12,13 +12,6 @@ document.title = "EXPT: $!item.getProperty('label')";
 			<div id="quarantine_div" class="error" style="background-color:#FFCC33;">This experiment is in quarantine.&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="toggleQuarantine();">Activate</a></div><br>
 			#end
 			#parse($turbineUtils.getTemplateName("_title",$om.getXSIType(),$project))
-					<STYLE>
-					TH.underscore{
-					border-bottom-width:2px;
-					border-bottom-color:rgb(255,153,51);
-					border-bottom-style:solid;
-					}
-					</STYLE>
 					#if($project)
 					
 					#else

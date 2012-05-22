@@ -150,14 +150,6 @@ if (valign=="center") {floatY=Math.round((document.body.offsetHeight-20)/2)-Math
 }
 //-->
 </script>
-
-<STYLE TYPE="text/css">
-  TH {
-	border-bottom-width:2px; 
-	border-bottom-color:rgb(255,153,51); 
-	border-bottom-style:solid; 
-	}
-</STYLE>
 #if($pageCSS)
 <link rel=stylesheet type="text/css" href="$content.getURI("$pageCSS")">
 #end

@@ -2,7 +2,6 @@
 li.change_header{
     border-width:1px;
     border-style:solid;
-	background-color:#FFFFCC;
 }
 ul.history, li.LIhistory,ul.historyWrapper,li.historyWrapper,li.historyHeader{
 	list-style: none;

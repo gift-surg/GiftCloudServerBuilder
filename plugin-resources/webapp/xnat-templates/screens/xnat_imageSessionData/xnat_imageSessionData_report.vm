@@ -14,13 +14,6 @@ document.title = "Session: $!item.getProperty('label')";
 			#end
 		#addCustomScreens($om.getXSIType() "report/errors") 
 			#parse($turbineUtils.getTemplateName("_title",$om.getXSIType(),$project))
-					<STYLE>
-					TH.underscore{
-					border-bottom-width:2px;
-					border-bottom-color:rgb(255,153,51);
-					border-bottom-style:solid;
-					}
-					</STYLE>
 					#if($project)
 					
 					#else

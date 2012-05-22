@@ -104,9 +104,9 @@
 		<div class="edit_header1" style="margin-bottom:16px">Reconstructions</div>
 		<TABLE bgColor=white cellPadding=0 cellSpacing=0 width=80% >
 			<TR style="border-style:none;">
-				<TH style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>ID</TH>
-				<TH style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Type</TH>
-				<TH style="border-bottom-color:rgb(255,153,51); border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Base Type</TH>
+				<TH class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>ID</TH>
+				<TH class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Type</TH>
+				<TH class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Base Type</TH>
 			</TR>
 			#set ($scanCounter = 300)
 			#foreach($scan in $om.getReconstructions_reconstructedimage())

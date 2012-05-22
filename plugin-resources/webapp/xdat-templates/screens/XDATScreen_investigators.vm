@@ -9,7 +9,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 #if ($data.message)
 <DIV class="error">$data.message</DIV><br>
 #end
-<table bgcolor="#DCDCDC" STYLE="border-width:1px;border-color:black;border-style:solid;">
+<table  class="dark" STYLE="border-width:1px;border-color:black;border-style:solid;">
 			<tr>
 			<th style="border-style:none;"><font face="$ui.sansSerifFonts">View</font></th>
 		    	<td align="left">

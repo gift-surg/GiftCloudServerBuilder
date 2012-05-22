@@ -149,7 +149,17 @@ YAHOO.util.Event.onDOMReady( function()
 				this.focus.focus();
 			}
 		});
-	
+		
+		//take the statically defined onsubmit action and add it as a yui event instead
+		var subFunction = myforms[i].onsubmit;
+		myforms[i].onsubmit = null;
+		YAHOO.util.Event.on(myforms[i],"submit",function(env,var2){
+			if(!subFunction()){
+				YAHOO.util.Event.stopEvent(env);
+				showContent();
+			}
+		});
+		
 		//function to replace empty strings with NULL in form elements with a nullable class
 		YAHOO.util.Event.on(myforms[i],"submit",function(env,var2){
 			if(XNAT.forms[this.ID]._ok){

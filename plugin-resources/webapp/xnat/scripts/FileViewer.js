@@ -315,6 +315,7 @@ function FileViewer(_obj){
 						}
 						cat.uri=this.obj.uri + "/resources/" + cat.xnat_abstractresource_id;
 						cat.canEdit=this.obj.canEdit;
+						cat.canDelete=this.obj.canDelete;
 						catNode=new YAHOO.widget.CatalogNode({label: lbl}, parent,cat);
 						this.catalogClickers.push(catNode);
 					}
@@ -339,7 +340,7 @@ function FileViewer(_obj){
 									var cat = scan.cats[scanCC];
 									cat.uri=this.obj.uri + "/" + catName+ "/" + scan.id + "/resources/" + cat.xnat_abstractresource_id;
 									cat.canEdit=this.obj.canEdit;
-									
+									cat.canDelete=this.obj.canDelete;
 									catNode=new YAHOO.widget.CatalogNode({label: (cat.label!="")?cat.label:"NO LABEL"}, scanNode,cat);
 									this.catalogClickers.push(catNode);
 
@@ -777,7 +778,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 		if(this.cat.tags!=""){
 		   this.label +="&nbsp;("+ this.cat.tags +")";
 		}
-		if(this.cat.canEdit)
+		if(this.cat.canDelete)
 			this.label +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeCatalog({file_name:'" + cat.label +"',uri:'" + this.cat.uri + "',id:'" + cat.xnat_abstractresource_id + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 	},
 	renderFiles:function(){
@@ -797,7 +798,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 				}
 				_lbl +="&nbsp;&nbsp;"+size_format(size) +"&nbsp;";
 				
-				if(this.cat.canEdit)
+				if(this.cat.canDelete)
 					_lbl +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 				
 				var fileNode=new YAHOO.widget.TextNode({label: _lbl, expanded: false}, this);

@@ -142,7 +142,11 @@ function  toggleQuarantine(){
 						    #else
 							      obj.canEdit=false;
 	    					#end
-    
+    #if ($item.canDelete($data.getSession().getAttribute("user")))
+							      obj.canDelete=true;
+						    #else
+							      obj.canDelete=false;
+	    					#end
     #if($om.getSortedScans().size()>0)
       obj.categories.ids.push("scans");
       obj.categories["scans"]=new Array();

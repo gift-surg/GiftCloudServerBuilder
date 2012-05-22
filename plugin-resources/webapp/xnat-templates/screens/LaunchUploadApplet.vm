@@ -6,7 +6,7 @@
 #* @vtlvariable name="link" type="org.apache.turbine.util.template.TemplateLink" *#
 <script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
 <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
-<form id="launchUploadAppletForm" action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='applet' onsubmit="popupWSize('about:blank',580,840,'applet'); return true;">
+<form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='applet' onsubmit="popupWSize('about:blank',580,840,'applet'); return true;">
     <table border="0">
         <tr>
             <td colspan="2">&nbsp;</td>

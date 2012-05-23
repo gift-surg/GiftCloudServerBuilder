@@ -139,16 +139,16 @@ YAHOO.util.Event.onDOMReady( function()
 		
 		//function to add validation to any form elements with specific classes (required, etc)
         YAHOO.util.Event.on(myForm, "submit", function (env, var2) {
-            var validators = XNAT.forms[this.ID];
-            XNAT.forms[this.ID]._ok = true;
+            var validators = this;
+            this._ok = true;
             for (var iVc = 0; iVc < validators.length; iVc++) {
                 if (!validators[iVc].validate()) {
-                    XNAT.forms[this.ID]._ok = false;
+                    this._ok = false;
                     this.focus = validators[iVc].box;
                 }
             }
 
-            if (!XNAT.forms[this.ID]._ok) {
+            if (!this._ok) {
                 YAHOO.util.Event.stopEvent(env);
                 showContent();
                 this.focus.focus();
@@ -171,8 +171,7 @@ YAHOO.util.Event.onDOMReady( function()
 		
 		//function to replace empty strings with NULL in form elements with a nullable class
 		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            if (this.ID) {
-			if(XNAT.forms[this.ID]._ok){
+            if (this.ID && this._ok) {
 				for(var iFc=0;iFc<this.length;iFc++){
 					if(YAHOO.util.Dom.hasClass(this[iFc],'nullable')){
 						if((this[iFc].nodeName=="INPUT" || this[iFc].nodeName=="TEXTAREA") && this[iFc].value==""){
@@ -180,7 +179,6 @@ YAHOO.util.Event.onDOMReady( function()
 						}
 					}
 				}
-			}
             }
 		});
 	}

@@ -37,33 +37,34 @@ $page.setVlinkColor($ui.vlink)
 		#set( $proj = $om.getProperty("id"))
 		#xdatHiddenBox("numRows" $item "$numRows")
 		#xdatHiddenBox("project" $item "$proj")
-		
-		#foreach($rowIndex in [0.. $numRows])
-			#set($row = $queryResults.nextRow())
-			#set($desc = $queryResults.getCellValue("series_description"))
-			#set($fr = $queryResults.getCellValue("frames"))
-			#set($imty = $queryResults.getCellValue("parameters_imagetype"))
-			#set($ty = $queryResults.getCellValue("type"))
-			<tr valign=top border=0>
-			<td border=0 align=left NOWRAP>
-				<input type="checkbox" name="change_${rowIndex}" value="doChange" />				
-			</td>
-			<td border=0 align=left NOWRAP>
-				$desc
-				#xdatHiddenBox("series_description_$rowIndex" $item "$desc")
-			</td>
-			<td border=0 align=left NOWRAP>
-				$fr
-				#xdatHiddenBox("frames_$rowIndex" $item "$fr")
-			</td>
-			<td border=0 align=left NOWRAP>
-				$imty
-				#xdatHiddenBox("parameters_imagetype_$rowIndex" $item "$imty")
-			</td>
-			<td border=0 align=left NOWRAP>
-				<input id="type_${rowIndex}" type="text" name="type_${rowIndex}" value="$ty"/>
-			</td>
-			</tr>
+		#if($numRows>0)
+    		#foreach($rowIndex in [0.. $numRows])
+    			#set($row = $queryResults.nextRow())
+    			#set($desc = $queryResults.getCellValue("series_description"))
+    			#set($fr = $queryResults.getCellValue("frames"))
+    			#set($imty = $queryResults.getCellValue("parameters_imagetype"))
+    			#set($ty = $queryResults.getCellValue("type"))
+    			<tr valign=top border=0>
+    			<td border=0 align=left NOWRAP>
+    				<input type="checkbox" name="change_${rowIndex}" value="doChange" />				
+    			</td>
+    			<td border=0 align=left NOWRAP>
+    				$desc
+    				#xdatHiddenBox("series_description_$rowIndex" $item "$desc")
+    			</td>
+    			<td border=0 align=left NOWRAP>
+    				$fr
+    				#xdatHiddenBox("frames_$rowIndex" $item "$fr")
+    			</td>
+    			<td border=0 align=left NOWRAP>
+    				$imty
+    				#xdatHiddenBox("parameters_imagetype_$rowIndex" $item "$imty")
+    			</td>
+    			<td border=0 align=left NOWRAP>
+    				<input id="type_${rowIndex}" type="text" name="type_${rowIndex}" value="$ty"/>
+    			</td>
+    			</tr>
+			#end
 		#end
 		<tr>
     	<td><input type="submit" name="eventSubmit_doInsert" value="Submit"/></td>

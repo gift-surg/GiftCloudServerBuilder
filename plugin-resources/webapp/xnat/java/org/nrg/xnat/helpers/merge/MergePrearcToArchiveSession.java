@@ -107,7 +107,7 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 									toDelete.add(r.result);
 									results.addAll(r);
 								}else{
-									CatalogUtils.populateStats((XnatAbstractresource)srcRess, srcRootPath);
+									CatalogUtils.populateStats((XnatAbstractresource)srcRes, srcRootPath);
 								}
 							}else if(destRes instanceof XnatResourceseriesI){
 								srcRes.setLabel(srcRes.getLabel()+"2");

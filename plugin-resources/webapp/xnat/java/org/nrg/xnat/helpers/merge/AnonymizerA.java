@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.edit.AttributeException;
 import org.nrg.dcm.edit.ScriptEvaluationException;
+import org.nrg.xft.XFT;
 
 /**
  * Base class that actually does the work of applying the edit scripts to files.
@@ -79,6 +81,9 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	abstract List<File> getFilesToAnonymize() throws IOException;
 	
 	public java.lang.Void call() throws Exception {
+		if(XFT.PROPS.containsKey("data.anonymize") && !(BooleanUtils.toBoolean(XFT.PROPS.getProperty("data.anonymize")))){
+			return null;
+		}
 		if (this.getScript() != null) {
 			List<File> fs = this.getFilesToAnonymize();
 			for (File f : fs) {

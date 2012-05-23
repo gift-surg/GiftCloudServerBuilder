@@ -73,7 +73,7 @@ function CheckAll() {
 										#end
 										<td> <input type="checkbox" name="cc$velocityCount"> </td>
 										<td> <input type="checkbox" name="bcc$velocityCount"> </td>
-										<td> $usr.getStringProperty("firstname") $usr.getStringProperty("lastname")<input type="hidden" name="EMAILID_$velocityCount" value="$usrEmail"></td>
+										<td> $!usr.getStringProperty("firstname") $!usr.getStringProperty("lastname")<input type="hidden" name="EMAILID_$velocityCount" value="$usrEmail"></td>
 										
 										</tr>
 										#set ($rowCount = $rowCount + 1)

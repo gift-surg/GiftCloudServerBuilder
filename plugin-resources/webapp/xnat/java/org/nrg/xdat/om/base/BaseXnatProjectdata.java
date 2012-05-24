@@ -48,7 +48,6 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.base.BaseXnatProjectdata.ProjectIDComparator;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.search.CriteriaCollection;
@@ -63,7 +62,6 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.Event;
@@ -1588,8 +1586,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	if (this.getId()==null){
             String secondaryID = this.getSecondaryId();
             if (secondaryID==null){
-
-                throw new Exception("Please define a project abbreviation.");
+            	throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,new Exception("Please define a project abbreviation."));
             }else{
                 setId(secondaryID);
 
@@ -1597,17 +1594,23 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 if (db!=null){
                 	String msg="Project '" + getId() + "' already exists.";
                 	this.setId("");
-                	throw new Exception(msg);
+                	throw new ClientException(Status.CLIENT_ERROR_CONFLICT,new Exception(msg));
                 }
             }
         }else{
+            XFTItem db=getCurrentDBVersion();
         	if(!allowMatchingID){
-                XFTItem db=getCurrentDBVersion();
                 if (db!=null){
                 	String msg="Project '" + getId() + "' already exists.";
                 	this.setId("");
-                	throw new Exception(msg);
+                	throw new ClientException(Status.CLIENT_ERROR_CONFLICT,new Exception(msg));
                 }
+        	}else if(db!=null){
+        		if(!user.canEdit(db)){
+        			String msg="Project '" + getId() + "' already exists.";
+                	this.setId("");
+                	throw new ClientException(Status.CLIENT_ERROR_CONFLICT,new Exception(msg));
+        		}
         	}
         }
 
@@ -2169,7 +2172,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		return this.getRootArchivePath();
 	}
 
-	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion,EventDetails event,String accessibility) throws ActionException{
+	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion, boolean allowMatchingID,EventDetails event,String accessibility) throws ActionException{
 		 PersistentWorkflowI wrk;
 			try {
 				wrk = PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),event);
@@ -2179,7 +2182,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			EventMetaI c=wrk.buildEvent();
 			
 			try {
-				String id=createProject(project, user, allowDataDeletion, c, accessibility);
+				String id=createProject(project, user, allowDataDeletion,allowMatchingID, c, accessibility);
 				
 				user.clearLocalCache();
 				ElementSecurity.refresh();
@@ -2198,9 +2201,9 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				throw e;
 			}
 	}
-	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion,EventMetaI event,String accessibility) throws ActionException{
+	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion, boolean allowMatchingID,EventMetaI event,String accessibility) throws ActionException{
 		try {
-			project.initNewProject(user,allowDataDeletion,false,event);
+			project.initNewProject(user,allowDataDeletion,allowMatchingID,event);
 	
 			final ValidationResults vr = project.validate();
 	

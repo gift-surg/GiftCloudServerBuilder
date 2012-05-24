@@ -97,7 +97,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				if(item.getCurrentDBVersion()==null){
 
-					this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
+					this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
 

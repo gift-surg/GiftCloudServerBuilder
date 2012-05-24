@@ -39,7 +39,7 @@ public class ItemPropBuilderTest extends BaseXDATTestCase{
 			proj.setSecondaryId(id);
 			proj.setName(id);
 			
-			XnatProjectdata.createProject(proj, user, true, EventUtils.TEST_EVENT(user), "private");
+			XnatProjectdata.createProject(proj, user, true,false, EventUtils.TEST_EVENT(user), "private");
 		}
 		
 		return proj;

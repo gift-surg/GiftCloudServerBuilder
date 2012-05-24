@@ -221,7 +221,7 @@ public class ProjectResource extends ItemResource {
 							}
 						}
 
-						BaseXnatProjectdata.createProject(project, user, allowDataDeletion,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility"));
+						BaseXnatProjectdata.createProject(project, user, allowDataDeletion,true,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility"));
 					}
 				}
 			}else{

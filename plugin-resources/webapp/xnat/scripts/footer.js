@@ -6,7 +6,7 @@
 
 
 if(XNAT==undefined)XNAT=new Object();
-if(XNAT.forms==undefined)XNAT.forms=new Object();
+if(XNAT.validators==undefined)XNAT.validators=new Object();
 
 /********************
  Add support for in page validation specification
@@ -45,11 +45,11 @@ function _addValidation(_element,_validator){
 		_form.ID="form" + forms++;
 	}
 	
-	if(XNAT.forms[_form.ID]==undefined){
-		XNAT.forms[_form.ID]=new Array();
+	if(XNAT.validators[_form.ID]==undefined){
+		XNAT.validators[_form.ID]=new Array();
 	}
 	
-	XNAT.forms[_form.ID].push(_validator);
+	XNAT.validators[_form.ID].push(_validator);
 }
 
 function validateBox(box){
@@ -131,35 +131,41 @@ YAHOO.util.Event.onDOMReady( function()
         }
 
         //function to hide forms while they are being submitted, unless they have a noHide class
-		if(!YAHOO.util.Dom.hasClass(myForm,'noHide')){
+		if(!YUIDOM.hasClass(myForm,'noHide')){
 			YAHOO.util.Event.on(myForm,"submit",function(env,var2){
     			concealContent("Submitting... Please wait.");
     		});
 		}
 		
 		//function to add validation to any form elements with specific classes (required, etc)
+		//an array of validator functions is stored in XNAT.validators.  They are tied to the form by the form's ID.
+		//this function iterates over those validators and tracks the overall validation outcome in a variable called _ok which is attached the the array of validators.
+		//the _ok may be checked by other functions
         YAHOO.util.Event.on(myForm, "submit", function (env, var2) {
-            var validators = this;
-            this._ok = true;
-            for (var iVc = 0; iVc < validators.length; iVc++) {
-                if (!validators[iVc].validate()) {
-                    this._ok = false;
-                    this.focus = validators[iVc].box;
+            var validators = XNAT.validators[this.ID];
+            if(validators!=undefined){
+                validators._ok = true;
+                for (var iVc = 0; iVc < validators.length; iVc++) {
+                    if (!validators[iVc].validate()) {
+                    	validators._ok = false;
+                        this.focus = validators[iVc].box;
+                    }
                 }
-            }
 
-            if (!this._ok) {
-                YAHOO.util.Event.stopEvent(env);
-                showContent();
-                this.focus.focus();
+                if (!validators._ok) {
+                    YAHOO.util.Event.stopEvent(env);
+                    showContent();
+                    if(this.focus!=undefined)
+                    	this.focus.focus();
+                }
             }
         });
 
         //take the statically defined onsubmit action and add it as a yui event instead
-		var subFunction = myForm.onsubmit;
+        myForm.userDefinedSubmit = myForm.onsubmit;
 		myForm.onsubmit = null;
 		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            var result = subFunction();
+            var result = this.userDefinedSubmit();
             if (result == undefined) {
                 result = true;
             }
@@ -167,15 +173,17 @@ YAHOO.util.Event.onDOMReady( function()
 				YAHOO.util.Event.stopEvent(env);
 				showContent();
 			}
-		});
+		},null,myForm);
 		
 		//function to replace empty strings with NULL in form elements with a nullable class
 		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            if (this.ID && this._ok) {
-				for(var iFc=0;iFc<this.length;iFc++){
-					if(YAHOO.util.Dom.hasClass(this[iFc],'nullable')){
-						if((this[iFc].nodeName=="INPUT" || this[iFc].nodeName=="TEXTAREA") && this[iFc].value==""){
-							this[iFc].value="NULL";
+            if (this.ID) {
+				if(XNAT.validators[this.ID]==undefined || XNAT.validators[this.ID]._ok){
+					for(var iFc=0;iFc<this.length;iFc++){
+						if(YUIDOM.hasClass(this[iFc],'nullable')){
+							if((this[iFc].nodeName=="INPUT" || this[iFc].nodeName=="TEXTAREA") && this[iFc].value==""){
+								this[iFc].value="NULL";
+							}
 						}
 					}
 				}

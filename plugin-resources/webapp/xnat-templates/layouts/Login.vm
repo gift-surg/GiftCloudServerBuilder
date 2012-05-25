@@ -15,8 +15,8 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 </head>
 <body id="page_body" class="yui-skin-sam" ONLOAD="document.getElementById('username').focus();">
 
-<table width="100%" height="100%" valign="top" border=0>
-  <tr height="10">
+<table width="800" height="500" valign="top" border=0>
+  <tr height="120">
     <td valign="top">
       $navigation.setTemplate("/NoMenuTop.vm")
     </td>

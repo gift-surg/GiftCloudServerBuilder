@@ -73,7 +73,7 @@
 
 
 <div id="header" class="main_header">
-    <a href="$link.setPage("Index.vm")" onmouseover="return true;">
+    <a id="header_logo" href="$link.setPage("Index.vm")" onmouseover="return true;">
         #parse("/screens/Logo.vm")
         ##<img id="header_logo" src="$content.getURI("images/logo.gif")" alt="logo" />
     </a>

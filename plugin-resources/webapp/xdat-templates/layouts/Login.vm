@@ -14,7 +14,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 </HEAD>
 <BODY ONLOAD="document.getElementById('username').focus();">
 
-<table width="100%" height="100%" valign="top" border=0>
+<table width="800" height="500" valign="top" border=0>
   <tr height="120">
     <td valign="top">
       $navigation.setTemplate("/NoMenuTop.vm")

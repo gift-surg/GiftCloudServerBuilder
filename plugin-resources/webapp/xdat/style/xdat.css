@@ -1,156 +1,65 @@
 /***********************************************/
 /* HTML tag styles                             */
-/***********************************************/ 
+/***********************************************/
 
-body {
-	margin:5px;
-	padding:0px;
-	font-size:11px;
-	line-height:13px;
-	font-weight:400;
-	font-family:arial, sans-serif;
-	background-color:white;
-	}
-  TH {
-    font-size:11px;
-    line-height:13px;
-	font-weight:700;
-	margin:0px 0px 0px 0px;	
-	border-top-style:none; 
-	border-right-style:none; 
-	border-left-style:none;
-	border-collapse: collapse;
-	PADDING-RIGHT: 4px;
- 	PADDING-LEFT: 4px;
-	}
-  p {
-	font-size:10px;
-	line-height:12px;
-	font-weight:400;
-	margin:0px 0px 0px 0px;	
-	}
-  TD {
- 	PADDING-RIGHT: 4px;
- 	PADDING-LEFT: 4px;
-	font-size:10px;
-	line-height:14px;
-	font-family:verdana,geneva,helvetica;
-  }
-A.plainText {	
-	text-decoration:none;
-	font-weight:100;
- 	font-size:10px;
-	font-family:verdana,geneva,helvetica;
-	color:black
-}
+body { margin: 5px ; padding: 0px ; font-size: 11px ; line-height: 13px ; /* font-weight: 400 ; */ font-family: Arial, Helvetica, sans-serif ; background-color: white ; }
 
-  A {
-    cursor:pointer;
- 	text-decoration:none;
-	font-weight:700;
- 	font-size:11px;
-	font-family:verdana,geneva,helvetica;
-	color:rgb(51,51,102);
-  }
+th { /* font-size: 11px ; line-height: 13px ; */ font-weight: 700 ; margin: 0 ; border-top: none ; border-right: none ; border-left: none ; border-collapse: collapse ; padding: 0 4px ; }
 
-.withColor{
- background-color:#FFFFCC;
-}
-input { 
-	font-size:11px;
-    	line-height:13px;
-	font-weight:500;
-	font-family:verdana,geneva,helvetica;
-	}
+h2 { line-height: 24px ; }
 
-select { 
-	font-size:11px;
-    	line-height:13px;
-	font-weight:500;
-	font-family:verdana,geneva,helvetica;
-	}
+h3 { line-height: 20px ; margin: 0 !important ; }
 
-DIV.error { 
-    width:500px;
-	background-color:#ff99cc;
-    border-width:1px;
-    border-style:solid;
-	font-size:14px;
-    line-height:16px;
-	font-weight:500;
-    overflow:auto;
-	padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align:left;
-    clear:left;
-	}
-DIV.warning { 
-    width:500px;
-	background-color:#ffCCCC;
-    border-width:1px;
-    border-style:solid;
-	font-size:14px;
-    line-height:16px;
-	font-weight:500;
-    overflow:auto;
-	padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align:left;
-    clear:left;
-	}
-DIV.note { 
-    width:500px;
-	background-color:#CCFFFF;
-    border-width:1px;
-    border-style:solid;
-	font-size:14px;
-    line-height:16px;
-	font-weight:500;
-    overflow:auto;
-	padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align:left;
-    clear:left;
-	}
-.text{
-    font-size:11px;
-    line-height:13px;
-    font-family:verdana,geneva,helvetica;
-    font-weight:400;
-}
-DIV.link{
-    cursor:pointer;
- 	text-decoration:none;
-	font-weight:700;
- 	font-size:11px;
-	font-family:verdana,geneva,helvetica;
-	color:rgb(51,51,102);
-}
-DIV.edit_title{
-    font-size:16px;
-    line-height:18px;
-	font-weight:700;
-}
-DIV.edit_header1{
-    font-size:14px;
-    line-height:16px;
-	font-weight:700;
-}
-DIV.edit_header2{
-    font-size:12px;
-    line-height:14px;
-	font-weight:700;
-}
-DIV.edit_header3{
-    font-size:11px;
-    line-height:13px;
-	font-weight:700;
-}DIV.spacer{
-    line-height:13px;
-}
+h4 { line-height: 18px ; }
+
+p { font-size: 10px ; line-height: 12px ; font-weight: 400 ; margin: 0 ; }
+
+td { padding-right: 4px ; padding-left: 4px ; /* font-size: 10px ; line-height: 14px ; font-family: Arial, Helvetica, sans-serif ; */ }
+
+a.plainText { text-decoration: none ; font-weight: 100 ; font-size: 10px ; /* font-family: Arial, Helvetica, sans-serif ; */ color: black ; }
+
+a { cursor: pointer ; text-decoration: none ; font-weight: 700 ; /* font-size: 11px ; */ /* font-family: Arial, Helvetica, sans-serif ; */ color: #039 ; }
+
+img { border: none ; }
+
+form { font-size: 12px ; }
+
+/* .withColor { background-color: #ffc ; } */
+
+.withColor { background-color: /* #084FAB */ #2d69b8 ; color: #fff ; }
+
+.withThinBorder { border-width: 1px solid #aaa ; }
+
+input { /* font-size: 11px ; line-height: 13px ; font-weight: 500 ; font-family: Arial, Helvetica, sans-serif ; */ }
+
+select { /* font-size: 12px ; line-height: 13px ; font-weight: 500 ; font-family: Arial, Helvetica, sans-serif ; */ }
+
+div.error { width: 500px ; background-color: #f9c ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding-top: 5px ; padding-bottom: 5px ; padding-left: 5px ; padding-right: 5px ; text-align: left ; clear: left ; }
+
+div.warning { width: 500px ; background-color: #fcc ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding: 5px ; text-align: left ; clear: left ; }
+
+div.note div.message { width: 500px ; background-color: #cff ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding-top: 5px ; padding-bottom: 5px ; padding-left: 5px ; padding-right: 5px ; text-align: left ; clear: left ; }
+
+.text { font-size: 11px ; line-height: 13px ; font-family: Arial, Helvetica, sans-serif ; font-weight: 400 ; }
+
+div.link { cursor: pointer ; text-decoration: none ; font-weight: 700 ; font-size: 11px ; font-family: Arial, Helvetica, sans-serif ; color: #039 ; }
+
+div.edit_title { font-size: 16px ; line-height: 18px ; font-weight: 700 ; }
+
+div.edit_header1 { font-size: 14px ; line-height: 16px ; font-weight: 700 ; }
+
+div.edit_header2 { font-size: 12px ; line-height: 14px ; font-weight: 700 ; }
+
+div.edit_header3 { font-size: 11px ; line-height: 13px ; font-weight: 700 ; }
+
+div.spacer { line-height: 13px ; }
+
+.actionsBox { background-color: #dcdcdc ; }
+
+.quarantine { background-color: #fc3 ; }
+
+#loginBox { top: 2px ; position: absolute ; text-align: right ; right: 5px ; }
+
+#menu1 { position: relative ; top: 2px ; left: 5px ; width: 99% ; height: 28px ; border-bottom: 1px solid #aaa ; }
+
+div.option { font-weight: 800 ; }

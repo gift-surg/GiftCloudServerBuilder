@@ -1,19 +1,7 @@
-<!-- Sequence: 5 -->
-          <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin.vm")" >Users</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_dataTypes.vm")" >Data types</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_email.vm")" >Email</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_manage_pipeline.vm")">Pipelines</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("XDATScreen_admin_options.vm")" >More options...</a>
-           </li>
-           <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" HREF="$link.setPage("Configuration.vm")">Configuration</a>
-           </li>
+<!-- Sequence: 10 -->
+    <li><a href="$link.setPage("XDATScreen_admin.vm")">Users</a></li>
+    <li><a href="$link.setPage("XDATScreen_dataTypes.vm")">Data types</a></li>
+    <li><a href="$link.setPage("XDATScreen_email.vm")">Email</a></li>
+    <li><a href="$link.setPage("XDATScreen_manage_pipeline.vm")">Pipelines</a></li>
+    <li><a href="$link.setPage("XDATScreen_admin_options.vm")">More options...</a></li>
+    <li><a href="$link.setPage("Configuration.vm")">Configuration</a></li>

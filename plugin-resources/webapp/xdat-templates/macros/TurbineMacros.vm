@@ -46,10 +46,10 @@
 
 
 #macro (includeJSFile)
-  <script LANGUAGE="JavaScript">
+  <script type="text/javascript">
     var serverRoot = "$content.getURI('')";
   </script>
-  <script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/xdat.js')"></SCRIPT>
+  <script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/xdat.js')"></script>
 #end
 
 ##CREATED BY TIMOTHY OLSEN 3/7/05 FOR USE IN EDIT SCREENS
@@ -63,7 +63,7 @@
 #macro (xdatTextBox $name $item $defaultValue $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if ($item.getProperty($name))
@@ -81,7 +81,7 @@
 #macro (xdatTextBoxWID $name $item $defaultValue $vr $id)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if ($item.getProperty($name))
@@ -112,7 +112,7 @@
 #macro (xdatStringBoxOnChange $name $item $defaultValue $onChange $vr $classes)
 	#if ($vr)
 		#if($vr.getField($name))
-			<font color="red">&#8658</font>
+			<span style="color:red;">&#8658</span>
 		#end
 	#end
 	#if ($item.getProperty($name))
@@ -130,7 +130,7 @@
 #macro (xdatStringBoxWSize $name $item $defaultValue $vr $size)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if ($item.getProperty($name))
@@ -148,7 +148,7 @@
 #macro (xdatTextArea $name $item $defaultValue $vr $rows $cols)
 #if ($vr)
     #if($vr.getField($name))
-        <font color="red">&#8658</font>
+        <span style="color:red;">&#8658</span>
     #end
 #end
     #if ($item.getProperty($name))
@@ -182,7 +182,7 @@
 #macro (xdatBooleanCheckbox $name $item $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #set($value = $!item.getBooleanProperty($name))
@@ -196,7 +196,7 @@
 #macro (xdatBooleanRadio $name $item $defaultValue $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if ($item.getBooleanProperty($name,$defaultValue))
@@ -211,7 +211,7 @@
 #macro (xdatBooleanRadioYesNo $name $item $defaultValue $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if ($item.getBooleanProperty($name,$defaultValue))
@@ -226,7 +226,7 @@
 #macro (xdatBooleanRadioYesNoWithoutDefault $name $item $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #set($value = "$!item.getBooleanProperty($name)")
@@ -247,7 +247,7 @@
 #macro (xdatBooleanRadioYesNoWithoutDefaultWONClick $name $item $vr $onchange)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #set($value = "$!item.getBooleanProperty($name)")
@@ -267,7 +267,7 @@
 #macro (xdatRadioButtonGroup $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -287,7 +287,7 @@
 #macro (xdatComboBox $name $item $settings_alias $vr)
  #if ($vr)
     #if($vr.getField($name))
-       <font color="red">&#8658</font>
+       <span style="color:red;">&#8658</span>
     #end
  #end
    #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -297,7 +297,7 @@
            <select id="$name" name="$name"></select>
 
           <script type="text/javascript" src="$content.getURI("scripts/customizableSelectBox.js")"></script>
-          <script type="text/javascript" LANGUAGE="JavaScript">
+          <script type="text/javascript">
              var comboBox=new CustomSelectBox("$name",$settings_alias);
              comboBox.render("$!item.getProperty($name)");
           </script>
@@ -307,7 +307,7 @@
 #macro (xdatSelectBox $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -329,7 +329,7 @@
       </td><td>
 <DIV ID="TEXT_$name" style="display:none"> Enter: <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/></DIV>
 </td></tr></table>
-  <script type="text/javascript" LANGUAGE="JavaScript">
+  <script type="text/javascript">
   function setSelectValue(SELECTbox){
     if(SELECTbox.selectedIndex!=0)
     {
@@ -364,7 +364,7 @@
 #macro (xdatSelectBoxWSingleValueLbl $lbl $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -386,7 +386,7 @@
       </td><td>
 <DIV ID="TEXT_$name" style="display:none"> Enter: <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/></DIV>
 </td></tr></table>
-  <script type="text/javascript" LANGUAGE="JavaScript">
+  <script type="text/javascript">
   function setSelectValue(SELECTbox){
     if(SELECTbox.selectedIndex!=0)
     {
@@ -424,7 +424,7 @@
 #macro (xdatSelectBoxWSingleValueWID $name $item $possibleValues $vr $id)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -447,7 +447,7 @@
 #macro (xdatSelectBoxWDefault $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -469,7 +469,7 @@
 #macro (xdatSimpleSelectBoxLbl $lbl $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -493,7 +493,7 @@
 #macro (xdatSimpleSelectBoxLblWKeyValue $lbl $name $item $possibleValues $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -520,7 +520,7 @@
 #macro (xdatIntegerValueSelectBox $name $item $possibleValues $offset $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
@@ -544,7 +544,7 @@
 #macro (xdatDateBox $name $item $vr $years)
  #if ($vr)
     #if($vr.getField($name))
-       <font color="red">&#8658</font>
+       <span style="color:red;">&#8658</span>
     #end
  #end
    #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
@@ -650,7 +650,7 @@
 #macro (xdatDateBoxNotReported $name $item $vr $years)
 	#if ($vr)
 		#if($vr.getField($name))
-			<font color="red">&#8658</font>
+			<span style="color:red;">&#8658</span>
 		#end
 	#end
 
@@ -767,7 +767,7 @@
 #macro (xdatDateTimeBox $name $item $vr $years)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
   #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
@@ -864,7 +864,7 @@
 #macro (xdatTimeBox $name $item $vr)
 #if ($vr)
   #if($vr.getField($name))
-    <font color="red">&#8658</font>
+    <span style="color:red;">&#8658</span>
   #end
 #end
 #set ($hours=[["08","8AM",8],["09","9AM",9],["10","10AM",10],["11","11AM",11],["12","12PM",12],["13","1PM",13],["14","2PM",14],["15","3PM",15],["16","4PM",16],["17","5PM",17],["18","6PM",18],["19","7PM",19],["20","8PM",20],["21","9PM",21],["22","10PM",22],["23","11PM",23],["00","12AM",0],["01","1AM",1],["02","2AM",2],["03","3AM",3],["04","4AM",4],["05","5AM",5],["06","6AM",6],["07","7AM",7]]	)
@@ -1378,7 +1378,7 @@ div.ic_spacer{
     #if ($elementSecurity)
         #set ($actions = $elementSecurity.getElementActionsByGroupings())
         #if ($actions.size() > 0)
-<SCRIPT language="javascript">
+<script type="text/javascript">
 YAHOO.util.Event.onContentReady("actionsMenu", function () {
     var actionsMenu = new YAHOO.widget.Menu("actionsMenu", { autosubmenudisplay: true,scrollincrement:5,position:"static"});
     // Render the MenuBar instance
@@ -1386,7 +1386,7 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
     actionsMenu.render();
     actionsMenu.show();
 });
-</SCRIPT>
+</script>
       <!-- actions menu -->
     <DIV id="actionsMenu" class="yuimenu" style="display:none">
      <DIV class="bd">
@@ -1421,7 +1421,7 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
     #if ($elementSecurity)
         #set ($actions = $elementSecurity.getElementActionsByGroupings())
         #if ($actions.size() > 0)
-<SCRIPT language="javascript">
+<script type="text/javascript">
 YAHOO.util.Event.onContentReady("actionsMenu", function () {
     var actionsMenu = new YAHOO.widget.Menu("actionsMenu", { autosubmenudisplay: true,scrollincrement:5,position:"static"});
     // Render the MenuBar instance
@@ -1429,7 +1429,7 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
     actionsMenu.render();
     actionsMenu.show();
 });
-</SCRIPT>
+</script>
       <!-- actions menu -->
     <DIV id="actionsMenu" class="yuimenu" style="display:none">
      <DIV class="bd">
@@ -1532,23 +1532,23 @@ $!turbineUtils.escapeJS($s)
 
 #macro(auditTable $reason $action)
 	#if($showReason)
-	<TABLE>
+	<table>
 		#auditBoxes("1" "" $reason $action)
-	</TABLE>
+	</table>
 	#end
 #end
 
 #macro(auditBoxes $span $align $reason $action)
 	#if($showReason)
-	<TR>
-		<TD colspan="$span" align="$align">
+	<tr>
+		<td colspan="$span" align="$align">
 			<input type="hidden" name="event_action" value="$!action"/>
 			<input type="hidden" name="event_type" value="WEB_FORM"/>
 			<div class="justification">Justification (Why are you completing this form?)<BR/>
 				<textarea rows="3" cols="70" id="event_reason" name="event_reason" #if($requireReason) class="required" #end>$!reason</textarea>
 			</div>
-		</TD>	
-	</TR>
+		</td>	
+	</tr>
 	#end
 #end
 

@@ -4,15 +4,17 @@
 <table align="left" valign="top">
 	<tr>
        <td>
-			<font size="2"><u><b>Projects</b></u><br></font>
-			<DIV STYLE="max-height:250px;overflow:auto;">
+			##<font size="2">
+                <u><b>Projects</b></u><br>
+            ##</font>
+			<div style="max-height:250px;overflow:auto;">
 			<table align="left" valign="top">
 			
 			#foreach ($projectObject in $projects)
-				<tr><td valign="top">• </td><td align="left"><A href="$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$projectObject.getId()")">$projectObject.getId()</A></td></tr>
+				<tr><td valign="top"></td><td align="left"><A href="$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$projectObject.getId()")">$projectObject.getId()</A></td></tr>
 			#end
 				</table>
-				</DIV>
+				</div>
 			<br>
 	  </td>
 	</tr>

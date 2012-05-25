@@ -1,16 +1,24 @@
+<!DOCTYPE html>
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<HTML>
-<HEAD>
-<TITLE>$!systemName</TITLE>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. -->
+
+<!-- xdat-templates/layouts/Index -->
+<head>
+<title>$!systemName</title>
 $navigation.setTemplate("/HeaderIncludes.vm")
 <!-- POPUP -->
-</HEAD>
-<BODY>
+</head>
+<body>
 
 <table WIDTH="100%" HEIGHT="100%" VALIGN="top">
-	<TR>
-		<TD VALIGN="top">
-<font face="$ui.sansSerifFonts" size="2">
+	<tr>
+		<td VALIGN="top">
+##<font face="$ui.sansSerifFonts" size="2">
 <table border="0">
   <tr>
     <td>
@@ -23,22 +31,22 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 <table align="center" border="0" >
   <tr>
     <td align="left" colspan="2">
-      <div id="layout_content2" style="display:none;">Loading...</DIV>
-      <div id="layout_content">$screen_placeholder</DIV></td>
+      <div id="layout_content2" style="display:none;">Loading...</div>
+      <div id="layout_content">$screen_placeholder</div></td>
   </tr>
   <tr>
     <td align="left" colspan="2">
-    	<TABLE>
-    		<TR>
-    			<TD>$navigation.setTemplate("QuickSearch.vm")</td>
+    	<table>
+    		<tr>
+    			<td>$navigation.setTemplate("QuickSearch.vm")</td>
     			<td align="left" valign="top"><BR>
-				 <font size="1">
-				  • <a href="$link.setPage("Help.vm")">Help</a><br>
-				  • <a href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","search")">More Search Options</a>
-				</font>
+				 ##<font size="1">
+				  <a href="$link.setPage("Help.vm")">Help</a><br>
+				  <a href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","search")">More Search Options</a>
+				##</font>
 			    </td>
-    		</TR>
-    	</TABLE>
+    		</tr>
+    	</table>
     </td>
   </tr>
 </table>
@@ -52,19 +60,19 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 		<td align="left" valign="top">$navigation.setTemplate("SubMenu3.vm")</td>
    </tr>
 </table>
-		</TD>
-	</TR>
-	<TR>
-		<TD ALIGN="right">
+		</td>
+	</tr>
+	<tr>
+		<td ALIGN="right">
 			<table valign="bottom">
 				<tr>
 				    <td valign="bottom" align="right">
-						<DIV VALIGN="bottom" align="right"><a href="http://www.xnat.org"><img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a></DIV>
+						<div VALIGN="bottom" align="right"><a href="http://www.xnat.org"><img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a></div>
 					</td>
 				</tr>
 			</table>
-		</TD>
-	</TR>
-</TABLE>
-</BODY>
-</HTML>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

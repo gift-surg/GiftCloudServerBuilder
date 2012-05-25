@@ -1,5 +1,13 @@
+<!DOCTYPE html>
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<HTML>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. -->
+
+<!-- xdat-templates/layouts/ScreenOnly -->
 <HEAD>
 $navigation.setTemplate("/HeaderIncludes.vm")
 </HEAD>
@@ -8,4 +16,4 @@ $navigation.setTemplate("/HeaderIncludes.vm")
       <div id="layout_content2" style="display:none;">Loading...</DIV>
       <div id="layout_content">$screen_placeholder</DIV>
 </BODY>
-</HTML>
+</html>

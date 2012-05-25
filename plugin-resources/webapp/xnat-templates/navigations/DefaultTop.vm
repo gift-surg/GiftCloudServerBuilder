@@ -1,4 +1,8 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+
+<!-- start -->
+<!-- xnat-templates/navigations/DefaultTop -->
+
 #if($popup)
 
 #else
@@ -13,49 +17,104 @@
   #set($projectString="/project/$project")
 #end
 
-<DIV>
-<DIV class="yui-skin-sam">
- <table cellspacing="0" border="0" width="800px">
-  <tr valign="bottom">
-   <td class="logo_img" align="left" rowspan="3"><a href="$link.setPage("Index.vm")" onmouseover="return true;">#parse("/screens/Logo.vm")</a>&nbsp;&nbsp;</td>
-   <td align="left" valign="top" NOWRAP>
-#if($data.getSession().getAttribute("user").getUsername()=="guest")
-     <font color="red">Guest</font>&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Login.vm")">(Login)</A>
-     &nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("Register.vm")">(Register)</A>
-	#elseif($data.getSession().getAttribute("user").getUsername())
-	     User: $!data.getSession().getAttribute("user").getUsername()
-     <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setAction("LogoutUser")">(Logout)</A>
-      <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("XDATScreen_MyXNAT.vm")">(Edit)</A>
-      <A CLASS="text" style="font-weight:550;text-decoration:underline;" HREF="$link.setPage("ReportIssue.vm")">(Report a problem)</A>
-	#end
-   </td>
-   <td align="right" valign="top" NOWRAP>
-   <style>
-   #quickSearchForm{
-     margin-bottom:0px;
-   }
-   </style>
+<!-- main_nav interactions -->
+<script type="text/javascript">
+    jQuery(function(){
+
+        var jq = jQuery.noConflict();
+
+        jq(document).ready(function() {
+
+            // fancy fades on hover
+            jq('#main_nav li').hover(
+                    function() {
+                        jq(this).stop('clearQueue','gotoEnd').find(' > ul').fadeIn(80);
+                    },
+                    function() {
+                        jq(this).stop('clearQueue','gotoEnd').find(' > ul').fadeOut(100);
+                    }
+            );
+
+            // modifying widths of 2nd level menu
+            jq('#main_nav li li').hover(function() {
+                var submenu_width = jq(this).outerWidth();
+                jq(this).find(' > ul').css({'left':submenu_width+1});
+            });
+
+            // give menus with submenus a class of 'more'
+            jq('#main_nav li ul , #main_nav li li ul').closest('li').find(' > a').addClass('more');
+
+        });
+
+    });
+</script>
+<!-- end main_nav interactions -->
+
+
+## preloading background images for main_nav
+<div id="img_preload" style="display:none;">
+    <img src="$content.getURI('images/nav_bkdg.png')" alt="">
+    <img src="$content.getURI('images/nav_bkdg_hover.png')" alt="">
+</div>
+
+
+<div id="user_bar">
+        #if($last_login)
+            <span id="last_login">Last login: $turbineUtils.formatDate($last_login,"MM-dd-yyyy hh:mm")</span>
+        #end
+    #if($data.getSession().getAttribute("user").getUsername()=="guest")
+        <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>
+    #elseif($data.getSession().getAttribute("user").getUsername())
+    ## use default timout value from web.xml as the starting text in the "timeLeft" element
+        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b> <pre id="timeLeft">0:15:00</pre> remaining - <a id="timeLeftRenew" href="javascript:;">renew</a> <b>|</b> <a href="$link.setAction("LogoutUser")">Logout</a></span>
+    #end
+    <div class="clear"></div>
+</div><!-- /user_bar -->
+
+
+<div id="header" class="main_header">
+    <a href="$link.setPage("Index.vm")" onmouseover="return true;">
+        #parse("/screens/Logo.vm")
+        ##<img id="header_logo" src="$content.getURI("images/logo.gif")" alt="logo" />
+    </a>
+
 $navigation.setTemplate("XNATQuickSearch.vm")
-   </td>
-  </tr>
-  <tr>
-   <td valign="bottom" width="532" colspan="2">
-    <DIV id="topMenuBar" class="yuimenubar yuimenubarnav" style="display:none">
-     <DIV class="bd">
-      <ul class="first-of-type">
-		#addGlobalCustomScreens("topBar")       
-      </ul>
-     </DIV>
-    </DIV>
-   </td>
-  </tr>
- </table>
-</DIV>
-</DIV>
-<SCRIPT language="javascript">
-YAHOO.util.Event.onContentReady("topMenuBar", function () {
-    var oMenuBar = new YAHOO.widget.MenuBar("topMenuBar", { autosubmenudisplay: true,scrollincrement:5,showdelay:1500});
-    // Render the MenuBar instance
-    oMenuBar.render();
-});
-</SCRIPT>
+
+##<form id="quickSearchForm" method="post" action="$link.setAction("QuickSearchAction")">
+      ##  <input id="searchValue" name="searchValue" type="text" size="25" value="$!field" />
+      ##  <a id="search_btn" class="btn1" href="javascript:;" onClick="submitQuickSearch();">Search</a>
+      ##  <a id="advanced_btn" class="btn2" href="javascript:;" onClick="advancedSearch();">Advanced</a>
+    ##</form>
+
+    <div id="main_nav">
+        <ul>
+            #addGlobalCustomScreens("topBar")
+        </ul>
+    </div><!-- /main_nav -->
+
+</div>  <!-- /header -->
+
+
+<script type="text/javascript">
+
+    var jq = jQuery.noConflict();
+
+    jq(document).ready(function() {
+
+        // adjust height of header if logo is taller than 80px
+        var hdr_logo_height = jq('#header_logo').height();
+        if (hdr_logo_height > 80) {
+            jq('.main_header').height(hdr_logo_height + 10);
+        }
+
+        // adjust width of main nave if logo is wider than 200px
+        var hdr_logo_width = jq('#header_logo').width();
+        if (hdr_logo_width > 200) {
+            jq('#main_nav').width(800 - hdr_logo_width - 30);
+        }
+    });
+
+</script>
+
+
+<script src="$content.getURI("scripts/timeLeft.js")"></script>

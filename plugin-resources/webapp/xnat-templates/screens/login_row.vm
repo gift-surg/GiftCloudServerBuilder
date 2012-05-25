@@ -8,14 +8,16 @@
   	  <TD><input type="password" name="password" size="15" autocomplete="off"></TD>
 					      <td></td>
       <td align ="left">
-        <font face="$ui.sansSerifFonts">
+        ##<font face="$ui.sansSerifFonts">
+        <span class="ui_sansSerifFonts">
         #foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&$key!="username" &&$key!="exception")
         	<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
         	#end
         #end
           <input type="submit" value="Login">
-        </font>
+        </span>
+        ##</font>
       </td>
 			      <td align="left">&nbsp;</td>
       <td>

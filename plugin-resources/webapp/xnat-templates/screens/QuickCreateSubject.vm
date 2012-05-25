@@ -1,6 +1,12 @@
 <table>
      <tr>
-      <td colspan="3">						<font face="$ui.sansSerifFonts" size="3" style="line-height:20px;"><b>Create Subject</b></font></td>
+      <td colspan="3">
+          ##<font face="$ui.sansSerifFonts" size="3" style="line-height:20px;">
+              <span class="ui_sansSerifFonts" style="line-height:20px;">
+                <b>Create Subject</b>
+              </span>
+          ##</font>
+      </td>
      </tr>
      <tr>
       <td colspan="3">						<DIV ID="create_message"></DIV></td>
@@ -28,7 +34,8 @@
 				#set($years = [ 1901..$!turbineUtils.getYear()])
 						#set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 						#set($days = [ 1..31 ])
-						<font face="$ui.sansSerifFonts">
+						##<font face="$ui.sansSerifFonts">
+						<span class="ui_sansSerifFonts">
 							<select name="subject_bmonth" ID="subject_bmonth">
 								<option value="bad">(SELECT)</option>
 								#foreach ($month in $months)
@@ -45,7 +52,8 @@
 					        		<option value="$day">$day</option>
 								#end
 							</select>
-						</font>
+						</span>
+						##</font>
 					
 						<select name="subject_byear" ID="subject_byear" >
 							<option value="bad">(SELECT)</option>

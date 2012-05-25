@@ -1,11 +1,19 @@
+<!DOCTYPE html>
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<HTML>
-<HEAD>
-<TITLE>$!systemName</TITLE>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. -->
+
+<!-- layouts/Viewer -->
+<head>
+<title>$!systemName</title>
 $navigation.setTemplate("/HeaderIncludes.vm")
 <!-- LOGIN -->
-</HEAD>
-<BODY>
+</head>
+<body>
 
 <table width="100%" height="100%" valign="top" border=0>
   <tr>
@@ -14,5 +22,5 @@ $navigation.setTemplate("/HeaderIncludes.vm")
     </td>
   </tr>
 </table>
-</BODY>
-</HTML>
+</body>
+</body>

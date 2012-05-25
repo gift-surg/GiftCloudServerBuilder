@@ -8,7 +8,7 @@
 			<table align="left" valign="top">
 			#foreach ($actionObject in $actionObjects)
 				#if ($actionObject.getName() != "browse")
-					<tr><td valign="top">• </td><td align="left"><a href="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName())" onmouseover="return true;">$actionObject.getDisplayName()</a></td></tr>
+					<tr><td valign="top"></td><td align="left"><a href="$link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName())" onmouseover="return true;">$actionObject.getDisplayName()</a></td></tr>
 				#end
 			#end
 			</table>

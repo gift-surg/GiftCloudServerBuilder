@@ -37,7 +37,7 @@
 			  #end
 			  #if ($vr)
 	    #if($vr.getField($f.getCleanedXMLPath()))
-		      <font color="red">&#8658</font>
+		      <span style="color:red;">&#8658</span>
 	    #end
   #end
   #if($f.getDatatype()=="boolean")

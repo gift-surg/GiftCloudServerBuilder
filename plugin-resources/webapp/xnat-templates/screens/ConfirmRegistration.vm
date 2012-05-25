@@ -2,9 +2,11 @@
 <form action="$link.setAction("XDATRegisterUser")" method="post" name="form1" id="form1" ONSUBMIT="return checkConfirm();">
   <table border="0" align="center" cellpadding="8">
 #if ( $data.getMessage() )
-  <tr><td colspan="2"><font color="#FF0000" size="2" face="verdana,geneva,helvetica">
+  <tr><td colspan="2">
+      ##<font color="#FF0000" size="2" face="verdana,geneva,helvetica">
   $data.getMessage()<br>
-  </font></td>
+  ##</font>
+  </td>
    </tr>
 #end
     <tr>

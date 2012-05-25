@@ -1,5 +1,13 @@
+<!DOCTYPE html>
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<HTML> 
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. -->
+
+<!-- xdat-templates/layouts/Popup -->
 <HEAD>
 <TITLE>$!systemName</TITLE>
 $navigation.setTemplate("/HeaderIncludes.vm")
@@ -19,7 +27,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
       <div id="layout_content">$screen_placeholder</DIV>
     </td>
   </tr>
-  <tr height="*">
+  <tr>
     <td valign="bottom" height="*">
       $navigation.setTemplate("/DefaultBottom.vm")
     </td>
@@ -27,4 +35,4 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 </table>
 </DIV>
 </BODY>
-</HTML>
+</html>

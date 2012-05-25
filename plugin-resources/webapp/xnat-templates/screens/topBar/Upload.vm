@@ -1,11 +1,6 @@
-<!-- Sequence: 10 -->
-       <li class="yuimenuitem first-of-type"> 
-        <a class="yuimenuitemlabel" href="#upload">Upload</a>
-        <DIV ID="upload" class="yuimenu">
-         <DIV class="bd">
-          <ul class="first-of-type"
-		#addGlobalCustomScreens("topBar/Upload")  
-          </ul>
-         </DIV>
-        </DIV>
-       </li>
+<!-- Sequence: 30 -->
+<li><a href="#upload">Upload</a>
+    <ul>
+        #addGlobalCustomScreens("topBar/Upload")
+    </ul>
+</li>

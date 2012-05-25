@@ -1,12 +1,24 @@
+<!DOCTYPE html>
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<HTML>
-<HEAD>
-<TITLE>$!systemName</TITLE>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. -->
+
+
+<!-- Index -->
+
+<head>
+<title>$!systemName</title>
+<!-- HeaderIncludes -->
 $navigation.setTemplate("/HeaderIncludes.vm")
-</HEAD>
-<BODY id="page_body" class="yui-skin-sam">
+<!-- /HeaderIncludes -->
+</head>
+<body id="page_body" class="yui-skin-sam">
 <!-- DEFAULT -->
-<table height="100%" border=0 >
+<table height="100%" border=0>
   <tr ID="DefaultTopTR">
     <td height="60"  #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultTop.vm")
@@ -15,24 +27,26 @@ $navigation.setTemplate("/HeaderIncludes.vm")
   <tr>
 	#if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true")))
     <td class="leftBar" align="left" valign="top">
-      $navigation.setTemplate("/DefaultLeft.vm")
+    <!-- DefaultLeft -->  
+    $navigation.setTemplate("/DefaultLeft.vm")
+    <!-- /DefaultLeft -->
     </td>
 	#end
-    <td width="*" align="left" valign="top">
+    <td align="left" valign="top">
       <div id="tp_fm"></div>
-      <div id="layout_content2" style="display:none;">Loading...</DIV>
+      <div id="layout_content2" style="display:none;">Loading...</div>
       <div id="layout_content">
 <!--BEGIN SCREEN CONTENT -->
       $screen_placeholder
 <!--END SCREEN CONTENT -->
-      </DIV>
+      </div>
     </td>
   </tr>
-  <tr ID="DefaultBottomTR" height="*">
-    <td height="*" valign="bottom"  #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
+  <tr id="DefaultBottomTR">
+    <td valign="bottom"  #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultBottom.vm")
     </td>
   </tr>
 </table>
-</BODY>
-</HTML>
+</body>
+</html>

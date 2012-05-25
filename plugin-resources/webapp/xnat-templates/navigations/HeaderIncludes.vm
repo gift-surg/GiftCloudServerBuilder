@@ -1,4 +1,15 @@
-<meta http-equiv="X-UA-Compatible" content="IE=8" />
+## <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+## <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+<!-- /xnat-templates/navigations/HeaderIncludes -->
+
+<script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.min.js')"></script>
+<script type="text/javascript">
+    jQuery(function() {
+        var jq = jQuery.noConflict();
+    });
+</script>
+
 	<script LANGUAGE="JavaScript">
 	    
 	    if (typeof XNAT == "undefined" || !XNAT) {
@@ -67,15 +78,9 @@
         #end
 	#end
 	</script>
-	<script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></SCRIPT>
-	<script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></SCRIPT>
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/xdat.css")">
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/xnat.css")">
+	<script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></script>
+	<script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></script>
 <!-- YAHOO USER INTERFACE files below here -->
-<!-- css -->
-<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
-<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/xnat_skin.css")">
-<!-- js -->
 
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/yahoo-dom-event/yahoo-dom-event.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event.js")"></script>
@@ -116,3 +121,13 @@
 		}
 	});
 </script>
+
+<!-- YUI css -->
+<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
+## xnat_skin.css file has been integrated with /style/xnat.css file
+##<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/xnat_skin.css")">
+
+<!-- xdat.css and xnat.css loaded last to override YUI styles -->
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/xdat.css")">
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/xnat.css")">
+

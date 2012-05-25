@@ -1,3 +1,4 @@
+<!-- search script -->
 <script type="text/javascript">
 <!--
 function DefaultEnterKey(e,button){
@@ -37,10 +38,12 @@ function submitQuickSearch(){
 #end
 //-->
 </script>
-<FORM id="quickSearchForm" method="post" action="$link.setAction("QuickSearchAction")">
-<input style="font-family:'arial'; font-style:normal; font-weight:normal; font-size:10px;" maxlength="40" size="20" type="text" name="searchValue" value="$!field">&nbsp;<INPUT type="button" style="line-height:10px;font-size:9px;" VALUE="Search" ONCLICK="submitQuickSearch();"/>
+<!-- end search script -->
 
+<form id="quickSearchForm" method="post" action="$link.setAction("QuickSearchAction")">
+    <input id="searchValue" name="searchValue" type="text" maxlength="40" size="25" value="$!field" />
+    <a id="search_btn" class="btn1" href="javascript:;" onClick="submitQuickSearch();">Search</a>
 #if($turbineUtils.toBoolean($configProps.getProperty("UI.allow_advanced_search","true")))
-	&nbsp;&nbsp;<A CLASS="text" style="font-weight:550;text-decoration:underline;" onclick="advancedSearch();">Advanced</A>
+    <a id="advanced_btn" class="btn2" href="javascript:;" onClick="advancedSearch();">Advanced</a>
 #end
-				</FORM>
+</form>

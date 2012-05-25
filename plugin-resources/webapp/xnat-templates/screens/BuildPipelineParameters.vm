@@ -38,14 +38,14 @@ $page.setVlinkColor($ui.vlink)
 #if ($data.message)
 <DIV class="error">$data.message</DIV><br>
 #end
-<font face="$ui.sansSerifFonts">				
+##<font face="$ui.sansSerifFonts">
 
 #set ($sessionId = $om.getId())
 <form name="BuildPipeline" method="post" action="$link.setAction("BuildPipelineActions")" >
 <b>
-  <font face="$ui.sansSerifFonts">
+  ##<font face="$ui.sansSerifFonts">
 	      Session: $sessionId 
-  </font>
+  ##</font>
 </b>
 <br>
 <br>

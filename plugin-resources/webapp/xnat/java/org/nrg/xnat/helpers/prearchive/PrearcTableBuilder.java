@@ -247,6 +247,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}
 
 		public String getProject(){
+			// Get the project specified in the session.xml.
+			// If the session.xml file couldn't be parsed return the project field in the the local SessionData object
+			// which holds the optional project name passed to the constructor in case of an unparseable session.xml.
 			if (session != null) {
 				return session.getProject();
 			}

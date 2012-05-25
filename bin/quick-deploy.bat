@@ -54,7 +54,7 @@ set MAVEN_HOME=%XDAT_HOME%\plugin-resources\maven-1.0.2
 
 rem EXECUTE MAVEN Setup
 cd %XDAT_HOME%
-%XDAT_HOME%\plugin-resources\maven-1.0.2\bin\maven xdat:quick-deploy %*
+%XDAT_HOME%\plugin-resources\maven-1.0.2\bin\maven -o xdat:quick-deploy %*
 
 pause
 :end

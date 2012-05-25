@@ -43,7 +43,6 @@ function submitParentForm(){
        {
          document.getElementById(elementName+"/ID").value=matchedExpt.getProperty("ID");
          submitHistory=true;
-         concealContent("Submitting... Please wait.");
          //submit
          document.getElementById("form1").submit();
        }else{
@@ -54,7 +53,6 @@ function submitParentForm(){
    }else{
          //alert("NO MATCHES FOUND");
          submitHistory=true;
-         concealContent("Submitting... Please wait.");
          //submit
          document.getElementById("form1").submit();
    }

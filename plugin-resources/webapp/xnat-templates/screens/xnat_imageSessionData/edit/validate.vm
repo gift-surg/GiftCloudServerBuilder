@@ -5,7 +5,6 @@
 function validateForm(){
   if(confirmValues())
   {
-     concealContent("Submitting session.");
      return true;
   }else{
      return false;

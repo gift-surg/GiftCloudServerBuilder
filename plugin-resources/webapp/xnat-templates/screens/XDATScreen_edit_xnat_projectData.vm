@@ -95,7 +95,6 @@ function validateProjectForm(){
     document.getElementById("xnat:projectData/secondary_ID").focus();
     return false;
   }
-  concealContent("Submitting... Please wait.");
   
   return true;
 }

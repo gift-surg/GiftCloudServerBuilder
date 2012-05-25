@@ -150,7 +150,14 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 						data.setStatus(PrearcStatus.ARCHIVING);
 					}
 				} catch (Exception e) {
-					if(PrearcStatus.potentiallyReady(data.getStatus()))data.setStatus(PrearcStatus.ERROR);
+					if(PrearcStatus.potentiallyReady(data.getStatus())){
+						// The following accounts for the case where a project was passed in but the session XML is unparseable for some reason (eg. it is empty).
+						// In that case use the project name passed in.
+						if (project != null && (data.getProject() == null || !data.getProject().equals(project))) {
+							data.setProject(project);
+						}
+						data.setStatus(PrearcStatus.ERROR);
+					}
 				}
 			}
 		}
@@ -240,7 +247,17 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}
 
 		public String getProject(){
-			return (session!=null)?session.getProject():null;
+			if (session != null) {
+				return session.getProject();
+			}
+			else {
+				if (data != null && data.getProject() != null) {
+					return data.getProject();
+				}
+				else {
+					return null;
+				}
+			}
 		}
 
 		public Object getDate(){

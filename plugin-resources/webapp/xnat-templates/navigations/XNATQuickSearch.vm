@@ -25,7 +25,6 @@ else if(e) // Netscape/Firefox/Opera
 }
 
 function submitQuickSearch(){
-	    concealContent("Submitting... Please wait.");
 	    if(document.getElementById('quickSearchForm').value!="")
     		   document.getElementById('quickSearchForm').submit();
 }

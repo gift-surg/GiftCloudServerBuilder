@@ -48,7 +48,9 @@ function summaryIndexChanged(){
 function summaryTabManagerInit(){
     window.summaryTabView = new YAHOO.widget.TabView('exptSummary');   
     window.expt_summary_module = new YAHOO.widget.Module("expt_summary_module",{visible:false,zIndex:5});
-    
+	
+#addCustomScreens($om.getXSIType() "report/tabs") 
+
     window.expt_summary_module.show(); 		    
     
     var tabIndex=YAHOO.util.Cookie.get("${om.getId()}.summary.index");

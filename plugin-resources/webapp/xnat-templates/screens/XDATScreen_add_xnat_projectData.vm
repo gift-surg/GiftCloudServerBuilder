@@ -148,7 +148,6 @@ function validateProjectForm(){
   }
 
   
-  concealContent("Submitting... Please wait.");
   return true;
 
 }

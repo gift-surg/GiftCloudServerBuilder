@@ -10,7 +10,6 @@ $page.setVlinkColor($ui.vlink)
 		{
 			if(document.getElementById('new_email').value == document.getElementById('confirm_email').value)
 			{
-concealContent("Submitting... Please wait.");
 				return true;
 			}else{
 				alert('Values do not match');
@@ -23,7 +22,6 @@ concealContent("Submitting... Please wait.");
 		{
 			if(document.all['new_email'].value == document.all['confirm_email'].value)
 			{
-				concealContent("Submitting... Please wait.");
 				return true;
 			}else{
 				alert('Values do not match');

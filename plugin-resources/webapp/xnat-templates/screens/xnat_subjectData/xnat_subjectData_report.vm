@@ -73,7 +73,9 @@ function summaryIndexChanged(){
 function summaryTabManagerInit(){
     window.summaryTabView = new YAHOO.widget.TabView('subjectSummary');   
     window.subject_summary_module = new YAHOO.widget.Module("subject_summary_module",{visible:false,zIndex:5});   
-    
+	
+#addCustomScreens($om.getXSIType() "report/tabs") 
+	
     window.subject_summary_module.show(); 		    
     
 #if($canReadSubjects)

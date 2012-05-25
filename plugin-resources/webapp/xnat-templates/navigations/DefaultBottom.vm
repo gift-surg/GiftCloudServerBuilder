@@ -19,3 +19,5 @@
 </TABLE>
 
 	<script type="text/javascript" src="$content.getURI('scripts/footer.js')"></SCRIPT>
+	
+#addGlobalCustomScreens("footer")

@@ -159,7 +159,6 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
 		         }
 			       }
     }
-    concealContent("Submitting project modifications... Please wait.");
 		}
 		
 		function identifierChanged(id,index){

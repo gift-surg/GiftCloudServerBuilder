@@ -113,7 +113,6 @@
 		function validateEditForm(){
 		  if(validateKeyFields())
 		  {
-     concealContent("Submitting... Please wait.");
 		     return true;
 		  }else{
 		     return false;

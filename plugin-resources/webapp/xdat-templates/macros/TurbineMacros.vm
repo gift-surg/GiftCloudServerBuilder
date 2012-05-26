@@ -101,7 +101,7 @@
 	#xdatStringBoxOnChange($name $item $defaultValue "" $vr "")
 #end
 
-#macro (xdatStringBox $name $item $defaultValue $vr $classes)
+#macro (xdatStringBoxWClass $name $item $defaultValue $vr $classes)
 	#xdatStringBoxOnChange($name $item $defaultValue "" $vr $classes)
 #end
 

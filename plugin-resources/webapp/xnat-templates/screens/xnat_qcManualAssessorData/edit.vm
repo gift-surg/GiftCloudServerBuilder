@@ -77,7 +77,7 @@ $page.setVlinkColor($ui.vlink)
 									#xdatHiddenBox("xnat:qcManualAssessorData.ID" $item $item.getStringProperty("xnat:qcManualAssessorData.ID"))
 								</td>
 							</tr>
-							<tr><td>Label</td><td>#xdatStringBox("xnat:qcManualAssessorData/label" $item "" $vr "required")</td></tr>
+							<tr><td>Label</td><td>#xdatStringBoxWClass("xnat:qcManualAssessorData/label" $item "" $vr "required")</td></tr>
 							<tr><td>QC Date</td><td>#xdatDateBox("xnat:qcManualAssessorData/date" $item $vr $years)</td></tr>
 							<tr><td>Rater</td><td>#xdatStringBox("xnat:qcManualAssessorData/rater" $item "" $vr)</td></tr>
 							#if ("xnat:petSessionData" != $imageSessionType)

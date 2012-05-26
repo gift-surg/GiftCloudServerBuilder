@@ -29,6 +29,7 @@ classes/XNATTool.class
 classes/ValidateJavaBean.class
 classes/BuildCatalog.class
 StoreXML.launch
+modules/audit.zip
 syntax: regexp
 ^classes/org
 ^deployments

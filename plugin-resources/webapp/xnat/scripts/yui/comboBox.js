@@ -146,7 +146,7 @@ function XdatYUIComboBox(_input,_options,_values){
              },0);   
           }
        }
-       this.pushButton.on("click, toggleD,this,this);
+       this.pushButton.on("click", toggleD,this,this);
        this.oAC.containerCollapseEvent.subscribe(function(){YAHOO.util.Dom.removeClass(this.dToggler, "open")});   
        this.dToggler.style.display="";
     }else{

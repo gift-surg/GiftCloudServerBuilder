@@ -2013,7 +2013,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader { height: 0 ; margin: 0 ; padd
 
 .yui-skin-sam .yui-navset .yui-nav .selected a, .yui-skin-sam .yui-navset .yui-nav .selected a em { border-color: #243356 ; }
 
-.yui-skin-sam .yui-navset .yui-content { background: #edf5ff ; }
+.yui-skin-sam .yui-navset .yui-content { background: /* #edf5ff */ #f0f0f0 ; }
 
 .yui-skin-sam .yui-navset .yui-content, .yui-skin-sam .yui-navset .yui-navset-top .yui-content { border: 1px solid #808080 ; border-top-color: #243356 ; padding: .25em .5em ; }
 

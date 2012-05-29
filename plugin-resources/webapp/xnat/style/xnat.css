@@ -165,6 +165,17 @@ table.ruled tr:nth-child(2n+1) { background: #fff ; }
 
 .ic, .ic_spacer { display: none ; visibility: hidden ; }
 
+TH.underscore{ border-bottom-width:2px; border-bottom-color:rgb(255,153,51); border-bottom-style:solid; }
+
+DIV.alert {  background-color:#CCCCCC; border-width:1px; border-style:solid; color:red; font-size:14px; line-height:16px; font-weight:700; overflow:auto; padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
+
+IMG.logo_img{ height:60px;}
+
+TD.logo_img{ width:160px;}
+
+DIV.justification{ font-size:11px; line-height:13px; border:1px solid #DDDDDD; background-color:#F2F2F2; padding:4px; font-weight:700;}
+
+TABLE.dark{  background-color:#DCDCDC;}
 
 #page_wrapper {  }
 

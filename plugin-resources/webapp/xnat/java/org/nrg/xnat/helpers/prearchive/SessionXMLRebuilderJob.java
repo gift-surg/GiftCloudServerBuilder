@@ -33,7 +33,9 @@ public class SessionXMLRebuilderJob implements JobInterface {
 		List<SessionData> sds = null;
 		long now = Calendar.getInstance().getTimeInMillis();
 		try {
-			sds = PrearcDatabase.getAllSessions();
+			if (PrearcDatabase.ready) { 
+				sds = PrearcDatabase.getAllSessions();
+			}
 		} catch (SessionException e) {
 			logger.error("", e);
 		} catch (SQLException e) {

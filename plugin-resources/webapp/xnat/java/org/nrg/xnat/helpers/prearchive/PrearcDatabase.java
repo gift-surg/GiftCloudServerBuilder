@@ -377,8 +377,17 @@ public final class PrearcDatabase {
 
     public static boolean moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception, SessionException, SyncFailedException, SQLException {
         final SessionData sd = PrearcDatabase.getSession(sess,timestamp,proj);
-        if (!proj.equals(newProj) && !sd.getStatus().equals(PrearcStatus.MOVING) && markSession(sd.getSessionDataTriple(), PrearcStatus.MOVING)) {
-            return PrearcDatabase._moveToProject(sess, timestamp, proj, newProj);}
+        if (!sd.getStatus().equals(PrearcStatus.MOVING) && markSession(sd.getSessionDataTriple(), PrearcStatus.MOVING)) {
+        	if (!proj.equals(newProj)) {
+        		PrearcDatabase._moveToProject(sd.getFolderName(),sd.getTimestamp(),sd.getProject(),newProj);
+        		return true;
+        	}
+        	else {
+        		// cannot move a session back on itself.
+        		markSession(sd.getSessionDataTriple(), PrearcStatus.READY);
+        		return false;
+        	}
+        }
         else {
             return false;
         }

@@ -28,11 +28,11 @@ ul.topSubMenu li { border: 1px solid #aaa ; font-size: 9px ; }
 
 li.topSubMenuHover { }
 
-div.container { border: 1px solid #aaa ; /*width:300px;  */ }
+div.container { border: 1px solid #ccc ; /*width:300px;  */ }
 
-div.mainContainer { border: 1px solid #aaa ; /*width:300px;  */ }
+div.mainContainer { border: 1px solid #ccc ; /*width:300px;  */ }
 
-div.containerTitle { border-bottom: 1px solid #aaa; font-size: 13px ; font-weight: 500 ; line-height: 23px ; padding-left: 7px !important ; padding-right: 7px !important ; }
+div.containerTitle { border-bottom: 1px solid #ccc; font-size: 13px ; font-weight: 500 ; line-height: 23px ; padding-left: 7px !important ; padding-right: 7px !important ; }
 
 div.containerBody { overflow: auto ; font-size: 12px ; line-height: 15px ; padding: 0 ; }
 
@@ -76,7 +76,7 @@ font.titleBarComment { text-decoration: none ; font-weight: 500 ; font-size: 9px
 
 .odd { background-color: #fff ; }
 
-.even { background-color: #f0f0f0 ; border-top: 1px solid #e0e0e0 ; border-bottom: 1px solid #e0e0e0 ; }
+.even { background-color: #f3f3f3 ; border-top: 1px solid #ececec ; border-bottom: 1px solid #ececec ; }
 
 div.projectPrimary { font-weight: 700px ; }
 
@@ -253,8 +253,10 @@ td.highlighted {
 .yuimenuitemlabel { outline: none; }
 
 #﻿layout_content { z-index: 0 ; }
+/*
 #layout_content, #layout_content .yui-content { width: 700px ; }
 #layout_content .yui-nav { width: 714px ; }
+*/
 
 div.containerTitle.withColor { background: #084FAB ; }
 
@@ -359,7 +361,7 @@ div.containerTitle.withColor { background: #084FAB ; }
 
 .formLabelRequired b { color: red ; /* font-size: 1.2em ; */ }
 
-.summary h3 { line-height: 15px ; margin: 2px 0 !important ; }
+.summary h3 { line-height: 15px ; margin: 0 !important ; padding: 3px 0 !important ; }
 
 #min_projects_list, #min_expt_list { height: 350px ; overflow-y: scroll ; }
 #min_projects_list { min-width: 409px ; }
@@ -380,6 +382,9 @@ div.edit_header1, div.edit_title {
 div.edit_title { margin-bottom: 10px ; }
 
 
+.yui-skin-sam .yui-navset .yui-content, .yui-skin-sam .yui-navset .yui-navset-top .yui-content {
+    border-color: #ccc;
+}
 
 
 

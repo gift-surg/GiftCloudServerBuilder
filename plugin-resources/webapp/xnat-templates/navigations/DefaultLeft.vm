@@ -10,12 +10,12 @@ Time Left :
 </div>
 -->
 <div class="yui-skin-sam">
-<table >
+<table style="margin:0 10px 0 0;padding:0;">
 $navigation.setTemplate("LeftBarOptions.vm")
  <tr>
-  <td valign="top" width="191px" style="border:solid 1px #AAAAAA">
-   <div id="l.tv"></div>
-   <div style="width:190px">&nbsp;</div>
+  <td valign="top" style="padding:10px;border:solid 1px #d0d0d0">
+   <div id="l_tv"></div>
+   <div style="width:160px">&nbsp;</div>
   </td>
  </tr>
 </table>
@@ -27,7 +27,7 @@ $navigation.setTemplate("LeftBarOptions.vm")
 
 <script type="text/javascript">
 //build element_array
- var lTV = new LeftBarTreeView({treeview:"l.tv"});
+ var lTV = new LeftBarTreeView({treeview:"l_tv"});
 
  lTV.loadNodeData=function(node, fnLoadComplete)  {
     var tabReqObject= node.data;

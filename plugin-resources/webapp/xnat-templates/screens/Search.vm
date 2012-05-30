@@ -17,7 +17,7 @@
 <table width="100%">
  <tr>
   <td valign="top" class="leftBar" width="191px" style="border:solid 1px #AAAAAA">
-   <div id="l.tv"></div>
+   <div id="l_tv"></div>
    <div style="width:190px">&nbsp;</div>
   </td>
   <td valign="top">
@@ -46,7 +46,7 @@ var server= "$content.getURI("images")/";
 var user_email= "$data.getSession().getAttribute("user").getEmail()";
 //build element_array
 
- window.lTV = new LeftBarTreeView({treeview:"l.tv",module:"search_tab_module",tabs:"search_tabs"});
+ window.lTV = new LeftBarTreeView({treeview:"l_tv",module:"search_tab_module",tabs:"search_tabs"});
   window.lTV.init();
  
  #if($node)

@@ -2,7 +2,7 @@
 /* HTML tag styles                             */
 /***********************************************/
 
-body { margin: 5px ; padding: 0px ; font-size: 11px ; line-height: 13px ; /* font-weight: 400 ; */ font-family: Arial, Helvetica, sans-serif ; background-color: white ; }
+body { margin: 5px ; padding: 0 ; font-size: 11px ; line-height: 13px ; /* font-weight: 400 ; */ font-family: Arial, Helvetica, sans-serif ; background-color: white ; }
 
 th { /* font-size: 11px ; line-height: 13px ; */ font-weight: 700 ; margin: 0 ; border-top: none ; border-right: none ; border-left: none ; border-collapse: collapse ; padding: 0 4px ; }
 
@@ -62,4 +62,4 @@ div.spacer { line-height: 13px ; }
 
 #menu1 { position: relative ; top: 2px ; left: 5px ; width: 99% ; height: 28px ; border-bottom: 1px solid #aaa ; }
 
-div.option { font-weight: 800 ; }
+div.option { /* font-weight: 800 ; */ }

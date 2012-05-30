@@ -13,10 +13,10 @@
 $navigation.setTemplate("/HeaderIncludes.vm")
 
 </head>
-<body style="margin-top:0px" id="page_body" class="yui-skin-sam">
-<table WIDTH="100%" HEIGHT="100%" VALIGN="top" style="">
+<body style="margin-top:0;" id="page_body" class="yui-skin-sam">
+<table width="100%" height="100%" valign="top" style="">
 	<tr>
-		<td VALIGN="top" align="left" style="">
+		<td valign="top" align="left" style="">
 <table border="0" width="100%" ID="DefaultTopTR" style="">
   <tr>
     <td>
@@ -27,15 +27,15 @@ $navigation.setTemplate("/HeaderIncludes.vm")
   <div id="tp_fm"></div>
 <table border="0" width="100%">
   <tr>
-   <td valign="top" align="center">
-    <div id="layout_content">$screen_placeholder</div>
+   <td valign="top">
+    <div id="layout_content_x">$screen_placeholder</div>
    </td>
   </tr>
 </table>
 		</td>
 	</tr>
 	<tr>
-		<td ALIGN="right">
+		<td align="right">
 			<table valign="bottom">
 				<tr>
 				    <td valign="bottom" align="right">

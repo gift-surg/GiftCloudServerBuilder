@@ -9,29 +9,29 @@
 
 <!-- xdat-templates/layouts/NoMenu -->
 <HEAD>
-<TITLE>$!systemName</TITLE>
-$navigation.setTemplate("/HeaderIncludes.vm")
-<!-- LOGIN -->
+    <TITLE>$!systemName</TITLE>
+    $navigation.setTemplate("/HeaderIncludes.vm")
+    <!-- LOGIN -->
 </HEAD>
 <BODY id="page_body" class="yui-skin-sam">
 
-<table width="100%" height="100%" valign="top" border=0>
-  <tr height="120">
-    <td valign="top">
-      $navigation.setTemplate("/NoMenuTop.vm")
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-      <div id="layout_content2" style="display:none;">Loading...</DIV>
-      <div id="layout_content">$screen_placeholder</DIV>
-    </td>
-  </tr>
-  <tr>
-    <td valign="bottom" height="*">
-      $navigation.setTemplate("/DefaultBottom.vm")
-    </td>
-  </tr>
+<table height="500" valign="top" border=0>
+    <tr height="120">
+        <td valign="top">
+            $navigation.setTemplate("/NoMenuTop.vm")
+        </td>
+    </tr>
+    <tr>
+        <td align="left" valign="top">
+            <div id="layout_content2" style="display:none;">Loading...</DIV>
+            <div id="layout_content_x">$screen_placeholder</DIV>
+        </td>
+    </tr>
+    <tr>
+        <td valign="bottom">
+            $navigation.setTemplate("/DefaultBottom.vm")
+        </td>
+    </tr>
 </table>
 </BODY>
 </html>

@@ -36,11 +36,13 @@ div.containerTitle { border-bottom: 1px solid #aaa; font-size: 13px ; font-weigh
 
 div.containerBody { overflow: auto ; font-size: 12px ; line-height: 15px ; padding: 0 ; }
 
+div.containerBody a { font-weight: bold ; }
+
 div.containerBody > div > div { padding: 5px 10px 9px ; font-size: 12px ; }
 
 div.containerBody #min_expt_list {  }
 
-div.containerBody #min_expt_list td { padding: 1px 6px ; }
+div.containerBody #min_expt_list td { padding: 3px 6px ; }
 
 div.containerBody h3 { font-size: 13px ; }
 
@@ -174,15 +176,15 @@ table.ruled tr:nth-child(2n+1) { background: #fff ; }
 
 /* new header and body styles */
 
-body, html body, * body { margin: 0 ; padding: 28px ; background: #fff url('images/left_margin.gif') left top repeat-y ; font-family: Arial, Helvetica, sans-serif ; letter-spacing: 0.02em ; position: relative ; }
+body, html body, * body { margin: 0 ; padding: 28px ; background: #fff url('images/left_margin.gif') left top repeat-y ; font-family: Arial, Helvetica, sans-serif ; /* letter-spacing: 0.02em ; */ position: relative ; }
 .ie html body { letter-spacing: normal ; }
 a { color: /* #2a70c6 */ /* #084FAB */ #084FAB ; }
-img { vertical-align: bottom ; }
+img { /* vertical-align: bottom ; */ }
 .clear { height: 0 ; clear: both ; }
 .btn1, .btn2 { display: inline-block ; padding: 3px 8px ; background-position: center center ; background-repeat: repeat-x ; text-decoration: none ; }
 .btn1 { background-image: url('images/btn1_30px.png') ; border: 1px solid #508ad0 ; }
 .btn2 { background-image: url('images/btn2_30px.png') ; border: 1px solid #d3d3d3 ; }
-#user_bar { position: absolute ; left: 0 ; top: 0 ; width: 828px ; height: 28px ; font-size: 11px ; line-height: 28px ; vertical-align: middle ; background: #dadada url('images/user_bar_bkgd.png') left top repeat-x ; }
+#user_bar { position: absolute ; left: 0 ; top: 0 ; width: 960px ; height: 28px ; font-size: 11px ; line-height: 28px ; vertical-align: middle ; background: #dadada url('images/user_bar_bkgd.png') left top repeat-x ; }
 #last_login { display: block ; float: left ; padding-left: 1em ; color: #666 ; white-space: nowrap ; }
 #user_info { display: block ; float: right ; padding-right: 1em ; color: #333 ; white-space: nowrap ; }
 #user_info a { padding: 4px 0 ; font-weight: normal ; text-decoration: underline ; }
@@ -190,7 +192,7 @@ img { vertical-align: bottom ; }
 .ie7 #user_info a { padding-top: 0 ; }
 #user_info b { padding: 0 5px ; font-weight: normal ; color: #aaa ; }
 #user_info pre { display: inline ; font-family: "Courier New", Courier, monospace ; font-weight: bold ; }
-#header { position: relative ; width: 800px ; min-height: 90px ; margin: -2px ; margin-bottom: 10px ; background: #fff ; z-index: 999 ; }
+#header { position: relative ; width: 932px ; min-height: 72px ; margin: -2px ; margin-bottom: 16px ; background: #fff ; z-index: 999 ; }
 #header_logo { position: absolute ; left: 10px ; bottom: 0 ; }
 #quickSearchForm { position: absolute ; right: 0 ; bottom: 35px ; }
 #searchValue { border: 1px solid #ccc ; height: 17px ; }
@@ -251,6 +253,8 @@ td.highlighted {
 .yuimenuitemlabel { outline: none; }
 
 #﻿layout_content { z-index: 0 ; }
+#layout_content, #layout_content .yui-content { width: 700px ; }
+#layout_content .yui-nav { width: 714px ; }
 
 div.containerTitle.withColor { background: #084FAB ; }
 
@@ -263,10 +267,10 @@ div.containerTitle.withColor { background: #084FAB ; }
 
 
 /* //////////  BRAND-SPANKING NEW NAV BAR!  ////////// */
-#main_nav { position: absolute ; right: 0 ; bottom: 0 ; height: 24px ; width: 578px /* 525px */ ; color: #333 ; background: url('images/nav_bkdg.png') center center repeat-x ;
+#main_nav { position: absolute ; right: 0 ; bottom: 0 ; height: 24px ; width: /* 578px */ /* 525px */ 728px ; color: #333 ; background: url('images/nav_bkdg.png') center center repeat-x ;
     font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; font-weight: bold ; border: 1px solid #c0c0c0 ; }
 #main_nav a { color: #333 ; text-decoration: none ; }
-#main_nav a:hover {  }
+#main_nav a:hover { cursor: pointer !important ; }
 #main_nav > ul {  }
 #main_nav ul { margin: 0 ; padding: 0 ; list-style: none ; background: #f8f8f8 ; }
 #main_nav > ul > li { border-right: 1px solid #c0c0c0 ; }
@@ -342,5 +346,51 @@ div.containerTitle.withColor { background: #084FAB ; }
     outline: none ;
 }
 
+.leftBar {  }
+.leftBarTable {  }
+.leftBarTableTD {  }
+.leftBarTableBlank {  }
 
-/*L*/
+.thc { padding-bottom: 10px ; font-weight: normal ; }
+
+.formLabel,
+.formLabelRequired,
+.formSublabel { text-align: left; /* vertical-align: text-top; */ white-space: nowrap ; }
+
+.formLabelRequired b { color: red ; /* font-size: 1.2em ; */ }
+
+.summary h3 { line-height: 15px ; margin: 2px 0 !important ; }
+
+#min_projects_list, #min_expt_list { height: 350px ; overflow-y: scroll ; }
+#min_projects_list { min-width: 409px ; }
+#min_expt_list { min-width: 289px ; }
+
+
+div.edit_header1, div.edit_title {
+    /* background: #c2c2c2 url("images/btn2_30px.png") repeat-x center top ; */
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 16px;
+    /* padding: 5px 10px; */
+    padding-bottom: 2px ;
+    border-bottom: 2px solid #e0e0e0 ;
+    margin-bottom: 5px ;
+}
+
+div.edit_title { margin-bottom: 10px ; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -66,7 +66,7 @@
         <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>
     #elseif($data.getSession().getAttribute("user").getUsername())
     ## use default timout value from web.xml as the starting text in the "timeLeft" element
-        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b> <pre id="timeLeft">0:15:00</pre> remaining - <a id="timeLeftRenew" href="javascript:;">renew</a> <b>|</b> <a href="$link.setAction("LogoutUser")">Logout</a></span>
+        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b> Auto-logout in: <pre id="timeLeft">0:15:00</pre> - <a id="timeLeftRenew" href="javascript:;">renew</a> <b>|</b> <a href="$link.setAction("LogoutUser")">Logout</a></span>
     #end
     <div class="clear"></div>
 </div><!-- /user_bar -->
@@ -103,15 +103,27 @@ $navigation.setTemplate("XNATQuickSearch.vm")
 
         // adjust height of header if logo is taller than 80px
         var hdr_logo_height = jq('#header_logo').height();
-        if (hdr_logo_height > 80) {
+        if (hdr_logo_height > 65) {
             jq('.main_header').height(hdr_logo_height + 10);
         }
 
-        // adjust width of main nave if logo is wider than 200px
+        // adjust width of main nav if logo is wider than 200px
         var hdr_logo_width = jq('#header_logo').width();
-        if (hdr_logo_width > 200) {
-            jq('#main_nav').width(800 - hdr_logo_width - 30);
+        if (hdr_logo_width > 175) {
+            jq('#main_nav').width(932 - hdr_logo_width - 30);
         }
+
+        //
+        //var recent_proj_height = jq('#min_projects_list > div').height();
+        var recent_proj_height = 67 ;
+        //jq('#min_projects_list, #min_expt_list').height(recent_proj_height * 5).css({'min-width':349,'overflow-y':'scroll'});
+
+        jq('#min_projects_list').closest('table').addClass('summary').css({
+            'margin':0,
+            'position':'relative',
+            'left':-2
+        })
+
     });
 
 </script>

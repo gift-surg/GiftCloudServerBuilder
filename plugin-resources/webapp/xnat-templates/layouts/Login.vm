@@ -7,7 +7,7 @@
 <!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
 <!-- the "no-js" class is for Modernizr. -->
 
-<!-- Login -->
+<!-- xnat/Login -->
 <head>
 <title>$!systemName</title>
 $navigation.setTemplate("/HeaderIncludes.vm")
@@ -15,7 +15,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 </head>
 <body id="page_body" class="yui-skin-sam" ONLOAD="document.getElementById('username').focus();">
 
-<table width="800" height="500" valign="top" border=0>
+<table id="login_container" height="500" valign="top" border=0>
   <tr height="120">
     <td valign="top">
       $navigation.setTemplate("/NoMenuTop.vm")
@@ -23,13 +23,13 @@ $navigation.setTemplate("/HeaderIncludes.vm")
   </tr>
   <tr>
     <td align="left" valign="top">
-      <div id="layout_content2" style="display:none;">Loading...</DIV>
-      <div id="layout_content">$screen_placeholder</DIV>
+      <div id="layout_content2" style="display:none;">Loading...</div>
+      <div id="layout_content_x">$screen_placeholder</div>
     </td>
   </tr>
-  <tr height="*">
-    <td valign="bottom" height="*">
-      <table width="100%" >
+  <tr>
+    <td valign="bottom">
+      <table width="100%">
 <tr>
 	<td><hr></td>
 </tr>

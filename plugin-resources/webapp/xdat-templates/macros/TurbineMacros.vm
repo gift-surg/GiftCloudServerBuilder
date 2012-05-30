@@ -1168,18 +1168,18 @@
 #end
 
 #macro (formLabel $label)
-  <TH style="text-align: left; vertical-align: text-top; white-space:nowrap">$label</TH>
+<TH class="formLabel">$label</TH>
 #end
 
 #macro (formLabelRequired $label)
-  <TH style="text-align: left; vertical-align: text-top; white-space:nowrap">
+<TH class="formLabelRequired">
     $label
-    <span style="color:red; font-size=1.2em;">*</span>
-  </TH>
+    <b>*</b>
+</TH>
 #end
 
 #macro (formSublabel $label)
-  <TD style="text-align: right; vertical-align: text-top; white-space:nowrap">$label</TD>
+<TD class="formSublabel">$label</TD>
 #end
 
 #macro (formUnderlineLabel $label)

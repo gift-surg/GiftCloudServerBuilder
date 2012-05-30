@@ -1,7 +1,7 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 
- <DIV ID="mylogger"></DIV>
-<TABLE width="100%" >
+<DIV ID="mylogger"></DIV>
+<TABLE width="100%" style="margin-top:75px;">
 <TR>
 	<TD colspan="2"><hr></TD>
 </TR>

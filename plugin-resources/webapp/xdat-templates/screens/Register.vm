@@ -3,7 +3,7 @@
 $!template.setLayoutTemplate("NoMenu.vm")
 $page.setTitle("XDAT -- Register")
 $page.setBgColor($ui.bgcolor)
-<DIV VALIGN="top">
+<DIV VALIGN="top" id="register_page">
 #parse("/screens/userValidationJS.vm")
 
 <form name="form2" id="registerForm" method="post" action="$link.setAction("XDATRegisterUser")" onSubmit="return XNAT.app.register.validateForm();">
@@ -16,20 +16,20 @@ $page.setBgColor($ui.bgcolor)
 	#if ( $data.getMessage() )
 		<tr>
 	  		<td colspan="2">
-	  			<font color="#FF0000" size="2" face="verdana,geneva,helvetica">
+	  			##<font color="#FF0000" size="2" face="verdana,geneva,helvetica">
 	  				$data.getMessage()<br>
-	  			</font>
+	  			##</font>
 			</td>
 		</tr>
 	#end
     <tr>
-    	<TH colspan="2"><font size="+1" style="line-height:20px;">New User Registration</font></TH>
+    	<TH colspan="2"><span style="line-height:20px;">New User Registration</span></TH>
     </tr>
     <tr>
     	<TD colspan="2"><hr/></TD>
     </tr>
     <tr>
-    	<TH colspan="2" align="left">Login Details</TH>
+    	<TH class="thc" colspan="2" align="left">Login Details</TH>
     </tr>
     <tr>
       #formLabelRequired("Username")
@@ -82,10 +82,10 @@ $page.setBgColor($ui.bgcolor)
     <tr>
 				      <td></td>
       <td align ="left">
-        <font face="$ui.sansSerifFonts">
+        ##<font face="$ui.sansSerifFonts">
          <input type="hidden" name="xdat:user.primary_password.encrypt" value="true">
          <input type="submit" value="Register" id="Register">
-        </font>
+        ##</font>
       </td>
     </tr>
   </table>

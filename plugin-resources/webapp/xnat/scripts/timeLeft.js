@@ -27,13 +27,13 @@ function parseExpirationTimeTuple (tuple) {
    *                    redirecting to the login page. 
    * - serverResponseTime : store the time it takes for a response to reach the client from the server
    *  
-   * The last two flags needs some explanation. Given the scenario where there are two session tabs A and B
+   * The dialogDisplay and sessionTimeout need some explanation. Given the scenario where there are two session tabs A and B
    * (1) Currently a warning dialog pops up only once per session per tab. If a user extends a session in tab A
-   * , tab B has no way of knowing this without the newSession cookie. 
+   * , tab B has no way of knowing this without the dialogDisplay cookie. 
    * (2) If A times out the page which then redirects to the login page, when that login page is loaded the server 
    * updates the SESSION_EXPIRATION_TIME cookie to a new value even though the session has expired. This happens 
    * because the redirect to the login page counts as a request. At this point the SESSION_EXPIRATION_TIME is wrong 
-   * and if a user were to refresh tab B they would be redirected to the login page. This flag is used to 
+   * and if a user were to refresh tab B they would be redirected to the login page. 'sessionTimout' is used to 
    * broadcast to all tabs and windows that the session has indeed expired and they should take some action.
    */  
 var synchronizingCookies = {
@@ -90,8 +90,6 @@ var synchronizingCookies = {
     }
   }
 };
-
-
 
 /**
  * Local variables, think of them as thread-local variables. 
@@ -349,24 +347,23 @@ function redirectToLogin () {
  */
 function sessionCountdown() {
   var timeLeft = locals.expirationTime.timeLeft;
+  document.getElementById('timeLeft').innerHTML=timeLeft.hoursPart + ":" 
+    + zeroPad(timeLeft.minutesPart) + ":"
+    + zeroPad(timeLeft.secondsPart);
+  if ((timeLeft.secondsLeft < locals.popupTime) && (!locals.warningDisplayedOnce)) {
+    synchronizingCookies.dialogDisplay.set("true");
+  }
   
-	document.getElementById('timeLeft').innerHTML=timeLeft.hoursPart + ":" 
-		+ zeroPad(timeLeft.minutesPart) + ":"
-		+ zeroPad(timeLeft.secondsPart);
-	  if ((timeLeft.secondsLeft < locals.popupTime) && (!locals.warningDisplayedOnce)) {
-		synchronizingCookies.dialogDisplay.set("true");
-	  }
-	  
-	  if (timeLeft.millisecondsLeft <= locals.timerInterval) {
-		synchronizingCookies.dialogDisplay.set("false");
-		document.getElementById('timeLeft').innerHTML="Time Left: Session Expired.";
-	  }
-	  if (synchronizingCookies.sessionTimeout.get() === "true" ||
-		  timeLeft.millisecondsLeft <= 0 ||
-		  timeLeft.millisecondsLeft == undefined) {
-		redirectToLogin();
-	  }
-	}
+  if (timeLeft.millisecondsLeft <= locals.timerInterval) {
+    synchronizingCookies.dialogDisplay.set("false");
+    document.getElementById('timeLeft').innerHTML="Time Left: Session Expired.";
+  }
+  if (synchronizingCookies.sessionTimeout.get() === "true" ||
+      timeLeft.millisecondsLeft <= 0 ||
+      timeLeft.millisecondsLeft == undefined) {
+    redirectToLogin();
+  }
+}
   
 /**
  * Initialize the synchronizing cookies and warning dialog and kick off the 

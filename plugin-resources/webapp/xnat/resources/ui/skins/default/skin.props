@@ -1,6 +1,6 @@
 # These are the default properties  
 bgcolor = #ffffff 
-sansSerifFonts = verdana,geneva,helvetica 
+sansSerifFonts = Arial,Helvetica,sans-serif
 #formLabelColor = #b3cc99 
 #formFieldColor = #b3bb99 
 #labelColor = #b3cc99 

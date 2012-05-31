@@ -165,7 +165,7 @@ function TabManager(_id){
 	  				       }));
     }else{
       var tempTab=new YAHOO.widget.Tab({
-	  				 label:obj.label + '&nbsp;<span class="close"><img src="' + server + 'close.jpg"/></span>',
+	  				 label:obj.label + '&nbsp;<span class="close"><img src="' + server + 'close.gif"/></span>',
 	  				 content:'<div id="'+_id + '_dt_p"></div><div id="'+_id + '_dt_c" style="overflow:auto;"><div id="'+_id + '_dt">Preparing Results</div></div>',
 	  				 active:true});
 

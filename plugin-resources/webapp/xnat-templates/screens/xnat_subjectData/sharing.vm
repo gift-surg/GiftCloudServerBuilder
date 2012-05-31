@@ -86,7 +86,7 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
    XNAT.app.subject.cfDT=new YAHOO.widget.DataTable("sharing_summary_table",[
    		{key:"button", label:"Unshare",formatter:function(el, oRecord, oColumn, oData) {
     					if(oRecord.getData("canEdit"))
-				      el.innerHTML = "<button type=\"button\" class=\"yui-dt-button\"><img border=\"0\" src=\""+serverRoot +"/images/close.jpg\"/></button>";
+				      el.innerHTML = "<button type=\"button\" class=\"yui-dt-button\"><img border=\"0\" src=\""+serverRoot +"/images/close.gif\"/></button>";
 				    else
 				   	   el.innerHTML="N/A";
    	    }},

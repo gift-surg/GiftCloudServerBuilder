@@ -1,2 +1,2 @@
 
-<img class="logo_img" src="$content.getURI("images/logo.gif")" border="0">
+<img class="logo_img" src="$content.getURI("images/logo.png")" style="border:none;">

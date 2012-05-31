@@ -66,7 +66,7 @@
         <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>
     #elseif($data.getSession().getAttribute("user").getUsername())
     ## use default timout value from web.xml as the starting text in the "timeLeft" element
-        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b> Auto-logout in: <pre id="timeLeft">0:15:00</pre> - <a id="timeLeftRenew" href="javascript:;">renew</a> <b>|</b> <a href="$link.setAction("LogoutUser")">Logout</a></span>
+        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b> Auto-logout in: <pre id="timeLeft">0:15:00</pre> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a href="$link.setAction("LogoutUser")">Logout</a></span>
     #end
     <div class="clear"></div>
 </div><!-- /user_bar -->

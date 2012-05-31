@@ -14,5 +14,5 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <div id="numdays" num=$!numdays></div>
 <div id="archiveheader"></div>
 </br>
-<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/archiveheaders/build/script/dicomheaderview.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/qooxdoo/dicomheaderview/build/script/dicomheaderview.js')"></script>
 

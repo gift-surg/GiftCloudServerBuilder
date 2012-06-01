@@ -78,13 +78,13 @@ public class MoverMaker {
 		}
 		
 		if(FileUtils.IsAbsolutePath(uri)){
-			int lastIndex=uri.lastIndexOf(File.separator + current_label + File.separator);
+			int lastIndex=uri.lastIndexOf("/" + current_label + "/");
 			if(lastIndex>-1)
 			{
 				lastIndex+=1+current_label.length();
 			}
 			if(lastIndex==-1){
-				lastIndex=uri.lastIndexOf(File.separator + m.getId() + File.separator);
+				lastIndex=uri.lastIndexOf("/" + m.getId() + "/");
 				if(lastIndex>-1)
 				{
 					lastIndex+=1+m.getId().length();

@@ -424,7 +424,7 @@ function SubjectEditor(_config){
 						  if(confirm("Modifying the subject of an experiment may result in the moving of files on the file server into the new subject's storage space.  Are you sure you want to make this change?")){
 						       openModalPanel("modify_subject","Modifying subject, please wait...");
 						        
-				               YAHOO.util.Connect.asyncRequest('PUT',serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + this.selector.new_subject + "/experiments/" + window.currentLabe + "?format=json&XNAT_CSRF=" + csrfToken,settingsCallback);
+				               YAHOO.util.Connect.asyncRequest('PUT',serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + this.selector.new_subject + "/experiments/" + window.currentLabel + "?format=json&XNAT_CSRF=" + csrfToken,settingsCallback);
 					      }else{
 					    	   this.cancel();
 					      }

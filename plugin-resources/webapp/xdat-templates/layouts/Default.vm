@@ -38,7 +38,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
       </DIV>
     </td>
   </tr>
-  <tr ID="DefaultBottomTR" height="*">
+  <tr ID="DefaultBottomTR">
     <td valign="bottom" #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultBottom.vm")
     </td>

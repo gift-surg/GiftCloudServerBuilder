@@ -1,7 +1,7 @@
 // Copyright (c) 2007 Washington University School of Medicine
 // Author: Tim Olsen <timo@npg.wustl.edu>
 
-var closeLocation = serverRoot+"/images/close.jpg";
+var closeLocation = serverRoot+"/images/close.gif";
 var DEBUG=false;
 //SearchCollection contains an array of searches
 //SearchCollection.selectedSearch is the currently active search.

@@ -26,18 +26,6 @@ $page.setVlinkColor($ui.vlink)
 	<tr>
 		<TD align=right>Password:</TD><TD><INPUT type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" value="$!item.getProperty("xdat:user.primary_password")" autocomplete="off"/></TD>
 	</tr>
-	<tr>
-		#if ($!item.getBooleanProperty("xdat:user.primary_password.encrypt","true"))
-			<TD align=right>Encrypt Password:</TD>
-			<TD><INPUT type="radio" name="xdat:user.primary_password.encrypt" value="1" CHECKED/>&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<INPUT type="radio" name="xdat:user.primary_password.encrypt" value="0"/>&nbsp;False</TD>
-		#else
-			<TD align=right>Encrypt Password:</TD>
-			<TD><INPUT type="radio" name="xdat:user.primary_password.encrypt" value="1"/>&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<INPUT type="radio" name="xdat:user.primary_password.encrypt" value="0" CHECKED/>&nbsp;False</TD>
-		#end
-	</tr>
-	##xdatHiddenBox("xdat:user.primary_password.encrypt" $item "true")
 	#xdatHiddenBox("xdat:user.enabled" $item "false")
 	<tr>
 		<TD align=right>First Name:</TD><TD><INPUT type="text" name="xdat:user.firstname" value="$!item.getProperty("firstname")"/></TD>

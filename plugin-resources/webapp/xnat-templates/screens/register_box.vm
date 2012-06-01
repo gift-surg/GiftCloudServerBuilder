@@ -59,7 +59,6 @@
                   </tr>               
                  
                  </table>
-        <input type="hidden" name="xdat:user.primary_password.encrypt" value="true">
         #foreach($key in $!turbineUtils.GetDataParameterHash($data).keySet())
         	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
         		<input type="hidden" name="$key" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	

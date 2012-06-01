@@ -3,6 +3,7 @@ function InvestigatorManager(){
 	this.init=function(){
 		//load from search xml from server
 		this.initCallback={
+            cache:false,
 			success:this.completeInit,
 			failure:this.initFailure,
 			scope:this

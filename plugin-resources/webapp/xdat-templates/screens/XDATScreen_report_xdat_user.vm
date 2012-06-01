@@ -37,9 +37,6 @@ $page.setVlinkColor($ui.vlink)
 							<tr>
 								<TD align=left>Enabled:</TD><TD>#if($item.getBooleanProperty("enabled"))YES #else NO #end</TD>
 							</tr>
-							<tr>
-								<TD align=left>Encrypted Password:</TD><TD>#if($item.getBooleanProperty("primary_password.encrypt"))YES #else NO #end</TD>
-							</tr>
 							<!--<tr>
 								<TD align=left>Authenticated:</TD><TD>#if($item.isActive())YES #else NO #end</TD>
 							</tr>-->

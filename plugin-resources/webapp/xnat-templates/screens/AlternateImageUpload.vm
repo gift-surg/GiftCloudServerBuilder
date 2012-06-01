@@ -152,7 +152,16 @@ var checkProgressFinal = 0;
 
 function prog(theform)
 {
-	  if(document.getElementById("project").selectedIndex==0){
+    var imageArchive = document.getElementById("image_archive");
+    if (!imageArchive.value) {
+        alert("Please select an archive to upload.");
+        return false;
+    }
+    if (!(imageArchive.value.endsWith(".tar") || imageArchive.value.endsWith(".zip"))) {
+        alert("Please select a tar or zip archive to upload.");
+        return false;
+    }
+    if(document.getElementById("project").selectedIndex==0){
 	    alert("Please select a project.");
 	    return false;
 	  }
@@ -383,7 +392,7 @@ function checkProgress(){
 		</TD>
 	</TR>
 	<TR>
-		<TH align="left">File</TH><TD><input type="file" name="image_archive" size="75" accept="application/zip, application/x-tar"/></TD>
+		<TH align="left">File</TH><TD><input type="file" id="image_archive" name="image_archive" size="75" accept="application/zip, application/x-tar"/></TD>
 	</TR>
 	
 	#auditBoxes("3" "" "" "Upload Images")

@@ -75,7 +75,6 @@ Registering for an account allows you to upload, download, and analyze your  dat
     </tr>
     <tr style="vertical-align: top" class="FooterColor">
       <td colspan="2" align="center">
-         <input type="hidden" name="xdat:user.primary_password.encrypt" value="true">
         <input type="submit" name="SubmitName" value="Register" />      </td>
     </tr>
   </table>

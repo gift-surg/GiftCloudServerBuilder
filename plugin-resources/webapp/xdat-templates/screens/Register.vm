@@ -83,7 +83,6 @@ $page.setBgColor($ui.bgcolor)
 				      <td></td>
       <td align ="left">
         ##<font face="$ui.sansSerifFonts">
-         <input type="hidden" name="xdat:user.primary_password.encrypt" value="true">
          <input type="submit" value="Register" id="Register">
         ##</font>
       </td>

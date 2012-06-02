@@ -14,9 +14,9 @@ $page.setVlinkColor($ui.vlink)
 <form name="SampleBuild" method="post" action="$link.setAction("SampleBuild")" >
 
 <b>
-  <font face="verdana,geneva,helvetica ">
+  ##<font face="verdana,geneva,helvetica ">
 	      Session: $mr.getId()
-  </font>
+  ##</font>
   
 </b>
 

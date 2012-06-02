@@ -5,7 +5,7 @@ http://developer.yahoo.net/yui/license.txt
 version: 2.8.0r4
 */
 
-.yui-skin-sam .yui-ac { position: relative ; font-family: arial ; font-size: 100% ; }
+.yui-skin-sam .yui-ac { position: relative ; font-family: Arial, Helvetica, sans-serif ; font-size: 100% ; }
 
 .yui-skin-sam .yui-ac-input { position: absolute ; width: 100% ; }
 
@@ -195,7 +195,7 @@ p#clear { clear: left ; padding-top: 10px ; }
 
 .yui-skin-sam .yui-calcontainer .yui-cal-nav-mask { background-color: #000 ; opacity: .25 ; filter: alpha(opacity=25) ; }
 
-.yui-skin-sam .yui-calcontainer .yui-cal-nav { font-family: arial,helvetica,clean,sans-serif ; font-size: /* 93% */ 100% ; border: 1px solid #808080 ; left: 50% ; margin-left: -7em ; width: 14em ; padding: 0 ; top: 2.5em ; background-color: #f2f2f2 ; }
+.yui-skin-sam .yui-calcontainer .yui-cal-nav { font-family: Arial, Helvetica, sans-serif ; font-size: /* 93% */ 100% ; border: 1px solid #808080 ; left: 50% ; margin-left: -7em ; width: 14em ; padding: 0 ; top: 2.5em ; background-color: #f2f2f2 ; }
 
 .yui-skin-sam .yui-calcontainer.withtitle .yui-cal-nav { top: 4.5em ; }
 
@@ -339,7 +339,7 @@ p#clear { clear: left ; padding-top: 10px ; }
 
 .yui-picker-hex-controls input { width: 4.6em ; }
 
-.yui-picker-controls a { font: 1em arial,helvetica,clean,sans-serif ; display: block ; *display: inline-block ; padding: 0 ; color: #000 ; }
+.yui-picker-controls a { font: 1em Arial, Helvetica, sans-serif ; display: block ; *display: inline-block ; padding: 0 ; color: #000 ; }
 
 .yui-overlay, .yui-panel-container { visibility: hidden ; position: absolute ; z-index: 2 ; }
 
@@ -475,7 +475,7 @@ th.yui-dt-hidden .yui-dt-liner,td.yui-dt-hidden .yui-dt-liner,th.yui-dt-hidden .
 
 .yui-dt-editor { position: absolute ; z-index: 9000 ; }
 
-.yui-skin-sam .yui-dt table { margin: 0 ; padding: 0 ; font-family: arial ; font-size: inherit ; border-collapse: separate ; *border-collapse: collapse ; border-spacing: 0 ; border: 1px solid #7F7F7F ; }
+.yui-skin-sam .yui-dt table { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: inherit ; border-collapse: separate ; *border-collapse: collapse ; border-spacing: 0 ; border: 1px solid #7F7F7F ; }
 
 .yui-skin-sam .yui-dt thead { border-spacing: 0 ; }
 
@@ -1141,7 +1141,7 @@ body.yui-layout { overflow: hidden ; position: relative ; padding: 0 ; margin: 0
 
 .yui-skin-sam .yui-log-container { position: absolute ; top: 1em ; right: 1em ; }
 
-.yui-skin-sam .yui-log input { margin: 0 ; padding: 0 ; font-family: arial ; font-size: 100% ; font-weight: normal ; }
+.yui-skin-sam .yui-log input { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: 100% ; font-weight: normal ; }
 
 .yui-skin-sam .yui-log .yui-log-btns { position: relative ; float: right ; bottom: .25em ; }
 
@@ -1287,7 +1287,7 @@ body.yui-layout { overflow: hidden ; position: relative ; padding: 0 ; margin: 0
 
 .yui-skin-sam .yui-pg-container { display: block ; margin: 6px 0 ; white-space: nowrap ; }
 
-.yui-skin-sam .yui-pg-first, .yui-skin-sam .yui-pg-previous, .yui-skin-sam .yui-pg-next, .yui-skin-sam .yui-pg-last, .yui-skin-sam .yui-pg-current, .yui-skin-sam .yui-pg-pages, .yui-skin-sam .yui-pg-page { display: inline-block ; font-family: arial,helvetica,clean,sans-serif ; padding: 3px 6px ; zoom: 1 ; }
+.yui-skin-sam .yui-pg-first, .yui-skin-sam .yui-pg-previous, .yui-skin-sam .yui-pg-next, .yui-skin-sam .yui-pg-last, .yui-skin-sam .yui-pg-current, .yui-skin-sam .yui-pg-pages, .yui-skin-sam .yui-pg-page { display: inline-block ; font-family: Arial, Helvetica, sans-serif ; padding: 3px 6px ; zoom: 1 ; }
 
 .yui-skin-sam .yui-pg-pages { padding: 0 ; }
 
@@ -1309,13 +1309,13 @@ body.yui-layout { overflow: hidden ; position: relative ; padding: 0 ; margin: 0
 
 .yui-skin-sam .yui-pg-current, .yui-skin-sam .yui-pg-rpp-options { margin-left: 1em ; margin-right: 1em ; }
 
-.yui-skin-sam .yui-pv { background-color: #4a4a4a ; font: arial ; position: relative ; width: 99% ; z-index: 1000 ; margin-bottom: 1em ; overflow: hidden ; }
+.yui-skin-sam .yui-pv { background-color: #4a4a4a ; font: Arial, Helvetica, sans-serif ; position: relative ; width: 99% ; z-index: 1000 ; margin-bottom: 1em ; overflow: hidden ; }
 
 .yui-skin-sam .yui-pv .hd { background: url(header_background.png) repeat-x ; min-height: 30px ; overflow: hidden ; zoom: 1 ; padding: 2px 0 ; }
 
-.yui-skin-sam .yui-pv .hd h4 { padding: 8px 10px ; margin: 0 ; font: bold 14px arial ; color: #fff ; }
+.yui-skin-sam .yui-pv .hd h4 { padding: 8px 10px ; margin: 0 ; font: bold 14px Arial, Helvetica, sans-serif ; color: #fff ; }
 
-.yui-skin-sam .yui-pv .hd a { background: #3f6bc3 ; font: bold 11px arial ; color: #fff ; padding: 4px ; margin: 3px 10px 0 0 ; border: 1px solid #3f567d ; cursor: pointer ; display: block ; float: right ; }
+.yui-skin-sam .yui-pv .hd a { background: #3f6bc3 ; font: bold 11px Arial, Helvetica, sans-serif ; color: #fff ; padding: 4px ; margin: 3px 10px 0 0 ; border: 1px solid #3f567d ; cursor: pointer ; display: block ; float: right ; }
 
 .yui-skin-sam .yui-pv .hd span { display: none ; }
 
@@ -1327,7 +1327,7 @@ body.yui-layout { overflow: hidden ; position: relative ; padding: 0 ; margin: 0
 
 .yui-skin-sam .yui-pv .yui-pv-table { padding: 0 10px ; margin: 5px 0 10px 0 ; }
 
-.yui-skin-sam .yui-pv .yui-pv-table .yui-dt-bd td { color: #eeee5c ; font: 12px arial ; }
+.yui-skin-sam .yui-pv .yui-pv-table .yui-dt-bd td { color: #eeee5c ; font: 12px Arial, Helvetica, sans-serif ; }
 
 .yui-skin-sam .yui-pv .yui-pv-table tr.yui-dt-odd { background: #929292 ; }
 
@@ -1343,7 +1343,7 @@ body.yui-layout { overflow: hidden ; position: relative ; padding: 0 ; margin: 0
 
 .yui-skin-sam .yui-pv th.yui-dt-desc .yui-dt-liner { background: transparent url(desc.gif) no-repeat scroll right center ; }
 
-.yui-skin-sam .yui-pv .yui-pv-table .yui-dt-hd th a { color: #fff ; font: bold 12px arial ; }
+.yui-skin-sam .yui-pv .yui-pv-table .yui-dt-hd th a { color: #fff ; font: bold 12px Arial, Helvetica, sans-serif ; }
 
 .yui-skin-sam .yui-pv .yui-pv-table .yui-dt-hd th.yui-dt-asc, .yui-skin-sam .yui-pv .yui-pv-table .yui-dt-hd th.yui-dt-desc { background: #333 ; }
 
@@ -1357,7 +1357,7 @@ body.yui-layout { overflow: hidden ; position: relative ; padding: 0 ; margin: 0
 
 .yui-skin-sam .yui-pv-chartlegend dt { float: left ; display: block ; height: .7em ; width: .7em ; padding: 0 ; }
 
-.yui-skin-sam .yui-pv-chartlegend dd { float: left ; display: block ; color: #fff ; margin: 0 1em 0 .5em ; padding: 0 ; font: 11px arial ; }
+.yui-skin-sam .yui-pv-chartlegend dd { float: left ; display: block ; color: #fff ; margin: 0 1em 0 .5em ; padding: 0 ; font: 11px Arial, Helvetica, sans-serif ; }
 
 .yui-skin-sam .yui-pv-minimized { height: 35px ; }
 

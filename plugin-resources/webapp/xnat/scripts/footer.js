@@ -14,140 +14,140 @@ if(XNAT.validators==undefined)XNAT.validators=new Object();
 var forms=0;
 
 YAHOO.util.Event.onDOMReady(function(){
-	var myforms = document.getElementsByTagName("form");
-	for(var iFc=0;iFc<myforms.length;iFc++){
-		for(var fFc=0;fFc<myforms[iFc].length;fFc++){
-			if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'required')){
-				if(myforms[iFc][fFc].nodeName=="INPUT" || myforms[iFc][fFc].nodeName=="TEXTAREA"){
-					_addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc]));
-				}else if(myforms[iFc][fFc].nodeName=="SELECT"){
-					_addValidation(myforms[iFc][fFc],new SelectValidator(myforms[iFc][fFc]));
-				}
-			}
-		}
-	}
-	
+    var myforms = document.getElementsByTagName("form");
+    for(var iFc=0;iFc<myforms.length;iFc++){
+        for(var fFc=0;fFc<myforms[iFc].length;fFc++){
+            if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'required')){
+                if(myforms[iFc][fFc].nodeName=="INPUT" || myforms[iFc][fFc].nodeName=="TEXTAREA"){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc]));
+                }else if(myforms[iFc][fFc].nodeName=="SELECT"){
+                    _addValidation(myforms[iFc][fFc],new SelectValidator(myforms[iFc][fFc]));
+                }
+            }
+        }
+    }
+
 });
 
 function addValidator(_element,_validator){
-	YAHOO.util.Event.onDOMReady(function(){
-		_addValidation(_element,_validator);
-	});
+    YAHOO.util.Event.onDOMReady(function(){
+        _addValidation(_element,_validator);
+    });
 }
 function _addValidation(_element,_validator){
-	var element=_element;
-	if(_element.nodeName==undefined){
-		_element=document.getElementById(_element);
-	}
-	
-	var _form=_element.form;
-	if(_form.ID==undefined){
-		_form.ID="form" + forms++;
-	}
-	
-	if(XNAT.validators[_form.ID]==undefined){
-		XNAT.validators[_form.ID]=new Array();
-	}
-	
-	XNAT.validators[_form.ID].push(_validator);
+    var element=_element;
+    if(_element.nodeName==undefined){
+        _element=document.getElementById(_element);
+    }
+
+    var _form=_element.form;
+    if(_form.ID==undefined){
+        _form.ID="form" + forms++;
+    }
+
+    if(XNAT.validators[_form.ID]==undefined){
+        XNAT.validators[_form.ID]=new Array();
+    }
+
+    XNAT.validators[_form.ID].push(_validator);
 }
 
 function validateBox(box){
-	if(box.value=="")
-	{
-		appendImage(box,"/images/checkmarkRed.gif");
-		return false;
-	}else{
-		removeAppendImage(box);
-		return true;
-	}
+    if(box.value=="")
+    {
+        appendImage(box,"/images/checkmarkRed.gif");
+        return false;
+    }else{
+        removeAppendImage(box);
+        return true;
+    }
 }
 
 //declaring the constructor  
-function TextboxValidator(box) {  
-    this.box = box;  
-}  
+function TextboxValidator(box) {
+    this.box = box;
+}
 // declaring instance methods  
-TextboxValidator.prototype = {  
+TextboxValidator.prototype = {
     validate: function () {
-    	if(this.box.monitored == undefined){
-        	this.box.monitored=true;
-    		YAHOO.util.Event.on(this.box,"change",function(env,var2){
-    			return validateBox(this);
-    		});
-    	}
-    	
-		
-    	if(!validateBox(this.box)){
-  			this.box.focus();
-  			return false;
-    	}else{
-    		return true;
-    	}
+        if(this.box.monitored == undefined){
+            this.box.monitored=true;
+            YAHOO.util.Event.on(this.box,"change",function(env,var2){
+                return validateBox(this);
+            });
+        }
+
+
+        if(!validateBox(this.box)){
+            this.box.focus();
+            return false;
+        }else{
+            return true;
+        }
     }
-};  
+};
 
 function validateSelect(sel){
-	if(sel.options[sel.selectedIndex].value==""){
-		appendImage(sel,"/images/checkmarkRed.gif");
-		return false;
-	}else{
-		removeAppendImage(sel);
-		return true;
-	}
+    if(sel.options[sel.selectedIndex].value==""){
+        appendImage(sel,"/images/checkmarkRed.gif");
+        return false;
+    }else{
+        removeAppendImage(sel);
+        return true;
+    }
 }
 
 
 //declaring the constructor  
-function SelectValidator(box) {  
-  this.box = box;  
-}  
+function SelectValidator(box) {
+    this.box = box;
+}
 //declaring instance methods  
 SelectValidator.prototype = {  validate: function () {
-	if(this.box.monitored == undefined){
-    	this.box.monitored=true;
-		YAHOO.util.Event.on(this.box,"change",function(env,var2){
-			return validateSelect(this);
-		});
-	}
-	
-	
-	if(!validateSelect(this.box)){
-			this.box.focus();
-			return false;
-	}else{
-		return true;
-	}
+    if(this.box.monitored == undefined){
+        this.box.monitored=true;
+        YAHOO.util.Event.on(this.box,"change",function(env,var2){
+            return validateSelect(this);
+        });
+    }
+
+
+    if(!validateSelect(this.box)){
+        this.box.focus();
+        return false;
+    }else{
+        return true;
+    }
 }
-};  
+};
 
 YAHOO.util.Event.onDOMReady( function()
 {
-	var myforms = document.getElementsByTagName("form");
-	for (var i=0; i<myforms.length; i++) {
+    var myforms = document.getElementsByTagName("form");
+    for (var i=0; i<myforms.length; i++) {
         var myForm = myforms[i];
         if(!myForm.ID) {
             myForm.ID = "form" + forms++;
         }
 
         //function to hide forms while they are being submitted, unless they have a noHide class
-		if(!YUIDOM.hasClass(myForm,'noHide')){
-			YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-    			concealContent("Submitting... Please wait.");
-    		});
-		}
-		
-		//function to add validation to any form elements with specific classes (required, etc)
-		//an array of validator functions is stored in XNAT.validators.  They are tied to the form by the form's ID.
-		//this function iterates over those validators and tracks the overall validation outcome in a variable called _ok which is attached the the array of validators.
-		//the _ok may be checked by other functions
+        if(!YUIDOM.hasClass(myForm,'noHide')){
+            YAHOO.util.Event.on(myForm,"submit",function(env,var2){
+                concealContent("Submitting... Please wait.");
+            });
+        }
+
+        //function to add validation to any form elements with specific classes (required, etc)
+        //an array of validator functions is stored in XNAT.validators.  They are tied to the form by the form's ID.
+        //this function iterates over those validators and tracks the overall validation outcome in a variable called _ok which is attached the the array of validators.
+        //the _ok may be checked by other functions
         YAHOO.util.Event.on(myForm, "submit", function (env, var2) {
             var validators = XNAT.validators[this.ID];
             if(validators!=undefined){
                 validators._ok = true;
                 for (var iVc = 0; iVc < validators.length; iVc++) {
                     if (!validators[iVc].validate()) {
-                    	validators._ok = false;
+                        validators._ok = false;
                         this.focus = validators[iVc].box;
                     }
                 }
@@ -156,50 +156,74 @@ YAHOO.util.Event.onDOMReady( function()
                     YAHOO.util.Event.stopEvent(env);
                     showContent();
                     if(this.focus!=undefined)
-                    	this.focus.focus();
+                        this.focus.focus();
                 }
             }
         });
 
         //take the statically defined onsubmit action and add it as a yui event instead
         myForm.userDefinedSubmit = myForm.onsubmit;
-		myForm.onsubmit = null;
-		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
+        myForm.onsubmit = null;
+        YAHOO.util.Event.on(myForm,"submit",function(env,var2){
             var result = this.userDefinedSubmit();
             if (result == undefined) {
                 result = true;
             }
             if(!result){
-				YAHOO.util.Event.stopEvent(env);
-				showContent();
-			}
-		},null,myForm);
-		
-		//function to replace empty strings with NULL in form elements with a nullable class
-		YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            if (this.ID) {
-				if(XNAT.validators[this.ID]==undefined || XNAT.validators[this.ID]._ok){
-					for(var iFc=0;iFc<this.length;iFc++){
-						if(YUIDOM.hasClass(this[iFc],'nullable')){
-							if((this[iFc].nodeName=="INPUT" || this[iFc].nodeName=="TEXTAREA") && this[iFc].value==""){
-								this[iFc].value="NULL";
-							}
-						}
-					}
-				}
+                YAHOO.util.Event.stopEvent(env);
+                showContent();
             }
-		});
-	}
+        },null,myForm);
+
+        //function to replace empty strings with NULL in form elements with a nullable class
+        YAHOO.util.Event.on(myForm,"submit",function(env,var2){
+            if (this.ID) {
+                if(XNAT.validators[this.ID]==undefined || XNAT.validators[this.ID]._ok){
+                    for(var iFc=0;iFc<this.length;iFc++){
+                        if(YUIDOM.hasClass(this[iFc],'nullable')){
+                            if((this[iFc].nodeName=="INPUT" || this[iFc].nodeName=="TEXTAREA") && this[iFc].value==""){
+                                this[iFc].value="NULL";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 });
 
 
 XNAT.app.toggle=function (_name){
-	var elements = document.getElementsByName(_name);
-	for(var trI=0;trI<elements.length;trI++){
-		if(elements[trI].style.display=="none"){
-			elements[trI].style.display="block";
-		}else{
-			elements[trI].style.display="none";
-		}
-	}	
+    var elements = document.getElementsByName(_name);
+    for(var trI=0;trI<elements.length;trI++){
+        if(elements[trI].style.display=="none"){
+            elements[trI].style.display="block";
+        }else{
+            elements[trI].style.display="none";
+        }
+    }
 }
+
+
+// removes icons and spacer from actions menu
+jQuery(function(){
+    var jq = jQuery.noConflict();
+    jq(document).ready(function() {
+        jq('#actionsMenu .ic, #actionsMenu .ic_spacer').hide().detach();
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

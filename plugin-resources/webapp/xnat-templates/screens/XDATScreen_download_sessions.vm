@@ -79,303 +79,309 @@
     }
 </SCRIPT>
 
-<FORM name="downloadForm" METHOD="post" ACTION="$link.setAction("DownloadSessionsAction2")" ONSUBMIT="return validateForm();">
-    <DIV class="edit_header1">Imaging Data Download</DIV>
-    <DIV class="spacer">&nbsp;</DIV>
-    <TABLE border="0">
-        <TR>
-            <TD>
-                <DIV class="edit_header2"><img src="$content.getURI("images/number_1.gif")" border=0> Confirm Sessions for download</DIV>
-            </TD>
-            <TD></TD>
-            <TD>
-                <DIV class="edit_header2"><img src="$content.getURI("images/number_2.gif")" border=0> Select image data to download</DIV>
-            </TD>
-            <TD></TD>
-            <TD>
-                <DIV class="edit_header2"><img src="$content.getURI("images/number_3.gif")" border=0> Select download format</DIV>
-            </TD>
-        <TR>
-            <TD VALIGN="top" class="withColor" style="border: 1px solid grey;" ROWSPAN="4">
-                <DIV ID="dataTable" style="display: none;">
-                    <DIV STYLE="overflow: auto; height: 550px; width: 300px;">
-                        <TABLE border="0" ID="subTableSessions" cellspacing="0">
-                            <TR class="">
-                                <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['sessions']);" ID="toggleAllSessions"CHECKED/></TD>
-                                <TD NOWRAP colspan="2"><label for="toggleAllSessions">Toggle All ($sessionSummary.size())</label></TD>
-                            </TR>
+<FORM id="downloadForm" name="downloadForm" METHOD="post" ACTION="$link.setAction("DownloadSessionsAction2")" ONSUBMIT="return validateForm();">
+<DIV class="edit_header1">Imaging Data Download</DIV>
+<DIV class="spacer">&nbsp;</DIV>
+<TABLE border="0">
+<TR>
+    <TD>
+        <DIV class="edit_header2"><img src="$content.getURI("images/number_1.gif")" border=0> Confirm Sessions for download</DIV>
+    </TD>
+    <TD></TD>
+    <TD>
+        <DIV class="edit_header2"><img src="$content.getURI("images/number_2.gif")" border=0> Select image data to download</DIV>
+    </TD>
+    <TD></TD>
+    <TD>
+        <DIV class="edit_header2"><img src="$content.getURI("images/number_3.gif")" border=0> Select download format</DIV>
+    </TD>
+<TR>
+<TD VALIGN="top" class="withColor" ROWSPAN="4">
+    <DIV ID="dataTable" style="display: none;">
+        <DIV STYLE="overflow: auto; height: 550px;">
+            <TABLE border="0" ID="subTableSessions" cellspacing="0">
+                <TR class="">
+                    <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['sessions']);" ID="toggleAllSessions" CHECKED/></TD>
+                    <TD NOWRAP colspan="2"><label for="toggleAllSessions">Toggle All ($sessionSummary.size())</label></TD>
+                </TR>
 
-                            #set($rowColor="even")
-                            #foreach($sessionRow in $sessionSummary)
-                                <TR class="$rowColor">
-                                    <TD></TD>
-                                    <TD><INPUT type="checkbox" value="$sessionRow.get(0)" ID="$sessionRow.get(0)" name="sessions" CHECKED/></TD>
-                                    <TD NOWRAP><label for="$sessionRow.get(0)">$sessionRow.get(1)</label></TD>
-                                    <TD NOWRAP><label for="$sessionRow.get(0)">$!sessionRow.get(2)</label></TD>
+                #set($rowColor="even")
+                #foreach($sessionRow in $sessionSummary)
+                    <TR class="$rowColor">
+                        <TD></TD>
+                        <TD><INPUT type="checkbox" value="$sessionRow.get(0)" ID="$sessionRow.get(0)" name="sessions" CHECKED/></TD>
+                        <TD NOWRAP><label for="$sessionRow.get(0)">$sessionRow.get(1)</label></TD>
+                        <TD NOWRAP><label for="$sessionRow.get(0)">$!sessionRow.get(2)</label></TD>
+                    </TR>
+
+                    #if($rowColor=="even")
+                        #set($rowColor="")
+                    #else
+                        #set($rowColor="even")
+                    #end
+                #end
+            </TABLE>
+        </DIV>
+    </DIV>
+</TD>
+<TD ROWSPAN="4">&nbsp;&nbsp;&nbsp;</TD>
+<TD VALIGN="top" class="withColor" ROWSPAN="4">
+    <SCRIPT language="javascript">
+        document.getElementById("dataTable").style.display = "block";
+    </SCRIPT>
+
+    <DIV>
+        <TABLE>
+            <TR>
+                <TD colspan="2">
+                    <DIV class="edit_header3">Scan Formats</DIV>
+                </TD>
+            </TR>
+
+            <TR>
+                <TD colspan="2">
+                    <TABLE>
+                        #foreach($scan in $scan_formats)
+                            #if($!scan.get(0))
+                                <TR>
+                                    <TD><input type="checkbox" name="scan_format" value="$!scan.get(0)" checked="true"/></TD>
+                                    <TD>$!scan.get(0)</TD>
                                 </TR>
+                            #else
+                                <TR>
+                                    <TD><input type="checkbox" name="scan_format" value="NULL"/></TD>
+                                    <TD>Unspecified</TD>
+                                </TR>
+                            #end
+                        #end
+                    </TABLE>
+                </TD>
+            </TR>
 
-                                #if($rowColor=="even")
-                                    #set($rowColor="")
+            <TR>
+                <TD colspan="2">&nbsp;</TD>
+            </TR>
+
+            <TR>
+                <TD><INPUT type="checkbox" value=""
+                           ONCLICK="toggleAll(this,['scan_type'#if($showResources),'resources'#end #if($showRecons),'recon'#end #if($showAssessors),'assessors'#end]);"
+                           ID="toggleAllScanTypes" checked="true"/></TD>
+                <TD>Toggle All</TD>
+            </TR>
+
+            <TR>
+                <TD></TD>
+                <TD>
+                    <DIV class="edit_header3">Scan Types</DIV>
+                </TD>
+            </TR>
+
+            <TR>
+                <TD></TD>
+                <TD>
+                    <TABLE>
+                        #foreach($scan in $scans)
+                            #if($!scan.get(0))
+                                <TR>
+                                    <TD><input type="checkbox" name="scan_type" value="$!scan.get(0)" checked="true"/></TD>
+                                    <TD>$!scan.get(0) ($!scan.get(1))</TD>
+                                </TR>
+                            #else
+                                <TR>
+                                    <TD><input type="checkbox" name="scan_type" value="NULL"/></TD>
+                                    <TD>Unassigned ($!scan.get(1))</TD>
+                                </TR>
+                            #end
+                        #end
+                    </TABLE>
+                </TD>
+            </TR>
+
+            <TR>
+                <TD colspan="2">&nbsp;</TD>
+            </TR>
+
+            #if ($showResources)
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <DIV class="edit_header3">Addl Resources</DIV>
+                    </TD>
+                </TR>
+
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <TABLE>
+                            #foreach($res in $resources)
+                                #if($!res.get(0))
+                                    <TR>
+                                        <TD><input type="checkbox" name="resources" value="$!res.get(0)" checked="true"/></TD>
+                                        <TD>$!res.get(0)</TD>
+                                    </TR>
                                 #else
-                                    #set($rowColor="even")
+                                    <TR>
+                                        <TD><input type="checkbox" name="resources" value="NULL"/></TD>
+                                        <TD>Unspecified</TD>
+                                    </TR>
                                 #end
                             #end
                         </TABLE>
-                    </DIV>
-                </DIV>
-            </TD>
-            <TD ROWSPAN="4">&nbsp;&nbsp;&nbsp;</TD>
-            <TD VALIGN="top" class="withColor" style="border: 1px solid grey;" ROWSPAN="4">
-                <SCRIPT language="javascript">
-                    document.getElementById("dataTable").style.display = "block";
-                </SCRIPT>
+                    </TD>
+                </TR>
 
-                <DIV>
-                    <TABLE>
-                        <TR>
-                            <TD colspan="2">
-                                <DIV class="edit_header3">Scan Formats</DIV>
-                            </TD>
-                        </TR>
+                <TR>
+                    <TD colspan="2">&nbsp;</TD>
+                </TR>
+            #end
 
-                        <TR>
-                            <TD colspan="2">
-                                <TABLE>
-                                    #foreach($scan in $scan_formats)
-                                        #if($!scan.get(0))
-                                            <TR>
-                                                <TD><input type="checkbox" name="scan_format" value="$!scan.get(0)" checked="true"/></TD>
-                                                <TD>$!scan.get(0)</TD>
-                                            </TR>
-                                        #else
-                                            <TR>
-                                                <TD><input type="checkbox" name="scan_format" value="NULL"/></TD>
-                                                <TD>Unspecified</TD>
-                                            </TR>
-                                        #end
-                                    #end
-                                </TABLE>
-                            </TD>
-                        </TR>
+            #if ($showRecons)
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <DIV class="edit_header3">Reconstructions</DIV>
+                    </TD>
+                </TR>
 
-                        <TR>
-                            <TD colspan="2">&nbsp;</TD>
-                        </TR>
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <TABLE ID="subTableScans">
+                            #foreach($scan in $recons)
+                                #if($!scan.get(0))
+                                    <TR>
+                                        <TD><input type="checkbox" name="recon" value="$!scan.get(0)" checked="true"/></TD>
+                                        <TD>$!scan.get(0) ($!scan.get(1))</TD>
+                                    </TR>
+                                #else
+                                    <TR>
+                                        <TD><input type="checkbox" name="recon" value="NULL"/></TD>
+                                        <TD>Unassigned ($!scan.get(1))</TD>
+                                    </TR>
+                                #end
+                            #end
+                        </TABLE>
+                    </TD>
+                </TR>
 
-                        <TR>
-                            <TD><INPUT type="checkbox" value=""
-                                       ONCLICK="toggleAll(this,['scan_type'#if($showResources),'resources'#end #if($showRecons),'recon'#end #if($showAssessors),'assessors'#end]);"
-                                       ID="toggleAllScanTypes" checked="true"/></TD>
-                            <TD>Toggle All</TD>
-                        </TR>
+                <TR>
+                    <TD colspan="2">&nbsp;</TD>
+                </TR>
+            #end
 
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <DIV class="edit_header3">Scan Types</DIV>
-                            </TD>
-                        </TR>
+            #if ($showAssessors)
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <DIV class="edit_header3">Assessments</DIV>
+                    </TD>
+                </TR>
 
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <TABLE>
-                                    #foreach($scan in $scans)
-                                        #if($!scan.get(0))
-                                            <TR>
-                                                <TD><input type="checkbox" name="scan_type" value="$!scan.get(0)" checked="true"/></TD>
-                                                <TD>$!scan.get(0) ($!scan.get(1))</TD>
-                                            </TR>
-                                        #else
-                                            <TR>
-                                                <TD><input type="checkbox" name="scan_type" value="NULL"/></TD>
-                                                <TD>Unassigned ($!scan.get(1))</TD>
-                                            </TR>
-                                        #end
-                                    #end
-                                </TABLE>
-                            </TD>
-                        </TR>
+                <TR>
+                    <TD></TD>
+                    <TD>
+                        <TABLE>
+                            #foreach($scan in $assessors)
+                                #if($!scan.get(2))
+                                    <TR>
+                                        <TD><input type="checkbox" name="assessors" value="$!scan.get(0)" checked="true"/></TD>
+                                        <TD>$!scan.get(2) ($!scan.get(1))</TD>
+                                    </TR>
+                                #else
+                                    <TR>
+                                        <TD><input type="checkbox" name="assessors" value="$!scan.get(0)"/></TD>
+                                        <TD>$!scan.get(0) ($!scan.get(1))</TD>
+                                    </TR>
+                                #end
+                            #end
+                        </TABLE>
+                    </TD>
+                </TR>
 
-                        <TR>
-                            <TD colspan="2">&nbsp;</TD>
-                        </TR>
+                <TR>
+                    <TD colspan="2">&nbsp;</TD>
+                </TR>
+            #end
 
-                        #if ($showResources)
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <DIV class="edit_header3">Addl Resources</DIV>
-                            </TD>
-                        </TR>
-
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <TABLE>
-                                    #foreach($res in $resources)
-                                        #if($!res.get(0))
-                                            <TR>
-                                                <TD><input type="checkbox" name="resources" value="$!res.get(0)" checked="true"/></TD>
-                                                <TD>$!res.get(0)</TD>
-                                            </TR>
-                                        #else
-                                            <TR>
-                                                <TD><input type="checkbox" name="resources" value="NULL"/></TD>
-                                                <TD>Unspecified</TD>
-                                            </TR>
-                                        #end
-                                    #end
-                                </TABLE>
-                            </TD>
-                        </TR>
-
-                        <TR>
-                            <TD colspan="2">&nbsp;</TD>
-                        </TR>
-                        #end
-
-                        #if ($showRecons)
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <DIV class="edit_header3">Reconstructions</DIV>
-                            </TD>
-                        </TR>
-
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <TABLE ID="subTableScans">
-                                    #foreach($scan in $recons)
-                                        #if($!scan.get(0))
-                                            <TR>
-                                                <TD><input type="checkbox" name="recon" value="$!scan.get(0)" checked="true"/></TD>
-                                                <TD>$!scan.get(0) ($!scan.get(1))</TD>
-                                            </TR>
-                                        #else
-                                            <TR>
-                                                <TD><input type="checkbox" name="recon" value="NULL"/></TD>
-                                                <TD>Unassigned ($!scan.get(1))</TD>
-                                            </TR>
-                                        #end
-                                    #end
-                                </TABLE>
-                            </TD>
-                        </TR>
-
-                        <TR>
-                            <TD colspan="2">&nbsp;</TD>
-                        </TR>
-                        #end
-
-                        #if ($showAssessors)
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <DIV class="edit_header3">Assessments</DIV>
-                            </TD>
-                        </TR>
-
-                        <TR>
-                            <TD></TD>
-                            <TD>
-                                <TABLE>
-                                    #foreach($scan in $assessors)
-                                        #if($!scan.get(2))
-                                            <TR>
-                                                <TD><input type="checkbox" name="assessors" value="$!scan.get(0)" checked="true"/></TD>
-                                                <TD>$!scan.get(2) ($!scan.get(1))</TD>
-                                            </TR>
-                                        #else
-                                            <TR>
-                                                <TD><input type="checkbox" name="assessors" value="$!scan.get(0)"/></TD>
-                                                <TD>$!scan.get(0) ($!scan.get(1))</TD>
-                                            </TR>
-                                        #end
-                                    #end
-                                </TABLE>
-                            </TD>
-                        </TR>
-
-                        <TR>
-                            <TD colspan="2">&nbsp;</TD>
-                        </TR>
-                        #end
-
-                    </TABLE>
-                </DIV>
-            </TD>
-            <TD ROWSPAN="4">&nbsp;&nbsp;&nbsp;</TD>
-            <TD VALIGN="top" width="200" class="withColor" style="border: 1px solid grey;">
-                <TABLE>
-                    <TR>
-                        <TD><INPUT type="radio" name="download_option" value="applet" CHECKED></TD>
-                        <TD>Option 1: Direct download</TD>
-                    </TR>
-                    <TR>
-                        <TD></TD>
-                        <TD style="font-size:9px;">
-                            You will be prompted to enter a local directory to copy the data to. Then, all of
-                            the requested imaging data will be directly downloaded via a java applet into that directory.
-                        </TD>
-                    </TR>
-                    <TR>
-                        <TD>&nbsp;</TD>
-                    </TR>
-                    <TR>
-                        <TD><INPUT type="radio" name="download_option" value="catalog"></TD>
-                        <TD>Option 2: Catalog XML (.xcat)</TD>
-                    </TR>
-
-                    <TR>
-                        <TD></TD>
-                        <TD style="font-size:9px;">Download an xml representation of the files. This xml can then be used by
-                            specific applications to download the data at the user's command.
-                        </TD>
-                    </TR>
-                    <TR>
-                        <TD>&nbsp;</TD>
-                    </TR>
-                    <TR>
-                        <TD><input type="checkbox" name="projectIncludedInPath" value="true"/>
-                        <TD>Include project in file paths</TD>
-                    </TR>
-                    <TR>
-                        <TD><input type="checkbox" name="subjectIncludedInPath" value="true"/>
-                        <TD>Include subject in file paths</TD>
-                    </TR>
-                    <TR>
-                        <TD><input type="checkbox" name="simplified" checked value="true"/>
-                        <TD>Simplify downloaded archive structure</TD>
-                    </TR>
-                    <TR>
-                        <TD colspan="2">&nbsp;</TD>
-                    </TR>
-                </TABLE>
+        </TABLE>
+    </DIV>
+</TD>
+<TD ROWSPAN="4">&nbsp;&nbsp;&nbsp;</TD>
+<TD VALIGN="top" width="300" class="withColor">
+    <TABLE>
+        <TR>
+            <TD><INPUT type="radio" name="download_option" value="applet" CHECKED></TD>
+            <TD>Option 1: Direct download</TD>
+        </TR>
+        <TR>
+            <TD></TD>
+            <TD style="font-size:9px;">
+                You will be prompted to enter a local directory to copy the data to. Then, all of
+                the requested imaging data will be directly downloaded via a java applet into that directory.
             </TD>
         </TR>
         <TR>
             <TD>&nbsp;</TD>
         </TR>
         <TR>
-            <TD>
-                <DIV class="edit_header2"><img src="$content.getURI("images/number_4.gif")" border=0> Submit Data Request</DIV>
+            <TD><INPUT type="radio" name="download_option" value="catalog"></TD>
+            <TD>Option 2: Catalog XML (.xcat)</TD>
+        </TR>
+
+        <TR>
+            <TD></TD>
+            <TD style="font-size:9px;">Download an xml representation of the files. This xml can then be used by
+                specific applications to download the data at the user's command.
             </TD>
         </TR>
         <TR>
-            <TD class="withColor" style="border: 1px solid grey;">
-                <TABLE>
-                    <TR>
-                        <TD><input type="submit" value="Submit" name="eventSubmit_doPerform"/></TD>
-                    </TR>
-                    <TR>
-                        <TD style="font-size:9px;">Upon page submission, the pertinent files will be reviewed and organized for
-                            download. Depending on the number of files, this may take several minutes to process.
-                        </TD>
-                    </TR>
-                </TABLE>
-            </TD>
+            <TD>&nbsp;</TD>
+        </TR>
+        <TR>
+            <TD><input type="checkbox" name="projectIncludedInPath" value="true"/>
+            <TD>Include project in file paths</TD>
+        </TR>
+        <TR>
+            <TD><input type="checkbox" name="subjectIncludedInPath" value="true"/>
+            <TD>Include subject in file paths</TD>
+        </TR>
+        <TR>
+            <TD><input type="checkbox" name="simplified" checked value="true"/>
+            <TD>Simplify downloaded archive structure</TD>
+        </TR>
+        <TR>
+            <TD colspan="2">&nbsp;</TD>
         </TR>
     </TABLE>
+</TD>
+</TR>
+<TR>
+    <TD>&nbsp;</TD>
+</TR>
+<TR>
+    <TD>
+        <DIV class="edit_header2"><img src="$content.getURI("images/number_4.gif")" border=0> Submit Data Request</DIV>
+    </TD>
+</TR>
+<TR>
+    <TD class="withColor">
+        <TABLE>
+            <TR>
+                <TD><input type="submit" value="Submit" name="eventSubmit_doPerform"/></TD>
+            </TR>
+            <TR>
+                <TD style="font-size:9px;">Upon page submission, the pertinent files will be reviewed and organized for
+                    download. Depending on the number of files, this may take several minutes to process.
+                </TD>
+            </TR>
+        </TABLE>
+    </TD>
+</TR>
+</TABLE>
 </FORM>
+
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        jQuery('#subTableSessions tr:first').addClass('first');
+    });
+</script>

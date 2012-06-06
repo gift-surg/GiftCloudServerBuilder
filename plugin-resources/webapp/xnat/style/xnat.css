@@ -428,7 +428,7 @@ div.edit_title { margin-bottom: 10px ; }
 #actionsMenu .yui-menu-body-scrolled { overflow: auto; height: auto !important ; }
 
 
-#session_timeout_dialog { z-index: 9999 ; }
+#session_timeout_dialog { width: 320px !important ; z-index: 9999 ; }
 
 span.close { position: relative ; left: 2px ; top: 2px ; }
 .yui-dt-button img { position: relative ; top: 2px ; }
@@ -443,6 +443,23 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 #expts_header #toggle_expts_link,
 #expts_header #expt_shared_legend,
 #expts_header #expt_denied_legend { padding:2px 4px;font-size:12px;font-weight:normal; }
+
+.yui-pg-container { font-size: 12px !important ; }
+
+#downloadForm .withColor { min-width: 200px ; color: #000 ; background: #f0f0f0 ; border: 1px solid #ccc ; }
+#downloadForm #subTableSessions tr { background: #f0f0f0 ; border: none ; }
+
+/* "No more wire inline font-size styles!" */
+.smallest_text, .ie .smallest_text,
+.smaller_text, .ie .smaller_text,
+.small_text, .ie .small_text { font-size: 12px !important ; line-height: 15px !important ; }
+
+
+
+
+
+
+
 
 
 

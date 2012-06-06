@@ -80,7 +80,6 @@
   <classpathentry kind="lib" path="plugin-resources/repository/httpcore/jars/httpcore-nio-4.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.43u.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/isorelax/jars/isorelax-20041111.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/iText-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/itext-2.0.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar"/>

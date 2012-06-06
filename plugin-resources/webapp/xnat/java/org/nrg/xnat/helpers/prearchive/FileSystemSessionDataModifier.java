@@ -3,10 +3,23 @@ package org.nrg.xnat.helpers.prearchive;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
+import org.dcm4che2.data.DicomObject;
+import org.nrg.config.entities.Configuration;
+import org.nrg.dcm.Anonymize;
+import org.nrg.dcm.EnumeratedMetadataStore.DicomOp;
+import org.nrg.dcm.edit.AttributeException;
+import org.nrg.dcm.edit.ScriptEvaluationException;
+import org.nrg.dcm.xnat.DICOMSessionBuilder;
+import org.nrg.dcm.xnat.XnatAttrDef;
+import org.nrg.session.SessionBuilder;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
+import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.xml.sax.SAXException;
@@ -92,15 +105,48 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			public XnatImagesessiondataBean run() throws SyncFailedException {
 				XnatImagesessiondataBean doc = null;
 				try {
-					doc=PrearcTableBuilder.parseSession(xml);
-					doc.setProject(newProj);
+					XnatProjectdata xpd = XnatProjectdata.getXnatProjectdatasById(newProj, null, false);
+					Long projectId = DicomEdit.getDBId(xpd);
+					Configuration c = AnonUtils.getService().getScript(DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, newProj), projectId);
+					if (c != null) {
+						final String anonScript = c.getContents();
+						XnatAttrDef[] params = {new XnatAttrDef.Constant("project", newProj)};
+						org.nrg.dcm.EnumeratedMetadataStore.DicomOp op = new org.nrg.dcm.EnumeratedMetadataStore.DicomOp() {
+							@Override
+							public DicomObject call(DicomObject o) throws IOException {
+								DicomObject tmp = o;
+								try {
+									Anonymize.anonymize(tmp, newProj, "", sess, anonScript);	
+								}
+								catch(ScriptEvaluationException e){
+									throw new IOException(e);
+								}
+								catch(AttributeException e) {
+									throw new IOException(e);
+								}
+								return tmp;
+							}
+						};
+						DICOMSessionBuilder db = new DICOMSessionBuilder(tsdir, params, op);
+						XnatImagesessiondataBean i = db.call();
+						doc = i;
+					}
+					else {
+						doc=PrearcTableBuilder.parseSession(xml);
+						doc.setProject(newProj);
+					}
 					//modified to also set the new prearchive path.
-					doc.setPrearchivepath(newDirPath);
+					doc.setPrearchivepath(newDirPath);	
 				} catch (SAXException e) {
-					throwSync(e.getMessage());
+					throwSync(e);
 				} catch (IOException e) {
-					throwSync(e.getMessage());
+					throwSync(e);
+				} catch (SQLException e) {
+					throwSync(e);
+				} catch (SessionBuilder.NoUniqueSessionException e) {
+					throwSync(e);
 				}
+				
 				return doc;
 			}
 			public void rollback() throws IllegalStateException {
@@ -154,6 +200,10 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 
 		void throwSync (String msg) throws SyncFailedException {
 			throw new SyncFailedException(msg);
+		}
+		
+		void throwSync (Throwable cause) throws SyncFailedException {
+			throw new SyncFailedException(cause);
 		}
 		
 		public Transaction<java.lang.Void> getCopy() {

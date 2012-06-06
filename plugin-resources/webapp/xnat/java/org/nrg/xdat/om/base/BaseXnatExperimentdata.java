@@ -6,6 +6,7 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,6 +20,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.nrg.action.ClientException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatExperimentdataFieldI;
@@ -45,6 +47,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -66,6 +69,7 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
+import org.restlet.data.Status;
 
 /**
  * @author XDAT
@@ -801,31 +805,42 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	
     	return sessionDIR;
     }
+    
+    protected void checkIsValidID(String s) throws IllegalArgumentException{
+		
+		if(StringUtils.IsEmpty(s)){
+			throw new IllegalArgumentException();
+		}	
+		
+		if(!StringUtils.IsAlphaNumericUnderscore(s)){
+			throw new IllegalArgumentException("Identifiers cannot use special characters.");
+		}
+    }
+    
+    public void checkUniqueLabel() throws Exception{
+		if(!StringUtils.IsEmpty(this.getLabel())){
+			Long count=(Long)PoolDBUtils.ReturnStatisticQuery(String.format("SELECT COUNT(*) FROM (SELECT label, ID FROM xnat_experimentData WHERE label='%1$s' AND ID !='%2$s' UNION SELECT label, sharing_share_xnat_experimentda_id AS ID FROM xnat_experimentData_share WHERE label='%1$s' AND sharing_share_xnat_experimentda_id !='%2$s') SRCH",this.getLabel(),this.getId()), "count", this.getDBName(), "system");
+			if(count>0){
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Conflict: Duplicate experiment label",new Exception());
+			}
+		}
+    }
+    
 
 	@Override
 	public void preSave() throws Exception{
 		super.preSave();
 		
-		if(StringUtils.IsEmpty(this.getId())){
-			throw new IllegalArgumentException();
-		}	
+		checkIsValidID(this.getId());
 		
-		if(StringUtils.IsEmpty(this.getLabel())){
-			throw new IllegalArgumentException();
-		}
-		
-		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
-			throw new IllegalArgumentException("Identifiers cannot use special characters.");
-		}
-		
-		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
-			throw new IllegalArgumentException("Labels cannot use special characters.");
-		}
+		checkIsValidID(this.getLabel());
 		
 		final XnatProjectdata proj = this.getPrimaryProject(false);
 		if(proj==null){
 			throw new Exception("Unable to identify project for:" + this.getProject());
 		}
+		
+		checkUniqueLabel();
 		
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		

@@ -40,16 +40,18 @@ RestDeleter = function(_array,_config) {
 		td1.innerHTML="Are you sure you want to permanently remove this data from the archive?<br />(Data shared into this project will be un-shared, rather than deleted.)";
 		td1.style.color="red";
 
-		var tr=tb.appendChild(document.createElement("tr"));
-		var td1=tr.appendChild(document.createElement("td"));
-		var lblDiv=td1.appendChild(document.createElement("div"));
-		lblDiv.innerHTML="Justification:";
-		var sel = td1.appendChild(document.createElement("textarea"));
-		sel.cols="48";
-		sel.rows="4";
-		sel.id="del_event_reason";
-		sel.name="del_event_reason";
-		td1.appendChild(sel);
+		if(showReason){
+			var tr=tb.appendChild(document.createElement("tr"));
+			var td1=tr.appendChild(document.createElement("td"));
+			var lblDiv=td1.appendChild(document.createElement("div"));
+			lblDiv.innerHTML="Justification:";
+			var sel = td1.appendChild(document.createElement("textarea"));
+			sel.cols="48";
+			sel.rows="4";
+			sel.id="del_event_reason";
+			sel.name="del_event_reason";
+			td1.appendChild(sel);
+		}
 		
 	    var myButtons = [ { text:"Cancel", handler:this.handleCancel, isDefault:true }, { text:"Delete", handler:{fn:this.handleDelete, scope:this} } ];
 		this.popup.cfg.queueProperty("buttons", myButtons);
@@ -57,7 +59,7 @@ RestDeleter = function(_array,_config) {
 	
 	
 	this.handleDelete=function(){
-		if(document.getElementById("del_event_reason").value==""){
+		if(showReason && document.getElementById("del_event_reason").value==""){
 			alert("Please specify a justification for this operation.");
 			return;
 		}

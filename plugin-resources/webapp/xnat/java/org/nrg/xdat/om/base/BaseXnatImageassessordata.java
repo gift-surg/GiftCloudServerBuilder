@@ -21,6 +21,7 @@ import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.base.auto.AutoXnatImageassessordata;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
@@ -162,18 +163,18 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
 	@Override
 	public void preSave() throws Exception{
 		if(StringUtils.IsEmpty(this.getId())){
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Please specify an ID for your experiment.");
 		}	
 		
-		if(StringUtils.IsEmpty(this.getLabel())){
-			throw new IllegalArgumentException();
+		if(XFT.getBooleanProperty("security.require_image_assessor_labels", false) && StringUtils.IsEmpty(this.getLabel())){
+			throw new IllegalArgumentException("Please specify a label for your experiment.");
 		}
 		
 		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
 		
-		if(!StringUtils.IsAlphaNumericUnderscore(getLabel())){
+		if(!StringUtils.IsEmpty(this.getLabel()) && !StringUtils.IsAlphaNumericUnderscore(getLabel())){
 			throw new IllegalArgumentException("Labels cannot use special characters.");
 		}
 		

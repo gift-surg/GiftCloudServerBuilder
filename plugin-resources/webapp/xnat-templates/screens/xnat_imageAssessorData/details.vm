@@ -49,7 +49,7 @@ function summaryTabManagerInit(){
     window.summaryTabView = new YAHOO.widget.TabView('exptSummary');   
     window.expt_summary_module = new YAHOO.widget.Module("expt_summary_module",{visible:false,zIndex:5});
 	
-#addCustomScreens($om.getXSIType() "report/tabs") 
+#addCustomScreens($om.getXSIType() "report/tabs_js") 
     
     window.expt_summary_module.show(); 		    
     

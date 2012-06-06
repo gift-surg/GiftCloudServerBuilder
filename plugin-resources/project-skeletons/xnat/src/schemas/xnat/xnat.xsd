@@ -3781,6 +3781,35 @@ rebinning, 6=FORE)</xs:documentation>
 					</xs:simpleContent>
 				</xs:complexType>
 			</xs:element>
+			
+			<xs:element name="fields" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence minOccurs="0">
+						<xs:element name="field" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:appinfo>
+									<xdat:field>
+										<xdat:relation uniqueComposite="NAME"/>
+									</xdat:field>
+								</xs:appinfo>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="name" type="xs:string">
+											<xs:annotation>
+												<xs:appinfo>
+													<xdat:field uniqueComposite="NAME"/>
+												</xs:appinfo>
+											</xs:annotation>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<!-- Base MR Scan QC data. Should be applicable to all types of MR scans -->

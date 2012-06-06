@@ -179,13 +179,14 @@ function scriptGet (_dom,_obj) {
     };
     var statusPut = function () {
       var uri = that.obj.putStatus+that.current.status;
-      YAHOO.util.Connect.asyncRequest('PUT',uri,{success : resetInitial, failure : that.onFailure,scope : that});
+      YAHOO.util.Connect.asyncRequest('PUT',uri + "&XNAT_CSRF=" + window.csrfToken,{success : resetInitial, failure : that.onFailure,scope : that});
     };
     var scriptPut = function (f) {
-      YAHOO.util.Connect.asyncRequest('PUT',that.obj.putScript,{success : f,
-                                                                 failure: that.onFailure,
-								 scope: that},
-				     that.current.script);
+      YAHOO.util.Connect.asyncRequest('PUT',that.obj.putScript + "?XNAT_CSRF=" + window.csrfToken,
+    		  									{success : f,
+    	  										 failure: that.onFailure,
+    	  										 scope: that},
+    	  										 that.current.script);
     };
     var contains = function(a,v) {
       var found = false;

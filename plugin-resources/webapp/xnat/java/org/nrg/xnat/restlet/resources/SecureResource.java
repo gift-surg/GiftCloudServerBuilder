@@ -501,8 +501,10 @@ public abstract class SecureResource extends Resource {
 	public FileRepresentation representFile(File f,MediaType mt){
 		mt=buildMediaType(mt,f.getName());
 
-		this.setContentDisposition(f.getName());
-
+		if(mt.getName().startsWith("APPLICATION") || !XFT.getBooleanProperty("security.allow-HTML-resource-rendering", true)){
+			this.setContentDisposition(f.getName());
+		}
+		
 		FileRepresentation fr= new FileRepresentation(f,mt);
 		fr.setModificationDate(new Date(f.lastModified()));
 

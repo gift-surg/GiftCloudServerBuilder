@@ -1,82 +1,441 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 $page.addAttribute("onLoad", "document.form1.destination.focus();")
 ##<font face="$ui.sansSerifFonts" size="2">
-<span class="ui_sansSerifFonts">
-#if ($turbineUtils.GetPassedParameter("popup",$data))
-	#set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
-#else
-	#set ($popup = "false")
-#end
-<form name="form1" ONSUBMIT="return validate();" method="post" action="$link.setAction("CreateExperiment")">
-	<INPUT TYPE="hidden" NAME="popup" VALUE="$popup">
-    <table width="450">
-    #if($part_id && $project)
-    <input type="hidden" name="part_id" value="$part_id"/>
-    <input type="hidden" name="project" value="$project"/>
-    #else
-<tr>
-  <th align="left">Project</th>
-  <td><select id="project" name="project" disabled=true></select></td>
- </tr>
- 	<tr>
-		  <td colspan="2">Please select a subject for this new experiment.</td>
-		 </tr>
- <tr>
-  <th align="left">Subject</th>
-  <td><select id="part_id" name="part_id" disabled=true></select></td>
- </tr>
-		<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
-<script type="text/javascript">
+##<span class="ui_sansSerifFonts">
 
-function verifyExptId(obj){        };
-window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-window.ProjectSubjectManager.init();
+#if ($turbineUtils.GetPassedParameter("popup",$data))
+    #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
+#else
+    #set ($popup = "false")
+#end
+
+<style type="text/css">
+    #breadcrumbs { margin-bottom: 10px ; }
+    #form1 * { font-size: 13px !important; }
+    #form1 p { margin-bottom: 10px ; }
+    #form1 table { border: none ; font-size: 13px ; }
+    #form1 td { padding: 0 ; }
+    #form1 .label { display: inline-block ; width: 76px ; font-weight: bold !important ; color: #000 ; }
+    #form1 #expt_list { width: 550px ; }
+    #form1 #expt_list #expt_list_filter { padding: 4px 16px ; background: #f3f3f3 ; }
+    #form1 #expt_list #expt_list_filter input { font-size: 12px !important ; color: #888 ; }
+    #form1 #expt_list #expt_list_filter #filter_clear { padding: 3px 8px ; color: #333 ; /* background: #e5f2ff ; */ border: 1px solid #b0b0b0 ; }
+    #form1 #expt_list .label { width: 100% ; }
+    #form1 #expt_list .label i { display: block ; margin-top: 3px ; font-size: 12px ; font-style: normal ; color: #888 ; }
+    #form1 #expt_list .rows { margin-top: 8px ; border: 1px solid #ccc ; }
+    #form1 #expt_list .rows h4,
+    #form1 #expt_list .rows p { margin: 2px 0 ; padding: 0 ; color: #666 ; }
+    #form1 #expt_list h4 a { font-weight: bold !important; /* line-height: 18px; */ text-decoration: underline ; }
+    #form1 #expt_list div.row { display:none ; margin: 0 ; padding: 12px 16px ; background: #fff !important; border-top: 1px solid #ddd ; }
+    #form1 #expt_list div.row:hover { cursor: pointer ; background: #e5f2ff !important; ; }
+        /* for filter */
+    #form1 #expt_list div.row.show { display: block ; visibility: visible ; }
+</style>
+
+
+<script type="text/javascript">
 </script>
+
+
+<form id="form1" name="form1"
+##ONSUBMIT="return validate();"
+      method="post" action="$link.setAction("CreateExperiment")">
+
+    <input type="hidden" name="popup" VALUE="$popup" />
+
+    #if($part_id && $project)
+
+        <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
+
+        <p id="selected_subject" class="selected"><b class="label">Subject: </b> <span class="selected_label" title="$part_id"></span> <select id="part_id" name="part_id" style="display:none;"></select></p>
+
+        <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+
+        <script type="text/javascript">
+            function verifyExptId(obj){        };
+            window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+            window.ProjectSubjectManager.init();
+
+            jQuery(document).ready(function(){
+
+                function selected_labeler(_this) {
+                    var _this_label = _this.find('option:selected').text();
+                    _this.find('.selected_label').text(_this_label);
+                }
+
+                window.proj_check = setInterval(function(){
+                    if(jQuery('#selected_project option').length > 0){ //check if loaded
+                        selected_labeler(jQuery('#selected_project'));
+                        clearInterval(window.proj_check);
+                    }
+                },100);
+
+                window.subj_check = setInterval(function(){
+                    if(jQuery('#selected_subject option').length > 0){ //check if loaded
+                        selected_labeler(jQuery('#selected_subject'));
+                        clearInterval(window.subj_check);
+                    }
+                },100);
+
+            });
+
+        </script>
+
+    #elseif($project)
+
+        <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
+
+        <p><b class="label">Subject: </b> <select id="part_id" name="part_id"></select></p>
+
+        <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+
+        <script type="text/javascript">
+
+            function verifyExptId(obj){        };
+            window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+            window.ProjectSubjectManager.init();
+
+            jQuery(document).ready(function(){
+
+                function selected_labeler(_this) {
+                    var _this_label = _this.find('option:selected').text();
+                    _this.find('.selected_label').text(_this_label);
+                }
+
+                window.proj_check = setInterval(function(){
+                    if(jQuery('#selected_project option').length > 0){ //check if loaded
+                        selected_labeler(jQuery('#selected_project'));
+                        clearInterval(window.proj_check);
+                    }
+                },100);
+
+            });
+
+        </script>
+
+    #else
+
+        <p><span class="label">Project: </span> <select disabled="disabled" id="project" name="project"></select></p>
+        <p><span class="label">Subject: </span> <select disabled="disabled" id="part_id" name="part_id"></select></p>
+
+        <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+
+        <script type="text/javascript">
+            function verifyExptId(obj){        };
+            window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+            window.ProjectSubjectManager.init();
+        </script>
+
     #end
-	<tr>
-		<td colspan="2">
-		<br>What type of experiment are you entering?</a>
-		<br><br></td>
-		</tr>
-#if ( $data.Message )
-      <tr>  
-		<td colspan="2">
-  <DIV class="error">$data.message</DIV><br>
-		</td>
-      </tr>
-#end
-#set($dC=0)
-#foreach($ed in $data.getSession().getAttribute("user").getBrowseableCreateableElementDisplays())
- #set($gwe=$ed.getSchemaElement().getGenericXFTElement())
- #if($gwe.instanceOf("xnat:subjectAssessorData"))
- <tr #if($dC%2==0)class="even"#else class="odd"#end>
-   <td><input type="radio" name="data_type" id="dt_$ed.getElementName()" value="$ed.getElementName()"/></td>
-   <td><h4>$ed.getSchemaElement().getSingularDescription()</h4>$gwe.getWrapped().getXsDescription()</td>
- </tr>
-  #set($dC=$dC+1)
- #end
-#end
-	<tr>
-		<td></td>
-		<td>
-    			<input type="submit" name="eventSubmit_doSetup" value="Submit"/>
-		</td>
-	</tr>
-    </table>
-  
+
+    <br>
+
+    <div id="expt_list">
+
+        <p class="label">
+            <b>What type of experiment are you entering?</b>
+            <br>
+            <i>(clicking the experiment row will create a new experiment)</i>
+        </p>
+
+        <div class="rows">
+
+            #if ( $data.Message )
+
+                <div class="error">$data.message</div>
+
+            #end
+
+            <div id="expt_list_filter">
+                <p><span class="label" style="display:inline;">Filter: </span>&nbsp;<input type="text" size="45" value="" /> &nbsp; <a id="filter_clear" class="btn2">clear</a> </p>
+            </div>
+
+
+            #set($dC=0)
+
+            #foreach($ed in $data.getSession().getAttribute("user").getBrowseableCreateableElementDisplays())
+
+                #set($gwe=$ed.getSchemaElement().getGenericXFTElement())
+
+                #if($gwe.instanceOf("xnat:subjectAssessorData"))
+
+                    <div #if ($dC%2==0) class="row" #else class="row" #end>
+                        <h4><a class="data_type" id="dt_$ed.getElementName()" title="$ed.getElementName()">$ed.getSchemaElement().getSingularDescription()</a></h4>
+                        <p>$gwe.getWrapped().getXsDescription()</p>
+                    </div>
+
+                    #set($dC=$dC+1)
+
+                #end
+
+            #end
+
+        </div><!-- /rows -->
+
+    </div><!-- /expt_list -->
+
+    <input type="hidden" id="data_type" name="data_type" value="" />
+    <br>
+    <input type="submit" name="eventSubmit_doSetup" value="Submit" style="display:none;visibility:hidden;" />
+
 </form>
 
 <script type="text/javascript">
+
+jQuery(document).ready(function(){
+
+    var jq = jQuery.noConflict();
+
+
+    // //////////////////////////////////////////////// //
+    // setting vars for this particular filter instance //
+    // //////////////////////////////////////////////// //
+
+    // class of filter box container
+    var the_container = '#expt_list .rows' ;
+
+    // class of the filter box(es)
+    var filter_input = '#expt_list_filter input' ;
+
+    // default text to show in filter_input field
+    var filter_default_text = "type here to filter list (press 'esc' to reset)" ;
+
+    // class of the option boxes
+    var option_boxes = '.row' ;
+
+    // option text we're testing
+    var option_text = option_boxes + ' ' +  'a' ;
+
+    // class for container of reset button next to filter_input field
+    var filter_input_reset = '#filter_clear' ;
+
+
+
+
+    // ///////////////////////////////// //
+    // shouldn't need to edit below here //
+    // ///////////////////////////////// //
+
+    // show default filter input text
+    jq(filter_input).val(filter_default_text);
+
+    // show the options by default
+    jq(option_boxes).addClass('show');
+
+    // if the filter_input is blank or default,
+    // show default text on focus
+    // otherwise keep the text that's in there
+    jq(filter_input).focus(function() {
+
+        var _filter_val = jq(this).val();
+
+        if (_filter_val === '') {
+            jq(option_boxes).addClass('show');
+        }
+
+        else if (_filter_val === filter_default_text) {
+            jq(this).val('');
+            jq(option_boxes).addClass('show');
+        }
+
+    });
+
+    if (jq(filter_input).val() === '') {
+        jq(option_boxes).addClass('show');
+    }
+
+    // create new case-insensitive :contains selector
+    // usage - jq('.this_selector:containsNC("hello")').click(function() { ... });
+    jq.extend(jq.expr[":"], {
+        "containsNC": function(elem, i, match, array) {
+            return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+        }
+    });
+
+
+    // the filtering
+    jq(filter_input).keypress(function() {
+        var _filter_val = jq(this).val();
+        if (_filter_val === '') {
+            jq(option_boxes).addClass('show').removeClass('match');
+        }
+    });
+
+    jq(filter_input).keyup(function() {
+
+        var _filter_val = jq(this).val();
+
+        var _active_container = jq(this).closest(the_container);
+        var _filter_match = _active_container.find(option_text+':containsNC('+_filter_val+')');
+
+        if (_filter_val > '') {
+            if (_filter_val != filter_default_text) {
+                jq(option_boxes).removeClass('show match');
+                _filter_match.closest(option_boxes).addClass('show match');
+            }
+        }
+
+        else {
+            jq(option_boxes).addClass('show');
+        }
+
+    });
+
+
+    // clear values and reset filter
+    jq(filter_input_reset).click(function() {
+        var _active_container = jq(this).closest(the_container);
+        _active_container.find(filter_input).val('').focus();
+        jq(option_boxes).addClass('show');
+    });
+
+
+    // press 'esc' key to reset
+    jq(filter_input).keyup(function(e) {
+
+        if (e.keyCode == 27) {  // key 27 = 'esc'
+            var _active_container = jq(this).closest(the_container);
+            _active_container.find(filter_input).val('').focus();
+            jq(option_boxes).addClass('show');
+        }
+
+        /*
+        if (e.keyCode == 8) { //delete/backspace key?
+            var _filter_val = jq(this).val();
+            if (_filter_val === ''){
+                jq(option_boxes).show();
+            }
+        }
+        */
+
+    });
+
+
+    // if the filter_input is blank or default,
+    // show default text on blur
+    // otherwise keep the text that's in there
+    jq(filter_input).blur(function() {
+
+        var _filter_val = jq(this).val();
+
+        if (_filter_val == '') {
+            jq(this).val(filter_default_text);
+        }
+        else {
+            jq(this).val(_filter_val);
+        }
+
+    });
+
+
+    /**
+     * jQuery.fn.sortElements
+     * --------------
+     * @param Function comparator:
+     *   Exactly the same behaviour as [1,2,3].sort(comparator)
+     *
+     * @param Function getSortable
+     *   A function that should return the element that is
+     *   to be sorted. The comparator will run on the
+     *   current collection, but you may want the actual
+     *   resulting sort to occur on a parent or another
+     *   associated element.
+     *
+     *   E.g. jq('td').sortElements(comparator, function(){
+     *      return this.parentNode;
+     *   })
+     *
+     *   The <td>'s parent (<tr>) will be sorted instead
+     *   of the <td> itself.
+     */
+    jQuery.fn.sortElements = (function(){
+
+        var sort = [].sort;
+
+        return function(comparator, getSortable) {
+
+            getSortable = getSortable || function(){return this;};
+
+            var placements = this.map(function(){
+
+                var sortElement = getSortable.call(this),
+                        parentNode = sortElement.parentNode,
+
+                // Since the element itself will change position, we have
+                // to have some way of storing its original position in
+                // the DOM. The easiest way is to have a 'flag' node:
+                        nextSibling = parentNode.insertBefore(
+                                document.createTextNode(''),
+                                sortElement.nextSibling
+                        );
+
+                return function() {
+
+                    if (parentNode === this) {
+                        throw new Error(
+                                "You can't sort elements if any one is a descendant of another."
+                        );
+                    }
+
+                    // Insert before flag:
+                    parentNode.insertBefore(this, nextSibling);
+                    // Remove flag:
+                    parentNode.removeChild(nextSibling);
+
+                };
+
+            });
+
+            return sort.call(this, comparator).each(function(i){
+                placements[i].call(getSortable.call(this));
+            });
+
+        };
+
+    })();
+
+    jq(option_text).sortElements(function(a, b){
+        return jq(a).text() > jq(b).text() ? 1 : -1;
+    });
+
+
+    // super basic simple easy validation
+    jq('#form1 .row').click(function() {
+        data_type_val = jq(this).find('.data_type').attr('title');
+        jq('#data_type').val(data_type_val);
+
+        if (jq('#project').val() > '') {
+            if (jq('#part_id').val() > '') {
+                jq('#form1').submit();
+            }
+            else {
+                alert('Please select a subject.');
+            }
+        }
+        else {
+            alert('Please select a project.');
+        }
+
+    });
+
+});
+
+
+// don't need this validator anymore?
+/*
 function validate(){
    if (document.getElementById("data_type").selectedIndex==0)
    {
      alert("Please select a Data Type.");
      return false;
    }
-   
+
    return true;
 }
+*/
+
 </script>
-</span>
+
+##</span>
 ##</font>
-			
+

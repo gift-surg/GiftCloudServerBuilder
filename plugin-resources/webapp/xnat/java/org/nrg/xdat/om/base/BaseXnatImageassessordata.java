@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.nrg.action.ClientException;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -31,6 +32,7 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.restlet.data.Status;
 
 /**
  * @author XDAT
@@ -186,6 +188,8 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
 		if(proj==null){
 			throw new Exception("Unable to identify project for:" + this.getProject());
 		}
+		
+		checkUniqueLabel();
 		
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		

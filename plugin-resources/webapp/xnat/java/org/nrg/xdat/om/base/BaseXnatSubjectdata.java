@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.nrg.action.ClientException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractdemographicdataI;
 import org.nrg.xdat.model.XnatAbstractresourceI;
@@ -56,6 +57,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -78,6 +80,7 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
+import org.restlet.data.Status;
 
 /**
  * @author XDAT
@@ -1429,6 +1432,14 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	return v;
     }
     
+    public void checkUniqueLabel() throws Exception{
+		if(!StringUtils.IsEmpty(this.getLabel())){
+			Long count=(Long)PoolDBUtils.ReturnStatisticQuery(String.format("SELECT COUNT(*) FROM (SELECT label,id FROM xnat_subjectData WHERE label='%1$s' AND ID !='%2$s' UNION SELECT label, subject_id as ID FROM xnat_projectParticipant WHERE label='%1$s' AND subject_id !='%2$s')SRCH",this.getLabel(),this.getId()), "count", this.getDBName(), "system");
+			if(count>0){
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Conflict: Duplicate subject label",new Exception());
+			}
+		}
+    }
 
 
 	@Override
@@ -1456,6 +1467,8 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 		if(proj==null){
 			throw new Exception("Unable to identify project for:" + this.getProject());
 		}
+		
+		checkUniqueLabel();
 		
 		final String expectedPath=getExpectedCurrentDirectory().getAbsolutePath().replace('\\', '/');
 		

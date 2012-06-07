@@ -130,7 +130,7 @@ td.ext-content { width: 300px ; white-space: normal ; }
 
 /* universal button style with CSS gradient */
 
-.button { display: inline-block ; margin: 1px ; padding: 2px 2px 4px ; border: 1px solid #000 ; border-radius: 5px ; -moz-border-radius: 5px ; -webkit-border-radius: 5px ; -khtml-border-radius: 5px ; font-family: Verdana, Geneva, sans-serif ; font-weight: bold ; text-align: center ; background: #999 ; background: -moz-linear-gradient(top, #ccc 0%, #999 25%) ; /* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccc), color-stop(25%,#999)) ; /* Chrome,Safari4+ */ background: linear-gradient(top, #ccc 0%, #999 25%) ; /* W3C */ color: #fff ; }
+.button { display: inline-block ; margin: 1px ; padding: 2px 2px 4px ; border: 1px solid #000 ; border-radius: 5px ; -moz-border-radius: 5px ; -webkit-border-radius: 5px ; -khtml-border-radius: 5px ; /* font-family: Verdana, Geneva, sans-serif ; */ font-weight: bold ; text-align: center ; background: #999 ; background: -moz-linear-gradient(top, #ccc 0%, #999 25%) ; /* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccc), color-stop(25%,#999)) ; /* Chrome,Safari4+ */ background: linear-gradient(top, #ccc 0%, #999 25%) ; /* W3C */ color: #fff ; }
 
 /* width set for QC buttons */
 
@@ -171,15 +171,16 @@ table.ruled tr:nth-child(2n+1) { background: #fff ; }
 
 td.underscore{ border-bottom: 2px solid rgb(255,153,51) ; padding-bottom: 2px ; padding-right: 20px ; }
 
-div.alert { background-color:#CCCCCC; border-width:1px; border-style:solid; color:red; font-size:14px; line-height:16px; font-weight:700; overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
+div.alert { background-color:#CCCCCC; border-width:1px; border-style:solid; color:red; font-size:14px; line-height:16px; /* font-weight:700; */ overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
 
 /* IMG.logo_img{ height:60px;} */
 
 /* TD.logo_img{ width:160px;}  */
 
-div.justification{ font-size:11px; line-height:13px; border:1px solid #DDDDDD; background-color:#F2F2F2; padding:4px; font-weight:700;}
+div.justification { /* font-size: 12px ; line-height:15px; */ border:1px solid #ccc ; background-color: #f0f0f0 ; padding:4px; /* font-weight:700; */}
 
-table.dark { background-color:#DCDCDC;}
+table.dark { background-color: /* #DCDCDC */ #f0f0f0 ; border: 1px solid #ccc !important ; color: #000 ; font-size: 12px ; font-weight: bold ; }
+table.dark th, table.dark td { padding: 4px 8px ; }
 
 #page_wrapper {  }
 
@@ -327,13 +328,9 @@ div.containerTitle.withColor { background: #084FAB ; }
     /* border: 2px solid rgba(204,204,204,0.5) ;	*/
 }
 
+.mask { z-index: 999999998 !important ; }
 
-.mask { z-index: 2000 !important ; }
-
-.yui-skin-sam .yui-panel-container {
-    padding: 0 1px;
-    z-index: 4000 !important;
-}
+.yui-skin-sam .yui-panel-container { padding: 0 1px; z-index: 999999999 !important; }
 
 .yui-skin-sam .yuimenubarnav .yuimenubaritemlabel {
     height: 26px;
@@ -356,8 +353,9 @@ div.containerTitle.withColor { background: #084FAB ; }
 
 .yui-content { font-size: 12px ; }
 
-.yui-skin-sam .yui-dialog .ft span.default button {
-    background: transparent url("images/btn1_30px.png") repeat-x center center ;
+.yui-skin-sam .yui-dialog .ft span.default button,
+.yui-skin-sam .yui-calcontainer .yui-cal-nav .yui-cal-nav-btn.yui-default button {
+    background: transparent url('images/btn1_30px.png') repeat-x center center ;
     color: #fff;
     outline: none ;
 }
@@ -413,6 +411,7 @@ div.edit_title { margin-bottom: 10px ; }
 #actionsMenu { /* border: 1px solid #eee ; */ }
 #actionsMenu ul { list-style: none !important ; border-color: #ddd ; }
 #actionsMenu .bd ul { padding: 2px 0 ; }
+#actionsMenu .bd ul ul { min-width: 100px ; max-width: 200px ; max-height: 300px ; overflow-x: hidden ; overflow-y: auto ; }
 #actionsMenu .ic,
 #actionsMenu .ic_spacer,
 #actionsMenu .topscrollbar,
@@ -427,8 +426,29 @@ div.edit_title { margin-bottom: 10px ; }
 #actionsMenu li.yuimenuitem-hassubmenu > a:hover { background-color: #e5f2ff ; }
 #actionsMenu .yui-menu-body-scrolled { overflow: auto; height: auto !important ; }
 
+/* ADD EXPERIMENT PAGE */
+#add_experiment #breadcrumbs { margin-bottom: 10px ; }
+#add_experiment #form1 * { font-size: 13px !important; }
+#add_experiment #form1 p { margin-bottom: 10px ; }
+#add_experiment #form1 table { border: none ; font-size: 13px ; }
+#add_experiment #form1 td { padding: 0 ; }
+#add_experiment #form1 .label { display: inline-block ; width: 76px ; font-weight: bold !important ; color: #000 ; }
+#add_experiment #form1 #expt_list { width: 550px ; }
+#add_experiment #form1 #expt_list #expt_list_filter { padding: 4px 16px ; background: #f3f3f3 ; }
+#add_experiment #form1 #expt_list #expt_list_filter input { font-size: 12px !important ; color: #b0b0b0 ; }
+#add_experiment #form1 #expt_list #expt_list_filter #filter_clear { padding: 3px 8px ; color: #333 ; /* background: #e5f2ff ; */ border: 1px solid #b0b0b0 ; }
+#add_experiment #form1 #expt_list .label { width: 100% ; }
+#add_experiment #form1 #expt_list .label i { display: block ; margin-top: 3px ; font-size: 12px ; font-style: normal ; color: #888 ; }
+#add_experiment #form1 #expt_list .rows { margin-top: 8px ; border: 1px solid #ccc ; }
+#add_experiment #form1 #expt_list .rows h4,
+#add_experiment #form1 #expt_list .rows p { margin: 2px 0 ; padding: 0 ; color: #666 ; }
+#add_experiment #form1 #expt_list h4 a { font-weight: bold !important; /* line-height: 18px; */ text-decoration: underline ; }
+#add_experiment #form1 #expt_list div.row { display:none ; margin: 0 ; padding: 12px 16px ; background: #fff !important; border-top: 1px solid #ddd ; }
+#add_experiment #form1 #expt_list div.row:hover { cursor: pointer ; background: #e5f2ff !important; ; }
+/* for filter */
+#add_experiment #form1 #expt_list div.row.show { display: block ; visibility: visible ; }
 
-#session_timeout_dialog { width: 320px !important ; z-index: 9999 ; }
+#session_timeout_dialog { width: 320px !important ; z-index: 999999 ; }
 
 span.close { position: relative ; left: 2px ; top: 2px ; }
 .yui-dt-button img { position: relative ; top: 2px ; }
@@ -452,7 +472,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 /* "No more wire inline font-size styles!" */
 .smallest_text, .ie .smallest_text,
 .smaller_text, .ie .smaller_text,
-.small_text, .ie .small_text { font-size: 12px !important ; line-height: 15px !important ; }
+.small_text, .ie .small_text { font-size: 11px !important ; line-height: 15px !important ; }
 
 
 

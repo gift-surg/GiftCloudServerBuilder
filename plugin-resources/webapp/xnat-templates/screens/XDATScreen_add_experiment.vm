@@ -3,182 +3,159 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 ##<font face="$ui.sansSerifFonts" size="2">
 ##<span class="ui_sansSerifFonts">
 
-#if ($turbineUtils.GetPassedParameter("popup",$data))
-    #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
-#else
-    #set ($popup = "false")
-#end
+<div id="add_experiment">
 
-<style type="text/css">
-    #breadcrumbs { margin-bottom: 10px ; }
-    #form1 * { font-size: 13px !important; }
-    #form1 p { margin-bottom: 10px ; }
-    #form1 table { border: none ; font-size: 13px ; }
-    #form1 td { padding: 0 ; }
-    #form1 .label { display: inline-block ; width: 76px ; font-weight: bold !important ; color: #000 ; }
-    #form1 #expt_list { width: 550px ; }
-    #form1 #expt_list #expt_list_filter { padding: 4px 16px ; background: #f3f3f3 ; }
-    #form1 #expt_list #expt_list_filter input { font-size: 12px !important ; color: #888 ; }
-    #form1 #expt_list #expt_list_filter #filter_clear { padding: 3px 8px ; color: #333 ; /* background: #e5f2ff ; */ border: 1px solid #b0b0b0 ; }
-    #form1 #expt_list .label { width: 100% ; }
-    #form1 #expt_list .label i { display: block ; margin-top: 3px ; font-size: 12px ; font-style: normal ; color: #888 ; }
-    #form1 #expt_list .rows { margin-top: 8px ; border: 1px solid #ccc ; }
-    #form1 #expt_list .rows h4,
-    #form1 #expt_list .rows p { margin: 2px 0 ; padding: 0 ; color: #666 ; }
-    #form1 #expt_list h4 a { font-weight: bold !important; /* line-height: 18px; */ text-decoration: underline ; }
-    #form1 #expt_list div.row { display:none ; margin: 0 ; padding: 12px 16px ; background: #fff !important; border-top: 1px solid #ddd ; }
-    #form1 #expt_list div.row:hover { cursor: pointer ; background: #e5f2ff !important; ; }
-        /* for filter */
-    #form1 #expt_list div.row.show { display: block ; visibility: visible ; }
-</style>
-
-
-<script type="text/javascript">
-</script>
-
-
-<form id="form1" name="form1"
-##ONSUBMIT="return validate();"
-      method="post" action="$link.setAction("CreateExperiment")">
-
-    <input type="hidden" name="popup" VALUE="$popup" />
-
-    #if($part_id && $project)
-
-        <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
-
-        <p id="selected_subject" class="selected"><b class="label">Subject: </b> <span class="selected_label" title="$part_id"></span> <select id="part_id" name="part_id" style="display:none;"></select></p>
-
-        <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
-
-        <script type="text/javascript">
-            function verifyExptId(obj){        };
-            window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-            window.ProjectSubjectManager.init();
-
-            jQuery(document).ready(function(){
-
-                function selected_labeler(_this) {
-                    var _this_label = _this.find('option:selected').text();
-                    _this.find('.selected_label').text(_this_label);
-                }
-
-                window.proj_check = setInterval(function(){
-                    if(jQuery('#selected_project option').length > 0){ //check if loaded
-                        selected_labeler(jQuery('#selected_project'));
-                        clearInterval(window.proj_check);
-                    }
-                },100);
-
-                window.subj_check = setInterval(function(){
-                    if(jQuery('#selected_subject option').length > 0){ //check if loaded
-                        selected_labeler(jQuery('#selected_subject'));
-                        clearInterval(window.subj_check);
-                    }
-                },100);
-
-            });
-
-        </script>
-
-    #elseif($project)
-
-        <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
-
-        <p><b class="label">Subject: </b> <select id="part_id" name="part_id"></select></p>
-
-        <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
-
-        <script type="text/javascript">
-
-            function verifyExptId(obj){        };
-            window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-            window.ProjectSubjectManager.init();
-
-            jQuery(document).ready(function(){
-
-                function selected_labeler(_this) {
-                    var _this_label = _this.find('option:selected').text();
-                    _this.find('.selected_label').text(_this_label);
-                }
-
-                window.proj_check = setInterval(function(){
-                    if(jQuery('#selected_project option').length > 0){ //check if loaded
-                        selected_labeler(jQuery('#selected_project'));
-                        clearInterval(window.proj_check);
-                    }
-                },100);
-
-            });
-
-        </script>
-
+    #if ($turbineUtils.GetPassedParameter("popup",$data))
+        #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
     #else
-
-        <p><span class="label">Project: </span> <select disabled="disabled" id="project" name="project"></select></p>
-        <p><span class="label">Subject: </span> <select disabled="disabled" id="part_id" name="part_id"></select></p>
-
-        <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
-
-        <script type="text/javascript">
-            function verifyExptId(obj){        };
-            window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-            window.ProjectSubjectManager.init();
-        </script>
-
+        #set ($popup = "false")
     #end
 
-    <br>
+    <form id="form1" name="form1"
+    ##ONSUBMIT="return validate();"
+          method="post" action="$link.setAction("CreateExperiment")">
 
-    <div id="expt_list">
+        <input type="hidden" name="popup" VALUE="$popup" />
 
-        <p class="label">
-            <b>What type of experiment are you entering?</b>
-            <br>
-            <i>(clicking the experiment row will create a new experiment)</i>
-        </p>
+        #if($part_id && $project)
 
-        <div class="rows">
+            <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
 
-            #if ( $data.Message )
+            <p id="selected_subject" class="selected"><b class="label">Subject: </b> <span class="selected_label" title="$part_id"></span> <select id="part_id" name="part_id" style="display:none;"></select></p>
 
-                <div class="error">$data.message</div>
+            <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
 
-            #end
+            <script type="text/javascript">
+                function verifyExptId(obj){        };
+                window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+                window.ProjectSubjectManager.init();
 
-            <div id="expt_list_filter">
-                <p><span class="label" style="display:inline;">Filter: </span>&nbsp;<input type="text" size="45" value="" /> &nbsp; <a id="filter_clear" class="btn2">clear</a> </p>
-            </div>
+                jQuery(document).ready(function(){
 
+                    function selected_labeler(_this) {
+                        var _this_label = _this.find('option:selected').text();
+                        _this.find('.selected_label').text(_this_label);
+                    }
 
-            #set($dC=0)
+                    window.proj_check = setInterval(function(){
+                        if(jQuery('#selected_project option').length > 0){ //check if loaded
+                            selected_labeler(jQuery('#selected_project'));
+                            clearInterval(window.proj_check);
+                        }
+                    },100);
 
-            #foreach($ed in $data.getSession().getAttribute("user").getBrowseableCreateableElementDisplays())
+                    window.subj_check = setInterval(function(){
+                        if(jQuery('#selected_subject option').length > 0){ //check if loaded
+                            selected_labeler(jQuery('#selected_subject'));
+                            clearInterval(window.subj_check);
+                        }
+                    },100);
 
-                #set($gwe=$ed.getSchemaElement().getGenericXFTElement())
+                });
 
-                #if($gwe.instanceOf("xnat:subjectAssessorData"))
+            </script>
 
-                    <div #if ($dC%2==0) class="row" #else class="row" #end>
-                        <h4><a class="data_type" id="dt_$ed.getElementName()" title="$ed.getElementName()">$ed.getSchemaElement().getSingularDescription()</a></h4>
-                        <p>$gwe.getWrapped().getXsDescription()</p>
-                    </div>
+        #elseif($project)
 
-                    #set($dC=$dC+1)
+            <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
+
+            <p><b class="label">Subject: </b> <select id="part_id" name="part_id"></select></p>
+
+            <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+
+            <script type="text/javascript">
+
+                function verifyExptId(obj){        };
+                window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+                window.ProjectSubjectManager.init();
+
+                jQuery(document).ready(function(){
+
+                    function selected_labeler(_this) {
+                        var _this_label = _this.find('option:selected').text();
+                        _this.find('.selected_label').text(_this_label);
+                    }
+
+                    window.proj_check = setInterval(function(){
+                        if(jQuery('#selected_project option').length > 0){ //check if loaded
+                            selected_labeler(jQuery('#selected_project'));
+                            clearInterval(window.proj_check);
+                        }
+                    },100);
+
+                });
+
+            </script>
+
+        #else
+
+            <p><span class="label">Project: </span> <select disabled="disabled" id="project" name="project"></select></p>
+            <p><span class="label">Subject: </span> <select disabled="disabled" id="part_id" name="part_id"></select></p>
+
+            <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+
+            <script type="text/javascript">
+                function verifyExptId(obj){        };
+                window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+                window.ProjectSubjectManager.init();
+            </script>
+
+        #end
+
+        <br>
+
+        <div id="expt_list">
+
+            <p class="label">
+                <b>What type of experiment are you entering?</b>
+                <br>
+                <i>(clicking the experiment row will create a new experiment)</i>
+            </p>
+
+            <div class="rows">
+
+                #if ( $data.Message )
+
+                    <div class="error">$data.message</div>
 
                 #end
 
-            #end
+                <div id="expt_list_filter">
+                    <p><span class="label" style="display:inline;">Filter: </span>&nbsp;<input type="text" size="45" value="" /> &nbsp; <a id="filter_clear" class="btn2">clear</a> </p>
+                </div>
 
-        </div><!-- /rows -->
 
-    </div><!-- /expt_list -->
+                #set($dC=0)
 
-    <input type="hidden" id="data_type" name="data_type" value="" />
-    <br>
-    <input type="submit" name="eventSubmit_doSetup" value="Submit" style="display:none;visibility:hidden;" />
+                #foreach($ed in $data.getSession().getAttribute("user").getBrowseableCreateableElementDisplays())
 
-</form>
+                    #set($gwe=$ed.getSchemaElement().getGenericXFTElement())
+
+                    #if($gwe.instanceOf("xnat:subjectAssessorData"))
+
+                        <div #if ($dC%2==0) class="row" #else class="row" #end>
+                            <h4><a class="data_type" id="dt_$ed.getElementName()" title="$ed.getElementName()">$ed.getSchemaElement().getSingularDescription()</a></h4>
+                            <p>$gwe.getWrapped().getXsDescription()</p>
+                        </div>
+
+                        #set($dC=$dC+1)
+
+                    #end
+
+                #end
+
+            </div><!-- /rows -->
+
+        </div><!-- /expt_list -->
+
+        <input type="hidden" id="data_type" name="data_type" value="" />
+        <br>
+        <input type="submit" name="eventSubmit_doSetup" value="Submit" style="display:none;visibility:hidden;" />
+
+    </form><!-- /form1 -->
+
+</div><!-- /add_experiment -->
+
 
 <script type="text/javascript">
 
@@ -198,7 +175,7 @@ jQuery(document).ready(function(){
     var filter_input = '#expt_list_filter input' ;
 
     // default text to show in filter_input field
-    var filter_default_text = "type here to filter list (press 'esc' to reset)" ;
+    var filter_default_text = "type here to filter list (press 'esc' to clear)" ;
 
     // class of the option boxes
     var option_boxes = '.row' ;

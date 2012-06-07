@@ -205,12 +205,26 @@ XNAT.app.toggle=function (_name){
 }
 
 
-jQuery(document).ready(function(){
+jQuery(window).load(function(){
+
     var jq = jQuery.noConflict();
+
+    // trying to make the text readable
     jq('[style*="font-size:9px"]').addClass('smallest_text');
     jq('[style*="font-size: 9px"]').addClass('smallest_text');
     jq('[style*="font-size:10px"]').addClass('smaller_text');
     jq('[style*="font-size: 10px"]').addClass('smaller_text');
     jq('[style*="font-size:11px"]').addClass('small_text');
     jq('[style*="font-size: 11px"]').addClass('small_text');
+
+    // ridding <font> tags of their meaning
+    jq('font').attr('face','').attr('size','');
+
 });
+
+
+
+
+
+
+

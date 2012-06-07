@@ -7,7 +7,7 @@
 <!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
 <!-- the "no-js" class is for Modernizr. -->
 
-<!-- Search -->
+<!-- xnat/Search -->
 <head>
 <title>$!systemName</title>
 $navigation.setTemplate("/HeaderIncludes.vm")
@@ -47,5 +47,6 @@ $navigation.setTemplate("/HeaderIncludes.vm")
 		</td>
 	</tr>
 </table>
+<script type="text/javascript" src="$content.getURI('scripts/footer.js')"></script>
 </body>
 </html>

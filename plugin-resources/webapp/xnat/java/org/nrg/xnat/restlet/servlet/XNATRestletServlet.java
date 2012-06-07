@@ -100,7 +100,7 @@ public class XNATRestletServlet extends ServerServlet {
     }
 
     /**
-     * Adds users from old xdat_user table to new user authentication table if they are not already there. New local database users now get added to both automatically, but this is necessary
+     * Adds users from /old xdat_user table to new user authentication table if they are not already there. New local database users now get added to both automatically, but this is necessary
      * so that those who upgrade from an earlier version will still have their users be able to log in. Password expiry times are also added so that pre-existing users still have their passwords expire.
      */
     private void updateAuthTable(){

@@ -73,7 +73,6 @@ function fixSpaces(val)
                 newVal += '' + temp[c];
         }
         
-        newVal = newVal.replace(/[-]/,"_");
         newVal = newVal.replace(/[&]/,"_");
         newVal = newVal.replace(/[?]/,"_");
         newVal = newVal.replace(/[<]/,"_");

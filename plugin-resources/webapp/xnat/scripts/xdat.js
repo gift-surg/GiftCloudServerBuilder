@@ -317,7 +317,6 @@ function stringTrim(str)
 function stringCamelCaps(val)
 {
         var temp = val.replace(/^\s*|\s*$/g,"");
-        temp = temp.replace(/[-]/," ");
         temp = temp.replace(/[&]/," ");
         temp = temp.replace(/[?]/," ");
         temp = temp.replace(/[<]/," ");

@@ -50,7 +50,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	}
 			
 	static class Move {
-		final String basePath, sess, uri, newProj;
+		final String basePath, sess, uri, subject, newProj;
 		final File f, tsdir, newTsdir, xml;
 		XnatImagesessiondataBean doc = null;
 		
@@ -116,7 +116,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 							public DicomObject call(DicomObject o) throws IOException {
 								DicomObject tmp = o;
 								try {
-									Anonymize.anonymize(tmp, newProj, "", sess, anonScript);	
+									Anonymize.anonymize(tmp, newProj, subject, sess, anonScript);	
 								}
 								catch(ScriptEvaluationException e){
 									throw new IOException(e);
@@ -150,6 +150,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 				return doc;
 			}
 			public void rollback() throws IllegalStateException {
+				// this operation is in memory there is no need to rollback
 			}
 		}
 		
@@ -183,11 +184,12 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			}
 		}
 				
-		public Move(String basePath, final String sess, String uri, final String newProj) {
+		public Move(String basePath, final String sess, String uri, String subject, final String newProj) {
 			super();
 			this.basePath = basePath;
 			this.sess = sess;
 			this.uri = uri;
+			this.subject = subject;
 			this.newProj = newProj;
 			this.f = new File(this.uri);
 			this.tsdir = f.getParentFile();
@@ -268,7 +270,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	}
 	
 	public void move(final SessionData sd, final String newProj) throws SyncFailedException {
-		this._move(new Move (this.basePath, sd.getFolderName(), sd.getUrl(), newProj){});
+		this._move(new Move (this.basePath, sd.getFolderName(), sd.getUrl(), sd.getSubject(), newProj){});
 	}
 	
 	protected void _move(Move move) throws SyncFailedException {

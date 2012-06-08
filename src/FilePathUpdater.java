@@ -155,7 +155,7 @@ public class FilePathUpdater {
 			
 			ItemCollection coll= ItemSearch.GetAllItems("xnat:file",tool.getUser(),false);
 
-            DBItemCache cache =  new DBItemCache(null,EventUtils.ADMIN_EVENT(tool.getUser()));
+            DBItemCache cache =  new DBItemCache(null,EventUtils.DEFAULT_EVENT(tool.getUser(),"File Path Updater"));
             String dbname = null;
 			StringBuffer sb = new StringBuffer();
 			sb.append("SESSION,OLD,NEW\n");

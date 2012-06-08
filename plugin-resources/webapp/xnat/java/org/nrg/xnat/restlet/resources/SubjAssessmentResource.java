@@ -694,7 +694,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 				return returnStatus(expt,mt);
 			}else if(filepath!=null && !filepath.equals("") && filepath.equals("history")){
 				try {
-					return buildChangesets(expt.getItem(), mt);
+					return buildChangesets(expt.getItem(),expt.getStringProperty("ID"), mt);
 				} catch (Exception e) {
 					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());

@@ -30,7 +30,7 @@ public class SetEmailSpecs extends AdminAction {
         
         ArcArchivespecification arc = new ArcArchivespecification(item);
         
-        SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+        SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,this.newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN,"Modified email specifications."));
         
         ArcSpecManager.Reset();
     }

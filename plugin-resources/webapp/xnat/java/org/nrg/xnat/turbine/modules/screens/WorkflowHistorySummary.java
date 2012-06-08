@@ -26,7 +26,7 @@ public class WorkflowHistorySummary extends SecureReport {
 	@Override
 	public void finalProcessing(RunData data, Context context) {
 		try {
-			String id=item.getStringProperty("ID");
+			final String id=(TurbineUtils.HasPassedParameter("key", data))?(String)TurbineUtils.GetPassedParameter("key", data):item.getStringProperty("ID");
 			List<WorkflowView> wvs=new ArrayList<WorkflowView>();
 			
 			Object o=TurbineUtils.GetPassedParameter("includeFiles", data);

@@ -140,7 +140,7 @@ public class MoveFiles extends SecureResource {
 			if(work!=null){
 				ci=work.buildEvent();
 			}else{
-				ci = EventUtils.ADMIN_EVENT(user);
+				ci = EventUtils.DEFAULT_EVENT(user,null);
 			}
 			
 			//this should allow injection of a different implementation- TO

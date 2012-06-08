@@ -264,7 +264,7 @@ public class SettingsRestlet extends SecureResource {
             }
         }
         if (dirtied) {
-            SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,EventUtils.ADMIN_EVENT(user));
+            SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modifying archive specification"));
         }
     }
 
@@ -273,7 +273,7 @@ public class SettingsRestlet extends SecureResource {
         XFTItem item = populator.getItem();
         item.setUser(user);
         ArcArchivespecification arc = new ArcArchivespecification(item);
-        SaveItemHelper.unauthorizedSave(arc, user, false, false,EventUtils.ADMIN_EVENT(user));
+        SaveItemHelper.unauthorizedSave(arc, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Initializing archive specification"));
         ArcSpecManager.Reset();
     }
 

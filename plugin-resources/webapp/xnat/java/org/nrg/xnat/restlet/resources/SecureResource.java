@@ -1061,13 +1061,13 @@ public abstract class SecureResource extends Resource {
 		}
 	}
 	
-	public Representation buildChangesets(XFTItem item, MediaType mt) throws Exception{
+	public Representation buildChangesets(XFTItem item, String key, MediaType mt) throws Exception{
 		String files=this.getQueryVariable("includeFiles");
 		String details=this.getQueryVariable("includeDetails");
 		final boolean includeFiles=(StringUtils.isEmpty(files))?false:Boolean.valueOf(files.toString());
 		final boolean includedetails=(StringUtils.isEmpty(details))?false:Boolean.valueOf(details.toString());
 		
-		return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, (new WorkflowBasedHistoryBuilder(item,item.getStringProperty("ID"),user,includeFiles,includedetails)).toJSON(this.getQueryVariable("dateFormat")));
+		return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, (new WorkflowBasedHistoryBuilder(item,key,user,includeFiles,includedetails)).toJSON(this.getQueryVariable("dateFormat")));
 	}
 	
 	public Integer getEventId(){

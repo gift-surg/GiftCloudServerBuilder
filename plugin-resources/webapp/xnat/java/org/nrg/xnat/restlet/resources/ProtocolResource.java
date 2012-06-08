@@ -12,6 +12,8 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
@@ -103,17 +105,25 @@ public class ProtocolResource extends ItemResource {
 						protocol.setProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender",this.getQueryVariable("gender"));
 					}
 											
-					if(SaveItemHelper.authorizedSave(protocol,user,false,true,EventUtils.ADMIN_EVENT(user))){
-						MaterializedView.DeleteByUser(user);
+					PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Modified event data-type protocol."));
+				    try {
+						if(SaveItemHelper.authorizedSave(protocol,user,false,true,wrk.buildEvent())){
+							PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());
+							MaterializedView.DeleteByUser(user);
+						}
+						
+						this.returnXML(protocol.getItem());
+					} catch (Exception e) {
+						PersistentWorkflowUtils.fail(wrk,wrk.buildEvent());
+						throw e;
 					}
-					
-					this.returnXML(protocol.getItem());
 				}
 		} catch (SAXParseException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
+			logger.error("",e);
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			e.printStackTrace();
+			logger.error("",e);
 		}
 	}
 
@@ -137,16 +147,20 @@ public class ProtocolResource extends ItemResource {
 		
 			if(protocol!=null){
 				if (protocol!=null){				        
-					SaveItemHelper.authorizedDelete(protocol.getItem().getCurrentDBVersion(), user,EventUtils.ADMIN_EVENT(user));
+					PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Delete event data-type protocol."));
+				    try {
+						SaveItemHelper.authorizedDelete(protocol.getItem().getCurrentDBVersion(), user,wrk.buildEvent());
+						PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());
+					} catch (Exception e1) {
+						PersistentWorkflowUtils.fail(wrk,wrk.buildEvent());
+						throw e1;
+					}
 			    }
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 		}
 	}
@@ -180,10 +194,17 @@ public class ProtocolResource extends ItemResource {
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/data-type", temp.getProperty("data-type"));
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
 					    }
-					    SaveItemHelper.authorizedSave(temp,user, false, false,EventUtils.ADMIN_EVENT(user));
+					    PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Modify event data-type protocol."));
+					    try {
+							SaveItemHelper.authorizedSave(temp,user, false, false,wrk.buildEvent());
+							PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());
+						} catch (Exception e1) {
+							PersistentWorkflowUtils.fail(wrk,wrk.buildEvent());
+							throw e1;
+						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				
 				if(temp==null){

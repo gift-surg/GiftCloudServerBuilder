@@ -97,7 +97,7 @@ public class XDATChangePassword extends VelocitySecureAction {
                 toSave.setProperty("primary_password", password);
                 toSave.setProperty("email", oldUser.getProperty("email"));
 				try {
-					XDATUser.ModifyUser(oldUser, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+					XDATUser.ModifyUser(oldUser, toSave, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Modified user password"));
 				}
 				catch (Exception e) {
 					invalidInformation(data, context, e.getMessage());
@@ -164,13 +164,12 @@ public class XDATChangePassword extends VelocitySecureAction {
                 toSave.setProperty("primary_password", password);
                 toSave.setProperty("email", user.getProperty("email"));
 				try {
-					XDATUser.ModifyUser(user, toSave, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+					XDATUser.ModifyUser(user, toSave, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Modified user password"));
 				} catch (Exception e) {
 					invalidInformation(data, context, e.getMessage());
 					logger.error("Error Storing User", e);
 					return;
 				}
-				SaveItemHelper.authorizedSave(toSave, TurbineUtils.getUser(data),true,false,true,false, EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
                 TurbineUtils.setUser(data, user);
 		    	
 				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "localdb", "");

@@ -125,11 +125,11 @@ public class AddProject extends SecureAction {
 					postSave = new XnatProjectdata(found);
 					postSave.getItem().setUser(user);
 
-					postSave.initGroups(c);
+					postSave.initGroups();
 					
 					//postSave.initBundles(user);
 					
-                String accessibility=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
+					String accessibility=((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("accessibility",data));
 					if (accessibility==null){
 					    accessibility="protected";
 					}

@@ -207,18 +207,26 @@ XNAT.app.toggle=function (_name){
 
 jQuery(window).load(function(){
 
-    var jq = jQuery.noConflict();
+    //var jq = jQuery.noConflict();
 
     // trying to make the text readable
-    jq('[style*="font-size:9px"]').addClass('smallest_text');
-    jq('[style*="font-size: 9px"]').addClass('smallest_text');
-    jq('[style*="font-size:10px"]').addClass('smaller_text');
-    jq('[style*="font-size: 10px"]').addClass('smaller_text');
-    jq('[style*="font-size:11px"]').addClass('small_text');
-    jq('[style*="font-size: 11px"]').addClass('small_text');
+    jQuery('[style*="font-size:9px"]').addClass('smallest_text');
+    jQuery('[style*="font-size: 9px"]').addClass('smallest_text');
+    jQuery('[style*="font-size:10px"]').addClass('smaller_text');
+    jQuery('[style*="font-size: 10px"]').addClass('smaller_text');
+    jQuery('[style*="font-size:11px"]').addClass('small_text');
+    jQuery('[style*="font-size: 11px"]').addClass('small_text');
 
     // ridding <font> tags of their meaning
-    jq('font').attr('face','').attr('size','');
+    jQuery('font').attr('face','').attr('size','');
+
+    window.timeLeft_dialog = setInterval(function(){
+        if((jQuery('#session_timeout_dialog_mask').length > 0) && (jQuery('#session_timeout_dialog_c').length > 0)){ //check if selected options are loaded
+            jQuery('body').append(jQuery('#session_timeout_dialog_mask, #session_timeout_dialog_c'));
+            //jQuery('#timeout_dialog_wrapper').append(jQuery('#session_timeout_dialog_c'));
+            clearInterval(window.timeLeft_dialog);
+        }
+    },100);
 
 });
 

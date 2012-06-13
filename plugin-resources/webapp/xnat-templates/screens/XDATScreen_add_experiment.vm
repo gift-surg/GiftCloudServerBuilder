@@ -11,6 +11,14 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
         #set ($popup = "false")
     #end
 
+    <style type="text/css">
+    </style>
+
+
+    <script type="text/javascript">
+    </script>
+
+
     <form id="form1" name="form1"
     ##ONSUBMIT="return validate();"
           method="post" action="$link.setAction("CreateExperiment")">
@@ -38,14 +46,14 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
                     }
 
                     window.proj_check = setInterval(function(){
-                        if(jQuery('#selected_project option').length > 0){ //check if loaded
+                        if(jQuery('#selected_project option:selected').length > 0){ //check if selected option is loaded
                             selected_labeler(jQuery('#selected_project'));
                             clearInterval(window.proj_check);
                         }
                     },100);
 
                     window.subj_check = setInterval(function(){
-                        if(jQuery('#selected_subject option').length > 0){ //check if loaded
+                        if(jQuery('#selected_subject option:selected').length > 0){ //check if selected option is loaded
                             selected_labeler(jQuery('#selected_subject'));
                             clearInterval(window.subj_check);
                         }
@@ -77,7 +85,7 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
                     }
 
                     window.proj_check = setInterval(function(){
-                        if(jQuery('#selected_project option').length > 0){ //check if loaded
+                        if(jQuery('#selected_project option:selected').length > 0){ //check if selected option is loaded
                             selected_labeler(jQuery('#selected_project'));
                             clearInterval(window.proj_check);
                         }
@@ -152,9 +160,10 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
         <br>
         <input type="submit" name="eventSubmit_doSetup" value="Submit" style="display:none;visibility:hidden;" />
 
-    </form><!-- /form1 -->
+    </form>
 
-</div><!-- /add_experiment -->
+</div>
+<!-- /add_experiment -->
 
 
 <script type="text/javascript">
@@ -371,7 +380,7 @@ jQuery(document).ready(function(){
 
     })();
 
-    jq(option_text).sortElements(function(a, b){
+    jq(option_boxes).sortElements(function(a, b){
         return jq(a).text() > jq(b).text() ? 1 : -1;
     });
 
@@ -415,4 +424,3 @@ function validate(){
 
 ##</span>
 ##</font>
-

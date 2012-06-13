@@ -101,13 +101,13 @@ $navigation.setTemplate("XNATQuickSearch.vm")
 
     jq(document).ready(function() {
 
-        // adjust height of header if logo is taller than 80px
+        // adjust height of header if logo is taller than 65px
         var hdr_logo_height = jq('#header_logo').height();
         if (hdr_logo_height > 65) {
             jq('.main_header').height(hdr_logo_height + 10);
         }
 
-        // adjust width of main nav if logo is wider than 200px
+        // adjust width of main nav if logo is wider than 175px
         var hdr_logo_width = jq('#header_logo').width();
         if (hdr_logo_width > 175) {
             jq('#main_nav').width(932 - hdr_logo_width - 30);

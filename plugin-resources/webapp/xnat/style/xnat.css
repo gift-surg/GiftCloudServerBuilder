@@ -328,9 +328,7 @@ div.containerTitle.withColor { background: #084FAB ; }
     /* border: 2px solid rgba(204,204,204,0.5) ;	*/
 }
 
-.mask { z-index: 999999998 !important ; }
-
-.yui-skin-sam .yui-panel-container { padding: 0 1px; z-index: 999999999 !important; }
+.yui-skin-sam .yui-panel-container { padding: 0 1px; /* z-index: 999999991 !important; */ }
 
 .yui-skin-sam .yuimenubarnav .yuimenubaritemlabel {
     height: 26px;
@@ -448,7 +446,24 @@ div.edit_title { margin-bottom: 10px ; }
 /* for filter */
 #add_experiment #form1 #expt_list div.row.show { display: block ; visibility: visible ; }
 
-#session_timeout_dialog { width: 320px !important ; z-index: 999999 ; }
+
+/* POP-UP ELEMENTS */
+.mask { z-index: 9999990 !important ; }
+.yui-dialog { z-index: 9999991 !important ; }
+.yui-dialog .yui-panel { z-index: 9999992 !important ; }
+#timeout_dialog_wrapper { z-index: 999999990 ; }
+#session_timeout_dialog_mask { z-index: 999999991 !important ; }
+#session_timeout_dialog_c { z-index: 999999992 !important ; }
+#session_timeout_dialog { width: 320px !important ; z-index: 999999999 !important ; }
+/*
+#rest_deleter_mask,
+#rest_share_mask { z-index: 9999990 !important ; }
+#rest_deleter_c,
+#rest_share_c { z-index: 9999991 !important ; }
+#session_timeout_dialog_mask { z-index: 9999998 !important ; }
+#session_timeout_dialog_c { z-index: 9999999 !important ; }
+#session_timeout_dialog { width: 320px !important ; z-index: 999999999 !important ; }
+*/
 
 span.close { position: relative ; left: 2px ; top: 2px ; }
 .yui-dt-button img { position: relative ; top: 2px ; }

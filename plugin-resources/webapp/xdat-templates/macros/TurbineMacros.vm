@@ -1587,3 +1587,21 @@ $!turbineUtils.escapeJS($s)
 		#end
 	#end
 #end
+
+#macro (xdatCalendar $property $item $vr)
+    #if ($vr)
+        #if($vr.getField($property))
+            <span style="color: red;">&#8658</span>
+        #end
+    #end
+    #set ($rawDate = $!item.getDateProperty($property))
+    #if ($rawDate)
+        #set ($date = $turbineUtils.formatDate($!item.getDateProperty($property), "MM/dd/yyyy"))
+    #else
+        #set ($date = "")
+    #end
+    <input type="text" id="$property" name="$property" value="$date"/>
+    <script type="text/javascript">
+        insertCalendar(document.getElementById("$property"), "Date of birth");
+    </script>
+#end

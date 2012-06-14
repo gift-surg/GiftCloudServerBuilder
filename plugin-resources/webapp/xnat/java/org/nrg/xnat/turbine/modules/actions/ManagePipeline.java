@@ -432,7 +432,7 @@ public class ManagePipeline extends SecureAction {
             ArrayList<String> formvalues = new ArrayList<String>();
             for (int j = 0; j < rowcount; j++) {
                 String formfieldname = "param[" + i + "][" + j + "].value";
-                if (TurbineUtils.HasPassedParameter(formfieldname, data)) formvalues.add(data.getParameters().get(formfieldname));
+                if (TurbineUtils.HasPassedParameter(formfieldname, data)) //formvalues.add(data.getParameters().get(formfieldname));
 				   formvalues.add(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(formfieldname,data)));
             }
 
@@ -452,6 +452,7 @@ public class ManagePipeline extends SecureAction {
         }
         return parameters;
     }
+
 
     private String saveParameters(String rootpath, String fileName, Parameters parameters) throws Exception {
         File dir = new File(rootpath);

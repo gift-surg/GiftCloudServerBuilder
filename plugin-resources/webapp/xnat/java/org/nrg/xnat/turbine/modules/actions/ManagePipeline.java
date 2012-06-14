@@ -209,9 +209,11 @@ public class ManagePipeline extends SecureAction {
             PopulateItem populater = PopulateItem.Populate(data, schemaType, true, newItem);
             found = populater.getItem();
 
+            boolean launchedAtAutoArchive = data.getParameters().getBoolean("auto_archive");
+
             //boolean launchedAtAutoArchive = ((Boolean)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("auto_archive",data));
-            Boolean autoArchive = (Boolean) org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("auto_archive",data);
-			boolean launchedAtAutoArchive = autoArchive == null ? false : autoArchive.booleanValue();
+            //Boolean autoArchive = (Boolean) org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("auto_archive",data);
+			//boolean launchedAtAutoArchive = autoArchive == null ? false : autoArchive.booleanValue();
 
             String templateSuppliedStepId = found.getStringProperty("stepid");
             boolean saved = false;

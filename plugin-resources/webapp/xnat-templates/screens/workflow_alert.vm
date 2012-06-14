@@ -4,7 +4,7 @@
 <table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
 <tr><th>Active Processes</th></tr>
 <tr><td align="center"><table>
-#foreach( $workflow in $workflows ) 
+#foreach( $workflow in $workflows )
 #if($workflow.isActive())
 #set($hasActiveProcess = true)
 <tr>
@@ -31,8 +31,14 @@ document.getElementById("workflow_active").style.display = 'block';
 <table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
 <tr><th><font color="red">Processing Exception</font></th></tr>
 <tr><td align="center"><table>
+#set ($completed = [])
+
 #foreach( $workflow in $workflows ) 
+#if($workflow.getStatus()=="Complete")
+#set($added = $completed.add($workflow.getOnlyPipelineName()))
+#end
 #if($workflow.getStatus()=="Error" || $workflow.getStatus()=="Failed")
+#if(!$completed.contains($workflow.getOnlyPipelineName()))
 #set($hasErrorProcess = true)
 <tr>
   <td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
@@ -40,6 +46,8 @@ document.getElementById("workflow_active").style.display = 'block';
   <td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
 </tr>
 #end
+#end
+
 #end 
 </table>
 </td>

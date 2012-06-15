@@ -110,7 +110,7 @@ this.prepare=function(){
 	}
 	openModalPanel("load_prot","Loading protocol details...");
 		
-	var url=serverRoot + '/REST/projects/' + this.opts.project +'/protocols/' + this.id + '?format=json&timestamp=' + (new Date()).getTime();
+	var url=serverRoot + '/REST/projects/' + this.opts.project +'/protocols/' + this.id + '?format=xml&timestamp=' + (new Date()).getTime();
 	if(this.opts!=undefined && this.opts.dataType!=undefined)
 		url+="&dataType="+ this.opts.dataType;
 	YAHOO.util.Connect.asyncRequest('GET',url,catCallback,null,this);

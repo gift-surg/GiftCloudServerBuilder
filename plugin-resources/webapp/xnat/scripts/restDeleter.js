@@ -97,7 +97,9 @@ RestDeleter = function(_array,_config) {
   			if(rF==null || rF.checked){
     			params +="&removeFiles=true"
     		}
-  			params+="&event_reason="+document.getElementById("del_event_reason").value;
+  			if(!(document.getElementById("del_event_reason")==null)){
+  				params+="&event_reason="+document.getElementById("del_event_reason").value;
+  			}
   			params+="&event_type=WEB_FORM";
   			params+="&event_action=Deletion";
   			

@@ -183,7 +183,7 @@ public class DeleteProjectData extends SecureAction {
 				    
 				    //DELETE user.groupId
 				    CriteriaCollection col = new CriteriaCollection("AND");
-				    col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," LIKE ", project.getId() + "\\_%");
+				    col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," SIMILAR TO ", project.getId() + "\\_(owner|member|collaborator)");
 				    Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
 				    
 				    while(groups.hasNext()){
@@ -197,7 +197,7 @@ public class DeleteProjectData extends SecureAction {
 				    
 				    //DELETE user groups
 				    col = new CriteriaCollection("AND");
-				    col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," LIKE ", project.getId() + "\\_%");
+				    col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," SIMILAR TO ", project.getId() + "\\_(owner|member|collaborator)");
 				    groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
 				    
 				    while(groups.hasNext()){

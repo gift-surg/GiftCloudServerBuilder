@@ -39,12 +39,26 @@ TH {
 
 </br>
 #if($val_protocolData_cause_15_NUM_ROWS>0)
+	#set ($acquisitionStatus = 0)
+	#set ($failStatus="FAIL")
+			#foreach($condition in $conditions)
+				#if ($condition.getStatus().equalsIgnoreCase($failStatus))
+				  #set ($acquisitionStatus = 1)
+				#end
+			#end
+		#if ($acquisitionStatus == 1)
 		<p align="left">Failure cause #if($val_protocolData_cause_15_NUM_ROWS>1)s#end</p>
+		#else 
+		<p align="left">Passed</p>
+		#end
 		<ul>
 			#foreach($condition in $conditions)
+			  
 					<li>$!condition.getId()	$!condition.getDiagnosis()</li>
+			   
 			#end
 		</ul>	
+		
 #end
 
 </br>

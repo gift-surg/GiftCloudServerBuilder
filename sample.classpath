@@ -51,7 +51,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.0.2.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-2.1.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-2.2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.1.1.jar"/>
@@ -110,7 +110,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.0.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.0.0-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.0.0-SNAPSHOT.jar"/>
@@ -186,6 +186,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/torque/plugins/maven-torque-plugin-3.1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/turbine/jars/turbine-2.3.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/turbine/plugins/maven-turbine-plugin-1.2.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/uuid/jars/java-uuid-generator-3.1.3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.3.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.4-dev.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/village/jars/village-2.0-dev-20030825.jar"/>

@@ -17,8 +17,6 @@ import org.nrg.xft.db.PoolDBUtils;
 import java.sql.SQLException;
 
 public class DeleteXdatElementSecurity extends DeleteAction {
-
-    @Override
     protected void postDelete(RunData data, Context context) {
         final String dataType = TurbineUtils.GetPassedParameter("search_value", data).toString();
         final String query1 = "DELETE FROM xdat_element_access WHERE xdat_element_access_id IN ( select xdat_element_access_id from xdat_element_access xea LEFT JOIN xdat_element_security xes ON xea.element_name=xes.element_name WHERE xes.element_name IS NULL);";

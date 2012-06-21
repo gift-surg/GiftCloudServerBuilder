@@ -515,9 +515,21 @@
             <j:set var="modules.extraction.dir" value="${java.io.tmpdir}/${xdat.project.name}_modules"/>
         </j:if>
         <ant:echo>Clearing and refreshing module extraction folder: ${modules.extraction.dir}</ant:echo>
+        <j:set var="modules.extraction.dir.exists" value="false"/>
         <u:available file="${modules.extraction.dir}">
-            <ant:delete dir="${modules.extraction.dir}"/>
+            <j:set var="modules.extraction.dir.exists" value="true"/>
         </u:available>
+        <j:if test="${context.getVariable('modules.extraction.dir.exists') == 'true'}">
+            <ant:echo>Found existing module extraction folder, now deleting: ${modules.extraction.dir}</ant:echo>
+            <ant:delete dir="${modules.extraction.dir}"/>
+        <u:available file="${modules.extraction.dir}">
+                <ant:echo>The delete operation on ${modules.extraction.dir} appears to have failed. After deletion but before creation, the folder still exists.</ant:echo>
+            </u:available>
+        </j:if>
+        <j:if test="${context.getVariable('modules.extraction.dir.exists') == 'false'}">
+            <ant:echo>Didn't find existing module extraction folder, can't delete: ${modules.extraction.dir}</ant:echo>
+        </j:if>
+        <ant:echo>Now creating the module extraction folder: ${modules.extraction.dir}</ant:echo>
         <ant:mkdir dir="${modules.extraction.dir}"/>
     </goal>
     <goal name="xdat:copyModulesToExtractionDir">

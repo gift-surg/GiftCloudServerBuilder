@@ -392,6 +392,7 @@ div.edit_header1, div.edit_title {
 
 div.edit_title { margin-bottom: 10px ; }
 
+.withColor.withThinBorder { color: #000 ; background: #f0f0f0 ; border: 1px solid #ccc ; }
 
 .yui-skin-sam .yui-navset .yui-content, .yui-skin-sam .yui-navset .yui-navset-top .yui-content {
     border-color: #ccc;
@@ -480,6 +481,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 #expts_header #expt_denied_legend { padding:2px 4px;font-size:12px;font-weight:normal; }
 
 .yui-pg-container { font-size: 12px !important ; }
+.yui-calcontainer { z-index: 9 ; }
 
 #downloadForm .withColor { min-width: 200px ; color: #000 ; background: #f0f0f0 ; border: 1px solid #ccc ; }
 #downloadForm #subTableSessions tr { background: #f0f0f0 ; border: none ; }
@@ -489,12 +491,49 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 .smaller_text, .ie .smaller_text,
 .small_text, .ie .small_text { font-size: 11px !important ; line-height: 15px !important ; }
 
+/* begin defining defaults for Add Experiment page */
+.add_experiment_form {  }
+.add_experiment_form .results_summary {  }
 
 
+.report_results { border: 1px solid #ccc ; }
+.report_results td, .report_results th { padding: 8px 12px ; border-bottom: 1px solid #ccc ; }
+.report_results th { font-size: 15px ; background: #f0f0f0 ; }
+.report_results td:nth-child(3) { text-align: center ; font-size: 15px ; font-weight: bold ; }
+
+/* results summary for experiment submissions */
+.results_summary > * { padding: 10px 6px ; font-size: 15px ; background: #f0f0f0 ; }
+.results_summary th,
+.results_summary td { outline: none ; border: 4px solid #f0f0f0 ; }
+.results_summary td { background: #fff ; text-align: center ; }
+
+/* //////////  styles for tooltips  ////////// */
+
+/* icon and text tooltip common styles */
+.tip_text,
+.tip_icon { display: inline-block ; position: relative ; overflow: visible ; }
+.tip_text:hover,
+.tip_icon:hover { cursor: help ; }
+
+/* the tooltop box */
+.tip_text .tip,
+.tip_icon .tip { display: none ; width: 400px ; padding: 5px ; position: absolute ; left: 20px ; top: -5px ; background: #fff ; border: 1px solid #ccc ; }
+.tip_text:hover .tip,
+.tip_icon:hover .tip { display: block ; z-index: 11 ; }
+
+/* tooltip using text */
+.tip_text { font-weight: normal ; border-bottom: 1px dotted #888 ; }
+.tip_text .tip { left: 80px ; }
+
+/* tooltip using icon styles */
+.tip_icon { width: 14px ; height: 14px ; left: 4px ; top: 2px ; background: #fff url('images/qm.gif') center center no-repeat ; }
+.tip_icon .tip {  }
 
 
-
-
+/* NIH Stroke Scale table */
+#nih_stroke_scale {  }
+#nih_stroke_scale th,
+#nih_stroke_scale td { padding: 6px ; }
 
 
 

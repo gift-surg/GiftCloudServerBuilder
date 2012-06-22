@@ -181,7 +181,7 @@ public class FileList extends XNATCatalogTemplate {
                         if(catalogs.rows().size()>0){
                             resourceIdentifier=catalogs.getFirstObject();
                         }else{
-                            if(resource_ids.size()>0){
+                            if(resource_ids != null && resource_ids.size()>0){
                                 resourceIdentifier=resource_ids.get(0);
                             }else{
                                 resourceIdentifier=null;

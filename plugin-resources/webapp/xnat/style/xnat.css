@@ -526,7 +526,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 .tip_text .tip { left: 80px ; }
 
 /* tooltip using icon styles */
-.tip_icon { width: 14px ; height: 14px ; left: 4px ; top: 2px ; background: #fff url('images/qm.gif') center center no-repeat ; }
+.tip_icon { width: 14px ; height: 14px ; left: 4px ; top: 2px ; background: #fff url('../images/qm.gif') center center no-repeat ; }
 .tip_icon .tip {  }
 
 

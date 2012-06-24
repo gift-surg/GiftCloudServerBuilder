@@ -324,9 +324,10 @@ public final class DicomEdit extends SecureResource {
 				FileWriterWrapperI fw = null;
 				List<FileWriterWrapperI> fws = DicomEdit.this.getFileWritersAndLoadParams(entity);
 				
-				if (fws.size() == 0) {
-					rp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
-					return null;
+				if (fws.isEmpty()) {
+				    logger.warn("Unable to unpack script from request {}", rq);
+				    rp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
+				    return null;
 				}
 				
 				if(fws.size()>1){

@@ -61,7 +61,7 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
 	       'getStatus' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/status?format=json',
 	       'putStatus' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/status?activate=',
 	       'getScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script?format=json',
-	       'putScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script',
+	       'putScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script?inbody=true',
 	       'project' : '$project.getId()',
 	       'enable_radio' : 'enable_anon_script',
 	       'disable_radio' : 'disable_anon_script',

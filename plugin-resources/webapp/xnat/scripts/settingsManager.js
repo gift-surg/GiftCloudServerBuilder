@@ -136,7 +136,7 @@ function scriptGet (_dom,_obj) {
       window.location=serverRoot+"/app/template/Login.vm";
     }else{
       // this.disableDOM(false);
-      alert("ERROR " + o.status + ": Get failed.");
+      alert("ERROR " + o.status + " (" + o.statusText + ") ");
     }
   };
   this.getDifferences=function() {
@@ -182,7 +182,7 @@ function scriptGet (_dom,_obj) {
       YAHOO.util.Connect.asyncRequest('PUT',uri + "&XNAT_CSRF=" + window.csrfToken,{success : resetInitial, failure : that.onFailure,scope : that});
     };
     var scriptPut = function (f) {
-      YAHOO.util.Connect.asyncRequest('PUT',that.obj.putScript + "?XNAT_CSRF=" + window.csrfToken,
+      YAHOO.util.Connect.asyncRequest('PUT',that.obj.putScript + "&XNAT_CSRF=" + window.csrfToken,
     		  									{success : f,
     	  										 failure: that.onFailure,
     	  										 scope: that},

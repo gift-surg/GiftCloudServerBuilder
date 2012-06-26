@@ -157,7 +157,7 @@ function prog(theform)
         alert("Please select an archive to upload.");
         return false;
     }
-    if (!(imageArchive.value.endsWith(".tar") || imageArchive.value.endsWith(".zip"))) {
+    if (!(imageArchive.value.endsWith(".tar") || imageArchive.value.endsWith(".gz") || imageArchive.value.endsWith(".zip"))) {
         alert("Please select a tar or zip archive to upload.");
         return false;
     }

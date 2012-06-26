@@ -1464,7 +1464,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     
     public void checkUniqueLabel() throws Exception{
 		if(!StringUtils.IsEmpty(this.getLabel())){
-			Long count=(Long)PoolDBUtils.ReturnStatisticQuery(String.format("SELECT COUNT(*) FROM (SELECT label,id FROM xnat_subjectData WHERE label='%1$s' AND ID !='%2$s' UNION SELECT label, subject_id as ID FROM xnat_projectParticipant WHERE label='%1$s' AND subject_id !='%2$s')SRCH",this.getLabel(),this.getId()), "count", this.getDBName(), "system");
+			Long count=(Long)PoolDBUtils.ReturnStatisticQuery(String.format("SELECT COUNT(*) FROM (SELECT label,id FROM xnat_subjectData WHERE label='%1$s' AND ID !='%2$s' AND project='%3$s' UNION SELECT label, subject_id as ID FROM xnat_projectParticipant WHERE label='%1$s' AND subject_id !='%2$s' AND project='%3$s')SRCH",this.getLabel(),this.getId(),this.getProject()), "count", this.getDBName(), "system");
 			if(count>0){
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Conflict: Duplicate subject label",new Exception());
 			}

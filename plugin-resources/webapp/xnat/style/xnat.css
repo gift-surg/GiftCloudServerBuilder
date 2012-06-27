@@ -535,9 +535,6 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 #nih_stroke_scale th,
 #nih_stroke_scale td { padding: 6px ; }
 
-
-
-
-
-
-
+.yui-skin-sam .yui-ac-input { width: auto !important ; }
+#labelDialog { height: auto !important ; }
+#labelDialog .bd { height: auto !important ; }

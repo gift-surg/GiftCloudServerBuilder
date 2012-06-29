@@ -28,21 +28,37 @@ document.title = "Session: $!item.getProperty('label')";
 			#parse($turbineUtils.getTemplateName("_details",$om.getXSIType(),$project))
 	    </td>
   				</tr>
+<tr>
+	<td>
 		#addCustomScreens($om.getXSIType() "report/postDetails")
+	</td>
+</tr>
   				<tr>
   					 <td colspan=2>
 			#parse("/screens/ReportProjectSpecificFields.vm")
 	  </td>
 	 </tr>
+<tr>
+	<td>
 	 #parse("/screens/qc_summary.vm")
+	</td>
+</tr>
+<tr>
+	<td>
 		#addCustomScreens($om.getXSIType() "report/preScans") 
+	</td>
+</tr>
  	<tr>
 					  <td align=left colspan=2 valign=top>
 					<BR/><BR/>
 #parse($turbineUtils.getTemplateName("_scans",$om.getXSIType(),$project))
 					  </td>
 				 </tr>
+<tr>
+	<td>
 		#addCustomScreens($om.getXSIType() "report/postScans") 
+	</td>
+</tr>
 				 <tr>
 	  <td align=left colspan=2 valign=top><BR/><BR/></td>
  </tr>
@@ -50,7 +66,11 @@ document.title = "Session: $!item.getProperty('label')";
 	#set ($scanCounter = 101)
 #parse($turbineUtils.getTemplateName("_reconstructions",$om.getXSIType(),$project))
 
+<tr>
+	<td>
 		#addCustomScreens($om.getXSIType() "report/postRecons") 
+	</td>
+</tr>
  <!--TEST 2-->
 	#set ($scanCounter = 202)
 <tr>
@@ -58,13 +78,21 @@ document.title = "Session: $!item.getProperty('label')";
 			#parse("/screens/workflow_summary.vm")
 	</td>
 </tr>
+<tr>
+	<td>
 		#addCustomScreens($om.getXSIType() "report/postWorkflowSummary") 
+	</td>
+</tr>
 				<tr>
 					 <td align=left colspan=2 valign=top>
 #parse($turbineUtils.getTemplateName("_assessments",$om.getXSIType(),$project))
  </td>
 </tr>
+<tr>
+	<td>
 		#addCustomScreens($om.getXSIType() "report/postAssessments") 
+	</td>
+</tr>
 			</table>
 				<script type="text/javascript">
 var image_session_id="$om.getId()";

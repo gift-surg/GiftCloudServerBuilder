@@ -1553,7 +1553,46 @@ $!turbineUtils.escapeJS($s)
 #end
 
 ##Used to load globally scoped VM files and inject them into parent VMs.
+#macro(addGlobalCustomScreenJS $subFolder)
+	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$subFolder</div>")#end
+	#foreach($screenProps in $turbineUtils.getTemplates($subFolder))
+		#set($templateFileName=$screenProps.getProperty("path"))
+		#if($data.getSession().getAttribute("user").getUsername()=="guest")
+			#if($turbineUtils.toBoolean($screenProps.getProperty("allowGuest"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($screenProps.getProperty("adminOnly"))
+			#if($turbineUtils.toBoolean($data.getSession().getAttribute("user").checkRole("Administrator"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($data.getSession().getAttribute("user").getUsername())
+				#parse("/screens/$templateFileName")
+		#end
+	#end
+#end
+
+##Used to load  VM files for specfic data-types and their extensions and inject them into parent VMs.
+#macro(addCustomScreenJS $dataType $subFolder)
+	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$dataType/$subFolder</div>")#end
+	#foreach($screenProps in $turbineUtils.getTemplates($dataType,$subFolder))
+		#set($templateFileName=$screenProps.getProperty("path"))
+		#if($data.getSession().getAttribute("user").getUsername()=="guest")
+			#if($turbineUtils.toBoolean($screenProps.getProperty("allowGuest"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($screenProps.getProperty("adminOnly"))
+			#if($turbineUtils.toBoolean($data.getSession().getAttribute("user").checkRole("Administrator"),"false"))
+				#parse("/screens/$templateFileName")
+			#end
+		#elseif($data.getSession().getAttribute("user").getUsername())
+				#parse("/screens/$templateFileName")
+		#end
+	#end
+#end
+
+##Used to load globally scoped VM files and inject them into parent VMs.
 #macro(addGlobalCustomScreens $subFolder)
+	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))<div class="extension">/templates/screens/$subFolder</div>#end
 	#foreach($screenProps in $turbineUtils.getTemplates($subFolder))
 		#set($templateFileName=$screenProps.getProperty("path"))
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")
@@ -1572,6 +1611,7 @@ $!turbineUtils.escapeJS($s)
 
 ##Used to load  VM files for specfic data-types and their extensions and inject them into parent VMs.
 #macro(addCustomScreens $dataType $subFolder)
+	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))<div class="extension">/templates/screens/$dataType/$subFolder</div>#end
 	#foreach($screenProps in $turbineUtils.getTemplates($dataType,$subFolder))
 		#set($templateFileName=$screenProps.getProperty("path"))
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")

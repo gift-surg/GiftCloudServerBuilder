@@ -74,7 +74,7 @@ function summaryTabManagerInit(){
 
     window.project_summary_module = new YAHOO.widget.Module("project_summary_module",{visible:false,zIndex:5});
 	
-#addCustomScreens($om.getXSIType() "report/tabs_js") 
+#addCustomScreenJS($om.getXSIType() "report/tabs_js") 
     
     window.project_summary_module.show(); 		    
     

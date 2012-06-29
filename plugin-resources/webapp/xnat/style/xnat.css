@@ -544,3 +544,10 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 .yui-skin-sam .yui-ac-input { width: auto !important ; }
 #labelDialog { height: auto !important ; }
 #labelDialog .bd { height: auto !important ; }
+
+div.extension{
+	background-color:#FF9;
+}
+div.extension_js{
+	background-color:#FF9;
+}

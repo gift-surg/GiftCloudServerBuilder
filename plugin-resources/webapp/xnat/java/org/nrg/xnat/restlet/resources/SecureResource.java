@@ -1,20 +1,35 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import com.noelios.restlet.http.HttpConstants;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.framework.exceptions.NrgServiceRuntimeException;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.security.XDATUser;
@@ -38,39 +53,46 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.presentation.FlattenedItemA;
 import org.nrg.xft.presentation.ItemJSONBuilder;
-import org.nrg.xft.presentation.ItemMerger;
-import org.nrg.xft.presentation.ItemPropBuilder;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
-import org.nrg.xnat.itemBuilders.FullFileHistoryBuilder;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
-import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
-import org.nrg.xnat.restlet.representations.*;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ChangeSummary;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ItemEventI;
-import org.nrg.xnat.presentation.DateBasedSummaryBuilder;
+import org.nrg.xnat.restlet.XnatTableRepresentation;
+import org.nrg.xnat.restlet.representations.CSVTableRepresentation;
+import org.nrg.xnat.restlet.representations.HTMLTableRepresentation;
+import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
+import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
+import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
+import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
+import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.*;
+import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.OutputRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 import org.xml.sax.SAXParseException;
 
-import javax.servlet.http.HttpServletRequest;
 import com.google.common.collect.Maps;
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
+import com.noelios.restlet.http.HttpConstants;
 
 @SuppressWarnings("deprecation")
 public abstract class SecureResource extends Resource {
@@ -187,6 +209,8 @@ public abstract class SecureResource extends Resource {
 				return APPLICATION_XCAT;
 			}else if(this.requested_format.equalsIgnoreCase("xar")){
 				return APPLICATION_XAR;
+			}else if(MediaType.valueOf(this.requested_format)!=null){
+				return MediaType.valueOf(this.requested_format);
 			}
 		}
 		return null;
@@ -395,7 +419,22 @@ public abstract class SecureResource extends Resource {
 				}
 			}
 
-	        if (mt.equals(MediaType.TEXT_XML)){
+			//try to map to an inserted implementation
+			Class clazz= this.getExtensionTableRepresentations().get(mt.toString());
+			if(clazz!=null){
+				try {
+					Constructor<OutputRepresentation> rep;
+					Class[] parameterTypes={XFTTable.class,Map.class,Hashtable.class,MediaType.class};
+					Object[] parameters={table,cp,params,mt};
+					rep = clazz.getConstructor(parameterTypes);
+
+					return rep.newInstance(parameters);
+				} catch (Exception e) {
+					logger.error("",e);
+				}
+			}
+			
+			if (mt.equals(MediaType.TEXT_XML)){
 				return new XMLTableRepresentation(table,cp,params,MediaType.TEXT_XML);
 			}else if (mt.equals(MediaType.APPLICATION_JSON)){
 				return new JSONTableRepresentation(table,cp,params,MediaType.APPLICATION_JSON);
@@ -413,7 +452,7 @@ public abstract class SecureResource extends Resource {
 			rep.setExpirationDate(Calendar.getInstance().getTime());
 			return rep;
 		}
-		}
+	}
 
 	public String getCurrentURI(){
 		return this.getRequest().getResourceRef().getPath();
@@ -1275,5 +1314,48 @@ public abstract class SecureResource extends Resource {
     protected void respondToException(Exception exception, Status status) {
         logger.error("Transaction got a status: " + status, exception);
         getResponse().setStatus(status, exception.getMessage());
+    }
+    
+
+
+    /**
+     * This method walks the <b>org.nrg.xnat.restlet.extensions.table.extensions</b> package and attempts to find extensions for the
+     * set of available REST table representations.
+     */
+    
+    static Map<String,Class<?>> map=null;
+    private synchronized Map<String,Class<?>> getExtensionTableRepresentations() {
+    	if(map==null){
+	    	map=Maps.newHashMap();
+	    	
+	        List<Class<?>> classes;
+	        try {
+	            classes = Reflection.getClassesForPackage("org.nrg.xnat.restlet.representations.table.extensions");
+	        } catch (Exception exception) {
+	            throw new RuntimeException(exception);
+	        }
+	
+	        for (Class<?> clazz : classes) {
+	            if (clazz.isAnnotationPresent(XnatTableRepresentation.class)) {
+	            	XnatTableRepresentation annotation = clazz.getAnnotation(XnatTableRepresentation.class);
+	                boolean required = annotation.required();
+	                if (!OutputRepresentation.class.isAssignableFrom(clazz)) {
+	                    String message = "You can only apply the XnatTableRepresentation annotation to classes that subclass the org.restlet.resource.Resource class: " + clazz.getName();
+	                    if (required) {
+	                        throw new NrgServiceRuntimeException(message);
+	                    } else {
+	                        logger.error(message);
+					    }
+					}else{
+						if(MediaType.valueOf(annotation.mediaType())!=null){
+							MediaType.register(annotation.mediaType(),annotation.mediaTypeDescription());
+						}
+						map.put(annotation.mediaType(), clazz);
+					}
+	            }
+	        }
+    	}
+    	
+    	return map;
     }
 }

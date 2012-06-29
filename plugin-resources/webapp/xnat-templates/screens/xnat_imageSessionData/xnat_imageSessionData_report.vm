@@ -35,14 +35,14 @@ document.title = "Session: $!item.getProperty('label')";
 	  </td>
 	 </tr>
 	 #parse("/screens/qc_summary.vm")
-		#addCustomScreens($om.getXSIType() "report/preScreens") 
+		#addCustomScreens($om.getXSIType() "report/preScans") 
  	<tr>
 					  <td align=left colspan=2 valign=top>
 					<BR/><BR/>
 #parse($turbineUtils.getTemplateName("_scans",$om.getXSIType(),$project))
 					  </td>
 				 </tr>
-		#addCustomScreens($om.getXSIType() "report/postScreens") 
+		#addCustomScreens($om.getXSIType() "report/postScans") 
 				 <tr>
 	  <td align=left colspan=2 valign=top><BR/><BR/></td>
  </tr>

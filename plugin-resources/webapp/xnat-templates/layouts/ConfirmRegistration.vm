@@ -1,11 +1,11 @@
-##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<HTML>
-<HEAD>
-<TITLE>$!systemName</TITLE>
-$navigation.setTemplate("/HeaderIncludes.vm")
-<!-- LOGIN -->
-</HEAD>
-<BODY id="page_body">
+$navigation.setTemplate("/htmlOpen.vm")
+## insert any template-specific <head> code here
+
+$navigation.setTemplate("/bodyOpen.vm")
+## insert any template-specific code here that needs to be directly after opening <body> tag
+
+
+<!-- path: xnat-templates/layouts/ConfirmRegistration -->
 
 <table width="100%" height="100%" valign="top" border=0>
   <tr height="10">
@@ -35,5 +35,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
     </td>
   </tr>
 </table>
-</BODY>
-</HTML>
+
+## insert any template-specific code here that needs to be directly before closing </body> tag
+
+$navigation.setTemplate("/htmlClose.vm")

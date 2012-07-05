@@ -5,15 +5,22 @@
 <!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
 <!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
 <!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. -->
+##<!-- the "no-js" class is for Modernizr. -->
 
-<!-- xdat-templates/layouts/ScreenOnly -->
-<HEAD>
-$navigation.setTemplate("/HeaderIncludes.vm")
-</HEAD>
-<BODY id="page_body" class="yui-skin-sam">
+<head>
+<!-- path: xdat-templates/layouts/ScreenOnly -->
+##$navigation.setTemplate("/HeaderIncludes.vm")
+<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
+## xnat_skin.css file has been integrated with /style/xnat.css file
+##<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/xnat_skin.css")">
+
+<!-- xdat.css and xnat.css loaded last to override YUI styles -->
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/xdat.css")">
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/xnat.css")">
+</head>
+<body id="page_body" class="yui-skin-sam">
       <div id="tp_fm"></div>
       <div id="layout_content2" style="display:none;">Loading...</DIV>
       <div id="layout_content">$screen_placeholder</DIV>
-</BODY>
+</body>
 </html>

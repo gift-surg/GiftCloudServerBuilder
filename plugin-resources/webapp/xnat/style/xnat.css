@@ -207,7 +207,7 @@ img { /* vertical-align: bottom ; */ }
 .ie7 #user_info a { padding-top: 0 ; }
 #user_info b { padding: 0 5px ; font-weight: normal ; color: #aaa ; }
 #user_info pre { display: inline ; font-family: "Courier New", Courier, monospace ; font-weight: bold ; }
-#header { position: relative ; width: 932px ; min-height: 72px ; margin: -2px ; margin-bottom: 16px ; background: #fff ; z-index: 999 ; }
+#header { position: relative ; width: 932px ; min-height: 72px ; margin: -2px ; margin-bottom: 16px ; background: #fff ; z-index: 2 ; }
 #header_logo { position: absolute ; left: 10px ; bottom: 0 ; }
 #quickSearchForm { position: absolute ; right: 0 ; bottom: 35px ; }
 #searchValue { border: 1px solid #ccc ; height: 17px ; }
@@ -222,12 +222,6 @@ img { /* vertical-align: bottom ; */ }
 
 
 
-div.extension{
-	background-color:#FF9;
-}
-div.extension_js{
-	background-color:#FF9;
-}
 
 
 
@@ -386,12 +380,12 @@ div.containerTitle.withColor { background: #084FAB ; }
 
 div.edit_header1, div.edit_title {
     /* background: #c2c2c2 url("images/btn2_30px.png") repeat-x center top ; */
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
     line-height: 16px;
     /* padding: 5px 10px; */
     padding-bottom: 2px ;
-    border-bottom: 2px solid #e0e0e0 ;
+    /* border-bottom: 2px solid #e0e0e0 ; */
     margin-bottom: 5px ;
     min-width: 470px ;
 }
@@ -455,9 +449,11 @@ div.edit_title { margin-bottom: 10px ; }
 
 
 /* POP-UP ELEMENTS */
+/*
 .mask { z-index: 9999990 !important ; }
 .yui-dialog { z-index: 9999991 !important ; }
 .yui-dialog .yui-panel { z-index: 9999992 !important ; }
+*/
 #timeout_dialog_wrapper { z-index: 999999990 ; }
 #session_timeout_dialog_mask { z-index: 999999991 !important ; }
 #session_timeout_dialog_c { z-index: 999999992 !important ; }
@@ -521,7 +517,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 .tip_text:hover,
 .tip_icon:hover { cursor: help ; }
 
-/* the tooltop box */
+/* the tooltip box common styles */
 .tip_text .tip,
 .tip_icon .tip { display: none ; width: 400px ; padding: 5px ; position: absolute ; left: 20px ; top: -5px ; background: #fff ; border: 1px solid #ccc ; }
 .tip_text:hover .tip,

@@ -218,7 +218,7 @@ jQuery(window).load(function(){
     jQuery('[style*="font-size: 11px"]').addClass('small_text');
 
     // ridding <font> tags of their meaning
-    jQuery('font').attr('face','').attr('size','');
+    jQuery('font').attr('face','')/*.attr('size','')*/;
 
     window.timeLeft_dialog = setInterval(function(){
         if((jQuery('#session_timeout_dialog_mask').length > 0) && (jQuery('#session_timeout_dialog_c').length > 0)){ //check if selected options are loaded
@@ -227,6 +227,8 @@ jQuery(window).load(function(){
             clearInterval(window.timeLeft_dialog);
         }
     },100);
+
+    jQuery('#actionsMenu ul ul').addClass('shadowed');
 
 });
 

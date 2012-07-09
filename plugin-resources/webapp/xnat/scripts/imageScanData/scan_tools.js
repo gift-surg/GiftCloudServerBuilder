@@ -1011,6 +1011,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 					scan.note_input.value=scan.extension.Note;
 				}
 				scan.note_input.size="40";
+				scan.note_input.className="nullable";
 			}
 			td.appendChild(scan.note_input);
 			tr.appendChild(td);

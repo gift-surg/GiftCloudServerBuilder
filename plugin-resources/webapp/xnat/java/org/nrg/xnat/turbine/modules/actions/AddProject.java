@@ -16,6 +16,7 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
 import org.nrg.xft.event.EventMetaI;
@@ -70,6 +71,23 @@ public class AddProject extends SecureAction {
                     data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
                 }
                 return;
+            }
+            
+            {
+        		String query = "SELECT count(*) as prevDeletedProjectWithThisID from xnat_projectdata_history WHERE id = '" + project.getId() + "';";
+
+        		Long count = (Long)PoolDBUtils.ReturnStatisticQuery(query, "prevDeletedProjectWithThisID", user.getDBName(), user.getUsername());
+
+	            if( count > 0 )
+	            {
+	            	data.addMessage("Project ID '" + project.getId() + "' was used in a previously deleted project and cannot be reused.");
+					TurbineUtils.SetEditItem(found,data);
+	                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+	                {
+	                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+	                }
+	                return;
+	            }
             }
             
             try {

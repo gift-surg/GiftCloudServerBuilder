@@ -282,7 +282,7 @@ public class PipelineActions extends SecureAction{
             }
         }catch(Exception e) {
             logger.debug("Unable to construct the build parameters for step " + step + " " + e.getMessage() + " " + e.getCause(),e);
-            //AdminUtils.sendErrorEmail(data,"Unable to construct the Build statement for "  + " Step " + step);
+            //AdminUtils.sendErrorNotification(data,"Unable to construct the Build statement for "  + " Step " + step);
         }
         return trueNameValues;
     }

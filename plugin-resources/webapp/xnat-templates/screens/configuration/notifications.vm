@@ -1,0 +1,56 @@
+<!-- Title: Notifications -->
+<table id="mgmt_container">
+    <tr>
+        <td>
+            <div id="notifications_mgmt_div">
+                <table>
+                    <tr>
+                        <td colspan="2">Specify subscribers for notification by username or email address. If by email address, the email address must belong to a valid system user. You can specify multiple users by separating the usernames or email addresses with a comma.</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Errors:</th>
+                        <td><input size="40" type="text" id="error" name="error" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Issues:</th>
+                        <td><input size="40" type="text" id="issue" name="issue" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">New Users:</th>
+                        <td><input size="40" type="text" id="newUser" name="newUser" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Updates:</th>
+                        <td><input size="40" type="text" id="update" name="update" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<input type="button" value="Save" name="eventSubmit_doPerform" id="notifications_save_button" onclick="window.notificationsManager.saveTabSettings();"/>&nbsp;
+<input type="button" value="Reset" name="eventSubmit_doReset" id="notifications_reset_button" onclick="window.notificationsManager.resetForm();" disabled/>
+
+<script language="javascript">
+function configurationNotificationsTabChange(obj) {
+    if(obj.newValue.get("href")=="#notifications") {
+        if(window.notificationsManager==undefined) {
+            window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', notificationsControls);
+        }
+    }
+}
+
+function addNotificationsMgmtMonitor(){
+    if(window.configurationTabView.get("activeTab").get("href")=="#notifications") {
+        if(window.notificationsManager==undefined) {
+            window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', notificationsControls);
+        }
+    } else {
+        window.configurationTabView.subscribe("activeTabChange", configurationNotificationsTabChange);
+    }
+}
+
+YAHOO.util.Event.onDOMReady(addNotificationsMgmtMonitor);
+var notificationsControls = ['error', 'issue', 'newUser', 'update'];
+</script>

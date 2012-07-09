@@ -1,4 +1,4 @@
-<!--BEGIN PROJECT SUMMARY TABS -->
+<!-- BEGIN xnat-templates/screens/xnat_projectData/xnat_projectData_summary_tabs.vm -->
 <style>
 span.spacer{
 height:12px;
@@ -106,4 +106,4 @@ function summaryTabManagerInit(){
 					}
 					summaryTabManagerInit();
 </script>
-<!--END PROJECT SUMMARY TABS -->
+<!-- END xnat-templates/screens/xnat_projectData/xnat_projectData_summary_tabs.vm -->

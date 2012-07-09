@@ -1,5 +1,6 @@
-## may not need this
+<!-- path: xnat-templates/navigations/htmlClose -->
+## may not need this - container for timeout warning
 ##<div id="timeout_dialog_wrapper"></div>
-
+<script type="text/javascript" src="$content.getURI('scripts/footer.js')"></script>
 </body>
 </html>

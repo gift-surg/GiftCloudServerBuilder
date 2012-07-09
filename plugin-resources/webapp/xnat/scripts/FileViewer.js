@@ -1047,7 +1047,7 @@ function UploadFileForm(_obj){
    	  input=document.createElement("input");
    	  input.size=50;
    	  input.id="file_name";
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  input.manager=this;
    	  td.appendChild(input);
    	  tr.appendChild(td);
@@ -1068,7 +1068,7 @@ function UploadFileForm(_obj){
    	  td=document.createElement("td");
    	  input=document.createElement("input");
    	  input.id="file_format";
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  td.appendChild(input);
    	  
    	  tr.appendChild(td);
@@ -1086,7 +1086,7 @@ function UploadFileForm(_obj){
    	  
    	  td=document.createElement("td");
    	  input=document.createElement("input");
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  input.id="file_content";
    	  td.appendChild(input);
    	  
@@ -1106,7 +1106,7 @@ function UploadFileForm(_obj){
    	  
    	  td=document.createElement("td");
    	  input=document.createElement("input");
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  input.id="file_tags";
    	  td.appendChild(input);
    	  
@@ -1125,8 +1125,8 @@ function UploadFileForm(_obj){
    	  input.type="file";
    	  input.id="local_file";
    	  input.name="local_file";
-   	  input.size=50;
-   	  input.style.fontSize = "99%";
+   	  input.size=40;
+   	  //input.style.fontSize = "99%";
    	  
    	  form.appendChild(input);
 		
@@ -1257,7 +1257,7 @@ function AddFolderForm(_obj){
 	   	  td=document.createElement("td");
 	   	  input=document.createElement("select");
 	   	  input.id="folder_level";
-   	  		input.style.fontSize = "99%";
+   	      //input.style.fontSize = "99%";
 	   	  input.manager=this;
 	   	  input.options[0]=new Option("SELECT","");
 	   	  for(var cIdC=0;cIdC<this.obj.categories.ids.length;cIdC++){
@@ -1321,7 +1321,7 @@ function AddFolderForm(_obj){
 	   	  input.id="folder_item";
 	   	  input.disabled=true;
 	   	  input.manager=this;
-   	  input.style.fontSize = "99%";
+   	      //input.style.fontSize = "99%";
 	   	  input.onchange=function(o){
 	   	  	var coll_select=document.getElementById("folder_collection");
 	   	  	if(this.selectedIndex>0){
@@ -1352,7 +1352,7 @@ function AddFolderForm(_obj){
    	  td=document.createElement("td");
    	  input=document.createElement("input");
    	  input.id="folder_collection";
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  input.manager=this;
    	  td.appendChild(input);
    	  tr.appendChild(td);
@@ -1383,7 +1383,7 @@ function AddFolderForm(_obj){
    	  td=document.createElement("td");
    	  input=document.createElement("input");
    	  input.id="folder_format";
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  td.appendChild(input);
    	  
    	  tr.appendChild(td);
@@ -1402,7 +1402,7 @@ function AddFolderForm(_obj){
    	  td=document.createElement("td");
    	  input=document.createElement("input");
    	  input.id="folder_content";
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  td.appendChild(input);
    	  
    	  tr.appendChild(td);
@@ -1422,7 +1422,7 @@ function AddFolderForm(_obj){
    	  td=document.createElement("td");
    	  input=document.createElement("input");
    	  input.id="folder_tags";
-   	  input.style.fontSize = "99%";
+   	  //input.style.fontSize = "99%";
    	  td.appendChild(input);
    	  
    	  tr.appendChild(td);

@@ -29,7 +29,7 @@
 </table>
 
 <input type="button" value="Save" name="eventSubmit_doPerform" id="registration_save_button" onclick="window.registrationManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="registration_reset_button" onclick="window.registrationManager.resetForm();" disabled/>
+<input type="button" class="resetButton" value="Reset" name="eventSubmit_doReset" id="registration_reset_button" onclick="window.registrationManager.resetForm();" disabled/>
 
 <script language="javascript">
 function configurationRegistrationTabChange(obj) {

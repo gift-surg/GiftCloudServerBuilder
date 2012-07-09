@@ -878,6 +878,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -919,6 +920,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -953,6 +955,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -992,6 +995,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1033,6 +1037,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1074,6 +1079,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1120,6 +1126,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1168,6 +1175,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1526,6 +1534,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1639,6 +1648,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>

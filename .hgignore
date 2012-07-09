@@ -30,6 +30,7 @@ classes/ValidateJavaBean.class
 classes/BuildCatalog.class
 StoreXML.launch
 modules/audit.zip
+xnat_subjectData_assessors_new.vm
 syntax: regexp
 ^classes/org
 ^deployments

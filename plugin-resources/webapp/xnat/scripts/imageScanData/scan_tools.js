@@ -695,7 +695,7 @@ function ScanSet(_options,_scans){
 		for(var csC=0;csC<this.new_scans.length;csC++){
 			var scan=this.new_scans[csC];
 			if(scan.id_input.value==""){
-		  		if(scan.type_input.value!="" || scan.qual_input.selectedIndex>0 || scan.note_input.value!=""){
+		  		if(scan.type_input.value!="" || scan.qual_input.selectedIndex>0 || !((scan.note_input.value=="")||(scan.note_input.value=="NULL"))){
 		  			removeAppendImage(scan.type_input);
 		  			removeAppendImage(scan.qual_input);
 		  			appendImage(scan.id_input,"/images/checkmarkRed.gif");

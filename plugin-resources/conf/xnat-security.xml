@@ -84,8 +84,17 @@
         <security:session-management session-authentication-strategy-ref="sas"/>
     </security:http>
 
+    <bean id="databaseAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator" p:configuratorId="db"/>
+    <bean id="ldapAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.LdapAuthenticationProviderConfigurator" p:configuratorId="ldap1"/>
+
     <bean id="customAuthenticationManager" name="org.springframework.security.authenticationManager" class="org.nrg.xnat.security.XnatProviderManager">
         <property name="properties" value="WEB-INF/conf/services.properties"/>
+        <property name="authenticationProviderConfigurators">
+            <map key-type="java.lang.String" value-type="org.nrg.xnat.security.config.AuthenticationProviderConfigurator">
+                <entry key="db" value-ref="databaseAuthenticationProviderConfigurator"/>
+                <entry key="ldap1" value-ref="ldapAuthenticationProviderConfigurator"/>
+            </map>
+        </property>
     </bean>
 
     <bean id="customAuthenticationFilter" class="org.nrg.xnat.security.XnatAuthenticationFilter">

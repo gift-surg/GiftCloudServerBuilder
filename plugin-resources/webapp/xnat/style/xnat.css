@@ -548,7 +548,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 div.extension { background-color: #FF9 ; }
 div.extension_js { background-color: #FF9 ; }
 
-#tab_module ul.yui-nav li { height: 29px ; }
-#tab_module ul.yui-nav li:last-child { height: 28px ; overflow: hidden ; }
+#tab_module ul.yui-nav li { height: 28px ; overflow: hidden ; }
+#tab_module ul.yui-nav li.selected { height: 29px ; }
 #tab_module ul.yui-nav select { font-size: 11px !important ; font-weight: normal !important ; }
 

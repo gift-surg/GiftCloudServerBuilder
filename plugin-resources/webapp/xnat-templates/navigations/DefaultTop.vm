@@ -44,6 +44,11 @@
             // give menus with submenus a class of 'more'
             jq('#main_nav li ul , #main_nav li li ul').closest('li').find(' > a').addClass('more');
 
+            // animate closing of warning bar
+            jq('#warning_bar .close').click(function(){
+                jq('#warning_bar').slideUp(200);
+            });
+
         });
 
     });
@@ -56,7 +61,6 @@
     <img src="$content.getURI('images/nav_bkdg.png')" alt="">
     <img src="$content.getURI('images/nav_bkdg_hover.png')" alt="">
 </div>
-
 
 <div id="user_bar">
         #if($last_login)
@@ -74,6 +78,20 @@
     <div class="clear"></div>
 </div><!-- /user_bar -->
 
+#if ($sessionCount > 100 || $sessionIpCount > 1 )
+<div id="warning_bar" class="sessionWarning">
+    <span class="close"><img src="$content.getURI('images/close.gif')"></span>
+    <span>
+        ATTENTION: You have $sessionCount sessions open from $sessionIpCount distinct IP addresses.
+        <span class="tip_text">(<i>what does this mean?</i>)
+            <span class="tip shadowed">
+                You may have multiple browsers open or may be logged in from more than one computer. If you believe this is incorrect, please take corrective action. The IP addresses are:
+                $sessionIpCsv.
+            </span>
+        </span>
+    </span>
+</div>
+#end
 
 <div id="header" class="main_header">
     <a id="header_logo" href="$link.setPage("Index.vm")" onmouseover="return true;">

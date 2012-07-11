@@ -1,34 +1,11 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 
-<DIV ID="mylogger"></DIV>
-<TABLE width="100%" style="margin-top:75px;">
-<TR>
-	<TD colspan="2"><hr></TD>
-</TR>
-<TR> 
-    <TD>
-#if ($sessionCount > 100 || $sessionIpCount > 1 )
-<div id="warning_bar" class="sessionWarning">
-    <span class="close"><img src="$content.getURI('images/close.gif')"></span>
-    <span>
-        ATTENTION: You have $sessionCount sessions open from $sessionIpCount distinct IP addresses.
-        <span class="tip_text">(<i>what does this mean?</i>)
-            <span class="tip shadowed">
-                You may have multiple browsers open or may be logged in from more than one computer. If you believe this is incorrect, please take corrective action. The IP addresses are: 
-$sessionIpCsv.
-            </span>
-        </span>
-    </span>
-</div>
-#end
+<div id="mylogger"></div>
 
-    </TD>
-	<TD valign="bottom" align="right">
-		<a target="_blank" href="http://www.xnat.org/">
-		<img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>
-	</TD>
-</TR>
-</TABLE>
+<div id="xnat_power" style="">
+    <a target="_blank" href="http://www.xnat.org/" style=""><img src="$content.getURI('images/xnat_power_small.jpg')"></a>
+</div>
 
 <script type="text/javascript" src="$content.getURI('scripts/footer.js')"></script>
+
 #addGlobalCustomScreens("footer")

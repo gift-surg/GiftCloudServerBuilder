@@ -219,10 +219,18 @@ img { /* vertical-align: bottom ; */ }
 #topMenuBar { position: absolute !important ; right: 0 ; bottom: 0 ; height: 24px ; width: 600px ; }
 #main_nav.hidden { overflow: hidden ; }
 
+/* warning bar */
+#warning_bar { width: 939px ; height: 20px ; position: relative ; left: -10px ; top: -2px ; line-height: 20px ; vertical-align: middle ; font-size: 11px ; background: #ffc ; color: #666 ; border: 1px solid #ee9 ; border-left: none ; }
+#warning_bar > span { padding: 0 4px ; }
+#warning_bar .close:hover { cursor: pointer ; }
+#warning_bar .tip_text { border: none ; }
+#warning_bar .tip_text i { border-bottom: 1px dotted #888 ; font-style: normal ; }
+#warning_bar .tip_text .tip { left: 20px ; top: 25px ; width: 250px ; padding: 10px 20px ; line-height: 15px ; background: #ffc ; border: 1px solid #ee9 ; }
 
+/* footer graphic */
 
-
-
+#xnat_power { width: 100% ; margin-top: 75px ; border-top: 1px solid #ccc ; }
+#xnat_power a { float: right ; display: inline-block ; margin-top: 10px ; }
 
 /* overrides to make this thing look better */
 

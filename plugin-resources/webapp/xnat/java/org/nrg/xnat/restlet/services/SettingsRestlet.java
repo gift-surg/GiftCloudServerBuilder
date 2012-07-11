@@ -87,8 +87,8 @@ public class SettingsRestlet extends SecureResource {
         try {
             if (StringUtils.isBlank(_property)) {
                 return mediaType == MediaType.TEXT_XML ?
-                    new ItemXMLRepresentation(_arcSpec.getItem(), mediaType) :
-                    new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
+                        new ItemXMLRepresentation(_arcSpec.getItem(), mediaType) :
+                        new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
             }
 
             Object property = _arcSpec.getProperty(_property);
@@ -240,7 +240,7 @@ public class SettingsRestlet extends SecureResource {
                     checkNotifications();
                 } else {
                     setPropertiesFromFormData();
-            }
+                }
         } catch (Exception exception) {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
         }
@@ -335,12 +335,12 @@ public class SettingsRestlet extends SecureResource {
                 if (!dirtiedNotifications) {
                     dirtiedNotifications = true;
                     clearArcSpecNotifications();
-            }
+                }
                 final String userIds = _data.get(property);
                 configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(property)), userIds);
             } else {
                 _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
-        }
+            }
         }
         if (dirtied || dirtiedNotifications) {
             SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,EventUtils.ADMIN_EVENT(user));
@@ -436,62 +436,79 @@ public class SettingsRestlet extends SecureResource {
      * Note that if any of the users aren't found, this method currently will have no indication other than returning fewer
      * users than are specified in the <b>emailAddresses</b> parameter.
      *
-     * @param addresses The comma-separated list of usernames, email addresses, and combined IDs.
+     * @param addressList The comma-separated list of usernames, email addressList, and combined IDs.
      * @return A list of {@link Subscriber} objects representing those users.
      */
-    private List<Subscriber> getSubscribersFromAddresses(String addresses) {
+    private List<Subscriber> getSubscribersFromAddresses(String addressList) throws Exception {
+        final String[] addresses = addressList.split("[\\s]*,[\\s]*");
+        if (addresses == null || addresses.length == 0) {
+            throw new Exception("Submitted text couldn't be parsed into a list of addresses: " + addressList);
+        }
+
         List<Subscriber> subscribers = new ArrayList<Subscriber>();
-        for (String address : addresses.split("[\\s]*,[\\s]*")) {
+        List<String> badAddresses = new ArrayList<String>();
+        for (String address : addresses) {
             String username = null;
             String email = null;
-            Matcher userMatcher = PATTERN_USERNAME.matcher(address);
-            if (userMatcher.matches()) {
+            if (PATTERN_USERNAME.matcher(address).matches()) {
                 // Handle this as a username.
-                username = address;
                 XdatUser user = XDATUser.getXdatUsersByLogin(username, null, true);
                 if (user != null) {
+                    username = address;
                     email = user.getEmail();
-                } else {
-                    // TODO: Need to add users that aren't located to a list of error messages.
-                    continue;
+                }
+            } else if (PATTERN_EMAIL.matcher(address).matches()) {
+                // Handle this as an email.
+                List<XdatUser> users = XDATUser.getXdatUsersByField("xdat:user/email", address, null, true);
+                if (users != null && users.size() > 0) {
+                    username = users.get(0).getLogin();
+                    email = address;
                 }
             } else {
-                Matcher emailMatcher = PATTERN_EMAIL.matcher(address);
-                if (emailMatcher.matches()) {
-                    // Handle this as an email.
-                    List<XdatUser> users = XDATUser.getXdatUsersByField("xdat:user/email", email = address, null, true);
-                    if (users == null || users.size() == 0) {
-                        // If we didn't find the user, do something.
-                        // TODO: Need to add users that aren't located to a list of error messages.
-                        continue;
-                    } else {
-                        username = users.get(0).getLogin();
-                    }
-                } else {
-                    Matcher combinedMatcher = PATTERN_COMBINED.matcher(address);
-                    if (combinedMatcher.matches()) {
-                        // Handle this as a combined. username will match first capture, email second capture (0 capture in regex is full expression).
-                        username = combinedMatcher.group(1);
-                        email = combinedMatcher.group(2);
-                    } else {
-                        // TODO: Need to add users that aren't located to a list of error messages.
-                    }
+                Matcher combinedMatcher = PATTERN_COMBINED.matcher(address);
+                if (combinedMatcher.matches()) {
+                    // Handle this as a combined. username will match first capture, email second capture (0 capture in regex is full expression).
+                    username = combinedMatcher.group(1);
+                    email = combinedMatcher.group(2);
                 }
             }
 
-            Subscriber subscriber = getNotificationService().getSubscriberService().getSubscriberByName(username);
-            if (subscriber == null) {
-                try {
-                    subscriber = getNotificationService().getSubscriberService().createSubscriber(username, email);
-                } catch (DuplicateSubscriberException exception) {
-                    // This shouldn't happen, since we just checked for the subscriber's existence.
-                }
+            // If there's no username, this is a bad address, but we'll continue so we can harvest ALL the bad addresses.
+            if (username == null) {
+                badAddresses.add(address);
+                continue;
             }
 
-            subscribers.add(subscriber);
+            // If we don't have any bad addresses, get the subscriber. If we do have bad addresses, we have a valid user
+            // but we'll skip getting the subscriber to save ourselves the work.
+            if (badAddresses.size() == 0) {
+                Subscriber subscriber = getNotificationService().getSubscriberService().getSubscriberByName(username);
+                if (subscriber == null) {
+                    try {
+                        subscriber = getNotificationService().getSubscriberService().createSubscriber(username, email);
+                    } catch (DuplicateSubscriberException exception) {
+                        // This shouldn't happen, since we just checked for the subscriber's existence.
+                    }
+                }
+
+                subscribers.add(subscriber);
+            }
+        }
+
+        if (badAddresses.size() > 0) {
+            throw new Exception(getBadAddressErrorMessage(badAddresses));
         }
 
         return subscribers;
+    }
+
+    private String getBadAddressErrorMessage(final List<String> badAddresses) {
+        StringBuilder buffer = new StringBuilder("<p>The following addresses were not valid usernames or emails of users of this XNAT server:</p><ul>");
+        for (String address : badAddresses) {
+            buffer.append("<li>").append(address).append("</li>");
+        }
+        buffer.append("</ul>");
+        return buffer.toString();
     }
 
     private void initializeArcSpec() throws Exception {
@@ -572,7 +589,7 @@ public class SettingsRestlet extends SecureResource {
             }
         }
     }
-    
+
     /**
      * Checks whether site-side notifications exist and initializes them if not.
      *
@@ -590,25 +607,25 @@ public class SettingsRestlet extends SecureResource {
     }
 
     private void configureArcSpecNotificationType(final ArcArchivespecification arcSpec, final NotificationType type, final Collection<Subscription> subscriptions) throws Exception {
-            ArcArchivespecificationNotificationTypeI typeObj = new ArcArchivespecificationNotificationType();
-            typeObj.setNotificationType(type.id());
-            if (subscriptions == null || subscriptions.size() == 0) {
-                typeObj.setEmailAddresses(getSiteAdminAccount(arcSpec) + " <" + arcSpec.getSiteAdminEmail() + ">");
-            } else {
-                StringBuilder buffer = new StringBuilder();
-                boolean isFirst = true;
-                for (Subscription subscription : subscriptions) {
-                    if (isFirst) {
-                        isFirst = false;
-                    } else {
-                        buffer.append(", ");
-}
-                    buffer.append(subscription.getSubscriber());
+        ArcArchivespecificationNotificationTypeI typeObj = new ArcArchivespecificationNotificationType();
+        typeObj.setNotificationType(type.id());
+        if (subscriptions == null || subscriptions.size() == 0) {
+            typeObj.setEmailAddresses(getSiteAdminAccount(arcSpec) + " <" + arcSpec.getSiteAdminEmail() + ">");
+        } else {
+            StringBuilder buffer = new StringBuilder();
+            boolean isFirst = true;
+            for (Subscription subscription : subscriptions) {
+                if (isFirst) {
+                    isFirst = false;
+                } else {
+                    buffer.append(", ");
                 }
-                typeObj.setEmailAddresses(buffer.toString());
+                buffer.append(subscription.getSubscriber());
             }
-            arcSpec.addNotificationTypes_notificationType(typeObj);
+            typeObj.setEmailAddresses(buffer.toString());
         }
+        arcSpec.addNotificationTypes_notificationType(typeObj);
+    }
 
     /**
      * Clears the arc spec notification listings.

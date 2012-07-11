@@ -281,7 +281,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
 			window.location = serverRoot + "/app/template/Login.vm";
 		}
-		alert("ERROR " + o.status + ": Operation Failed.");
+        showMessage('page_body', 'Error', '<p>There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText + '</p>');
 		this.setFormDisabled(false);
 	};
 

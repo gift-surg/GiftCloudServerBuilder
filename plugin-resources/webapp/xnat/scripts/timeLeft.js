@@ -327,8 +327,9 @@ function updateMessageOrHide (dialog) {
  * If the session has expired just refreshing the page should redirect to the login page.
  */
 function redirectToLogin () {
-  synchronizingCookies.sessionTimeout.set("true");
-  window.location.reload(true);
+    YAHOO.util.Cookie.set('WARNING_BAR','OPEN',{path:'/'});
+    synchronizingCookies.sessionTimeout.set("true");
+    window.location.reload(true);
 }
 
 /**

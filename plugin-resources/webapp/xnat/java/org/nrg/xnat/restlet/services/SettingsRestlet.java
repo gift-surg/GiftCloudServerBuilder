@@ -10,9 +10,9 @@ import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.mail.api.NotificationType;
 import org.nrg.notify.api.CategoryScope;
-import org.nrg.notify.entities.Category;
-import org.nrg.notify.entities.Definition;
-import org.nrg.notify.entities.Subscription;
+import org.nrg.notify.api.SubscriberType;
+import org.nrg.notify.entities.*;
+import org.nrg.notify.exceptions.DuplicateSubscriberException;
 import org.nrg.notify.services.NotificationService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.model.ArcArchivespecificationNotificationTypeI;
@@ -45,9 +45,9 @@ import org.restlet.resource.Variant;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SettingsRestlet extends SecureResource {
 
@@ -87,8 +87,8 @@ public class SettingsRestlet extends SecureResource {
         try {
             if (StringUtils.isBlank(_property)) {
                 return mediaType == MediaType.TEXT_XML ?
-                    new ItemXMLRepresentation(_arcSpec.getItem(), mediaType) :
-                    new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
+                        new ItemXMLRepresentation(_arcSpec.getItem(), mediaType) :
+                        new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
             }
 
             Object property = _arcSpec.getProperty(_property);
@@ -131,8 +131,85 @@ public class SettingsRestlet extends SecureResource {
         settings.put("dcmAe", _arcSpec.getDcm_dcmAe());
         settings.put("dcmAppletLink", _arcSpec.getDcm_appletLink());
         settings.put("enableCsrfToken", _arcSpec.getEnableCsrfToken());
+        settings.put("error", getSubscribersForEvent(NotificationType.Error));
+        settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
+        settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
+        settings.put("update", getSubscribersForEvent(NotificationType.Update));
 
         return settings;
+    }
+
+    // TODO: Gross.
+    public static final String ADMIN_USERNAME_FOR_SUBSCRIPTION = "admin";
+
+    /**
+     * This returns the current subscriber or subscribers to a particular <i>site-wide</i> event. If the event doesn't
+     * already exist, the event will be created with the default user set to the site administrator's email address.
+     * @param event    The event to be created or retrieved.
+     */
+    private String getSubscribersForEvent(NotificationType event) {
+        Category category = getNotificationService().getCategoryService().getCategoryByScopeAndEvent(CategoryScope.Site, event.toString());
+        if (category == null) {
+            category = getNotificationService().getCategoryService().newEntity();
+            category.setScope(CategoryScope.Site);
+            category.setEvent(event.toString());
+            getNotificationService().getCategoryService().create(category);
+        }
+        Definition definition;
+        List<Definition> definitions = getNotificationService().getDefinitionService().getDefinitionsForCategory(category);
+        if (definitions == null || definitions.size() == 0) {
+            definition = getNotificationService().getDefinitionService().newEntity();
+            definition.setCategory(category);
+            getNotificationService().getDefinitionService().create(definition);
+        } else {
+            definition = definitions.get(0);
+        }
+
+        Map<Subscriber, Subscription> subscriptions = getNotificationService().getSubscriptionService().getSubscriberMapOfSubscriptionsForDefinition(definition);
+        if (subscriptions != null && subscriptions.size() > 0) {
+            return createCommaSeparatedList(subscriptions.keySet());
+        } else {
+            Subscriber adminUser = getNotificationService().getSubscriberService().getSubscriberByName(ADMIN_USERNAME_FOR_SUBSCRIPTION);
+            if (adminUser == null) {
+                try {
+                    adminUser = getNotificationService().getSubscriberService().createSubscriber(ADMIN_USERNAME_FOR_SUBSCRIPTION, _arcSpec.getSiteAdminEmail());
+                } catch (DuplicateSubscriberException exception) {
+                    // This shouldn't happen, since we just checked for the subscriber's existence.
+                }
+            }
+
+            getNotificationService().subscribe(adminUser, SubscriberType.User, definition, getHtmlMailChannel());
+            assert adminUser != null;
+            return adminUser.getEmails();
+        }
+    }
+
+    private Channel getHtmlMailChannel() {
+        Channel channel = getNotificationService().getChannelService().getChannel("htmlMail");
+        if (channel == null) {
+            channel = getNotificationService().getChannelService().newEntity();
+            channel.setName("htmlMail");
+            channel.setFormat("text/html");
+            getNotificationService().getChannelService().create(channel);
+        }
+        return channel;
+    }
+
+    private String createCommaSeparatedList(final Set<Subscriber> subscribers) {
+        if (subscribers == null || subscribers.size() == 0) {
+            return "";
+        }
+        boolean isFirst = true;
+        StringBuilder buffer = new StringBuilder();
+        for (Subscriber subscriber : subscribers) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                buffer.append(", ");
+            }
+            buffer.append(subscriber.getEmails());
+        }
+        return buffer.toString();
     }
 
     @Override
@@ -155,23 +232,15 @@ public class SettingsRestlet extends SecureResource {
         try {
             if (!StringUtils.isBlank(_property) && !_property.equals("initialize")) {
                 setDiscreteProperty();
-                checkNotifications(_arcSpec);
+                checkNotifications();
             } else
                 // We will only enter this if _property is "initialize", so that means we need to set up the arc spec entry.
                 if (!StringUtils.isBlank(_property)) {
                     initializeArcSpec();
-                    checkNotifications(_arcSpec);
+                    checkNotifications();
                 } else {
                     setPropertiesFromFormData();
-            }
-        } catch (XFTInitException exception) {
-            respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
-        } catch (ElementNotFoundException exception) {
-            respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
-        } catch (FieldNotFoundException exception) {
-            respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
-        } catch (InvalidValueException exception) {
-            respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
+                }
         } catch (Exception exception) {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
         }
@@ -181,6 +250,7 @@ public class SettingsRestlet extends SecureResource {
     private void setPropertiesFromFormData() throws Exception {
         _log.debug("Setting arc spec property from body string: " + _form);
         boolean dirtied = false;
+        boolean dirtiedNotifications = false;
         for (String property : _data.keySet()) {
             if (property.equals("siteId")) {
                 final String siteId = _data.get("siteId");
@@ -261,11 +331,184 @@ public class SettingsRestlet extends SecureResource {
                 _arcSpec.setEnableCsrfToken(enableCsrfToken);
                 XFT.SetEnableCsrfToken(enableCsrfToken);
                 dirtied = true;
+            } else if (property.equals("error") || property.equals("issue") || property.equals("newUser") || property.equals("update")) {
+                if (!dirtiedNotifications) {
+                    dirtiedNotifications = true;
+                    clearArcSpecNotifications();
+                }
+                final String userIds = _data.get(property);
+                configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(property)), userIds);
+            } else {
+                _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
             }
         }
-        if (dirtied) {
+        if (dirtied || dirtiedNotifications) {
             SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,EventUtils.ADMIN_EVENT(user));
         }
+    }
+
+    /**
+     * Sets up the subscriptions for the indicated events.
+     * @param notificationType    The type of notification for which to configure subscriptions.
+     * @param userIds             The IDs of the users to be subscribed to the indicated notification.
+     */
+    private void configureEventSubscriptions(final NotificationType notificationType, final String userIds) throws Exception {
+        Definition definition = retrieveSiteEventDefinition(notificationType);
+        List<Subscriber> subscribers = getSubscribersFromAddresses(userIds);
+        Map<Subscriber, Subscription> subscriptions = getNotificationService().getSubscriptionService().getSubscriberMapOfSubscriptionsForDefinition(definition);
+        Channel channel = getHtmlMailChannel();
+
+        for (Subscriber subscriber : subscribers) {
+            // If we don't have a subscription for this notification...
+            if (!subscriptions.containsKey(subscriber)) {
+                // Create one.
+                getNotificationService().subscribe(subscriber, SubscriberType.User, definition, channel);
+                // But if we do have a subscription for this notification...
+            } else {
+                // Remove it from the map.
+                subscriptions.remove(subscriber);
+            }
+        }
+
+        // If there are any left-over subscriptions...
+        if (subscriptions.size() > 0) {
+            // Those are no longer wanted (they weren't specified in the submitted list), so let's remove those subscriptions.
+            for (Subscription subscription : subscriptions.values()) {
+                getNotificationService().getSubscriptionService().delete(subscription);
+            }
+        }
+
+        configureArcSpecNotificationType(_arcSpec, notificationType, subscriptions.values());
+    }
+
+    /**
+     * @param type The type for which the definition and its associated category should be created or retrieved.
+     * @return The existing or newly created definition.
+     */
+    private Definition retrieveSiteEventDefinition(NotificationType type) {
+        Category category = getNotificationService().getCategoryService().getCategoryByScopeAndEvent(CategoryScope.Site, type.toString());
+        if (category == null) {
+            category = initializeSiteEventCategory(type.toString());
+        }
+        List<Definition> definitions = getNotificationService().getDefinitionService().getDefinitionsForCategory(category);
+        Definition definition;
+        if (definitions == null || definitions.size() == 0) {
+            definition = initializeSiteEventDefinition(category);
+        } else {
+            definition = definitions.get(0);
+        }
+        return definition;
+    }
+
+    /**
+     * @param event The event for which a category should be created.
+     * @return The newly created category object.
+     */
+    private Category initializeSiteEventCategory(String event) {
+        Category category = getNotificationService().getCategoryService().newEntity();
+        category.setScope(CategoryScope.Site);
+        category.setEvent(event);
+        getNotificationService().getCategoryService().create(category);
+        return category;
+    }
+
+    /**
+     * @param category The category for which a definition should be created.
+     * @return The newly created definition object.
+     */
+    private Definition initializeSiteEventDefinition(Category category) {
+        Definition definition = getNotificationService().getDefinitionService().newEntity();
+        definition.setCategory(category);
+        getNotificationService().getDefinitionService().create(definition);
+        return definition;
+    }
+
+    /**
+     * Takes a comma-separated list of "email addresses" (which actually may include {@link XDATUser#getEmail() email addresses},
+     * {@link XDATUser#getLogin() XDAT user names}, and a combination of the two in the format:
+     * <p/>
+     * <code><i>username</i> &lt;<i>email</i>&gt;</code>
+     * <p/>
+     * So for example, you may have something like this:
+     * <p/>
+     * <code>user1 &lt;user1@@xnat.org&gt;, user2, user3@xnat.org</code>
+     * <p/>
+     * Note that if any of the users aren't found, this method currently will have no indication other than returning fewer
+     * users than are specified in the <b>emailAddresses</b> parameter.
+     *
+     * @param addressList The comma-separated list of usernames, email addressList, and combined IDs.
+     * @return A list of {@link Subscriber} objects representing those users.
+     */
+    private List<Subscriber> getSubscribersFromAddresses(String addressList) throws Exception {
+        final String[] addresses = addressList.split("[\\s]*,[\\s]*");
+        if (addresses == null || addresses.length == 0) {
+            throw new Exception("Submitted text couldn't be parsed into a list of addresses: " + addressList);
+        }
+
+        List<Subscriber> subscribers = new ArrayList<Subscriber>();
+        List<String> badAddresses = new ArrayList<String>();
+        for (String address : addresses) {
+            String username = null;
+            String email = null;
+            if (PATTERN_USERNAME.matcher(address).matches()) {
+                // Handle this as a username.
+                XdatUser user = XDATUser.getXdatUsersByLogin(username, null, true);
+                if (user != null) {
+                    username = address;
+                    email = user.getEmail();
+                }
+            } else if (PATTERN_EMAIL.matcher(address).matches()) {
+                // Handle this as an email.
+                List<XdatUser> users = XDATUser.getXdatUsersByField("xdat:user/email", address, null, true);
+                if (users != null && users.size() > 0) {
+                    username = users.get(0).getLogin();
+                    email = address;
+                }
+            } else {
+                Matcher combinedMatcher = PATTERN_COMBINED.matcher(address);
+                if (combinedMatcher.matches()) {
+                    // Handle this as a combined. username will match first capture, email second capture (0 capture in regex is full expression).
+                    username = combinedMatcher.group(1);
+                    email = combinedMatcher.group(2);
+                }
+            }
+
+            // If there's no username, this is a bad address, but we'll continue so we can harvest ALL the bad addresses.
+            if (username == null) {
+                badAddresses.add(address);
+                continue;
+            }
+
+            // If we don't have any bad addresses, get the subscriber. If we do have bad addresses, we have a valid user
+            // but we'll skip getting the subscriber to save ourselves the work.
+            if (badAddresses.size() == 0) {
+                Subscriber subscriber = getNotificationService().getSubscriberService().getSubscriberByName(username);
+                if (subscriber == null) {
+                    try {
+                        subscriber = getNotificationService().getSubscriberService().createSubscriber(username, email);
+                    } catch (DuplicateSubscriberException exception) {
+                        // This shouldn't happen, since we just checked for the subscriber's existence.
+                    }
+                }
+
+                subscribers.add(subscriber);
+            }
+        }
+
+        if (badAddresses.size() > 0) {
+            throw new Exception(getBadAddressErrorMessage(badAddresses));
+        }
+
+        return subscribers;
+    }
+
+    private String getBadAddressErrorMessage(final List<String> badAddresses) {
+        StringBuilder buffer = new StringBuilder("<p>The following addresses were not valid usernames or emails of users of this XNAT server:</p><ul>");
+        for (String address : badAddresses) {
+            buffer.append("<li>").append(address).append("</li>");
+        }
+        buffer.append("</ul>");
+        return buffer.toString();
     }
 
     private void initializeArcSpec() throws Exception {
@@ -346,69 +589,52 @@ public class SettingsRestlet extends SecureResource {
             }
         }
     }
-    
+
     /**
      * Checks whether site-side notifications exist and initializes them if not.
      *
-     * @param arcSpec The archive specification object.
      * @throws Exception
      */
-    private void checkNotifications(ArcArchivespecification arcSpec) throws Exception {
+    private void checkNotifications() throws Exception {
         // Check whether any notification types already exist and clear them if so.
-        clearArcSpecNotifications(arcSpec);
+        clearArcSpecNotifications();
 
         for (NotificationType type : NotificationType.values()) {
             Definition definition = retrieveSiteEventDefinition(type);
             List<Subscription> subscriptions = getNotificationService().getSubscriptionService().getSubscriptionsForDefinition(definition);
-
-            ArcArchivespecificationNotificationTypeI typeObj = new ArcArchivespecificationNotificationType();
-            typeObj.setNotificationType(type.id());
-            if (subscriptions == null || subscriptions.size() == 0) {
-                typeObj.setEmailAddresses(getSiteAdminAccount(arcSpec) + " <" + arcSpec.getSiteAdminEmail() + ">");
-            } else {
-                StringBuilder buffer = new StringBuilder();
-                boolean isFirst = true;
-                for (Subscription subscription : subscriptions) {
-                    if (isFirst) {
-                        isFirst = false;
-                    } else {
-                        buffer.append(", ");
-}
-                    buffer.append(subscription.getSubscriber());
-                }
-                typeObj.setEmailAddresses(buffer.toString());
-            }
-            arcSpec.addNotificationTypes_notificationType(typeObj);
+            configureArcSpecNotificationType(_arcSpec, type, subscriptions);
         }
     }
 
-    /**
-     * @param arcSpec
-     */
-    private void clearArcSpecNotifications(ArcArchivespecification arcSpec) {
-        List<ArcArchivespecificationNotificationTypeI> notificationTypes;
-        while ((notificationTypes = arcSpec.getNotificationTypes_notificationType()) != null && notificationTypes.size() > 0) {
-            arcSpec.removeNotificationTypes_notificationType(0);
-        }
-    }
-
-    /**
-     * @param type The type for which the definition and its associated category should be created or retrieved.
-     * @return The existing or newly created definition.
-     */
-    private Definition retrieveSiteEventDefinition(NotificationType type) {
-        Category category = getNotificationService().getCategoryService().getCategoryByScopeAndEvent(CategoryScope.Site, type.toString());
-        if (category == null) {
-            category = initializeSiteEventCategory(type.toString());
-        }
-        List<Definition> definitions = getNotificationService().getDefinitionService().getDefinitionsForCategory(category);
-        Definition definition;
-        if (definitions == null || definitions.size() == 0) {
-            definition = initializeSiteEventDefinition(category);
+    private void configureArcSpecNotificationType(final ArcArchivespecification arcSpec, final NotificationType type, final Collection<Subscription> subscriptions) throws Exception {
+        ArcArchivespecificationNotificationTypeI typeObj = new ArcArchivespecificationNotificationType();
+        typeObj.setNotificationType(type.id());
+        if (subscriptions == null || subscriptions.size() == 0) {
+            typeObj.setEmailAddresses(getSiteAdminAccount(arcSpec) + " <" + arcSpec.getSiteAdminEmail() + ">");
         } else {
-            definition = definitions.get(0);
+            StringBuilder buffer = new StringBuilder();
+            boolean isFirst = true;
+            for (Subscription subscription : subscriptions) {
+                if (isFirst) {
+                    isFirst = false;
+                } else {
+                    buffer.append(", ");
+                }
+                buffer.append(subscription.getSubscriber());
+            }
+            typeObj.setEmailAddresses(buffer.toString());
         }
-        return definition;
+        arcSpec.addNotificationTypes_notificationType(typeObj);
+    }
+
+    /**
+     * Clears the arc spec notification listings.
+     */
+    private void clearArcSpecNotifications() {
+        List<ArcArchivespecificationNotificationTypeI> notificationTypes;
+        while ((notificationTypes = _arcSpec.getNotificationTypes_notificationType()) != null && notificationTypes.size() > 0) {
+            _arcSpec.removeNotificationTypes_notificationType(0);
+        }
     }
 
     /**
@@ -424,32 +650,9 @@ public class SettingsRestlet extends SecureResource {
     }
 
     /**
-     * @param event The event for which a category should be created.
-     * @return The newly created category object.
-     */
-    private Category initializeSiteEventCategory(String event) {
-        Category category = getNotificationService().getCategoryService().newEntity();
-        category.setScope(CategoryScope.Site);
-        category.setEvent(event);
-        getNotificationService().getCategoryService().create(category);
-        return category;
-    }
-
-
-    /**
-     * @param category The category for which a definition should be created.
-     * @return The newly created definition object.
-     */
-    private Definition initializeSiteEventDefinition(Category category) {
-        Definition definition = getNotificationService().getDefinitionService().newEntity();
-        definition.setCategory(category);
-        getNotificationService().getDefinitionService().create(definition);
-        return definition;
-    }
-
-    /**
-     * @param arcSpec
-     * @return
+     * Gets the site admin account name.
+     * @param arcSpec    The arc spec from which the admin account can be retrieved.
+     * @return The site admin account name.
      */
     private String getSiteAdminAccount(ArcArchivespecification arcSpec) {
         List<XdatUser> users = XDATUser.getXdatUsersByField("xdat:user/email", arcSpec.getSiteAdminEmail(), null, true);
@@ -458,6 +661,13 @@ public class SettingsRestlet extends SecureResource {
         }
         return users.get(0).getLogin();
     }
+
+    private static final String EXPRESSION_USERNAME = "[a-zA-Z][a-zA-Z0-9_-]{3,15}";
+    private static final String EXPRESSION_EMAIL = "[_A-Za-z0-9-]+(?:\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(?:\\.[A-Za-z0-9]+)*(?:\\.[A-Za-z]{2,})";
+    private static final String EXPRESSION_COMBINED = "(" + EXPRESSION_USERNAME + ")[\\s]*<(" + EXPRESSION_EMAIL + ")>";
+    private static final Pattern PATTERN_USERNAME = Pattern.compile(EXPRESSION_USERNAME);
+    private static final Pattern PATTERN_EMAIL = Pattern.compile(EXPRESSION_EMAIL);
+    private static final Pattern PATTERN_COMBINED = Pattern.compile(EXPRESSION_COMBINED);
 
     private NotificationService _notificationService;
     private static final Log _log = LogFactory.getLog(SettingsRestlet.class);

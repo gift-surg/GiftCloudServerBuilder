@@ -46,10 +46,10 @@ public class FileSystemSessionDataModifierTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		fs = new FileSystemSessionDataModifier(basePath);
-		move = new FileSystemSessionDataModifier.Move(basePath,sess,uri,newProj);
+		move = new FileSystemSessionDataModifier.Move(basePath,sess,uri,null, newProj);
 		copy = move.new Copy(new File(tsdir), new File(newTsdir), sess);
 		setXml = move.new SetXml(new File(xml), newProj,new File(newTsdir, sess).getAbsolutePath());
-		copyException = new Move(basePath,sess,uri,newProj) {
+		copyException = new Move(basePath,sess,uri,null,newProj) {
 			{
 				this.copy = new Except(tsdir, newTsdir, sess);
 			}
@@ -62,7 +62,7 @@ public class FileSystemSessionDataModifierTest {
 				}
 			}
 		};
-		setXmlException = new Move(basePath,sess,uri,newProj) {
+		setXmlException = new Move(basePath,sess,uri,null,newProj) {
 			{
 				this.setXml = new Except(xml,newProj);
 			}
@@ -75,7 +75,7 @@ public class FileSystemSessionDataModifierTest {
 				}
 			}
 		};
-		writeXmlException = new Move(basePath,sess,uri,newProj) {
+		writeXmlException = new Move(basePath,sess,uri,null,newProj) {
 			{
 				this.writeXml = new Except(tsdir,sess,xml);
 			}
@@ -163,7 +163,7 @@ public class FileSystemSessionDataModifierTest {
 	@Test 
 	public final void testMove() {
 		try {
-			fs._move(new Move(basePath,sess,uri,newProj));
+			fs._move(new Move(basePath,sess,uri,null,newProj));
 		} catch (SyncFailedException e) {
 			fail("SyncFailedException thrown " + e);
 		}

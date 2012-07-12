@@ -24,6 +24,9 @@ function fullConfigHandler() {
     if(window.siteInfoManager==undefined) {
         missing.push('Site Information');
     }
+    if(window.notificationsManager==undefined) {
+        missing.push('Notifications');
+    }
     if (missing.length > 0) {
         var message = 'You need to review the contents of the following panels before saving: <ul>';
         for (var index = 0; index < missing.length; index++) {
@@ -69,6 +72,7 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('siteInfo_save_button').onclick = fullConfigHandler;
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
+        document.getElementById('notifications_save_button').onclick = fullConfigHandler;
         showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
 }
@@ -108,6 +112,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	if(document.getElementById("registration_reset_button")){
     		document.getElementById("registration_reset_button").disabled = false;
     	}
+    	if(document.getElementById("notifications_reset_button")){
+    		document.getElementById("notifications_reset_button").disabled = false;
+    	}
     };
     this.disableResetButtons = function() {
     	if(document.getElementById("siteInfo_reset_button")){
@@ -118,6 +125,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	}
     	if(document.getElementById("registration_reset_button")){
     		document.getElementById("registration_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("notifications_reset_button")){
+    		document.getElementById("notifications_reset_button").disabled = true;
     	}
     };
     
@@ -271,7 +281,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
 			window.location = serverRoot + "/app/template/Login.vm";
 		}
-		alert("ERROR " + o.status + ": Operation Failed.");
+        showMessage('page_body', 'Error', '<p>There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText + '</p>');
 		this.setFormDisabled(false);
 	};
 

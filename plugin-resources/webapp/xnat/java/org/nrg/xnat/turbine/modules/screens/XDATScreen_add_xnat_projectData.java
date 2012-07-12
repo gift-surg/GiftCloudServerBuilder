@@ -72,16 +72,14 @@ public class XDATScreen_add_xnat_projectData extends EditScreenA {
             context.put("subjectAssessors", subjectAssessors);
             context.put("mrAssessors", mrAssessors);
             context.put("petAssessors", petAssessors);
-        
-			if (item.getProperty("ID")==null)
+		    context.put("page_title","New Project");
+		    
+			if (item.getProperty("ID")!=null)
 			{
-			    context.put("page_title","New Project");
-			}else{
                 ArcProject p = ArcSpecManager.GetInstance().getProjectArc(item.getStringProperty("ID"));
                 if (p!=null){
                     context.put("arcP", p);
                 }
-			    context.put("page_title","Edit Project");
 			}
 		} catch (Exception e) {
 			logger.error("",e);

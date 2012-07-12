@@ -1,22 +1,11 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 
-<DIV ID="mylogger"></DIV>
-<TABLE width="100%" style="margin-top:75px;">
-<TR>
-	<TD colspan="2"><hr></TD>
-</TR>
-<TR> 
-    <TD>
-        #if ($sessionWarning)
-            <DIV class="sessionWarning">$sessionWarning</DIV><br>
-        #end
-    </TD>
-	<TD valign="bottom" align="right">
-		<a target="_blank" href="http://www.xnat.org/">
-		<img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>
-	</TD>
-</TR>
-</TABLE>
+<div id="mylogger"></div>
+
+<div id="xnat_power" style="">
+    <a target="_blank" href="http://www.xnat.org/" style=""><img src="$content.getURI('images/xnat_power_small.jpg')"></a>
+</div>
 
 <script type="text/javascript" src="$content.getURI('scripts/footer.js')"></script>
+
 #addGlobalCustomScreens("footer")

@@ -424,7 +424,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 	        minLoadAssessors = new ArrayList<ItemI>();
 
 	        try {
-                XFTTable table = TableSearch.Execute("SELECT ex.id,ex.date,me.element_name AS type,ex.project,me.element_name,ex.note AS note,projects,label,visit as visit FROM xnat_subjectAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ':' || label || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.subject_id='" + this.getId() +"'  ORDER BY ex.date ASC",getDBName(),null);
+                XFTTable table = TableSearch.Execute("SELECT ex.id,ex.date,me.element_name AS type,ex.project,me.element_name,ex.note AS note,projects,label,visit as visit, protocol as protocol FROM xnat_subjectAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ':' || label || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.subject_id='" + this.getId() +"'  ORDER BY ex.date ASC",getDBName(),null);
                 table.resetRowCursor();
                 while (table.hasMoreRows())
                 {
@@ -439,6 +439,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
                         final Object project = row.get("project");
                         final Object label = row.get("label");
                         final Object visit = row.get("visit");
+                        final Object protocol = row.get("protocol");
 
                         if (date!=null)
                         {
@@ -486,6 +487,20 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
                         {
                             try {
                                 child.setProperty("visit",visit);
+                            } catch (XFTInitException e) {
+                                logger.error("",e);
+                            } catch (ElementNotFoundException e) {
+                                logger.error("",e);
+                            } catch (FieldNotFoundException e) {
+                                logger.error("",e);
+                            } catch (InvalidValueException e) {
+                                logger.error("",e);
+                            }
+                        }
+                        if (protocol!=null)
+                        {
+                            try {
+                                child.setProperty("protocol",protocol);
                             } catch (XFTInitException e) {
                                 logger.error("",e);
                             } catch (ElementNotFoundException e) {
@@ -548,7 +563,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
                         {
                             minLoadAssessors.add(BaseElement.GetGeneratedItem(child));
                             try {
-                            	XFTTable table2 = TableSearch.Execute("SELECT ex.id,ex.date,me.element_name AS type,ex.project,me.element_name,ex.note AS note,projects,label,assessor.imagesession_id,visit as visit FROM xnat_imageAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ':' || label || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.imagesession_id='" + id +"'  ORDER BY ex.date ASC",getDBName(),null);
+                            	XFTTable table2 = TableSearch.Execute("SELECT ex.id,ex.date,me.element_name AS type,ex.project,me.element_name,ex.note AS note,projects,label,assessor.imagesession_id,visit as visit, protocol as protocol FROM xnat_imageAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ':' || label || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.imagesession_id='" + id +"'  ORDER BY ex.date ASC",getDBName(),null);
                                 table2.resetRowCursor();
                                 while (table2.hasMoreRows())
                                 {
@@ -563,6 +578,7 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
                                         final Object note2 = row2.get("note");
                                         final Object label2 = row2.get("label");
                                         final Object visit2 = row2.get("visit");
+                                        final Object protocol2 = row2.get("protocol");
                                         final Object imgsession2 = row2.get("imagesession_id");
 
 
@@ -626,6 +642,20 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
                                         {
                                             try {
                                                 child2.setProperty("visit_id",visit2);
+                                            } catch (XFTInitException e) {
+                                                logger.error("",e);
+                                            } catch (ElementNotFoundException e) {
+                                                logger.error("",e);
+                                            } catch (FieldNotFoundException e) {
+                                                logger.error("",e);
+                                            } catch (InvalidValueException e) {
+                                                logger.error("",e);
+                                            }
+                                        }
+                                        if (protocol2!=null)
+                                        {
+                                            try {
+                                                child2.setProperty("protocol",protocol2);
                                             } catch (XFTInitException e) {
                                                 logger.error("",e);
                                             } catch (ElementNotFoundException e) {

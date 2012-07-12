@@ -166,10 +166,9 @@ table.ruled td:first-child { border-left: none ; }
 
 table.ruled tr:nth-child(2n+1) { background: #fff ; }
 
-
 .ic, .ic_spacer { display: none ; visibility: hidden ; }
 
-td.underscore{ border-bottom: 2px solid rgb(255,153,51) ; padding-bottom: 2px ; padding-right: 20px ; }
+.underscore{ border-bottom: 2px solid #f93 ; padding-bottom: 1px ; padding-right: 20px ; padding-left: 5px ; }
 
 div.alert { background-color:#CCCCCC; border-width:1px; border-style:solid; color:red; font-size:14px; line-height:16px; /* font-weight:700; */ overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
 
@@ -220,10 +219,18 @@ img { /* vertical-align: bottom ; */ }
 #topMenuBar { position: absolute !important ; right: 0 ; bottom: 0 ; height: 24px ; width: 600px ; }
 #main_nav.hidden { overflow: hidden ; }
 
+/* warning bar */
+#warning_bar { width: 939px ; height: 20px ; position: relative ; left: -10px ; top: -2px ; line-height: 20px ; vertical-align: middle ; font-size: 11px ; background: #ffc ; color: #666 ; border: 1px solid #ee9 ; border-left: none ; }
+#warning_bar > span { padding: 0 4px ; }
+#warning_bar .close:hover { cursor: pointer ; }
+#warning_bar .tip_text { border: none ; }
+#warning_bar .tip_text i { border-bottom: 1px dotted #888 ; font-style: normal ; }
+#warning_bar .tip_text .tip { left: 20px ; top: 25px ; width: 250px ; padding: 10px 20px ; line-height: 15px ; background: #ffc ; border: 1px solid #ee9 ; }
 
+/* footer graphic */
 
-
-
+#xnat_power { width: 100% ; margin-top: 75px ; border-top: 1px solid #ccc ; }
+#xnat_power a { float: right ; display: inline-block ; margin-top: 10px ; }
 
 /* overrides to make this thing look better */
 
@@ -238,10 +245,7 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 .yui-nav a { font-weight: bold ; }
 
 .yui-skin-sam .yui-button a,
-.yui-button button {
-    font-weight: bold ;
-    font-size: 12px ;
-}
+.yui-button button { font-weight: bold ; font-size: 12px ; }
 
 table {  }
 
@@ -476,11 +480,19 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 #layout_content form * b { font-weight: bold !important ; }
 #layout_content form * b u { font-weight: bold !important ; text-decoration: underline ; }
 
-#expts_header .alts { float:right;position:relative;bottom:4px; }
-#expts_header #view_all_link,
-#expts_header #toggle_expts_link,
-#expts_header #expt_shared_legend,
-#expts_header #expt_denied_legend { padding:2px 4px;font-size:12px;font-weight:normal; }
+/* #expts_header .alts { float:right;position:relative;bottom:4px; } */
+#expts_container { display: inline-block ; width: auto ; }
+#expts_link_legend { min-width: 505px ; margin-bottom: 10px ; }
+#expts_link_legend #expts_header { display: inline-block ; float: left ; min-width: 220px ; padding-left: 5px ; font-size: 13px ; font-weight: bold ; }
+/* #expts_link_legend #view_all_link, */
+#expts_link_legend #toggle_expts_link,
+#expts_link_legend #expt_shared_legend,
+#expts_link_legend #expt_denied_legend { float: right ; padding: 0 3px ; font-size: 12px ; font-weight: normal ; }
+#expts_link_legend #expt_shared_legend {  }
+#expts_link_legend #expt_denied_legend {  }
+#proj_expts td, #all_expts td { padding: 2px 20px 2px 5px ; min-width: 80px ; }
+
+#proj_expts td a, #all_expts td a { text-decoration: underline ; }
 
 .yui-pg-container { font-size: 12px !important ; }
 .yui-calcontainer { z-index: 9 ; }
@@ -544,7 +556,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 div.extension { background-color: #FF9 ; }
 div.extension_js { background-color: #FF9 ; }
 
-#tab_module ul.yui-nav li { height: 29px ; }
-#tab_module ul.yui-nav li:last-child { height: 28px ; overflow: hidden ; }
+#tab_module ul.yui-nav li { height: 28px ; overflow: hidden ; }
+#tab_module ul.yui-nav li.selected { height: 29px ; }
 #tab_module ul.yui-nav select { font-size: 11px !important ; font-weight: normal !important ; }
 

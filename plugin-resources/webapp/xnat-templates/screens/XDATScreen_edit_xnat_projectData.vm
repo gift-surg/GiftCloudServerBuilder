@@ -32,6 +32,7 @@ $page.setVlinkColor($ui.vlink)
 						       <DIV class="containerBody">
 						        <DIV class="containerItem">Define the details of this project.  The 'Abbreviation' should be a single word or acronym which will identify your project.  It will be used on the file system to name directories and files, so it shouldn't contain any wild characters or spaces.  The 'Running Title' will be used throughout the website to identify your project.<br><hr></DIV>
 						        <DIV class="containerItem">
+									 #set( $parentTemplate = 'edit' )
 						        	 #parse("/screens/xnat_projectData/edit/details.vm")
 						        </DIV>  
 						       </DIV>

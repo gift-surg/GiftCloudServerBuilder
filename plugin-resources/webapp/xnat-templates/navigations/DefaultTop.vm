@@ -17,6 +17,7 @@
   #set($projectString="/project/$project")
 #end
 
+<script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.cookie.js')"></script>
 <!-- main_nav interactions -->
 <script type="text/javascript">
     jQuery(function(){
@@ -44,6 +45,32 @@
             // give menus with submenus a class of 'more'
             jq('#main_nav li ul , #main_nav li li ul').closest('li').find(' > a').addClass('more');
 
+            // clicking the "Logout" link sets the warning bar cookie to 'OPEN' so it's available if needed on next login
+            jq('#logout_user').click(function(){
+                jq.cookie('WARNING_BAR','OPEN',{path:'/'});
+            });
+
+            if (jq.cookie('WARNING_BAR') == 'CLOSED'){
+                // could maybe animate the warning bar, but could lead to missed clicks as page elements animate upwards
+                //jq(window).load(function(){
+                    //jq('#warning_bar')/*.delay(3000).slideUp(200)*/.hide();
+                //});
+                jq('#attention_icon').show();
+            }
+            else {
+                //jq.cookie('WARNING_BAR','OPEN',{path:'/'});
+                jq('#warning_bar').show();
+            }
+
+            jq('#attention_icon').click(function(){
+                jq('#warning_bar').slideToggle(200);
+            });
+
+            jq('#warning_bar .close').click(function(){
+                jq.cookie('WARNING_BAR','CLOSED',{path:'/'});
+                jq('#warning_bar').slideUp(200);
+            });
+
         });
 
     });
@@ -57,37 +84,49 @@
     <img src="$content.getURI('images/nav_bkdg_hover.png')" alt="">
 </div>
 
+<style type="text/css">
+    #attention_icon { float: left ; padding-top: 7px ; padding-left: 11px ; }
+    #attention_icon:hover { cursor: pointer ; }
+</style>
 
 <div id="user_bar">
-        #if($last_login)
-            <span id="last_login">Last login: $turbineUtils.formatDate($last_login,"MM-dd-yyyy hh:mm")</span>
-        #end
+    <img id="attention_icon" src="$content.getURI('images/attention.png')" style="display:none;" alt="attention needed - click for more info" title="attention needed - click for more info">
+    #if($last_login)
+        <span id="last_login">Last login: $turbineUtils.formatDate($last_login,"MM-dd-yyyy hh:mm")</span>
+    #end
     #if($data.getSession().getAttribute("user").getUsername()=="guest")
         <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>
     #elseif($data.getSession().getAttribute("user").getUsername())
-    ## use default timout value from web.xml as the starting text in the "timeLeft" element
+    ## use default timeout value from web.xml as the starting text in the "#timeLeft" element
         <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b><div class="tip_icon" style="margin-right:3px;left:2px;top:3px;">
             <p class="tip shadowed" style="top:20px;z-index:10000;white-space:normal;left:-150px;width:300px;background-color:#ffc;">Your XNAT session will auto-logout after a certain period of inactivity. You can reset that timer without reloading the page by clicking "renew."</p>
         </div>
-        Auto-logout in: <pre id="timeLeft">0:15:00</pre> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a href="$link.setAction("LogoutUser")">Logout</a></span>
+        Auto-logout in: <pre id="timeLeft">0:15:00</pre> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a id="logout_user" href="$link.setAction("LogoutUser")">Logout</a></span>
     #end
     <div class="clear"></div>
 </div><!-- /user_bar -->
 
+#if ($sessionCount > 100 || $sessionIpCount > 1 )
+<div id="warning_bar" style="display:none;">
+    <span class="close"><img src="$content.getURI('images/close.gif')"></span>
+    <span>
+        ATTENTION: You have $sessionCount sessions open from $sessionIpCount distinct IP addresses.
+        <span class="tip_text">(<i>what does this mean?</i>)
+            <span class="tip shadowed">
+                You may have multiple browsers open or may be logged in from more than one computer. If you believe this is incorrect, please take corrective action. The IP addresses are:
+                $sessionIpCsv.
+            </span>
+        </span>
+    </span>
+</div>
+#end
 
 <div id="header" class="main_header">
     <a id="header_logo" href="$link.setPage("Index.vm")" onmouseover="return true;">
         #parse("/screens/Logo.vm")
-        ##<img id="header_logo" src="$content.getURI("images/logo.gif")" alt="logo" />
     </a>
 
 $navigation.setTemplate("XNATQuickSearch.vm")
-
-##<form id="quickSearchForm" method="post" action="$link.setAction("QuickSearchAction")">
-      ##  <input id="searchValue" name="searchValue" type="text" size="25" value="$!field" />
-      ##  <a id="search_btn" class="btn1" href="javascript:;" onClick="submitQuickSearch();">Search</a>
-      ##  <a id="advanced_btn" class="btn2" href="javascript:;" onClick="advancedSearch();">Advanced</a>
-    ##</form>
 
     <div id="main_nav">
         <ul>

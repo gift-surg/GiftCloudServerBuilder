@@ -1,23 +1,28 @@
 <html>
-	<head><title>New User Request</title></head>
-	<body>
-		<b>New User Request</b><br><br>
-		<b>Date:</b> $time<br>
-		<b>Site:</b> $system<br>
-		<b>Host:</b> $server<br>
-		<b>Username:</b> $username<br>
-		<b>Firstname:</b> $firstname<br>
-		<b>Lastname:</b> $lastname<br>
-		<b>Phone:</b> $phone<br>
-		<b>Lab:</b> $lab<br>
-		<b>Email:</b> $email<br><br><br>
+<head><title>New User Request</title></head>
+<body>
+    <table>
+        <thead>
+            <tr><th>New User Request</th></tr>
+        </thead>
+        <tbody>
+            <tr><th>Date:</th><td>$time</td></tr>
+            <tr><th>Site:</th><td>$system</td></tr>
+            <tr><th>Host:</th><td>$server</td></tr>
+            <tr><th>Username:</th><td>$username</td></tr>
+            <tr><th>First:</th><td>$first</td></tr>
+            <tr><th>Last:</th><td>$last</td></tr>
+            <tr><th>Phone:</th><td>$phone</td></tr>
+            <tr><th>Lab:</th><td>$lab</td></tr>
+            <tr><th>Email:</th><td>$email</td></tr>
+        </tbody>
+    </table>
 
-		This account has been created but will be disabled until you enable the account.<br><br><br>
+    <p>This account has been created but will be disabled until you enable the account.</p>
 
-		<a href="$server/app/action/DisplayItemAction/search_value/$username/search_element/xdat:user/search_field/xdat:user.login">Review and Enable</a><br><br><br>
+    <p><a href="$server/app/action/DisplayItemAction/search_value/$username/search_element/xdat:user/search_field/xdat:user.login">Review and Enable</a></p>
 
-		<b>User Comments:</b> $comments<br><br><br>
-		$time,$username,$firstname,$lastname,$phone,$lab,$email
-	</body>
+    <p><b>User Comments:</b> $comments<br/>
+    $time, $username, $first, $last, $phone, $lab, $email</p>
+</body>
 </html>
-

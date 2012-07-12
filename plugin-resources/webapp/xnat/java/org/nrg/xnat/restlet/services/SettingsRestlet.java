@@ -178,21 +178,10 @@ public class SettingsRestlet extends SecureResource {
                 }
             }
 
-            getNotificationService().subscribe(adminUser, SubscriberType.User, definition, getHtmlMailChannel());
+            getNotificationService().subscribe(adminUser, SubscriberType.User, definition, XDAT.getHtmlMailChannel());
             assert adminUser != null;
             return adminUser.getEmails();
         }
-    }
-
-    private Channel getHtmlMailChannel() {
-        Channel channel = getNotificationService().getChannelService().getChannel("htmlMail");
-        if (channel == null) {
-            channel = getNotificationService().getChannelService().newEntity();
-            channel.setName("htmlMail");
-            channel.setFormat("text/html");
-            getNotificationService().getChannelService().create(channel);
-        }
-        return channel;
     }
 
     private String createCommaSeparatedList(final Set<Subscriber> subscribers) {
@@ -356,7 +345,7 @@ public class SettingsRestlet extends SecureResource {
         Definition definition = retrieveSiteEventDefinition(notificationType);
         List<Subscriber> subscribers = getSubscribersFromAddresses(userIds);
         Map<Subscriber, Subscription> subscriptions = getNotificationService().getSubscriptionService().getSubscriberMapOfSubscriptionsForDefinition(definition);
-        Channel channel = getHtmlMailChannel();
+        Channel channel = XDAT.getHtmlMailChannel();
 
         for (Subscriber subscriber : subscribers) {
             // If we don't have a subscription for this notification...

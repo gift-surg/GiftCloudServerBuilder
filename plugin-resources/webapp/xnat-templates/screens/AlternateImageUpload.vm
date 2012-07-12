@@ -157,7 +157,7 @@ function prog(theform)
         alert("Please select an archive to upload.");
         return false;
     }
-    if (!(imageArchive.value.endsWith(".tar") || imageArchive.value.endsWith(".gz") || imageArchive.value.endsWith(".zip"))) {
+    if (!(imageArchive.value.endsWith(".tar") || imageArchive.value.endsWith(".gz") || imageArchive.value.endsWith(".tgz") || imageArchive.value.endsWith(".zip"))) {
         alert("Please select a tar or zip archive to upload.");
         return false;
     }
@@ -392,7 +392,7 @@ function checkProgress(){
 		</TD>
 	</TR>
 	<TR>
-		<TH align="left">File</TH><TD><input type="file" id="image_archive" name="image_archive" size="75" accept="application/zip, application/x-tar"/></TD>
+		<TH align="left">File</TH><TD><input type="file" id="image_archive" name="image_archive" size="75" accept="application/zip, application/x-tar, application/x-gtar"/></TD>
 	</TR>
 	
 	#auditBoxes("3" "" "" "Upload Images")

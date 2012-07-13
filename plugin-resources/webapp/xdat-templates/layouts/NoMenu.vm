@@ -1,22 +1,14 @@
-<!DOCTYPE html>
-##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
-<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. -->
+$navigation.setTemplate("/htmlOpen.vm")
+## insert any template-specific <head> code here
 
-<!-- xdat-templates/layouts/NoMenu -->
-<HEAD>
-    <TITLE>$!systemName</TITLE>
-    $navigation.setTemplate("/HeaderIncludes.vm")
-    <!-- LOGIN -->
-</HEAD>
-<BODY id="page_body" class="yui-skin-sam">
+$navigation.setTemplate("/bodyOpen.vm")
+## insert any template-specific code here that needs to be directly after opening <body> tag
 
-<table height="500" valign="top" border=0>
-    <tr height="120">
+
+<!-- path: xdat-templates/layouts/NoMenu -->
+
+<table id="wrapper_table" height="500" border="0" valign="top">
+<tr height="120">
         <td valign="top">
             $navigation.setTemplate("/NoMenuTop.vm")
         </td>
@@ -33,5 +25,7 @@
         </td>
     </tr>
 </table>
-</BODY>
-</html>
+
+## insert any template-specific code here that needs to be directly before closing </body> tag
+
+$navigation.setTemplate("/htmlClose.vm")

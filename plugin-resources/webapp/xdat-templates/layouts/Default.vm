@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
-<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. -->
+$navigation.setTemplate("/htmlOpen.vm")
+## insert any template-specific <head> code here
 
-<!-- xdat-templates/layouts/Default -->
-<head>
-<title>$!systemName</title>
-$navigation.setTemplate("/HeaderIncludes.vm")
-</head>
-<body id="page_body" class="yui-skin-sam">
-		<!-- DEFAULT -->
-<div id="page_wrapper">
-<table height="100%" border="0">
+$navigation.setTemplate("/bodyOpen.vm")
+## insert any template-specific code here that needs to be directly after opening <body> tag
+
+
+<!-- path: xdat-templates/layouts/Default -->
+
+<table id="wrapper_table" height="100%" border="0" valign="top">
   <tr ID="DefaultTopTR">
     <td height="60" #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultTop.vm")
@@ -44,6 +36,7 @@ $navigation.setTemplate("/HeaderIncludes.vm")
     </td>
   </tr>
 </table>
-</div> <!-- /page_wrapper -->
-</body>
-</html>
+
+## insert any template-specific code here that needs to be directly before closing </body> tag
+
+$navigation.setTemplate("/htmlClose.vm")

@@ -1,22 +1,14 @@
-<!DOCTYPE html>
-##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
-<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. -->
+$navigation.setTemplate("/htmlOpen.vm")
+## insert any template-specific <head> code here
 
-<!-- xdat-templates/layouts/Classic -->
-<head>
-<title>$!systemName</title>
-$navigation.setTemplate("/HeaderIncludes.vm")
-<!-- POPUP -->
-</head>
-<body>
+$navigation.setTemplate("/bodyOpen.vm")
+## insert any template-specific code here that needs to be directly after opening <body> tag
 
-<table width="100%" height="100%" valign="top">
-	<tr>
+
+<!-- path: xdat-templates/layouts/Classic -->
+
+<table id="wrapper_table" height="100%" border="0" valign="top">
+<tr>
 		<td valign="top">
 ##<font face="$ui.sansSerifFonts" size="2">
 <table border="0">

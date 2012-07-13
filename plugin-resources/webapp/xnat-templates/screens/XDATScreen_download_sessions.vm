@@ -381,7 +381,7 @@
 </FORM>
 
 <script type="text/javascript">
-    jQuery(document).ready(function(){
-        jQuery('#subTableSessions tr:first').addClass('first');
+    jq(document).ready(function(){
+        jq('#subTableSessions tr:first').addClass('first');
     });
 </script>

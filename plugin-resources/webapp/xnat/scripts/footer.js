@@ -205,32 +205,30 @@ XNAT.app.toggle=function (_name){
 }
 
 
-jQuery(window).load(function(){
-
-    //var jq = jQuery.noConflict();
+jq(window).load(function(){
 
     // trying to make the text readable
-    jQuery('[style*="font-size:8px"]').addClass('smallest_text');
-    jQuery('[style*="font-size: 8px"]').addClass('smallest_text');
-    jQuery('[style*="font-size:9px"]').addClass('smallest_text');
-    jQuery('[style*="font-size: 9px"]').addClass('smallest_text');
-    jQuery('[style*="font-size:10px"]').addClass('smaller_text');
-    jQuery('[style*="font-size: 10px"]').addClass('smaller_text');
-    jQuery('[style*="font-size:11px"]').addClass('small_text');
-    jQuery('[style*="font-size: 11px"]').addClass('small_text');
+    jq('[style*="font-size:8px"]').addClass('smallest_text');
+    jq('[style*="font-size: 8px"]').addClass('smallest_text');
+    jq('[style*="font-size:9px"]').addClass('smallest_text');
+    jq('[style*="font-size: 9px"]').addClass('smallest_text');
+    jq('[style*="font-size:10px"]').addClass('smaller_text');
+    jq('[style*="font-size: 10px"]').addClass('smaller_text');
+    jq('[style*="font-size:11px"]').addClass('small_text');
+    jq('[style*="font-size: 11px"]').addClass('small_text');
 
     // ridding <font> tags of their meaning
-    jQuery('font').attr('face','')/*.attr('size','')*/.css('font-family','Arial, Helvetica, sans-serif');
+    jq('font').attr('face','')/*.attr('size','')*/.css('font-family','Arial, Helvetica, sans-serif');
 
     window.timeLeft_dialog = setInterval(function(){
-        if((jQuery('#session_timeout_dialog_mask').length > 0) && (jQuery('#session_timeout_dialog_c').length > 0)){ //check if selected options are loaded
-            jQuery('body').append(jQuery('#session_timeout_dialog_mask, #session_timeout_dialog_c'));
-            //jQuery('#timeout_dialog_wrapper').append(jQuery('#session_timeout_dialog_c'));
+        if((jq('#session_timeout_dialog_mask').length > 0) && (jq('#session_timeout_dialog_c').length > 0)){ //check if selected options are loaded
+            jq('body').append(jq('#session_timeout_dialog_mask, #session_timeout_dialog_c'));
+            //jq('#timeout_dialog_wrapper').append(jq('#session_timeout_dialog_c'));
             clearInterval(window.timeLeft_dialog);
         }
     },100);
 
-    jQuery('#actionsMenu ul ul').addClass('shadowed');
+    jq('#actionsMenu ul ul').addClass('shadowed');
 
 });
 

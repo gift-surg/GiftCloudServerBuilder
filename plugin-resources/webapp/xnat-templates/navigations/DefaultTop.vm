@@ -20,10 +20,6 @@
 <script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.cookie.js')"></script>
 <!-- main_nav interactions -->
 <script type="text/javascript">
-    jQuery(function(){
-
-        var jq = jQuery.noConflict();
-
         jq(document).ready(function() {
 
             // fancy fades on hover
@@ -50,30 +46,7 @@
                 jq.cookie('WARNING_BAR','OPEN',{path:'/'});
             });
 
-            if (jq.cookie('WARNING_BAR') == 'CLOSED'){
-                // could maybe animate the warning bar, but could lead to missed clicks as page elements animate upwards
-                //jq(window).load(function(){
-                    //jq('#warning_bar')/*.delay(3000).slideUp(200)*/.hide();
-                //});
-                jq('#attention_icon').show();
-            }
-            else {
-                //jq.cookie('WARNING_BAR','OPEN',{path:'/'});
-                jq('#warning_bar').show();
-            }
-
-            jq('#attention_icon').click(function(){
-                jq('#warning_bar').slideToggle(200);
-            });
-
-            jq('#warning_bar .close').click(function(){
-                jq.cookie('WARNING_BAR','CLOSED',{path:'/'});
-                jq('#warning_bar').slideUp(200);
-            });
-
         });
-
-    });
 </script>
 <!-- end main_nav interactions -->
 
@@ -98,15 +71,36 @@
         <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>
     #elseif($data.getSession().getAttribute("user").getUsername())
     ## use default timeout value from web.xml as the starting text in the "#timeLeft" element
-        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b><div class="tip_icon" style="margin-right:3px;left:2px;top:3px;">
-            <p class="tip shadowed" style="top:20px;z-index:10000;white-space:normal;left:-150px;width:300px;background-color:#ffc;">Your XNAT session will auto-logout after a certain period of inactivity. You can reset that timer without reloading the page by clicking "renew."</p>
-        </div>
-        Auto-logout in: <pre id="timeLeft">0:15:00</pre> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a id="logout_user" href="$link.setAction("LogoutUser")">Logout</a></span>
+        <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b><span class="tip_icon" style="margin-right:3px;left:2px;top:3px;">
+            <span class="tip shadowed" style="top:20px;z-index:10000;white-space:normal;left:-150px;width:300px;background-color:#ffc;">Your XNAT session will auto-logout after a certain period of inactivity. You can reset that timer without reloading the page by clicking "renew."</span>
+        </span>
+        Auto-logout in: <b id="timeLeft">0:15:00</b> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a id="logout_user" href="$link.setAction("LogoutUser")">Logout</a></span>
     #end
     <div class="clear"></div>
 </div><!-- /user_bar -->
 
 #if ($sessionCount > 100 || $sessionIpCount > 1 )
+<script type="text/javascript">
+    jq(document).ready(function(){
+
+        if (jq.cookie('WARNING_BAR') == 'CLOSED'){
+            jq('#attention_icon').show();
+        }
+        else {
+            jq('#warning_bar').show();
+        }
+
+        jq('#attention_icon').click(function(){
+            jq('#warning_bar').slideToggle(200);
+        });
+
+        jq('#warning_bar .close').click(function(){
+            jq.cookie('WARNING_BAR','CLOSED',{path:'/'});
+            jq('#warning_bar').slideUp(200);
+        });
+
+    })
+</script>
 <div id="warning_bar" style="display:none;">
     <span class="close"><img src="$content.getURI('images/close.gif')"></span>
     <span>
@@ -138,9 +132,6 @@ $navigation.setTemplate("XNATQuickSearch.vm")
 
 
 <script type="text/javascript">
-
-    var jq = jQuery.noConflict();
-
     jq(document).ready(function() {
 
         // adjust height of header if logo is taller than 65px
@@ -167,7 +158,6 @@ $navigation.setTemplate("XNATQuickSearch.vm")
         })
 
     });
-
 </script>
 
 

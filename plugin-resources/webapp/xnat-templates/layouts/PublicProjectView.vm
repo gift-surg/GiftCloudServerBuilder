@@ -7,8 +7,8 @@ $navigation.setTemplate("/bodyOpen.vm")
 
 <!-- path: xnat-templates/layouts/PublicProjectView -->
 
-    <div id="layout_content2" style="display:none;">Loading...</DIV>
-    <div id="layout_content">$screen_placeholder</DIV>
+    <div id="layout_content2" style="display:none;">Loading...</div>
+    <div id="layout_content">$screen_placeholder</div>
 
 ## insert any template-specific code here that needs to be directly before closing </body> tag
 

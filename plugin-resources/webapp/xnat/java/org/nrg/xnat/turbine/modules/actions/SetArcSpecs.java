@@ -45,7 +45,7 @@ public class SetArcSpecs extends AdminAction {
         ArcArchivespecification arc = new ArcArchivespecification(item);
         SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
         
-        Channel channel = getHtmlMailChannel();
+        Channel channel = XDAT.getHtmlMailChannel();
 
         List<ArcArchivespecificationNotificationTypeI> types = arc.getNotificationTypes_notificationType();
         for (ArcArchivespecificationNotificationTypeI type : types) {
@@ -76,23 +76,6 @@ public class SetArcSpecs extends AdminAction {
         }
 
         ArcSpecManager.Reset();
-    }
-
-    /**
-     * Gets the channel identified by <b>htmlMail</b>. If the <b>htmlMail</b> channel doesn't
-     * already exist, this will create it and associate it with the MIME type <b>text/html</b>.
-     *
-     * @return The {@link Channel htmlMail channel}.
-     */
-    private Channel getHtmlMailChannel() {
-        Channel channel = getNotificationService().getChannelService().getChannel("htmlMail");
-        if (channel == null) {
-            channel = getNotificationService().getChannelService().newEntity();
-            channel.setName("htmlMail");
-            channel.setFormat("text/html");
-            getNotificationService().getChannelService().create(channel);
-}
-        return channel;
     }
 
     /**

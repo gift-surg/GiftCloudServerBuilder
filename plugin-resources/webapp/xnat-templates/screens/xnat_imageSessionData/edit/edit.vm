@@ -16,6 +16,10 @@ window.currentProject="$!project";
   #end
 
 window.currentSubject="$!om.getSubjectId()";
+#if($om.getSubjectData())
+window.currentSubjectLabel="$!om.getSubjectData().getLabel()";
+#end
+
 window.currentLabel="$!om.getLabel()";
 </script>
 <style>

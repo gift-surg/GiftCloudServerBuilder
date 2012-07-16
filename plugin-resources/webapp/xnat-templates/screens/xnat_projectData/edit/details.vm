@@ -127,11 +127,11 @@ window.refreshInvestigators=function (){
 }
 
 window.success=function(subject_id){
-  alert("The investigator you entered was stored.");
   if(window.investigatorForm!=undefined){
     window.investigatorForm.close();
 		    window.investigatorForm=null;
 		  }
+	alert("The investigator you entered was stored.");
 		  document.getElementById("investigatorBox").innerHTML="Loading...";
 		  window.invest_manager.init();
 }

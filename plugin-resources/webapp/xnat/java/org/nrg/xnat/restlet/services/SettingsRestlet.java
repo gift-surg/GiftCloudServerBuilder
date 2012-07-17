@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.mail.api.NotificationType;
@@ -108,11 +109,13 @@ public class SettingsRestlet extends SecureResource {
             throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Something went wrong converting filters to JSON.", exception);
         } catch (IOException exception) {
             throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Something went wrong converting filters to JSON.", exception);
+        } catch (ConfigServiceException exception) {
+            throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Something went wrong retrieving site properties.", exception);
         }
         return null;
     }
 
-    private Map<String, Object> getArcSpecAsMap() {
+    private Map<String, Object> getArcSpecAsMap() throws IOException, ConfigServiceException {
         Map<String, Object> settings = new HashMap<String, Object>();
 
         settings.put("siteId", _arcSpec.getSiteId());
@@ -122,6 +125,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("requireLogin", _arcSpec.getRequireLogin());
         settings.put("enableNewRegistrations", _arcSpec.getEnableNewRegistrations());
         settings.put("archivePath", _arcSpec.getGlobalArchivePath());
+        settings.put("checksums", XDAT.getSiteConfigurationProperty("checksums"));
         settings.put("prearchivePath", _arcSpec.getGlobalPrearchivePath());
         settings.put("cachePath", _arcSpec.getGlobalCachePath());
         settings.put("buildPath", _arcSpec.getGlobalBuildPath());
@@ -275,6 +279,14 @@ public class SettingsRestlet extends SecureResource {
                 final String archivePath = _data.get("archivePath");
                 _arcSpec.getGlobalpaths().setArchivepath(archivePath);
                 XFT.SetArchiveRootPath(archivePath);
+                dirtied = true;
+            } else if (property.equals("checksums")) {
+                final String checksums = _data.get("checksums");
+                try {
+                    XDAT.setSiteConfigurationProperty("checksums", checksums);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the checksums site info property", exception);
+                }
                 dirtied = true;
             } else if (property.equals("prearchivePath")) {
                 final String prearchivePath = _data.get("prearchivePath");

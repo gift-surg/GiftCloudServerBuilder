@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.twmacinta.util.MD5;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatCatalogMetafieldBean;
@@ -67,6 +68,18 @@ import org.xml.sax.SAXException;
 public class CatalogUtils {
     static Logger logger = Logger.getLogger(CatalogUtils.class);
 	
+    public static void calculateResourceChecksums(final CatCatalogBean cat, final File f) {
+        for (CatEntryI entry : cat.getEntries_entry()) {
+            File file = new File(f.getParent(), entry.getUri());
+            try {
+                String checksum = MD5.asHex(MD5.getHash(file));
+                entry.setDigest(checksum);
+            } catch (IOException e) {
+                //
+            }
+        }
+    }
+
 	public static List<Object[]> getEntryDetails(CatCatalogI cat, String parentPath,String uriPath,XnatResource _resource, String coll_tags,boolean includeFile, final CatEntryFilterI filter,XnatProjectdata proj,String locator){
 		final ArrayList<Object[]> al = new ArrayList<Object[]>();
 		for(final CatCatalogI subset:cat.getSets_entryset()){

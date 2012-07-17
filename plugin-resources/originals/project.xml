@@ -1757,6 +1757,15 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>fast-md5</groupId>
+			<artifactId>fast-md5</artifactId>
+			<version>1.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<!-- This setting is important. The source tree will be merged -->

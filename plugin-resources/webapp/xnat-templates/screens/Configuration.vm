@@ -1,4 +1,3 @@
-#* @velocityproperties path= *#
 #* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
 #* @vtlvariable name="data" type="org.apache.turbine.util.RunData" *#
 #* @vtlvariable name="tabs" type="java.util.List<java.util.Properties>" *#

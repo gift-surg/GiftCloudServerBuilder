@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.config.entities.Configuration;
+import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatResourceI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.model.XnatResourceseriesI;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
+import org.nrg.xdat.om.*;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
@@ -56,7 +56,33 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 	
 	public void postSave(XnatImagesessiondata session){
 		final String root = destRootPath.replace('\\','/') + "/";
-		boolean modified=false;
+        boolean checksums = false;
+        try {
+            final XnatProjectdata project = session.getProjectData();
+            Callable<Long> getProjectId = new Callable<Long>() {
+                public Long call() {
+                    return (long) (Integer) project.getItem().getProps().get("projectdata_info");
+                }
+            };
+
+            Configuration configuration = XDAT.getConfigService().getConfig("checksums", "checksums", getProjectId);
+            String checksumProperty = null;
+            if (configuration != null) {
+                checksumProperty = XDAT.getSiteConfigurationProperty("checksums");
+                if (!StringUtils.isBlank(checksumProperty)) {
+                    checksums = Boolean.parseBoolean(checksumProperty);
+                }
+            }
+            if (StringUtils.isBlank(checksumProperty)) {
+                checksumProperty = XDAT.getSiteConfigurationProperty("checksums");
+                if (!StringUtils.isBlank(checksumProperty)) {
+                    checksums = Boolean.parseBoolean(checksumProperty);
+                }
+            }
+        } catch (ConfigServiceException e) {
+            //
+        }
+
 		for(XnatImagescandataI scan:session.getScans_scan()){
 			for (final XnatAbstractresourceI file : scan.getFile()) {
 				if(file instanceof XnatResourcecatalog){
@@ -65,6 +91,9 @@ public  class  MergePrearcToArchiveSession extends  MergeSessionsA<XnatImagesess
 					CatCatalogBean cat=CatalogUtils.getCatalog(root, res);
 					if(CatalogUtils.formalizeCatalog(cat, f.getParentFile().getAbsolutePath(), user, c)){
 						try {
+                            if (checksums) {
+                                CatalogUtils.calculateResourceChecksums(cat, f);
+                            }
 							CatalogUtils.writeCatalogToFile(cat, f);
 						} catch (Exception e) {
 							logger.error("",e);

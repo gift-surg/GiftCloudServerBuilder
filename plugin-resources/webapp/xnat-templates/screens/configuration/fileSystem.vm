@@ -15,6 +15,16 @@
                         <td colspan="2" style="line-height:4px">&nbsp;</td>
                     </tr>
                     <tr>
+                        <th align="left">Checksums</th>
+                        <td><input type="checkbox" id="checksums" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Indicates whether checksums should be calculated for each image file as it's archived. Activating this provides greater assurance of data integrity, but may add significant overhead to the archive process.</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
                         <th align="left">Pre-archive Location</th>
                         <td><input size="50" type="text" id="prearchivePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
                     </tr>
@@ -90,5 +100,5 @@ function addFileSystemMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addFileSystemMgmtMonitor);
-var fileSystemControls = ['archivePath', 'prearchivePath', 'cachePath', 'buildPath', 'ftpPath', 'pipelinePath'];
+var fileSystemControls = ['archivePath', 'checksums', 'prearchivePath', 'cachePath', 'buildPath', 'ftpPath', 'pipelinePath'];
 </script>

@@ -68,6 +68,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-instrument/jars/excalibur-instrument-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-logger/jars/excalibur-logger-1.0.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-pool/jars/excalibur-pool-1.2.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/fast-md5/jars/fast-md5-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/fop/jars/fop-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/gnu/jars/java-getopt-1.0.13.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-10.0.1.jar"/>

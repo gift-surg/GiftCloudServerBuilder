@@ -65,7 +65,7 @@ $page.setVlinkColor($ui.vlink)
 #else
   #set($allowDataDeletion=true)
 #end
-#set($formName="Image Session #if($om.getId()) Modification Form #else Creation Form #end")
+#set($formName="#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()")
        <DIV class="edit_title">$formName</DIV><br>
 <form method="post" action="$target?XNAT_CSRF=$!XNAT_CSRF" name="form1" id="form1" onsubmit="return validateForm();">
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>

@@ -12,12 +12,14 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
+import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
@@ -137,6 +139,11 @@ public class XMLUpload extends SecureAction {
 		            postSave.getItem().setUser(user);
 		            
 		            postSave.initGroups(c);
+		            PopulateItem populater = PopulateItem.Populate(data,"arc:project",true);
+		            XFTItem item2 = populater.getItem();
+		            item2.setProperty("arc:project.current_arc", "arc001");
+		            ArcProject arcP = new ArcProject(item2);
+		            postSave.initArcProject(arcP, user, c);
 		            
 		            user.initGroups();
 		        	

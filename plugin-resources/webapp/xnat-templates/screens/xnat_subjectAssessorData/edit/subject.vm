@@ -21,12 +21,13 @@
       
       var config ={"create_subject_link":create_subject_link};
       if(window.currentID!=""){
-        config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentLabel;
+        config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentID;
       }
       window.subjectEditor=new SubjectEditor(config);
       window.subjectEditor.onModification.subscribe(function (obj){
          document.getElementById("subject_placeholder").innerHTML=this.new_subject_name;
          document.getElementById("$om.getXSIType()/subject_id").value=this.new_subject;
+         config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentID;
          confirmValues();
       });
       window.subjectEditor.render();

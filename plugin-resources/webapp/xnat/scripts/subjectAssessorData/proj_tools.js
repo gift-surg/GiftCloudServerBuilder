@@ -259,46 +259,101 @@ function ProjectEditor(_config) {
             this.panel.setBody(bd);
 
             this.panel.form = bd;
-
+            
             this.panel.selector = this;
             var buttons = [
                 {text:"Modify", handler:{fn:function () {
+                	
+                	this.checkIfSessionSubjectIsOwnedByOrSharedIntoTheSessionProject = function () {
+                        var callback = {
+	                            success:function (o) {
+	                            	// subject is already owned or shared, no additional action needed
+	                            	this.modifyProject();
+	                            },
+	                            failure:function (o) {
+	                            	if( o.status == 404 ) {
+		                            	// subject not currently owned by or shared into the new project, warn user that we must do this to change the project
+	                                    if (confirm("As part of this change, the system will attempt to share this session's subject into the new project.  Is this OK?")) {
+	                                    	this.subjectNeedsToBeSharedIntoNewProject = true;
+	    	                            	this.modifyProject();
+	                                    } else {
+	                                        this.cancel();
+	                                    }
+	                                }
+	                            	else {	
+	                            		// some systemic error occured
+		                            	alert("ERROR (" + o.status + "): Failed to modify project.");
+		                                closeModalPanel("modify_project");
+	                            	}
+	                            },
+	                            scope:this
+                        }
+
+                        this.subjectNeedsToBeSharedIntoNewProject = false;
+                        
+                        var url = serverRoot + "/REST/projects/" + this.selector.new_project + "/subjects/" + window.currentSubjectLabel + "?format=json&XNAT_CSRF=" + csrfToken;
+                        YAHOO.util.Connect.asyncRequest('GET', url, callback);
+                	}
+                    
+                	this.modifyProject = function () {
+                        var callback = {
+                                success:function (o) {
+                                	if( this.subjectNeedsToBeSharedIntoNewProject ) {
+                                    	this.shareSubjectIntoNewProject();
+                                	}
+                                    window.currentProject = this.selector.new_project;
+                                    closeModalPanel("modify_project");
+                                    this.selector.onModification.fire();
+                                    this.cancel();
+                                },
+                                failure:function (o) {
+                                    alert("ERROR (" + o.status + "): Failed to modify project.");
+                                    closeModalPanel("modify_project");
+                                },
+                                scope:this
+                        }
+
+                        if (confirm("Modifying the primary project of an imaging session will result in the moving of files on the file server into the new project's storage space.  Are you sure you want to make this change?")) {
+                            openModalPanel("modify_project", "Modifying project, please wait...");
+
+                            var url = this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json&XNAT_CSRF=" + csrfToken;
+                            YAHOO.util.Connect.asyncRequest('PUT', url, callback);
+                        } else {
+                            this.cancel();
+                        }
+                    }
+                    
+                	this.shareSubjectIntoNewProject = function () {
+                		
+                		// attempt this as a convenience to the user
+                		// if there is a label conflict or other issue, we'll not worry about it here
+                		// they can always share in the subject manually
+
+                		var url = serverRoot + "/REST"
+                        		+ "/projects/" + window.currentProject
+                        		+ "/subjects/" + window.currentSubject
+                        		+ "/projects/" + this.selector.new_project 
+                        		+ "?XNAT_CSRF=" + csrfToken + "&label=" + window.currentSubjectLabel;
+                		
+                        YAHOO.util.Connect.asyncRequest('PUT', url, {});
+                    }
+                    
                     this.selector.new_project = this.form.new_project.options[this.form.new_project.selectedIndex].value;
                     this.selector.new_project_name = this.form.new_project.options[this.form.new_project.selectedIndex].text;
 
                     if (this.selector.new_project == window.currentProject) {
                         alert("No project modification found.");
                         this.cancel();
-                    } else if (this.form.new_project.selectedValue == 0) {
+                    } else if (this.form.new_project.selectedIndex == 0) {
                         alert("Please select a project");
                     } else {
-                        var settingsCallback = {
-                            success:function (o) {
-                                window.currentProject = this.selector.new_project;
-                                closeModalPanel("modify_project");
-                                this.selector.onModification.fire();
-                                this.cancel();
-                            },
-                            failure:function (o) {
-                                alert("ERROR (" + o.status + "): Failed to modify project.");
-                                closeModalPanel("modify_project");
-                            },
-                            scope:this
-                        }
-
                         if (this.selector.config.uri == undefined) {
                             window.currentProject = this.selector.new_project;
                             closeModalPanel("modify_project");
                             this.selector.onModification.fire();
                             this.cancel();
                         } else {
-                            if (confirm("Modifying the primary project of an imaging session will result in the moving of files on the file server into the new project's storage space.  Are you sure you want to make this change?")) {
-                                openModalPanel("modify_project", "Modifying project, please wait...");
-
-                                YAHOO.util.Connect.asyncRequest('PUT', this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json&XNAT_CSRF=" + csrfToken, settingsCallback);
-                            } else {
-                                this.cancel();
-                            }
+                        	this.checkIfSessionSubjectIsOwnedByOrSharedIntoTheSessionProject();
                         }
                     }
                 }}, isDefault:true},
@@ -405,6 +460,7 @@ function SubjectEditor(_config) {
                         var settingsCallback = {
                             success:function (o) {
                                 window.currentSubject = this.selector.new_subject;
+                                window.currentSubjectLabel = this.selector.new_subject_name;
                                 closeModalPanel("modify_subject");
                                 this.selector.onModification.fire();
                                 this.cancel();
@@ -418,6 +474,7 @@ function SubjectEditor(_config) {
 
                         if (this.selector.config.uri == undefined) {
                             window.currentSubject = this.selector.new_subject;
+                            window.currentSubjectLabel = this.selector.new_subject_name;
                             closeModalPanel("modify_subject");
                             this.selector.onModification.fire();
                             this.cancel();
@@ -425,7 +482,7 @@ function SubjectEditor(_config) {
                             if (confirm("Modifying the subject of an experiment may result in the moving of files on the file server into the new subject's storage space.  Are you sure you want to make this change?")) {
                                 openModalPanel("modify_subject", "Modifying subject, please wait...");
 
-                                YAHOO.util.Connect.asyncRequest('PUT', serverRoot + "/REST/projects/" + window.currentProject + "/subjects/" + this.selector.new_subject + "/experiments/" + window.currentLabel + "?format=json&XNAT_CSRF=" + csrfToken, settingsCallback);
+                                YAHOO.util.Connect.asyncRequest('PUT', serverRoot + "/REST/projects/" + window.currentProject + "/subjects/" + this.selector.new_subject + "/experiments/" + window.currentID + "?format=json&XNAT_CSRF=" + csrfToken, settingsCallback);
                             } else {
                                 this.cancel();
                             }

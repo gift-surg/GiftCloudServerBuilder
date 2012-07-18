@@ -2,3 +2,4 @@
 ## open <head> tag in htmlOpen.vm file
 </head>
 <body id="page_body" class="yui-skin-sam">
+<div id="page_wrapper">

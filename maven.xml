@@ -124,6 +124,11 @@
             <fileset dir="${basedir}/plugin-resources/webapp/xnat/style"/>
         </copy>
     </goal>
+    <goal name="xdat:updateImages" description="Update image files">
+        <copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
+            <fileset dir="${basedir}/plugin-resources/webapp/xnat/images"/>
+        </copy>
+    </goal>
     <goal name="xdat:updateFiles" description="Update XDAT Files">
         <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
         <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
@@ -878,6 +883,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -920,6 +926,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -955,6 +962,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -995,6 +1003,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -1037,6 +1046,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -1079,6 +1089,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -1126,6 +1137,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -1175,6 +1187,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -1444,6 +1457,7 @@
     <goal name="xdat:quick-deploy-templates">
         <attainGoal name="xdat:updateJS"/>
         <attainGoal name="xdat:updateCSS"/>
+        <attainGoal name="xdat:updateImages"/>
         <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.jar"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
@@ -1474,6 +1488,9 @@
         </copy>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/applet" preservelastmodified="true">
             <fileset dir="${basedir}/projects/${xdat.project.name}/src/applet"/>
+        </copy>
+        <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/images" preservelastmodified="true">
+            <fileset dir="${basedir}/projects/${xdat.project.name}/src/images"/>
         </copy>
         <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/scripts/xdat.js" file="${basedir}/plugin-resources/webapp/xnat/scripts/xdat.js"/>
         <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/scripts/xnat.js" file="${basedir}/plugin-resources/webapp/xnat/scripts/xnat.js"/>
@@ -1534,6 +1551,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
@@ -1648,6 +1666,7 @@
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
                 <pathelement location="./lib/nrg-framework-1.0.0-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-config-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/nrg-notify-1.0.0-SNAPSHOT.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>

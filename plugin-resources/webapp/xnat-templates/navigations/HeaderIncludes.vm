@@ -1,90 +1,89 @@
 ## <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
 ## <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-<!-- /xnat-templates/navigations/HeaderIncludes -->
+<!-- path: /xnat-templates/navigations/HeaderIncludes -->
 
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.min.js')"></script>
 <script type="text/javascript">
-    jQuery(function() {
-        var jq = jQuery.noConflict();
-    });
+    // use 'jq' instead of '$' for jQuery functions to avoid _possible_ conflicts with Velocity
+    // but $() and jQuery() should still work since we're not using noConflict()
+    var jq = jQuery;
 </script>
 
-	<script LANGUAGE="JavaScript">
-	    
-	    if (typeof XNAT == "undefined" || !XNAT) {
-		    /* 
-		     * XNAT global namespace object, which will not be overwriten if 
-		     * already defined. Also define some other top level namespaces. 
-		     */
-		    var XNAT = {
-		                 /* 
-		                  * Parent namespace that templates can use to put their 
-		                  * own namespace 
-		                  */
-		                 app: {},
-						 images:{
-						 	grnChk:"$content.getURI("images/checkmarkGreen.gif")",
-							redChk:"$content.getURI("images/checkmarkRed.gif")"
-						 }
-		               };
-		    
-		}
-	    
-		var serverRoot = "$content.getURI('')";
-		var csrfToken = "$!XNAT_CSRF";
-		var showReason = $showReason;
-		var requireReason = $requireReason;
-		
-		XNAT.app.showLeftBar=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"));
-		XNAT.app.showLeftBarProjects=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-projects","true"));
-		XNAT.app.showLeftBarFavorites=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-favorites","true"));
-		XNAT.app.showLeftBarSearch=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-search","true"));
-		XNAT.app.showLeftBarBrowse=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-browse","true"));
-		  
-		window.available_elements=new Array();
-		
-		#if($data.getSession().getAttribute("user"))
-			#set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
-		#end
-		
-		#foreach ($typeObject in $typeObjects)
-			window.available_elements.push({singular:"$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",plural:"$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",			element_name:"$typeObject.getElementName()",actions:$typeObject.getElementSecurity().getListingActionsJSON(),"lbg":"$!typeObject.getLightColor()","dbg":"$!typeObject.getDarkColor()"});
-		#end
-		
-		window.available_elements.getByName=function(name){
-		  for(var aeC=0;aeC<this.length;aeC++){
-		    if(this[aeC].element_name==name){
-		      return this[aeC];
-		    }
-		  }
-		}
-		
-		#if($project)
-		 #if($project.getId())
-		  window.projectScope="$!project.getId()";
-		 #else
-		  window.projectScope="$!project";
-		 #end
-		#end
+<script LANGUAGE="JavaScript">
 
-	#if($item)
-    	#if($item.instanceOf("xnat:subjectData"))
-    		      XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()";
-        #elseif($item.instanceOf("xnat:derivedData"))
-    		      XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()";
-        #else
-    		      XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()";
-        #end
-	#end
-	</script>
-	<script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></script>
-	<script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></script>
+    if (typeof XNAT == "undefined" || !XNAT) {
+        /*
+         * XNAT global namespace object, which will not be overwriten if
+         * already defined. Also define some other top level namespaces.
+         */
+        var XNAT = {
+                     /*
+                      * Parent namespace that templates can use to put their
+                      * own namespace
+                      */
+                     app: {},
+                     images:{
+                        grnChk:"$content.getURI("images/checkmarkGreen.gif")",
+                        redChk:"$content.getURI("images/checkmarkRed.gif")"
+                     }
+                   };
+
+    }
+
+    var serverRoot = "$content.getURI('')";
+    var csrfToken = "$!XNAT_CSRF";
+    var showReason = $showReason;
+    var requireReason = $requireReason;
+
+    XNAT.app.showLeftBar=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"));
+    XNAT.app.showLeftBarProjects=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-projects","true"));
+    XNAT.app.showLeftBarFavorites=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-favorites","true"));
+    XNAT.app.showLeftBarSearch=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-search","true"));
+    XNAT.app.showLeftBarBrowse=$turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar-browse","true"));
+
+    window.available_elements=new Array();
+
+    #if($data.getSession().getAttribute("user"))
+        #set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
+    #end
+
+    #foreach ($typeObject in $typeObjects)
+        window.available_elements.push({singular:"$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",plural:"$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",			element_name:"$typeObject.getElementName()",actions:$typeObject.getElementSecurity().getListingActionsJSON(),"lbg":"$!typeObject.getLightColor()","dbg":"$!typeObject.getDarkColor()"});
+    #end
+
+    window.available_elements.getByName=function(name){
+      for(var aeC=0;aeC<this.length;aeC++){
+        if(this[aeC].element_name==name){
+          return this[aeC];
+        }
+      }
+    }
+
+    #if($project)
+     #if($project.getId())
+      window.projectScope="$!project.getId()";
+     #else
+      window.projectScope="$!project";
+     #end
+    #end
+
+#if($item)
+    #if($item.instanceOf("xnat:subjectData"))
+              XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getId()";
+    #elseif($item.instanceOf("xnat:derivedData"))
+              XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()";
+    #else
+              XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()";
+    #end
+#end
+</script>
+<script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></script>
 <!-- YAHOO USER INTERFACE files below here -->
-
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/yahoo-dom-event/yahoo-dom-event.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event.js")"></script>
-
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/container/container-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/menu/menu-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/element/element-beta-min.js")"></script>
@@ -92,7 +91,6 @@
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/connection/connection-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/treeview/treeview-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/cookie/cookie-min.js")"></script>
-
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/tabview/tabview-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/datasource/datasource-min.js")"></script> 
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/resize/resize-min.js")"></script>   
@@ -100,7 +98,6 @@
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/datatable/datatable-min.js")"></script>  
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/paginator/paginator-min.js")"></script>  
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/json/json-min.js")"></script>  
-
 <script type="text/javascript" src="$content.getURI("scripts/yui/xnat_loader.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/LeftBarTreeView.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event-min.js")"></script>

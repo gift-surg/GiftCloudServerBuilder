@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<!--[if lt IE 7 ]> <html class="ie ie6 no-js"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie ie7 no-js"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie ie8 no-js"> <![endif]-->
-<!--[if IE 9 ]>    <html class="ie ie9 no-js"> <![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. -->
+$navigation.setTemplate("/htmlOpen.vm")
+## insert any template-specific <head> code here
 
-<!-- /xdat-templates/layouts/DefaultExptList.vm -->
-<head>
-<title>$!systemName</title>
-
-$navigation.setTemplate("/HeaderIncludes.vm")
-<!-- DEFAULT EXPT LIST -->
-
-
+## is the code in this script deprecated?
 <SCRIPT LANGUAGE="JavaScript">
 <!--
 floatX=10;
@@ -157,22 +144,26 @@ if (valign=="center") {floatY=Math.round((document.body.offsetHeight-20)/2)-Math
 }
 //-->
 </script>
+## what does this do?
 #if($pageCSS)
 <link rel="stylesheet" type="text/css" href="$content.getURI("$pageCSS")">
 #end
 
-</head>
+
+$navigation.setTemplate("/bodyOpen.vm")
+## insert any template-specific code here that needs to be directly after opening <body> tag
 #if($search)
-	#if($search.isSuperSearch() || $search.isStoredSearch())
-		<body id="page_body" class="yui-skin-sam" onload='showSpan("panel$search.getElement().getXSIType()");'>
-	#else
-		<body id="page_body" class="yui-skin-sam">
-	#end
-		#else
-		<body id="page_body" class="yui-skin-sam">
+    #if($search.isSuperSearch() || $search.isStoredSearch())
+        <script type="text/javascript">
+            jq(window).load(showSpan("panel$search.getElement().getXSIType()"));
+        </script>
+    #end
 #end
-<table width="100%" height="100%" border=0>
-  <tr>
+
+<!-- path: xdat-templates/layouts/DefaultExptList -->
+
+<table id="wrapper_table" height="100%" border="0" valign="top">
+    <tr>
     <td height="60">
       $navigation.setTemplate("/DefaultTop.vm")
     </td>
@@ -190,5 +181,7 @@ if (valign=="center") {floatY=Math.round((document.body.offsetHeight-20)/2)-Math
     </td>
   </tr>
 </table>
-</body>
-</html>
+
+## insert any template-specific code here that needs to be directly before closing </body> tag
+
+$navigation.setTemplate("/htmlClose.vm")

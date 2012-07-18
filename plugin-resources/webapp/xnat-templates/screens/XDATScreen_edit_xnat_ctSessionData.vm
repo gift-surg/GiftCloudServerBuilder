@@ -23,7 +23,7 @@ $page.setVlinkColor($ui.vlink)
 #set($scanTypes = [])
 	#set($scanQualities = ["usable","unusable","questionable"])
 <br>
-		   <DIV class="edit_title">CT Session Info</DIV>
+		   <DIV class="edit_title">#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()</DIV>
 <INPUT type="hidden" name="xnat:ctSessionData.modality" value="CT"/>
 #parse("/screens/xnat_edit_subjectAssessorData.vm")
 

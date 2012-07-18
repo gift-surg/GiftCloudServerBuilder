@@ -7,7 +7,7 @@ $navigation.setTemplate("/bodyOpen.vm")
 
 <!-- path: xnat-templates/layouts/Index -->
 
-<table height="100%" border=0>
+<table id="wrapper_table" height="100%" border="0" valign="top">
   <tr ID="DefaultTopTR">
     <td height="60"  #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultTop.vm")
@@ -24,7 +24,7 @@ $navigation.setTemplate("/bodyOpen.vm")
     <td align="left" valign="top">
       <div id="tp_fm"></div>
       <div id="layout_content2" style="display:none;">Loading...</div>
-      <div id="layout_content">
+      <div id="layout_content" class="main">
 <!--BEGIN SCREEN CONTENT -->
       $screen_placeholder
 <!--END SCREEN CONTENT -->

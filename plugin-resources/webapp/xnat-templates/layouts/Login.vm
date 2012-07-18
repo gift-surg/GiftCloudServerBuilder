@@ -10,8 +10,8 @@ $navigation.setTemplate("/bodyOpen.vm")
 ##<body id="page_body" class="yui-skin-sam" ONLOAD="document.getElementById('username').focus();">
 ## moved 'onload' script in <body> tag to a jQuery function
 <script type="text/javascript">
-    jQuery(window).load(function(){
-       jQuery('#username').focus();
+    jq(window).load(function(){
+       jq('#username').focus();
     });
 </script>
 <table id="login_container" height="500" valign="top" border=0>
@@ -42,7 +42,6 @@ $navigation.setTemplate("/bodyOpen.vm")
     </td>
   </tr>
 </table>
-
 ## insert any template-specific code here that needs to be directly before closing </body> tag
 
 $navigation.setTemplate("/htmlClose.vm")

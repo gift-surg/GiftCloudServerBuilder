@@ -15,12 +15,13 @@
     if(window.projectEditor==undefined){
       var config =new Object();
       if(window.currentID!=""){
-        config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentLabel;
+        config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentID;
       }
       window.projectEditor=new ProjectEditor(config);
       window.projectEditor.onModification.subscribe(function (obj){
          document.getElementById("project_placeholder").innerHTML=this.new_project_name;
          document.getElementById("$om.getXSIType()/project").value=this.new_project;
+         config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentID;
          confirmValues();
       });
       window.projectEditor.render();

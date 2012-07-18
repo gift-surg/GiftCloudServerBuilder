@@ -7,7 +7,6 @@
 <!--[if gt IE 9]><!--><html class="no-js"><!--<![endif]-->
 ##<!-- the "no-js" class is for Modernizr. -->
 
-
 <head>
 <!-- path: xnat-templates/navigations/htmlOpen -->
     <title>$!systemName</title>

@@ -27,7 +27,6 @@ $page.setVlinkColor($ui.vlink)
 <INPUT type="hidden" name="xnat:ctSessionData.modality" value="CT"/>
 #parse("/screens/xnat_edit_subjectAssessorData.vm")
 
-		   <DIV class="edit_header1">Session Info</div><br>
 <INPUT TYPE="hidden" NAME="popup" VALUE="$popup">
 												<input type="hidden" name="project" value="$!{project}" >
 <table border="0" cellpadding=5>
@@ -98,7 +97,7 @@ $page.setVlinkColor($ui.vlink)
 <BR>
 <HR>
 <INPUT type="hidden" name="numEmpty" value="$!numEmpty">
-		   <DIV class="edit_header1">Scan Info</DIV><BR>
+		   <DIV class="edit_header1">Scans</DIV><BR>
 <TABLE>
 #set($scanCount=$om.getScans_scan().size())
 	<TR>

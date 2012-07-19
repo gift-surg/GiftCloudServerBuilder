@@ -22,27 +22,25 @@ public class DeleteXdatElementSecurity extends DeleteAction {
     @Override
     protected void postDelete(RunData data, Context context) {
         final String dataType = TurbineUtils.GetPassedParameter("search_value", data).toString();
-        final String query1 = "DELETE FROM xdat_element_access WHERE xdat_element_access_id IN ( select xdat_element_access_id from xdat_element_access xea LEFT JOIN xdat_element_security xes ON xea.element_name=xes.element_name WHERE xes.element_name IS NULL);";
-        final String query2 = String.format("DELETE FROM xdat_meta_element WHERE element_name LIKE '%s%%';", dataType);
+        final String[] queries = new String[] { "DELETE FROM xdat_element_access WHERE xdat_element_access_id IN ( select xdat_element_access_id from xdat_element_access xea LEFT JOIN xdat_element_security xes ON xea.element_name=xes.element_name WHERE xes.element_name IS NULL)",
+                "DELETE FROM xdat_meta_element WHERE element_name LIKE '%s'",
+                "DELETE FROM xdat_meta_element WHERE element_name LIKE '%s_history'",
+                "DELETE FROM xdat_meta_element WHERE element_name LIKE '%s_meta_data'" };
         final XDATUser user = TurbineUtils.getUser(data);
         String login = user.getLogin();
+        for (String query : queries) {
         try {
-            PoolDBUtils.ExecuteNonSelectQuery(query1, user.getDBName(), login);
+                if (query.contains("%")) {
+                    query = String.format(query, dataType);
+                }
+                PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), login);
         } catch (SQLException exception) {
-            _log.error("There was a SQL exception trying to remove the element access data for data type: " + dataType);
+                _log.error("There was a SQL exception trying to remove the element access data for data type: " + dataType, exception);
             throw new RuntimeException(exception);
         } catch (Exception exception) {
-            _log.error("There was an unknown exception trying to remove the element access data for data type: " + dataType);
+                _log.error("There was an unknown exception trying to remove the element access data for data type: " + dataType, exception);
             throw new RuntimeException(exception);
         }
-        try {
-            PoolDBUtils.ExecuteNonSelectQuery(query2, user.getDBName(), login);
-        } catch (SQLException exception) {
-            _log.error("There was a SQL exception trying to remove the element access data for data type: " + dataType);
-            throw new RuntimeException(exception);
-        } catch (Exception exception) {
-            _log.error("There was an unknown exception trying to remove the element access data for data type: " + dataType);
-            throw new RuntimeException(exception);
         }
     }
 

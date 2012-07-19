@@ -104,6 +104,36 @@ public class VisitResource  extends ItemResource{
 	}
 	
 	@Override
+	public boolean allowPost() {
+		return true;
+	}
+	@Override
+	public void handlePost(){
+		if(this.getQueryVariable("close") != null){
+			visit.setClosed(true);
+			try {
+				visit.save(user, true, false, null);
+				this.getResponse().setStatus(Status.SUCCESS_OK);
+				return;
+			} catch (Exception e) {
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to close visit " + visit.getId() + ", cause: " + e.getMessage());
+				return;
+			}
+		}
+		if(this.getQueryVariable("open") != null){
+			visit.setClosed(false);
+			try {
+				visit.save(user, true, false, null);
+				this.getResponse().setStatus(Status.SUCCESS_OK);
+				return;
+			} catch (Exception e) {
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to open visit " + visit.getId() + ", cause: " + e.getMessage());
+				return;
+			}
+		}	
+	}
+	
+	@Override
 	public Representation getRepresentation(Variant variant) {	
 		MediaType mt = overrideVariant(variant);	
 		if(visit!=null){

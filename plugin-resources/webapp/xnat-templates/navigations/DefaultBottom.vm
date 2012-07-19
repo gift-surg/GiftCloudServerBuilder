@@ -6,6 +6,4 @@
     <a target="_blank" href="http://www.xnat.org/" style=""><img src="$content.getURI('images/xnat_power_small.jpg')"></a>
 </div>
 
-<script type="text/javascript" src="$content.getURI('scripts/footer.js')"></script>
-
 #addGlobalCustomScreens("footer")

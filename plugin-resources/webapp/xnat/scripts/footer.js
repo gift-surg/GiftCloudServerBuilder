@@ -162,7 +162,9 @@ YAHOO.util.Event.onDOMReady( function()
         });
 
         //take the statically defined onsubmit action and add it as a yui event instead
-        myForm.userDefinedSubmit = myForm.onsubmit;
+        if (!myForm.userDefinedSubmit) {
+            myForm.userDefinedSubmit = myForm.onsubmit;
+        }
         myForm.onsubmit = null;
         YAHOO.util.Event.on(myForm,"submit",function(env,var2){
             var result = (this.userDefinedSubmit) ? this.userDefinedSubmit() : undefined;

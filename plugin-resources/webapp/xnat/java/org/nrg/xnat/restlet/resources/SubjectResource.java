@@ -13,7 +13,6 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -21,11 +20,17 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.presentation.FlattenedItemA;
+import org.nrg.xft.presentation.ItemJSONBuilder;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
+import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
+import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
+import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
+import org.nrg.xnat.restlet.representations.TurbineScreenRepresentation;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -449,4 +454,19 @@ public class SubjectResource extends ItemResource {
 		}
 
 	}
+	
+	@Override
+	public Representation representItem(XFTItem item, MediaType mt) 
+	{
+		Representation representation = super.representItem(item, mt);
+		
+		if( representation != null && representation instanceof TurbineScreenRepresentation )
+		{
+			// provides appropriate rendering if the caller is querying this subject in the context of a shared project
+			((TurbineScreenRepresentation) representation).setRunDataParameter("project", proj.getId());
+		}
+		
+		return representation;
+	}
+	
 }

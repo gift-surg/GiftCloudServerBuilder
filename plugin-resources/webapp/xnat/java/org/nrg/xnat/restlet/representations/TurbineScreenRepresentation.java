@@ -74,6 +74,11 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
         writer.close();
 	}
 	
+	public void setRunDataParameter(String key, String value)
+	{
+		data.getParameters().setString(key, value);
+	}
+	
 	public static RunData populateRunData(HttpServletRequest request, HttpServletResponse response,XDATUser user,final Map<String,Object> params) throws TurbineException{
 //		RunDataService rundataService = null;
 //		rundataService = TurbineRunDataFacade.getService();

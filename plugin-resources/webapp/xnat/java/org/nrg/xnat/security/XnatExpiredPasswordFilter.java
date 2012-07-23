@@ -1,17 +1,9 @@
 package org.nrg.xnat.security;
 
-import org.nrg.xdat.XDAT;
-import org.nrg.xdat.entities.AliasToken;
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.services.AliasTokenService;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.core.codec.Base64;
-import org.springframework.web.filter.GenericFilterBean;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,10 +11,21 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+
+import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.AliasToken;
+import org.nrg.xdat.entities.XDATUserDetails;
+import org.nrg.xdat.om.ArcArchivespecification;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.services.XdatUserAuthService;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.core.codec.Base64;
+import org.springframework.web.filter.GenericFilterBean;
 
 public class XnatExpiredPasswordFilter extends GenericFilterBean {
     private String changePasswordPath = "";
@@ -106,6 +109,15 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
             }
             else if(referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination))){
                 //If you're on a request within the change password page, continue on without redirect.
+                chain.doFilter(req, res);
+            }
+            else if( 
+            		user instanceof XDATUserDetails 
+            		&& ((XDATUserDetails) user).getAuthorization() != null
+            		&& ((XDATUserDetails) user).getAuthorization().getAuthMethod().equals(XdatUserAuthService.LDAP)
+            		)
+            {
+                // Shouldn't check for a localdb expired password if user is coming in through LDAP
                 chain.doFilter(req, res);
             }
             else{

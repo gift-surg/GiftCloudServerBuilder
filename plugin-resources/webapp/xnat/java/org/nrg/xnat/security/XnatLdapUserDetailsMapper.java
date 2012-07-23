@@ -26,12 +26,6 @@ public class XnatLdapUserDetailsMapper extends LdapUserDetailsMapper {
 	static org.apache.log4j.Logger logger = Logger.getLogger(XnatLdapUserDetailsMapper.class);
     public XDATUserDetails mapUserFromContext(DirContextOperations ctx, String username, Collection<GrantedAuthority> authorities) {
         UserDetails user = super.mapUserFromContext(ctx, username, authorities);
-        XdatUserAuth userAuth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), XdatUserAuthService.LDAP, authMethodId);
-        try {
-			return new XDATUserDetails(userAuth.getXdatUsername());
-		} catch (Exception e) {
-			logger.error("",e);
-		}
-        return null;
+        return XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(user.getUsername(), XdatUserAuthService.LDAP, authMethodId);
     }
 }

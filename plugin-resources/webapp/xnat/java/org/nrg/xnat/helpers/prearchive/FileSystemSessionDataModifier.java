@@ -127,7 +127,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 								return tmp;
 							}
 						};
-						DICOMSessionBuilder db = new DICOMSessionBuilder(tsdir, params, op);
+						DICOMSessionBuilder db = new DICOMSessionBuilder(tsdir, params);
 						XnatImagesessiondataBean i = db.call();
 						doc = i;
 					}

@@ -27,6 +27,9 @@ function fullConfigHandler() {
     if(window.notificationsManager==undefined) {
         missing.push('Notifications');
     }
+    if(window.anonymizationManager==undefined) {
+        missing.push('Anonymization');
+    }
     if (missing.length > 0) {
         var message = 'You need to review the contents of the following panels before saving: <ul>';
         for (var index = 0; index < missing.length; index++) {
@@ -73,6 +76,7 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
+        document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
 }
@@ -115,6 +119,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	if(document.getElementById("notifications_reset_button")){
     		document.getElementById("notifications_reset_button").disabled = false;
     	}
+    	if(document.getElementById("anonymization_reset_button")){
+    		document.getElementById("anonymization_reset_button").disabled = false;
+    	}
     };
     this.disableResetButtons = function() {
     	if(document.getElementById("siteInfo_reset_button")){
@@ -128,6 +135,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	}
     	if(document.getElementById("notifications_reset_button")){
     		document.getElementById("notifications_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("anonymization_reset_button")){
+    		document.getElementById("anonymization_reset_button").disabled = true;
     	}
     };
     
@@ -189,6 +199,11 @@ function SettingsTabManager(settingsTabDivId, settings) {
 		var selects = this.settings_tab_mgmt_div.getElementsByTagName("select");
 		for ( var selectsCounter in selects) {
 			selects[selectsCounter].disabled = value;
+		}
+
+		var textareas = this.settings_tab_mgmt_div.getElementsByTagName("textarea");
+		for (var textareasCounter in textareas) {
+			textareas[textareasCounter].disabled = value;
 		}
 	};
 

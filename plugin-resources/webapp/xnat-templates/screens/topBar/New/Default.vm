@@ -1,6 +1,5 @@
 <!-- Sequence: 10 -->
 
-<ul>
     <li><a href="$link.setPage("XDATScreen_add_xnat_projectData.vm")">Project</a></li>
     <!-- -->
     #if ($data.getSession().getAttribute("user").canCreateElement("xnat:subjectData", "xnat:subjectData/project"))
@@ -36,4 +35,3 @@
         <!-- -->
     #end
     <!-- -->
-</ul>

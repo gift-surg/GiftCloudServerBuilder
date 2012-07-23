@@ -105,13 +105,13 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
    XNAT.app.subject.cfDT.render();
    	
    function refreshSharing(){
-      		if(XNAT.app.subject.shared_projects.length==0){
+      		if(XNAT.app.subject.cfDT.getRecordSet().getRecords().length==0){
       		   		document.getElementById("sharing_summary_table").style.display="none";
       		}
       		else{ 
       		   		document.getElementById("sharing_summary_table").style.display="block";
       		}
-      		document.getElementById("sharing_summary_title").innerHTML="This subject has been shared into <b>$om.getSharing_share().size()</b> project(s):";
+      		document.getElementById("sharing_summary_title").innerHTML="This subject has been shared into <b>" + XNAT.app.subject.cfDT.getRecordSet().getRecords().length + "</b> project(s):";
    }
    refreshSharing();
 		
@@ -132,7 +132,9 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
    	   		     var deleteCallback={
 								             success:function(o){
 				             	   closeModalPanel("share");
+								   document.getElementById("s_projects").add(new Option(oRecord.getData("id"), oRecord.getData("name")));
 				             	   XNAT.app.subject.cfDT.deleteRow(o.argument.oArgs.target);
+								   refreshSharing();
 								             },
 				             failure:function(o){
 				             	   closeModalPanel("share");

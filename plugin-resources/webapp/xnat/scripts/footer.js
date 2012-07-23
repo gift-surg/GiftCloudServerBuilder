@@ -162,7 +162,9 @@ YAHOO.util.Event.onDOMReady( function()
         });
 
         //take the statically defined onsubmit action and add it as a yui event instead
-        myForm.userDefinedSubmit = myForm.onsubmit;
+        if (!myForm.userDefinedSubmit) {
+            myForm.userDefinedSubmit = myForm.onsubmit;
+        }
         myForm.onsubmit = null;
         YAHOO.util.Event.on(myForm,"submit",function(env,var2){
             var result = (this.userDefinedSubmit) ? this.userDefinedSubmit() : undefined;
@@ -220,6 +222,8 @@ jq(window).load(function(){
     // ridding <font> tags of their meaning
     jq('font').attr('face','')/*.attr('size','')*/.css('font-family','Arial, Helvetica, sans-serif');
 
+    // this is not necessary now that z-index issues are resolved
+    /*
     window.timeLeft_dialog = setInterval(function(){
         if((jq('#session_timeout_dialog_mask').length > 0) && (jq('#session_timeout_dialog_c').length > 0)){ //check if selected options are loaded
             jq('body').append(jq('#session_timeout_dialog_mask, #session_timeout_dialog_c'));
@@ -227,6 +231,7 @@ jq(window).load(function(){
             clearInterval(window.timeLeft_dialog);
         }
     },100);
+    */
 
     jq('#actionsMenu ul ul').addClass('shadowed');
 

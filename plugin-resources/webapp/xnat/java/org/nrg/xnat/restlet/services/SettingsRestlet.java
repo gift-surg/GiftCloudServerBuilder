@@ -139,6 +139,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
+        settings.put("anonScript", XDAT.getConfigService().getConfig("anon", "script").getContents());
 
         return settings;
     }
@@ -339,6 +340,14 @@ public class SettingsRestlet extends SecureResource {
                 }
                 final String userIds = _data.get(property);
                 configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(property)), userIds);
+            } else if (property.equals("anonScript")) {
+                final String anonScript = _data.get("anonScript");
+                try {
+                    XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the site-wide anonymization script", "anon", "script", anonScript);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the site-wide anonymization script", exception);
+                }
+                dirtied = true;
             } else {
                 _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
             }

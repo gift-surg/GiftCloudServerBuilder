@@ -1,0 +1,54 @@
+<!-- Title: Anonymization -->
+<script language="javascript">
+    var hasDirtied = false;
+</script>
+<table id="mgmt_container">
+    <tr>
+        <td>
+            <div id="anonymization_mgmt_div">
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            This is the site-wide anonymization script applied to all incoming and archiving DICOM resources. This script
+                            can also be supplemented by anonymization operations specified at the project level.
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left" colspan="2">Script:</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea id="anonScript" name="anonScript" rows="20" cols="80" onkeypress="if (!hasDirtied) { alert('getting dirty'); window.anonymizationManager.dirtyForm(); hasDirtied = true; }" disabled></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<input type="button" value="Save" name="eventSubmit_doPerform" id="anonymization_save_button" onclick="window.anonymizationManager.saveTabSettings();"/>&nbsp;
+<input type="button" value="Reset" name="eventSubmit_doReset" id="anonymization_reset_button" onclick="window.anonymizationManager.resetForm();" disabled/>
+
+<script language="javascript">
+function configurationAnonymizationTabChange(obj) {
+    if(obj.newValue.get("href")=="#anonymization") {
+        if(window.anonymizationManager==undefined) {
+            window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', anonymizationControls);
+        }
+    }
+}
+
+function addAnonymizationMgmtMonitor(){
+    if(window.configurationTabView.get("activeTab").get("href")=="#anonymization") {
+        if(window.anonymizationManager==undefined) {
+            window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', anonymizationControls);
+        }
+    } else {
+        window.configurationTabView.subscribe("activeTabChange", configurationAnonymizationTabChange);
+    }
+}
+
+YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
+var anonymizationControls = ['anonScript'];
+</script>

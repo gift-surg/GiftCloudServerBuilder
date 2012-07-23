@@ -1,5 +1,5 @@
 <tr>
-			 <td align="left">Scanner</td>
+			 <th align="left">Scanner</th>
 			#set($currentScanner=$item.getProperty("scanner"))
 								#set($scanners = $data.getSession().getAttribute("user").getQueryResultsAsArrayList("SELECT DISTINCT isd.scanner  FROM xnat_imageSessionData isd LEFT JOIN xnat_experimentData expt ON isd.id=expt.id LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id LEFT JOIN xnat_imageScanData scan ON isd.id=scan.image_session_id WHERE xme.element_name='xnat:petSessionData' AND scan.scanner='$currentScanner'"))
 
@@ -39,14 +39,14 @@
 		</tr>	
 		
 					<tr>
-						<td>Acquisition Site</td>
+						<th align="left">Acquisition Site</th>
 						<td>
 						 #xdatTextBox("xnat:petSessionData.acquisition_site" $item "" $vr)
 			 </td>
 		</tr>
 
 		<tr name="additional_fields" >
-			 <td>Operator</td>
+			 <th align="left">Operator</th>
 			 <td>
 		  	#if ($vr)
 	    		#if($vr.getField("${datatype}.operator"))
@@ -69,7 +69,7 @@
 		</tr>
 		
 		<tr>
-<td>Tracer</td>
+<th align="left">Tracer</th>
 					  <td>
 					#set($tracers = $data.getSession().getAttribute("user").getQueryResultsAsArrayList("SELECT DISTINCT tracer_name,tracer_name  FROM xnat_petSessionData WHERE tracer_name IS NOT NULL"))
 #if($tracers.size()==0)
@@ -90,15 +90,15 @@
 					</tr>
 					#set($units =["mCi","ug"])
 													         <TR>
-					<td>Transmissions</td>
+					<th align="left">Transmissions</th>
 					  <td>#xdatTextBox("xnat:petSessionData.tracer.transmissions" $item "" $vr)</td>
 					</tr>								        
 													         <TR>
-					<td>Time of Injection</td>
+					<th align="left">Time of Injection</th>
 					  <td>#xdatTimeBox("xnat:petSessionData/start_time_injection" $item $vr)</td>
 					</tr>
 													         <TR>
-					 <td>Tracer Dosage</td>
+					 <th align="left">Tracer Dosage</th>
 					 <td align="left" NOWRAP>
 						  <TABLE>
 						    <TR>
@@ -110,11 +110,11 @@
 					</tr>
 										
 													         <TR>
-					<td>Specific Activity</td>
+					<th align="left">Specific Activity</th>
 					  <td>#xdatTextBox("xnat:petSessionData.tracer.specificActivity" $item "" $vr)</td>
 					</tr>
 													         <TR>
-					<td>Total mass</td>
+					<th align="left">Total mass</th>
 					 <td align="left" NOWRAP>
 						  <TABLE>
 													         <TR>
@@ -125,7 +125,7 @@
 						 </td>
 					</tr>         
 													         <TR>
-					<td>Emission Scan Start-time</td>
+					<th align="left">Emission Scan Start-time</th>
 					  <td>#xdatTimeBox("xnat:petSessionData/start_time_scan" $item $vr)</td>
 					</tr>    
 													

@@ -107,8 +107,8 @@
         ATTENTION: You have $sessionCount sessions open from $sessionIpCount distinct IP addresses.
         <span class="tip_text">(<i>what does this mean?</i>)
             <span class="tip shadowed">
-                You may have multiple browsers open or may be logged in from more than one computer. If you believe this is incorrect, please take corrective action. The IP addresses are:
-                $sessionIpCsv.
+                You may have multiple browsers open or may be logged in from more than one computer. If you believe that someone other than you has logged in to your account, please contact your site administrator immediately.
+                The IP addresses are: $sessionIpCsv.
             </span>
         </span>
     </span>

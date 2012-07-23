@@ -88,7 +88,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
 
-	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process.";
+	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process. The session ID already exists.";
 
 	public static final String PROJ_MOD = "Invalid modification of session project via archive process.";
 

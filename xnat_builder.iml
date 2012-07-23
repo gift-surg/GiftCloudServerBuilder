@@ -190,6 +190,11 @@
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar!/" />
+    <libelement value="file://plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.jar" />
+    <libelement value="file://plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.jar" />
+    <libelement value="file://plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.jar" />
+    <libelement value="file://plugin-resources/repository/fast-md5/jars/fast-md5-1.0.jar" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/pipelineClient-1.6.jar!/" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/plugin-resources/webapp/xnat/javatest" expected_position="1" />
@@ -1132,9 +1137,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="pipelineClient-1.6.0-SNAPSHOT.jar">
+      <library name="pipelineClient-1.6.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/pipelineClient-1.6.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/pipelineClient-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1883,7 +1888,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1892,7 +1897,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1901,13 +1906,21 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="fast-md5-1.0" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/fast-md5/jars/fast-md5-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="module-library">
       <library>

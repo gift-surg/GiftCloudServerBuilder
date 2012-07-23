@@ -111,13 +111,13 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.0.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.0.0-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.0.0-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.0.0-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.0.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.0.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/Transaction-0.0.1-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>

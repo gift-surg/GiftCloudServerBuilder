@@ -47,9 +47,9 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.0-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-2.2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar"/>
@@ -61,7 +61,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.5.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.5.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar"/>
@@ -119,7 +119,6 @@
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/Transaction-0.0.1-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.xmlbeans/jars/xmlbeans-2.4.0.jar"/>
@@ -129,8 +128,8 @@
   <classpathentry kind="lib" path="plugin-resources/repository/org.ostermiller/jars/utils-1.07.00.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/oro/jars/oro-2.0.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/parser/jars/parser-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/Pipeline-1.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.0-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_pipeline-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>

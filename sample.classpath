@@ -134,7 +134,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/XNATTools-1.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_tools-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/PlexiViewer-1.4.jar"/>

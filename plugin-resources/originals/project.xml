@@ -1668,8 +1668,8 @@
 		</dependency>
 		<dependency>
 			<groupId>pipeline</groupId>
-			<artifactId>XNATTools</artifactId>
-			<version>1.0</version>
+			<artifactId>xnat_tools</artifactId>
+			<version>1.6</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1713,8 +1713,8 @@
 		</dependency>
 		<dependency>
 			<groupId>pipeline</groupId>
-			<artifactId>Pipeline</artifactId>
-			<version>1.0</version>
+			<artifactId>xnat_pipeline</artifactId>
+			<version>1.6</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

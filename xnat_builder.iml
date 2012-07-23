@@ -195,6 +195,7 @@
     <libelement value="file://plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.jar" />
     <libelement value="file://plugin-resources/repository/fast-md5/jars/fast-md5-1.0.jar" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/pipelineClient-1.6.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/xnat_tools-1.6.jar!/" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/plugin-resources/webapp/xnat/javatest" expected_position="1" />
@@ -1173,9 +1174,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="XNATTools-1.0.jar">
+      <library name="xnat_tools-1.6.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/XNATTools-1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/pipeline/jars/xnat_tools-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

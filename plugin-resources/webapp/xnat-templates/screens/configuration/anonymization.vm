@@ -18,7 +18,7 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <textarea id="anonScript" name="anonScript" rows="20" cols="80" onkeypress="if (!hasDirtied) { alert('getting dirty'); window.anonymizationManager.dirtyForm(); hasDirtied = true; }" disabled></textarea>
+                            <textarea id="anonScript" name="anonScript" rows="20" cols="80" onkeypress="if (!hasDirtied) { window.anonymizationManager.dirtyForm(); hasDirtied = true; }" disabled></textarea>
                         </td>
                     </tr>
                 </table>

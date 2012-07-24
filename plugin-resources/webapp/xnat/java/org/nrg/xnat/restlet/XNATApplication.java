@@ -35,9 +35,16 @@ import org.restlet.util.Template;
 import java.util.List;
 
 /**
- * @author tolsen01
+ * To add additional REST services to your installation, you can create a REST extension:
  *
- * To add additional URIs to this file (non-xnat developers), build a class which extends this class.  Override the addRoutes method (calling the super.addRoutes(router)) to add your new URIs.  Then modify the XNATRestletFactory to load your class as the default application.
+ * <ol>
+ *     <li>Create a new class and set the package to {@link org.nrg.xnat.restlet.extensions}.</li>
+ *     <li>Add the {@link XnatRestlet} annotation to the class declaration.</li>
+ *     <li>Set the path or paths to the REST service as attributes values to the {@link XnatRestlet} annotation.</li>
+ *     <li>Compile your class and add it to the XNAT web application's class path (usually by putting it in a jar and adding it through a module).</li>
+ * </ol>
+ *
+ * See the XNAT documentation on extending XNAT for more information.
  */
 public class XNATApplication extends Application {
     private static final Log _log = LogFactory.getLog(XNATApplication.class);

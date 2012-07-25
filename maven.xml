@@ -357,7 +357,6 @@
                 <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/actions"/>
                 <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/modules/screens"/>
                 <ant:mkdir dir="${xdat.project.resource}/src/java/org/apache/turbine/app/${xdat.project.name}/utils"/>
-                <attainGoal name="xdat:updateFavicon" />
                 <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/security/security.xsd" tofile="${basedir}/projects/${xdat.project.name}/src/schemas/security/security.xsd"/>
                 <copy file="${basedir}/plugin-resources/project-skeletons/xnat/src/schemas/security/security.xsd" tofile="${basedir}/deployments/${xdat.project.name}/src/schemas/security/security.xsd"/>
                 <j:if test="${context.getVariable('xdat.project.includeXNAT').equalsIgnoreCase('true')}">
@@ -435,6 +434,7 @@
                 <ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.mail.admin}"/>
             </j:otherwise>
         </j:choose>
+        <attainGoal name="xdat:updateFavicon" />
     </goal>
     <!-- ================================================================ -->
     <!--Copies pertinent XDAT files to the deployment                                      -->

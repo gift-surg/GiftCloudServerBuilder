@@ -26,6 +26,14 @@ public class XnatLdapUserDetailsMapper extends LdapUserDetailsMapper {
 	static org.apache.log4j.Logger logger = Logger.getLogger(XnatLdapUserDetailsMapper.class);
     public XDATUserDetails mapUserFromContext(DirContextOperations ctx, String username, Collection<GrantedAuthority> authorities) {
         UserDetails user = super.mapUserFromContext(ctx, username, authorities);
-        return XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(user.getUsername(), XdatUserAuthService.LDAP, authMethodId);
+        XDATUserDetails userDetails = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(user.getUsername(), XdatUserAuthService.LDAP, authMethodId);
+        if( userDetails.getAuthorization().isEnabled() )
+        {
+        	return userDetails;
+        }
+        else
+        {
+        	throw new NewLdapAccountNotAutoEnabledException("Successful first-time authentication via LDAP, but accounts are not auto-enabled.  We'll treat this the same as we would a user registration"); 
+        }
     }
 }

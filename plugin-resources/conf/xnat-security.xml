@@ -71,6 +71,7 @@
         <security:intercept-url pattern="/app/action/XDATForgotLogin" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/action/XDATRegisterUser" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Error.vm" access="permitAll" requires-channel="${security.channel}"/>
+        <security:intercept-url pattern="/favicon.ico" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/images/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/scripts/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/style/**" access="permitAll" requires-channel="${security.channel}"/>

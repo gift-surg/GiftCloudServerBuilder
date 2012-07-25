@@ -217,7 +217,7 @@ public class FileList extends XNATCatalogTemplate {
 
                     final EventMetaI i;
                     if(wrk==null){
-                        i=EventUtils.ADMIN_EVENT(user);
+                        i=EventUtils.DEFAULT_EVENT(user,null);
                     }else{
                         i=wrk.buildEvent();
                     }

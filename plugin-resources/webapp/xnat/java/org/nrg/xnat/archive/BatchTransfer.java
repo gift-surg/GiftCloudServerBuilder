@@ -71,7 +71,6 @@ public class BatchTransfer extends Thread{
 		final List<String> messages = new LinkedList<String>();
 		final List<List<String>> errors = new LinkedList<List<String>>();
         
-        EventMetaI ci=EventUtils.ADMIN_EVENT(user);
         
         for(int i=0, nSessions = sessions.size(); i<nSessions; i++){
             boolean _successful = true;
@@ -125,7 +124,7 @@ public class BatchTransfer extends Thread{
                 
                 try {
                     wkdata.setStatus("In Progress");
-                    PersistentWorkflowUtils.save(wkdata,ci);
+                    PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                 } catch (Throwable e) {
                     logger.error("",e);
                 }
@@ -147,7 +146,7 @@ public class BatchTransfer extends Thread{
                 session.fixScanTypes();
                 session.correctArchivePaths();
                 
-                SaveItemHelper.authorizedSave(session,user, false, false,ci);
+                SaveItemHelper.authorizedSave(session,user, false, false,wkdata.buildEvent());
                 
 
 //                        logger.error("",e2);
@@ -164,7 +163,7 @@ public class BatchTransfer extends Thread{
                     wkdata.setCurrentStepId("Copy To Arc");
                     wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
                     wkdata.setNextStepId("Verify Copy");
-                    PersistentWorkflowUtils.save(wkdata,ci);
+                    PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                 } catch (Exception e) {
                     logger.error("",e);
                 }
@@ -246,7 +245,7 @@ public class BatchTransfer extends Thread{
                     wkdata.setCurrentStepId("Verify Copy");
                     wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
                     wkdata.setNextStepId("Zip");
-                    PersistentWorkflowUtils.save(wkdata,ci);
+                    PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                 } catch (Exception e) {
                     logger.error("",e);
                 }
@@ -262,7 +261,7 @@ public class BatchTransfer extends Thread{
                     try {
                 	wkdata.setStatus("Failed");
                 	wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                    PersistentWorkflowUtils.save(wkdata,ci);
+                    PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                     } catch (Exception e) {
                 	logger.error("",e);
                     }
@@ -338,7 +337,7 @@ public class BatchTransfer extends Thread{
                   try {
                       wkdata.setStatus("Complete");
                       wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                      PersistentWorkflowUtils.save(wkdata,ci);
+                      PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                   } catch (Exception e) {
                       logger.error("",e);
                   }
@@ -388,7 +387,7 @@ public class BatchTransfer extends Thread{
                       try {
                           wkdata.setStatus("Complete");
                           wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                          PersistentWorkflowUtils.save(wkdata,ci);
+                          PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                       } catch (Exception e) {
                           logger.error("",e);
                       }
@@ -396,7 +395,7 @@ public class BatchTransfer extends Thread{
                       try {
                           wkdata.setStatus("Failed");
                           wkdata.setCurrentStepLaunchTime(java.util.Calendar.getInstance().getTime());
-                          PersistentWorkflowUtils.save(wkdata,ci);
+                          PersistentWorkflowUtils.save(wkdata,wkdata.buildEvent());
                       } catch (Exception e) {
                           logger.error("",e);
                       }

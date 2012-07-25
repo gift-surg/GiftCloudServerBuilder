@@ -17,6 +17,8 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
 public class XDATScreen_manage_xnat_projectData  extends SecureReport {
@@ -30,7 +32,15 @@ public class XDATScreen_manage_xnat_projectData  extends SecureReport {
         try {
             context.put("guest", project.getPublicAccessibility());
 
-            project.initGroups(EventUtils.ADMIN_EVENT(user));
+            PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.getXSIType(),project.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_FORM, "Re-initialize project permissions"));
+                        
+            try {
+				if(project.initGroups()){
+					PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());
+				}
+			} catch (Exception e) {
+            	PersistentWorkflowUtils.fail(wrk,wrk.buildEvent());
+			}
             
             XFTTable table = XFTTable.Execute("select TRIM(email) AS email, lastname || ', ' || firstname AS user_name FROM xdat_user WHERE email IS NOT NULL ORDER BY LOWER(lastname);", project.getDBName(), user.getLogin());
             context.put("allUsers", table.convertToMap("user_name", "email",new TreeMap<Object, Object>()));

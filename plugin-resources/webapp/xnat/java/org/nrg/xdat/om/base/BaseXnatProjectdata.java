@@ -71,7 +71,10 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.ActionNameAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.IDAbsent;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -910,21 +913,83 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	}
     	
     }
+    
+    public boolean initGroup(final String id, final String displayName, Boolean create,Boolean read,Boolean delete,Boolean edit,Boolean activate,boolean activateChanges,List<ElementSecurity> ess) throws Exception{
+    	PersistentWorkflowI wrk=null;
+    	final ArrayList<XdatUsergroup> groups = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", id, this.getUser(), true);
+    	boolean modified=false;
+    	
+        //init owners
+        XdatUsergroup group = null;
+        if (groups.size()==0){
+            try {
+                group = new XdatUsergroup((UserI)this.getUser());
+                group.setId(id);
+                group.setDisplayname(displayName);
+                group.setTag(getId());
+                wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialize auto-generated user group."));
+                if(SaveItemHelper.authorizedSave(group,this.getUser(), true, true,wrk.buildEvent())){
+                	modified=true;
+                }
+            } catch (Exception e) {
+                logger.error("",e);
+                if(wrk!=null) WorkflowUtils.fail(wrk, wrk.buildEvent());
+            }
+        }else{
+            group = (XdatUsergroup)groups.get(0);
+            wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modify auto-generated user group."));
+        }
 
-    public void initGroups(EventMetaI ci){
+        try {
+            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), create,read,delete,edit,activate,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent());
+
+            Iterator iter = ess.iterator();
+            while (iter.hasNext())
+            {
+                ElementSecurity es = (ElementSecurity)iter.next();
+
+
+                if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), create,read,delete,edit,activate,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent())){
+                	modified=true;
+                }
+                     
+                if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,wrk.buildEvent())){
+                	modified=true;
+                }
+            }
+        } catch (Exception e) {
+            if(wrk!=null) WorkflowUtils.fail(wrk, wrk.buildEvent());
+            logger.error("",e);
+        }
+
+        try {
+			group.activate(this.getUser());
+		} catch (Exception e2) {
+            logger.error("",e2);
+		}
+
+        try {
+			if(modified){
+				PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
+				
+				EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
+				
+			}
+		} catch (Exception e1) {
+            if(wrk!=null) WorkflowUtils.fail(wrk, wrk.buildEvent());
+            logger.error("",e1);
+		}
+		
+		return modified;
+    }
+
+    public boolean initGroups() throws Exception{
+    	boolean modified=false;
     	final long startTime = Calendar.getInstance().getTimeInMillis();
-    	final ArrayList<XdatUsergroup> owner = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", this.getId() + "_" + OWNER_GROUP, this.getUser(), true);
-
+    	
     	final ArrayList<ElementSecurity> ess = new ArrayList<ElementSecurity>();
         try {
         	ess.addAll(ElementSecurity.GetElementSecurities().values());
-
-//            for (final XnatAbstractprotocol protocol: this.getStudyprotocol()){
-//                if (securedElements.containsKey(protocol.getDataType())){
-//                    ess.add(securedElements.remove(protocol.getDataType()));
-//                }
-//            }
-
         } catch (Exception e2) {
             logger.error("",e2);
         }
@@ -935,8 +1000,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             try {
 				if (es.isSecure() && (es.getSchemaElement().getGenericXFTElement().instanceOf("xnat:subjectData") || es.getSchemaElement().getGenericXFTElement().instanceOf("xnat:experimentData"))){
 
-				    es.initPSF(es.getElementName() + "/project",ci);
-				    es.initPSF(es.getElementName() + "/sharing/share/project",ci);
+				    es.initPSF(es.getElementName() + "/project",EventUtils.DEFAULT_EVENT(getUser(), null));
+				    es.initPSF(es.getElementName() + "/sharing/share/project",EventUtils.DEFAULT_EVENT(getUser(), null));
 				}else{
 				    ess.remove(es);
 				}
@@ -945,153 +1010,15 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			}
         }
 
-        if (XFT.VERBOSE)System.out.println("Group init() PREP: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
-
-        //init owners
-        XdatUsergroup group = null;
-        if (owner.size()==0){
-            try {
-                group = new XdatUsergroup((UserI)this.getUser());
-                group.setId(getId() + "_" + OWNER_GROUP);
-                group.setDisplayname("Owners");
-                group.setTag(getId());
-                SaveItemHelper.authorizedSave(group,this.getUser(), true, true,ci);
-            } catch (Exception e) {
-                logger.error("",e);
-            }
-        }else{
-            group = (XdatUsergroup)owner.get(0);
-        }
-
-        try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-
-            Iterator iter = ess.iterator();
-            while (iter.hasNext())
-            {
-                ElementSecurity es = (ElementSecurity)iter.next();
+        
+       initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
 
-                if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci)){
-                	//ownerMod = true;
-                }
-                     
-                if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci)){
-                	//ownerMod = true;
-                }
-            }
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-        if (XFT.VERBOSE)System.out.println("Group init() OWNER: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
+       initGroup(getId() + "_" + MEMBER_GROUP,"Members", Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
-        try {
-			group.activate(this.getUser());
-		} catch (Exception e2) {
-            logger.error("",e2);
-		}
-
-        try {
-			EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
-		} catch (Exception e1) {
-            logger.error("",e1);
-		}
-
-        //init members
-        ArrayList member = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", this.getId() + "_" + MEMBER_GROUP, this.getUser(), true);
-
-        group = null;
-
-        if (member.size()==0){
-            try {
-                group = new XdatUsergroup((UserI)this.getUser());
-                group.setId(getId() + "_" + MEMBER_GROUP);
-                group.setDisplayname("Members");
-                group.setTag(getId());
-                SaveItemHelper.authorizedSave(group,this.getUser(), true, true,ci);
-            } catch (Exception e) {
-                logger.error("",e);
-            }
-        }else{
-            group = (XdatUsergroup)member.get(0);
-        }
-
-        try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-
-            Iterator iter = ess.iterator();
-            while (iter.hasNext())
-            {
-                ElementSecurity es = (ElementSecurity)iter.next();
-
-                group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-                group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-            }
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-
-        try {
-			EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
-		} catch (Exception e1) {
-            logger.error("",e1);
-		}
-
-        try {
-			group.activate(this.getUser());
-		} catch (Exception e2) {
-            logger.error("",e2);
-		}
-
-        if (XFT.VERBOSE)System.out.println("Group init() MEMBER: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
-
-        //init collaborators
-        ArrayList collabs = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", this.getId() + "_" + COLLABORATOR_GROUP, this.getUser(), true);
-
-        group = null;
-        if (collabs.size()==0){
-            try {
-                group = new XdatUsergroup((UserI)this.getUser());
-                group.setId(getId() + "_" + COLLABORATOR_GROUP);
-                group.setDisplayname("Collaborators");
-                group.setTag(getId());
-                SaveItemHelper.authorizedSave(group,this.getUser(), true, true,ci);
-            } catch (Exception e) {
-                logger.error("",e);
-            }
-        }else{
-            group = (XdatUsergroup)collabs.get(0);
-        }
-
-
-        try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-
-            Iterator iter = ess.iterator();
-            while (iter.hasNext())
-            {
-                ElementSecurity es = (ElementSecurity)iter.next();
-
-                group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-                group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-            }
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-
-        try {
-			EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
-		} catch (Exception e1) {
-            logger.error("",e1);
-		}
-
-        try {
-			group.activate(this.getUser());
-		} catch (Exception e2) {
-            logger.error("",e2);
-		}
-
-        if (XFT.VERBOSE)System.out.println("Group init(): " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
+       
+       initGroup(getId() + "_" + COLLABORATOR_GROUP,"Collaborators",Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, ess);
+        return modified;
     }
 
     public static void quickSave(XnatProjectdata project, XDATUser user,boolean allowDataDeletion,boolean overrideSecurity,EventMetaI ci) throws Exception{
@@ -1103,7 +1030,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		XnatProjectdata postSave = new XnatProjectdata(item);
 	    postSave.getItem().setUser(user);
 	
-	    postSave.initGroups(ci);
+	    postSave.initGroups();
 	        
 	    user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
 	
@@ -2109,18 +2036,26 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
         if(ownerG==null){
-            EventMetaI ci = EventUtils.ADMIN_EVENT(getUser());
-        	SaveItemHelper.authorizedSave(group,this.getUser(), true, true,ci);
+        	PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, (XDATUser)this.getUser(), this.getXSIType(),this.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Init owner group for project"));
+            
+        	EventMetaI ci = wrk.buildEvent();
+        	try {
+				SaveItemHelper.authorizedSave(group,this.getUser(), true, true,ci);
 
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
+				group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
 
-            if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
-                UserGroup ug= new UserGroup(group.getId());
-                ug.init(group);
-                ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
+				if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
+				    UserGroup ug= new UserGroup(group.getId());
+				    ug.init(group);
+				    ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
 
-                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)this.getUser(), (XDATUser)this.getUser(),ci);
-            }
+				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)this.getUser(), (XDATUser)this.getUser(),ci);
+				}
+				PersistentWorkflowUtils.complete(wrk, ci);
+			} catch (Exception e) {
+				PersistentWorkflowUtils.fail(wrk, ci);
+				throw e;
+			}
         }
 	}
 
@@ -2225,7 +2160,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			XnatProjectdata postSave = new XnatProjectdata(item);
 			postSave.getItem().setUser(user);
 	
-			postSave.initGroups(event);
+			postSave.initGroups();
 	
 			if (accessibility==null){
 				accessibility="protected";

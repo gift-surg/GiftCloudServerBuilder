@@ -522,7 +522,7 @@ public class XnatLdapAuthenticator extends Authenticator {
 	public void updateStoredDN(final String newDN,XDATUser u){
 		try {
 			u.setQuarantinePath(newDN);
-			SaveItemHelper.authorizedSave(u,null, true, false, true, false,null);
+			SaveItemHelper.authorizedSave(u,null, true, false, true, false,EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "User created from LDAP"));
 		} catch (Exception e) {
 			logger.error(u.getUsername() + ":Failed to update stored DN for user. Proceeding...",e);
 		}
@@ -569,7 +569,7 @@ public class XnatLdapAuthenticator extends Authenticator {
 				if (authenticate(u, cred)){
 					if(u.getXdatUserId()==null){
 
-						SaveItemHelper.authorizedSave(u,null, true, false, true, false,EventUtils.ADMIN_EVENT(u));
+						SaveItemHelper.authorizedSave(u,null, true, false, true, false,EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "User created from LDAP"));
 
 						u = new XDATUser(cred.getUsername());
 						u.setLoggedIn(true);

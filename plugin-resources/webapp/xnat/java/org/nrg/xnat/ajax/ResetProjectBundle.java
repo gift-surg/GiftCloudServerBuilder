@@ -25,6 +25,8 @@ import org.nrg.xdat.security.UserGroupManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.SaveItemHelper;
@@ -95,7 +97,7 @@ public class ResetProjectBundle {
         	
         	if(xss!=null && modified){
                 try {
-                    SaveItemHelper.unauthorizedSave(xss,user, true, true,EventUtils.ADMIN_EVENT(user));
+                	SaveItemHelper.unauthorizedSave(xss,user, true, true,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.TYPE.WEB_FORM, "Reset project searches"));
                     
                     //XdatStoredSearch.ReplacePreLoadedSearch(xss);
                     

@@ -92,7 +92,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
             ArrayList<XnatProjectdata> al = XnatProjectdata.getAllXnatProjectdatas(null, false);
             System.out.println("" + al.size() + " projects");
             
-            EventMetaI c=EventUtils.ADMIN_EVENT(getUser());
+            EventMetaI c=EventUtils.DEFAULT_EVENT(getUser(),"src/Manage Project Accessories");
 
             for (XnatProjectdata p:al){
                 System.out.println("Reviewing " + p.getId());
@@ -143,7 +143,7 @@ public class ManageProjectAccessories  extends CommandPromptTool{
                 p.getItem().setUser(this.getUser());
 
                 System.out.println(p.getId()+" initGroups();");
-                p.initGroups(c);
+                p.initGroups();
 
                 System.out.println(p.getId()+" initBundles();");
                 //p.initBundles((XDATUser)getUser());

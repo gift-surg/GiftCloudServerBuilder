@@ -76,14 +76,14 @@ public class MergePrearcToArchiveSessionTest extends BaseXDATTestCase {
 		subject.setId(TEST_SUB_1);
 		subject.setProject(PROJECT);
 		subject.setLabel(TEST_SUB_1);
-		SaveItemHelper.authorizedSave(subject,user, false, false,null);
+		SaveItemHelper.authorizedSave(subject,user, false, false,EventUtils.TEST_EVENT(user));
 		
 		mr=new XnatMrsessiondata((UserI)user);
 		mr.setId(MR);
 		mr.setProject(PROJECT);
 		mr.setLabel(MR);
 		mr.setSubjectId(TEST_SUB_1);
-		SaveItemHelper.authorizedSave(mr,user, false, false,null);
+		SaveItemHelper.authorizedSave(mr,user, false, false,EventUtils.TEST_EVENT(user));
 	}
 	
 	@AfterClass

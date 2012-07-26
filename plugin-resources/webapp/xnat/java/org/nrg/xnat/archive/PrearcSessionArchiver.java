@@ -88,7 +88,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
 
-	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process. The session ID already exists.";
+	public static final String SUBJECT_MOD = "Invalid modification of session subject via archive process.";
 
 	public static final String PROJ_MOD = "Invalid modification of session project via archive process.";
 
@@ -379,6 +379,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(i);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
 		if(existing!=null){
 			if(!overwrite){
@@ -397,8 +398,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 	
 			if(!StringUtils.equals(existing.getSubjectId(),src.getSubjectId())){
-				failed(SUBJECT_MOD);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,SUBJECT_MOD, new Exception());
+				String subjectId = existing.getLabel();
+				String newError = SUBJECT_MOD + ": " + subjectId + " Already Exists for another Subject";
+				failed(newError);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,newError, new Exception());
 			}
 			
 			if(!allowDataDeletion){

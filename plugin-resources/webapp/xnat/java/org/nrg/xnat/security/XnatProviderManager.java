@@ -2,10 +2,12 @@ package org.nrg.xnat.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.services.XdatUserAuthService;
+import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.utils.AuthUtils;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
@@ -15,6 +17,7 @@ import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
@@ -194,6 +197,20 @@ public class XnatProviderManager extends ProviderManager {
                 // SEC-546: Avoid polling additional providers if auth failure is due to invalid account status
                 eventPublisher.publishAuthenticationFailure(e, authentication);
                 throw e;
+            } catch(NewLdapAccountNotAutoEnabledException e) {
+                try {
+                   AdminUtils.sendNewUserRequestNotification(
+                		   e.getUserDetails().getUsername(), 
+                		   e.getUserDetails().getFirstname(), 
+                		   e.getUserDetails().getLastname(), 
+                		   e.getUserDetails().getEmail()
+                		   , "", "", "", new VelocityContext()
+                	);
+                } catch (Exception exception) {
+                    logger.error("Error occurred sending new user request email", exception);
+                }
+                lastException = e;
+                
             } catch (AuthenticationException e) {
                 lastException = e;
             }

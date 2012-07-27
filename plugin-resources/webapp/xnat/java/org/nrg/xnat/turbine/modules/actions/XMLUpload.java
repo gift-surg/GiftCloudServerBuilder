@@ -106,24 +106,9 @@ public class XMLUpload extends SecureAction {
 										EventUtils.STORE_XML));
 					}
 
-					final EventMetaI ci;
-					if (wrk != null) {
-						ci = wrk.buildEvent();
-					} else {
-						ci = EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data));
-					}
-
-					SaveItemHelper.unauthorizedSave(item,
-							TurbineUtils.getUser(data), false, q, override,
-							allowDeletion.equalsIgnoreCase("true"), ci);
-
-					if (wrk != null) {
-						PersistentWorkflowUtils.complete(wrk, ci);
-
-					}
-
+					SaveItemHelper.unauthorizedSave(item,TurbineUtils.getUser(data),false,q,override,allowDeletion.equalsIgnoreCase("true"),newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.STORE_XML));
+                	
 					if (XFT.VERBOSE) {
-
 						System.out.println("Item Successfully Stored.");
 						logger.info("Item Successfully Stored.");
 
@@ -138,7 +123,7 @@ public class XMLUpload extends SecureAction {
 		        	XnatProjectdata postSave = new XnatProjectdata(item);
 		            postSave.getItem().setUser(user);
 		            
-		            postSave.initGroups(c);
+		            postSave.initGroups();
 		            PopulateItem populater = PopulateItem.Populate(data,"arc:project",true);
 		            XFTItem item2 = populater.getItem();
 		            item2.setProperty("arc:project.current_arc", "arc001");

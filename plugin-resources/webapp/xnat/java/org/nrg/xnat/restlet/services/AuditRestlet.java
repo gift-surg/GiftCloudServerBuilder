@@ -1,28 +1,18 @@
 package org.nrg.xnat.restlet.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.turbine.util.TurbineException;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.xdat.security.Authorizer;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
-import org.nrg.xft.utils.DateUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
-import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
 import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
@@ -43,7 +33,6 @@ import com.google.common.collect.Maps;
  *
  *	Use a combination of the xsi:type and the primary key value to access the audit trail
  *
- *	/services/audit/xdat:user/tolsen
  *  /services/audit/xdat:user/1
  *  /services/audit/xnat:projectData/TEST_PROJECT
  *  

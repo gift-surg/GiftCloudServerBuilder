@@ -128,6 +128,16 @@
         <copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/webapp/xnat/images"/>
         </copy>
+        <attainGoal name="xdat:updateFavicon" />
+    </goal>
+    <goal name="xdat:updateFavicon" description="Updates the favicon from the default store if it doesn't already exist in the projects folder.">
+        <j:set var="xdat.project.favicon.exists" value="false"/>
+        <u:available file="${basedir}/projects/${xdat.project.name}/src/pages/favicon.ico">
+            <j:set var="xdat.project.favicon.exists" value="true"/>
+        </u:available>
+        <j:if test="${context.getVariable('xdat.project.favicon.exists').equalsIgnoreCase('false')}">
+            <copy file="${basedir}/plugin-resources/project-skeletons/xnat/favicon.ico" tofile="${basedir}/projects/${xdat.project.name}/src/pages/favicon.ico"/>
+        </j:if>
     </goal>
     <goal name="xdat:updateFiles" description="Update XDAT Files">
         <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
@@ -156,6 +166,7 @@
         </j:choose>
         <attainGoal name="xdat:updateJS"/>
         <attainGoal name="xdat:updateCSS"/>
+        <attainGoal name="xdat:updateImages"/>
         <attainGoal name="xdat:updateApplet"/>
         <attainGoal name="xdat:updateFilesFromModules"/>
         <attainGoal name="xdat:manageProjectXML"/>
@@ -423,6 +434,7 @@
                 <ant:replace file="${xdat.project.resource}/security/security.xml" token="test@test.com" value="${xdat.mail.admin}"/>
             </j:otherwise>
         </j:choose>
+        <attainGoal name="xdat:updateFavicon" />
     </goal>
     <!-- ================================================================ -->
     <!--Copies pertinent XDAT files to the deployment                                      -->

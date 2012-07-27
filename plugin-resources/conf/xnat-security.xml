@@ -28,8 +28,9 @@
 
     <bean class="org.nrg.xnat.security.OnXnatLogin" id="logUserLogin"/>
 
-    <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" id="authFailure">
+    <bean class="org.nrg.xnat.security.XnatUrlAuthenticationFailureHandler" id="authFailure">
         <constructor-arg value="/app/template/Login.vm?failed=true" />
+        <constructor-arg value="/app/template/PostRegister.vm" />
     </bean> 
 
     <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
@@ -71,6 +72,8 @@
         <security:intercept-url pattern="/app/action/XDATForgotLogin" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/action/XDATRegisterUser" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/app/template/Error.vm" access="permitAll" requires-channel="${security.channel}"/>
+        <security:intercept-url pattern="/app/template/PostRegister.vm" access="permitAll" requires-channel="${security.channel}"/>
+        <security:intercept-url pattern="/favicon.ico" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/images/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/scripts/**" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/style/**" access="permitAll" requires-channel="${security.channel}"/>

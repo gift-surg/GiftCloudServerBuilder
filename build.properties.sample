@@ -18,6 +18,7 @@ xdat.project.db.password=PASSWORD
 # IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
 # Location where image data will be stored, e.g. /tmp/archive.
 # As with all folder locations, these paths should be absolute, not relative to your xnat_builder location.
+# UNIX Users: For easier setup, we recommend that the data directories specified below (archive, prearchive, cache, etc.) be owned by the same user account which will execute Tomcat. 
 xdat.archive.location=/Library/XNAT/archive
 
 # Location where image data is stored temporarily before it is moved into the archive, e.g. /tmp/prearchive.

@@ -72,7 +72,8 @@ public class PipelineScreen_set_site_parameters extends AdminEditScreenA{
 				try {
             		PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
             		pipelineRepository.setPipeline(pipelineDetails);
-            		SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.ADMIN_EVENT(user));
+            		
+            		SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Modify registered pipeline"));
             		PipelineRepositoryManager.Reset();
     				data.setMessage("The pipeline has been added to the repository");
     				data.setScreenTemplate("ClosePage.vm");

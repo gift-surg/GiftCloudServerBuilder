@@ -93,7 +93,7 @@ public class ModifyProject extends SecureAction {
             XnatProjectdata postSave = new XnatProjectdata(item);
             postSave.getItem().setUser(user);
 
-            postSave.initGroups(c);
+            postSave.initGroups();
             
             user.initGroups();
             user.clearLocalCache();

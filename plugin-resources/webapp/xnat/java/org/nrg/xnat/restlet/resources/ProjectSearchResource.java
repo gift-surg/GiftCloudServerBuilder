@@ -12,6 +12,8 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.DBAction;
 import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
@@ -130,35 +132,19 @@ public class ProjectSearchResource extends ItemResource {
 					search.setAllowedUser(au);
 				}
 				
+				PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, search.getItem(), EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_SERVICE, "Modify Project stored search"));
 				try {
-					SaveItemHelper.authorizedSave(search,user, false, true,EventUtils.ADMIN_EVENT(user));
-				} catch (DBPoolException e) {
-					e.printStackTrace();
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-				} catch (SQLException e) {
-					e.printStackTrace();
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+					SaveItemHelper.authorizedSave(search,user, false, true,wrk.buildEvent());
+					PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
 				} catch (Exception e) {
-					e.printStackTrace();
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+					PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
+					throw e;
 				}
-					
-//				try {
-//					MaterializedView.DeleteBySearchID(search.getId(), user);
-//				} catch (Throwable e) {
-//					e.printStackTrace();
-//				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (SAXException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-			} catch (ElementNotFoundException e) {
-				e.printStackTrace();
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} 
 		}
@@ -181,22 +167,23 @@ public class ProjectSearchResource extends ItemResource {
 					}
 					
 					if(mine!=null){
-						if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
-							SaveItemHelper.authorizedDelete(mine.getItem(), user,EventUtils.ADMIN_EVENT(user));
-						}else{
-							SaveItemHelper.authorizedDelete(search.getItem(), user,EventUtils.ADMIN_EVENT(user));
+						PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, search.getItem(), EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_SERVICE, "Deleted Project stored search"));
+						try {
+							if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
+								SaveItemHelper.authorizedDelete(mine.getItem(), user,wrk.buildEvent());
+							}else{
+								SaveItemHelper.authorizedDelete(search.getItem(), user,wrk.buildEvent());
+							}
+							PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
+						} catch (Exception e) {
+							PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
+							throw e;
 						}
 					}
 				}
-			} catch (IOException e) {
-				logger.error("",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (SAXException e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-			} catch (ElementNotFoundException e) {
-				logger.error("",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

@@ -55,7 +55,7 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 	      	item.setProperty("xdat:user_login.login_date",today);
 	      	item.setProperty("xdat:user_login.ip_address", AccessLogger.GetRequestIp(request));
 	      	item.setProperty("xdat:user_login.session_id", request.getSession().getId());
-	      	SaveItemHelper.authorizedSave(item,null,true,false, EventUtils.ADMIN_EVENT(user));
+	      	SaveItemHelper.authorizedSave(item,null,true,false, EventUtils.DEFAULT_EVENT(user,null));
 	      	
 	      	request.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
         }

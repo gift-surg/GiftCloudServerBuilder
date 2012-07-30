@@ -113,20 +113,21 @@ public class ManagePipeline extends SecureAction {
             XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
 			String pipeline_path = (String)pipeline.getProperty("path");
             if (pipeline != null) {
-				EventMetaI c=EventUtils.ADMIN_EVENT(user);
+            	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, pipeline, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Delete registered pipeline"));
 				PipePipelinerepository pipelines = PipelineRepositoryManager.GetInstance();
-				SaveItemHelper.authorizedRemoveChild(pipelines.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user,c);
-				//if (deleted) {
-                logger.info("Deleted " + pipeline.getProperty("path"));
-                data.setMessage("Pipeline removed from site repository");
-			//	PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects( (String)pipeline.getProperty("path"), user);
-					PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects(pipeline_path, user,c);
-                PipelineRepositoryManager.Reset();
+				try {
+					SaveItemHelper.authorizedRemoveChild(pipelines.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user,wrk.buildEvent());
+					logger.info("Deleted " + pipeline.getProperty("path"));
+	                data.setMessage("Pipeline removed from site repository");
+					PipelineRepositoryManager.RemoveReferenceToPipelineFromProjects(pipeline_path, user,wrk.buildEvent());
+					PipelineRepositoryManager.Reset();
 					ArcSpecManager.Reset();
-				/*}else {
-		    		logger.error("Error deleting "  + data.getParameters().get("search_value"));
-		    		data.setMessage("Error Deleting item.");
-				}*/
+
+					WorkflowUtils.complete(wrk, wrk.buildEvent());
+				} catch (Exception e) {
+					logger.error("",e);
+					WorkflowUtils.fail(wrk, wrk.buildEvent());
+				}
             }
         } catch (Exception e) {
     		logger.error("Error deleting "  + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)) ,e);
@@ -338,7 +339,7 @@ public class ManagePipeline extends SecureAction {
                 try {
                     PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
                     pipelineRepository.setPipeline(pipelineDetails);
-            	    SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.ADMIN_EVENT(user));
+            	    SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Add registered pipeline"));
                     PipelineRepositoryManager.Reset();
                     data.setMessage("Pipeline " + pipelineDetails.getPath() + " has been successfully added to the repository");
                     data.setScreenTemplate("ClosePageAndRefresh.vm");

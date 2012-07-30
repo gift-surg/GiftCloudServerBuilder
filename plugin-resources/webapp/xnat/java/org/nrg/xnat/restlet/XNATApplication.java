@@ -1,6 +1,8 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
@@ -9,7 +11,40 @@ import org.nrg.framework.utilities.Reflection;
 import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
-import org.nrg.xnat.restlet.resources.*;
+import org.nrg.xnat.restlet.resources.ConfigResource;
+import org.nrg.xnat.restlet.resources.ExperimentListResource;
+import org.nrg.xnat.restlet.resources.ExperimentResource;
+import org.nrg.xnat.restlet.resources.ExptAssessmentResource;
+import org.nrg.xnat.restlet.resources.ExptVisitListResource;
+import org.nrg.xnat.restlet.resources.InvestigatorListResource;
+import org.nrg.xnat.restlet.resources.ProjSubExptAsstList;
+import org.nrg.xnat.restlet.resources.ProjSubExptList;
+import org.nrg.xnat.restlet.resources.ProjSubVisitList;
+import org.nrg.xnat.restlet.resources.ProjectAccessibilityResource;
+import org.nrg.xnat.restlet.resources.ProjectArchive;
+import org.nrg.xnat.restlet.resources.ProjectListResource;
+import org.nrg.xnat.restlet.resources.ProjectMemberResource;
+import org.nrg.xnat.restlet.resources.ProjectPipelineListResource;
+import org.nrg.xnat.restlet.resources.ProjectResource;
+import org.nrg.xnat.restlet.resources.ProjectSearchResource;
+import org.nrg.xnat.restlet.resources.ProjectSubjectList;
+import org.nrg.xnat.restlet.resources.ProjectUserListResource;
+import org.nrg.xnat.restlet.resources.ProjtExptPipelineResource;
+import org.nrg.xnat.restlet.resources.ProtocolResource;
+import org.nrg.xnat.restlet.resources.ReconList;
+import org.nrg.xnat.restlet.resources.ReconResource;
+import org.nrg.xnat.restlet.resources.ScanDIRResource;
+import org.nrg.xnat.restlet.resources.ScanList;
+import org.nrg.xnat.restlet.resources.ScanResource;
+import org.nrg.xnat.restlet.resources.ScanTypeListing;
+import org.nrg.xnat.restlet.resources.ScannerListing;
+import org.nrg.xnat.restlet.resources.SubjAssessmentResource;
+import org.nrg.xnat.restlet.resources.SubjVisitResource;
+import org.nrg.xnat.restlet.resources.SubjectListResource;
+import org.nrg.xnat.restlet.resources.SubjectResource;
+import org.nrg.xnat.restlet.resources.UserCacheResource;
+import org.nrg.xnat.restlet.resources.VersionRepresentation;
+import org.nrg.xnat.restlet.resources.VisitResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
@@ -17,6 +52,7 @@ import org.nrg.xnat.restlet.resources.files.FileList;
 import org.nrg.xnat.restlet.resources.protocols.ProjectSubjectVisitsRestlet;
 import org.nrg.xnat.restlet.services.AliasTokenRestlet;
 import org.nrg.xnat.restlet.services.Archiver;
+import org.nrg.xnat.restlet.services.AuditRestlet;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.services.MoveFiles;
 import org.nrg.xnat.restlet.services.RemoteLoggingRestlet;
@@ -31,8 +67,6 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.resource.Resource;
 import org.restlet.util.Template;
-
-import java.util.List;
 
 /**
  * To add additional REST services to your installation, you can create a REST extension:
@@ -253,6 +287,7 @@ public class XNATApplication extends Application {
         router.attach("/services/tokens/{OPERATION}/{TOKEN}", AliasTokenRestlet.class);
         router.attach("/services/tokens/{OPERATION}/{TOKEN}/{SECRET}", AliasTokenRestlet.class);
 
+        router.attach("/services/audit",AuditRestlet.class);
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
         router.attach("/version",VersionRepresentation.class);

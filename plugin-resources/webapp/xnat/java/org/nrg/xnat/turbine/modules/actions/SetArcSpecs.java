@@ -43,7 +43,7 @@ public class SetArcSpecs extends AdminAction {
         item.setUser(TurbineUtils.getUser(data));
         
         ArcArchivespecification arc = new ArcArchivespecification(item);
-        SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,EventUtils.ADMIN_EVENT(TurbineUtils.getUser(data)));
+        SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,this.newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN,"Modified archive specifications."));
         
         Channel channel = XDAT.getHtmlMailChannel();
 

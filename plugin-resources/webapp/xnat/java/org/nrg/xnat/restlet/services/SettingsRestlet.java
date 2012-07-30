@@ -348,12 +348,12 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the site-wide anonymization script", exception);
                 }
                 dirtied = true;
-            } else {
                 _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
             }
         }
-        if (dirtied || dirtiedNotifications) {
-            SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,EventUtils.ADMIN_EVENT(user));
+        if (dirtied || dirtiedNotifications) {            
+        SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modifying archive specification"));
+
         }
     }
 
@@ -526,7 +526,7 @@ public class SettingsRestlet extends SecureResource {
         XFTItem item = populator.getItem();
         item.setUser(user);
         ArcArchivespecification arc = new ArcArchivespecification(item);
-        SaveItemHelper.unauthorizedSave(arc, user, false, false,EventUtils.ADMIN_EVENT(user));
+        SaveItemHelper.unauthorizedSave(arc, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Initializing archive specification"));
         ArcSpecManager.Reset();
     }
 

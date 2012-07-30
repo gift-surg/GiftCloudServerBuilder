@@ -1,5 +1,4 @@
 <!-- Splash -->
-<DIV class="edit_header2">Search</DIV>
 <div>$!systemName currently contains $proj_count Projects, $sub_count Subjects, and $isd_count Imaging Sessions.
 </div>
 <br/>

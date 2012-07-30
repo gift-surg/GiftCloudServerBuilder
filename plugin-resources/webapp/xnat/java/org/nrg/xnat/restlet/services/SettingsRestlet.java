@@ -133,7 +133,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("pipelinePath", _arcSpec.getGlobalpaths().getPipelinepath());
         settings.put("dcmPort", _arcSpec.getDcm_dcmPort());
         settings.put("dcmAe", _arcSpec.getDcm_dcmAe());
-        settings.put("dcmAppletLink", _arcSpec.getDcm_appletLink());
+        settings.put("dcmAppletLink", XDAT.getSiteConfigurationProperty("showapplet"));
         settings.put("enableCsrfToken", _arcSpec.getEnableCsrfToken());
         settings.put("error", getSubscribersForEvent(NotificationType.Error));
         settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
@@ -321,7 +321,12 @@ public class SettingsRestlet extends SecureResource {
                 _arcSpec.setDcm_dcmAe(_data.get("dcmAe"));
                 dirtied = true;
             } else if (property.equals("dcmAppletLink")) {
-                _arcSpec.setDcm_appletLink(_data.get("dcmAppletLink"));
+                final String dcmAppletLink = _data.get("dcmAppletLink");
+                try {
+                    XDAT.setSiteConfigurationProperty("showapplet", dcmAppletLink);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the dcmAppletLink site info property", exception);
+                }
                 dirtied = true;
             } else if (property.equals("enableCsrfToken")) {
                 final String enableCsrfToken = _data.get("enableCsrfToken");
@@ -550,7 +555,6 @@ public class SettingsRestlet extends SecureResource {
         addSpecifiedProperty(data, "arc:archivespecification/require_login", "requireLogin");
         addSpecifiedProperty(data, "arc:archivespecification/enable_new_registrations", "enableNewRegistrations");
         addSpecifiedProperty(data, "arc:archivespecification/dcm/dcm_ae", "dcmAe");
-        addSpecifiedProperty(data, "arc:archivespecification/dcm/applet_link", "dcmAppletLink");
         addSpecifiedProperty(data, "arc:archivespecification/dcm/dcm_port", "dcmPort");
         addSpecifiedProperty(data, "arc:archivespecification/enable_csrf_token", "enableCsrfToken");
         return data;

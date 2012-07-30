@@ -46,7 +46,9 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <a href="$link.setPage("XDATScreen_active_sessions.vm")">Monitor Sessions</a><BR><BR>
 
 				<a class=b href="$link.setPage("XDATScreen_admin_projectAccess.vm")" onmouseover="return true;">Project Accessibility</a><BR><BR>
-<a href="$link.setPage("AdminSummary.vm")">Summary</a>
+<a href="$link.setPage("AdminSummary.vm")">Summary</a><BR><BR>
 
 <a href="$link.setPage("XDATScreen_add_xnat_projectData.vm")">Create Project</a>
+
+#addGlobalCustomScreens("admin/options")
 </td></tr></table>

@@ -13,11 +13,11 @@ $page.setVlinkColor($ui.vlink)
 		<TD align="left">
 			<table border="0" align="left">
 				<tr>
-				<tr>
 					<td>
 						#addCustomScreens($om.getXSIType() "report/preDetails") 
 					</td>
 				</tr>
+				<tr>
 					<TH align=left colspan=2>User Details
 					#if ($item.canEdit($user))
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >Edit</a>
@@ -50,11 +50,6 @@ $page.setVlinkColor($ui.vlink)
 				</tr>
 			</table>
 		</TD>
-				<tr>
-					<td>
-						#addCustomScreens($om.getXSIType() "report/postDetails") 
-					</td>
-				</tr>
 	    <td valign="top">
 			#if($dataPopup)
 			#else
@@ -134,6 +129,11 @@ $page.setVlinkColor($ui.vlink)
 			<TD align=left colspan=2 valign=top>&nbsp;
 			</td>
 		</tr>
+				<tr>
+					<td>
+						#addCustomScreens($om.getXSIType() "report/postDetails") 
+					</td>
+				</tr>
                 <TR>
                         <TD align=left colspan=2>
                                 <TABLE border="1" width="80%">

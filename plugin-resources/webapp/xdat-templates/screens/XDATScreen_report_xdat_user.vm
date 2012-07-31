@@ -11,44 +11,64 @@ $page.setVlinkColor($ui.vlink)
 <TABLE width=100% align="left" border="0">
 	<TR>
 		<TD align="left">
-			<table border="0" align="left">
-				<tr>
-					<td>
-						#addCustomScreens($om.getXSIType() "report/preDetails") 
-					</td>
-				</tr>
-				<tr>
-					<TH align=left colspan=2>User Details
-					#if ($item.canEdit($user))
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="$link.setAction("XDATActionRouter").addPathInfo("xdataction","edit").addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup)" >Edit</a>
-					#end
-					</TH>
-				</tr>
-				<tr>
-					<td> 
-						<table>
-							<tr>
-								<TD width="90" align=left>Username:</TD><TD>$!item.getProperty("login")</TD>
-							</tr>
-							<tr>
-								<TD align=left>First Name:</TD><TD>$!item.getProperty("firstname")</TD>
-							</tr>
-							<tr>
-								<TD align=left>Last Name:</TD><TD>$!item.getProperty("lastname")</TD>
-							</tr>
-							<tr>
-								<TD align=left>Email:</TD><TD>$!item.getProperty("email")</TD>
-							</tr>
-							<tr>
-								<TD align=left>Enabled:</TD><TD>#if($item.getBooleanProperty("enabled"))YES #else NO #end</TD>
-							</tr>
-							<!--<tr>
-								<TD align=left>Authenticated:</TD><TD>#if($item.isActive())YES #else NO #end</TD>
-							</tr>-->
-						</table>
-					</td>
-				</tr>
-			</table>
+			#addCustomScreens($om.getXSIType() "report/preDetails") 
+<STYLE>
+span.spacer{
+height:12px;
+width:1px;
+}
+</STYLE>
+<div ID="subject_summary_module" style="display:none">
+ <DIV id="subjectSummary" class="yui-navset">
+  <ul class="yui-nav" style="">
+      <li class="selected"><a href="#tab1"><em>Details<span class="spacer"></span></em></a></li>
+	  ##<!-- inject additional tabs-->
+	  #foreach($tab in $turbineUtils.getTemplates($om.getXSIType(),"report/tabs"))
+            <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+        #end
+  </ul>
+  
+ <div class="yui-content">   
+	
+  ##<!-- details tab -->
+  <div id="tab1"><p>
+			#parse($turbineUtils.getTemplateName("details","xdat:user",$!project))
+</p></div>  
+
+    ##<!-- inject additional tabs -->
+    #foreach($tab in $turbineUtils.getTemplates($om.getXSIType(),"report/tabs"))
+        <div id="$tab.getProperty("divName")">
+            #set($path = "screens/${tab.getProperty('path')}")
+            <p>#parse($path)</p>
+        </div>
+	#end
+			
+  </div> 
+  
+  
+ </DIV>
+</div>
+<script type="text/javascript">  
+function summaryIndexChanged(){
+   var activeIndex=this.get("activeIndex");
+   YAHOO.util.Cookie.set("${project.getId()}.summary.index",activeIndex);
+}
+   
+function summaryTabManagerInit(){
+    window.summaryTabView = new YAHOO.widget.TabView('subjectSummary');   
+    window.subject_summary_module = new YAHOO.widget.Module("subject_summary_module",{visible:false,zIndex:5});   
+	
+#addCustomScreenJS($om.getXSIType() "report/tabs_js") 
+	
+    window.subject_summary_module.show(); 		    
+    
+    var tabIndex=YAHOO.util.Cookie.get("${om.getId()}.summary.index");
+    window.summaryTabView.set('activeIndex',tabIndex||0);
+    
+    window.summaryTabView.subscribe("activeTabChange",summaryIndexChanged);
+}
+					summaryTabManagerInit();
+</script>
 		</TD>
 	    <td valign="top">
 			#if($dataPopup)
@@ -60,7 +80,6 @@ $page.setVlinkColor($ui.vlink)
 				#set ($actions = $elementSecurity.getElementActions())
 				#if ($actions.size() > 0)
 					<TABLE>
-					
 					<TR><TD align="center">
 					<table class="dark" STYLE="border-width:1px;border-color:black;border-style:solid;">
 						<tr>

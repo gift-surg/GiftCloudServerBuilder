@@ -50,6 +50,9 @@ function loadApplet() {
     #if( $visit_id )
             parameters['xnat-visit-id'] = '$visit_id';
     #end
+    #if( $visit )
+            parameters['xnat-visit'] = '$visit';
+    #end
     #if( $scan_type )
             parameters['xnat-scan-type'] = '$scan_type';
     #end

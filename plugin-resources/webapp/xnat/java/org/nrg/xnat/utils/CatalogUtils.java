@@ -172,6 +172,7 @@ public class CatalogUtils {
 			try {
 				if(filter==null || filter.accept(entry)){
     				entries.add(entry);
+    				
     			}
 			} catch (Exception e1) {
 				logger.error(e1);

@@ -187,13 +187,13 @@ public final class DicomDump extends SecureResource {
                 CatFilterWithPath filter = new CatFilterWithPath() {
                     public boolean accept(CatEntryI entry) {
                         File f = CatalogUtils.getFile(entry, this.path);
-                        return f.getName().equals(filename); 
+                        return f.getName().equals(filename);
                     }
                 };
 
                 Collection<File> matches = env.r.getFiles(env,user, filter);
-                List<File> list = new ArrayList<File>(matches);
-                if (list.size() > 0) {
+               List<File> list = new ArrayList<File>(matches);
+                if (matches.size() > 0) {
                     return list.get(0).getAbsolutePath();
                 }
                 else {

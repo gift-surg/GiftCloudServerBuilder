@@ -259,11 +259,6 @@
             <replacefilter token="@XDAT_MAIL_ADMIN@" property="xdat.mail.admin"/>
             <replacefilter token="@XDAT_MAIL_PREFIX@" property="xdat.mail.prefix"/>
             <replacefilter token="@XDAT_SECURITY_CHANNEL@" property="xdat.security.channel"/>
-            <replacefilter token="@XDAT_SECURITY_LDAP_ADDRESS@" property="xdat.security.ldap.address"/>
-            <replacefilter token="@XDAT_SECURITY_LDAP_USERDN@" property="xdat.security.ldap.userdn"/>
-            <replacefilter token="@XDAT_SECURITY_LDAP_PASSWORD@" property="xdat.security.ldap.password"/>
-            <replacefilter token="@XDAT_SECURITY_LDAP_SEARCH_BASE@" property="xdat.security.ldap.search.base"/>
-            <replacefilter token="@XDAT_SECURITY_LDAP_SEARCH_FILTER@" property="xdat.security.ldap.search.filter"/>
         </ant:replace>
     </goal>
     <!-- ================================================================ -->

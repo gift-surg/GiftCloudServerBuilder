@@ -17,7 +17,7 @@ public class Configuration extends AdminScreen {
             context.put("initialize", true);
         }
         context.put("arc", arcSpec);
-        setDefaultTabs("siteInfo", "fileSystem", "registration", "dicomReceiver");
+        setDefaultTabs("siteInfo", "fileSystem", "registration", "notifications", "anonymization", "filters");
         cacheTabs(context, "configuration");
     }
 }

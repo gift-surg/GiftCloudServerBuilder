@@ -91,15 +91,19 @@ public class XNATApplication extends Application {
     }
     @Override
     public synchronized Restlet createRoot() {
-        Router router = new Router(getContext());
+    	Router rootRouter = new Router(getContext());
 
-        addRoutes(router);
-        addExtensionRoutes(router);
-
+    	Router securedResourceRouter = new Router(getContext());
+        addRoutes(securedResourceRouter);
+        addExtensionRoutes(securedResourceRouter);
+    	
         XnatSecureGuard guard = new XnatSecureGuard();
-        guard.setNext(router);
-
-        return guard;
+        guard.setNext(securedResourceRouter);
+    	rootRouter.attach(guard);
+    	
+    	addPublicRoutes(rootRouter);
+    	
+    	return rootRouter;
     }
 
 	private void attachArchiveURI(final Router router,final String uri,final Class<? extends Resource> clazz){
@@ -290,8 +294,6 @@ public class XNATApplication extends Application {
         router.attach("/services/audit",AuditRestlet.class);
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
-        router.attach("/version",VersionRepresentation.class);
-
         // TODO: These are placeholders for the protocol REST services to come.
         router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);
         router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits/{VISIT_ID}", ProjectSubjectVisitsRestlet.class);
@@ -348,4 +350,8 @@ public class XNATApplication extends Application {
             }
         }
     }
+
+	private void addPublicRoutes(final Router router){
+        router.attach("/version",VersionRepresentation.class);
+	}
 }

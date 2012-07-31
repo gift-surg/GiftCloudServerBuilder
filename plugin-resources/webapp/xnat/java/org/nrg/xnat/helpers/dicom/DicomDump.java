@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.dcm4che2.data.ElementDictionary;
 import org.nrg.action.ClientException;
+import org.nrg.xdat.bean.CatDcmentryBean;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.model.XnatImageassessordataI;
@@ -31,12 +32,12 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -181,24 +182,18 @@ public final class DicomDump extends SecureResource {
             }
             @Override
             String retrieve(Env env, XDATUser user) throws ClientException, IOException, InvalidPermissionException, Exception {
-                List<String> segments = new Reference(env.uri).getSegments();
-                final String filename = segments.get(segments.size() - 1);
-
-                CatFilterWithPath filter = new CatFilterWithPath() {
+                final Collection<File> matches = env.r.getFiles(env,user, new CatFilterWithPath() {
                     public boolean accept(CatEntryI entry) {
-                        File f = CatalogUtils.getFile(entry, this.path);
-                        return f.getName().equals(filename);
+                        return entry instanceof CatDcmentryBean;
                     }
-                };
-
-                Collection<File> matches = env.r.getFiles(env,user, filter);
-               List<File> list = new ArrayList<File>(matches);
-                if (matches.size() > 0) {
-                    return list.get(0).getAbsolutePath();
+                });
+                for (final Iterator<File> fi = matches.iterator(); fi.hasNext(); ) {
+                    final File f = fi.next();
+                    if (null != f) {
+                        return f.getAbsolutePath();
+                    }
                 }
-                else {
-                    return null;
-                }
+                return null;
             }
         },
         SUMMARY(){
@@ -398,15 +393,15 @@ public final class DicomDump extends SecureResource {
     private static enum ResourceType {
         SCAN {
             @Override
-            Collection<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter) throws IOException, 
-            InvalidPermissionException,
-            Exception{
-                XnatImagesessiondataI x = env.a.retrieve(env, user);
-                List<XnatImagescandataI> scans = x.getScans_scan();
-                Collection<File> files = new ArrayList<File>();
-                for (XnatImagescandataI scan : scans){
-                    List<XnatResourcecatalogI> resources = scan.getFile();
-                    files.addAll(this.findMatchingFile(env, resources, filter));					
+            Collection<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter) throws Exception {
+                final XnatImagesessiondataI x = env.a.retrieve(env, user);
+                final List<File> files = new ArrayList<File>();
+                final Object scanID = env.attrs.get(URIManager.SCAN_ID);
+                for (final XnatImagescandataI scan : x.getScans_scan()){
+                    if (null == scanID || scanID.equals(scan.getId())) {
+                        final List<XnatResourcecatalogI> resources = scan.getFile();
+                        files.addAll(this.findMatchingFile(env, resources, filter));
+                    }
                 }
                 return files;
             }

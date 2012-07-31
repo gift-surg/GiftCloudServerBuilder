@@ -72,6 +72,19 @@ function ProjectLoader(_options) {
     }
 }
 
+function sortByLabel(a,b)
+{
+	var aName = a.label.toLowerCase();
+	var bName = b.label.toLowerCase();
+	if (aName < bName){
+        return -1;
+     }else if (aName > bName){
+       return  1;
+     }else{
+       return 0;
+     }
+}
+
 function SubjectLoader(_options) {
     this.onLoadComplete = new YAHOO.util.CustomEvent("load-complete", this);
     this.options = _options;
@@ -100,6 +113,7 @@ function SubjectLoader(_options) {
     this.completeInit = function (o) {
         try {
             this.list = eval("(" + o.responseText + ")").ResultSet.Result;
+            this.list.sort(sortByLabel);
             this.onLoadComplete.fire();
 
             if (this.options != undefined && this.options.selects != undefined) {

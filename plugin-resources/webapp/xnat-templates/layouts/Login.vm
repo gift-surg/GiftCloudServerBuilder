@@ -1,6 +1,18 @@
 $navigation.setTemplate("/htmlOpen.vm")
 ## insert any template-specific <head> code here
 
+<style type="text/css">
+    #user_bar { width: 100% ; }
+    #login_container { width: 90% ; height: 400px ; }
+</style>
+
+## moved 'onload' script in <body> tag to a jQuery function
+<script type="text/javascript">
+    jq(window).load(function(){
+        jq('#username').focus();
+    });
+</script>
+
 $navigation.setTemplate("/bodyOpen.vm")
 ## insert any template-specific code here that needs to be directly after opening <body> tag
 
@@ -8,40 +20,41 @@ $navigation.setTemplate("/bodyOpen.vm")
 <!-- path: xnat-templates/layouts/Login -->
 
 ##<body id="page_body" class="yui-skin-sam" ONLOAD="document.getElementById('username').focus();">
-## moved 'onload' script in <body> tag to a jQuery function
-<script type="text/javascript">
-    jq(window).load(function(){
-       jq('#username').focus();
-    });
-</script>
-<table id="login_container" height="500" valign="top" border=0>
-  <tr height="120">
-    <td valign="top">
-      $navigation.setTemplate("/NoMenuTop.vm")
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-      <div id="layout_content2" style="display:none;">Loading...</div>
-      <div id="layout_content_x">$screen_placeholder</div>
-    </td>
-  </tr>
-  <tr>
-    <td valign="bottom">
-      <table width="100%">
-<tr>
-	<td><hr></td>
-</tr>
-<tr>
-	<td valign="bottom" align="right">
-		<a target="_blank" href="http://www.xnat.org/">
-		<img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>
-	</td>
-</tr>
+<table id="login_container" valign="top" border=0>
+    <tr>
+        <td valign="top">
+            $navigation.setTemplate("/NoMenuTop.vm")
+        </td>
+    </tr>
+    <tr>
+        <td align="left" valign="top">
+            <div id="layout_content2" style="display:none;">Loading...</div>
+            <div id="layout_content_x">$screen_placeholder</div>
+        </td>
+    </tr>
+    <!--
+    <tr>
+        <td valign="bottom">
+            <table width="100%">
+                <tr>
+                    <td><hr></td>
+                </tr>
+                <tr>
+                    <td valign="bottom" align="right">
+                        <a target="_blank" href="http://www.xnat.org/">
+                            <img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    -->
 </table>
-    </td>
-  </tr>
-</table>
+
+<div id="xnat_power" style="">
+    <a target="_blank" href="http://www.xnat.org/" style=""><img src="$content.getURI('images/xnat_power_small.jpg')"></a>
+</div>
+
 ## insert any template-specific code here that needs to be directly before closing </body> tag
 
 $navigation.setTemplate("/htmlClose.vm")

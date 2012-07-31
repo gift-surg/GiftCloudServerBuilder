@@ -230,8 +230,16 @@ function ProjectEditor(_config) {
 
     this.render = function () {
         if (this.panel == undefined) {
-            this.panel = new YAHOO.widget.Dialog("projectDialog", {close:true,
-                width:"350px", height:"100px", underlay:"shadow", modal:true, fixedcenter:true, visible:false});
+            this.panel = new YAHOO.widget.Dialog("projectDialog", {
+                close:true,
+                //width:"350px",
+                //height:"100px",
+                //zIndex:9,
+                underlay:"shadow",
+                modal:true,
+                fixedcenter:true,
+                visible:false
+            });
             this.panel.setHeader("Project modification");
 
             var bd = document.createElement("form");
@@ -385,8 +393,17 @@ function SubjectEditor(_config) {
 
     this.render = function () {
         if (this.panel == undefined) {
-            this.panel = new YAHOO.widget.Dialog("subjectDialog", {close:true,
-                width:"350px", height:"100px", underlay:"shadow", modal:true, fixedcenter:true, visible:false});
+            this.panel = new YAHOO.widget.Dialog("subjectDialog", {
+                close:true,
+                //width:"350px",
+                //height:"100px",
+                // does 'zIndex' do anything?
+                //zIndex:9,
+                underlay:"shadow",
+                modal:true,
+                fixedcenter:true,
+                visible:false
+            });
             this.panel.setHeader("Subject modification");
 
             var bd = document.createElement("form");
@@ -571,7 +588,15 @@ function LabelEditor(_config) {
             var oPushButtonD = new YAHOO.widget.Button({container:window.labelToggler});
             window.labelToggler.style.display = "none";
 
-            this.panel = new YAHOO.widget.Dialog("labelDialog", { close:true, width:"350px", underlay:"shadow", modal:true, fixedCenter:true, visible:false });
+            this.panel = new YAHOO.widget.Dialog("labelDialog", {
+                close:true,
+                //width:"350px",
+                //zIndex:9,
+                underlay:"shadow",
+                modal:true,
+                fixedCenter:true,
+                visible:false
+            });
             this.panel.handleEnter = function () {
                 var label = this.form.new_label;
                 window.selectedLabel = label.value.trim();

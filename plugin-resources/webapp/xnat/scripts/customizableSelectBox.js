@@ -101,8 +101,15 @@ function CustomValueCreator(_options){
     this.onResponse=new YAHOO.util.CustomEvent("response",this);
   
 	this.render=function(){	
-		this.panel=new YAHOO.widget.Dialog("valueDialog",{close:true,
-		   width:"350px",height:"100px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
+		this.panel=new YAHOO.widget.Dialog("valueDialog",{
+            close:true,
+            width:"350px",
+            height:"100px",
+            underlay:"shadow",
+            modal:true,
+            fixedcenter:true,
+            visible:false
+        });
 		this.panel.setHeader("Define New Value");
 				
 		var bd = document.createElement("form");

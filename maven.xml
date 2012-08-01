@@ -1168,6 +1168,9 @@
         <j:if test="${context.getVariable('beans.jar.name') ==null}">
             <j:set var="beans.jar.name" value="beans"/>
         </j:if>
+        <j:if test="${context.getVariable('beans.jar.version') ==null}">
+            <j:set var="beans.jar.version" value="1.6"/>
+        </j:if>
         <java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
             <arg value="${basedir}"/>
@@ -1216,19 +1219,20 @@
                 <pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
             </classpath>
         </javac>
-        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" basedir="${basedir}/classes">
+        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" basedir="${basedir}/classes">
             <include name="org/**"/>
         </jar>
-        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0-source.jar" basedir="${basedir}/src">
+        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}-source.jar" basedir="${basedir}/src">
             <include name="org/**"/>
         </jar>
-        <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
-        <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-1.0.jar"/>
+        <!-- NOTE: The applet xdat-beans archive is signed and should only be replaced when one of the applets needs to access a modified or new class. -->
+        <!-- copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-${beans.jar.version}.jar"/ -->
+        <!-- copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-${beans.jar.version}.jar"/ -->
         <j:if test="${context.getVariable('xdat.pipeline.location') != null}">
-            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${xdat.pipeline.location}/lib/xdat-${beans.jar.name}-1.0.jar"/>
+            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${xdat.pipeline.location}/lib/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
         </j:if>
         <j:if test="${context.getVariable('xdat.pipeline.location') == null}">
-            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-1.0.jar"/>
+            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
         </j:if>
     </goal>
     <!-- ================================================================ -->
@@ -1608,7 +1612,10 @@
                 <j:if test="${context.getVariable('beans.jar.name') == null}">
                     <j:set var="beans.jar.name" value="beans"/>
                 </j:if>
-                <j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-1.0.jar"/>
+                <j:if test="${context.getVariable('beans.jar.version') ==null}">
+                    <j:set var="beans.jar.version" value="1.6"/>
+                </j:if>
+                <j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
                 <j:set var="beans.jar.exists" value="false"/>
                 <u:available file="${beans.jar}">
                     <j:set var="beans.jar.exists" value="true"/>
@@ -1617,7 +1624,7 @@
                     <ant:echo>Couldn't locate the beans jar ${beans.jar}. This is required for pipeline initialization.</ant:echo>
                 </j:if>
                 <j:if test="${context.getVariable('beans.jar.exists') == 'true'}">
-                    <copy file="${beans.jar}" tofile="${pipeline.dir}/lib/xdat-${beans.jar.name}-1.0.jar"/>
+                    <copy file="${beans.jar}" tofile="${pipeline.dir}/lib/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
                     <j:if test="${context.getVariable('os.name').startsWith('Windows')}">
                         <ant:echo>Launching ${pipeline.dir}/setup.bat script</ant:echo>
                         <ant:exec executable="cmd" failonerror="true">

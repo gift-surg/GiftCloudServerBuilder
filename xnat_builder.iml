@@ -1201,15 +1201,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="PlexiViewer-1.4.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/PlexiViewer/jars/PlexiViewer-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="postgresql-9.0-801.jdbc4.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar!/" />
@@ -1941,6 +1932,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="plexiviewer" />
   </component>
 </module>
 

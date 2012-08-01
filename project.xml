@@ -412,7 +412,7 @@
 		</dependency>
 		<dependency>
 			<groupId>PlexiViewer</groupId>
-			<artifactId>PlexiViewer</artifactId>
+			<artifactId>plexiviewer</artifactId>
 			<version>1.6</version>
 			<properties>
 				<war.bundle>true</war.bundle>

@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -17,7 +18,6 @@ import java.util.Set;
 
 import org.dcm4che2.data.ElementDictionary;
 import org.nrg.action.ClientException;
-import org.nrg.xdat.bean.CatDcmentryBean;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.model.XnatImageassessordataI;
@@ -46,6 +46,7 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Template;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 
@@ -146,128 +147,101 @@ public final class DicomDump extends SecureResource {
         }
     }
 
+
     /**
      * The dicom dump requested, either a specific file, or a general summary of the session
      * @author aditya
      *
      */
     private static enum HeaderType {
-        FILE(){
-            @Override
-            List<Template> getTemplates() {
-                String[] ss = {
-                        "/prearchive/projects/{PROJECT_ID}/{TIMESTAMP}/{EXPT_ID}/scans/{SCAN_ID}/resources/DICOM/files",
-                        "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/scans/{SCAN_ID}/resources/DICOM/files",
-                        "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/assessors/{SCAN_ID}/resources/DICOM/files",
-                        "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/recons/{SCAN_ID}/resources/DICOM/files"	
-                };
-                return toTemplates(ss);
-            }
-            @Override
-            ResourceType getResourceType(Template matchingTemplate) {
-                ResourceType r = ResourceType.UNKNOWN;
-                if (matchingTemplate.getPattern().contains("scans")) {
-                    r = ResourceType.SCAN;
-                }
-                else if (matchingTemplate.getPattern().contains("assessors")) {
-                    r = ResourceType.ASSESSOR;
-                }
-                else if (matchingTemplate.getPattern().contains("recons")) {
-                    r = ResourceType.RECON;
-                }
-                else {
-                    // unknown
-                }
-                return r;
-            }
-            @Override
-            String retrieve(Env env, XDATUser user) throws ClientException, IOException, InvalidPermissionException, Exception {
-                final Collection<File> matches = env.r.getFiles(env,user, new CatFilterWithPath() {
-                    public boolean accept(CatEntryI entry) {
-                        return entry instanceof CatDcmentryBean;
-                    }
-                });
-                for (final Iterator<File> fi = matches.iterator(); fi.hasNext(); ) {
-                    final File f = fi.next();
-                    if (null != f) {
-                        return f.getAbsolutePath();
-                    }
-                }
-                return null;
-            }
-        },
-        SUMMARY(){
-            @Override
-            List<Template> getTemplates() {
-                String[] ss = {
-                        "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}",
-                        "/archive/projects/{PROJECT_ID}/experiments/{EXPT_ID}",
-                        "/prearchive/projects/{PROJECT_ID}/{TIMESTAMP}/{EXPT_ID}"
-                };
-                return toTemplates(ss);
-            }
-            @Override
-            ResourceType getResourceType (Template t) {
-                return ResourceType.UNKNOWN;
-            }
-            @Override
-            String retrieve(Env env, XDATUser user) throws ClientException, IOException, InvalidPermissionException, Exception {
-                CatFilterWithPath dummy = new CatFilterWithPath() {
-                    @Override
-                    public boolean accept(CatEntryI entry) {
-                        return true;
-                    }
-                };
+        FILE("/prearchive/projects/{PROJECT_ID}/{TIMESTAMP}/{EXPT_ID}/scans/{SCAN_ID}/resources/DICOM/files/{FILENAME}",
+                "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/scans/{SCAN_ID}/resources/DICOM/files/{FILENAME}",
+                "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/assessors/{SCAN_ID}/resources/DICOM/files/{FILENAME}",
+                "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/recons/{SCAN_ID}/resources/DICOM/files/{FILENAME}"
+        ){
+            private static final String FILENAME_PARAM = "FILENAME";
 
-                Collection<File> matches = env.r.getFiles(env,user, dummy);
-                List<File> list = new ArrayList<File>(matches);
-                if (list.size() > 0) {
-                    return list.get(0).getAbsolutePath();
-                }
-                else {
-                    return null;
-                }
+            @Override
+            CatFilterWithPath getFilter(final Env env, final XDATUser user) {
+                final Object filename = env.attrs.get(FILENAME_PARAM);
+                return new CatFilterWithPath() {
+                    public boolean accept(CatEntryI entry) {
+                        final File f = CatalogUtils.getFile(entry, path);
+                        return f.getName().equals(filename);
+                    }
+                };
             }
         },
+        
+        SCAN("/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/scans/{SCAN_ID}",
+                "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/assessors/{SCAN_ID}",
+                "/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}/recons/{SCAN_ID}",
+                "/archive/projects/{PROJECT_ID}/experiments/{EXPT_ID}/scans/{SCAN_ID}",
+                "/archive/projects/{PROJECT_ID}/experiments/{EXPT_ID}/assessors/{SCAN_ID}",
+                "/archive/projects/{PROJECT_ID}/experiments/{EXPT_ID}/recons/{SCAN_ID}",
+                "/prearchive/projects/{PROJECT_ID}/{TIMESTAMP}/{EXPT_ID}/scans/{SCAN_ID}"
+        ),
+        
+        SESSION("/archive/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{EXPT_ID}",
+                "/archive/projects/{PROJECT_ID}/experiments/{EXPT_ID}",
+                "/prearchive/projects/{PROJECT_ID}/{TIMESTAMP}/{EXPT_ID}"
+        ),
+        
         UNKNOWN(){
             @Override
-            List<Template> getTemplates() {
-                return new ArrayList<Template>();
-            }
-            @Override
-            ResourceType getResourceType (Template t) {
-                return ResourceType.UNKNOWN;
-            }
-            @Override
-            String retrieve(Env env, XDATUser user) {
-                return null;
-            }
+            String retrieve(Env env, XDATUser user) { return null; }
         };
 
-        // Convert a set of templated string to Template objects
-        List<Template> toTemplates (String [] ss) {
-            List<Template> ts = new ArrayList<Template>();
-            for (String s : ss) {
-                ts.add(new Template(s, Template.MODE_STARTS_WITH));
+        private final ImmutableMap<Template,ResourceType> templates;
+
+        private HeaderType(final String...templates) {
+            // Convert the provided string templates to Template objects
+            final ImmutableMap.Builder<Template,ResourceType> builder = ImmutableMap.builder();
+            for (final String st : templates) {
+                final Template t = new Template(st, Template.MODE_STARTS_WITH);
+                final ResourceType r;
+                if (st.contains("scans")) {
+                    r = ResourceType.SCAN;
+                } else if (st.contains("assessors")) {
+                    r = ResourceType.ASSESSOR;
+                } else if (st.contains("recons")) {
+                    r = ResourceType.RECON;
+                } else {
+                    r = ResourceType.UNKNOWN;
+                }
+                builder.put(t, r);
             }
-            return ts;
+            this.templates = builder.build();
         }
+
 
         /**
          * The URI templates associated with type
          * @return
          */
-        abstract List<Template> getTemplates ();
+        final List<Template> getTemplates() { return Lists.newArrayList(templates.keySet()); }
 
         /**
          * Based on the matching template output the correct resource type 
          * @param matchingTemplate
          * @return
          */
-        abstract ResourceType getResourceType(Template matchingTemplate);
+        final ResourceType getResourceType(final Template matchingTemplate) {
+            final ResourceType r = templates.get(matchingTemplate);
+            return null == r ? ResourceType.UNKNOWN : r;
+        }
 
         /**
-         * Retrieve the file path to the specified file. For the summary view the path to the first dicom file found is returned.
+         * Returns the filter used to determine whether to use a provided catalog entry.
+         * Default implementation always passes.
+         * @param env
+         * @param user
+         * @return
+         */
+        CatFilterWithPath getFilter(Env env, XDATUser user) { return alwaysCatWithPath; }
+        
+        /**
+         * Retrieve the file path to the first matching file.
          * 
          * Returns null if no DICOM file is found.
          * 
@@ -279,8 +253,16 @@ public final class DicomDump extends SecureResource {
          * @throws InvalidPermissionException
          * @throws Exception
          */
-
-        abstract String retrieve(Env env, XDATUser user) throws ClientException, IOException, InvalidPermissionException, Exception;
+        String retrieve(final Env env, final XDATUser user) throws Exception {
+            final Iterable<File> matches = env.r.getFiles(env, user, getFilter(env, user), 1);
+            for (final Iterator<File> fi = matches.iterator(); fi.hasNext(); ) {
+                final File f = fi.next();
+                if (null != f) {
+                    return f.getAbsolutePath();
+                }
+            }
+            return null;    
+        }
     };
 
     /**
@@ -392,15 +374,17 @@ public final class DicomDump extends SecureResource {
      */
     private static enum ResourceType {
         SCAN {
-            @Override
-            Collection<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter) throws Exception {
+            Iterable<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter, int enough) throws Exception {
                 final XnatImagesessiondataI x = env.a.retrieve(env, user);
                 final List<File> files = new ArrayList<File>();
                 final Object scanID = env.attrs.get(URIManager.SCAN_ID);
                 for (final XnatImagescandataI scan : x.getScans_scan()){
                     if (null == scanID || scanID.equals(scan.getId())) {
                         final List<XnatResourcecatalogI> resources = scan.getFile();
-                        files.addAll(this.findMatchingFile(env, resources, filter));
+                        files.addAll(this.findMatchingFile(env, resources, filter, enough));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
                     }
                 }
                 return files;
@@ -408,63 +392,75 @@ public final class DicomDump extends SecureResource {
         },
 
         ASSESSOR {
-            @Override
-            Collection<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter) throws Exception {
-                XnatImagesessiondataI x = env.a.retrieve(env, user);
-                List<XnatImageassessordataI> assessors = x.getAssessors_assessor();
-                Collection<File> files = new ArrayList<File>();
-                for (XnatImageassessordataI assessor : assessors) {
-                    List<XnatResourcecatalogI> resources = assessor.getResources_resource();
-                    files.addAll(this.findMatchingFile(env, resources, filter));
-                    List<XnatResourcecatalogI> in_resources = assessor.getIn_file();
-                    files.addAll(this.findMatchingFile(env, in_resources, filter));
-                    List<XnatResourcecatalogI> out_resources = assessor.getOut_file();
-                    files.addAll(this.findMatchingFile(env, out_resources, filter));
+            Iterable<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter, int enough) throws Exception {
+                final XnatImagesessiondataI x = env.a.retrieve(env, user);
+                final Object id = env.attrs.get(URIManager.SCAN_ID);
+                final List<File> files = new ArrayList<File>();
+                for (XnatImageassessordataI assessor : x.getAssessors_assessor()) {
+                    if (null == id || id.equals(assessor.getId())) {
+                        final List<XnatResourcecatalogI> resources = assessor.getResources_resource();
+                        files.addAll(this.findMatchingFile(env, resources, filter, enough));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
+                        final List<XnatResourcecatalogI> in_resources = assessor.getIn_file();
+                        files.addAll(this.findMatchingFile(env, in_resources, filter, enough));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
+                        final List<XnatResourcecatalogI> out_resources = assessor.getOut_file();
+                        files.addAll(this.findMatchingFile(env, out_resources, filter, enough));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
+                    }
                 }
                 return files;
             }
         },
 
         RECON {
-            @Override
-            Collection<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter) throws Exception {
-                XnatImagesessiondataI x = env.a.retrieve(env,user);
-                List<XnatReconstructedimagedataI> recons = x.getReconstructions_reconstructedimage();
-                Collection<File> files = new ArrayList<File>();
-                for (XnatReconstructedimagedataI recon : recons) {
-                    List<XnatResourcecatalogI> in_resources = recon.getIn_file();
-                    files.addAll(this.findMatchingFile(env, in_resources, filter));
-                    List<XnatResourcecatalogI> out_resources = recon.getOut_file();
-                    files.addAll(this.findMatchingFile(env, out_resources, filter));
+            Iterable<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter, int enough) throws Exception {
+                final XnatImagesessiondataI x = env.a.retrieve(env,user);
+                final Object id = env.attrs.get(URIManager.SCAN_ID);
+                final Collection<File> files = new ArrayList<File>();
+                for (XnatReconstructedimagedataI recon : x.getReconstructions_reconstructedimage()) {
+                    if (null == id || id.equals(recon.getId())) {
+                        List<XnatResourcecatalogI> in_resources = recon.getIn_file();
+                        files.addAll(this.findMatchingFile(env, in_resources, filter, enough));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
+                        List<XnatResourcecatalogI> out_resources = recon.getOut_file();
+                        files.addAll(this.findMatchingFile(env, out_resources, filter, enough));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
+                    }
                 }
                 return files;
             }
         },
 
         UNKNOWN {
-            @Override
-            Collection<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter) {
-                return new ArrayList<File>();
+            Iterable<File> getFiles(Env env, XDATUser user, CatFilterWithPath filter, int enough) {
+                return Collections.emptyList();
             }
         };
 
-        Collection<File> findMatchingFile(Env env, List<XnatResourcecatalogI> resources, CatFilterWithPath filter) {
-            Collection<File> files = new ArrayList<File>();
-            for (XnatResourcecatalogI resource: resources) {
-                String type = resource.getLabel();
-                if (type.equals(DicomDump.imageType)){
-                    // The "retrieve" method should have populated the global "XnatImagesessiondataI" object.
-                    CatCatalogI catalog = env.a.getCatalog(resource);
-                    // the getCatalog function updates the global "rootPath" variable so 
-                    // it's safe to use it here.
+        List<File> findMatchingFile(final Env env, final List<XnatResourcecatalogI> resources, final CatFilterWithPath filter, final int enough) {
+            final List<File> files = Lists.newArrayList();
+            for (XnatResourcecatalogI resource : resources) {
+                final String type = resource.getLabel();
+                if (type.equals(DicomDump.imageType)) {
+                    final CatCatalogI catalog = env.a.getCatalog(resource);
                     filter.setPath(env.a.rootPath);
-                    Collection<CatEntryI> matches = CatalogUtils.getEntriesByFilter(catalog, filter);
-                    for (CatEntryI match : matches) {
+                    for (CatEntryI match : CatalogUtils.getEntriesByFilter(catalog, filter)) {
                         files.add(CatalogUtils.getFile(match, env.a.rootPath));
+                        if (files.size() >= enough) {
+                            return files;
+                        }
                     }
-                }
-                else {
-                    // ignore non-dicom files
                 }
             }
             return files;
@@ -475,15 +471,17 @@ public final class DicomDump extends SecureResource {
          * @param uri
          * @param user
          * @param filter
+         * @param enough
          * @return
          * @throws ClientException
          * @throws IOException
          * @throws InvalidPermissionException
          * @throws Exception
          */
-        abstract Collection<File> getFiles(Env env, 
+        abstract Iterable<File> getFiles(Env env, 
                 XDATUser user, 
-                CatFilterWithPath filter) 
+                CatFilterWithPath filter,
+                int enough) 
                 throws ClientException, 
                 IOException, 
                 InvalidPermissionException, 
@@ -558,6 +556,11 @@ public final class DicomDump extends SecureResource {
         public void setPath (String path) {this.path = path;}
         public abstract boolean accept(CatEntryI entry);
     }
+
+    final static CatFilterWithPath alwaysCatWithPath = new CatFilterWithPath() {
+        { setPath(null); }
+        public boolean accept(CatEntryI _) { return true; }
+    };
 
     public Representation represent(final Variant variant) {
         final MediaType mt = overrideVariant(variant);

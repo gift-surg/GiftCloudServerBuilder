@@ -17,8 +17,8 @@ import org.apache.velocity.context.Context;
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.pipeline.XnatPipelineLauncher;
-import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.utils.PipelineAdder;
+import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.utils.PipelineUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
@@ -39,7 +39,6 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -113,7 +112,7 @@ public class ManagePipeline extends SecureAction {
             XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
 			String pipeline_path = (String)pipeline.getProperty("path");
             if (pipeline != null) {
-            	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, pipeline, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Delete registered pipeline"));
+            	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, pipeline.getXSIType(), pipeline.getPKValueString(), PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Delete registered pipeline"));
 				PipePipelinerepository pipelines = PipelineRepositoryManager.GetInstance();
 				try {
 					SaveItemHelper.authorizedRemoveChild(pipelines.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user,wrk.buildEvent());

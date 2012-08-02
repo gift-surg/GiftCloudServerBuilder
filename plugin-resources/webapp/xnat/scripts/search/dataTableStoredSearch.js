@@ -16,8 +16,8 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 		this.loaderGIF.render();
 
 		var URL = this.obj.URL;
-		
-		URL += '?XNAT_CSRF=' + csrfToken;
+		var questOrAmper = URL.indexOf("?") == -1 ? "?" : "&";
+		URL += questOrAmper + 'XNAT_CSRF=' + csrfToken;
 		
 		if(this.obj.XML){
 			this.load();

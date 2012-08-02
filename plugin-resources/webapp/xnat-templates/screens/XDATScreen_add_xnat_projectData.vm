@@ -1,3 +1,5 @@
+<script type="text/javascript" src="$content.getURI("scripts/project/accessibility.js")"></script> 
+
 $page.setTitle("XDAT")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
@@ -58,11 +60,11 @@ $page.setVlinkColor($ui.vlink)
 
               <TABLE cellpadding="5" cellspacing="0">
 
-                <TR><TD NOWRAP><DIV title="Only you and study members will be able to access study data." style="cursor:pointer" ONCLICK="document.getElementById('private_access').checked=true;document.getElementById('balloon').innerHTML=this.title;"><input type="radio" ID="private_access" name="accessibility" value="private" CHECKED/> Private</DIV></TD><TD></TD></TR>
+                <TR><TD NOWRAP><DIV ID="private_access_div" title="Only you and study members will be able to access study data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'private_access');"><input type="radio" ID="private_access" name="accessibility" value="private" CHECKED/> Private</DIV></TD><TD></TD></TR>
 
-                <TR><TD NOWRAP><DIV title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="cursor:pointer" ONCLICK="document.getElementById('protected_access').checked=true;document.getElementById('balloon').innerHTML=this.title;"><input id="protected_access" type="radio" name="accessibility" value="protected"/> Protected</DIV></TD><TD></TD></TR>
+                <TR><TD NOWRAP><DIV ID="protected_access_div" title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'protected_access');"><input id="protected_access" type="radio" name="accessibility" value="protected"/> Protected</DIV></TD><TD></TD></TR>
 
-                <TR><TD NOWRAP><DIV title="All users will be able to access study data for analysis and download." style="cursor:pointer" ONCLICK="document.getElementById('public_access').checked=true;document.getElementById('balloon').innerHTML=this.title;"><input id="public_access" type="radio" name="accessibility" value="public"/> Public</DIV></TD><TD></TD></TR>
+                <TR><TD NOWRAP><DIV ID="public_access_div" title="All users will be able to access study data for analysis and download." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'public_access');"><input id="public_access" type="radio" name="accessibility" value="public"/> Public</DIV></TD><TD></TD></TR>
 
               </TABLE>
 

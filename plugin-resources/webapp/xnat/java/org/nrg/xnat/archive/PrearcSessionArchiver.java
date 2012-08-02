@@ -529,8 +529,14 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 
 			org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));
 			org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession.getSessionDir());
-			if (new File(this.prearcSession.getSessionDir().getParent()).listFiles().length == 0)  {
-				org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getParent()));
+			File timestampedDir = new File(this.prearcSession.getSessionDir().getParent());
+			File projectDir = timestampedDir.getParentFile();
+			if (timestampedDir.listFiles().length == 0)  {
+				org.nrg.xft.utils.FileUtils.DeleteFile(timestampedDir);
+			}
+			if (projectDir.listFiles().length == 0)  {
+				// to keep things tidy, also direct the project-level dir if it's empty
+				org.nrg.xft.utils.FileUtils.DeleteFile(projectDir);
 			}
 
 			try {

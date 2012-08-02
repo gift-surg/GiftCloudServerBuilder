@@ -111,8 +111,7 @@ public class ProcessAccessRequest extends SecureAction {
         //data.setScreenTemplate("XDATScreen_manage_xnat_projectData.vm");
         //data.setScreenTemplate("/xnat_projectData/xnat_projectData_summary_management.vm");        
         TurbineUtils.SetSearchProperties(data, project);
-       // data.getSession().setAttribute("tab","Access");
-        data.getParameters().setString("params", "/topTab/Access");
+        data.getParameters().setString("topTab", "Access");
         this.redirectToReportScreen("XDATScreen_report_xnat_projectData.vm", project, data);
     }
     
@@ -191,8 +190,7 @@ public class ProcessAccessRequest extends SecureAction {
         //data.setScreenTemplate("XDATScreen_manage_xnat_projectData.vm");
         //data.setScreenTemplate("/xnat_projectData/xnat_projectData_summary_management.vm");
         TurbineUtils.SetSearchProperties(data, project);
-        //data.getSession().setAttribute("tab","Access");
-        data.getParameters().setString("params", "/topTab/Access");
+        data.getParameters().setString("topTab", "Access");
         this.redirectToReportScreen("XDATScreen_report_xnat_projectData.vm", project, data);
     }
     

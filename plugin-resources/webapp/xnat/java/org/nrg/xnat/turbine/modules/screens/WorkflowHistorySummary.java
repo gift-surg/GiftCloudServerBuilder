@@ -22,7 +22,7 @@ import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
 
 
 public class WorkflowHistorySummary extends SecureReport {
-
+ 
 	@Override
 	public void finalProcessing(RunData data, Context context) {
 		try {
@@ -48,6 +48,10 @@ public class WorkflowHistorySummary extends SecureReport {
 				}
 			});
 			context.put("change_sets",wvs);
+			
+			if(TurbineUtils.HasPassedParameter("hideTopBar",data)){
+				context.put("hideTopBar", Boolean.valueOf((String)TurbineUtils.GetPassedParameter(("hideTopBar"), data)));
+			}
 		} catch (Exception e) {
 			logger.error("",e);
 		}

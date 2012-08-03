@@ -1,10 +1,6 @@
-#if($hideTopBar)
 #set ($template = $data.getTemplateInfo())
 $!template.setLayoutTemplate("/ScreenOnly.vm")
-#else
-#set ($template = $data.getTemplateInfo())
-$!template.setLayoutTemplate("/Default.vm")
-#end
+
 
 <!-- include only if not defined elsewhere -->
 <script type="text/javascript">
@@ -17,6 +13,20 @@ $!template.setLayoutTemplate("/Default.vm")
                 YAHOO.util.Dom.addClass(id, 'hidden');
             }
         }
+
+function toggle_ul(n){
+	var element = document.getElementById("ul_"+n);
+	if (element) { var a = document.getElementById("a_"+n); }
+	if(YAHOO.util.Dom.hasClass(element,"hidden")){
+		// show hidden items and toggle icon to "hide"
+		YAHOO.util.Dom.removeClass(element,"hidden");
+		a.style.backgroundPosition="right top";
+	}else{
+		// hide elements and toggle icon to "expand"
+		YAHOO.util.Dom.addClass(element,"hidden");
+		a.style.backgroundPosition="left top";
+	}
+}
 </script>
 
 
@@ -50,10 +60,9 @@ $!template.setLayoutTemplate("/Default.vm")
 	dd.auditItem 	{	width:160px; font-weight:bold; position:relative;	}
 	dd.auditAgent 	{	width:100px;	}
 	dd.auditTime 	{	width:170px;	}
-	dd.justification { 	clear:left; margin-left:52px !important;	}
 	dt.DATA 	{	background:url($content.getURI("images/icon-file-16.png")) left center no-repeat;	}
-	dt.PROJECT_ADMIN {	background:url($content.getURI("images/icon-folder-16.png")) left center no-repeat;	}
-	dt.SITE_ADMIN 	{	background:url($content.getURI("images/icon-site-16.png")) left center no-repeat;	}
+	dt.PROJECTADMIN {	background:url($content.getURI("images/icon-folder-16.png")) left center no-repeat;	}
+	dt.SITEADMIN 	{	background:url($content.getURI("images/icon-site-16.png")) left center no-repeat;	}
 	dt.ACCESS 	{	background:url($content.getURI("images/icon-user-16.png")) left center no-repeat;	}
 	
 	a.auditButton {
@@ -110,6 +119,7 @@ $!template.setLayoutTemplate("/Default.vm")
                   <dd class="auditItem">Change</dd>
                   <dd class="auditAgent">Agent</dd>
                   <dd class="auditTime">Timestamp</dd>
+                  <dd class="justification">Justification</dd>
               </dl>
             </dl>
 
@@ -117,13 +127,17 @@ $!template.setLayoutTemplate("/Default.vm")
 	#foreach($wv in $change_sets)
 
             <dl class="auditTrailItem $!wv.getWorkflow().getCategory()" id="$wv.getDate()">
-                <dl onClick="toggle_ul('$wv.getDate()')">
+                <dl onClick="toggle_ul($wv.getDate())">
                     <dt class="auditIcon $!wv.getWorkflow().getCategory()"></dt>
                     <dd class="auditItem">$!wv.getMessage() on <a href="/REST/services/audit/$!wv.getWorkflow().getDataType()/$!wv.getWorkflow().getId()">$!wv.getWorkflow().getId()</a>  <a title="expand" id="a_$wv.getDate()" href="#" class="auditButton"></a></dd>
                     <dd class="auditAgent">by $!wv.getUsername()</dd>
                     <dd class="auditTime">$!turbineUtils.formatDate($wv.getDate(),"yyyy-MM-dd HH:mm:ss")</dd>
+                </dl>
+				#if($!wv.getWorkflow().getJustification())
+				<dl>
                     <dd class="justification">$!wv.getWorkflow().getJustification()</dd>
                 </dl>
+				#end
 
 		<!-- changeset details -->
                 <div class="workflow_history hidden" id="ul_$wv.getDate()"> 

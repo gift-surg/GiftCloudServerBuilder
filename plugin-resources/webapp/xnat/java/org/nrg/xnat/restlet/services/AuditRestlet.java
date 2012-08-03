@@ -115,6 +115,8 @@ public class AuditRestlet extends SecureResource {
 					params.put("includeDetails", getQueryVariable("includeDetails"));
 				}
 				
+				params.put("hideTopBar",isQueryVariableTrue("hideTopBar"));
+				
 				return new ItemHTMLRepresentation(item.getItem(), MediaType.TEXT_HTML, getRequest(), user,screen,params);
 			}else{
 				return buildChangesets(item.getItem(), key, mt);

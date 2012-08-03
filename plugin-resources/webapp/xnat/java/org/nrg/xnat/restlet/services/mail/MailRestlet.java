@@ -1,5 +1,6 @@
 package org.nrg.xnat.restlet.services.mail;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -229,7 +230,7 @@ public class MailRestlet extends SecureResource {
     }
 
     private String getHtml() {
-        return getParameter(PARAM_HTML);
+        return StringEscapeUtils.unescapeHtml(getParameter(PARAM_HTML));
     }
 
     private String getParameter(String parameter) {
@@ -248,7 +249,7 @@ public class MailRestlet extends SecureResource {
             validationErrors.add("You can only provide a single value for the email subject.");
         }
         if (!_parameters.containsKey(PARAM_TEXT) && !_parameters.containsKey(PARAM_HTML)) {
-            validationErrors.add("Emails sent through this service must have a message body in either the .");
+            validationErrors.add("Emails sent through this service must have a message body in either the HTML or text parameters.");
         } else {
             if (_parameters.containsKey(PARAM_TEXT) && _parameters.get(PARAM_TEXT).size() > 1) {
                 validationErrors.add("You can only provide a single value for the email text body.");

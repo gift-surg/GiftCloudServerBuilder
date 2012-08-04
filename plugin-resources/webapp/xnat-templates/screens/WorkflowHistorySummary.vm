@@ -119,10 +119,12 @@ $!template.setLayoutTemplate("/Default.vm")
             <dl class="auditTrailItem $!wv.getWorkflow().getCategory()" id="$wv.getDate()">
                 <dl onClick="toggle_ul('$wv.getDate()')">
                     <dt class="auditIcon $!wv.getWorkflow().getCategory()"></dt>
-                    <dd class="auditItem">$!wv.getMessage() on <a href="/REST/services/audit/$!wv.getWorkflow().getDataType()/$!wv.getWorkflow().getId()">$!wv.getWorkflow().getId()</a>  <a title="expand" id="a_$wv.getDate()" href="#" class="auditButton"></a></dd>
-                    <dd class="auditAgent">by $!wv.getUsername()</dd>
-                    <dd class="auditTime">$!turbineUtils.formatDate($wv.getDate(),"yyyy-MM-dd HH:mm:ss")</dd>
-                    <dd class="justification">$!wv.getWorkflow().getJustification()</dd>
+                    <dd class="auditItem">#if($!wv.getMessage())$!wv.getMessage() #else [Unknown Event] #end #if($!wv.getWorkflow().getId())on <a href="/REST/services/audit/$!wv.getWorkflow().getDataType()/$!wv.getWorkflow().getId()">$!wv.getWorkflow().getId()</a> #end <a title="expand" id="a_$wv.getDate()" href="#" class="auditButton"></a></dd>
+                    <dd class="auditAgent">#if($!wv.getUsername()) by $!wv.getUsername() #else by [Unknown] #end</dd>
+                    <dd class="auditTime">#if($wv.getDate())$!turbineUtils.formatDate($wv.getDate(),"yyyy-MM-dd HH:mm:ss")#else [Unknown] #end</dd>
+                    #if($!wv.getWorkflow().getJustification())
+						<dd class="justification">$!wv.getWorkflow().getJustification()</dd>
+					#end
                 </dl>
 
 		<!-- changeset details -->

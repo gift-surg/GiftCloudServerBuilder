@@ -81,12 +81,16 @@ public class AuditRestlet extends SecureResource {
 			
 			ItemI i=ItemSearch.GetItems(xsiType, cc, this.user, false).getFirst();
 			
-			Authorizer.getInstance().authorizeRead(i.getItem(), user);
+			if(i !=null){
+				Authorizer.getInstance().authorizeRead(i.getItem(), user);
+			}
 			
 			return i;
 		} catch (ElementNotFoundException e) {
 			throw new ClientException(e);
-		} catch (Exception e) {
+		}  catch (ActionException e) {
+			throw e;
+		}catch (Exception e) {
 			throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
 		}
 	}

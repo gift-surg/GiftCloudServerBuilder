@@ -62,6 +62,10 @@ function reconEditor(_sessionID,_reconID,_options){
 		
 	};
 	
+	this.displayError=function(errorMsg){
+		alert(errorMsg);
+	};
+	
 	this.render=function(){
 		if(this.recon){						
 			this.panel=new YAHOO.widget.Dialog("reconDialog",{close:true,

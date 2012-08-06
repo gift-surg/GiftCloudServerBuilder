@@ -52,6 +52,10 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         }
     };
 
+	this.displayError=function(errorMsg){
+		alert(errorMsg);
+	};
+	
     this.renderProjects = function () {
         //noinspection JSUnresolvedVariable
         if (this.projectResultSet.ResultSet.Result.length == 0) {

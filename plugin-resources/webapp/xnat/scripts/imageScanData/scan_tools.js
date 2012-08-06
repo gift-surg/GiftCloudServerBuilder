@@ -130,6 +130,10 @@ function ScanEditor(_sessionID,_scanID,_options){
 
 	};
 
+	this.displayError=function(errorMsg){
+		alert(errorMsg);
+	};
+	
 	this.render=function(){
 		if(this.scan){
 			this.panel=new YAHOO.widget.Dialog("scanDialog",{close:true,

@@ -15,6 +15,7 @@ import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
+import org.nrg.xdat.turbine.modules.actions.ModifyItem.CriticalException;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
@@ -142,6 +143,14 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     	return;
                     }
                 	
+                    try {
+                        preSave(found,data,context);
+                    } catch (CriticalException e) {
+                        throw e;
+                    } catch (RuntimeException e) {
+                        logger.error("",e);
+                    }
+                    
                     try {
                     SaveItemHelper.authorizedSave(found,TurbineUtils.getUser(data),false,allowDataDeletion(),c);
 					} catch (Exception e1) {

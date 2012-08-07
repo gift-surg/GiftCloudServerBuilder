@@ -5,6 +5,7 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
+
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XnatSubjectassessordata;
@@ -12,37 +13,42 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xnat.turbine.utils.ScanQualityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public abstract class EditSubjectAssessorScreen extends EditScreenA {
+    private final Logger logger = LoggerFactory.getLogger(EditSubjectAssessorScreen.class);
 
     @Override
-    public void finalProcessing(RunData data, Context context) {
+    public void finalProcessing(final RunData data, final Context context) {
         try {
-            if (item != null)
-            {
-                XnatSubjectassessordata mr=null;
-                ItemI part = TurbineUtils.GetParticipantItem(data);
-                if (part !=null)
-                {
-                    mr= new XnatSubjectassessordata(item);
+            final String project;
+            if (item != null) {
+                final XnatSubjectassessordata assessor;
+                final ItemI part = TurbineUtils.GetParticipantItem(data);
+                if (part !=null) {
+                    assessor= new XnatSubjectassessordata(item);
                     context.put("part",new XnatSubjectdata(part));
-                }else{
-                    mr = new XnatSubjectassessordata(item);
-                    context.put("notes",mr.getNote());
-                    context.put("part",mr.getSubjectData());
+                } else {
+                    assessor = new XnatSubjectassessordata(item);
+                    context.put("notes",assessor.getNote());
+                    context.put("part",assessor.getSubjectData());
                 }
-                
-                if(mr.getProject()==null){
-                	if(context.get("project")!=null){
-                		mr.setProject((String)context.get("project"));
-                	}
-                }
-            }
-            
 
-        }catch(Exception e)
-        {
+                if(assessor.getProject()==null){
+                    if(context.get("project")!=null){
+                        assessor.setProject((String)context.get("project"));
+                    }
+                }
+                project = assessor.getProject();
+            } else {
+                project = (String)context.get("project");
+            }
+            context.put("qualityLabels", ScanQualityUtils.getQualityLabels(project, TurbineUtils.getUser(data)));
+        } catch(Throwable t) {
+            logger.warn("error in preparing subject assessor edit screen", t);
         }
     }
-
 }

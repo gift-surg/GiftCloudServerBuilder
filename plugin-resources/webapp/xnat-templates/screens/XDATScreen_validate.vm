@@ -18,10 +18,14 @@
 												<TR>
 					<TD align="left">Status					:</TD>
 										<TD align="left">
-										<label><input ID="value1" type="radio" name="${item.getXSIType()}.validation.status" value="usable"
-										#if($!item.getProperty("validation.status")=="usable")CHECKED#end>&nbsp;Usable</label><br>
-										<label><input ID="value2" type="radio" name="${item.getXSIType()}.validation.status" value="unusable"
-										#if($!item.getProperty("validation.status")=="unusable")CHECKED#end>&nbsp;Unusable</label><br>
+		
+#foreach ($quality in $qualityLabels)
+<label>
+<input ID="value$velocityCount" type="radio"
+       name="${item.getXSIType()}.validation.status value="$quality"
+       #if ($!item.getProperty("validation.status")==$quality)CHECKED#end>
+&nbsp;$quality</label>
+#end
 															</TD>
 				</TR>
 												<TR>

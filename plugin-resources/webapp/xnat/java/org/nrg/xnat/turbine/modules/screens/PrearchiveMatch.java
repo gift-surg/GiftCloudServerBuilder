@@ -9,10 +9,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -27,6 +25,7 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.turbine.utils.ScanQualityUtils;
 
 public class PrearchiveMatch extends SecureScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(PrearchiveMatch.class);
@@ -36,8 +35,6 @@ public class PrearchiveMatch extends SecureScreen {
     final String[] ct_identifiers={"xnat:ctSessionData.ID","xnat:ctSessionData.label","xnat:ctSessionData.sharing.share.label"};
     @Override
     protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        Long count =new Long(0);
-        Map sm = new Hashtable();
         ArrayList allMatchers=new ArrayList();
 
         String project = (String)TurbineUtils.GetPassedParameter("project", data);
@@ -49,7 +46,9 @@ public class PrearchiveMatch extends SecureScreen {
             prearchive_path += File.separator;
         }
         
-        UserI user =TurbineUtils.getUser(data);
+        final UserI user =TurbineUtils.getUser(data);
+        context.put("qualityLabels", ScanQualityUtils.getQualityLabels(project, user));
+
         File dir = new File(prearchive_path);
         
         if (dir.exists())

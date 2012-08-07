@@ -1,0 +1,9 @@
+td.quality-usable {
+    color:green;font-weight:700
+}
+td.quality-questionable {
+    color:orange;font-weight:700
+}
+td.quality-unusable {
+    color:red;font-weight:700
+}

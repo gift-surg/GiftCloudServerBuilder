@@ -7,6 +7,7 @@ package org.nrg.xnat.turbine.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatImagescandataI;
@@ -53,9 +54,10 @@ public class XNATSessionPopulater {
 	        XnatImagesessiondata imageSessionData =(XnatImagesessiondata) BaseElement.GetGeneratedItem(item);
 	        imageSessionData.fixScanTypes();
 
+	        final List<String> scanQualityLabels = ScanQualityUtils.getQualityLabels(project, user);
 	        for(final XnatImagescandataI scan: imageSessionData.getScans_scan()){
 	        	if(!XNATUtils.hasValue(scan.getQuality())){
-	        		((XnatImagescandata)scan).setQuality("usable");
+	        		((XnatImagescandata)scan).setQuality(scanQualityLabels.get(0));
 	        	}
 	        }
 	        

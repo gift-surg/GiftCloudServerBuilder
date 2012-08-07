@@ -449,7 +449,7 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 		 * @see org.nrg.xft.presentation.ItemEventI#getObjectHeader()
 		 */
 		public String getObjectHeader() {
-			return object.objectHeader;
+			return object.getObjectHeader();
 		}
 		/* (non-Javadoc)
 		 * @see org.nrg.xft.presentation.ItemEventI#getObjectLabel()

@@ -84,6 +84,11 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="element_access">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="element_name"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="secondary_password" minOccurs="0">
@@ -191,6 +196,11 @@
 		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="role_type">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="role_name"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="allowed_actions" minOccurs="0">
 				<xs:complexType>
@@ -244,6 +254,11 @@
 		</xs:simpleContent>
 	</xs:complexType>
 	<xs:complexType name="element_security">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="element_name"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="primary_security_fields" minOccurs="0">
 				<xs:complexType>
@@ -345,6 +360,11 @@
 		<xs:attribute name="code" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="element_action_type">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="element_action_name"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:attribute name="element_action_name" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:appinfo>
@@ -371,6 +391,11 @@
 		<xs:attribute name="grouping" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="user">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="login"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="login">
 				<xs:annotation>
@@ -766,6 +791,11 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="userGroup">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="ID"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element ref="xdat:element_access" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>

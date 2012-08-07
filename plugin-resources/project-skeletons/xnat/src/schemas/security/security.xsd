@@ -458,7 +458,8 @@
 						<xs:element name="groupID" type="xs:string" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
-									<xdat:field uniqueComposite="true" baseElement="xdat:userGroup" baseCol="ID">
+									<xdat:element displayIdentifiers="groupID"/>
+									<xdat:field displayName="user group" uniqueComposite="true" baseElement="xdat:userGroup" baseCol="ID">
 										<xdat:relation relationType="single" uniqueComposite="true"/>
 									</xdat:field>
 								</xs:appinfo>

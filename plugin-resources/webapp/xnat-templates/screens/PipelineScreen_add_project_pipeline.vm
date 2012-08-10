@@ -136,8 +136,13 @@ $newpipeline.getDescription()
 		<TD colspan="2" align="left"><b>Pipeline setup</b></TD>
 	</TR>
 	<TR>
-		<TD><b>Is this pipeline to be launched automatically while archiving?</b></TD>
-		<TD> <input type="checkbox"  name="auto_archive" $checked/> </TD>
+		<TD colspan="2" align="left"> 
+		    <TABLE>
+			<TR>
+			  <TD><b>Launch pipeline automatically when session is archived?</b></TD><TD><input type="checkbox"  name="auto_archive" $checked/></TD>
+			</TR>
+			</TABLE>
+		</TD>
 	</TR>
 
 <input type="hidden"  id=$dblQts${schemaType}.stepId$dblQts name=$dblQts${schemaType}.stepId$dblQts value="$newpipeline.getName()"/></TD>

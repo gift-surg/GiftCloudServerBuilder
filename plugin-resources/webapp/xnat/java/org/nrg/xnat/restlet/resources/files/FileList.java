@@ -192,6 +192,7 @@ public class FileList extends XNATCatalogTemplate {
                     }
 
                     final boolean overwrite=this.isQueryVariableTrue("overwrite");
+                    final boolean extract=this.isQueryVariableTrue("extract");
 
 
                     PersistentWorkflowI wrk=PersistentWorkflowUtils.getWorkflowByEventId(user,getEventId());
@@ -225,7 +226,7 @@ public class FileList extends XNATCatalogTemplate {
                     UpdateMeta um= new UpdateMeta(i,!(skipUpdateStats));
 
                     try {
-                        this.buildResourceModifier(overwrite,um).addFile(getFileWriters(),resourceIdentifier,type, filepath, this.buildResourceInfo(um),overwrite);
+                        this.buildResourceModifier(overwrite,um).addFile(getFileWriters(),resourceIdentifier,type, filepath, this.buildResourceInfo(um),extract);
                     } catch (Exception e) {
                         logger.error("",e);
                         throw e;

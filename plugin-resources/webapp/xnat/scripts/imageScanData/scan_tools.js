@@ -130,6 +130,10 @@ function ScanEditor(_sessionID,_scanID,_options){
 
 	};
 
+	this.displayError=function(errorMsg){
+		alert(errorMsg);
+	};
+	
 	this.render=function(){
 		if(this.scan){
 			this.panel=new YAHOO.widget.Dialog("scanDialog",{close:true,
@@ -1011,7 +1015,6 @@ function scanListingEditor(_tbody,_scanSet,_options){
 					scan.note_input.value=scan.extension.Note;
 				}
 				scan.note_input.size="40";
-				scan.note_input.className="nullable";
 			}
 			td.appendChild(scan.note_input);
 			tr.appendChild(td);

@@ -45,6 +45,10 @@ function MinExptList(_div, _options){
 		}
 	};
 	
+	this.displayError=function(errorMsg){
+		alert(errorMsg);
+	};
+	
 	this.render=function(){
 		var items=new Array();
 									

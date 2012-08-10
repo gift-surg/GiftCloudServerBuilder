@@ -39,6 +39,10 @@ function ProjectSubjectSelector(_proj_select, _subj_select,_submit_button, _defa
 		}
 	};
 	
+	this.displayError=function(errorMsg){
+		alert(errorMsg);
+	};
+	
 	this.renderProjects=function(){
 		if(this.projectResultSet.ResultSet.Result.length==0){
 			

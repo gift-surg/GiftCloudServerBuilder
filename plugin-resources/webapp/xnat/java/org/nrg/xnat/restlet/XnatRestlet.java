@@ -29,4 +29,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface XnatRestlet {
     String[] value();
     boolean required() default false;
+    boolean secure() default true;
 }

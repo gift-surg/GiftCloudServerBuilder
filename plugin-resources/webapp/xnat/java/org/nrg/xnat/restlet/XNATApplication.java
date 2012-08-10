@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -81,37 +82,36 @@ import org.restlet.util.Template;
  * See the XNAT documentation on extending XNAT for more information.
  */
 public class XNATApplication extends Application {
-    private static final Log _log = LogFactory.getLog(XNATApplication.class);
     public static final String PREARC_PROJECT_URI = "/prearchive/projects/{PROJECT_ID}";
     public static final String PREARC_SESSION_URI = PREARC_PROJECT_URI + "/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
 
-	public XNATApplication(Context parentContext) {
+    public XNATApplication(Context parentContext) {
         super(parentContext);
 
     }
     @Override
     public synchronized Restlet createRoot() {
-    	Router rootRouter = new Router(getContext());
+        Router rootRouter = new Router(getContext());
 
-    	Router securedResourceRouter = new Router(getContext());
+        Router securedResourceRouter = new Router(getContext());
         addRoutes(securedResourceRouter);
-        addExtensionRoutes(securedResourceRouter);
-    	
+        List<Class<?>> publicRoutes = addExtensionRoutes(securedResourceRouter);
+
         XnatSecureGuard guard = new XnatSecureGuard();
         guard.setNext(securedResourceRouter);
-    	rootRouter.attach(guard);
-    	
-    	addPublicRoutes(rootRouter);
-    	
-    	return rootRouter;
+        rootRouter.attach(guard);
+
+        addPublicRoutes(rootRouter, publicRoutes);
+
+        return rootRouter;
     }
 
-	private void attachArchiveURI(final Router router,final String uri,final Class<? extends Resource> clazz){
-		router.attach(uri.intern(),clazz);
-		router.attach(("/archive"+uri).intern(),clazz);
-	}
+    private void attachArchiveURI(final Router router,final String uri,final Class<? extends Resource> clazz){
+        router.attach(uri.intern(),clazz);
+        router.attach(("/archive"+uri).intern(),clazz);
+    }
 
-	private void addRoutes(final Router router){
+    private void addRoutes(final Router router){
         attachArchiveURI(router,"/investigators",InvestigatorListResource.class);
 
         //BEGIN ---- Pipelines section
@@ -155,7 +155,7 @@ public class XNATApplication extends Application {
         attachArchiveURI(router,"/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",ScanDIRResource.class);
         attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions",ReconList.class);
         attachArchiveURI(router,"/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}",ReconResource.class);
-		attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);
+        attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors",ProjSubExptAsstList.class);
         attachArchiveURI(router,"/experiments/{ASSESSED_ID}/assessors/{EXPT_ID}",ExptAssessmentResource.class);
 
         attachArchiveURI(router,"/subjects/{SUBJECT_ID}",SubjectResource.class);
@@ -274,7 +274,7 @@ public class XNATApplication extends Application {
         router.attach("/projects/{PROJECT_ID}/config",ConfigResource.class);
         router.attach("/projects/{PROJECT_ID}/config/{TOOL_NAME}",ConfigResource.class);
         router.attach("/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}",ConfigResource.class).setMatchingMode(Template.MODE_STARTS_WITH);
-        
+
         // System services
         router.attach("/services/import",Importer.class);
         router.attach("/services/archive",Archiver.class);
@@ -306,16 +306,18 @@ public class XNATApplication extends Application {
         attachArchiveURI(router,"/projects/{PROJECT_ID}/visits/{VISIT_ID}/experiments",ExptVisitListResource.class);  //GET to return a list of experiments.
         attachArchiveURI(router,"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/visits/{VISIT_ID}/experiments",ExptVisitListResource.class);  //GET to return a list of experiments.
 
-	}
+    }
 
     /**
      * This method walks the <b>org.nrg.xnat.restlet.extensions</b> package and attempts to find extensions for the
      * set of available REST services.
      * @param router The URL router for the restlet servlet.
+     * @return A list of classes that should be attached unprotected, i.e. publicly accessible.
      */
-    private void addExtensionRoutes(Router router) {
-
+    private List<Class<?>> addExtensionRoutes(Router router) {
         List<Class<?>> classes;
+        List<Class<?>> publicClasses = new ArrayList<Class<?>>();
+
         try {
             classes = Reflection.getClassesForPackage("org.nrg.xnat.restlet.extensions");
         } catch (Exception exception) {
@@ -332,26 +334,52 @@ public class XNATApplication extends Application {
                         throw new NrgServiceRuntimeException(message);
                     } else {
                         _log.error(message);
-    }
-}
-                String[] paths = annotation.value();
-                if(paths == null || paths.length == 0) {
-                    String message = "You must specify a value for the XnatRestlet annotation to indicate the hosting path for the restlet extension in class: " + clazz.getName();
-                    if (required) {
-                        throw new NrgServiceRuntimeException(message);
-                    } else {
-                        _log.error(message);
-                    }
-                } else {
-                    for (String path : paths) {
-                        router.attach(path, (Class<? extends Resource>) clazz);
                     }
                 }
+
+                if (annotation.secure()) {
+                    attachPath(router, clazz, annotation);
+                } else {
+                    publicClasses.add(clazz);
+                }
+            }
+        }
+
+        return publicClasses;
+    }
+
+    private void attachPath(Router router, Class<?> clazz) {
+        attachPath(router, clazz, clazz.getAnnotation(XnatRestlet.class));
+    }
+
+    private void attachPath(Router router, Class<?> clazz, XnatRestlet annotation) {
+        String[] paths = annotation.value();
+        boolean required = annotation.required();
+        if(paths == null || paths.length == 0) {
+            String message = "You must specify a value for the XnatRestlet annotation to indicate the hosting path for the restlet extension in class: " + clazz.getName();
+            if (required) {
+                throw new NrgServiceRuntimeException(message);
+            } else {
+                _log.error(message);
+            }
+        } else {
+            for (String path : paths) {
+                router.attach(path, (Class<? extends Resource>) clazz);
             }
         }
     }
 
-	private void addPublicRoutes(final Router router){
+    private void addPublicRoutes(final Router router, List<Class<?>> publicRoutes){
         router.attach("/version",VersionRepresentation.class);
-	}
+
+        if (publicRoutes == null) {
+            return;
+        }
+
+        for (Class<?> route : publicRoutes) {
+            attachPath(router, route);
+        }
+    }
+
+    private static final Log _log = LogFactory.getLog(XNATApplication.class);
 }

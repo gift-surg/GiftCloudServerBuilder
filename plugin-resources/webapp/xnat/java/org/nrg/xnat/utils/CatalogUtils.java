@@ -448,9 +448,6 @@ public class CatalogUtils {
 	
 		if (extract && (compression_method.equalsIgnoreCase(".tar") || compression_method.equalsIgnoreCase(".gz") || compression_method.equalsIgnoreCase(".zip") || compression_method.equalsIgnoreCase(".zar"))) {
 			File destinationDir = catFile.getParentFile();
-			if(dest!=null){
-				destinationDir=new File(destinationDir,dest);
-			}
 			final InputStream is = fi.getInputStream();
 	
 			ZipI zipper = null;

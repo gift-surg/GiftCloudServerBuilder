@@ -1702,21 +1702,14 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="xdat-beans-1.0-source.jar">
+      <library name="xdat-beans-1.6.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/xdat/jars/xdat-beans-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="xdat-beans-1.0.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/xdat/jars/xdat-beans-1.6-source.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -1732,15 +1725,6 @@
       <library name="xdat-createUserSession-1.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="xdat-downloader-1.0.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/xdat/jars/xdat-downloader-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1876,34 +1860,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -1917,7 +1874,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/DicomEdit-2.2.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1926,13 +1883,39 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/DicomEdit-2.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="plexiviewer" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

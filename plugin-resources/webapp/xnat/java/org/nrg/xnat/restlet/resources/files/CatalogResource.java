@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.nrg.action.ClientException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.om.WrkWorkflowdata;
@@ -227,6 +228,11 @@ public class CatalogResource extends XNATCatalogTemplate {
 						}
 						
 						final String rootPath=proj.getRootArchivePath();
+
+						if(!(((XFTItem)security).getItem().isActive() || ((XFTItem)security).getItem().isQuarantine() )){
+							//cannot modify it if it isn't active
+							throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,new Exception());
+						}
 						
 						final PersistentWorkflowI workflow=PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, security.getXSIType(), securityId, (proj==null)?null:proj.getId(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.REMOVE_CATALOG));
 				    	EventMetaI ci=workflow.buildEvent();

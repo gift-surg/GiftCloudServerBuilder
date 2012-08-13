@@ -19,6 +19,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.slf4j.Logger;
@@ -81,8 +82,9 @@ public class XNATRestletServlet extends ServerServlet {
             logger.error("Unable to either find or initialize script database", e);
         }
 
+        PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
         try {
-            PrearcDatabase.initDatabase();
+            PrearcDatabase.initDatabase(prearcConfig.isReloadPrearcDatabaseOnApplicationStartup());
         } catch (Throwable e) {
             logger.error("Unable to initialize prearchive database", e);
         }

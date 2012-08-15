@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
@@ -20,6 +21,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.xml.sax.SAXException;
 
@@ -221,14 +223,15 @@ public class ArcSpecManager {
                 logger.error("",e);
             }
             System.out.println("done");
-            
+   
             if(dbInit){
-            try {
-    			PrearcDatabase.initDatabase();
-    		} catch (Exception e) {
-    			logger.error("",e);
-    		}
-        }
+                PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
+	            try {
+	    			PrearcDatabase.initDatabase(prearcConfig.isReloadPrearcDatabaseOnApplicationStartup());
+	    		} catch (Exception e) {
+	    			logger.error("",e);
+	    		}
+            }
         }
         
         return arcSpec;

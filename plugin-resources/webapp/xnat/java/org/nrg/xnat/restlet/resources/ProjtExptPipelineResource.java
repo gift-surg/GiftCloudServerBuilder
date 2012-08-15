@@ -43,7 +43,6 @@ import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -130,11 +129,11 @@ public class ProjtExptPipelineResource extends SecureResource {
 
 						PersistentWorkflowI wrk = PersistentWorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.TRIGGER_PIPELINES));
 						EventMetaI c=wrk.buildEvent();
-						
+
 						try {
 							FixScanTypes fst=new FixScanTypes(expt,user,proj,true,c);
 							fst.call();
-							
+
 							TriggerPipelines tp = new TriggerPipelines(expt,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
 							tp.call();
 							PersistentWorkflowUtils.complete(wrk,c);
@@ -176,7 +175,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 						PersistentWorkflowI wrk = PersistentWorkflowUtils.buildOpenWorkflow(user, expt.getItem(),newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.TRIGGER_PIPELINES));
 						EventMetaI c=wrk.buildEvent();
 						PersistentWorkflowUtils.save(wrk,c);
-					
+
 						try {
 							FixScanTypes fst=new FixScanTypes(expt,user,proj,true,c);
 							fst.call();
@@ -224,15 +223,19 @@ public class ProjtExptPipelineResource extends SecureResource {
 	    xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
 	    xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
 
-	    
+
 	    xnatPipelineLauncher.setPipelineName(arcPipeline.getLocation());
 		xnatPipelineLauncher.setId(expt.getId());
 		xnatPipelineLauncher.setLabel(expt.getLabel());
 		xnatPipelineLauncher.setExternalId(expt.getProject());
 		xnatPipelineLauncher.setDataType(expt.getXSIType());
 
+    	Date date = new Date();
+    	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+	    String dateSuffix = formatter.format(date);
+
 		String buildDir = PipelineFileUtils.getBuildDir(expt.getProject(), true);
-		buildDir +=   "archive_trigger"  ;
+		buildDir +=   "archive_trigger" + File.separator +  dateSuffix    ;
 		xnatPipelineLauncher.setBuildDir(buildDir);
 		xnatPipelineLauncher.setNeedsBuildDir(false);
 
@@ -302,10 +305,7 @@ public class ProjtExptPipelineResource extends SecureResource {
 	    			}
     		}
     	}
-    	Date date = new Date();
-    	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-	    String s = formatter.format(date);
-		String paramFileName = expt.getLabel() + "_params_" + s + ".xml";
+		String paramFileName = expt.getLabel() + "_" + arcPipeline.getName() + "_params_" + dateSuffix + ".xml";
 		String paramFilePath = saveParameters(buildDir+File.separator + expt.getLabel(),paramFileName,parameters);
 	    xnatPipelineLauncher.setParameterFile(paramFilePath);
 	    return xnatPipelineLauncher.launch();

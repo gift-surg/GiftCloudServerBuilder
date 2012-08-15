@@ -3,7 +3,7 @@
 <!-- BEGIN val_protocolData/report.vm -->
 
 <script type="text/javascript">
-	document.title = "Protocol Validation for $!mr.getIdentifier($project,false)";
+	document.title = "Acquisition Validation for $!mr.getIdentifier($project,false)";
 </script>
 
 <style>
@@ -102,7 +102,7 @@ TH {
 			
 </br>			
 
-<b>Scan $!scanId </b> ($!scan.getType()) <font class="status field$status">$!status.toUpperCase()</font> 
+<b>Scan $!scanId </b> ($!scan.getType()-$!scan.getSeriesDescription()) <font class="status field$status">$!status.toUpperCase()</font> 
 <br/>
 <TABLE>
 		#foreach($condition in $conditions)

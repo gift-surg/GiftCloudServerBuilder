@@ -220,7 +220,7 @@ var warningDialog = new YAHOO.widget.SimpleDialog("session_timeout_dialog", {
 						    modal:true,
 						    icon:YAHOO.widget.SimpleDialog.ICON_WARN,
 						    visible:true,
-						    draggable:false,
+						    draggable:true,
 						    hideAfterSubmit : true,
 						    buttons : [
 						      { text : 'Renew', handler : handleOk, isDefault:true },

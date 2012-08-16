@@ -279,7 +279,7 @@ function FileViewer(_obj){
 	   		}
 	   	
 	   	    this.panel=new YAHOO.widget.Dialog("fileListing",{close:true,
-			   width:"780px",height:"550px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
+			   width:"780px",height:"550px",underlay:"shadow",modal:true,fixedcenter:true,visible:false,draggable:true});
 			this.panel.setHeader("File Manager");
 		
 			this.catalogClickers=new Array();
@@ -450,7 +450,7 @@ function FileViewer(_obj){
 						fixedcenter:true,
 						modal:true,
 	    				visible:false,
-						draggable:false });
+						draggable:true });
 					mySimpleDialog.setHeader("Preparing Download");
 					mySimpleDialog.setBody("Your download should begin within 30 seconds.  If you encounter technical difficulties, you can restart the download using this <a href='" + destination +"'>link</a>.");
 					

@@ -136,7 +136,7 @@ img { /* vertical-align: bottom ; */ }
 #main_nav.hidden { overflow: hidden ; }
 
 /* warning bar */
-#warning_bar { width: 939px ; height: 20px ; position: relative ; left: -10px ; top: -2px ; line-height: 20px ; vertical-align: middle ; font-size: 11px ; background: #ffc ; color: #666 ; border: 1px solid #ee9 ; border-left: none ; }
+#warning_bar { width: 944px ; height: 20px ; position: relative ; left: -15px ; top: -2px ; line-height: 20px ; vertical-align: middle ; font-size: 11px ; background: #ffc ; color: #666 ; border: 1px solid #ee9 ; border-left: none ; }
 /* warning bar with no left 'page border' and 960px user bar */
 /*
 #warning_bar {
@@ -179,7 +179,7 @@ img { /* vertical-align: bottom ; */ }
 
 /* footer graphic */
 
-#xnat_power { width: 100% ; margin-top: 75px ; border-top: 1px solid #ccc ; }
+#xnat_power { width: 100% ; margin: 75px 20px 20px 30px ; border-top: 1px solid #ccc ; }
 #xnat_power a { float: right ; display: inline-block ; margin-top: 10px ; }
 
 /* overrides to make this thing look better? */
@@ -359,10 +359,18 @@ div.containerTitle.withColor { background: #084FAB ; }
 
 
 /* POP-UP ELEMENTS */
-#timeout_dialog_wrapper { z-index: 999999990 ; }
-#session_timeout_dialog_mask { z-index: 999999991 !important ; }
-#session_timeout_dialog_c { z-index: 999999992 !important ; }
-#session_timeout_dialog { width: 320px !important ; z-index: 999999999 !important ; }
+body #timeout_dialog_wrapper { z-index: 999999990 !important ; }
+body #session_timeout_dialog_mask { z-index: 999999991 !important ; }
+body #session_timeout_dialog_c { z-index: 999999992 !important ; }
+body #session_timeout_dialog { width: 320px !important ; z-index: 999999999 !important ; }
+
+body #fileListing_mask { z-index: 101 !important ; }
+body #fileListing_c { z-index: 102 !important ; }
+body #fileListing { z-index: 103 !important ; }
+
+body #fileUploadDialog_mask { z-index: 201 !important ; }
+body #fileUploadDialog_c { z-index: 202 !important ; }
+body #fileUploadDialog { z-index: 203 !important ; }
 
 span.close { position: relative ; left: 2px ; top: 2px ; }
 .yui-dt-button img { position: relative ; top: 2px ; }

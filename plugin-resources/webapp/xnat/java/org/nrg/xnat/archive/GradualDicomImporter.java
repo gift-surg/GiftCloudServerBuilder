@@ -280,6 +280,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
             session = dicomObjectIdentifier.getSessionLabel(o);
         }
         
+        String visit;
+        if (params.containsKey(URIManager.VISIT_LABEL)){
+        	visit = (String)params.get(URIManager.VISIT_LABEL);
+        	logger.trace("using provided visit label {}", params.get(URIManager.VISIT_LABEL));
+        } else {
+        	visit = null;
+        }
+        
         if (Strings.isNullOrEmpty(session)) {
             session = "dicom_upload";
         }
@@ -298,6 +306,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setFolderName(session);
         sess.setName(session);
         sess.setProject(project_id);
+        sess.setVisit(visit);
         sess.setScan_date(o.getDate(Tag.StudyDate));
         sess.setTag(studyInstanceUID);
         sess.setTimestamp(tsdir.getName());

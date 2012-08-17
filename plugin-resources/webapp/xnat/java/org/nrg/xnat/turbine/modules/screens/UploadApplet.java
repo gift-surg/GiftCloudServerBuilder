@@ -31,6 +31,8 @@ public class UploadApplet extends SecureScreen {
         storeParameterIfPresent(data, context, "session_id", "expt_id");
         storeParameterIfPresent(data, context, "visit_id");
         storeParameterIfPresent(data, context, "visit");
+        storeParameterIfPresent(data, context, "protocol");
+        storeParameterIfPresent(data, context, "expectedModality");
         storeParameterIfPresent(data, context, "scan_type");
         if (TurbineUtils.HasPassedParameter("session_date", data)) {
             context.put("session_date", ((String)TurbineUtils.GetPassedParameter("session_date", data)).replace('.', '/'));

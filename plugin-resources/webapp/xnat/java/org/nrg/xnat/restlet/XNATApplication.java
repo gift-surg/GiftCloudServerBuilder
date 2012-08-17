@@ -50,7 +50,6 @@ import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
 import org.nrg.xnat.restlet.resources.files.FileList;
-import org.nrg.xnat.restlet.resources.protocols.ProjectSubjectVisitsRestlet;
 import org.nrg.xnat.restlet.services.AliasTokenRestlet;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.restlet.services.AuditRestlet;
@@ -294,10 +293,7 @@ public class XNATApplication extends Application {
         router.attach("/services/audit",AuditRestlet.class);
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
-        // TODO: These are placeholders for the protocol REST services to come.
-        router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits", ProjectSubjectVisitsRestlet.class);
-        router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/visits/{VISIT_ID}", ProjectSubjectVisitsRestlet.class);
-        router.attach("/services/protocols/project/{PROJECT_ID}/subject/{SUBJECT_ID}/generate/{TYPE}", ProjectSubjectVisitsRestlet.class);
+
 
         attachArchiveURI(router,"/projects/{PROJECT_ID}/visits/{VISIT_ID}",VisitResource.class); //use this to get or delete a visit. Deletion will automatically dis-associate all experiments associated with the deleted visit.
         attachArchiveURI(router,"/visits/{VISIT_ID}",VisitResource.class); //for consistency with the URI result returned by ProjSubVisitList. only GET. DELETE on this URI does not work (you need to pass the project to delete)

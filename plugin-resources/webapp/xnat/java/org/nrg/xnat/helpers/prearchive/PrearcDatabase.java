@@ -520,7 +520,7 @@ public final class PrearcDatabase {
     	}
     }
 
-    public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project) throws Exception {
+    public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project, final String visit, final String protocol) throws Exception {
         final SessionData sd = PrearcDatabase.getSession(session, timestamp, project);
         try {
             new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
@@ -533,6 +533,12 @@ public final class PrearcDatabase {
                     final String subject = sd.getSubject();
                     if (!Strings.isNullOrEmpty(subject)) {
                         params.put("subject_ID", sd.getSubject());
+                    }
+                    if (!Strings.isNullOrEmpty(visit)) {
+                    	params.put("visit", visit);
+                    }
+                    if (!Strings.isNullOrEmpty(protocol)) {
+                    	params.put("protocol", protocol);
                     }
 
                     try {

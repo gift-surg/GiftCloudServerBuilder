@@ -40,7 +40,7 @@ public class DicomDataUsingTestCase extends TestCase implements Iterable<File> {
     }
 
     public Iterator<File> iterator() {
-        return new FileWalkIterator(sample1);//, null);
+        return new FileWalkIterator(sample1, null);
     }
     
     protected File getSampleData() { return sample1; }

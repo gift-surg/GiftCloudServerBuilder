@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.edit.AttributeException;
 import org.nrg.dcm.edit.ScriptEvaluationException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xft.XFT;
 
 /**
@@ -81,9 +83,13 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	abstract List<File> getFilesToAnonymize() throws IOException;
 	
 	public java.lang.Void call() throws Exception {
-		if(XFT.PROPS.containsKey("data.anonymize") && !(BooleanUtils.toBoolean(XFT.PROPS.getProperty("data.anonymize")))){
+        try {
+            if(XDAT.getSiteConfiguration().containsKey("data.anonymize") && !(BooleanUtils.toBoolean(XDAT.getSiteConfiguration().getProperty("data.anonymize")))){
 			return null;
 		}
+        } catch (ConfigServiceException exception) {
+            throw new Exception("An error occurred trying to retrieve the data.anonymize configuration setting.", exception);
+        }
 		if (this.getScript() != null) {
 			List<File> fs = this.getFilesToAnonymize();
 			for (File f : fs) {

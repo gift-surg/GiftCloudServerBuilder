@@ -9,12 +9,12 @@ $navigation.setTemplate("/bodyOpen.vm")
 
 <table id="wrapper_table" height="100%" border="0" valign="top">
   <tr ID="DefaultTopTR">
-    <td height="60"  #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
+    <td height="60"  #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultTop.vm")
     </td>
   </tr>
   <tr>
-	#if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true")))
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-left-bar","true")))
     <td class="leftBar" align="left" valign="top">
     <!-- DefaultLeft -->  
     $navigation.setTemplate("/DefaultLeft.vm")
@@ -32,7 +32,7 @@ $navigation.setTemplate("/bodyOpen.vm")
     </td>
   </tr>
   <tr id="DefaultBottomTR">
-    <td valign="bottom"  #if($turbineUtils.toBoolean($configProps.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
+    <td valign="bottom"  #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-left-bar","true"))) colspan="2" #end>
       $navigation.setTemplate("/DefaultBottom.vm")
     </td>
   </tr>

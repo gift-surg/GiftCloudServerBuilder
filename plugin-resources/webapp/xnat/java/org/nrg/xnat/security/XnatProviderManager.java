@@ -151,13 +151,6 @@ public class XnatProviderManager extends ProviderManager {
 		try {
 			URL url = getClass().getResource(path);
 			properties.load(url.openStream());
-			
-			File custom=new File(XFT.GetConfDir(),"custom.properties");
-			if(custom.exists()){
-				properties.load(custom.toURL().openStream());
-			}
-			
-			XFT.PROPS=properties;
 		} catch (IOException e) {
 			logger.error(e);
 		}

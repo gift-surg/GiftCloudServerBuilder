@@ -786,7 +786,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 				var file=this.cat.files[fC];
 				var size=parseInt(file.Size);
 				var path=file.URI.substring(file.URI.indexOf("/files/")+7);
-				var _lbl="<a style='font-size:9px' target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + path + "</a>"
+				var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + path + "</a>"
 				if(file.file_format!=""){
 				   _lbl +="&nbsp;"+ file.file_format +"";
 				}
@@ -824,7 +824,7 @@ function UploadFileForm(_obj){
    	  var title=document.createElement("div");
    	  title.style.marginTop="3px";
    	  title.style.marginLeft="1px";
-   	  title.innerHTML="<font size='+1' style='weight:700'>File Upload Form</font>";
+   	  title.innerHTML="File Upload Form";
    	  div.appendChild(title);
    	  
    	  div.appendChild(document.createElement("br"));
@@ -1168,24 +1168,24 @@ function UploadFileForm(_obj){
 		
 		var file_params="?file_upload=true&XNAT_CSRF=" + csrfToken;
 		
-		if(file_content!=""){
+		if (file_content > ''){
 			file_params+="&content="+file_content;
 		}
-		if(file_format!=""){
+		if (file_format > ''){
 			file_params+="&format="+file_format;
 		}
-		if(file_tags!=""){
+		if (file_tags > ''){
 			file_params+="&tags="+file_tags;
 		}
 			
 		var file_dest = this.selector.obj.uri;
-		if(collection_name==""){
+		if(collection_name == ''){
 			file_dest=this.selector.obj.uri+"/files";
 		}else{
 			file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
 		}
 		
-		if(file_name!=""){
+		if(file_name > ''){
 			file_dest +="/"+ file_name;
 		}
 		
@@ -1229,7 +1229,7 @@ function AddFolderForm(_obj){
    	  var title=document.createElement("div");
    	  title.style.marginTop="3px";
    	  title.style.marginLeft="1px";
-   	  title.innerHTML="<font size='+1' style='weight:700'>New Folder</font>";
+   	  title.innerHTML="New Folder";
    	  div.appendChild(title);
    	  
    	  div.appendChild(document.createElement("br"));
@@ -1525,7 +1525,7 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	openModalPanel("add_file","Uploading File.")
 	
 	var method = 'POST';
-	if(container.file_name!=""){
+	if(container.file_name > ''){
 		method='PUT';
 	}
 	

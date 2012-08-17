@@ -1,7 +1,7 @@
 #if($siteConfig.getProperty("showapplet") && $siteConfig.getProperty("showapplet").equals("true"))
 <tr>
    <td align="center">
-     <INPUT type="button" style="line-height:10px;font-size:9px;font-weight:700;" VALUE="Launch Uploader" ONCLICK="popupWithProperties('$link.setPage("UploadApplet.vm")/popup/true', '', 'width=840,height=580,status=yes,resizable=yes,scrollbars=no,toolbar=no')"/>	
+     <INPUT type="button" style="line-height:11px;font-size:11px;" VALUE="Launch Uploader" ONCLICK="popupWithProperties('$link.setPage("UploadApplet.vm")/popup/true', '', 'width=840,height=580,status=yes,resizable=yes,scrollbars=no,toolbar=no')"/>
    </td>
  </tr>
  #end

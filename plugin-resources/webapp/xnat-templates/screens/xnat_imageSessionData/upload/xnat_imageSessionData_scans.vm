@@ -73,7 +73,7 @@
 						<td>	<!-- align="left" -->
 							<DIV ID="IND_${datatype}/scans/scan[$scani]/type">
 								<a ID="A_${datatype}/scans/scan[$scani]/type"
-								   onclick="showText(this);" style="font-size:9px">
+								   onclick="showText(this);" style="font-size:11px">
 Other
 								</a>
 							</DIV>

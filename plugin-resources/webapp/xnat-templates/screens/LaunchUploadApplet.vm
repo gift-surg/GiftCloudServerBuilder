@@ -80,7 +80,7 @@
             <td>&nbsp;</td>
             <td align="left">
                 <input type="hidden" id="session_id" name="session_id" value=""/>
-                <input type="submit" id="gojuice" name="gojuice" style="line-height:10px;font-size:9px;font-weight:700;" value="Launch Uploader" disabled="true"/>
+                <input type="submit" id="gojuice" name="gojuice" style="line-height:11px;font-size:11px;" value="Launch Uploader" disabled="true"/>
             </td>
         </tr>
         <tr>

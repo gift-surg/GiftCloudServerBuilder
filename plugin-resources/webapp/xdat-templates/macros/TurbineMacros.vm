@@ -1284,7 +1284,7 @@ div.ic_spacer{
 #set($previousLink=$link.getLink())
         #foreach ($actionGroup in $actions)
          #if($actionGroup.getGroup()!="")
-           <li class="yuimenuitem" style="margin-bottom:2px">
+           <li class="yuimenuitem #if($actionGroup.group=="Upload") lockable #end" style="margin-bottom:2px">
      <a class="yuimenuitemlabel" href="#${actionGroup.group}box"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>$actionGroup.group</a>
             <DIV ID="${actionGroup.group}box" class="yuimenu">
              <DIV class="bd">

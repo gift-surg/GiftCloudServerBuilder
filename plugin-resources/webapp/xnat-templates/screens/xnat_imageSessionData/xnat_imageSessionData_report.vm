@@ -19,7 +19,7 @@ document.title = "Session: $!item.getProperty('label')";
 					#else
 					#set($project=$mr.getProject())
 					#end
-<BR>
+
 		#addCustomScreens($om.getXSIType() "report/alert") 
 			#parse("/screens/workflow_alert.vm")
 <table width="100%" border="0">

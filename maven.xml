@@ -1515,6 +1515,9 @@
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/org" preservelastmodified="true">
             <fileset dir="${class.dir}/org"/>
         </copy>
+        <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/com" preservelastmodified="true">
+            <fileset dir="${class.dir}/com"/>
+        </copy>
     </goal>
     <goal name="xdat:manageProjectXML" description="Updates Project xml with more recent dependencies">
         <ant:taskdef name="ManageProjectXML" classname="ManageProjectXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>

@@ -54,7 +54,7 @@ $!template.setLayoutTemplate("/Default.vm")
 	dt.DATA 	{	background:url($content.getURI("images/icon-file-16.png")) left center no-repeat;	}
 	dt.PROJECT_ADMIN {	background:url($content.getURI("images/icon-folder-16.png")) left center no-repeat;	}
 	dt.SITE_ADMIN 	{	background:url($content.getURI("images/icon-site-16.png")) left center no-repeat;	}
-	dt.ACCESS 	{	background:url($content.getURI("images/icon-user-16.png")) left center no-repeat;	}
+	dt.PROJECT_ACCESS 	{	background:url($content.getURI("images/icon-user-16.png")) left center no-repeat;	}
 	
 	a.auditButton {
 		background:url($content.getURI("images/hide-expand.png")) left top no-repeat; 

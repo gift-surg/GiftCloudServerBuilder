@@ -1014,7 +1014,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
        initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
 
-       initGroup(getId() + "_" + MEMBER_GROUP,"Members", Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
+       initGroup(getId() + "_" + MEMBER_GROUP,"Members", Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
        
        initGroup(getId() + "_" + COLLABORATOR_GROUP,"Collaborators",Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, ess);

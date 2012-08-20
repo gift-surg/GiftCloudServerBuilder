@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.dcm.DicomSCP;
 import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
@@ -93,8 +94,16 @@ public class XNATRestletServlet extends ServerServlet {
         dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
         if (null != dicomSCP) {
             try {
-                logger.debug("starting {}", dicomSCP);
-                dicomSCP.start();
+            	Boolean enableDicomReceiver = Boolean.valueOf(XDAT.getSiteConfigurationProperty("enableDicomReceiver"));
+            	if(enableDicomReceiver) {
+                    logger.debug("starting {}", dicomSCP);
+                    dicomSCP.start();
+            	}
+            	else {
+                    logger.debug("DICOM receiver is disabled");
+            	}
+            } catch (ConfigServiceException e) {
+                throw new ServletException("unable to lookup enableDicomReceiver property from config service", e);
             } catch (Throwable t) {
                 throw new ServletException("unable to start DICOM SCP", t);
             }
@@ -123,10 +132,10 @@ public class XNATRestletServlet extends ServerServlet {
 
     @Override
     public void destroy() {
-        logger.debug("stopping {}", dicomSCP);
-        dicomSCP.stop();
+        if(dicomSCP.isStarted()) {
+            logger.debug("stopping {}", dicomSCP);
+            dicomSCP.stop();
+        }
         dicomSCP = null;
     }
-
-    public DicomSCP getDicomSCP() { return dicomSCP; }
 }

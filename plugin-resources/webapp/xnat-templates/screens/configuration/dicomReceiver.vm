@@ -28,7 +28,13 @@
                     <tr>
                         <td colspan="2" style="line-height:4px">&nbsp;</td>
                     </tr>
-
+                    <tr>
+                        <td colspan="2"><b>Enabled?</b>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="enableDicomReceiver" onchange="window.dicomReceiverManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Should the DICOM receiver listen for connections?<br/>
+						<span style="color:red;font-weight:bold;">Caution:</span> Before shutting down the receiver, verify that there are no transmissions currently in progress.</td>
+                    </tr>
                 </table>
             </div>
         </td>
@@ -58,5 +64,5 @@ function addDicomReceiverMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addDicomReceiverMgmtMonitor);
-var dicomReceiverControls = ['dcmPort', 'dcmAe'];
+var dicomReceiverControls = ['dcmPort', 'dcmAe', 'enableDicomReceiver'];
 </script>

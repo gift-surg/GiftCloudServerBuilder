@@ -140,6 +140,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
         settings.put("anonScript", XDAT.getConfigService().getConfig("anon", "script").getContents());
+        settings.put("enableDicomReceiver", XDAT.getSiteConfigurationProperty("enableDicomReceiver"));
 
         return settings;
     }
@@ -354,6 +355,14 @@ public class SettingsRestlet extends SecureResource {
                 }
                 dirtied = true;
                 _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
+            } else if (property.equals("enableDicomReceiver")) {
+                final String enableDicomReceiver = _data.get("enableDicomReceiver");
+                try {
+                    XDAT.setSiteConfigurationProperty("enableDicomReceiver", enableDicomReceiver);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the enableDicomReceiver site info property", exception);
+                }
+                dirtied = true;
             }
         }
         if (dirtied || dirtiedNotifications) {            

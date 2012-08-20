@@ -5,21 +5,25 @@
             <div id="dicom_receiver_mgmt_div">
                 <table>
                     <tr>
-                        <th align="left">Port Number</th>
-                        <td><input size="30" type="text" id="dcmPort" onchange="this.value=stringCamelCaps(this.value); window.dicomReceiverManager.dirtyForm();" disabled /></td>
+                        <td colspan="2">This configuration comes from <i>WEB-INF/conf/dicom-import-context.xml</i> and is not currently editable here.  See the XNAT documentation for detailed information about configuration of the DICOM SCP.</td>
                     </tr>
                     <tr>
-                        <td colspan="2">This is the port number to which C-STORE SCUs (scanners and other clients sending data) should connect. It is also the port that the SCP listens to, unless a different port has been configured using the DICOM.port property in WEB-INF/conf/DICOM-SCP.properties. See the XNAT documentation for detailed information about advanced configuration of the DICOM SCP.</td>
+                        <td colspan="2" style="line-height:8px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Port Number:</b>&nbsp;&nbsp;&nbsp;<span id="dcmPortLabel"></span><input type="hidden" id="dcmPort"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">This is the port number to which C-STORE SCUs (scanners and other clients sending data) should connect.</td>
                     </tr>
                     <tr>
                         <td colspan="2" style="line-height:4px">&nbsp;</td>
                     </tr>
                     <tr>
-                        <th align="left">DICOM AE Title</th>
-                        <td><input size="30" type="text" id="dcmAe" onchange="window.dicomReceiverManager.dirtyForm();" disabled /></td>
+                        <td colspan="2"><b>DICOM AE Title(s):</b>&nbsp;&nbsp;&nbsp;<span id="dcmAeLabel"></span><input type="hidden" id="dcmAe"/></td>
                     </tr>
                     <tr>
-                        <td colspan="2">This is the SCP Application Entity (AE) title.</td>
+                        <td colspan="2">These are the SCP Application Entity (AE) title(s).</td>
                     </tr>
                     <tr>
                         <td colspan="2" style="line-height:4px">&nbsp;</td>
@@ -32,7 +36,7 @@
 </table>
 
 <input type="button" value="Save" name="eventSubmit_doPerform" id="dicomReceiver_save_button" onclick="window.dicomReceiverManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="reset_button" onclick="window.dicomReceiverManager.resetForm();" disabled/>
+<input type="button" value="Reset" name="eventSubmit_doReset" id="dicomReceiver_reset_button" onclick="window.dicomReceiverManager.resetForm();" disabled/>
 
 <script language="javascript">
 function configurationDicomReceiverTabChange(obj) {

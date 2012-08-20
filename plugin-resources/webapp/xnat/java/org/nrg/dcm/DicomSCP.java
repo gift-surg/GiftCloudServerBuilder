@@ -25,9 +25,11 @@ import static org.dcm4che2.data.UID.VerificationSOPClass;
 import static org.dcm4che2.data.UID.XMLEncoding;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import javax.inject.Provider;
@@ -85,6 +87,15 @@ public class DicomSCP {
 
     public int getPort() {
         return device.getNetworkConnection()[0].getPort();
+    }
+    
+    public Iterable<String> getAEs() {
+    	Set<NetworkApplicationEntity> aesKeys = aes.keySet();
+    	List<String> aeTitleList = new ArrayList<String>(aesKeys.size());
+    	for ( NetworkApplicationEntity ae : aesKeys ) {
+    		aeTitleList.add(ae.getAETitle());
+    	}
+    	return aeTitleList;
     }
     
     public DicomSCP setService(final String aeTitle, final DicomService service) {

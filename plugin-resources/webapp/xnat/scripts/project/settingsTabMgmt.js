@@ -30,6 +30,9 @@ function fullConfigHandler() {
     if(window.anonymizationManager==undefined) {
         missing.push('Anonymization');
     }
+    if(window.dicomReceiverManager==undefined) {
+        missing.push('DICOM Receiver');
+    }
     if (missing.length > 0) {
         var message = 'You need to review the contents of the following panels before saving: <ul>';
         for (var index = 0; index < missing.length; index++) {
@@ -77,6 +80,7 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
+        document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
         showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
 }
@@ -122,6 +126,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	if(document.getElementById("anonymization_reset_button")){
     		document.getElementById("anonymization_reset_button").disabled = false;
     	}
+    	if(document.getElementById("dicomReceiver_reset_button")){
+    		document.getElementById("dicomReceiver_reset_button").disabled = false;
+    	}
     };
     this.disableResetButtons = function() {
     	if(document.getElementById("siteInfo_reset_button")){
@@ -138,6 +145,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	}
     	if(document.getElementById("anonymization_reset_button")){
     		document.getElementById("anonymization_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("dicomReceiver_reset_button")){
+    		document.getElementById("dicomReceiver_reset_button").disabled = true;
     	}
     };
     
@@ -217,7 +227,10 @@ function SettingsTabManager(settingsTabDivId, settings) {
                 control.value = control.defaultValue;
 			} else if (control.type == 'checkbox') {
                 control.checked = control.defaultValue.toLowerCase() === 'true';
-            }
+            } else if (control.type == 'hidden') {
+                control.value = control.defaultValue;
+            	jq('#' + control.id + 'Label').html(control.defaultValue);
+	        }
 			}
 		this.firstControl.focus();
 	};

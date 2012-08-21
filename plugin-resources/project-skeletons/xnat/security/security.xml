@@ -265,6 +265,14 @@
 					</xdat:allow_set>
 				</xdat:permissions>
 			</xdat:element_access>
+			<xdat:element_access element_name="xnat:pVisitData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:pVisitData/sharing/share/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+						<xdat:allow field="xnat:pVisitData/project" field_value="*" active_element="true" create_element="false" read_element="true" delete_element="false" edit_element="false" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
 		</xdat:group>
 		<xdat:group ID="ALL_DATA_ADMIN" displayName="All Data Administration">
 			<xdat:element_access element_name="xnat:projectData">
@@ -527,6 +535,14 @@
 					<xdat:allow_set method="OR">
 						<xdat:allow field="val:protocolData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
 						<xdat:allow field="val:protocolData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+					</xdat:allow_set>
+				</xdat:permissions>
+			</xdat:element_access>
+			<xdat:element_access element_name="xnat:pVisitData">
+				<xdat:permissions>
+					<xdat:allow_set method="OR">
+						<xdat:allow field="xnat:pVisitData/sharing/share/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
+						<xdat:allow field="xnat:pVisitData/project" field_value="*" active_element="true" create_element="true" read_element="true" delete_element="true" edit_element="true" comparison_type="equals"/>
 					</xdat:allow_set>
 				</xdat:permissions>
 			</xdat:element_access>
@@ -1154,6 +1170,18 @@
 				<xdat:element_action element_action_name="xml_file" display_name="Download XML" sequence="3" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="4" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="delete" display_name="Delete" sequence="5" image="delete.gif" popup="sometimes" secureAccess="delete"/>
+			</xdat:element_actions>
+		</xdat:element_security>
+		<xdat:element_security element_name="xnat:pVisitData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Visit" plural="Visits" accessible="1" code="V">
+			<xdat:primary_security_fields>
+				<xdat:primary_security_field>xnat:pVisitData/sharing/share/project</xdat:primary_security_field>
+				<xdat:primary_security_field>xnat:pVisitData/project</xdat:primary_security_field>
+			</xdat:primary_security_fields>
+			<xdat:element_actions>
+				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
+				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
+				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 	</xdat:element_security_set>

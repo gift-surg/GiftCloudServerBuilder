@@ -241,6 +241,7 @@ public class SettingsRestlet extends SecureResource {
                 // We will only enter this if _property is "initialize", so that means we need to set up the arc spec entry.
                 initializeArcSpec();
                 checkNotifications();
+                setPropertiesFromMap(_data);
                 // Do not return a representation if we are initializing, it will attempt (and fail) to find a property called "initialize"
             } else {
                 setPropertiesFromMap(_data);
@@ -345,11 +346,6 @@ public class SettingsRestlet extends SecureResource {
                 _arcSpec.setEnableCsrfToken(enableCsrfToken);
                 XFT.SetEnableCsrfToken(enableCsrfToken);
                 dirtied = true;
-            } else if (property.equals("enableCsrfToken")) {
-                final String enableCsrfToken = map.get("enableCsrfToken");
-                _arcSpec.setEnableCsrfToken(enableCsrfToken);
-                XFT.SetEnableCsrfToken(enableCsrfToken);
-                dirtied = true;
             } else if (property.equals("error") || property.equals("issue") || property.equals("newUser") || property.equals("update")) {
                 if (!dirtiedNotifications) {
                     dirtiedNotifications = true;
@@ -365,7 +361,6 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the site-wide anonymization script", exception);
                 }
                 dirtied = true;
-                _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
             } else if (property.equals("enableDicomReceiver")) {
                 final String enableDicomReceiver = map.get("enableDicomReceiver");
                 try {
@@ -374,6 +369,8 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the enableDicomReceiver site info property", exception);
                 }
                 dirtied = true;
+            } else {
+                _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
             }
         }
         if (dirtied || dirtiedNotifications) {            

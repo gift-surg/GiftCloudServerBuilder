@@ -291,7 +291,7 @@ public class ArcSpecManager {
         try {
 			arcSpec.setDcm_dcmHost(new URL(arcSpec.getSiteUrl()).getHost());
 		} catch (MalformedURLException e) {
-            throw new RuntimeException("The site URL was not found in the arc spec");
+            throw new RuntimeException("The site URL was not found in the arc spec, or was not a properly formatted URL");
 		}
         arcSpec.setDcm_dcmPort(String.valueOf(dicomSCP.getPort()));
         arcSpec.setDcm_dcmAe(Joiner.on(", ").join(dicomSCP.getAEs()));

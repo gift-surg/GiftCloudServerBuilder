@@ -1340,11 +1340,17 @@ YAHOO.util.Connect =
 		var frameId = 'yuiIO' + this._transaction_id,
 			io;
 		if(YAHOO.env.ua.ie){
-			io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+            //io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+            //io = YAHOO.appendToBody('<iframe id="' + frameId + '" name="' + frameId + '" />');
 
-			// IE will throw a security exception in an SSL environment if the
+            // IE will throw a security exception in an SSL environment if the
 			// iframe source is undefined.
-			if(typeof secureUri == 'boolean'){
+
+            io = document.createElement('iframe');
+            io.id = frameId;
+            io.name = frameId;
+
+            if(typeof secureUri == 'boolean'){
 				io.src = 'javascript:false';
 			}
 		}

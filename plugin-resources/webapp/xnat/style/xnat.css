@@ -217,7 +217,7 @@ div.edit_title { margin-bottom: 10px ; }
 .yui-skin-sam .yuimenu .bd { background-color: #fff ; border: 1px solid #ccc ; }
 
 input, button, input[type="submit"] { font-family: Arial, Helvetica, sans-serif ; font-size: inherit ; }
-button, input[type="submit"] {  }
+button, input[type="submit"], input[type="button"] {  }
 
 td.highlighted { background-color: #f0f0f0 ; border: 1px solid #d8d8d8 ; }
 

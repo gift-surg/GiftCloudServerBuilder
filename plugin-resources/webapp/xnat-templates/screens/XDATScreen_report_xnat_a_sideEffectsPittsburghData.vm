@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+##<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 #macro( propValueRow $name $prop )
   #if ( $!item.getProperty("$prop") )
 		<tr><td class="attr_name">$name:</td><td class="attr_value">$item.getProperty("$prop")</td></tr>

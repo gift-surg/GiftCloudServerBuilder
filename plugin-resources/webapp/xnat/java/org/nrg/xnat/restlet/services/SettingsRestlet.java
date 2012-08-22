@@ -1,6 +1,8 @@
 package org.nrg.xnat.restlet.services;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -45,6 +48,7 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
+import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
@@ -147,10 +151,44 @@ public class SettingsRestlet extends SecureResource {
         settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
-        settings.put("anonScript", XDAT.getConfigService().getConfig("anon", "script").getContents());
+        settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
+        settings.put("restMockCallMap", getFormattedRestMockCallMap());
         settings.put("enableDicomReceiver", XDAT.getSiteConfigurationProperty("enableDicomReceiver"));
 
         return settings;
+    }
+
+    private String getFormattedRestMockCallMap() {
+        Map<String, String> map = RestMockCallMapRestlet.getRestMockCallMap();
+        if (map == null || map.size() == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder formattedMap = new StringBuilder();
+        for (Map.Entry<String, String> call : map.entrySet()) {
+            formattedMap.append(call.getKey()).append("|").append(call.getValue()).append("\n");
+        }
+        return formattedMap.toString();
+    }
+
+    private String getUnformattedRestMockCallMap(String raw) {
+        if (StringUtils.isBlank(raw)) {
+            return StringUtils.EMPTY;
+        }
+        BufferedReader reader = new BufferedReader(new StringReader(raw));
+        Map<String, String> map = new HashMap<String, String>();
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                String[] atoms = line.split("\\|");
+                map.put(atoms[0], atoms[1]);
+            }
+
+            return MAPPER.writeValueAsString(map);
+        } catch (IOException ignored) {
+            // We're not reading from a file, so we shouldn't encounter this.
+        }
+
+        return StringUtils.EMPTY;
     }
 
     // TODO: Gross.
@@ -360,6 +398,14 @@ public class SettingsRestlet extends SecureResource {
                     XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the site-wide anonymization script", "anon", "script", anonScript);
                 } catch (ConfigServiceException exception) {
                     throw new Exception("Error setting the site-wide anonymization script", exception);
+                }
+                dirtied = true;
+            } else if (property.equals("restMockCallMap")) {
+                final String callMap = map.get("restMockCallMap");
+                try {
+                    XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the REST service mock call map", "rest", "mockCallMap", getUnformattedRestMockCallMap(callMap));
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the REST service mock call map", exception);
                 }
                 dirtied = true;
             } else if (property.equals("enableDicomReceiver")) {
@@ -717,6 +763,7 @@ public class SettingsRestlet extends SecureResource {
     private static final Pattern PATTERN_USERNAME = Pattern.compile(EXPRESSION_USERNAME);
     private static final Pattern PATTERN_EMAIL = Pattern.compile(EXPRESSION_EMAIL);
     private static final Pattern PATTERN_COMBINED = Pattern.compile(EXPRESSION_COMBINED);
+    private final static ObjectMapper MAPPER = new ObjectMapper(new JsonFactory());
 
     private NotificationService _notificationService;
     private static final Log _log = LogFactory.getLog(SettingsRestlet.class);

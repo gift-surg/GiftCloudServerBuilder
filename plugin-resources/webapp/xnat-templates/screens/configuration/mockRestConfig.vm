@@ -1,0 +1,56 @@
+<!-- Title: Mock REST Calls -->
+<script language="javascript">
+    var hasDirtied = false;
+</script>
+<table id="mgmt_container">
+    <tr>
+        <td>
+            <div id="mockRestConfig_mgmt_div">
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            This manages mock REST call URLs and return values. Currently you can configure this by
+                            specifying the desired URL, a pipe or OR character ('|'), and the resulting value to be
+                            returned as JSON. This version supports <i>no</i> parameter substitution or wild-carding,
+                            i.e. the result will be returned literally and parameters in the REST URL will be ignored.
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left" colspan="2">Map:</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea id="restMockCallMap" name="restMockCallMap" rows="20" cols="80" onkeypress="if (!hasDirtied) { window.mockRestConfigManager.dirtyForm(); hasDirtied = true; }" disabled></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<input type="button" value="Save" name="eventSubmit_doPerform" id="mockRestConfig_save_button" onclick="window.mockRestConfigManager.saveTabSettings();"/>&nbsp;
+<input type="button" value="Reset" name="eventSubmit_doReset" id="mockRestConfig_reset_button" onclick="window.mockRestConfigManager.resetForm();" disabled/>
+
+<script language="javascript">
+function configurationAnonymizationTabChange(obj) {
+    if(obj.newValue.get("href")=="#mockRestConfig") {
+        if(window.mockRestConfigManager==undefined) {
+            window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', mockRestConfigControls);
+        }
+    }
+}
+
+function addAnonymizationMgmtMonitor(){
+    if(window.configurationTabView.get("activeTab").get("href")=="#mockRestConfig") {
+        if(window.mockRestConfigManager==undefined) {
+            window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', mockRestConfigControls);
+        }
+    } else {
+        window.configurationTabView.subscribe("activeTabChange", configurationAnonymizationTabChange);
+    }
+}
+
+YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
+var mockRestConfigControls = ['restMockCallMap'];
+</script>

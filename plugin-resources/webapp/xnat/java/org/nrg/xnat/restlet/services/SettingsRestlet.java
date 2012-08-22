@@ -20,6 +20,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.PropertyNotFoundException;
 import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.dcm.DicomSCPManager;
 import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.mail.api.NotificationType;
@@ -365,6 +366,7 @@ public class SettingsRestlet extends SecureResource {
                 final String enableDicomReceiver = map.get("enableDicomReceiver");
                 try {
                     XDAT.setSiteConfigurationProperty("enableDicomReceiver", enableDicomReceiver);
+                    XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();
                 } catch (ConfigServiceException exception) {
                     throw new Exception("Error setting the enableDicomReceiver site info property", exception);
                 }

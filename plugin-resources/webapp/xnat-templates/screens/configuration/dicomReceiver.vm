@@ -33,7 +33,7 @@
                     </tr>
                     <tr>
                         <td colspan="2">Should the DICOM receiver listen for connections?<br/>
-						<span style="color:red;font-weight:bold;">Caution:</span> Before shutting down the receiver, verify that there are no transmissions currently in progress.</td>
+						<span style="color:red;font-weight:bold;">Caution:</span>&nbsp;Changes to this setting will take effect immediately.  Before disabling the receiver, verify that there are no transmissions currently in progress.</td>
                     </tr>
                 </table>
             </div>

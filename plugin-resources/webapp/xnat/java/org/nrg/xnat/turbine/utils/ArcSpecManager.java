@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.nrg.dcm.DicomSCP;
+import org.nrg.dcm.DicomSCPManager;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -287,13 +287,13 @@ public class ArcSpecManager {
     
     public static void setDicomReceiverProperties() {
         // all the existing code is looking at the legacy ArcSpec object for this info, so just give the people what they want
-        DicomSCP dicomSCP = XDAT.getContextService().getBean(DicomSCP.class);
+        DicomSCPManager dicomSCPManager = XDAT.getContextService().getBean(DicomSCPManager.class);
         try {
 			arcSpec.setDcm_dcmHost(new URL(arcSpec.getSiteUrl()).getHost());
 		} catch (MalformedURLException e) {
             throw new RuntimeException("The site URL was not found in the arc spec, or was not a properly formatted URL");
 		}
-        arcSpec.setDcm_dcmPort(String.valueOf(dicomSCP.getPort()));
-        arcSpec.setDcm_dcmAe(Joiner.on(", ").join(dicomSCP.getAEs()));
+        arcSpec.setDcm_dcmPort(String.valueOf(dicomSCPManager.getDicomSCPPort()));
+        arcSpec.setDcm_dcmAe(Joiner.on(", ").join(dicomSCPManager.getDicomSCPAEs()));
     }
 }

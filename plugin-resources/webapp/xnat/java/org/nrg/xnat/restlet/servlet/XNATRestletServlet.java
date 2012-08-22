@@ -11,9 +11,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
-import org.nrg.config.exceptions.ConfigServiceException;
-import org.nrg.dcm.DicomSCP;
-import org.nrg.framework.services.ContextService;
+import org.nrg.dcm.DicomSCPManager;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
@@ -37,7 +35,6 @@ public class XNATRestletServlet extends ServerServlet {
     public static ServletConfig REST_CONFIG=null;
 
     private final Logger logger = LoggerFactory.getLogger(XNATRestletServlet.class);
-    private DicomSCP dicomSCP = null;
 
     /**
      * Get the username of the site administrator. If there are multiple
@@ -90,24 +87,7 @@ public class XNATRestletServlet extends ServerServlet {
             logger.error("Unable to initialize prearchive database", e);
         }
 
-        final ContextService context = XDAT.getContextService();
-        dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
-        if (null != dicomSCP) {
-            try {
-            	Boolean enableDicomReceiver = Boolean.valueOf(XDAT.getSiteConfigurationProperty("enableDicomReceiver"));
-            	if(enableDicomReceiver) {
-                    logger.debug("starting {}", dicomSCP);
-                    dicomSCP.start();
-            	}
-            	else {
-                    logger.debug("DICOM receiver is disabled");
-            	}
-            } catch (ConfigServiceException e) {
-                throw new ServletException("unable to lookup enableDicomReceiver property from config service", e);
-            } catch (Throwable t) {
-                throw new ServletException("unable to start DICOM SCP", t);
-            }
-        }
+        XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();
     }
 
     /**
@@ -132,10 +112,6 @@ public class XNATRestletServlet extends ServerServlet {
 
     @Override
     public void destroy() {
-        if(dicomSCP.isStarted()) {
-            logger.debug("stopping {}", dicomSCP);
-            dicomSCP.stop();
-        }
-        dicomSCP = null;
+        XDAT.getContextService().getBean(DicomSCPManager.class).stopDicomSCP();
     }
 }

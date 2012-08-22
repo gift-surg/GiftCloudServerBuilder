@@ -889,6 +889,18 @@
               <option value="$minute" #if ( $minute == $!expt_date.getMinutes() ) SELECTED="true" #end>$minuteD</option>
         #end
       </select>
+      <select id="${name}.seconds" name="${name}.seconds">
+        <option value="">SS</option>
+        #foreach ($second in [ 0..59 ])
+           #if($second<10)
+           		#set($secondD="0$second")
+           #else
+           		#set($secondD="$second")
+           #end
+           <option value="$second" #if ( $second == $!expt_date.getSeconds() ) SELECTED="true" #end>$secondD</option>
+        #end
+      </select>
+
       #else
       <select id="${name}.hours" name="${name}.hours">
         <option value="">HH</option>
@@ -908,9 +920,23 @@
               <option value="$minute">$minuteD</option>
         #end
       </select>
+      
+      <select id="${name}.seconds" name="${name}.seconds">
+        <option value="">SS</option>
+        #foreach ($second in [ 0..59 ])
+          #if($second<10)
+            #set($secondD="0$second")
+          #else
+            #set($secondD="$second")
+          #end
+          <option value="$second">$secondD</option>
+        #end
+      </select>
+      
       #end
             </font>
 #end
+
 
 ## EDIT PROPS
 #macro (xdatEditProps $item $edit_screen)

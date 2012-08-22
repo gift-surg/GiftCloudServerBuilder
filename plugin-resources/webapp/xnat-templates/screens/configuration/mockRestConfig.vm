@@ -33,7 +33,7 @@
 <input type="button" value="Reset" name="eventSubmit_doReset" id="mockRestConfig_reset_button" onclick="window.mockRestConfigManager.resetForm();" disabled/>
 
 <script language="javascript">
-function configurationAnonymizationTabChange(obj) {
+function configurationRestMockCallConfigTabChange(obj) {
     if(obj.newValue.get("href")=="#mockRestConfig") {
         if(window.mockRestConfigManager==undefined) {
             window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', mockRestConfigControls);
@@ -41,16 +41,16 @@ function configurationAnonymizationTabChange(obj) {
     }
 }
 
-function addAnonymizationMgmtMonitor(){
+function addRestMockCallConfigMgmtMonitor(){
     if(window.configurationTabView.get("activeTab").get("href")=="#mockRestConfig") {
         if(window.mockRestConfigManager==undefined) {
             window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', mockRestConfigControls);
         }
     } else {
-        window.configurationTabView.subscribe("activeTabChange", configurationAnonymizationTabChange);
+        window.configurationTabView.subscribe("activeTabChange", configurationRestMockCallConfigTabChange);
     }
 }
 
-YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
+YAHOO.util.Event.onDOMReady(addRestMockCallConfigMgmtMonitor);
 var mockRestConfigControls = ['restMockCallMap'];
 </script>

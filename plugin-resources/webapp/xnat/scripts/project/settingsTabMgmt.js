@@ -30,6 +30,9 @@ function fullConfigHandler() {
     if(window.anonymizationManager==undefined) {
         missing.push('Anonymization');
     }
+    if(window.dicomReceiverManager==undefined) {
+        missing.push('DICOM Receiver');
+    }
     if (missing.length > 0) {
         var message = 'You need to review the contents of the following panels before saving: <ul>';
         for (var index = 0; index < missing.length; index++) {
@@ -38,7 +41,7 @@ function fullConfigHandler() {
         message += "</ul>";
         showMessage('page_body', 'Required', message);
     } else {
-        this.initArcSpecCallback = {
+        this.fullConfigCallback = {
             success : function() {
                 showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
                 window.location.replace(serverRoot);
@@ -49,19 +52,18 @@ function fullConfigHandler() {
             scope : this
         };
 
-        var arcSpecControls = [ 'siteId', 'siteUrl', 'siteAdminEmail', 'dcmAppletLink', 'enableCsrfToken', 'archivePath', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath', 'requireLogin', 'enableNewRegistrations' ];
-        var data = '';
-        for (var index = 0; index < arcSpecControls.length; index++) {
-            var control = document.getElementById(arcSpecControls[index]);
-            if (data) {
-                data += '&';
-            }
-            var value = (control.type == 'checkbox' ? (control.checked ? 1 : 0) : control.value);
-            data += control.id + '=' + encodeURIComponent(value);
-        }
+        var allControls = [ 
+		       	'siteId', 'siteUrl', 'siteAdminEmail', 'dcmAppletLink', 'enableCsrfToken'
+		       	, 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
+		       	, 'requireLogin', 'enableNewRegistrations'
+		       	, 'error', 'issue', 'newUser', 'update'
+		       	, 'anonScript'
+		       	, 'dcmPort', 'dcmAe', 'enableDicomReceiver'
+        ];
+        var data = buildSettingsUpdateRequestBody(allControls);
 
         var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
-        YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.initArcSpecCallback, data, this);
+        YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.fullConfigCallback, data, this);
     }
 }
 
@@ -77,6 +79,7 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
+        document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
         showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
 }
@@ -122,6 +125,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	if(document.getElementById("anonymization_reset_button")){
     		document.getElementById("anonymization_reset_button").disabled = false;
     	}
+    	if(document.getElementById("dicomReceiver_reset_button")){
+    		document.getElementById("dicomReceiver_reset_button").disabled = false;
+    	}
     };
     this.disableResetButtons = function() {
     	if(document.getElementById("siteInfo_reset_button")){
@@ -138,6 +144,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	}
     	if(document.getElementById("anonymization_reset_button")){
     		document.getElementById("anonymization_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("dicomReceiver_reset_button")){
+    		document.getElementById("dicomReceiver_reset_button").disabled = true;
     	}
     };
     
@@ -217,7 +226,10 @@ function SettingsTabManager(settingsTabDivId, settings) {
                 control.value = control.defaultValue;
 			} else if (control.type == 'checkbox') {
                 control.checked = control.defaultValue.toLowerCase() === 'true';
-            }
+            } else if (control.type == 'hidden') {
+                control.value = control.defaultValue;
+            	jq('#' + control.id + 'Label').html(control.defaultValue);
+	        }
 			}
 		this.firstControl.focus();
 	};
@@ -236,15 +248,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 					failure : this.saveFailure,
 					scope : this
 				};
-				var data = '';
-                for (var index = 0; index < this.controls.length; index++) {
-                    var control = this.controls[index];
-					if (data) {
-						data += '&';
-					}
-                    var value = (control.type == 'checkbox' ? control.checked : control.value);
-                    data += control.id + '=' + value;
-                }
+		        var data = buildSettingsUpdateRequestBody(this.controls);
 				YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
 			} else {
 				showMessage('page_body', 'Message', 'None of the site information appears to have changed.');
@@ -306,4 +310,24 @@ function SettingsTabManager(settingsTabDivId, settings) {
 	};
 
 	this.init();
+}
+
+function buildSettingsUpdateRequestBody(controls) {
+	var data = '';
+	for (var index = 0; index < controls.length; index++) {
+		var control;
+		if('string' == typeof controls[index]) {
+			control = document.getElementById(controls[index]);
+		}
+		else {
+			control = controls[index];
+		}
+		if (data) {
+			data += '&';
+		}
+		var value = (control.type == 'checkbox' ? control.checked : control.value);
+		data += control.id + '=' + encodeURIComponent(value);
+	}
+
+	return data;
 }

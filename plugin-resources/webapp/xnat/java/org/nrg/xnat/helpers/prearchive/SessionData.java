@@ -27,7 +27,7 @@ public final class SessionData {
 	private PrearcStatus status;
 	private SessionDataTriple sessionTriple = new SessionDataTriple();
 	private Date scan_date;
-	private String scan_time, subject, url, session, tag, source;
+	private String scan_time, subject, url, session, tag, source, visit, protocol;
 	private PrearchiveCode autoArchive;
     private Boolean preventAnon;
     private Boolean preventAutoCommit = Boolean.valueOf(false);
@@ -281,7 +281,32 @@ public final class SessionData {
 		}
 		return this;
 	}
-	
+	public String getVisit() {
+		return visit;
+	}
+	public SessionData setVisit(String visit) {
+		this.visit = visit;
+		return this;
+	}
+	public SessionData setVisit(Object o) {
+		if (null != o) {
+			this.setVisit((String)o);
+		}
+		return this;
+	}
+	public String getProtocol() {
+		return protocol;
+	}
+	public SessionData setProtocol(String protocol) {
+		this.protocol = protocol;
+		return this;
+	}
+	public SessionData setProtocol(Object o) {
+		if (null != o) {
+			this.setProtocol((String)o);
+		}
+		return this;
+	}	
 	public SessionDataTriple getSessionDataTriple(){
 		return sessionTriple;
 	}

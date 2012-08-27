@@ -315,7 +315,7 @@
         </TR>
         <TR>
             <TD></TD>
-            <TD style="font-size:9px;">
+            <TD style="font-size:11px;">
                 You will be prompted to enter a local directory to copy the data to. Then, all of
                 the requested imaging data will be directly downloaded via a java applet into that directory.
             </TD>
@@ -330,7 +330,7 @@
 
         <TR>
             <TD></TD>
-            <TD style="font-size:9px;">Download an xml representation of the files. This xml can then be used by
+            <TD style="font-size:11px;">Download an xml representation of the files. This xml can then be used by
                 specific applications to download the data at the user's command.
             </TD>
         </TR>
@@ -370,7 +370,7 @@
                 <TD><input type="submit" value="Submit" name="eventSubmit_doPerform"/></TD>
             </TR>
             <TR>
-                <TD style="font-size:9px;">Upon page submission, the pertinent files will be reviewed and organized for
+                <TD style="font-size:11px;">Upon page submission, the pertinent files will be reviewed and organized for
                     download. Depending on the number of files, this may take several minutes to process.
                 </TD>
             </TR>

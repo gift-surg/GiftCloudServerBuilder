@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+##<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 $data.setLayoutTemplate("Popup.vm")
 $page.setTitle("Remove Pipeline")
 $page.setLinkColor($ui.alink)

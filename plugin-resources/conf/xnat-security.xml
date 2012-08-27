@@ -76,6 +76,8 @@
         <security:intercept-url pattern="/favicon.ico" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/data/version" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/REST/version" access="permitAll" requires-channel="${security.channel}"/>
+        <security:intercept-url pattern="/data/JSESSION" access="permitAll" requires-channel="${security.channel}"/>
+        <security:intercept-url pattern="/REST/JSESSION" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/data/services/auth" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/REST/services/auth" access="permitAll" requires-channel="${security.channel}"/>
         <security:intercept-url pattern="/images/**" access="permitAll" requires-channel="${security.channel}"/>

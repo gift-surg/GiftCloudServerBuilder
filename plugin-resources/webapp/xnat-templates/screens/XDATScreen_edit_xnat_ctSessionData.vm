@@ -232,14 +232,14 @@ $page.setVlinkColor($ui.vlink)
 	</tr>
 </TABLE><BR><BR><HR>
 #auditTable("" "Session Modification")
-<table>
 #xdatEditProps($item $edit_screen)
+
 <DIV ID="ADDIN"></DIV>
-    	<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
-    	<input type="button" ONCLICK="validateForm();"  name="eventSubmit_doInsert" value="Submit"/>
-    	
-	</form>
-</table>
+
+<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+<input type="button" onclick="validateForm();"  name="eventSubmit_doInsert" value="Submit"/>
+
+</form>
 <script type="text/javascript">
 function validateForm()
 {

@@ -8,10 +8,12 @@ package org.nrg.xnat.turbine.utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.dcm.DicomSCPManager;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -24,6 +26,8 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.xml.sax.SAXException;
+
+import com.google.common.base.Joiner;
 
 /**
  * @author timo
@@ -176,18 +180,7 @@ public class ArcSpecManager {
                     AdminUtils.SetPageEmail(arcSpec.getEmailspecifications_pageEmail());
                 }
 
-
-                if (StringUtils.isEmpty(arcSpec.getDcm_dcmAe())){
-                    arcSpec.setDcm_dcmAe("XNAT");
-                }
-
-                if (StringUtils.isEmpty(arcSpec.getDcm_dcmHost())){
-                    arcSpec.setDcm_dcmHost("localhost");
-                }
-
-                if (StringUtils.isEmpty(arcSpec.getDcm_dcmPort())){
-                    arcSpec.setDcm_dcmPort("8104");
-                }
+                setDicomReceiverProperties();
 
                 if (arcSpec.getDcm_appletLink()==null){
                     arcSpec.setDcm_appletLink(Boolean.TRUE);
@@ -282,11 +275,25 @@ public class ArcSpecManager {
             arcSpec.setProperty("globalPaths/buildPath", XFT.getBuildPath());
         }
         arcSpec.setEnableCsrfToken(XFT.GetEnableCsrfToken());
+        
+        setDicomReceiverProperties();
+
         return arcSpec;
     }
 
     public static boolean allowTransferEmail(){
         return GetInstance().getEmailspecifications_transfer();
     }
-
+    
+    public static void setDicomReceiverProperties() {
+        // all the existing code is looking at the legacy ArcSpec object for this info, so just give the people what they want
+        DicomSCPManager dicomSCPManager = XDAT.getContextService().getBean(DicomSCPManager.class);
+        try {
+			arcSpec.setDcm_dcmHost(new URL(arcSpec.getSiteUrl()).getHost());
+		} catch (MalformedURLException e) {
+            throw new RuntimeException("The site URL was not found in the arc spec, or was not a properly formatted URL");
+		}
+        arcSpec.setDcm_dcmPort(String.valueOf(dicomSCPManager.getDicomSCPPort()));
+        arcSpec.setDcm_dcmAe(Joiner.on(", ").join(dicomSCPManager.getDicomSCPAEs()));
+    }
 }

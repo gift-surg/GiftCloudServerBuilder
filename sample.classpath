@@ -55,7 +55,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.poi/jars/poi-3.8.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.poi/jars/poi-ooxml-3.8.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.poi/jars/poi-ooxml-schemas-3.8.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.2.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>

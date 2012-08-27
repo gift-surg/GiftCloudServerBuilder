@@ -60,11 +60,11 @@ $page.setVlinkColor($ui.vlink)
 
               <TABLE cellpadding="5" cellspacing="0">
 
-                <TR><TD NOWRAP><DIV ID="private_access_div" title="Only you and study members will be able to access study data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'private_access');"><input type="radio" ID="private_access" name="accessibility" value="private" CHECKED/> Private</DIV></TD><TD></TD></TR>
+                <TR><TD NOWRAP><DIV ID="private_access_div" title="Only you and study members will be able to access study data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'private_access');"><input type="radio" ID="private_access" name="accessibility" value="private" onkeydown="subOnEnter(event,this);" CHECKED/> Private</DIV></TD><TD></TD></TR>
 
-                <TR><TD NOWRAP><DIV ID="protected_access_div" title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'protected_access');"><input id="protected_access" type="radio" name="accessibility" value="protected"/> Protected</DIV></TD><TD></TD></TR>
+                <TR><TD NOWRAP><DIV ID="protected_access_div" title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'protected_access');"><input id="protected_access" type="radio" name="accessibility" value="protected" onkeydown="subOnEnter(event,this);" /> Protected</DIV></TD><TD></TD></TR>
 
-                <TR><TD NOWRAP><DIV ID="public_access_div" title="All users will be able to access study data for analysis and download." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'public_access');"><input id="public_access" type="radio" name="accessibility" value="public"/> Public</DIV></TD><TD></TD></TR>
+                <TR><TD NOWRAP><DIV ID="public_access_div" title="All users will be able to access study data for analysis and download." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'public_access');"><input id="public_access" type="radio" name="accessibility" value="public" onkeydown="subOnEnter(event,this);" /> Public</DIV></TD><TD></TD></TR>
 
               </TABLE>
 
@@ -114,6 +114,23 @@ $page.setVlinkColor($ui.vlink)
 
 <SCRIPT type="text/javascript">
 
+function subOnEnter(e,inp) {
+      // get the event
+      var evt = e||window.event;
+      // pressed enter?
+      if(evt.keyCode == 13) {
+        // in your case, you want to validate, so:
+        if(validate_form()) {
+          // submit the form (will not fire onsubmit, validation above)
+          inp.form.submit();
+          // note we re using the passed inputs .form instead of a literal
+        }
+      }
+} 
+
+
+
+    
 function validateProjectForm(){
 
   if(document.getElementById("xnat:projectData/ID").value==""){

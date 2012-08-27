@@ -206,8 +206,27 @@ public enum DatabaseSession {
 		public void writeSession (SessionData s, Object o) {
 			s.setSource(o);
 		}
+	},
+	VISIT ("VISIT", ColType.VARCHAR, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getVisit();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setVisit(o);
+		}
+	},
+	PROTOCOL ("PROTOCOL", ColType.VARCHAR, true) {
+		@Override
+		public Object readSession (SessionData s) {
+			return s.getProtocol();
+		}
+		@Override
+		public void writeSession (SessionData s, Object o) {
+			s.setProtocol(o);
+		}
 	};
-	
 	/**
 	 * ColType provides a simple mapping from Java objects to java.sql.* objects   
 	 * @author aditya siram

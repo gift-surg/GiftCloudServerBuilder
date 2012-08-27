@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+##<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 $page.setTitle("XDAT")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
@@ -58,7 +58,9 @@ $page.setVlinkColor($ui.vlink)
 	<TR>
 		<TD>
 		#xdatEditProps($item $edit_screen)
-		<TR><TD COLSPAN=2 ALIGN=left><input type="button" ONCLICK="validateForm();"  name="eventSubmit_doInsert" value="Submit"/></TD></TR>
+		##<TR><TD COLSPAN=2 ALIGN=left>
+    <input type="button" onclick="validateForm();" name="eventSubmit_doInsert" value="Submit"/>
+        ##</TD></TR>
 		</TD>
 	</TR>
 </TABLE>

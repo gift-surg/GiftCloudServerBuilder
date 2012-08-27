@@ -53,6 +53,12 @@ function loadApplet() {
     #if( $visit )
             parameters['xnat-visit'] = '$visit';
     #end
+    #if( $protocol )
+            parameters['xnat-protocol'] = '$protocol';
+    #end
+    #if( $expectedModality )
+            parameters['expected-modality'] = '$expectedModality';
+    #end
     #if( $scan_type )
             parameters['xnat-scan-type'] = '$scan_type';
     #end

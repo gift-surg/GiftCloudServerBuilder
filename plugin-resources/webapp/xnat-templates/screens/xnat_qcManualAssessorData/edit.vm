@@ -134,7 +134,7 @@ $page.setVlinkColor($ui.vlink)
 	<tr>
 		<td>
 		#xdatEditProps($item $edit_screen)
-		<tr><td COLSPAN=2 ALIGN=left><input type="submit" name="eventSubmit_doInsert" value="Submit"/></td></tr>
+		<input type="submit" name="eventSubmit_doInsert" value="Submit"/>
 		</td>
 	</tr>
 </table>

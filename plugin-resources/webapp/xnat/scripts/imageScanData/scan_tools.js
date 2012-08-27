@@ -493,25 +493,29 @@ function scanDeletor(_options){
 	this.options=_options;
 
 	this.onCompletion=new YAHOO.util.CustomEvent("complete",this);
-
+	
 	this.execute=function(){
 		this.deleteDialog=new scanDeleteDialog();
 		this.deleteDialog.onResponse.subscribe(function(){
 			var delete_files=this.deleteDialog.delete_files;
 			var event_reason=this.deleteDialog.event_reason;
-
+			
 			this.initCallback={
 				success:function(obj1){
 					closeModalPanel("delete_scan");
 					this.onCompletion.fire();
+					setTimeout(function(){window.location.reload()},2000);
+					
 				},
 				failure:function(o){
 					closeModalPanel("delete_scan");
 					this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
 				},
 				scope:this
+				
+				
 			}
-			
+		
 			var params="";
 			if(delete_files){
 				params+="&removeFiles=true";
@@ -523,9 +527,11 @@ function scanDeletor(_options){
 
 			openModalPanel("delete_scan","Delete scan.");
 			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json&XNAT_CSRF=' + csrfToken+params,this.initCallback,null,this);
+			
 		},this,this);
 
 		this.deleteDialog.render();
+		
 	}
 }
 

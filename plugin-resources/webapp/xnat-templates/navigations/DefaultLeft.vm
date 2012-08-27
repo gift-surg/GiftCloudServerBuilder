@@ -1,7 +1,7 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 <style>
 .ygtvlabel{
-  font-size:9px;
+  /* font-size:9px;*/
 }
 </style>
 <!--

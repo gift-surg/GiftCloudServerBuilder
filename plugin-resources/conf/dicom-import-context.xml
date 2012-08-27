@@ -20,4 +20,8 @@
 		<constructor-arg value="XNAT" />
 		<constructor-arg ref="dicomObjectIdentifier" />
 	</bean>
+
+	<bean name="dicomSCPManager" class="org.nrg.dcm.DicomSCPManager">
+		<constructor-arg ref="dicomSCP" />
+	</bean>
 </beans>

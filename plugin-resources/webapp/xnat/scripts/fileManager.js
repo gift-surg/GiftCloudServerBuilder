@@ -9,7 +9,7 @@ function fileManager(_resource){
    		}
    	
    	    this.panel=new YAHOO.widget.Dialog("fileListing",{close:true,
-		   width:"760px",height:"600px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
+		   width:"760px",height:"600px",underlay:"shadow",modal:true,fixedcenter:true,visible:false,draggable:true});
 		this.panel.setHeader("File Manager");
 				
 		var bd = document.createElement("div");

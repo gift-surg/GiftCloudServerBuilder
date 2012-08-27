@@ -3,7 +3,6 @@ dynamicJSLoad("SAXEventHandler","SAXEventHandler-min.js");
 
 function setScanQualityOptions(sel,choices,offset,value){
     if(choices==undefined || choices.length==0){
-        console.log('unable to load scan quality choices, using XNAT defaults');
 	choices=['usable','questionable','unusable'];
     }
     for(i=0;i<choices.length;i++){

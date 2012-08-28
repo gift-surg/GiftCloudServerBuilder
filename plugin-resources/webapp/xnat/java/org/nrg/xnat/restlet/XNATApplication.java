@@ -1,20 +1,10 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.nrg.config.entities.Configuration;
-import org.nrg.config.services.ConfigService;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.framework.logging.Analytics;
 import org.nrg.framework.utilities.Reflection;
@@ -27,13 +17,7 @@ import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
 import org.nrg.xnat.restlet.resources.files.FileList;
-import org.nrg.xnat.restlet.services.AliasTokenRestlet;
-import org.nrg.xnat.restlet.services.Archiver;
-import org.nrg.xnat.restlet.services.AuditRestlet;
-import org.nrg.xnat.restlet.services.Importer;
-import org.nrg.xnat.restlet.services.MoveFiles;
-import org.nrg.xnat.restlet.services.RemoteLoggingRestlet;
-import org.nrg.xnat.restlet.services.SettingsRestlet;
+import org.nrg.xnat.restlet.services.*;
 import org.nrg.xnat.restlet.services.mail.MailRestlet;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchDelete;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchMove;
@@ -44,6 +28,10 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.resource.Resource;
 import org.restlet.util.Template;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * To add additional REST services to your installation, you can create a REST extension:
@@ -71,7 +59,10 @@ public class XNATApplication extends Application {
 
         Router securedResourceRouter = new Router(getContext());
         addRoutes(securedResourceRouter);
+        if (isRestMockServiceEnabled()) {
+            _log.debug("Found UI.show-mock-rest-config set to true, mapping configured mock REST service routes.");
         addConfiguredRoutes(rootRouter);
+        }
 
         List<Class<?>> publicRoutes = addExtensionRoutes(securedResourceRouter);
 
@@ -82,6 +73,15 @@ public class XNATApplication extends Application {
         addPublicRoutes(rootRouter, publicRoutes);
 
         return rootRouter;
+    }
+
+    private boolean isRestMockServiceEnabled() {
+        try {
+            final String showMockRestConfig = XDAT.getSiteConfigurationProperty("UI.show-mock-rest-config");
+            return !StringUtils.isBlank(showMockRestConfig) && Boolean.parseBoolean(showMockRestConfig);
+        } catch (ConfigServiceException e) {
+            return false;
+        }
     }
 
     private void attachArchiveURI(final Router router,final String uri,final Class<? extends Resource> clazz){
@@ -366,8 +366,13 @@ public class XNATApplication extends Application {
         Map<String, String> callMap = RestMockCallMapRestlet.getRestMockCallMap();
         if (callMap != null) {
             for (String mapping : callMap.keySet()) {
+                if (_log.isDebugEnabled()) {
+                    _log.debug("Adding route for mock REST call: " + mapping);
+                }
                 router.attach(mapping, RestMockCallMapRestlet.class);
             }
+        } else if (_log.isDebugEnabled()) {
+            _log.debug("No mock REST call configuration found.");
         }
     }
 

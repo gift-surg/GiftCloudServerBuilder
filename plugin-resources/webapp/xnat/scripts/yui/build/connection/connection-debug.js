@@ -1452,14 +1452,9 @@ YAHOO.util.Connect =
 		this._formNode.setAttribute('method', 'POST');
 		this._formNode.setAttribute('target', frameId);
 
-		if(YAHOO.env.ua.ie && !ie8){
-			// IE does not respect property enctype for HTML forms.
-			// Instead it uses the property - "encoding".
+        // Rick: Conditional removed here, set both types so that different flavors of IE can get their req'd encoding.
 			this._formNode.setAttribute('encoding', uploadEncoding);
-		}
-		else{
 			this._formNode.setAttribute('enctype', uploadEncoding);
-		}
 
 		if(postData){
 			oElements = this.appendPostData(postData);

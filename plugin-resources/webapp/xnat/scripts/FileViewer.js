@@ -237,7 +237,7 @@ function FileViewer(_obj){
 
 			var dest=document.getElementById("total_dicom_files");
 			if(dest!=null && dest !=undefined){
-   				dest.innerHTML="Totals: ";
+   				dest.innerHTML="<b>Totals:</b> ";
 				for(var sC2=0;sC2<scan_resources.length;sC2++){
 					dest.innerHTML+=scan_counts[scan_resources[sC2]].label+" (";
 					dest.innerHTML+=scan_counts[scan_resources[sC2]].count;

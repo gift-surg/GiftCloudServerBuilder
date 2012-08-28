@@ -65,8 +65,8 @@
                <td colspan="4" align="right">
                </td>
                <td NOWRAP >
-                       <span ID="total_dicom_files" style="position:relative;">
-						<a onclick="window.viewer.init();">Total Counts</a></span>
+                       <div ID="total_dicom_files" class="totals">
+						<a onclick="window.viewer.init();">Total Counts</a></div>
                </td>
        </tr>
     #end

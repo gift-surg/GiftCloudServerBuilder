@@ -18,16 +18,8 @@
   <servlet-name>dispatch</servlet-name>
   <url-pattern>*.do</url-pattern>
 </servlet-mapping>
+<context-param>
+        <param-name>org.restlet.autoWire</param-name>
+        <param-value>false</param-value>
+</context-param>
 -->
-<!-- 
-Add the Servlet context path to routes: DEFAULT=true 
-If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify the org.restlet.autoWire parameter.
-
-THIS IS THE PLACE to modify this parameter.  Uncomment the following code to configure the REST API to ignore the context path.
-	-->
-    <!--
-    <context-param>
-            <param-name>org.restlet.autoWire</param-name>
-            <param-value>false</param-value>
-    </context-param>
-    -->

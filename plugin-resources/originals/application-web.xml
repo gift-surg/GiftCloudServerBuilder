@@ -31,13 +31,13 @@
         <param-name>org.restlet.component</param-name>
         <param-value>org.nrg.xnat.restlet.XNATComponent</param-value>
     </context-param>
-    <!-- Add the Servlet context path to routes: DEFAULT=true 
-         If you configure your server to have your XNAT webapp to be the DEFAULT server context (removing the /xnat level from your URL), you'll need to modify this parameter BUT....
-         DO NOT MODIFY THIS FILE.  Instead, modify the file in your project directory xnat/projects/xnat/src/web-conf/web-projectMerge.xml
+    <!-- 
+    	 This setting will be automatically configured according to xdat.url in build.properties.
+    	 You can still set it manually if desired (not here - do it in xnat/projects/xnat/src/web-conf/web-projectMerge.xml).
     -->
     <context-param>
         <param-name>org.restlet.autoWire</param-name>
-        <param-value>true</param-value>
+        <param-value>@RESTLET_AUTOWIRE@</param-value>
     </context-param>
     <listener>
 		<listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>

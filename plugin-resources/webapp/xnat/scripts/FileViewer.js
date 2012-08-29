@@ -88,6 +88,40 @@ function FileViewer(_obj){
 		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+'?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
    
+   this.removeReconstruction=function(item){
+	   if(showReason){
+			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeReconstruction,this);
+			justification.item=item;	
+		}else{
+			var passthrough= new XNAT.app.passThrough(this._removeReconstruction,this);
+			passthrough.item=item;
+			passthrough.fire();
+		}
+   }
+   
+   this._removeReconstruction=function(arg1,arg2,container){
+	    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
+	    this.initCallback={
+			success:function(obj1){
+	    		this.refreshCatalogs("file");
+			},
+			failure:function(o){
+	    		closeModalPanel("file");
+				displayError("ERROR " + o.status+ ": Failed to delete file.");
+			},
+			scope:this
+		}
+		
+	   openModalPanel("file","Deleting reconstruction '" + container.item.reconId +"'");
+	    
+	   var params="";		
+	   params+="event_reason="+event_reason;
+	   params+="&event_type=WEB_FORM";
+	   params+="&event_action=File Deleted";
+	    
+	   YAHOO.util.Connect.asyncRequest('DELETE',this.obj.uri +'/reconstructions/' + container.item.reconId + '?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this)
+   }
+   
    this.removeCatalog=function(item){	
 		if(showReason){
 			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeCatalog,this);
@@ -237,7 +271,7 @@ function FileViewer(_obj){
 
 			var dest=document.getElementById("total_dicom_files");
 			if(dest!=null && dest !=undefined){
-   				dest.innerHTML="<b>Totals:</b> ";
+   				dest.innerHTML="Totals: ";
 				for(var sC2=0;sC2<scan_resources.length;sC2++){
 					dest.innerHTML+=scan_counts[scan_resources[sC2]].label+" (";
 					dest.innerHTML+=scan_counts[scan_resources[sC2]].count;
@@ -333,7 +367,12 @@ function FileViewer(_obj){
 							var scan=scans[rScanC];
 							var scanNode=null;
 							if(scan.cats!=null && scan.cats!=undefined && scan.cats.length>0){
-								var scanNode=new YAHOO.widget.TaskNode({label:(scan.label!=undefined)?scan.label:scan.id, expanded: true,checked:true}, parent);
+								
+								var l = (scan.label!=undefined)?scan.label:scan.id;
+								if(parent.label == "reconstructions"){
+									l +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeReconstruction({reconId:'" + scan.id + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+								}
+								var scanNode=new YAHOO.widget.TaskNode({label:l, expanded: true,checked:true}, parent);
 								scanNode.labelStyle = "icon-cf";
 								
 								for(var scanCC=0;scanCC<scan.cats.length;scanCC++){

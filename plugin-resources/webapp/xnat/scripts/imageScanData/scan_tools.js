@@ -1,6 +1,46 @@
 dynamicJSLoad("SAXDriver","xmlsax-min.js");
 dynamicJSLoad("SAXEventHandler","SAXEventHandler-min.js");
 
+function setScanQualityOptions(sel,choices,offset,value){
+    if(choices==undefined || choices.length==0){
+	choices=['usable','questionable','unusable'];
+    }
+    for(i=0;i<choices.length;i++){
+	var choice=choices[i];
+	var selected=(value==undefined)?(i==0):(choice==value);
+	sel.options[i+offset]=new Option(choice,choice,selected,selected);
+	if(selected){
+	    sel.selectedIndex=i+offset;
+	}
+    }
+}
+
+function populateScanQualitySelector(server,project,sel,offset,assigned) {
+    var url=server+'/REST/';
+    if (project){
+	url+='projects/'+project+'/config/scan-quality/labels';
+    } else {
+	url+='config/scan-quality/labels';
+    } 
+    url+='?XNAT_CSRF='+window.csrfToken+'&format=json';
+    YAHOO.util.Connect.asyncRequest('GET',url,
+                                    {
+                                        success:function(resp){
+	                                    var rs=eval('('+resp.responseText+')');
+                                            var contents=rs['ResultSet']['Result'][0]['contents'];
+	                                    var choices=contents.replace(/^\s+|\s+$/g,'').split(',');
+	                                    setScanQualityOptions(sel,choices,offset,assigned);
+                                        },
+                                        failure:function(resp){
+                                            if (project) {
+	                                        populateScanQualitySelector(server,undefined,sel,offset,assigned);
+                                            } else {
+                                                setScanQualityOptions(sel,[],offset,assigned);
+                                            }
+                                        }
+                                    });
+}
+
 function scanInit(_options){
   	this.options=_options;
     this.onResponse=new YAHOO.util.CustomEvent("response",this);
@@ -256,20 +296,8 @@ function ScanEditor(_sessionID,_scanID,_options){
 			td1.align="left";
 			var sel = document.createElement("select");
 			sel.name=modality + "/quality";
-			sel.options[0]=new Option("(SELECT)","");
-
-			sel.options[1]=new Option("usable","usable",(this.scan.extension.Quality==undefined || this.scan.extension.Quality=="usable")?true:false,(this.scan.extension.Quality==undefined || this.scan.extension.Quality=="usable")?true:false);
-			if(scan.extension.Quality!=undefined && scan.extension.Quality=="usable"){
-				scan.qual_input.selectedIndex=1;
-			}
-			sel.options[2]=new Option("questionable","questionable",(this.scan.extension.Quality!=undefined && this.scan.extension.Quality=="questionable")?true:false,(this.scan.extension.Quality!=undefined && this.scan.extension.Quality=="questionable")?true:false);
-			if(scan.extension.Quality!=undefined && scan.extension.Quality=="questionable"){
-				sel.selectedIndex=2;
-			}
-			sel.options[3]=new Option("unusable","unusable",(this.scan.extension.Quality!=undefined && this.scan.extension.Quality=="unusable")?true:false,(this.scan.extension.Quality!=undefined && this.scan.extension.Quality=="unusable")?true:false);
-			if(scan.extension.Quality!=undefined && scan.extension.Quality=="unusable"){
-				sel.selectedIndex=3;
-			}
+		        sel.options[0]=new Option("(SELECT)","");
+		        populateScanQualitySelector(serverRoot,this.options && this.options.project,sel,1,this.scan.extension.Quality);
 			td2.appendChild(sel);
 			tr.appendChild(td1);
 			tr.appendChild(td2);
@@ -574,13 +602,10 @@ function renderScans(scans,tbody_id,session_id,project){
 
 		//id
 		td= document.createElement("td");
-		if(scan.quality=="usable"){
-			td.innerHTML="<div style='color:green;font-weight:700'>"+ scan.id + "</div>";
-		}else if(scan.quality=="questionable"){
-			td.innerHTML="<div style='color:orange;font-weight:700'>"+ scan.id + "</div>";
-		}else{
-			td.innerHTML="<div style='color:red;font-weight:700'>"+ scan.id + "</div>";
-		}
+                if(scan.quality) {
+                    td.className="quality-"+scan.quality
+                }
+                td.innerHTML=scan.id
 		tr.appendChild(td);
 
 		//type
@@ -992,21 +1017,10 @@ function scanListingEditor(_tbody,_scanSet,_options){
 			//type
 			td= document.createElement("td");
 			if(scan.qual_input==undefined){
-				scan.qual_input=document.createElement("select");
-				scan.qual_input.name=elementName + scanXPath(modality,scanTypeTable) + "/quality";
-				scan.qual_input.options[0]=new Option("(SELECT)","");
-				scan.qual_input.options[1]=new Option("usable","usable",(scan.extension.Quality!=undefined && scan.extension.Quality=="usable")?true:false,(scan.extension.Quality!=undefined && scan.extension.Quality=="usable")?true:false);
-				if(scan.extension.Quality!=undefined && scan.extension.Quality=="usable"){
-					scan.qual_input.selectedIndex=1;
-				}
-				scan.qual_input.options[2]=new Option("questionable","questionable",(scan.extension.Quality!=undefined && scan.extension.Quality=="questionable")?true:false,(scan.extension.Quality!=undefined && scan.extension.Quality=="questionable")?true:false);
-				if(scan.extension.Quality!=undefined && scan.extension.Quality=="questionable"){
-					scan.qual_input.selectedIndex=2;
-				}
-				scan.qual_input.options[3]=new Option("unusable","unusable",(scan.extension.Quality!=undefined && scan.extension.Quality=="unusable")?true:false,(scan.extension.Quality!=undefined && scan.extension.Quality=="unusable")?true:false);
-				if(scan.extension.Quality!=undefined && scan.extension.Quality=="unusable"){
-					scan.qual_input.selectedIndex=3;
-				}
+			    scan.qual_input=document.createElement("select");
+			    scan.qual_input.name=elementName + scanXPath(modality,scanTypeTable) + "/quality";
+			    scan.qual_input.options[0]=new Option("(SELECT)","");
+                            populateScanQualitySelector(serverRoot,projectScope,scan.qual_input,1,scan.extension.Quality);
 			}
 			td.appendChild(scan.qual_input);
 			tr.appendChild(td);

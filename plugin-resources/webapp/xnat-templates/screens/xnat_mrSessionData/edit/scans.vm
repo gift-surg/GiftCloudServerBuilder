@@ -1,3 +1,4 @@
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
 <DIV class="edit_header1" style="margin-bottom:16px">Scans &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" value="Add Scan" onclick="addScan(this)"/>
 </DIV>

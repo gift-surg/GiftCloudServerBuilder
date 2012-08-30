@@ -21,7 +21,7 @@ $navigation.setTemplate("/bodyOpen.vm")
 <table border="0" width="100%">
   <tr>
    <td valign="top">
-    <div id="layout_content_x">$screen_placeholder</div>
+    <div id="layout_content">$screen_placeholder</div>
    </td>
   </tr>
 </table>

@@ -266,15 +266,27 @@ function DaysArray(n) {
 }
 
 function concealContent(message){
-    document.getElementById("layout_content2").className="warning";
-    document.getElementById("layout_content2").innerHTML=message;
-    document.getElementById("layout_content2").style.display="block";
-    document.getElementById("layout_content").style.display="none";
+    var layout2 = document.getElementById("layout_content2");
+    if (layout2) {
+        layout2.className="warning";
+        layout2.innerHTML=message;
+        layout2.style.display="block";
+    }
+    var layout1 = document.getElementById("layout_content");
+    if (layout1) {
+        layout1.style.display="none";
+    }
 }
 
 function showContent(){
+    var layout2 = document.getElementById("layout_content2");
+    if (layout2) {
     document.getElementById("layout_content2").style.display="none";
+    }
+    var layout1 = document.getElementById("layout_content");
+    if (layout1) {
     document.getElementById("layout_content").style.display="block";
+}
 }
 
 function ArrayIndexOf(array,item){

@@ -329,6 +329,8 @@ function updateMessageOrHide (dialog) {
 function redirectToLogin () {
     YAHOO.util.Cookie.set('WARNING_BAR','OPEN',{path:'/'});
     synchronizingCookies.sessionTimeout.set("true");
+	var currTime = (new Date()).getTime();
+	YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME',currTime,{path:'/'});
     window.location.reload(true);
 }
 

@@ -9,8 +9,8 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
   
   <tr>
     <td valign="top" colspan="2">
-#if ( $data.getMessage() )
- <DIV class="error">$data.message</DIV><br><br>
+#if ( $data.getMessage() && $data.getMessage()!="" )
+ <DIV class="error">$data.getMessage()</DIV><br><br>
 #end
 #if($msg)
   <DIV class="warning">$msg</DIV><br><br>
@@ -48,12 +48,12 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
   <table valign="top" align="center">
   <tr>
     <td valign="top" colspan="52" align="center">
-#if ( $data.getMessage() )
- <DIV class="error">$data.message</DIV><br><br>
+#if ( $data.getMessage() && $data.getMessage()!="" )
+ <DIV class="error">$data.getMessage()</DIV><br><br>
 #end
 #if($msg)
   <DIV class="warning">$msg</DIV><br><br>
-#end
+#end		
     </td>
   </tr>
   <tr>

@@ -12,7 +12,7 @@
   </td>
  </tr>
  <tr>
-  <th align="left">Subject:</th>
+  <th align="left">Subject: </th>
 
 ## #if ($!subject != "")
 #if (!$subject)
@@ -28,7 +28,7 @@
 #end
 
   #if(!$subject || $!item.getProperty("project") == "")
-	  <td><select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select></td>
+	  <td><select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id"></select></td>
 	  #if(!$preventSubject)
 	    <td><a onclick="createSubjectForm();">Add New Subject</a></td>
 	  #end	  
@@ -36,7 +36,7 @@
 	<td>
 	$subject.getIdentifier($project,false)
   	<div style="display:none">
-  	<select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id" disabled=true></select>
+  	<select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id"></select>
   	</div>
   	</td>
   #end
@@ -73,7 +73,11 @@ function createSubjectForm(){
    	  	}
    	 	window.create_subject_link ="$link.setPage('XDATScreen_edit_xnat_subjectData.vm').addPathInfo('popup','true')";
    	 	var project = document.getElementById("xnat:mrSessionData/project").value;
-   	 	if (project == "") {
+   	 	if ((project == "")&&($item.user.canRead($item))&&($item.user.canEdit($item))&&($item.user.canCreate($item))&&($item.user.canActivate($item))&&($item.user.canDelete($item))){
+   	 		alert('Please Add Yourself as a "Member" of the Project');
+   	 		return;
+   	 	}
+   	 	if (project == ""){
    	 		alert('Please Select a Project First');
    	 		return;
    	 	}

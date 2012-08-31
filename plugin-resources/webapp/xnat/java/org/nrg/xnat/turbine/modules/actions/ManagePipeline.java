@@ -283,7 +283,7 @@ public class ManagePipeline extends SecureAction {
                 msg = "<p><b>The pipelines for the project were successfully modified.</b></p>";
             }
             data.setMessage(msg);
-            data.setScreenTemplate("ClosePage.vm");
+            data.setScreenTemplate("ClosePageAndRefresh.vm");
             // ItemI project = TurbineUtils.GetItemBySearch(data,false);
             // this.redirectToReportScreen((String)TurbineUtils.GetPassedParameter("destination",
             // data), project, data);

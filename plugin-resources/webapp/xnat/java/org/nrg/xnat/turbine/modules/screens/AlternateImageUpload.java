@@ -32,7 +32,5 @@ public class AlternateImageUpload extends SecureScreen {
         context.put("uploadID", formatter.format(Calendar.getInstance().getTime()));
         final ArcArchivespecification arc = ArcSpecManager.GetInstance();
         context.put("arc", arc);
-        final URL url = new URL(arc.getSiteUrl());
-        context.put("hostname", url.getHost());
     }
 }

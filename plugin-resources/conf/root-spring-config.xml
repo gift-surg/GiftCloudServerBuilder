@@ -50,6 +50,7 @@
     <import resource="orm-config.xml" />
         <import resource="mail-services-config.xml" />
     <import resource="notify-services-config.xml" />
+    <import resource="prearc-config.xml" />
 
     <bean id="coreXnatEntityPackages" class="org.nrg.framework.orm.hibernate.HibernateEntityPackageList">
         <property name="items">

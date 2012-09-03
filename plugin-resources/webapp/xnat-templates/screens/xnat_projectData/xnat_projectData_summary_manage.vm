@@ -32,7 +32,7 @@ window.quarantine=(new RadioSettingsManager(document.getElementById('quarantine_
 	<DIV style="font-weight:700;">&nbsp;Define Prearchive Settings</DIV>
        <TABLE cellpadding="5" cellspacing="0">
             <TR><TD NOWRAP><input id="0_prearchive" type="radio" name="prearchive" value="0" #if($prearc==0)CHECKED#end/></TD><TD>All image data should be placed in a temporary location (prearchive) before being manually transfered into the permanent archive.</TD></TR>
-            <TR><TD NOWRAP><input id="4_prearchive"  type="radio" name="prearchive" value="4" #if($prearc==4)CHECKED#end /></TD><TD>All image data will be placed into the archive automatically.  Data which doesn't match a pre-existing project will be placed in an 'Unassigned' project.</TD></TR>
+            <TR><TD NOWRAP><input id="4_prearchive"  type="radio" name="prearchive" value="4" #if($prearc==4)CHECKED#end /></TD><TD>All image data will be placed into the archive automatically, but anything matching existing files will be rejected.  Data which doesn't match a pre-existing project will be placed in an 'Unassigned' project.</TD></TR>
             <TR><TD NOWRAP><input id="5_prearchive"  type="radio" name="prearchive" value="5" #if($prearc==5)CHECKED#end /></TD><TD>All image data will be placed into the archive automatically and will overwrite existing files.  Data which doesn't match a pre-existing project will be placed in an 'Unassigned' project.</TD></TR>
             <TR><TD COLSPAN="2"><input type="button" id="project_prearchive_save" value="Save" disabled="true"/></TD></TR>
        </TABLE>

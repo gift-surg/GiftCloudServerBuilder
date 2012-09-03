@@ -1,4 +1,5 @@
 <!--BEGIN /screens/xnat_imageSessionData/xnat_imageSessionData_scans.vm -->
+<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
 <div class="edit_header1" style="margin-bottom:16px">Scans</div>
 #set($scanAssessors =$!om.getScanAssessors())
 
@@ -26,18 +27,9 @@
       </td>
       <td border=0 align=left NOWRAP>$!scan.getProperty("type")</td>
 	  <td border=0 align=left NOWRAP>$!scan.getProperty("series_description")</td>
-      <td border=0 style="font-weight:bold; text-align:left;"  NOWRAP>
-        <span style="color:
-          #if ($!scan.getProperty("quality").equalsIgnoreCase("usable"))
-            green
-          #elseif($!scan.getProperty("quality").equalsIgnoreCase("questionable"))
-            gold
-          #else
-            red
-          #end
-          ">$!scan.getProperty("quality")
-        </span>	  
-		</td>
+      <td border=0 class="quality-$!scan.getProperty("quality")" style="font-weight:bold; text-align:left;"  NOWRAP>
+      $!scan.getProperty("quality")
+      </td>
 	
 	<td border=0 align=left NOWRAP>
         #if($scan.getFile().size()>0)
@@ -65,8 +57,8 @@
                <td colspan="4" align="right">
                </td>
                <td NOWRAP >
-                       <span ID="total_dicom_files" style="position:relative;">
-						<a onclick="window.viewer.init();">Total Counts</a></span>
+                       <div ID="total_dicom_files" class="totals">
+						<a onclick="window.viewer.init();">Total Counts</a></div>
                </td>
        </tr>
     #end

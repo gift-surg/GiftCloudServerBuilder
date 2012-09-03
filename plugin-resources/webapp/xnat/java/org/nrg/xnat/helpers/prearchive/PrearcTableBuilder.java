@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 public class PrearcTableBuilder implements PrearcTableBuilderI {
 	static Logger logger = Logger.getLogger(PrearcTableBuilder.class);
 
-	public final static String[] PREARC_HEADERS = {"project".intern(),"last_mod".intern(),"uploaded".intern(),"scan_date".intern(),"scan_time".intern(),"subject".intern(),"session".intern(),"status".intern(),"url".intern()};
+	public final static String[] PREARC_HEADERS = {"project".intern(),"last_mod".intern(),"uploaded".intern(),"scan_date".intern(),"scan_time".intern(),"subject".intern(),"session".intern(),"status".intern(),"url".intern(),"visit".intern(),"protocol".intern()};
 	
 	public static Object[] buildRow(final Session s,final String urlBase){
 		Object[] row = new Object[PREARC_HEADERS.length];
@@ -44,6 +44,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		row[6]=PrearcTableBuilder.Session.pickSessionName(s);
 		row[7]=s.getStatus();
 		row[8]=StringUtils.join(new String[]{urlBase,"/".intern(),s.getTimestamp(),"/".intern(),s.getFolderName()});
+		row[9]=s.getVisit();
+		row[10]=s.getProtocol();
 		
 		return row;
 	}
@@ -173,6 +175,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setTag(this.getTag());
 			data.setAutoArchive(null);
 			data.setUrl(PrearcUtils.makeUri(urlBase, data.getTimestamp(), data.getFolderName()));
+			data.setVisit(this.getVisit());
+			data.setProtocol(this.getProtocol());
 			return this.data;
 		}
 		
@@ -279,7 +283,14 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			return (session!=null)?session.getLabel():null;
 			
 		}
-		
+		public String getVisit(){
+			return (session!=null)?session.getVisit():null;
+			
+		}
+		public String getProtocol(){
+			return (session!=null)?session.getProtocol():null;
+			
+		}
 		public String getPatientId() {
 			return (session!=null)?session.getDcmpatientid():null;
 		}

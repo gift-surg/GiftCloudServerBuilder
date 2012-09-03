@@ -11,14 +11,14 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
-import org.nrg.dcm.DicomSCP;
-import org.nrg.framework.services.ContextService;
+import org.nrg.dcm.DicomSCPManager;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.slf4j.Logger;
@@ -35,7 +35,6 @@ public class XNATRestletServlet extends ServerServlet {
     public static ServletConfig REST_CONFIG=null;
 
     private final Logger logger = LoggerFactory.getLogger(XNATRestletServlet.class);
-    private DicomSCP dicomSCP = null;
 
     /**
      * Get the username of the site administrator. If there are multiple
@@ -81,22 +80,14 @@ public class XNATRestletServlet extends ServerServlet {
             logger.error("Unable to either find or initialize script database", e);
         }
 
+        PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
         try {
-            PrearcDatabase.initDatabase();
+            PrearcDatabase.initDatabase(prearcConfig.isReloadPrearcDatabaseOnApplicationStartup());
         } catch (Throwable e) {
             logger.error("Unable to initialize prearchive database", e);
         }
 
-        final ContextService context = XDAT.getContextService();
-        dicomSCP = context.getBean("dicomSCP", DicomSCP.class);
-        if (null != dicomSCP) {
-            try {
-                logger.debug("starting {}", dicomSCP);
-                dicomSCP.start();
-            } catch (Throwable t) {
-                throw new ServletException("unable to start DICOM SCP", t);
-            }
-        }
+        XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();
     }
 
     /**
@@ -121,10 +112,6 @@ public class XNATRestletServlet extends ServerServlet {
 
     @Override
     public void destroy() {
-        logger.debug("stopping {}", dicomSCP);
-        dicomSCP.stop();
-        dicomSCP = null;
+        XDAT.getContextService().getBean(DicomSCPManager.class).stopDicomSCP();
     }
-
-    public DicomSCP getDicomSCP() { return dicomSCP; }
 }

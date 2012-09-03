@@ -134,9 +134,9 @@
 		  #end
 			</td>
      <td><select name="match${rowCount}.scan${scanCount}_USE">
-      <option value="usable" SELECTED>usable</option>
-      <option value="questionable">questionable</option>
-      <option value="unusable">unusable</option>
+     #foreach ($quality in $qualityLabels())
+     <option value="$quality">$quality</option>
+     #end
      </select>
      </td></tr>
      #set($scanCount = $scanCount + 1)

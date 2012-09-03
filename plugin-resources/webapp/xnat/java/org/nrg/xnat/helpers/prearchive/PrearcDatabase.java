@@ -1,14 +1,25 @@
 package org.nrg.xnat.helpers.prearchive;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusListenerI;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
@@ -18,16 +29,10 @@ import org.nrg.xnat.restlet.XNATApplication;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 /**
  * This class creates a in-memory database that holds all the information in the prearchive 
@@ -59,28 +64,34 @@ public final class PrearcDatabase {
      * @throws SessionException
      * @throws IOException 
      */
-    public static void initDatabase(String prearcPath) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
+    public static void initDatabase(String prearcPath, boolean recreateDBMSTablesFromScratch) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
         if (!PrearcDatabase.ready) {
             PrearcDatabase.prearcPath = prearcPath;
             PrearcDatabase.sessionDelegate = new FileSystemSessionData(PrearcDatabase.prearcPath);
-            PrearcDatabase.createDatabase();
+            if(recreateDBMSTablesFromScratch) {
+                PrearcDatabase.createDatabase();
+            }
             PrearcDatabase.ready = true;
         }
     }
 
-    public static void initDatabase(String prearcPath, SessionDataDelegate sp) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
+    public static void initDatabase(String prearcPath, SessionDataDelegate sp, boolean recreateDBMSTablesFromScratch) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
         if (!PrearcDatabase.ready){ 
             PrearcDatabase.prearcPath = prearcPath;
             PrearcDatabase.sessionDelegate = sp;
-            PrearcDatabase.createDatabase();
+            if(recreateDBMSTablesFromScratch) {
+                PrearcDatabase.createDatabase();
+            }
             PrearcDatabase.ready = true;}
     }
 
-    public static void initDatabase(SessionDataDelegate sp) throws Exception , SQLException, IllegalStateException, SessionException, IOException {
+    public static void initDatabase(SessionDataDelegate sp, boolean recreateDBMSTablesFromScratch) throws Exception , SQLException, IllegalStateException, SessionException, IOException {
         if (!PrearcDatabase.ready){ 
             PrearcDatabase.prearcPath = PrearcDatabase.getPrearcPath();
             PrearcDatabase.sessionDelegate = sp;
-            PrearcDatabase.createDatabase();
+            if(recreateDBMSTablesFromScratch) {
+                PrearcDatabase.createDatabase();
+            }
             PrearcDatabase.ready = true;}
     }
 
@@ -91,11 +102,13 @@ public final class PrearcDatabase {
      * @throws SessionException
      * @throws IOException 
      */
-    public static void initDatabase() throws Exception, SQLException, IllegalStateException, SessionException, IOException {
+    public static void initDatabase(boolean recreateDBMSTablesFromScratch) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
         if (!PrearcDatabase.ready){ 
             PrearcDatabase.prearcPath = PrearcDatabase.getPrearcPath();
             PrearcDatabase.sessionDelegate = new FileSystemSessionData(PrearcDatabase.prearcPath);
-            PrearcDatabase.createDatabase();
+            if(recreateDBMSTablesFromScratch) {
+                PrearcDatabase.createDatabase();
+            }
             PrearcDatabase.ready = true;}
     }
 
@@ -507,7 +520,7 @@ public final class PrearcDatabase {
     	}
     }
 
-    public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project) throws Exception {
+    public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project, final String visit, final String protocol) throws Exception {
         final SessionData sd = PrearcDatabase.getSession(session, timestamp, project);
         try {
             new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
@@ -520,6 +533,12 @@ public final class PrearcDatabase {
                     final String subject = sd.getSubject();
                     if (!Strings.isNullOrEmpty(subject)) {
                         params.put("subject_ID", sd.getSubject());
+                    }
+                    if (!Strings.isNullOrEmpty(visit)) {
+                    	params.put("visit", visit);
+                    }
+                    if (!Strings.isNullOrEmpty(protocol)) {
+                    	params.put("protocol", protocol);
                     }
 
                     try {

@@ -889,6 +889,18 @@
               <option value="$minute" #if ( $minute == $!expt_date.getMinutes() ) SELECTED="true" #end>$minuteD</option>
         #end
       </select>
+      <select id="${name}.seconds" name="${name}.seconds">
+        <option value="">SS</option>
+        #foreach ($second in [ 0..59 ])
+           #if($second<10)
+           		#set($secondD="0$second")
+           #else
+           		#set($secondD="$second")
+           #end
+           <option value="$second" #if ( $second == $!expt_date.getSeconds() ) SELECTED="true" #end>$secondD</option>
+        #end
+      </select>
+
       #else
       <select id="${name}.hours" name="${name}.hours">
         <option value="">HH</option>
@@ -908,9 +920,23 @@
               <option value="$minute">$minuteD</option>
         #end
       </select>
+      
+      <select id="${name}.seconds" name="${name}.seconds">
+        <option value="">SS</option>
+        #foreach ($second in [ 0..59 ])
+          #if($second<10)
+            #set($secondD="0$second")
+          #else
+            #set($secondD="$second")
+          #end
+          <option value="$second">$secondD</option>
+        #end
+      </select>
+      
       #end
             </font>
 #end
+
 
 ## EDIT PROPS
 #macro (xdatEditProps $item $edit_screen)
@@ -1554,7 +1580,7 @@ $!turbineUtils.escapeJS($s)
 
 ##Used to load globally scoped VM files and inject them into parent VMs.
 #macro(addGlobalCustomScreenJS $subFolder)
-	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$subFolder</div>")#end
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$subFolder</div>")#end
 	#foreach($screenProps in $turbineUtils.getTemplates($subFolder))
 		#set($templateFileName=$screenProps.getProperty("path"))
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")
@@ -1573,7 +1599,7 @@ $!turbineUtils.escapeJS($s)
 
 ##Used to load  VM files for specfic data-types and their extensions and inject them into parent VMs.
 #macro(addCustomScreenJS $dataType $subFolder)
-	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$dataType/$subFolder</div>")#end
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$dataType/$subFolder</div>")#end
 	#foreach($screenProps in $turbineUtils.getTemplates($dataType,$subFolder))
 		#set($templateFileName=$screenProps.getProperty("path"))
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")
@@ -1592,7 +1618,7 @@ $!turbineUtils.escapeJS($s)
 
 ##Used to load globally scoped VM files and inject them into parent VMs.
 #macro(addGlobalCustomScreens $subFolder)
-	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))<div class="extension">/templates/screens/$subFolder</div>#end
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.debug-extension-points","false")))<div class="extension">/templates/screens/$subFolder</div>#end
 	#foreach($screenProps in $turbineUtils.getTemplates($subFolder))
 		#set($templateFileName=$screenProps.getProperty("path"))
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")
@@ -1611,7 +1637,7 @@ $!turbineUtils.escapeJS($s)
 
 ##Used to load  VM files for specfic data-types and their extensions and inject them into parent VMs.
 #macro(addCustomScreens $dataType $subFolder)
-	#if($turbineUtils.toBoolean($configProps.getProperty("UI.debug-extension-points","false")))<div class="extension">/templates/screens/$dataType/$subFolder</div>#end
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.debug-extension-points","false")))<div class="extension">/templates/screens/$dataType/$subFolder</div>#end
 	#foreach($screenProps in $turbineUtils.getTemplates($dataType,$subFolder))
 		#set($templateFileName=$screenProps.getProperty("path"))
 		#if($data.getSession().getAttribute("user").getUsername()=="guest")

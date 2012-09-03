@@ -162,7 +162,7 @@ public class PrearcDatabaseTest extends BaseXDATTestCase {
 		PrearcDatabaseTest.sd = new SessionDataDelegate(sp,sm) {};
 		PrearcDatabaseTest.sessions = sd.get();
 		try {
-			PrearcDatabase.initDatabase("/home/aditya/Java/PRE_ARCHIVE_NEW/", PrearcDatabaseTest.sd);
+			PrearcDatabase.initDatabase("/home/aditya/Java/PRE_ARCHIVE_NEW/", PrearcDatabaseTest.sd, true);
 		} catch (SessionException e) {
 			fail("SessionException " + e);
 		}

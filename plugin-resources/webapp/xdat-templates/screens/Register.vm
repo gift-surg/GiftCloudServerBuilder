@@ -67,7 +67,7 @@ $page.setBgColor($ui.bgcolor)
       #formLabel("Study Site or Lab")
   	  <TD><input type="text" name="lab"></TD>
     </tr>
-	#if($turbineUtils.toBoolean($configProps.getProperty("UI.allow-new-user-comments","true")))
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-new-user-comments","true")))
     <tr>
     	<TD colspan="2"><hr/></TD>
     </tr>

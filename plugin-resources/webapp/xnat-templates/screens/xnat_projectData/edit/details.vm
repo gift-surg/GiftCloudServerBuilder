@@ -1,15 +1,15 @@
 <TABLE>
-				<TR><TH align="left">Title</TH><TD>		<input id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95"/></TD></TR>
-														<TR><TH align="left">Running Title</TH><TD>		<input id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24"/> (24 characters maximum.)</TD></TR>
+				<TR><TH align="left">Title</TH><TD>		<input id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95" onkeydown="subOnEnter(event,this);"/></TD></TR>
+														<TR><TH align="left">Running Title</TH><TD>		<input id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24" onkeydown="subOnEnter(event,this);" /> (24 characters maximum.)</TD></TR>
 <TR><TH align="left" NOWRAP>Project Abbreviation</TH><TD>
 		#if( $parentTemplate != 'add' )
-		<input id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")"/>
+		<input id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")" />
 		$item.getProperty("xnat:projectData/ID")
 		#else
-		<input id="xnat:projectData/ID" type="text" name="xnat:projectData/ID" value="$!item.getStringProperty("xnat:projectData/ID")" size="20" maxlength="14" ONCHANGE="this.value=stringCamelCaps(this.value);"/>&nbsp;(One word only, no special characters,'_' is ok.)
+		<input id="xnat:projectData/ID" type="text" name="xnat:projectData/ID" value="$!item.getStringProperty("xnat:projectData/ID")" size="20" maxlength="14" ONCHANGE="this.value=stringCamelCaps(this.value);" onkeydown="subOnEnter(event,this);" />&nbsp;(One word only, no special characters,'_' is ok.)
 		#end</TD></TR>
-							<TR><TH align="left">Description</TH><TD>		<textarea id="xnat:projectData/description"  name="xnat:projectData/description" rows="4" cols="70">$!item.getStringProperty("xnat:projectData/description")</textarea></TD></TR>
-							<TR><TH align="left">Keywords</TH><TD>		<input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95"/></TD></TR>
+							<TR><TH align="left">Description</TH><TD>		<textarea id="xnat:projectData/description"  name="xnat:projectData/description" rows="4" cols="70" onkeydown="subOnEnter(event,this);" >$!item.getStringProperty("xnat:projectData/description")</textarea></TD></TR>
+											<TR><TH align="left">Keywords</TH><TD>		<input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95" onkeydown="subOnEnter(event,this);" /></TD></TR>
 
 		#addCustomScreens($om.getXSIType() "edit/details")
 		
@@ -19,7 +19,7 @@
  <TR><TH align="left">Alias</TH>
  <TD>
  #foreach($aliasCounter in [0..3])
- <input id="xnat:projectData/aliases/alias[$aliasCounter]/alias" type="text" name="xnat:projectData/aliases/alias[$aliasCounter]/alias" value="$!item.getStringProperty("xnat:projectData/aliases/alias[$aliasCounter]/alias")"/>
+ <input id="xnat:projectData/aliases/alias[$aliasCounter]/alias" type="text" name="xnat:projectData/aliases/alias[$aliasCounter]/alias" value="$!item.getStringProperty("xnat:projectData/aliases/alias[$aliasCounter]/alias")" onkeydown="subOnEnter(event,this);"/>
  &nbsp;
  #end
  </TD>

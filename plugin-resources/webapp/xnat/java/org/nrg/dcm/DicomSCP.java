@@ -25,9 +25,11 @@ import static org.dcm4che2.data.UID.VerificationSOPClass;
 import static org.dcm4che2.data.UID.XMLEncoding;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import javax.inject.Provider;
@@ -77,14 +79,25 @@ public class DicomSCP {
     private final Executor executor;
     private final Device device;
     private final Multimap<NetworkApplicationEntity,DicomService> aes = LinkedHashMultimap.create();
+    private boolean started;
 
     public DicomSCP(final Executor executor, final Device device) {
         this.executor = executor;
         this.device = device;
+        setStarted(false);
     }
 
     public int getPort() {
         return device.getNetworkConnection()[0].getPort();
+    }
+    
+    public Iterable<String> getAEs() {
+    	Set<NetworkApplicationEntity> aesKeys = aes.keySet();
+    	List<String> aeTitleList = new ArrayList<String>(aesKeys.size());
+    	for ( NetworkApplicationEntity ae : aesKeys ) {
+    		aeTitleList.add(ae.getAETitle());
+    	}
+    	return aeTitleList;
     }
     
     public DicomSCP setService(final String aeTitle, final DicomService service) {
@@ -135,50 +148,56 @@ public class DicomSCP {
 
     
     public void start() throws IOException {
-        logger.info("starting DICOM SCP on {}:{}",
-                new Object[] {
-                device.getNetworkConnection()[0].getHostname(),
-                device.getNetworkConnection()[0].getPort(),
-        });
-        if (logger.isDebugEnabled()) {
-            logger.debug("Application Entities: ");
-            for (final NetworkApplicationEntity ae : aes.keySet()) {
-                logger.debug("{}: {}", ae.getAETitle(), aes.get(ae));
-            }
-        }
-
-        final VerificationService cecho = new VerificationService();
-
-        for (final NetworkApplicationEntity ae : aes.keySet()) {
-            logger.trace("Setting up AE {}", ae.getAETitle());
-            final List<TransferCapability> tcs = Lists.newArrayList();
-            ae.register(cecho);
-            tcs.add(new TransferCapability(VerificationSOPClass,
-                    VERIFICATION_SOP_TS, TransferCapability.SCP));
-            for (final DicomService service : aes.get(ae)) {
-                logger.trace("adding {}", service);
-                ae.register(service);
-                for (final String sopClass : service.getSopClasses()) {
-                    tcs.add(new TransferCapability(sopClass, TSUIDS,
-                            TransferCapability.SCP));
-                }
-            }
-
-            ae.setTransferCapability(tcs.toArray(new TransferCapability[0]));
-        }
-        device.setNetworkApplicationEntity(aes.keySet().toArray(new NetworkApplicationEntity[0]));
-        device.startListening(executor);
+    	if(!isStarted()) {
+	        logger.info("starting DICOM SCP on {}:{}",
+	                new Object[] {
+	                device.getNetworkConnection()[0].getHostname(),
+	                device.getNetworkConnection()[0].getPort(),
+	        });
+	        if (logger.isDebugEnabled()) {
+	            logger.debug("Application Entities: ");
+	            for (final NetworkApplicationEntity ae : aes.keySet()) {
+	                logger.debug("{}: {}", ae.getAETitle(), aes.get(ae));
+	            }
+	        }
+	
+	        final VerificationService cecho = new VerificationService();
+	
+	        for (final NetworkApplicationEntity ae : aes.keySet()) {
+	            logger.trace("Setting up AE {}", ae.getAETitle());
+	            final List<TransferCapability> tcs = Lists.newArrayList();
+	            ae.register(cecho);
+	            tcs.add(new TransferCapability(VerificationSOPClass,
+	                    VERIFICATION_SOP_TS, TransferCapability.SCP));
+	            for (final DicomService service : aes.get(ae)) {
+	                logger.trace("adding {}", service);
+	                ae.register(service);
+	                for (final String sopClass : service.getSopClasses()) {
+	                    tcs.add(new TransferCapability(sopClass, TSUIDS,
+	                            TransferCapability.SCP));
+	                }
+	            }
+	
+	            ae.setTransferCapability(tcs.toArray(new TransferCapability[0]));
+	        }
+	        device.setNetworkApplicationEntity(aes.keySet().toArray(new NetworkApplicationEntity[0]));
+	        device.startListening(executor);
+	        setStarted(true);
+    	}
     }
 
     public void stop() {
-        logger.info("stopping DICOM SCP");
-        device.stopListening();
-        for (final NetworkApplicationEntity ae : aes.keySet()) {
-            for (final DicomService service : aes.get(ae)) {
-                ae.unregister(service);
-            }
-            ae.setTransferCapability(new TransferCapability[0]);
-        }
+    	if(isStarted()) {
+	        logger.info("stopping DICOM SCP");
+	        device.stopListening();
+	        for (final NetworkApplicationEntity ae : aes.keySet()) {
+	            for (final DicomService service : aes.get(ae)) {
+	                ae.unregister(service);
+	            }
+	            ae.setTransferCapability(new TransferCapability[0]);
+	        }
+	        setStarted(false);
+    	}
     }
 
 
@@ -244,4 +263,12 @@ public class DicomSCP {
         }
         return create(executor, port, specs);
     }
+
+	public boolean isStarted() {
+		return started;
+	}
+
+	private void setStarted(boolean started) {
+		this.started = started;
+	}
 }

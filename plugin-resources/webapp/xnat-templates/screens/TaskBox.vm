@@ -8,14 +8,14 @@ window.location.href='$link.setAction("SearchAction")/element/' + document.getEl
 }
 </SCRIPT>
 						       <DIV class="containerItem"><A >Browse 
-						       <SELECT ID="browseable_elements" style="line-height:10px;font-size:9px;">
+						       <SELECT ID="browseable_elements" style="line-height:11px;font-size: 11px;">
 						         <OPTION VALUE="">(SELECT)</OPTION>
 						         #set ($typeObjects = $data.getSession().getAttribute("user").getBrowseableElementDisplays() )
 						         			#foreach ($typeObject in $typeObjects)
 <OPTION VALUE="$typeObject.getElementName()">$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()</OPTION>
 			         #end
 						       </SELECT>
-						       <INPUT type="button" style="line-height:10px;font-size:9px;" VALUE=">" ONCLICK="browse();"/></DIV>
+						       <INPUT type="button" style="line-height:10px;" VALUE=">" ONCLICK="browse();"/></DIV>
 						       <DIV class="containerItem"><A HREF="$link.setPage("XDATScreen_MyXNAT.vm")" >My XNAT</A></DIV>
 						       <DIV class="containerItem">Upload: <A HREF="$link.setPage("ImageUpload.vm")" >images</A> <A HREF="$link.setPage("XMLUpload.vm")" >xml</A> <A HREF="$link.setPage("XDATScreen_uploadCSV.vm")" >spreadsheet</A></DIV>
 						       

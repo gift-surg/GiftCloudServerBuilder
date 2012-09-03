@@ -21,7 +21,6 @@ $page.setVlinkColor($ui.vlink)
 #end
 <form method="post" action="$link.setAction("EditImageSessionAction")" name="form1" id="form1">
 #set($scanTypes = [])
-	#set($scanQualities = ["usable","unusable","questionable"])
 <br>
 		   <DIV class="edit_title">#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()</DIV>
 <INPUT type="hidden" name="xnat:ctSessionData.modality" value="CT"/>
@@ -187,8 +186,8 @@ $page.setVlinkColor($ui.vlink)
 				#set($currentStatusQuality = $item.getProperty("xnat:ctSessionData.scans.scan[${c}][@xsi:type=xnat:ctScanData].quality"))
 			<SELECT id="xnat:ctSessionData/scans/scan[${c}][@xsi:type=xnat:ctScanData]/quality" name="xnat:ctSessionData/scans/scan[${c}][@xsi:type=xnat:ctScanData]/quality">
 				<OPTION VALUE="">(SELECT)</OPTION>
-				#foreach ($pValue in $scanQualities)
-				<OPTION VALUE="$pValue" #if($pValue.equals($currentStatusQuality)) SELECTED #end>$pValue</OPTION>
+				#foreach ($quality in $qualityLabels)
+					<OPTION VALUE="$quality" #if($quality.equals($currentStatusQuality)) SELECTED #end>$quality</OPTION>
 				#end
 				#set($currentStatusQuality = "")
 			</SELECT>
@@ -233,14 +232,14 @@ $page.setVlinkColor($ui.vlink)
 	</tr>
 </TABLE><BR><BR><HR>
 #auditTable("" "Session Modification")
-<table>
 #xdatEditProps($item $edit_screen)
+
 <DIV ID="ADDIN"></DIV>
-    	<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
-    	<input type="button" ONCLICK="validateForm();"  name="eventSubmit_doInsert" value="Submit"/>
-    	
-	</form>
-</table>
+
+<input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+<input type="button" onclick="validateForm();"  name="eventSubmit_doInsert" value="Submit"/>
+
+</form>
 <script type="text/javascript">
 function validateForm()
 {

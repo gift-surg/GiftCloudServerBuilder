@@ -123,6 +123,7 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 //		window.waitPanel.show();
 		this.initLoader.render();
 		this.initCallback={
+			cache:false,
 			success:this.completeAdditionalInit,
 			failure:this.initFailure,
 			scope:this
@@ -135,6 +136,7 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 //		window.waitPanel.show();
 		this.initLoader.render();
 		this.initCallback={
+			cache:false,
 			success:this.completeInit,
 			failure:this.initFailure,
 			scope:this

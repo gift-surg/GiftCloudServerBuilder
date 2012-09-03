@@ -30,7 +30,7 @@ $navigation.setTemplate("/bodyOpen.vm")
     <tr>
         <td align="left" valign="top">
             <div id="layout_content2" style="display:none;">Loading...</div>
-            <div id="layout_content_x">$screen_placeholder</div>
+            <div id="layout_content">$screen_placeholder</div>
         </td>
     </tr>
     <!--

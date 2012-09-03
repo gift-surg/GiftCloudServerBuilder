@@ -73,7 +73,7 @@
 						<td>	<!-- align="left" -->
 							<DIV ID="IND_${datatype}/scans/scan[$scani]/type">
 								<a ID="A_${datatype}/scans/scan[$scani]/type"
-								   onclick="showText(this);" style="font-size:9px">
+								   onclick="showText(this);" style="font-size:11px">
 Other
 								</a>
 							</DIV>
@@ -97,10 +97,10 @@ Other
 			</td>
 			<td>	<!-- width="127" align="center" -->
 				<SELECT id="${datatype}/scans/scan[$scani]/quality" name="${datatype}/scans/scan[$scani]/quality">
-					<OPTION VALUE="">(SELECT)</OPTION>
-					<OPTION VALUE="usable" selected>usable</OPTION>
-					<OPTION VALUE="unusable">unusable</OPTION>
-					<OPTION VALUE="questionable">questionable</OPTION>
+					<OPTION VALUE="" selected>(SELECT)</OPTION>
+					#foreach ($quality in $qualityLabels())
+					<OPTION VALUE="$quality">$quality</OPTION>
+					#end
 				</SELECT>
 			</td>
 			<td>	<!-- width="215" align="center" -->

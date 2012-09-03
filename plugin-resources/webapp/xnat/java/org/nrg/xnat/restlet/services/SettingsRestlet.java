@@ -1,18 +1,39 @@
 package org.nrg.xnat.restlet.services;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.PropertyNotFoundException;
 import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.dcm.DicomSCPManager;
 import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.mail.api.NotificationType;
 import org.nrg.notify.api.CategoryScope;
 import org.nrg.notify.api.SubscriberType;
-import org.nrg.notify.entities.*;
+import org.nrg.notify.entities.Category;
+import org.nrg.notify.entities.Channel;
+import org.nrg.notify.entities.Definition;
+import org.nrg.notify.entities.Subscriber;
+import org.nrg.notify.entities.Subscription;
 import org.nrg.notify.exceptions.DuplicateSubscriberException;
 import org.nrg.notify.services.NotificationService;
 import org.nrg.xdat.XDAT;
@@ -25,12 +46,9 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
+import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
@@ -42,13 +60,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SettingsRestlet extends SecureResource {
 
@@ -91,17 +102,18 @@ public class SettingsRestlet extends SecureResource {
                         new ItemXMLRepresentation(_arcSpec.getItem(), mediaType) :
                         new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
             }
-
-            Object property = _arcSpec.getProperty(_property);
-            if (mediaType == MediaType.TEXT_XML) {
-                String xml = "<" + _property + ">" + property.toString() + "</" + _property + ">";
-                return new StringRepresentation(xml, mediaType);
-            } else {
-                return new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(property) + ", \"title\": \"" + _property + "\"}}");
+            else {
+            	Object propertyValue = checkForExistenceOfProperty(_property);
+            	
+                if (mediaType == MediaType.TEXT_XML) {
+                    String xml = "<" + _property + ">" + propertyValue.toString() + "</" + _property + ">";
+                    return new StringRepresentation(xml, mediaType);
+                }
+                else {
+                    return new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(propertyValue) + ", \"title\": \"" + _property + "\"}}");
+               	}
             }
-        } catch (ElementNotFoundException exception) {
-            respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
-        } catch (FieldNotFoundException exception) {
+        } catch (PropertyNotFoundException exception) {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
         } catch (JsonGenerationException exception) {
             throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Something went wrong converting filters to JSON.", exception);
@@ -139,9 +151,44 @@ public class SettingsRestlet extends SecureResource {
         settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
-        settings.put("anonScript", XDAT.getConfigService().getConfig("anon", "script").getContents());
+        settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
+        settings.put("restMockCallMap", getFormattedRestMockCallMap());
+        settings.put("enableDicomReceiver", XDAT.getSiteConfigurationProperty("enableDicomReceiver"));
 
         return settings;
+    }
+
+    private String getFormattedRestMockCallMap() {
+        Map<String, String> map = RestMockCallMapRestlet.getRestMockCallMap();
+        if (map == null || map.size() == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder formattedMap = new StringBuilder();
+        for (Map.Entry<String, String> call : map.entrySet()) {
+            formattedMap.append(call.getKey()).append("|").append(call.getValue()).append("\n");
+        }
+        return formattedMap.toString();
+    }
+
+    private String getUnformattedRestMockCallMap(String raw) {
+        if (StringUtils.isBlank(raw)) {
+            return StringUtils.EMPTY;
+        }
+        BufferedReader reader = new BufferedReader(new StringReader(raw));
+        Map<String, String> map = new HashMap<String, String>();
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                String[] atoms = line.split("\\|");
+                map.put(atoms[0], atoms[1]);
+            }
+
+            return MAPPER.writeValueAsString(map);
+        } catch (IOException ignored) {
+            // We're not reading from a file, so we shouldn't encounter this.
+        }
+
+        return StringUtils.EMPTY;
     }
 
     // TODO: Gross.
@@ -227,62 +274,67 @@ public class SettingsRestlet extends SecureResource {
             if (!StringUtils.isBlank(_property) && !_property.equals("initialize")) {
                 setDiscreteProperty();
                 checkNotifications();
-            } else
+                returnDefaultRepresentation();
+            } 
+            else if (!StringUtils.isBlank(_property)) {
                 // We will only enter this if _property is "initialize", so that means we need to set up the arc spec entry.
-                if (!StringUtils.isBlank(_property)) {
-                    initializeArcSpec();
-                    checkNotifications();
-                } else {
-                    setPropertiesFromFormData();
-                }
+                initializeArcSpec();
+                checkNotifications();
+                setPropertiesFromMap(_data);
+                // Do not return a representation if we are initializing, it will attempt (and fail) to find a property called "initialize"
+            } else {
+                setPropertiesFromMap(_data);
+                returnDefaultRepresentation();
+            }
         } catch (Exception exception) {
             respondToException(exception, Status.CLIENT_ERROR_BAD_REQUEST);
-        }
-        returnDefaultRepresentation();
+	    } catch (ConfigServiceException exception) {
+	        throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Something went wrong retrieving site properties.", exception);
+	    }
     }
 
-    private void setPropertiesFromFormData() throws Exception {
+    private void setPropertiesFromMap(Map<String, String> map) throws Exception {
         _log.debug("Setting arc spec property from body string: " + _form);
         boolean dirtied = false;
         boolean dirtiedNotifications = false;
-        for (String property : _data.keySet()) {
+        for (String property : map.keySet()) {
             if (property.equals("siteId")) {
-                final String siteId = _data.get("siteId");
+                final String siteId = map.get("siteId");
                 _arcSpec.setSiteId(siteId);
                 XFT.SetSiteID(siteId);
                 dirtied = true;
             } else if (property.equals("siteUrl")) {
-                final String siteUrl = _data.get("siteUrl");
+                final String siteUrl = map.get("siteUrl");
                 _arcSpec.setSiteUrl(siteUrl);
                 XFT.SetSiteURL(siteUrl);
                 dirtied = true;
             } else if (property.equals("siteAdminEmail")) {
-                final String siteAdminEmail = _data.get("siteAdminEmail");
+                final String siteAdminEmail = map.get("siteAdminEmail");
                 _arcSpec.setSiteAdminEmail(siteAdminEmail);
                 XFT.SetAdminEmail(siteAdminEmail);
                 dirtied = true;
             } else if (property.equals("smtpHost")) {
-                final String smtpHost = _data.get("smtpHost");
+                final String smtpHost = map.get("smtpHost");
                 _arcSpec.setSmtpHost(smtpHost);
                 XFT.SetAdminEmailHost(smtpHost);
                 dirtied = true;
             } else if (property.equals("requireLogin")) {
-                final String requireLogin = _data.get("requireLogin");
+                final String requireLogin = map.get("requireLogin");
                 _arcSpec.setRequireLogin(requireLogin);
                 XFT.SetRequireLogin(requireLogin);
                 dirtied = true;
             } else if (property.equals("enableNewRegistrations")) {
-                final String enableNewRegistrations = _data.get("enableNewRegistrations");
+                final String enableNewRegistrations = map.get("enableNewRegistrations");
                 _arcSpec.setEnableNewRegistrations(enableNewRegistrations);
                 XFT.SetUserRegistration(enableNewRegistrations);
                 dirtied = true;
             } else if (property.equals("archivePath")) {
-                final String archivePath = _data.get("archivePath");
+                final String archivePath = map.get("archivePath");
                 _arcSpec.getGlobalpaths().setArchivepath(archivePath);
                 XFT.SetArchiveRootPath(archivePath);
                 dirtied = true;
             } else if (property.equals("checksums")) {
-                final String checksums = _data.get("checksums");
+                final String checksums = map.get("checksums");
                 try {
                     XDAT.setSiteConfigurationProperty("checksums", checksums);
                 } catch (ConfigServiceException exception) {
@@ -290,38 +342,38 @@ public class SettingsRestlet extends SecureResource {
                 }
                 dirtied = true;
             } else if (property.equals("prearchivePath")) {
-                final String prearchivePath = _data.get("prearchivePath");
+                final String prearchivePath = map.get("prearchivePath");
                 _arcSpec.getGlobalpaths().setPrearchivepath(prearchivePath);
                 XFT.SetPrearchivePath(prearchivePath);
                 dirtied = true;
             } else if (property.equals("cachePath")) {
-                final String cachePath = _data.get("cachePath");
+                final String cachePath = map.get("cachePath");
                 _arcSpec.getGlobalpaths().setCachepath(cachePath);
                 XFT.SetCachePath(cachePath);
                 dirtied = true;
             } else if (property.equals("buildPath")) {
-                final String buildPath = _data.get("buildPath");
+                final String buildPath = map.get("buildPath");
                 _arcSpec.getGlobalpaths().setBuildpath(buildPath);
                 XFT.setBuildPath(buildPath);
                 dirtied = true;
             } else if (property.equals("ftpPath")) {
-                final String ftpPath = _data.get("ftpPath");
+                final String ftpPath = map.get("ftpPath");
                 _arcSpec.getGlobalpaths().setFtppath(ftpPath);
                 XFT.setFtpPath(ftpPath);
                 dirtied = true;
             } else if (property.equals("pipelinePath")) {
-                final String pipelinePath = _data.get("pipelinePath");
+                final String pipelinePath = map.get("pipelinePath");
                 _arcSpec.getGlobalpaths().setPipelinepath(pipelinePath);
                 XFT.SetPipelinePath(pipelinePath);
                 dirtied = true;
             } else if (property.equals("dcmPort")) {
-                _arcSpec.setDcm_dcmPort(_data.get("dcmPort"));
+                _arcSpec.setDcm_dcmPort(map.get("dcmPort"));
                 dirtied = true;
             } else if (property.equals("dcmAe")) {
-                _arcSpec.setDcm_dcmAe(_data.get("dcmAe"));
+                _arcSpec.setDcm_dcmAe(map.get("dcmAe"));
                 dirtied = true;
             } else if (property.equals("dcmAppletLink")) {
-                final String dcmAppletLink = _data.get("dcmAppletLink");
+                final String dcmAppletLink = map.get("dcmAppletLink");
                 try {
                     XDAT.setSiteConfigurationProperty("showapplet", dcmAppletLink);
                 } catch (ConfigServiceException exception) {
@@ -329,12 +381,7 @@ public class SettingsRestlet extends SecureResource {
                 }
                 dirtied = true;
             } else if (property.equals("enableCsrfToken")) {
-                final String enableCsrfToken = _data.get("enableCsrfToken");
-                _arcSpec.setEnableCsrfToken(enableCsrfToken);
-                XFT.SetEnableCsrfToken(enableCsrfToken);
-                dirtied = true;
-            } else if (property.equals("enableCsrfToken")) {
-                final String enableCsrfToken = _data.get("enableCsrfToken");
+                final String enableCsrfToken = map.get("enableCsrfToken");
                 _arcSpec.setEnableCsrfToken(enableCsrfToken);
                 XFT.SetEnableCsrfToken(enableCsrfToken);
                 dirtied = true;
@@ -343,16 +390,34 @@ public class SettingsRestlet extends SecureResource {
                     dirtiedNotifications = true;
                     clearArcSpecNotifications();
                 }
-                final String userIds = _data.get(property);
+                final String userIds = map.get(property);
                 configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(property)), userIds);
             } else if (property.equals("anonScript")) {
-                final String anonScript = _data.get("anonScript");
+                final String anonScript = map.get("anonScript");
                 try {
                     XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the site-wide anonymization script", "anon", "script", anonScript);
                 } catch (ConfigServiceException exception) {
                     throw new Exception("Error setting the site-wide anonymization script", exception);
                 }
                 dirtied = true;
+            } else if (property.equals("restMockCallMap")) {
+                final String callMap = map.get("restMockCallMap");
+                try {
+                    XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the REST service mock call map", "rest", "mockCallMap", getUnformattedRestMockCallMap(callMap));
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the REST service mock call map", exception);
+                }
+                dirtied = true;
+            } else if (property.equals("enableDicomReceiver")) {
+                final String enableDicomReceiver = map.get("enableDicomReceiver");
+                try {
+                    XDAT.setSiteConfigurationProperty("enableDicomReceiver", enableDicomReceiver);
+                    XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the enableDicomReceiver site info property", exception);
+                }
+                dirtied = true;
+            } else {
                 _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
             }
         }
@@ -535,9 +600,17 @@ public class SettingsRestlet extends SecureResource {
         ArcSpecManager.Reset();
     }
 
-    private void setDiscreteProperty() throws XFTInitException, ElementNotFoundException, FieldNotFoundException, InvalidValueException {
+    private void setDiscreteProperty() throws Exception, ConfigServiceException {
         _log.debug("Setting arc spec property: [" + _property + "] = " + _value);
-        _arcSpec.setProperty(_property, _value);
+    	checkForExistenceOfProperty(_property);
+        if(null == _value) {
+            throw new NullPointerException(String.format("Setting '%s' cannot be set to NULL.", _property));
+        }
+        else {
+            Map<String, String> map = new HashMap<String, String>(1);
+            map.put(_property, _value);
+            setPropertiesFromMap(map);
+        }
     }
 
     private Map<String, String> copyDataToXmlPath() {
@@ -675,6 +748,14 @@ public class SettingsRestlet extends SecureResource {
         }
         return users.get(0).getLogin();
     }
+    
+    private Object checkForExistenceOfProperty(String propertyName) throws PropertyNotFoundException, ConfigServiceException, IOException {
+        Object property = getArcSpecAsMap().get(_property);
+        if(null == property) {
+            throw new PropertyNotFoundException(String.format("Setting '%s' was not found in the system.", _property));
+        }
+        return property;
+    }
 
     private static final String EXPRESSION_USERNAME = "[a-zA-Z][a-zA-Z0-9_-]{3,15}";
     private static final String EXPRESSION_EMAIL = "[_A-Za-z0-9-]+(?:\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(?:\\.[A-Za-z0-9]+)*(?:\\.[A-Za-z]{2,})";
@@ -682,6 +763,7 @@ public class SettingsRestlet extends SecureResource {
     private static final Pattern PATTERN_USERNAME = Pattern.compile(EXPRESSION_USERNAME);
     private static final Pattern PATTERN_EMAIL = Pattern.compile(EXPRESSION_EMAIL);
     private static final Pattern PATTERN_COMBINED = Pattern.compile(EXPRESSION_COMBINED);
+    private final static ObjectMapper MAPPER = new ObjectMapper(new JsonFactory());
 
     private NotificationService _notificationService;
     private static final Log _log = LogFactory.getLog(SettingsRestlet.class);

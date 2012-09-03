@@ -2,6 +2,7 @@
 
 
 #parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
+<!-- BEGIN xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->
 <script type="text/javascript">
 var elementName="$!item.getXSIType()";
 window.currentID="$!om.getId()";
@@ -78,7 +79,6 @@ $page.setVlinkColor($ui.vlink)
       #end
 
 #set($scanTypes = [])
-  #set($scanQualities = ["usable","unusable","questionable"])
 ##parse("/screens/xnat_edit_subjectAssessorData.vm")
 <hr/>
 <table border="0" cellpadding=5>
@@ -152,4 +152,4 @@ $page.setVlinkColor($ui.vlink)
 
   </form>
 
-
+<!-- END xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->

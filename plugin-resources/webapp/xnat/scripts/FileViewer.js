@@ -88,6 +88,40 @@ function FileViewer(_obj){
 		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+'?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
    }
    
+   this.removeReconstruction=function(item){
+	   if(showReason){
+			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeReconstruction,this);
+			justification.item=item;	
+		}else{
+			var passthrough= new XNAT.app.passThrough(this._removeReconstruction,this);
+			passthrough.item=item;
+			passthrough.fire();
+		}
+   }
+   
+   this._removeReconstruction=function(arg1,arg2,container){
+	    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
+	    this.initCallback={
+			success:function(obj1){
+	    		this.refreshCatalogs("file");
+			},
+			failure:function(o){
+	    		closeModalPanel("file");
+				displayError("ERROR " + o.status+ ": Failed to delete file.");
+			},
+			scope:this
+		}
+		
+	   openModalPanel("file","Deleting reconstruction '" + container.item.reconId +"'");
+	    
+	   var params="";		
+	   params+="event_reason="+event_reason;
+	   params+="&event_type=WEB_FORM";
+	   params+="&event_action=File Deleted";
+	    
+	   YAHOO.util.Connect.asyncRequest('DELETE',this.obj.uri +'/reconstructions/' + container.item.reconId + '?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this)
+   }
+   
    this.removeCatalog=function(item){	
 		if(showReason){
 			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeCatalog,this);
@@ -279,7 +313,7 @@ function FileViewer(_obj){
 	   		}
 	   	
 	   	    this.panel=new YAHOO.widget.Dialog("fileListing",{close:true,
-			   width:"780px",height:"550px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
+			   width:"780px",height:"550px",underlay:"shadow",modal:true,fixedcenter:true,visible:false,draggable:true});
 			this.panel.setHeader("File Manager");
 		
 			this.catalogClickers=new Array();
@@ -333,7 +367,12 @@ function FileViewer(_obj){
 							var scan=scans[rScanC];
 							var scanNode=null;
 							if(scan.cats!=null && scan.cats!=undefined && scan.cats.length>0){
-								var scanNode=new YAHOO.widget.TaskNode({label:(scan.label!=undefined)?scan.label:scan.id, expanded: true,checked:true}, parent);
+								
+								var l = (scan.label!=undefined)?scan.label:scan.id;
+								if(parent.label == "reconstructions"){
+									l +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeReconstruction({reconId:'" + scan.id + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+								}
+								var scanNode=new YAHOO.widget.TaskNode({label:l, expanded: true,checked:true}, parent);
 								scanNode.labelStyle = "icon-cf";
 								
 								for(var scanCC=0;scanCC<scan.cats.length;scanCC++){
@@ -450,7 +489,7 @@ function FileViewer(_obj){
 						fixedcenter:true,
 						modal:true,
 	    				visible:false,
-						draggable:false });
+						draggable:true });
 					mySimpleDialog.setHeader("Preparing Download");
 					mySimpleDialog.setBody("Your download should begin within 30 seconds.  If you encounter technical difficulties, you can restart the download using this <a href='" + destination +"'>link</a>.");
 					
@@ -786,7 +825,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 				var file=this.cat.files[fC];
 				var size=parseInt(file.Size);
 				var path=file.URI.substring(file.URI.indexOf("/files/")+7);
-				var _lbl="<a style='font-size:9px' target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + path + "</a>"
+				var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + path + "</a>"
 				if(file.file_format!=""){
 				   _lbl +="&nbsp;"+ file.file_format +"";
 				}
@@ -824,7 +863,7 @@ function UploadFileForm(_obj){
    	  var title=document.createElement("div");
    	  title.style.marginTop="3px";
    	  title.style.marginLeft="1px";
-   	  title.innerHTML="<font size='+1' style='weight:700'>File Upload Form</font>";
+   	  title.innerHTML="File Upload Form";
    	  div.appendChild(title);
    	  
    	  div.appendChild(document.createElement("br"));
@@ -1168,24 +1207,24 @@ function UploadFileForm(_obj){
 		
 		var file_params="?file_upload=true&XNAT_CSRF=" + csrfToken;
 		
-		if(file_content!=""){
+		if (file_content > ''){
 			file_params+="&content="+file_content;
 		}
-		if(file_format!=""){
+		if (file_format > ''){
 			file_params+="&format="+file_format;
 		}
-		if(file_tags!=""){
+		if (file_tags > ''){
 			file_params+="&tags="+file_tags;
 		}
 			
 		var file_dest = this.selector.obj.uri;
-		if(collection_name==""){
+		if(collection_name == ''){
 			file_dest=this.selector.obj.uri+"/files";
 		}else{
 			file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
 		}
 		
-		if(file_name!=""){
+		if(file_name > ''){
 			file_dest +="/"+ file_name;
 		}
 		
@@ -1229,7 +1268,7 @@ function AddFolderForm(_obj){
    	  var title=document.createElement("div");
    	  title.style.marginTop="3px";
    	  title.style.marginLeft="1px";
-   	  title.innerHTML="<font size='+1' style='weight:700'>New Folder</font>";
+   	  title.innerHTML="New Folder";
    	  div.appendChild(title);
    	  
    	  div.appendChild(document.createElement("br"));
@@ -1525,7 +1564,7 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	openModalPanel("add_file","Uploading File.")
 	
 	var method = 'POST';
-	if(container.file_name!=""){
+	if(container.file_name > ''){
 		method='PUT';
 	}
 	

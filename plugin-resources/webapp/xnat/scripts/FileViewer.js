@@ -1196,7 +1196,8 @@ function UploadFileForm(_obj){
   	    }
   	    
 		var collection_name=coll_select.options[coll_select.selectedIndex].value;
-		
+		var upload_level = document.getElementById("upload_level").value.trim();
+		var upload_item = document.getElementById("upload_item").value.trim();
 		var file_tags=document.getElementById("file_tags").value.trim();
 		var file_format=document.getElementById("file_format").value.trim();
 		var file_content=document.getElementById("file_content").value.trim();
@@ -1220,6 +1221,8 @@ function UploadFileForm(_obj){
 		var file_dest = this.selector.obj.uri;
 		if(collection_name == ''){
 			file_dest=this.selector.obj.uri+"/files";
+		}else if(upload_level == 'scans'){
+			file_dest = this.selector.obj.uri+"/scans/"+ upload_item + "/files";
 		}else{
 			file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
 		}

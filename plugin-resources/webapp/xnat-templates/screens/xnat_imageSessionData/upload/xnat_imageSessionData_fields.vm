@@ -48,7 +48,7 @@
 	<td></td>
 </tr>
 <tr>
-			 <td colspan="2"><div style="line-height:8px">&nbsp;</div><a onclick="toggleAdditionalFields();">Add More Session Details</a></td>
+			 <td colspan="2"><div style="line-height:8px">&nbsp;</div></td>
 		</tr>	
 		<tr name="additional_fields" style="display:none">
 			 <td>Operator</td>

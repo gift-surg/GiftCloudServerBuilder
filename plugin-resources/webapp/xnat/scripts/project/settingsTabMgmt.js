@@ -222,7 +222,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 		this.disableResetButtons();
         for (var index = 0; index < this.controls.length; index++) {
             var control = this.controls[index];
-			if (control.type == 'text') {
+			if (control.type == 'text' || control.type == 'textarea') {
                 control.value = control.defaultValue;
 			} else if (control.type == 'checkbox') {
                 control.checked = control.defaultValue.toLowerCase() === 'true';

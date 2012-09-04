@@ -229,12 +229,23 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         	if(activate == null){
         		var sessionDate = document.getElementById("session_date").value;
         		var noSessionDate = document.getElementById("no_session_date").checked;
-        		 
+
         		// If any of these are true, what project this is doesn't matter.
         		if (this.projectBox.selectedIndex == 0 || this.subjectBox.selectedIndex == 0 || (!sessionDate && !noSessionDate)) {
         			activate = false;
         		} else {
-        			activate = true;
+        			if(sessionDate && !noSessionDate){
+            			//check date format to be sure it has a 4 digit year
+            			if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(sessionDate)){
+            			  activate = false;
+            			  this.displayError("ERROR: Session Date must be in mm/dd/yyyy format."); 
+            			} else {
+            		      activate = true;
+            			}
+            		        
+            		} else {	
+        			  activate = true;
+            		}
         		}
         		
         	}

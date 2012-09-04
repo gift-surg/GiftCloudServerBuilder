@@ -17,30 +17,35 @@ width:1px;
 				  		  label:'Projects<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:projectData',
 				  		  cacheData:true,
+				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
 				  		  active:true
 				  }));
 				  
 				  frontTabs.addTab(new YAHOO.widget.Tab({
 				  		  label:'Subjects<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:subjectData',
+				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
 				  		  cacheData:true
 				  }));
 				  
 				  frontTabs.addTab(new YAHOO.widget.Tab({
 				  		  label:'MR<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:mrSessionData',
+				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
 				  		  cacheData:true
 				  }));
 				  
 				  frontTabs.addTab(new YAHOO.widget.Tab({
 				  		  label:'PET<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:petSessionData',
+				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
 				  		  cacheData:true
 				  }));
 				  
 				  frontTabs.addTab(new YAHOO.widget.Tab({
 				  		  label:'CT<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:ctSessionData',
+				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
 				  		  cacheData:true
 				  }));
 				</script>

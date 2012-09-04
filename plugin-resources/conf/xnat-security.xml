@@ -64,26 +64,7 @@
     </bean>
 
     <security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
-        <security:intercept-url pattern="/app/template/Login.vm" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/app/template/Register.vm" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/app/template/ForgotLogin.vm" access="permitAll" requires-channel="${security.channel}"/>
-		<security:intercept-url pattern="/app/template/ChangePassword.vm" access="permitAll" requires-channel="${security.channel}"/>
-		<security:intercept-url pattern="/app/action/XDATChangePassword" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/app/action/XDATForgotLogin" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/app/action/XDATRegisterUser" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/app/template/Error.vm" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/app/template/PostRegister.vm" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/favicon.ico" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/data/version" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/REST/version" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/data/JSESSION" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/REST/JSESSION" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/data/services/auth" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/REST/services/auth" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/images/**" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/scripts/**" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/style/**" access="permitAll" requires-channel="${security.channel}"/>
-        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="${security.channel}"/>
+        <security:custom-filter position="CHANNEL_FILTER" ref="channelProcessingFilter"/>
         <security:custom-filter before="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
         <security:custom-filter after="BASIC_AUTH_FILTER" ref="customBasicAuthenticationFilter"/>
 		<security:custom-filter before="REMEMBER_ME_FILTER" ref="arcSpecFilter"/>
@@ -92,6 +73,46 @@
         <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
         <security:session-management session-authentication-strategy-ref="sas"/>
     </security:http>
+
+    <bean class="org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor">
+        <property name="openUrls">
+            <list>
+                <value>/app/template/Login.vm</value>
+                <value>/app/template/Register.vm</value>
+                <value>/app/template/ForgotLogin.vm</value>
+                <value>/app/template/ChangePassword.vm</value>
+                <value>/app/action/XDATChangePassword</value>
+                <value>/app/action/XDATForgotLogin</value>
+                <value>/app/action/XDATRegisterUser</value>
+                <value>/app/template/Error.vm</value>
+                <value>/app/template/PostRegister.vm</value>
+                <value>/favicon.ico</value>
+                <value>/data/version</value>
+                <value>/REST/version</value>
+                <value>/data/JSESSION</value>
+                <value>/REST/JSESSION</value>
+                <value>/data/services/auth</value>
+                <value>/REST/services/auth</value>
+                <value>/images/**</value>
+                <value>/scripts/**</value>
+                <value>/style/**</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="channelProcessingFilter" class="org.nrg.xnat.security.TranslatingChannelProcessingFilter">
+        <property name="channelDecisionManager">
+            <bean id="channelDecisionManager" class="org.springframework.security.web.access.channel.ChannelDecisionManagerImpl">
+                <property name="channelProcessors">
+                    <list>
+                        <bean class="org.springframework.security.web.access.channel.SecureChannelProcessor"/>
+                        <bean class="org.springframework.security.web.access.channel.InsecureChannelProcessor"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="requiredChannel" value="${security.channel}" />
+    </bean>
 
     <bean id="databaseAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator" p:configuratorId="db"/>
     <bean id="ldapAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.LdapAuthenticationProviderConfigurator" p:configuratorId="ldap"/>

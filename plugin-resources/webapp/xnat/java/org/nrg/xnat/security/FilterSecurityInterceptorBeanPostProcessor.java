@@ -1,3 +1,12 @@
+/**
+ * FilterSecurityInterceptorBeanPostProcessor
+ * (C) 2012 Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD License
+ *
+ * Created on 9/4/12 by rherri01
+ */
 package org.nrg.xnat.security;
 
 import java.util.Collection;
@@ -34,11 +43,14 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
 
         if (bean instanceof FilterSecurityInterceptor) {
             FilterSecurityInterceptor interceptor = (FilterSecurityInterceptor) bean;
+            final ExpressionBasedFilterInvocationSecurityMetadataSource metadataSource = getMetadataSource(isRequiredLogin());
             if (_log.isDebugEnabled()) {
-                _log.debug("Found a FilterSecurityInterceptor bean, doing the needful");
-                displayExistingMetadataSource(interceptor.getSecurityMetadataSource());
+                _log.debug("Found a FilterSecurityInterceptor bean with the following metadata configuration:");
+                displayMetadataSource(interceptor.getSecurityMetadataSource());
+                _log.debug("Updating the bean with the following metadata configuration:");
+                displayMetadataSource(metadataSource);
             }
-            interceptor.setSecurityMetadataSource(getMetadataSource(isRequiredLogin()));
+            interceptor.setSecurityMetadataSource(metadataSource);
         }
 
         return bean;
@@ -50,10 +62,18 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
         LinkedHashMap<RequestKey, Collection<ConfigAttribute>> map = new LinkedHashMap<RequestKey, Collection<ConfigAttribute>>();
 
         for (String openUrl : _openUrls) {
+            if (_log.isDebugEnabled()) {
+                _log.debug("Setting permitAll on the open URL: " + openUrl);
+            }
+
             map.put(new RequestKey(openUrl), SecurityConfig.createList(PERMIT_ALL));
         }
 
-        map.put(new RequestKey(DEFAULT_PATTERN), SecurityConfig.createList(requiredLogin ? DEFAULT_EXPRESSION : PERMIT_ALL));
+        final String nonopen = requiredLogin ? DEFAULT_EXPRESSION : PERMIT_ALL;
+        if (_log.isDebugEnabled()) {
+            _log.debug("Setting " + nonopen + " on the default pattern: " + DEFAULT_PATTERN);
+        }
+        map.put(new RequestKey(DEFAULT_PATTERN), SecurityConfig.createList(nonopen));
         return new ExpressionBasedFilterInvocationSecurityMetadataSource(urlMatcher, map, handler);
     }
 
@@ -79,10 +99,9 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
         return getArcSpecInstance().getRequireLogin();
     }
 
-    private void displayExistingMetadataSource(final SecurityMetadataSource metadataSource) {
+    private void displayMetadataSource(final SecurityMetadataSource metadataSource) {
         if (metadataSource != null) {
-            _log.debug("Found existing configuration, now iterating.");
-
+            _log.debug("Found metadata source configuration, now iterating.");
             for (ConfigAttribute attribute : metadataSource.getAllConfigAttributes()) {
                 _log.debug("*** Attribute: " + attribute.getAttribute());
             }

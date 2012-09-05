@@ -82,13 +82,6 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
         return bean;
     }
 
-    private ArcArchivespecification getArcSpecInstance() {
-        if (_arcSpec == null) {
-            initializeArcSpecInstance();
-        }
-        return _arcSpec;
-    }
-
     private synchronized void initializeArcSpecInstance() {
         if (_arcSpec == null) {
             _arcSpec = ArcSpecManager.GetInstance();
@@ -96,7 +89,16 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
     }
 
     private boolean isRequiredLogin() {
-        return getArcSpecInstance().getRequireLogin();
+        // First check for null arcSpace, initialize if null.
+        if (_arcSpec == null) {
+            initializeArcSpecInstance();
+        }
+        // If it's STILL null, then arcSpec hasn't been initialized in the database, so just say false.
+        if (_arcSpec == null) {
+            return false;
+        }
+        // If it's not null, see what it's got to say.
+        return _arcSpec.getRequireLogin();
     }
 
     private void displayMetadataSource(final SecurityMetadataSource metadataSource) {

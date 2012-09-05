@@ -4,7 +4,7 @@
   <classpathentry kind="src" path="projects/xnat/src/java"/>
   <classpathentry kind="src" path="src"/>
   <classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-1.6.jar"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/xdat"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-2.7.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar"/>

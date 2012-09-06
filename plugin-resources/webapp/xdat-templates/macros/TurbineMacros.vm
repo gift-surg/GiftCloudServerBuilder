@@ -1570,7 +1570,7 @@ $!turbineUtils.escapeJS($s)
 		<td colspan="$span" align="$align">
 			<input type="hidden" name="event_action" value="$!action"/>
 			<input type="hidden" name="event_type" value="WEB_FORM"/>
-			<div class="justification">Justification (Why are you completing this form?)<BR/>
+			<div id="form_justification" class="justification">Justification (Why are you completing this form?)<BR/>
 				<textarea rows="3" cols="70" id="event_reason" name="event_reason" #if($requireReason) class="required" #end>$!reason</textarea>
 			</div>
 		</td>	

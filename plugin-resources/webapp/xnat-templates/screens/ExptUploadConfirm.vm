@@ -55,7 +55,8 @@ $page.setVlinkColor($ui.vlink)
 <table WIDTH="50%" align="center"><tr><td ALIGN="center">
 Please review the details above and confirm that the proper files has been uploaded.
 </td></tr>
-#auditBoxes("1" "" "" "Uploaded additional resources")
+#auditBoxes("1" "" "Standard Upload." "Uploaded additional resources")
+		<script>YUIDOM.get('form_justification').style.display='none';</script>
 <tr><td ALIGN="center">
 <input type="button" name="cancel" ONCLICK="window.location='$link.setPage("XDATScreen_upload_xnat_imageSessionData.vm").addPathInfo("search_field","$search_field").addPathInfo("search_element","$search_element").addPathInfo("search_value","$search_value").addPathInfo("popup","$!popup")';" value="Cancel"/>
 

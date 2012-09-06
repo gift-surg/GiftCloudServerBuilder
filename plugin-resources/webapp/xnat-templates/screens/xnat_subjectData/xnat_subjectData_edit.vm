@@ -92,8 +92,13 @@
 		#parse("/screens/EditProjectSpecificFields.vm")
 		  </td>
 		</tr>
-		#auditBoxes("2" "" "" "$!page_title")
-				
+		#if($subject.getId())
+			#auditBoxes("2" "" "" "Modified Subject")
+		#else
+			#auditBoxes("2" "" "Standard creation." "Created Subject")
+			<script>YUIDOM.get('form_justification').style.display='none';</script>
+		#end
+		
 		<tr>
 			<td colspan=2 align="center">
 			<input type="hidden" name="source" value="$!source">

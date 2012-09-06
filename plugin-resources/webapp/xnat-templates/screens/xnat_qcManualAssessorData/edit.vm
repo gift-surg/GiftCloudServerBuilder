@@ -130,7 +130,12 @@ $page.setVlinkColor($ui.vlink)
 <!-- END xnat:qcManualAssessorData -->
 		</td>
 	</tr>
-	#auditBoxes("3" "" "" "Manual QC Modification")
+	#if($item.getStringProperty("xnat:qcManualAssessorData.ID"))
+		#auditBoxes("3" "" "" "Modified Manual QC")
+	#else
+		#auditBoxes("3" "" "Standard QC" "Created Manual QC")
+		<script>YUIDOM.get('form_justification').style.display='none';</script>
+	#end
 	<tr>
 		<td>
 		#xdatEditProps($item $edit_screen)

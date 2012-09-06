@@ -251,7 +251,7 @@ public class SavedSearchResource extends ItemResource {
 				}
 				
 				try {
-					SaveItemHelper.unauthorizedSave(search,user, false, true,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, (isNew)?"Creating new stored search":"Modifying existing stored search"));
+					SaveItemHelper.unauthorizedSave(search,user, false, true,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, (isNew)?"Creating new stored search":"Modified existing stored search"));
 				} catch (Exception e) {
 					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -305,18 +305,18 @@ public class SavedSearchResource extends ItemResource {
 					
 					if(mine!=null){
 						if(search.getAllowedUser().size()>1 || search.getAllowedGroups_groupid().size()>0){
-							SaveItemHelper.authorizedDelete(mine.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Remove user from stored search"));
+							SaveItemHelper.authorizedDelete(mine.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed user from stored search"));
 						}else{
-							SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Remove stored search"));
+							SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed stored search"));
 						}
 					}else if(group!=null){
 						if(search.getAllowedUser().size()>0 || search.getAllowedGroups_groupid().size()>1){
-							SaveItemHelper.authorizedDelete(group.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Remove group from stored search"));
+							SaveItemHelper.authorizedDelete(group.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed group from stored search"));
 						}else{
-							SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Remove stored search"));
+							SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed stored search"));
 						}
 					}else if(user.getGroup("ALL_DATA_ADMIN")!=null){
-						SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Remove stored search"));
+						SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed stored search"));
 					}else{						
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 						return;

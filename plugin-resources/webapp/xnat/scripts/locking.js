@@ -63,7 +63,7 @@ XNAT.app.locker= {
 		var params="";		
 		params+="event_reason="+event_reason;
 		params+="&event_type=WEB_FORM";
-		params+="&event_action=Lock Item";
+		params+="&event_action=Locked Item";
 		params+="&_lock=true";
 		params+="&XNAT_CSRF="+csrfToken;
 
@@ -99,7 +99,7 @@ XNAT.app.locker= {
 		var params="";		
 		params+="event_reason="+event_reason;
 		params+="&event_type=WEB_FORM";
-		params+="&event_action=Unlock Item";
+		params+="&event_action=Unlocked Item";
 		params+="&_unlock=true";
 		params+="&XNAT_CSRF="+csrfToken;
 

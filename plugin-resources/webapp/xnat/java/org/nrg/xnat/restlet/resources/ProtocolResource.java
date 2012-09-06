@@ -147,7 +147,7 @@ public class ProtocolResource extends ItemResource {
 		
 			if(protocol!=null){
 				if (protocol!=null){				        
-					PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Delete event data-type protocol."));
+					PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Deleted event data-type protocol."));
 				    try {
 						SaveItemHelper.authorizedDelete(protocol.getItem().getCurrentDBVersion(), user,wrk.buildEvent());
 						PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());
@@ -194,7 +194,7 @@ public class ProtocolResource extends ItemResource {
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/data-type", temp.getProperty("data-type"));
 					    	temp.setProperty("xnat:datatypeProtocol/definitions/definition[ID=default]/project-specific", "false");
 					    }
-					    PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Modify event data-type protocol."));
+					    PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.getItem(), this.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Modified event data-type protocol."));
 					    try {
 							SaveItemHelper.authorizedSave(temp,user, false, false,wrk.buildEvent());
 							PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());

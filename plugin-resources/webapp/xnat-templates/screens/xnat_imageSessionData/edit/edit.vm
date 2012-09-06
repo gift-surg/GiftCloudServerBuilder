@@ -140,7 +140,17 @@ $page.setVlinkColor($ui.vlink)
   </tr>
 </TABLE><BR><BR><HR>
 #xdatEditProps($item $edit_screen)
-#auditTable("" "$!formName")
+
+#if($isUpload)
+    #auditTable("Standard upload" "Uploaded Session")
+#else
+    #if($om.getId())
+    	#auditTable("" "Modified Session")
+    #else
+    		#auditTable("Standard activity." "Created Session")
+		<script>YUIDOM.get('form_justification').style.display='none';</script>
+    #end
+#end
 <input type="hidden" name="tag" value="$!tag"/>
 <DIV ID="ADDIN"></DIV>
 	#if($src)

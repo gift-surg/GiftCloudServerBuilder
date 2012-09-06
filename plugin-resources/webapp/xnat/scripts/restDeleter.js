@@ -101,7 +101,7 @@ RestDeleter = function(_array,_config) {
   				params+="&event_reason="+document.getElementById("del_event_reason").value;
   			}
   			params+="&event_type=WEB_FORM";
-  			params+="&event_action=Deletion";
+  			params+="&event_action=Deleted";
   			
     		var matched=false;
 

@@ -1469,6 +1469,7 @@
         <attainGoal name="xdat:updateJS"/>
         <attainGoal name="xdat:updateCSS"/>
         <attainGoal name="xdat:updateImages"/>
+        <attainGoal name="xdat:updateFilesFromModules"/>
         <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.jar"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
@@ -1510,6 +1511,7 @@
         </copy>
         <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/style/xdat.css" file="${basedir}/plugin-resources/webapp/xnat/style/xdat.css"/>
     </goal>
+    
     <goal name="xdat:quick-deploy-classes">
         <maven:param-check value="${class.dir}" fail="true" message="'class.dir' must be specified (location of compiled classes)"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/org" preservelastmodified="true">

@@ -78,9 +78,12 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 				if (this.selectedIndex > 0) {
 					this.manager.projID = this.options[this.selectedIndex].value;
 					this.manager.loadSubjects();
-					// this.manager.loadExpts();
+					this.manager.loadExpts();
+					
+					
 				}
 			}
+			
 
 			if (this.projBox.selectedIndex > 0) {
 				this.projBox.onchange();
@@ -199,16 +202,21 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 		}
 	}
 
-	/*this.loadExpts = function(o) {
+	this.loadExpts = function(o) {
 		try {
 			var subjCallback = {
 				success : function(o) {
+					
 					try {
 						var resultset = (eval("(" + o.responseText + ")")).ResultSet;
 						if (resultset.totalRecords == "0") {
+							if(window.psm != undefined){
 							window.psm.exptResultSet = new Array();
+							}
 						} else {
+							if(window.psm != undefined){
 							window.psm.exptResultSet = resultset.Result;
+							}
 						}
 					} catch (e) {
 						if (window.psm != undefined)
@@ -227,16 +235,17 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 				},
 				argument : this
 			}
-
+			
 			YAHOO.util.Connect.asyncRequest('GET', serverRoot
 					+ '/REST/projects/' + this.projID
 					+ '/experiments?XNAT_CSRF=' + window.csrfToken
 					+ '&format=json&timestamp=' + (new Date()).getTime(),
 					subjCallback);
+			
 		} catch (e) {
 			alert('failed to load expts');
 		}
-	}*/
+	}
 }
 
 function checkSubmitButton(selectedIndex, submitButton) {

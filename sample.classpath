@@ -139,7 +139,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_tools-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/PlexiViewer-1.4.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/plexiviewer-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/com.noelios.restlet-1.1.6.jar"/>
@@ -201,11 +201,10 @@
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.0-source.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6-source.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-downloader-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFileCatalog-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-refreshUserSession-1.jar"/>

@@ -50,6 +50,7 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -60,6 +61,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 public class SettingsRestlet extends SecureResource {
 
@@ -322,6 +324,7 @@ public class SettingsRestlet extends SecureResource {
                 final String requireLogin = map.get("requireLogin");
                 _arcSpec.setRequireLogin(requireLogin);
                 XFT.SetRequireLogin(requireLogin);
+                updateSecurityFilter(Boolean.parseBoolean(requireLogin));
                 dirtied = true;
             } else if (property.equals("enableNewRegistrations")) {
                 final String enableNewRegistrations = map.get("enableNewRegistrations");
@@ -425,6 +428,15 @@ public class SettingsRestlet extends SecureResource {
         SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specification"));
 
         }
+    }
+
+    private void updateSecurityFilter(final boolean requireLogin) {
+        FilterSecurityInterceptor interceptor = XDAT.getContextService().getBean(FilterSecurityInterceptor.class);
+        FilterSecurityInterceptorBeanPostProcessor postProcessor = XDAT.getContextService().getBean(FilterSecurityInterceptorBeanPostProcessor.class);
+        assert interceptor != null;
+        assert postProcessor != null;
+
+        interceptor.setSecurityMetadataSource(postProcessor.getMetadataSource(requireLogin));
     }
 
     /**

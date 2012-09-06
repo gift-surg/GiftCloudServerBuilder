@@ -257,7 +257,7 @@ public class FileList extends XNATCatalogTemplate {
         if(resource!=null && this.parent!=null && this.security!=null){
             try {
                 if(user.canDelete(this.security)){
-					if(!(((XFTItem)security).getItem().isActive() || ((XFTItem)security).getItem().isQuarantine() )){
+					if(!((security).getItem().isActive() || (security).getItem().isQuarantine() )){
 						//cannot modify it if it isn't active
 						throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,new Exception());
 					}

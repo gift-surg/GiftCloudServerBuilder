@@ -12,6 +12,7 @@ function PARManager(_div,_obj){
 		this.initCallback={
 			success:this.completeInit,
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 				
@@ -48,6 +49,7 @@ function PARManager(_div,_obj){
 				window.projList.init();
 			},			
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 			
@@ -63,6 +65,7 @@ function PARManager(_div,_obj){
 				this.init();
 			},			
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		if(msg==undefined)

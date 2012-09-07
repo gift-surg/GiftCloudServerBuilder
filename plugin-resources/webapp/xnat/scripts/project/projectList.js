@@ -14,6 +14,7 @@ function ProjectList(_menu, _options){
 		this.initCallback={
 			success:this.completeInit,
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		

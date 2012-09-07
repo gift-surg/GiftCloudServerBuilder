@@ -88,6 +88,7 @@ function SearchFieldManager(div_id){
 				success:this.processResults,
 				failure:this.initFailure,
 				scope:this,
+                cache:false, // Turn off caching for IE
 				argument:element_name
 			}
 			

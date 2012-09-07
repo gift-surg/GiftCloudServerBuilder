@@ -8,6 +8,7 @@ function restLister(_info){
 			var scanCallback={
 				success:this.processScans,
 				failure:this.handleFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 			};
 		
@@ -33,6 +34,7 @@ function restLister(_info){
 			var fileCallback={
 				success:this.processFiles,
 			    failure:this.handleFailure,
+                cache:false, // Turn off caching for IE
 			    scope:this
 			};
 			var fileuri=this.info.uri + "/" + this.info.category + "/" + this.info.scans[i].cat_id + "/out/resources/" + this.info.scans[i].xnat_abstractresource_id;

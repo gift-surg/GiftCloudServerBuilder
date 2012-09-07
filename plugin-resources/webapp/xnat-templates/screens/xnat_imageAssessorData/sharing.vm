@@ -117,6 +117,7 @@ $om.getAssessmentCount($pp.getProperty("project"))
 				             	   closeModalPanel("share");
 								             	   alert("Unable to remove experiment from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
 								             },
+                           cache:false, // Turn off caching for IE
 				             scope:this,
 				             argument:{"oRecord":oRecord,"oArgs":oArgs}
 			           };

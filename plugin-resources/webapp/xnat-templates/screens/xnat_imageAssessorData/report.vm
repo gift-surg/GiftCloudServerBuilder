@@ -58,6 +58,7 @@ function  toggleQuarantine(){
 			      failure:function(o){
 						        closeModalPanel("quarantine_");
 				      },
+                cache:false, // Turn off caching for IE
 			      scope:this
 		    }
 		    openModalPanel("quarantine_","Removing item from quarantine.");
@@ -84,6 +85,7 @@ function  toggleQuarantine(){
 			      failure:function(o){
 						        closeModalPanel("activate_");
 				      },
+                cache:false, // Turn off caching for IE
 			      scope:this
 		    }
 		    openModalPanel("activate_","Placing item in quarantine.");

@@ -39,6 +39,9 @@
  		callback.argument[0].disabled=true;
  		callback.argument[1].disabled=true;
  		callback.argument[2].disabled=true;
+        if (callback.cache == undefined) {
+            callback.cache = false;
+        }
  		var params = "remote-class=org.nrg.xnat.ajax.GrantProjectAccess&remote-method=invite&email=" + email +"&project=" + project +"&level=" + level + "&XNAT_CSRF=" + csrfToken;
  		YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/servlet/AjaxServlet',callback,params);
  	}

@@ -57,6 +57,7 @@ this.resetBundle=function(){
 	 var callback={
 		success:this.bundleCallback,
 		failure:this.bundleFailure,
+         cache:false, // Turn off caching for IE
 		scope:this
 	}
 	openModalPanel("def_sch","Reset default searches...");
@@ -106,6 +107,7 @@ this.prepare=function(){
 	var catCallback={
 		success:this.prepareCallback,
 		failure:this.handleFailedGet,
+        cache:false, // Turn off caching for IE
 		scope:this
 	}
 	openModalPanel("load_prot","Loading protocol details...");
@@ -156,6 +158,7 @@ this.save=function(){
 	var catCallback={
 		success:this.processSave,
 		failure:this.handleFailedSave,
+        cache:false, // Turn off caching for IE
 		scope:this
 	}
 	openModalPanel("prot_save","Saving modifications...");

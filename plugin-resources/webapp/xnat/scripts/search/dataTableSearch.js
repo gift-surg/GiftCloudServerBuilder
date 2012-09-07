@@ -20,6 +20,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.initCallback={
       success:this.completeInit,
       failure:this.initFailure,
+        cache:false, // Turn off caching for IE
       scope:this
     };
 
@@ -202,6 +203,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     var initCallback={
       success:this.showPage,
       failure:initFailure,
+        cache:false, // Turn off caching for IE
       scope:this
     };
 
@@ -458,6 +460,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	  failure:function(o){
 
 	  },
+        cache:false, // Turn off caching for IE
 	  arguments:{"dts":this}
 	};
 	YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/search/saved/' + this.obj.SS_ID + '?format=json&XNAT_CSRF='+csrfToken,callback,null,this);

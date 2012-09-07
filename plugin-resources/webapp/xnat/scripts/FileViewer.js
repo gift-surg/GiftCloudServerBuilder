@@ -21,6 +21,7 @@ function FileViewer(_obj){
 			var catCallback={
 				success:this.processCatalogs,
 				failure:this.handleFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 			}
 		
@@ -36,6 +37,7 @@ function FileViewer(_obj){
 //			var countCallback={
 //				success:this.processResults,
 //				failure:this.handleFailure,
+//              cache:false, // Turn off caching for IE
 //				scope:this
 //			}
 //			
@@ -75,6 +77,7 @@ function FileViewer(_obj){
 	    		closeModalPanel("file");
 				displayError("ERROR " + o.status+ ": Failed to delete file.");
 			},
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		
@@ -109,6 +112,7 @@ function FileViewer(_obj){
 	    		closeModalPanel("file");
 				displayError("ERROR " + o.status+ ": Failed to delete file.");
 			},
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		
@@ -143,6 +147,7 @@ function FileViewer(_obj){
 	    		closeModalPanel("file");
 				displayError("ERROR " + o.status+ ": Failed to delete file.");
 			},
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		
@@ -292,6 +297,7 @@ function FileViewer(_obj){
 		var catCallback={
 			success:this.processCatalogs,
 			failure:this.handleFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 	
@@ -796,6 +802,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 			      failure:function(oResponse){
 			        oResponse.argument.fnLoadComplete();
 			      },
+                  cache:false, // Turn off caching for IE
 			      argument:{"fnLoadComplete":fnLoadComplete,catNode:this}
 			    };
 			    
@@ -1562,6 +1569,7 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 			window.viewer.refreshCatalogs("add_file");
 			this.cancel();
 		},
+        cache:false, // Turn off caching for IE
 		scope:this
 	}
 	openModalPanel("add_file","Uploading File.")
@@ -1595,6 +1603,7 @@ XNAT.app._addFolder=function(arg1,arg2,container){
 			}
 			this.cancel();
 		},
+        cache:false, // Turn off caching for IE
 		scope:this
 	}
 	openModalPanel("add_folder","Creating folder.");

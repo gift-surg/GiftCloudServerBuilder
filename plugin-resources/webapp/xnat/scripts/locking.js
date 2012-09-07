@@ -54,6 +54,7 @@ XNAT.app.locker= {
 	    		closeModalPanel("lock_");
 				displayError("ERROR " + o.status+ ": Failed to lock item.");
 			},
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 
@@ -91,6 +92,7 @@ XNAT.app.locker= {
 					closeModalPanel("lock_");
 					displayError("ERROR " + o.status+ ": Failed to unlock item.");
 				},
+            cache:false, // Turn off caching for IE
 				scope:this
 		}
 		if(XNAT.app.current_uri==undefined)alert("Missing URI definition");

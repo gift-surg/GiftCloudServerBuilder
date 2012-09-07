@@ -12,6 +12,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 		this.initCallback = {
 			success : this.completeInit,
 			failure : this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope : this
 		}
 
@@ -123,6 +124,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 				failure : function(o) {
 					alert("Failed to load subjects.")
 				},
+                cache:false, // Turn off caching for IE
 				argument : this
 			}
 
@@ -233,6 +235,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 				failure : function(o) {
 					alert("Failed to load expts.")
 				},
+                cache:false, // Turn off caching for IE
 				argument : this
 			}
 			

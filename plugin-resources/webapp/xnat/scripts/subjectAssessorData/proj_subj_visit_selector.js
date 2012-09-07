@@ -21,6 +21,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         this.initCallback = {
             success:this.completeInit,
             failure:this.initFailure,
+            cache:false, // Turn off caching for IE
             scope:this
         };
 
@@ -139,6 +140,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                 failure:function () {
                     alert("Failed to load subjects.")
                 },
+                cache:false, // Turn off caching for IE
                 argument:this
             };
 

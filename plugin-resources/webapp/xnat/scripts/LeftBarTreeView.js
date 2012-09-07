@@ -82,6 +82,7 @@ function LeftBarTreeView(_config){
 		      failure:function(oResponse){
 		        oResponse.argument.fnLoadComplete();
 		      },
+              cache:false, // Turn off caching for IE
 		      argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
 		    };
 		    
@@ -112,6 +113,7 @@ function LeftBarTreeView(_config){
 			      failure:function(oResponse){
 			        oResponse.argument.fnLoadComplete();
 			      },
+                  cache:false, // Turn off caching for IE
 			      argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
 			    };
 			    
@@ -275,6 +277,7 @@ function LeftBarTreeView(_config){
       failure:function(oResponse){
         oResponse.argument.fnLoadComplete();
       },
+      cache:false, // Turn off caching for IE
       argument:{"node":node,"fnLoadComplete":fnLoadComplete,"lTV":lTV}
     };
     

@@ -281,6 +281,7 @@ XNAT.app.uca.moveFinished=function(){
 XNAT.app.uca.moveCallback={
 		success:function(){XNAT.app.uca.moveNext();},
 		failure:function(){closeModalPanel("moving_files");alert("Failed to move files.");},
+    cache:false, // Turn off caching for IE
 		scope:this
 }
 

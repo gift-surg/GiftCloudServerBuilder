@@ -68,6 +68,7 @@ td._old{
 	
 	function viewVersion(xft_version,_obj){
 		var callback={
+              cache:false, // Turn off caching for IE
        	      success:function(oResponse){
 			  	var version_view=document.getElementById("version_view");
 				version_view.innerHTML=oResponse.responseText;

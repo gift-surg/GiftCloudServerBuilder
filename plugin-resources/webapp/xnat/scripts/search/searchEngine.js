@@ -41,6 +41,7 @@ function HTMLSearchManager(_id,_desc){
 		this.initCallback={
 			success:this.completeInit,
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		
@@ -85,6 +86,7 @@ function HTMLSearchManager(_id,_desc){
         this.preloadCallback={
 			success:this.completePreload,
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
         };
         
@@ -117,6 +119,7 @@ function HTMLSearchManager(_id,_desc){
 	        this.loadCallback={
 				success:this.completeLoad,
 				failure:this.initFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 	        };
 	        
@@ -138,6 +141,7 @@ function HTMLSearchManager(_id,_desc){
 	        this.loadCallback={
 				success:this.completeLoad,
 				failure:this.initFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 	        };
 	        

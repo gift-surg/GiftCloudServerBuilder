@@ -57,6 +57,7 @@ function SavePopupForm(_search,_div,_config){
 		    this.emailCallback={
 				success:this.completeSave,
 				failure:this.saveFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 	        };
 	        

@@ -129,6 +129,7 @@ RestSharer = function(_array,_config) {
 						  	alert("Failed to share " + oRecord.getData("label") + ".  \r\n\r\nThis item has either already been shared into this project, or their is already an item in this project with the requested label.");
 						}
 					},
+                    cache:false, // Turn off caching for IE
 					scope:this,
 				    argument:{"oRecord":oRecord}
 				}

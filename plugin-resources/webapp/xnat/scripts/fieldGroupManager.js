@@ -186,6 +186,7 @@ this.save=function(){
 			 var catCallback={
 				success:this.handleSuccessPost,
 				failure:this.handleFailedPost,
+                 cache:false, // Turn off caching for IE
 				scope:this
 			 }
 			openModalPanel("save_fg","Saving Variable Set...");

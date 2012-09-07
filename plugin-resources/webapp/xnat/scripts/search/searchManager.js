@@ -85,6 +85,7 @@ function SearchXMLManager(_xml){
 			var fieldCallback={
 				success:this.processValues,
 				failure:this.valuesFailure,
+                cache:false, // Turn off caching for IE
 				scope:this,
 				argument:{"element_name":element_name,"field_id":field_id,"oColumn":oColumn}
 			}
@@ -312,6 +313,7 @@ function SearchXMLManager(_xml){
 							this.fillVersionBox(o.argument);
 						},
 						failure:function(o){alert("Failed to load fields for " + o.argument.element_name);},
+                        cache:false, // Turn off caching for IE
 						scope:sm,
 						argument:element_name
 				}
@@ -736,6 +738,7 @@ function SearchXMLManager(_xml){
 				}
 			},
 			failure:function(o){alert("Failed to load available fields.");},
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/elements/'+ ce.toCommaString() +'?XNAT_CSRF=' + window.csrfToken + '&format=json',fcb,null,this);

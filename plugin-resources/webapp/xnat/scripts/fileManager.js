@@ -150,6 +150,7 @@ function fileManager(_resource){
 							displayError("ERROR " + o.status+ ": Failed to delete file.");
 						},
 						argument:{"counter":this.counter},
+                        cache:false, // Turn off caching for IE
 						scope:this.fileManager
 					}
 					
@@ -220,6 +221,7 @@ function fileManager(_resource){
 			    closeModalPanel("refresh_file");
 			},
 			arguments:this.resource,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 	
@@ -566,6 +568,7 @@ function fileManager(_resource){
 			    				this.refreshFiles();
 							},
 							argument:obj1.argument,
+                            cache:false, // Turn off caching for IE
 							scope:this
 						}
 						openModalPanel("file","Uploading File.");
@@ -581,6 +584,7 @@ function fileManager(_resource){
 						displayError("ERROR " + o.status+ ": Failed to create collection.");
 					},
 					argument:{"file_dest":file_dest,"collection":collection_name,"file_name":file_name},
+                    cache:false, // Turn off caching for IE
 					scope:this
 				}
 								
@@ -604,6 +608,7 @@ function fileManager(_resource){
 	    				closeModalPanel("file");
 	    				this.refreshFiles();
 					},
+                    cache:false, // Turn off caching for IE
 					scope:this
 				}
 				openModalPanel("file","Uploading File.")

@@ -129,6 +129,7 @@ RestDeleter = function(_array,_config) {
 				  	   	  	this.currentTR.pDivColor.innerHTML="&nbsp;error&nbsp;";
 				    		alert("ERROR " + o.status+ ": Failed to delete " + this.currentTR.entry.label);
 						},
+                        cache:false, // Turn off caching for IE
 						scope:this
 					}
 					matched=true;

@@ -14,6 +14,7 @@ function reconEditor(_sessionID,_reconID,_options){
 			this.initCallback={
 				success:this.completeInit,
 				failure:this.initFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 			}
 			
@@ -171,7 +172,7 @@ function reconEditor(_sessionID,_reconID,_options){
 					closeModalPanel("save_recon");
 					alert("FAILED;");
 					this.cancel();
-				},scope:this},params);
+				}, cache:false, scope:this},params);
 			}},isDefault:true},
 			{text:"Cancel",handler:{fn:function(){
 				this.cancel();
@@ -194,6 +195,7 @@ function loadrecons(session_id,project,tbody_id){
 			closeModalPanel("recon_summary");
 			this.displayError("ERROR " + o.status+ ": Failed to load recon list.");
 		},
+        cache:false, // Turn off caching for IE
 		arguments:{"session_id":session_id,"project":project,"tbody_id":tbody_id}
 	}
 	openModalPanel("recon_summary","Loading reconstruction summary.");
@@ -280,6 +282,7 @@ function reconDeletor(_options){
 					closeModalPanel("delete_recon");
 					this.displayError("ERROR " + o.status+ ": Failed to load recon list.");
 				},
+                cache:false, // Turn off caching for IE
 				arguments:this.options
 			}
 			

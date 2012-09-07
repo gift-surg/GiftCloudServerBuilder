@@ -140,6 +140,7 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
 				             	   closeModalPanel("share");
 								             	   alert("Unable to remove subject from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
 								             },
+                             cache:false, // Turn off caching for IE
 				             scope:this,
 				             argument:{"oRecord":oRecord,"oArgs":oArgs}
 			           };

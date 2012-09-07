@@ -30,6 +30,7 @@ function CustomSelectBox(_input,_settings){
 							this.populate();
 						},
 						failure:function(obj){},
+                         cache:false, // Turn off caching for IE
 						scope:this
 					}
 					openModalPanel("values_loading","Loading additional values...");

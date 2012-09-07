@@ -49,6 +49,7 @@ function fullConfigHandler() {
             failure : function(o) {
                 showMessage('page_body', 'Error', 'Your settings were not successfully saved: ' + o);
             },
+            cache : false, // Turn off caching for IE
             scope : this
         };
 
@@ -158,6 +159,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 		this.initCallback = {
 			success : this.completeInit,
 			failure : this.initFailure,
+            cache : false, // Turn off caching for IE
 			scope : this
 		};
 
@@ -246,6 +248,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 				this.updateCallback = {
 					success : this.completeSave,
 					failure : this.saveFailure,
+                    cache : false, // Turn off caching for IE
 					scope : this
 				};
 		        var data = buildSettingsUpdateRequestBody(this.controls);

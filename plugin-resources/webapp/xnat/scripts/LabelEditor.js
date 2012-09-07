@@ -107,7 +107,9 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 			               		alert("ERROR (" +o.status +"): Failed to modify label.");
 			        	        this.selector.onError.fire();
 			        	        closeModalPanel("modify_new_label");	
-			            	},scope:this
+			            	},
+                            cache:false, // Turn off caching for IE
+                            scope:this
 				        }
 				    
 				    if(this.selector.uri==undefined){
@@ -150,6 +152,7 @@ XNAT.app._label.labelLoaderP=function(){
 		this.initCallback={
 			success:this.completeInit,
 			failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		

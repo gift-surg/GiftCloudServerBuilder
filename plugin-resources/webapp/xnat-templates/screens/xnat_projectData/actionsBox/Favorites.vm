@@ -17,6 +17,7 @@ function toggleFavorites(){
 			      failure:function(o){
 			      
 				      },
+                cache:false, // Turn off caching for IE
 			      scope:this
 		    }
     YAHOO.util.Connect.asyncRequest('DELETE',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);
@@ -29,6 +30,7 @@ function toggleFavorites(){
 			      failure:function(o){
 			      
 				      },
+                cache:false, // Turn off caching for IE
 			      scope:this
 		    }
     YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/REST/users/favorites/Project/$project.getId()?XNAT_CSRF="+csrfToken,initCallback);

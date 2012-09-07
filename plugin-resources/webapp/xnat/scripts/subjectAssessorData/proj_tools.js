@@ -15,6 +15,7 @@ function ProjectLoader(_options) {
         this.initCallback = {
             success:this.completeInit,
             failure:this.initFailure,
+            cache:false, // Turn off caching for IE
             scope:this
         }
 
@@ -100,6 +101,7 @@ function SubjectLoader(_options) {
         this.initCallback = {
             success:this.completeInit,
             failure:this.initFailure,
+            cache:false, // Turn off caching for IE
             scope:this
         }
 
@@ -149,6 +151,7 @@ function ExptLoader() {
         this.initCallback = {
             success:this.completeInit,
             failure:this.initFailure,
+            cache:false, // Turn off caching for IE
             scope:this
         }
 
@@ -308,6 +311,7 @@ function ProjectEditor(_config) {
 		                                closeModalPanel("modify_project");
 	                            	}
 	                            },
+                                cache:false, // Turn off caching for IE
 	                            scope:this
                         }
 
@@ -332,6 +336,7 @@ function ProjectEditor(_config) {
                                     alert("ERROR (" + o.status + "): Failed to modify project.");
                                     closeModalPanel("modify_project");
                                 },
+                                cache:false, // Turn off caching for IE
                                 scope:this
                         }
 

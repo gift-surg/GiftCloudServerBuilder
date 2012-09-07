@@ -37,7 +37,8 @@ function populateScanQualitySelector(server,project,sel,offset,assigned) {
                                             } else {
                                                 setScanQualityOptions(sel,[],offset,assigned);
                                             }
-                                        }
+                                        },
+                                        cache : false
                                     });
 }
 
@@ -116,6 +117,7 @@ function ScanEditor(_sessionID,_scanID,_options){
 			this.initCallback={
 				success:this.completeInit,
 				failure:this.initFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 			}
 
@@ -279,6 +281,7 @@ function ScanEditor(_sessionID,_scanID,_options){
 		    this.initCallback={
 				success:this.loadedTypes,
 				failure:this.initTypesFailure,
+                cache:false, // Turn off caching for IE
 				scope:this
 			}
 			if(this.options.project==undefined){
@@ -335,7 +338,10 @@ function ScanEditor(_sessionID,_scanID,_options){
 					closeModalPanel("save_scan");
 					alert("FAILED;");
 					this.cancel();
-				},scope:this},params);
+                        },
+                        cache:false, // Turn off caching for IE
+                        scope:this
+                    }, params);
 			}},isDefault:true},
 			{text:"Cancel",handler:{fn:function(){
 				this.cancel();
@@ -398,6 +404,7 @@ function loadScans(session_id,project,tbody_id){
 			closeModalPanel("scan_summary");
 			this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
 		},
+        cache:false, // Turn off caching for IE
 		arguments:{"session_id":session_id,"project":project,"tbody_id":tbody_id}
 	}
 	openModalPanel("scan_summary","Loading scan summary.");
@@ -511,6 +518,7 @@ function scanDeletor(_options){
 					closeModalPanel("delete_scan");
 					this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
 				},
+                cache:false, // Turn off caching for IE
 				scope:this
 				
 				
@@ -660,6 +668,7 @@ function ScanSet(_options,_scans){
 				displayError("ERROR " + o.status+ ": Failed to load scan list.");
 			},
 			arguments:{"session_id":this.options.session_id},
+            cache:false, // Turn off caching for IE
 			scope:this
 		}
 		if(this.options.msg!=undefined){
@@ -949,6 +958,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 									this.populateAll();
 								},
 								failure:function(obj){},
+                                cache:false, // Turn off caching for IE
 								scope:this
 							}
 							openModalPanel("scan_type_loading","Loading Scan Types...");

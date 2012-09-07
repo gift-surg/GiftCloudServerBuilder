@@ -91,6 +91,7 @@ function RadioSettingsManager(_dom,_obj){
 		this.settingsCallback={
 			success:this.changeSuccess,
 			failure:this.changeFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
 		};
 		this.disableDOM(true);
@@ -179,12 +180,13 @@ function scriptGet (_dom,_obj) {
     };
     var statusPut = function () {
       var uri = that.obj.putStatus+that.current.status;
-      YAHOO.util.Connect.asyncRequest('PUT',uri + "&XNAT_CSRF=" + window.csrfToken,{success : resetInitial, failure : that.onFailure,scope : that});
+      YAHOO.util.Connect.asyncRequest('PUT',uri + "&XNAT_CSRF=" + window.csrfToken,{success : resetInitial, failure : that.onFailure, cache : false, scope : that});
     };
     var scriptPut = function (f) {
       YAHOO.util.Connect.asyncRequest('PUT',that.obj.putScript + "&XNAT_CSRF=" + window.csrfToken,
     		  									{success : f,
     	  										 failure: that.onFailure,
+                                                 cache:false, // Turn off caching for IE
     	  										 scope: that},
     	  										 that.current.script);
     };
@@ -233,7 +235,7 @@ function scriptGet (_dom,_obj) {
       var script = "";
       if (parsedResponse.ResultSet.Result.length !== 0) {
 	script = parsedResponse.ResultSet.Result[0].script;
-	YAHOO.util.Connect.asyncRequest('GET', this.obj.getStatus, {success : statusGet, failure : this.onFailure, scope : this});
+	YAHOO.util.Connect.asyncRequest('GET', this.obj.getStatus, {success : statusGet, failure : this.onFailure, cache : false, scope : this});
       }
       this.initial.script = script;
       this.current.script = script;
@@ -241,7 +243,7 @@ function scriptGet (_dom,_obj) {
       document.getElementById(this.obj.script_text_area).value=script;
     };
     
-    YAHOO.util.Connect.asyncRequest('GET', this.obj.getScript, {success : scriptGet, failure : this.onFailure, scope : this});
+    YAHOO.util.Connect.asyncRequest('GET', this.obj.getScript, {success : scriptGet, failure : this.onFailure, cache : false, scope : this});
   };
   this.addListeners();
 }

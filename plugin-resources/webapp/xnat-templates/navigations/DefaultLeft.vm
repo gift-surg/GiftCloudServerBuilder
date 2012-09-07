@@ -38,6 +38,7 @@ $navigation.setTemplate("LeftBarOptions.vm")
     }else{
     	   if(tabReqObject.ID!=undefined && tabReqObject.ID=="ss"){
        	    var callback={
+                cache:false, // Turn off caching for IE
        	      success:function(oResponse){
        	        var oResults = eval("(" + oResponse.responseText + ")");
        	        if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {

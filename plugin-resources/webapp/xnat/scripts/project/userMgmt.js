@@ -79,6 +79,7 @@ function UserManager(user_mgmt_div_id, pID){
 		this.initCallback={
 				success:this.completeInit,
 				failure:this.initFailure,
+            cache:false, // Turn off caching for IE
 				scope:this
 		};
 
@@ -114,6 +115,7 @@ function UserManager(user_mgmt_div_id, pID){
 		this.allUsersCallback={
 				success:this.completeAllUsers,
 				failure:this.allUsersFailure,
+            cache:false, // Turn off caching for IE
 				scope:this
 		};
 		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/users?format=json&stamp='+ (new Date()).getTime(),this.allUsersCallback,null,this);
@@ -218,6 +220,7 @@ function UserManager(user_mgmt_div_id, pID){
 					that.insertCallback={
 							success:that.completeInvite,
 							failure:that.inviteFailure,
+                        cache:false, // Turn off caching for IE
 							scope:that
 					};
 					var params = "XNAT_CSRF=" + csrfToken + "&format=json";
@@ -264,6 +267,7 @@ function UserManager(user_mgmt_div_id, pID){
 		this.deleteCallback={
 				success:this.completeRemoval,
 				failure:this.inviteFailure,
+            cache:false, // Turn off caching for IE
 				scope:this
 		};
 		var post_url = serverRoot + "/REST/projects/" + this.pID + "/users/" + group;
@@ -467,6 +471,7 @@ function DefaultAccessibilityManager(_dom,_pID){
 		this.accessibilityCallback={
 				success:this.changeSuccess,
 				failure:this.changeFailure,
+            cache:false, // Turn off caching for IE
 				scope:this
 		};
 		this.disableDOM(true);

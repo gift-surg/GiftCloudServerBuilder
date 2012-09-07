@@ -34,6 +34,7 @@ function fileCounter(_options){
 					success:this.processResults,
 					failure:this.handleFailure,
 					arguments:this.openItem,
+                    cache:false, // Turn off caching for IE
 					scope:this
 				}
 			

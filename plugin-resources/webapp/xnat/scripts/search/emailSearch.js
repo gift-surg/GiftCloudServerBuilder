@@ -45,6 +45,7 @@ function EmailPopupForm(_search,_div){
 	    this.emailCallback={
 			success:this.completeEmail,
 			failure:this.emailFailure,
+            cache:false, // Turn off caching for IE
 			scope:this
         };
         

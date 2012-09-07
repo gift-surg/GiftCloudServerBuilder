@@ -84,6 +84,7 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 					initLoader.close();
 					window.xnatalert("Couldnt delete pipeline");
 				      },
+                      cache:false, // Turn off caching for IE
 				      scope:this
 				   }
 			   

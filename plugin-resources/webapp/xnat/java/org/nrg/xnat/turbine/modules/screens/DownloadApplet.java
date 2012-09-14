@@ -9,6 +9,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.utils.XnatHttpUtils;
 
 public class DownloadApplet extends SecureScreen {
 
@@ -19,6 +20,7 @@ public class DownloadApplet extends SecureScreen {
 
         context.put("appletPath",TurbineUtils.GetRelativeServerPath(data) + "/applet");
         context.put("serverRoot",TurbineUtils.GetRelativeServerPath(data));
+		context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
     }
 
 }

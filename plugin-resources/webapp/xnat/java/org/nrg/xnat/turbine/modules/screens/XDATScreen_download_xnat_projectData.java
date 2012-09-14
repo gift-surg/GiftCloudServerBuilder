@@ -9,6 +9,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.utils.XnatHttpUtils;
 
 public class XDATScreen_download_xnat_projectData extends SecureReport {
 
@@ -17,6 +18,7 @@ public class XDATScreen_download_xnat_projectData extends SecureReport {
 
         context.put("appletPath",TurbineUtils.GetRelativeServerPath(data) + "/applet");
         context.put("serverRoot",TurbineUtils.GetRelativeServerPath(data));
+		context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
     }
 
 }

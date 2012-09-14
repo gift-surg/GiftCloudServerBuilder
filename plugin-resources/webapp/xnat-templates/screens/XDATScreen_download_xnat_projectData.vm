@@ -16,6 +16,7 @@ $page.setTitle("Download: $om.Id")
 															#end
 					#end
 					#end
+			    <param name="jsessionid" value="$jsessionid">
             </applet>
        </td>
     </tr>

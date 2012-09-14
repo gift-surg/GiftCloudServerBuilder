@@ -803,7 +803,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrgutil</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

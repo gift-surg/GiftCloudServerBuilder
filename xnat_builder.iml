@@ -97,7 +97,7 @@
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/msv/jars/xsdlib-20070407.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/nrg/jars/nrgutil-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar!/" />
     <libelement value="jar://$MODULE_DIR$/plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar!/" />
     <libelement value="file://plugin-resources/repository/org.apache.xmlbeans/jars/com.springsource.org.apache.xmlbeans-2.4.0.jar" />
@@ -1050,9 +1050,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="nrgutil-1.0.0.jar">
+      <library name="nrgutil-1.0.1.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/plugin-resources/repository/nrg/jars/nrgutil-1.0.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -448,6 +448,10 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		final EventMetaI c;
 		
 		try {
+			String justification=(String)params.get(EventUtils.EVENT_REASON);
+			if(justification==null){
+				justification="standard upload";
+			}
 			workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), EventUtils.TRANSFER, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
 			workflow.setStepDescription("Validating");
 			c=workflow.buildEvent();

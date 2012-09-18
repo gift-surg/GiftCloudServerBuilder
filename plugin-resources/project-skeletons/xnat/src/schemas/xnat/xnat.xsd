@@ -524,6 +524,8 @@
 				</xs:appinfo>
 			</xs:annotation>
 		</xs:attribute>	
+		<xs:attribute name="version" type="xs:integer" use="optional"/>
+		<xs:attribute name="original" type="xs:string" use="optional"/>	
 		<xs:attribute name="protocol" type="xs:string" use="optional"/>	
 		<xs:attribute name="label" type="xs:string">
 			<xs:annotation>

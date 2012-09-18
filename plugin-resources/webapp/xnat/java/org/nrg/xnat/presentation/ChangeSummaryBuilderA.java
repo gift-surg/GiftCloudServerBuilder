@@ -3,14 +3,13 @@ package org.nrg.xnat.presentation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -165,7 +164,7 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 	}
 	
 	public Map<Date,ChangeSummary> call(List<FlattenedItemI> items) throws Exception {
-		Map<Date,ChangeSummary> sb= new TreeMap<Date,ChangeSummary>();
+		Map<Date,ChangeSummary> sb= new HashMap<Date,ChangeSummary>();
 		build(new FlattenedItemA.ChildCollection(items,"",""),null,sb,null);
 		return sb;
 	}	
@@ -449,7 +448,7 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 		 * @see org.nrg.xft.presentation.ItemEventI#getObjectHeader()
 		 */
 		public String getObjectHeader() {
-			return object.objectHeader;
+			return object.getObjectHeader();
 		}
 		/* (non-Javadoc)
 		 * @see org.nrg.xft.presentation.ItemEventI#getObjectLabel()

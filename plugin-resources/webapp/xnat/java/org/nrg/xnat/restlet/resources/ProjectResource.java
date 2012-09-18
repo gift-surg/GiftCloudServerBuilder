@@ -163,7 +163,7 @@ public class ProjectResource extends ItemResource {
 									}
 								}
 
-								create(project,ap,false,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,"Configure quarantine code"));
+								create(project,ap,false,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,"Configured quarantine code"));
 								ArcSpecManager.Reset();
 							}
 						}else if(filepath.startsWith("prearchive_code/")){
@@ -183,7 +183,7 @@ public class ProjectResource extends ItemResource {
 										return;
 									}
 								}
-								create(project,ap,false,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,"Configure prearchive code"));
+								create(project,ap,false,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,"Configured prearchive code"));
 								ArcSpecManager.Reset();
 							}
 						}else if(filepath.startsWith("current_arc/")){
@@ -192,7 +192,7 @@ public class ProjectResource extends ItemResource {
 								ArcProject ap =project.getArcSpecification();
 								ap.setCurrentArc(qc);
 
-								create(project,ap,false,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,"Configure current arc"));
+								create(project,ap,false,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,"Configured current arc"));
 								ArcSpecManager.Reset();
 							}
 						}else{

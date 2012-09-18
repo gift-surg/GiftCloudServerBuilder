@@ -261,7 +261,7 @@ public abstract class BasePipePipelinerepository extends AutoPipePipelinereposit
 			}
 		}
 		if (save) {
-			SaveItemHelper.authorizedSave(arcProject,user, false, true,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.TYPE.STORE_XML, "Modify project pipelines"));
+			SaveItemHelper.authorizedSave(arcProject,user, false, true,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.TYPE.STORE_XML, "Modified project pipelines"));
 			
 		}
 		}catch(Exception e) {

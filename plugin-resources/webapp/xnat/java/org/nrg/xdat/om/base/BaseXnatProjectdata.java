@@ -927,7 +927,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 group.setId(id);
                 group.setDisplayname(displayName);
                 group.setTag(getId());
-                wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialize auto-generated user group."));
+                wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialized permissions"));
                 if(SaveItemHelper.authorizedSave(group,this.getUser(), true, true,wrk.buildEvent())){
                 	modified=true;
                 }
@@ -937,7 +937,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             }
         }else{
             group = (XdatUsergroup)groups.get(0);
-            wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modify auto-generated user group."));
+            wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modified permissions"));
         }
 
         try {
@@ -2036,7 +2036,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
         if(ownerG==null){
-        	PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, (XDATUser)this.getUser(), this.getXSIType(),this.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Init owner group for project"));
+        	PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, (XDATUser)this.getUser(), this.getXSIType(),this.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));
             
         	EventMetaI ci = wrk.buildEvent();
         	try {

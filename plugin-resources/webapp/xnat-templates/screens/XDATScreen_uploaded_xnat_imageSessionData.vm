@@ -1,3 +1,4 @@
 #set($target=$content.getURI("/REST/services/archive"))
 #set($allowDataDeletion="false")
+#set($isUpload="true")
 			#parse($turbineUtils.getTemplateName("edit",$om.getXSIType(),$project,"edit"))

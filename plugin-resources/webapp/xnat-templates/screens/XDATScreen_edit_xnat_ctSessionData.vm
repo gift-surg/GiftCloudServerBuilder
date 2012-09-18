@@ -231,7 +231,12 @@ $page.setVlinkColor($ui.vlink)
 		<td><textarea name="xnat:ctSessionData.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
 	</tr>
 </TABLE><BR><BR><HR>
-#auditTable("" "Session Modification")
+		#if($om.getId())
+			#auditTable("" "Modified Session")
+		#else
+				#auditTable("Standard activity." "Created Session")
+		<script>YUIDOM.get('form_justification').style.display='none';</script>
+		#end
 #xdatEditProps($item $edit_screen)
 
 <DIV ID="ADDIN"></DIV>

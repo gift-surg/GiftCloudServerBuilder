@@ -28,6 +28,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
 import org.nrg.dcm.Dcm2Jpg;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -46,6 +47,7 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -255,7 +257,11 @@ public class FileList extends XNATCatalogTemplate {
         if(resource!=null && this.parent!=null && this.security!=null){
             try {
                 if(user.canDelete(this.security)){
-
+					if(!((security).getItem().isActive() || (security).getItem().isQuarantine() )){
+						//cannot modify it if it isn't active
+						throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,new Exception());
+					}
+                	
                     if(proj==null){
                         if(parent.getItem().instanceOf("xnat:experimentData")){
                             proj = ((XnatExperimentdata)parent).getPrimaryProject(false);

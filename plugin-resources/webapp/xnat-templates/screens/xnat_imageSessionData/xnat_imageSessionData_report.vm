@@ -19,7 +19,7 @@ document.title = "Session: $!item.getProperty('label')";
 					#else
 					#set($project=$mr.getProject())
 					#end
-<BR>
+
 		#addCustomScreens($om.getXSIType() "report/alert") 
 			#parse("/screens/workflow_alert.vm")
 <table width="100%" border="0">
@@ -167,16 +167,22 @@ function  toggleQuarantine(){
     obj.categories=new Object();
     obj.categories.ids=new Array();
     
-    #if ($item.canEdit($data.getSession().getAttribute("user")))
-							      obj.canEdit=true;
-						    #else
-							      obj.canEdit=false;
-	    					#end
-    #if ($item.canDelete($data.getSession().getAttribute("user")))
-							      obj.canDelete=true;
-						    #else
-							      obj.canDelete=false;
-	    					#end
+	#if($item.isActive() || $item.isQuarantine())
+    	#if ($item.canEdit($data.getSession().getAttribute("user")))
+              obj.canEdit=true;
+        #else
+              obj.canEdit=false;
+        #end
+        #if ($item.canDelete($data.getSession().getAttribute("user")))
+    	      obj.canDelete=true;
+        #else
+    	      obj.canDelete=false;
+    	#end
+	#else
+          obj.canEdit=false;
+	      obj.canDelete=false;
+	#end
+	    
     #if($om.getSortedScans().size()>0)
       obj.categories.ids.push("scans");
       obj.categories["scans"]=new Array();

@@ -767,3 +767,19 @@ function showMessage(divId, title, body) {
     dialog.bringToTop();
     dialog.show();
 }
+
+
+
+function toggle_ul(n){
+	var element = document.getElementById("ul_"+n);
+	if (element) { var a = document.getElementById("a_"+n); }
+	if(YAHOO.util.Dom.hasClass(element,"hidden")){
+		// show hidden items and toggle icon to "hide"
+		YAHOO.util.Dom.removeClass(element,"hidden");
+		a.style.backgroundPosition="right top";
+	}else{
+		// hide elements and toggle icon to "expand"
+		YAHOO.util.Dom.addClass(element,"hidden");
+		a.style.backgroundPosition="left top";
+	}
+}

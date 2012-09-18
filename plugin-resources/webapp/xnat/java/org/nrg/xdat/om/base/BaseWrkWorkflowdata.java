@@ -357,7 +357,11 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
 	}
     
 	public String getUsername(){
-		return this.getInsertUser().getLogin();
+		if(this.getInsertUser()!=null){
+			return this.getInsertUser().getLogin();
+		}else{
+			return null;
+		}
 	}
 
 	@Override

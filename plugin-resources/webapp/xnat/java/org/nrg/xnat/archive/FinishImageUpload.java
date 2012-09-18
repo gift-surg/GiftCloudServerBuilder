@@ -14,6 +14,7 @@ import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusPublisherI;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
@@ -190,31 +191,44 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 	private static boolean isAutoArchive(final PrearcSession session, final URIManager.DataURIA destination) throws SQLException, SessionException, Exception{
 		//determine auto-archive setting
 		if(session.getProject()==null){
-			return false;
+			return setArchiveReason(session,false);
 		}
 
         final SessionData sessionData = session.getSessionData();
         if (sessionData != null) {
             PrearchiveCode sessionAutoArcSetting = sessionData.getAutoArchive();
-        if (sessionAutoArcSetting != null && (sessionAutoArcSetting == PrearchiveCode.AutoArchive || sessionAutoArcSetting == PrearchiveCode.AutoArchiveOverwrite)) {
-            return true;
-		}
+	        if (sessionAutoArcSetting != null && (sessionAutoArcSetting == PrearchiveCode.AutoArchive || sessionAutoArcSetting == PrearchiveCode.AutoArchiveOverwrite)) {
+	        	return setArchiveReason(session,true);
+			}
         }
 						
 		if(destination !=null && destination instanceof URIManager.ArchiveURI){
+			setArchiveReason(session,false);
 			return true;
 		}
 		
 		if(isAutoArchive(session.getAdditionalValues())){
-			return true;
+			return setArchiveReason(session,true);
 		}
 						
 		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());
 		if(code!=null && code>=4){
-			return true;
+			return setArchiveReason(session,true);
 		}
-		
-		return false;
+
+		return setArchiveReason(session,false);
+	}
+	
+	public static boolean setArchiveReason(PrearcSession session, boolean autoArchive){
+		if(autoArchive){
+			if(!session.getAdditionalValues().containsKey(EventUtils.EVENT_REASON))
+				session.getAdditionalValues().put(EventUtils.EVENT_REASON, "auto-archive");
+		}else{
+			if(!session.getAdditionalValues().containsKey(EventUtils.EVENT_REASON))
+				session.getAdditionalValues().put(EventUtils.EVENT_REASON, "standard upload");
+		}
+        
+        return autoArchive;
 	}
 	
     private static boolean isAutoArchive(final Map<String,Object> params){

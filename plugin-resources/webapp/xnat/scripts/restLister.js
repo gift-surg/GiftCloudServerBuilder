@@ -17,7 +17,7 @@ function restLister(_info){
 	}
 		
 	this.handleFailure=function(o){		
-		alert("Error loading resources");
+		alert("Error loading resources: [" + o.status + "] " + o.statusText);
 		this.loaded=0;
 	}
 	

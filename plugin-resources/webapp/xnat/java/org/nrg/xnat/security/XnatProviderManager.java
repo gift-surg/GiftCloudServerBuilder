@@ -129,14 +129,16 @@ public class XnatProviderManager extends ProviderManager {
         setProviders(providers);
     }
 
-	public void setProperties(String filename) {
-		String path = "../../../../../../"+filename;
+	public void setProperties(List<String> filenames) {
 		properties = new Properties();
-		try {
-			URL url = getClass().getResource(path);
-			properties.load(url.openStream());
-		} catch (IOException e) {
-			logger.error(e);
+		for(String filename:filenames){
+			String path = "../../../../../../"+filename;
+			try {
+				URL url = getClass().getResource(path);
+				properties.load(url.openStream());
+			} catch (IOException e) {
+				logger.error(e);
+			}
 		}
 	}
 

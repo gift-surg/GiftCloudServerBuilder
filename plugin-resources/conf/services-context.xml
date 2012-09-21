@@ -15,6 +15,7 @@
         e.g. for password security, see services-context.encrypted.sample.xml, which uses the jasypt library
         to manage property encryption and decryption.
     -->
-    <context:property-placeholder location="WEB-INF/conf/services.properties" ignore-unresolvable="true" />
+    <context:property-placeholder location="WEB-INF/conf/services.properties,WEB-INF/conf/services-custom.properties" ignore-unresolvable="true" />
+
 
 </beans>

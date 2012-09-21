@@ -1,7 +1,4 @@
 <!-- Title: Anonymization -->
-<script language="javascript">
-    var hasDirtied = false;
-</script>
 <table id="mgmt_container">
     <tr>
         <td>
@@ -18,7 +15,7 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <textarea id="anonScript" name="anonScript" rows="20" cols="80" onkeypress="if (!hasDirtied) { window.anonymizationManager.dirtyForm(); hasDirtied = true; }" disabled></textarea>
+                            <textarea id="anonScript" name="anonScript" rows="20" cols="80" onkeypress="if (!window.anonymizationManager.isDirty()) { window.anonymizationManager.dirtyForm(); }" disabled></textarea>
                         </td>
                     </tr>
                 </table>

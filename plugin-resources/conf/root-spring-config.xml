@@ -11,7 +11,7 @@
         e.g. for password security, see services-context.encrypted.sample.xml, which uses the jasypt library
         to manage property encryption and decryption.
     -->
-    <context:property-placeholder location="WEB-INF/conf/services.properties,WEB-INF/conf/services-custom.properties" ignore-unresolvable="true" />
+    <context:property-placeholder location="WEB-INF/conf/services.properties,WEB-INF/conf/services-custom.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
 
 
 	<bean id="validator" class="org.nrg.xdat.security.PasswordValidatorChain">

@@ -62,5 +62,8 @@ $page.setVlinkColor($ui.vlink)
 	<input type="hidden" name="destination" value="$!destination"/>
 	<TR><TD COLSPAN=2 ALIGN=center><input type="submit" name="eventSubmit_doSetup" value="Submit"/></TD></TR>
 </table>
+
+			#auditBoxes("2" "" "Standard creation." "Created Investigator")
+			<script>YUIDOM.get('form_justification').style.display='none';</script>
 </form>
 </p>

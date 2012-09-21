@@ -15,7 +15,9 @@ import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.status.StatusListenerI;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
@@ -207,6 +209,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					}
 					
 					if(PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcStatus.ARCHIVING)){
+						FinishImageUpload.setArchiveReason(session, false);
 						_return = "/data" +PrearcDatabase.archive(session, allowDataDeletion, overwrite,overwrite_files, user, listeners);
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
@@ -232,6 +235,11 @@ public class Archiver extends BatchPrearchiveActionsA  {
 					if (!PrearcUtils.canModify(user, sessions.get(0).getProject())) {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
 						return;
+					}
+					
+					for(PrearcSession ps:sessions){
+						if(!ps.getAdditionalValues().containsKey(EventUtils.EVENT_REASON))
+							ps.getAdditionalValues().put(EventUtils.EVENT_REASON, "Batch archive");
 					}
 					
 					m=PrearcDatabase.archive(sessions, allowDataDeletion, overwrite,overwrite_files, user, listeners);

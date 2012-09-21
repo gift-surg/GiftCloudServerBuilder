@@ -6,8 +6,11 @@
    	info.category="reconstructions";
    	var temp=new restLister(info);
 	temp.init();
-	
-	function collectFiles(id){
+    jq(window).bind('beforeunload', function(){
+        temp.leaving = 1;
+    });
+
+    function collectFiles(id){
 		clearFiles(id);
 		var list = new Array();
 		var tbod = document.getElementById("FILES_scan" + id);

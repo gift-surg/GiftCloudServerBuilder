@@ -190,7 +190,7 @@ public class ExptAssessmentResource extends ItemResource {
 										if(newLabel!=null)pp.setLabel(newLabel);
 										pp.setProperty("sharing_share_xnat_experimentda_id", assessor.getId());
 
-										BaseXnatExperimentdata.SaveSharedProject((XnatExperimentdataShare)pp, assessor, user,newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():"Share into additional project"));
+										BaseXnatExperimentdata.SaveSharedProject((XnatExperimentdataShare)pp, assessor, user,newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():"Shared into additional project"));
 									}else{
 										this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in the " + newProject.getId() + " project.");
 										return;

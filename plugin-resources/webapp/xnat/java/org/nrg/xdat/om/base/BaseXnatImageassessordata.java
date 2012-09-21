@@ -80,7 +80,9 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
         return mr;
     }
     
-
+    public void setImageSessionData(XnatImagesessiondata ses){
+    	mr=ses;
+    }
 
     
     public boolean validateSessionId(){

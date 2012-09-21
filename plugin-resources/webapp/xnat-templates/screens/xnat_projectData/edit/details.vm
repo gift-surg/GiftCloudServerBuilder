@@ -10,6 +10,9 @@
 		#end</TD></TR>
 							<TR><TH align="left">Description</TH><TD>		<textarea id="xnat:projectData/description"  name="xnat:projectData/description" rows="4" cols="70" onkeydown="subOnEnter(event,this);" >$!item.getStringProperty("xnat:projectData/description")</textarea></TD></TR>
 											<TR><TH align="left">Keywords</TH><TD>		<input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95" onkeydown="subOnEnter(event,this);" /></TD></TR>
+
+		#addCustomScreens($om.getXSIType() "edit/details")
+		
 														#set($pathInfo = $arcP.getPaths())
  <INPUT TYPE="hidden" NAME="arc:project/current_arc" VALUE="arc001"/>
  

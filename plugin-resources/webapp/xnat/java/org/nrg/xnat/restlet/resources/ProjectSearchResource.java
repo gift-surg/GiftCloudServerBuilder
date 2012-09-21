@@ -132,7 +132,7 @@ public class ProjectSearchResource extends ItemResource {
 					search.setAllowedUser(au);
 				}
 				
-				PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, search.getItem(), EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_SERVICE, "Modify Project stored search"));
+				PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, search.getItem(), EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_SERVICE, "Modified Project stored search"));
 				try {
 					SaveItemHelper.authorizedSave(search,user, false, true,wrk.buildEvent());
 					PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());

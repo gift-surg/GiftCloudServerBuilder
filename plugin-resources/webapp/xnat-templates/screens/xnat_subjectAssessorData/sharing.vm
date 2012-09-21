@@ -9,7 +9,7 @@
   <div ID="sharing_summary_title" style="margin-bottom:5px"></div>
   <div ID="sharing_summary_table"></div>
 </div>
-<div>
+<div class="lockable">
 Share into 
 #if($create_projects.size()>0)
 <SELECT ID="s_projects" name="projects">
@@ -119,7 +119,7 @@ shared_projects.push({id:"$pp.getProperty("project")",
 			           };
 			           openModalPanel("share","Un-sharing experiment...");
 			           var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
-			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/${om.getSubjectData().getId()}/experiments/'+ label +'?format=json&XNAT_CSRF='+csrfToken;
+			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/${om.getSubjectData().getId()}/experiments/'+ label +'?format=json&XNAT_CSRF='+csrfToken+'&event_reason=standard unshare';
    				        YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
 		   	   		    }
    	   		     

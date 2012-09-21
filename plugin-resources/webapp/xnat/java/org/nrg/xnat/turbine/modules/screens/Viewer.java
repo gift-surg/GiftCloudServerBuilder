@@ -13,6 +13,7 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.XnatHttpUtils;
 
 /**
  * @author Tim
@@ -44,6 +45,7 @@ public class Viewer extends SecureReport {
             context.put("item",item);
         }
         context.put("appletPath",TurbineUtils.GetRelativeServerPath(data) + "/applet");
+		context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
     }
 
     public void noItemError(RunData data, Context context)
@@ -63,6 +65,7 @@ public class Viewer extends SecureReport {
 			 	    context.put("item",mr.getItem());
 					context.put("om",mr);
 			        context.put("appletPath",TurbineUtils.GetRelativeServerPath(data) + "/applet");
+					context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
 		 	    }
 		 	} catch (Exception e){
 				e.printStackTrace();

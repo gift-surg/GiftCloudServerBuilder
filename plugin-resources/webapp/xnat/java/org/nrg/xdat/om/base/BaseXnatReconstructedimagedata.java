@@ -64,6 +64,10 @@ public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimageda
 
         return mr;
     }
+    
+    public void setImageSessionData(XnatImagesessiondata ses){
+    	mr=ses;
+    }
 
     public ArrayList getOutFileByContent(String content) {
 

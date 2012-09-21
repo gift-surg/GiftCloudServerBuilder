@@ -9,22 +9,17 @@ import java.util.Map;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTItem;
-import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
 
 
 public class WorkflowHistorySummary extends SecureReport {
-
+ 
 	@Override
-	public void finalProcessing(RunData data, Context context) {
+	public void finalProcessing(final RunData data, Context context) {
 		try {
 			final String id=(TurbineUtils.HasPassedParameter("key", data))?(String)TurbineUtils.GetPassedParameter("key", data):item.getStringProperty("ID");
 			List<WorkflowView> wvs=new ArrayList<WorkflowView>();
@@ -48,6 +43,10 @@ public class WorkflowHistorySummary extends SecureReport {
 				}
 			});
 			context.put("change_sets",wvs);
+			
+			if(TurbineUtils.HasPassedParameter("hideTopBar",data)){
+				context.put("hideTopBar", Boolean.valueOf((String)TurbineUtils.GetPassedParameter(("hideTopBar"), data)));
+			}
 		} catch (Exception e) {
 			logger.error("",e);
 		}

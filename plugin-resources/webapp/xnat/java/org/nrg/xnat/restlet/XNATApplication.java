@@ -11,6 +11,7 @@ import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.XDAT;
 import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
+import org.nrg.xnat.restlet.actions.UserSessionId;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
 import org.nrg.xnat.restlet.resources.*;
 import org.nrg.xnat.restlet.resources.files.CatalogResource;
@@ -225,6 +226,7 @@ public class XNATApplication extends Application {
         router.attach("/projects/{PROJECT_ID}/pars",org.nrg.xnat.restlet.resources.ProjectPARListResource.class);
 
         router.attach("/JSESSION",org.nrg.xnat.restlet.resources.UserSession.class);
+        router.attach("/auth",org.nrg.xnat.restlet.resources.UserAuth.class);
 
         router.attach("/prearchive",org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
         router.attach("/prearchive/experiments", org.nrg.xnat.restlet.resources.prearchive.RecentPrearchiveSessions.class);
@@ -238,7 +240,8 @@ public class XNATApplication extends Application {
         attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments/{EXPT_ID}/DIR",DIRResource.class);
         attachArchiveURI(router,"/experiments/{EXPT_ID}/XAR",DIRResource.class);
         attachArchiveURI(router,"/projects/{PROJECT_ID}/experiments/{EXPT_ID}/XAR",DIRResource.class);
-
+        attachArchiveURI(router,"/user/{USER_ID}/sessions",UserSessionId.class);//GET returns number of user sessions
+        
         // Users Cache Space
         router.attach("/user/cache/resources",UserCacheResource.class);
         router.attach("/user/cache/resources/{XNAME}",UserCacheResource.class);

@@ -13,6 +13,8 @@ function setScanQualityOptions(sel,choices,offset,value){
 	    sel.selectedIndex=i+offset;
 	}
     }
+    
+    if(confirmValues!=undefined)confirmValues();
 }
 
 function populateScanQualitySelector(server,project,sel,offset,assigned) {
@@ -531,7 +533,7 @@ function scanDeletor(_options){
 			
 			params+="&event_reason="+event_reason;
 			params+="&event_type=WEB_FORM";
-			params+="&event_action=Session Modification form";
+			params+="&event_action=Removed scan";
 
 			openModalPanel("delete_scan","Delete scan.");
 			YAHOO.util.Connect.asyncRequest('DELETE',serverRoot +'/REST/experiments/' + this.options.session_id +'/scans/' + this.options.scan.getProperty("ID") +'?format=json&XNAT_CSRF=' + csrfToken+params,this.initCallback,null,this);

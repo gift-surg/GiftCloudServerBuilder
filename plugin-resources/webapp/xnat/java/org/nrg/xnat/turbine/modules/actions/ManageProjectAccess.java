@@ -70,7 +70,7 @@ public class ManageProjectAccess extends SecureAction {
                     ArrayList<XdatUser> al = XdatUser.getXdatUsersByField("xdat:user.email", newOwner, null, true);
                     for (XdatUser newU : al){
                         XDATUser newUOM = new XDATUser(newU);
-                        final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + "(" + newUOM.getLogin() + ")"));
+                        final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUOM.getLogin() + ")"));
         				
                         project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP, newUOM, TurbineUtils.getUser(data),c);
     		            PersistentWorkflowUtils.save(wrk2,c);
@@ -112,7 +112,7 @@ public class ManageProjectAccess extends SecureAction {
                     ArrayList<XdatUser> al = XdatUser.getXdatUsersByField("xdat:user.email", newMember, null, true);
                     for (XdatUser newU : al){
                         XDATUser newUOM = new XDATUser(newU);
-						final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + "(" + newUOM.getLogin() + ")"));
+						final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUOM.getLogin() + ")"));
                         project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.MEMBER_GROUP, newUOM, TurbineUtils.getUser(data),c);
     		            PersistentWorkflowUtils.complete(wrk2,c);
                     }
@@ -153,7 +153,7 @@ public class ManageProjectAccess extends SecureAction {
                     ArrayList<XdatUser> al = XdatUser.getXdatUsersByField("xdat:user.email", newMember, null, true);
                     for (XdatUser newU : al){
                         XDATUser newUOM = new XDATUser(newU);
-                        final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + "(" + newUOM.getLogin() + ")"));
+                        final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUOM.getLogin() + ")"));
                         project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.COLLABORATOR_GROUP, newUOM, TurbineUtils.getUser(data),c);
                         PersistentWorkflowUtils.complete(wrk2, c);
                     }

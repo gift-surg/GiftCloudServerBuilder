@@ -4,7 +4,7 @@ XNAT.app.scans={};
 </script>
 <DIV class="edit_header1" style="margin-bottom:16px">Scans &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-#if($turbineUtils.toBoolean($configProps.getProperty("UI.allow-scan-addition","true")))
+#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-addition","true")))
 <input type="button" value="Add Scan" onclick="addScan(this)"/>
 #end
 </DIV>

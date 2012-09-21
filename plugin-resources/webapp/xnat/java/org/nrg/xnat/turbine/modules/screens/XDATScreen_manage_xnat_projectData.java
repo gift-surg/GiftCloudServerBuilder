@@ -32,7 +32,7 @@ public class XDATScreen_manage_xnat_projectData  extends SecureReport {
         try {
             context.put("guest", project.getPublicAccessibility());
 
-            PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.getXSIType(),project.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_FORM, "Re-initialize project permissions"));
+            PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.getXSIType(),project.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_FORM, "Re-initialized project permissions"));
                         
             try {
 				if(project.initGroups()){

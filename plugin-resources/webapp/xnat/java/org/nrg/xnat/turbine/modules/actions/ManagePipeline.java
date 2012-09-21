@@ -112,7 +112,7 @@ public class ManagePipeline extends SecureAction {
             XFTItem pipeline = TurbineUtils.GetItemBySearch(data);
 			String pipeline_path = (String)pipeline.getProperty("path");
             if (pipeline != null) {
-            	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, pipeline.getXSIType(), pipeline.getPKValueString(), PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Delete registered pipeline"));
+            	PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, pipeline.getXSIType(), pipeline.getPKValueString(), PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Deleted registered pipeline"));
 				PipePipelinerepository pipelines = PipelineRepositoryManager.GetInstance();
 				try {
 					SaveItemHelper.authorizedRemoveChild(pipelines.getCurrentDBVersion(),null,pipeline.getCurrentDBVersion(),user,wrk.buildEvent());
@@ -338,7 +338,7 @@ public class ManagePipeline extends SecureAction {
                 try {
                     PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
                     pipelineRepository.setPipeline(pipelineDetails);
-            	    SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Add registered pipeline"));
+            	    SaveItemHelper.authorizedSave(pipelineRepository,user, false, true,EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.WEB_FORM, "Added registered pipeline"));
                     PipelineRepositoryManager.Reset();
                     data.setMessage("Pipeline " + pipelineDetails.getPath() + " has been successfully added to the repository");
                     data.setScreenTemplate("ClosePageAndRefresh.vm");

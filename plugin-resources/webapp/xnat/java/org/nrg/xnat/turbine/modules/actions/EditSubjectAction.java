@@ -314,7 +314,6 @@ public class EditSubjectAction extends SecureAction {
                 }
             }else{
             	try {
-                	wrk.setPipelineName("Modify Subject");
                 	PersistentWorkflowUtils.save(wrk, ci);
             		
             		XnatSubjectdata sub=new XnatSubjectdata(found);

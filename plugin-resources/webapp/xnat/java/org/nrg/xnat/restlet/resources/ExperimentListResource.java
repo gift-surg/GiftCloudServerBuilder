@@ -76,7 +76,7 @@ public class ExperimentListResource  extends QueryOrganizerResource {
 			if(this.getQueryVariable("recent")!=null){
 				params.put("title", "Recent Experiments");
 				//this uses an ugly hack to try to enforces security via the SQL statement.  It generates the statement for the subject data type.  It then uses the same permissions on the experimentData type.  This assumes that experiments and subjects have the same permissions defined (which is currently always the case).  But, this could be an issue in the future.
-				org.nrg.xft.search.QueryOrganizer qo = new org.nrg.xft.search.QueryOrganizer("xnat:subjectData",user,ViewManager.ALL);
+				org.nrg.xft.search.QueryOrganizer qo = new org.nrg.xft.search.QueryOrganizer("xnat:subjectData",user,ViewManager.ACCESSIBLE);
 				qo.addField("xnat:subjectData/ID");			
 				
 				try {
@@ -101,6 +101,7 @@ public class ExperimentListResource  extends QueryOrganizerResource {
 				query=StringUtils.ReplaceStr(query, "xnat_subjectData", "xnat_experimentData");
 				query=StringUtils.ReplaceStr(query, "xnat_projectParticipant", "xnat_experimentData_share");
 				query=StringUtils.ReplaceStr(query, "subject_id", "sharing_share_xnat_experimentda_id");
+				query=StringUtils.ReplaceStr(query, "subjectData_info", "experimentData_info");
 				
 				query="SELECT * FROM (SELECT DISTINCT ON (expt.id) expt.id,label,project,date,status, xme.element_name, COALESCE(es.code,es.singular,es.element_name) AS TYPE_DESC,insert_date,activation_date,last_modified,workflow_date,pipeline_name, CASE WHEN (CASE WHEN last_modified>insert_date THEN last_modified ELSE insert_date END)>(CASE WHEN workflow_date>activation_date THEN workflow_date ELSE activation_date END) THEN (CASE WHEN last_modified>insert_date THEN last_modified ELSE insert_date END) ELSE (CASE WHEN workflow_date>activation_date THEN workflow_date ELSE activation_date END) END  AS action_date FROM xnat_experimentData expt LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id LEFT JOIN xdat_element_security es ON xme.element_name=es.element_name LEFT JOIN xnat_experimentData_meta_data emd ON expt.experimentData_info=emd.meta_data_id LEFT JOIN (   SELECT DISTINCT ON (id) id,current_step_launch_time AS workflow_date,pipeline_name FROM wrk_workflowdata WHERE status='Complete' ORDER BY id,current_step_launch_time ) wrkflw ON expt.id=wrkflw.id RIGHT JOIN (" +
 						query +

@@ -16,7 +16,9 @@ import java.util.concurrent.Callable;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.search.CriteriaCollection;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
@@ -187,7 +189,21 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 		
 		try {
 			if(i.getItem().instanceOf("xnat:projectData")){
-				wrks.addAll(PersistentWorkflowUtils.getWorkflowsByExternalId(user, id));
+				try {
+					String project=i.getStringProperty("ID");
+					CriteriaCollection cc= new CriteriaCollection("OR");
+					cc.addClause("wrk:workflowData/ID", project);
+					
+					CriteriaCollection inner= new CriteriaCollection("AND");
+					inner.addClause("wrk:workflowData/ExternalID", project);
+					inner.addClause("wrk:workflowData/category", "!=","DATA");
+					
+					cc.add(inner);
+					
+					wrks.addAll(WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false));
+				} catch (Exception e) {
+					logger.error("",e);
+				}
 			}else{
 				wrks.addAll(PersistentWorkflowUtils.getWorkflows(user, id));
 				

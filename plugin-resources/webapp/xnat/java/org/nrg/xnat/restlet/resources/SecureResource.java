@@ -1289,20 +1289,34 @@ public abstract class SecureResource extends Resource {
 					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.",new Exception());
 				}
 			}
-//			else if(this.isQueryVariableTrue("_unlock")){
-//				if(user.canActivate(i.getItem())){
-//					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Unlocked"));
-//					try {
-//						i.activate(user);
-//						WorkflowUtils.complete(wrk, wrk.buildEvent());
-//					} catch (Exception e) {
-//						logger.error("",e);
-//						WorkflowUtils.fail(wrk,wrk.buildEvent());
-//					}
-//				}else { 
-//					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.",new Exception());
-//				}
-//			}
+			else if(this.isQueryVariableTrue("_unlock")){
+				if(user.canActivate(i.getItem())){
+					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Unlocked"));
+					try {
+						i.activate(user);
+						WorkflowUtils.complete(wrk, wrk.buildEvent());
+					} catch (Exception e) {
+						logger.error("",e);
+						WorkflowUtils.fail(wrk,wrk.buildEvent());
+					}
+				}else { 
+					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.",new Exception());
+				}
+			}
+			else if(this.isQueryVariableTrue("_obsolete")){
+				if(user.canActivate(i.getItem())){
+					PersistentWorkflowI wrk= PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, i.getItem(), this.newEventInstance(EventUtils.CATEGORY.DATA, "Obsoleted"));
+					try {
+						i.getItem().setStatus(user, ViewManager.OBSOLETE);
+						WorkflowUtils.complete(wrk, wrk.buildEvent());
+					} catch (Exception e) {
+						logger.error("",e);
+						WorkflowUtils.fail(wrk,wrk.buildEvent());
+					}
+				}else { 
+					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient activation priviledges for experiments in this project.",new Exception());
+				}
+			}
 		} catch (ActionException e) {
 			throw e;
 		} catch (Exception e) {

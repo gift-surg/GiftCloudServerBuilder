@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -27,7 +28,9 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ecs.xhtml.address;
 import org.nrg.action.ActionException;
+import org.nrg.action.ClientException;
 import org.nrg.dcm.Dcm2Jpg;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -46,6 +49,7 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -249,13 +253,17 @@ public class FileList extends XNATCatalogTemplate {
     public boolean allowDelete() {
         return true;
     }
-
+    
     @Override
     public void handleDelete(){
         if(resource!=null && this.parent!=null && this.security!=null){
             try {
                 if(user.canDelete(this.security)){
-
+					if(!((security).getItem().isActive() || (security).getItem().isQuarantine() )){
+						//cannot modify it if it isn't active
+						throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,new Exception());
+					}
+                	
                     if(proj==null){
                         if(parent.getItem().instanceOf("xnat:experimentData")){
                             proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
@@ -265,46 +273,59 @@ public class FileList extends XNATCatalogTemplate {
                     }
 
                     if(resource instanceof XnatResourcecatalog){
+                    	
+                    	Collection<CatEntryI> entries = new ArrayList<CatEntryI>();
+                    	
                         final XnatResourcecatalog catResource=(XnatResourcecatalog)resource;
 
                         final File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
                         final String parentPath=catFile.getParent();
                         final CatCatalogBean cat=(CatCatalogBean)catResource.getCleanCatalog(proj.getRootArchivePath(), false,null,null);
 
-                        CatEntryBean entry = (CatEntryBean)CatalogUtils.getEntryByURI(cat, filepath);
-
-                        if(entry==null){
-                            entry = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                        CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                        if(e != null){
+                        	entries.add(e);
+                    	}
+                        if(entries.size()==0){
+                            e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                            if(e != null){
+                            	entries.add(e);
+                        	}
                         }
 
-                        if(entry==null){
-                            this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify specified file.");
-                            return;
+                        if(entries.size()==0 && filepath.endsWith("*")){
+                        	StringBuilder regex = new StringBuilder(filepath);
+                        	int lastIndex = filepath.lastIndexOf("*");
+                        	regex.replace(lastIndex, lastIndex+1, ".*");
+                        	entries.addAll(CatalogUtils.getEntriesByRegex(cat, regex.toString()));
                         }
 
-                        final File f = new File(parentPath,entry.getUri());
-
-                        if(f.exists()){
-                            PersistentWorkflowI work=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, this.security.getItem(), newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.REMOVE_FILE));
-                            EventMetaI ci=work.buildEvent();
-
-                            CatalogUtils.removeEntry(cat, entry);
-                            //update for file deletion
-                            CatalogUtils.writeCatalogToFile(cat, catFile);
-
-                            CatalogUtils.moveToHistory(catFile,cat,f,entry,ci);
-
-                            //if parent folder is empty, then delete folder
-                            if(FileUtils.CountFiles(f.getParentFile(),true)==0){
-                                FileUtils.DeleteFile(f.getParentFile());
-                            }
-
-                            CatalogUtils.populateStats(catResource,proj.getRootArchivePath());
-                            SaveItemHelper.authorizedSave(catResource,user, false, false, ci);
-
-                            WorkflowUtils.complete(work, ci);
-                        }else{
-                            this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
+                        for(CatEntryI entry:entries){
+                        
+	                        final File f = new File(parentPath,entry.getUri());
+	
+	                        if(f.exists()){
+	                            PersistentWorkflowI work=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, this.security.getItem(), newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.REMOVE_FILE));
+	                            EventMetaI ci=work.buildEvent();
+	
+	                            CatalogUtils.removeEntry(cat, entry);
+	                            //update for file deletion
+	                            CatalogUtils.writeCatalogToFile(cat, catFile);
+	
+	                            CatalogUtils.moveToHistory(catFile,cat,f,(CatEntryBean)entry,ci);
+	
+	                            //if parent folder is empty, then delete folder
+	                            if(FileUtils.CountFiles(f.getParentFile(),true)==0){
+	                                FileUtils.DeleteFile(f.getParentFile());
+	                            }
+	
+	                            CatalogUtils.populateStats(catResource,proj.getRootArchivePath());
+	                            SaveItemHelper.authorizedSave(catResource,user, false, false, ci);
+	
+	                            WorkflowUtils.complete(work, ci);
+	                        }else{
+	                            this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
+	                        }
                         }
                     }else{
                         this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
@@ -781,6 +802,8 @@ public class FileList extends XNATCatalogTemplate {
         final boolean isZip=isZIPRequest(mt);
 
         File f = null;
+        Map<String,File> fileList = new HashMap<String,File>();
+        
         final XFTTable table = new XFTTable();
 
         String[] headers;
@@ -825,20 +848,52 @@ public class FileList extends XNATCatalogTemplate {
                             table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip || (index!=null),entryFilter,proj,locator));
                         }
                     }else{
-                        CatEntryI entry = CatalogUtils.getEntryByURI(cat, filepath);
-
-                        if(entry==null){
-                            entry = CatalogUtils.getEntryById(cat, filepath);
+                    	
+                    	ArrayList<CatEntryI> entries = new ArrayList<CatEntryI>();
+                    	
+                    	CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                        if(e != null){
+                        	entries.add(e);
+                    	}
+                        if(entries.size()==0){
+                            e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                            if(e != null){
+                            	entries.add(e);
+                        	}
                         }
-
-                        if(entry!=null){
-                            if(FileUtils.IsAbsolutePath(entry.getUri())){
-                                f = new File(entry.getUri());
+                        if(entries.size()==0 && filepath.endsWith("*")){
+                        	StringBuilder regex = new StringBuilder(filepath);
+                        	int lastIndex = filepath.lastIndexOf("*");
+                        	regex.replace(lastIndex, lastIndex+1, ".*");
+                        	entries.addAll(CatalogUtils.getEntriesByRegex(cat, regex.toString()));
+                        }
+                        
+                        
+                        
+                        if(entries.size() == 1){
+                            if(FileUtils.IsAbsolutePath(entries.get(0).getUri())){
+                                f = new File(entries.get(0).getUri());
                             }else{
-                                f = new File(parentPath,entry.getUri());
+                                f = new File(parentPath,entries.get(0).getUri());
                             }
 
                             if(f.exists())break;
+                        	
+                        } else {
+            
+                        	for(CatEntryI entry:entries){
+                        		if(FileUtils.IsAbsolutePath(entry.getUri())){
+                                    f = new File(entry.getUri());
+                                }else{
+                                    f = new File(parentPath,entry.getUri());
+                                }
+
+                                if(f.exists()){
+                                	fileList.put(entry.getUri(),f);
+                                }
+                        	
+                        	}
+                        	break;
                         }
                     }
                 }
@@ -906,7 +961,26 @@ public class FileList extends XNATCatalogTemplate {
             }
 
             //return file
-            if(f!=null){
+            if(fileList.size() > 0){
+                if((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip"))
+                        || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".tar.gz") )
+                        || (mt.equals(MediaType.APPLICATION_TAR) && !f.getName().toLowerCase().endsWith(".tar"))){
+                    final ZipRepresentation rep;
+                    try{
+                        rep=new ZipRepresentation(mt,((ArchivableItem)security).getArchiveDirectoryName(),identifyCompression(null));
+                    } catch (ActionException e) {
+                        logger.error("",e);
+                        this.setResponseStatus(e);
+                        return null;
+                    }
+                    for(String fn:fileList.keySet()){
+                    	
+                    	rep.addEntry(fn,fileList.get(fn));
+                    }
+                   	return rep;
+                }
+            
+            }else if(f!=null){
                 if(f!=null && f.exists()){
                     if((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip"))
                             || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".tar.gz") )
@@ -928,11 +1002,13 @@ public class FileList extends XNATCatalogTemplate {
                     this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find file.");
                     return null;
                 }
-            }else{
+            } else{
+            
                 this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find file.");
                 return null;
             }
         }
+        return null;
     }
 
     private FileRepresentation getFileRepresentation(File f, MediaType mt) {

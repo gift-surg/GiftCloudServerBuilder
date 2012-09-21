@@ -7,11 +7,13 @@
 
 if(XNAT==undefined)XNAT=new Object();
 if(XNAT.validators==undefined)XNAT.validators=new Object();
-
+if(XNAT.app.validatorImpls==undefined)XNAT.app.validatorImpls=new Object();
+ 
 /********************
  Add support for in page validation specification
  */
 var forms=0;
+
 
 YAHOO.util.Event.onDOMReady(function(){
     var myforms = document.getElementsByTagName("form");
@@ -19,9 +21,9 @@ YAHOO.util.Event.onDOMReady(function(){
         for(var fFc=0;fFc<myforms[iFc].length;fFc++){
             if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'required')){
                 if(myforms[iFc][fFc].nodeName=="INPUT" || myforms[iFc][fFc].nodeName=="TEXTAREA"){
-                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc]));
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RequiredTextBox));
                 }else if(myforms[iFc][fFc].nodeName=="SELECT"){
-                    _addValidation(myforms[iFc][fFc],new SelectValidator(myforms[iFc][fFc]));
+                    _addValidation(myforms[iFc][fFc],new SelectValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RequiredSelect));
                 }
             }
         }
@@ -29,11 +31,14 @@ YAHOO.util.Event.onDOMReady(function(){
 
 });
 
+//this delays the call to add validatoin until after the dom is loaded
 function addValidator(_element,_validator){
     YAHOO.util.Event.onDOMReady(function(){
         _addValidation(_element,_validator);
     });
 }
+
+//this method should only be called once the dom is loaded
 function _addValidation(_element,_validator){
     var element=_element;
     if(_element.nodeName==undefined){
@@ -46,14 +51,21 @@ function _addValidation(_element,_validator){
     }
 
     if(XNAT.validators[_form.ID]==undefined){
-        XNAT.validators[_form.ID]=new Array();
+        XNAT.validators[_form.ID]=new Object();
+        XNAT.validators[_form.ID].keys=new Array();
     }
 
-    XNAT.validators[_form.ID].push(_validator);
+    if(XNAT.validators[_form.ID][_element.id]==undefined){
+        XNAT.validators[_form.ID][_element.id]=new Array();
+        XNAT.validators[_form.ID][_element.id].box=_element;
+        XNAT.validators[_form.ID].keys.push(_element.id);
+    }
+    
+    XNAT.validators[_form.ID][_element.id].push(_validator);
 }
 
-function validateBox(box){
-    if(box.value=="")
+function validateBox(box,_checkFunction){
+    if(!_checkFunction.isValid(box))
     {
         appendImage(box,"/images/checkmarkRed.gif");
         return false;
@@ -63,8 +75,15 @@ function validateBox(box){
     }
 }
 
+XNAT.app.validatorImpls.RequiredTextBox={
+	isValid:function(_box){
+		return (_box.value!="");
+	}
+}
+
 //declaring the constructor
-function TextboxValidator(box) {
+function TextboxValidator(box,_validator) {
+	this._validator=_validator;
     this.box = box;
 }
 // declaring instance methods
@@ -73,12 +92,12 @@ TextboxValidator.prototype = {
         if(this.box.monitored == undefined){
             this.box.monitored=true;
             YAHOO.util.Event.on(this.box,"change",function(env,var2){
-                return validateBox(this);
-            });
+                return validateBox(this.box,this._validator);
+            },this,true);
         }
 
 
-        if(!validateBox(this.box)){
+        if(!validateBox(this.box,this._validator)){
             this.box.focus();
             return false;
         }else{
@@ -95,6 +114,12 @@ function validateSelect(sel){
         removeAppendImage(sel);
         return true;
     }
+}
+
+XNAT.app.validatorImpls.RequiredSelect={
+	isValid:function(sel){
+		return (sel.options[sel.selectedIndex].value!="");
+	}
 }
 
 
@@ -133,7 +158,9 @@ YAHOO.util.Event.onDOMReady( function()
         //function to hide forms while they are being submitted, unless they have a noHide class
         if(!YUIDOM.hasClass(myForm,'noHide')){
             YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-                concealContent("Submitting... Please wait.");
+            	if(!YUIDOM.hasClass(this,'noHide')){//check again in case class was added after build
+            		concealContent("Submitting... Please wait.");
+            	}
             });
         }
 
@@ -144,13 +171,36 @@ YAHOO.util.Event.onDOMReady( function()
         YAHOO.util.Event.on(myForm, "submit", function (env, var2) {
             var validators = XNAT.validators[this.ID];
             if(validators!=undefined){
-                validators._ok = true;
-                for (var iVc = 0; iVc < validators.length; iVc++) {
-                    if (!validators[iVc].validate()) {
-                        validators._ok = false;
-                        this.focus = validators[iVc].box;
-                    }
-                }
+            	try{
+	                validators._ok = true;
+	                for(var elementIdI=0;elementIdI<validators.keys.length;elementIdI++){
+	                	var elementId=validators.keys[elementIdI];
+	                	if(validators[elementId] instanceof Array){
+		                	try{
+		                		validators[elementId]._ok=true;
+		                		for (var iVc = 0; iVc < validators[elementId].length; iVc++) {
+		    	                    if (!validators[elementId][iVc].validate()) {
+		    	                        validators[elementId]._ok = false;
+		    	                        validators._ok = false;
+		    	                        this.focus = validators[elementId][iVc].box;
+		    	                    }
+		    	                }
+		                		
+		                		if(validators[elementId]._ok){
+		                	        removeAppendImage(validators[elementId].box);
+		                		}else{
+		                	        appendImage(validators[elementId].box,"/images/checkmarkRed.gif");
+		                		}
+		                	}catch(e){
+		                		alert("Error performing validation")
+		                		validators._ok=false;
+		                	}
+	                	}
+	                }
+            	}catch(e){
+            		alert("Error performing validation")
+            		validators._ok=false;
+            	}
 
                 if (!validators._ok) {
                     YAHOO.util.Event.stopEvent(env);

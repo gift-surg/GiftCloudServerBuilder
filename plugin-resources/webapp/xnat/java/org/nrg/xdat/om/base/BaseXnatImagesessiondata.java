@@ -3328,15 +3328,18 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
 		
 		for(final XnatImagescandataI scan:this.getScans_scan()){
+			((XnatImagescandata)scan).setImageSessionData((XnatImagesessiondata)this);
 			((XnatImagescandata)scan).validate(expectedPath);
 		
 		}
 
 		for(final XnatReconstructedimagedataI recon:this.getReconstructions_reconstructedimage()){
+			((XnatReconstructedimagedata)recon).setImageSessionData((XnatImagesessiondata)this);
 			((XnatReconstructedimagedata)recon).validate(expectedPath);
 		}
 
 		for(final XnatImageassessordataI assess:this.getAssessors_assessor()){
+			((XnatImageassessordata)assess).setImageSessionData((XnatImagesessiondata)this);
 			((XnatImageassessordata)assess).preSave();
 		}
 	}

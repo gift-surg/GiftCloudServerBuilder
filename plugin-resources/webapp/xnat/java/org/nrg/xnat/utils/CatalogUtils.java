@@ -237,6 +237,23 @@ public class CatalogUtils {
 		}
 	}
 
+	public static Collection<CatEntryI> getEntriesByRegex(final CatCatalogI cat, String regex){
+		List<CatEntryI> entries=new ArrayList<CatEntryI>();
+		for(CatCatalogI subset:cat.getSets_entryset()){
+			entries.addAll(getEntriesByRegex(subset,regex));
+		}
+		for(CatEntryI entry:cat.getEntries_entry()){
+			try {
+				if(entry.getUri().matches(regex)){
+					entries.add(entry);
+				}
+			} catch (Exception e1) {
+				logger.error(e1);
+			}
+		}
+		return entries;
+	}
+	
 	public static CatEntryI getEntryByURI(CatCatalogI cat, String name){
 		CatEntryI e=null;
 		for(CatCatalogI subset:cat.getSets_entryset()){

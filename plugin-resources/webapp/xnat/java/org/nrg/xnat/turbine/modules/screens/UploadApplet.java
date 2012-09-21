@@ -1,13 +1,12 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.turbine.modules.screens;
 
-import javax.servlet.http.Cookie;
-
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.XnatHttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,15 +15,7 @@ public class UploadApplet extends SecureScreen {
 	
 	@Override
 	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        Cookie[] cookies = data.getRequest().getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equalsIgnoreCase("jsessionid")) {
-                    context.put("jsessionid", cookie.getValue());
-                    break;
-                }
-            }
-        }
+		context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
         storeParameterIfPresent(data, context, "project");
         storeParameterIfPresent(data, context, "subject_id", "part", "part_id");
         storeParameterIfPresent(data, context, "subject_label");

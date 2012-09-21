@@ -77,22 +77,22 @@
     <bean class="org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor">
         <property name="openUrls">
             <list>
-                <value>/app/template/Login.vm</value>
-                <value>/app/template/Register.vm</value>
-                <value>/app/template/ForgotLogin.vm</value>
-                <value>/app/template/ChangePassword.vm</value>
-                <value>/app/action/XDATChangePassword</value>
-                <value>/app/action/XDATForgotLogin</value>
-                <value>/app/action/XDATRegisterUser</value>
-                <value>/app/template/Error.vm</value>
-                <value>/app/template/PostRegister.vm</value>
+                <value>/app/template/Login.vm*</value>
+                <value>/app/template/Register.vm*</value>
+                <value>/app/template/ForgotLogin.vm*</value>
+                <value>/app/template/ChangePassword.vm*</value>
+                <value>/app/action/XDATChangePassword*</value>
+                <value>/app/action/XDATForgotLogin*</value>
+                <value>/app/action/XDATRegisterUser*</value>
+                <value>/app/template/Error.vm*</value>
+                <value>/app/template/PostRegister.vm*</value>
                 <value>/favicon.ico</value>
                 <value>/data/version</value>
                 <value>/REST/version</value>
                 <value>/data/JSESSION</value>
                 <value>/REST/JSESSION</value>
-                <value>/data/services/auth</value>
-                <value>/REST/services/auth</value>
+                <value>/data/services/auth*</value>
+                <value>/REST/services/auth*</value>
                 <value>/images/**</value>
                 <value>/scripts/**</value>
                 <value>/style/**</value>

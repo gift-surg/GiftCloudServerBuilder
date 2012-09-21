@@ -828,27 +828,84 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 			this.label +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeCatalog({file_name:'" + cat.label +"',uri:'" + this.cat.uri + "',id:'" + cat.xnat_abstractresource_id + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 	},
 	renderFiles:function(){
+		
+		    var folderArray = new Array();
 			for(var fC=0;fC<this.cat.files.length;fC++){
 				var file=this.cat.files[fC];
 				var size=parseInt(file.Size);
 				var path=file.URI.substring(file.URI.indexOf("/files/")+7);
-				var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + path + "</a>"
-				if(file.file_format!=""){
-				   _lbl +="&nbsp;"+ file.file_format +"";
-				}
-				if(file.file_content!=""){
-				   _lbl +="&nbsp;"+ file.file_content +"";
-				}
-				if(file.file_tags!=""){
-				   _lbl +="&nbsp;("+ file.file_tags +")";
-				}
-				_lbl +="&nbsp;&nbsp;"+size_format(size) +"&nbsp;";
+				var root=file.URI.substring(0,file.URI.indexOf("/files/")+6)
 				
-				if(this.cat.canDelete)
-					_lbl +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+				var splitPath =  path.split("/");
+				var fileNode = this;
 				
-				var fileNode=new YAHOO.widget.TextNode({label: _lbl, expanded: false}, this);
-				fileNode.labelStyle = "icon-f"; 
+				
+				for(var sp = 0; sp < splitPath.length; sp++){
+					
+					if(sp == splitPath.length - 1){
+						var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + splitPath[sp] + "</a>"
+						if(file.file_format!=""){
+						   _lbl +="&nbsp;"+ file.file_format +"";
+						}
+						if(file.file_content!=""){
+						   _lbl +="&nbsp;"+ file.file_content +"";
+						}
+						if(file.file_tags!=""){
+						   _lbl +="&nbsp;("+ file.file_tags +")";
+						}
+						_lbl +="&nbsp;&nbsp;"+size_format(size) +"&nbsp;";
+						
+						if(this.cat.canDelete)
+							_lbl +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+						
+						var fileNode=new YAHOO.widget.TextNode({label: _lbl, expanded: false}, fileNode);
+						fileNode.labelStyle = "icon-f"; 
+						
+					} else {
+						
+						var folderArrayKey = splitPath[sp]+'__'+sp;
+						
+						
+						if(   typeof folderArray[folderArrayKey] !== 'undefined' && typeof folderArray[folderArrayKey] !== null ){
+							
+							fileNode = folderArray[folderArrayKey];
+							
+						} else {
+							
+							var newPath = root;
+							for(var np=0;np<=sp;np++){
+								newPath = newPath + "/" + splitPath[np];
+							}
+							newPath = newPath + '/*';
+							var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + newPath + "?format=zip';\">" + splitPath[sp] + "</a>"
+							if(file.file_format!=""){
+							   _lbl +="&nbsp;"+ file.file_format +"";
+							}
+							if(file.file_content!=""){
+							   _lbl +="&nbsp;"+ file.file_content +"";
+							}
+							if(file.file_tags!=""){
+							   _lbl +="&nbsp;("+ file.file_tags +")";
+							}
+							_lbl +="&nbsp;&nbsp;"+size_format(size) +"&nbsp;";
+							
+							if(this.cat.canDelete)
+								_lbl +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + newPath + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+							
+							
+							
+							fileNode=new YAHOO.widget.TaskNode({label: _lbl, expanded: false}, fileNode);
+							fileNode.labelStyle = "icon-f";
+
+							folderArray[folderArrayKey] = fileNode;
+							
+						}
+						
+					}
+				}
+				
+
+				
 			}
 		}
 });

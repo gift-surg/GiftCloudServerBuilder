@@ -13,6 +13,8 @@ function setScanQualityOptions(sel,choices,offset,value){
 	    sel.selectedIndex=i+offset;
 	}
     }
+    
+    if(confirmValues!=undefined)confirmValues();
 }
 
 function populateScanQualitySelector(server,project,sel,offset,assigned) {

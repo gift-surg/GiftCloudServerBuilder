@@ -8,28 +8,17 @@ import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xdat.turbine.utils.AdminUtils;
-import org.nrg.xft.XFT;
 import org.nrg.xft.utils.AuthUtils;
-import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
-import org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider;
-import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.*;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.SpringSecurityMessageSource;
-import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
-import org.springframework.security.ldap.authentication.BindAuthenticator;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -39,21 +28,21 @@ public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
     private static final String SECURITY_PASSWORD_COMPLEXITY_PROPERTY = "security.password_complexity";
     private static final String SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY = "security.password_complexity_message";
-	private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
+    private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
 
-	
-	private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
+
+    private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
 
     private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
     private AuthenticationManager parent;
     private Properties properties;
 
-	private static final FailedAttemptsManager failures= new FailedAttemptsManager();
-	private static String PASSWORD_COMPLEXITY="";
-	private static String PASSWORD_COMPLEXITY_MESSAGE="";
+    private static final FailedAttemptsManager failures= new FailedAttemptsManager();
+    private static String PASSWORD_COMPLEXITY="";
+    private static String PASSWORD_COMPLEXITY_MESSAGE="";
 
-	private static String PASSWORD_EXPIRATION="-1";
+    private static String PASSWORD_EXPIRATION="-1";
     private Map<String, AuthenticationProviderConfigurator> _configurators;
 
     @Override
@@ -88,16 +77,16 @@ public class XnatProviderManager extends ProviderManager {
         String[] providerArray=commaDelineatedProviders.split("[\\s,]+");
         HashMap<String, HashMap<String, String>> providerMap = new HashMap<String, HashMap<String, String>>();
         for(String prov : providerArray){
-        	providerMap.put(prov, new HashMap<String, String>());
+            providerMap.put(prov, new HashMap<String, String>());
         }
         // Populate map of properties
         for(Map.Entry<Object, Object> entry : properties.entrySet()) {
-        	String key = (String) entry.getKey();
-        	StringTokenizer st = new StringTokenizer(key, ".");
+            String key = (String) entry.getKey();
+            StringTokenizer st = new StringTokenizer(key, ".");
             String provider = st.nextToken();
             if (provider.equals("provider")) {
-        		String name = st.nextToken();
-        		if(providerMap.containsKey(name)) {
+                String name = st.nextToken();
+                if(providerMap.containsKey(name)) {
                     StringBuilder providerProperty = new StringBuilder();
                     while (st.hasMoreTokens()) {
                         if (providerProperty.length() > 0) {
@@ -105,17 +94,17 @@ public class XnatProviderManager extends ProviderManager {
                         }
                         providerProperty.append(st.nextToken());
                     }
-        			providerMap.get(name).put(providerProperty.toString(), (String) entry.getValue());
-        		}
-        	}
+                    providerMap.get(name).put(providerProperty.toString(), (String) entry.getValue());
+                }
+            }
         }
-        
-     // Create providers
+
+        // Create providers
         List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>();
         for(String prov: providerArray){
-        	String name = providerMap.get(prov).get("name");
-        	String id = providerMap.get(prov).get("id");
-        	String type = providerMap.get(prov).get("type");
+            String name = providerMap.get(prov).get("name");
+            String id = providerMap.get(prov).get("id");
+            String type = providerMap.get(prov).get("type");
 
             assert name != null : "You must provide a name for all authentication provider configurations";
             assert id != null : "You must provide an ID for all authentication provider configurations";
@@ -129,25 +118,27 @@ public class XnatProviderManager extends ProviderManager {
         setProviders(providers);
     }
 
-	public void setProperties(List<String> filenames) {
-		properties = new Properties();
-		for(String filename:filenames){
-			String path = "../../../../../../"+filename;
-			try {
-				URL url = getClass().getResource(path);
-				properties.load(url.openStream());
-			} catch (IOException e) {
-				logger.error(e);
-			}
-		}
-	}
+    public void setProperties(List<String> filenames) {
+        properties = new Properties();
+        for(String filename:filenames){
+            String path = "../../../../../../"+filename;
+            URL url = getClass().getResource(path);
+            if (url != null) {
+                try {
+                    properties.load(url.openStream());
+                } catch (IOException e) {
+                    logger.error(e);
+                }
+            }
+        }
+    }
 
     public void setAuthenticationProviderConfigurators(Map<String, AuthenticationProviderConfigurator> configurators) {
         _configurators = configurators;
     }
 
-	@Override
-	public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
+    @Override
+    public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
         Class<? extends Authentication> toTest = authentication.getClass();
         AuthenticationException lastException = null;
         Authentication result = null;
@@ -157,12 +148,12 @@ public class XnatProviderManager extends ProviderManager {
                 continue;
             }
             if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
-            	if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName().equals(provider.toString())){
-            		//This is a different LDAP provider than the one that was selected.
-            		continue;
-            	}
+                if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName().equals(provider.toString())){
+                    //This is a different LDAP provider than the one that was selected.
+                    continue;
+                }
             }
-           
+
             logger.debug("Authentication attempt using " + provider.getClass().getName());
 
             try {
@@ -178,18 +169,18 @@ public class XnatProviderManager extends ProviderManager {
                 throw e;
             } catch(NewLdapAccountNotAutoEnabledException e) {
                 try {
-                   AdminUtils.sendNewUserRequestNotification(
-                		   e.getUserDetails().getUsername(), 
-                		   e.getUserDetails().getFirstname(), 
-                		   e.getUserDetails().getLastname(), 
-                		   e.getUserDetails().getEmail()
-                		   , "", "", "", new VelocityContext()
-                	);
+                    AdminUtils.sendNewUserRequestNotification(
+                            e.getUserDetails().getUsername(),
+                            e.getUserDetails().getFirstname(),
+                            e.getUserDetails().getLastname(),
+                            e.getUserDetails().getEmail()
+                            , "", "", "", new VelocityContext()
+                    );
                 } catch (Exception exception) {
                     logger.error("Error occurred sending new user request email", exception);
                 }
                 lastException = e;
-                
+
             } catch (AuthenticationException e) {
                 lastException = e;
             }
@@ -206,7 +197,7 @@ public class XnatProviderManager extends ProviderManager {
                 lastException = e;
             }
         }
-        
+
         if (result != null) {
             boolean eraseCredentialsAfterAuthentication = false;
             if (eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
@@ -215,27 +206,27 @@ public class XnatProviderManager extends ProviderManager {
             }
 
             eventPublisher.publishAuthenticationSuccess(result);
-            
+
             failures.clearCount(authentication);
-            
+
             return result;
         }else{
-        	//increment failed login attempt
-        	failures.addFailedLoginAttempt(authentication);
+            //increment failed login attempt
+            failures.addFailedLoginAttempt(authentication);
         }
 
         // Parent was null, or didn't authenticate (or throw an exception).
 
         if (lastException == null) {
             lastException = new ProviderNotFoundException(messages.getMessage("ProviderManager.providerNotFound",
-                        new Object[] {toTest.getName()}, "No AuthenticationProvider found for {0}"));
+                    new Object[] {toTest.getName()}, "No AuthenticationProvider found for {0}"));
         }
 
         eventPublisher.publishAuthenticationFailure(lastException, authentication);
 
         throw lastException;
     }
-	
+
     private void copyDetails(Authentication source, Authentication destination) {
         if ((destination instanceof AbstractAuthenticationToken) && (destination.getDetails() == null)) {
             AbstractAuthenticationToken token = (AbstractAuthenticationToken) destination;
@@ -243,64 +234,64 @@ public class XnatProviderManager extends ProviderManager {
             token.setDetails(source.getDetails());
         }
     }
-    
+
     private static final class NullEventPublisher implements AuthenticationEventPublisher {
         public void publishAuthenticationFailure(AuthenticationException exception, Authentication authentication) {}
         public void publishAuthenticationSuccess(Authentication authentication) {}
     }
 
     public String getExpirationInterval(){
-    	return PASSWORD_EXPIRATION;
+        return PASSWORD_EXPIRATION;
     }
-    
-	private static class FailedAttemptsManager {
-		/**
-		 * Increments failed Login count
+
+    private static class FailedAttemptsManager {
+        /**
+         * Increments failed Login count
          * @param auth    The authentication that failed.
-		 *
-		 */
-		private synchronized void addFailedLoginAttempt(final Authentication auth){
-			if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
-				XdatUserAuth ua=getUserByAuth(auth);
-				if(ua!=null){
-					ua.setFailedLoginAttempts(ua.getFailedLoginAttempts()+1);
-					XDAT.getXdatUserAuthService().update(ua);
-				}
-			}
-		} 
-		
-		public void clearCount(final Authentication auth) {
-			if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
-				XdatUserAuth ua=getUserByAuth(auth);
-				if(ua!=null){
-					ua.setFailedLoginAttempts(0);
-					XDAT.getXdatUserAuthService().update(ua);
-				}
-			}
-					}
-				}
-				
-	public static XdatUserAuth getUserByAuth(Authentication authentication) {
-		if(authentication==null){
-			return null;
-		}
-		
-		final String u;
-		if(authentication.getPrincipal() instanceof String){
-			u=(String)authentication.getPrincipal();
-		}else{
-			u=((XDATUserDetails)authentication.getPrincipal()).getLogin();
-		}
-		final String method;
-		final String provider;
-		if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
-        	provider=((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName();
-        	method=XdatUserAuthService.LDAP;
+         *
+         */
+        private synchronized void addFailedLoginAttempt(final Authentication auth){
+            if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
+                XdatUserAuth ua=getUserByAuth(auth);
+                if(ua!=null){
+                    ua.setFailedLoginAttempts(ua.getFailedLoginAttempts()+1);
+                    XDAT.getXdatUserAuthService().update(ua);
+                }
+            }
+        }
+
+        public void clearCount(final Authentication auth) {
+            if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
+                XdatUserAuth ua=getUserByAuth(auth);
+                if(ua!=null){
+                    ua.setFailedLoginAttempts(0);
+                    XDAT.getXdatUserAuthService().update(ua);
+                }
+            }
+        }
+    }
+
+    public static XdatUserAuth getUserByAuth(Authentication authentication) {
+        if(authentication==null){
+            return null;
+        }
+
+        final String u;
+        if(authentication.getPrincipal() instanceof String){
+            u=(String)authentication.getPrincipal();
         }else{
-        	provider=XnatDatabaseUserDetailsService.DB_PROVIDER;
-        	method=XdatUserAuthService.LOCALDB;
-			}
-		
-		return XDAT.getXdatUserAuthService().getUserByNameAndAuth(u, method, provider);
-		}
-	}
+            u=((XDATUserDetails)authentication.getPrincipal()).getLogin();
+        }
+        final String method;
+        final String provider;
+        if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
+            provider=((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName();
+            method=XdatUserAuthService.LDAP;
+        }else{
+            provider=XnatDatabaseUserDetailsService.DB_PROVIDER;
+            method=XdatUserAuthService.LOCALDB;
+        }
+
+        return XDAT.getXdatUserAuthService().getUserByNameAndAuth(u, method, provider);
+    }
+}

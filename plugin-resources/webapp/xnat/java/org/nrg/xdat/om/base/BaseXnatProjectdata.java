@@ -2034,6 +2034,15 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         group.setDisplayname("Owners");
         group.setTag(getId());
 
+        
+        XFTItem existing=this.getCurrentDBVersion();
+        if(existing==null){
+        	Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+this.getId()+"';", "COUNT", null, null);
+        	if(count>0){
+        		throw new Exception("Project '"+this.getId() + "' was used in a previously deleted project and cannot be reused.");
+        	}
+        }
+        
         UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
         if(ownerG==null){
         	PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, (XDATUser)this.getUser(), this.getXSIType(),this.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));

@@ -4,36 +4,26 @@ $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 
 <script language="javascript">
-	function ConfirmPassword()
+	function ConfirmEmail()
 	{
-		if (document.getElementById)
+		if(YUIDOM.get('new_email').value == YUIDOM.get('confirm_email').value)
 		{
-			if(document.getElementById('new_email').value == document.getElementById('confirm_email').value)
-			{
+			if(YUIDOM.get('new_email')!="" && YUIDOM.get('new_email').value.indexOf('@')>-1){
 				return true;
 			}else{
-				alert('Values do not match');
-				document.getElementById('new_email').value='';
-				document.getElementById('confirm_email').value='';
+				alert("Please enter a valid email address");
 				return false;
 			}
-		}
-		else if (document.all)
-		{
-			if(document.all['new_email'].value == document.all['confirm_email'].value)
-			{
-				return true;
-			}else{
-				alert('Values do not match');
-				document.all['new_email'].value='';
-				document.all['confirm_email'].value='';
-				return false;
-			}
+		}else{
+			alert('Values do not match');
+			YUIDOM.get('new_email').value='';
+			YUIDOM.get('confirm_email').value='';
+			return false;
 		}
 	}
 </script>
 <p>
-<form name="form1" method="post" action="$link.setAction("ModifyEmail")" ONSUBMIT="return ConfirmPassword();">
+<form name="form1" class="noHide" method="post" action="$link.setAction("ModifyEmail")" ONSUBMIT="return ConfirmEmail();">
 
 <table border="0" width="95%">
 	<tr>

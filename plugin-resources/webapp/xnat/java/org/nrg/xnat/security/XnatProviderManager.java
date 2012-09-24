@@ -1,14 +1,24 @@
 package org.nrg.xnat.security;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
+import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.AdminUtils;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.AuthUtils;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
@@ -213,6 +223,7 @@ public class XnatProviderManager extends ProviderManager {
         }else{
             //increment failed login attempt
             failures.addFailedLoginAttempt(authentication);
+            
         }
 
         // Parent was null, or didn't authenticate (or throw an exception).
@@ -251,12 +262,26 @@ public class XnatProviderManager extends ProviderManager {
          *
          */
         private synchronized void addFailedLoginAttempt(final Authentication auth){
-            if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
-                XdatUserAuth ua=getUserByAuth(auth);
-                if(ua!=null){
+            XdatUserAuth ua=getUserByAuth(auth);
+            if(ua!=null){
+            	if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
                     ua.setFailedLoginAttempts(ua.getFailedLoginAttempts()+1);
                     XDAT.getXdatUserAuthService().update(ua);
-                }
+	            }
+	            
+            	if(StringUtils.isNotEmpty(ua.getXdatUsername())){
+            		Integer uid=XDATUser.getUserid(ua.getXdatUsername());
+            		if(uid!=null){
+	    	            try {
+							XFTItem item = XFTItem.NewItem("xdat:user_login",null);
+							item.setProperty("xdat:user_login.user_xdat_user_id",uid);
+							item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());
+							SaveItemHelper.authorizedSave(item,null,true,false,(EventMetaI)null);
+						} catch (Exception e) {
+							//ignore
+						}
+            		}
+            	}
             }
         }
 

@@ -927,8 +927,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 group.setId(id);
                 group.setDisplayname(displayName);
                 group.setTag(getId());
-                wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialized permissions"));
+                Integer _id=group.getXdatUsergroupId();
+                wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), (_id==null)?"ADMIN":_id.toString(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialized permissions"));
                 if(SaveItemHelper.authorizedSave(group,this.getUser(), true, true,wrk.buildEvent())){
+                	if(wrk.getId().equals("ADMIN")){
+                		_id=group.getXdatUsergroupId();
+                		wrk.setId(_id.toString());
+                	}
                 	modified=true;
                 }
             } catch (Exception e) {
@@ -937,7 +942,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             }
         }else{
             group = (XdatUsergroup)groups.get(0);
-            wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getId(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modified permissions"));
+            wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getXdatUsergroupId().toString(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modified permissions"));
         }
 
         try {

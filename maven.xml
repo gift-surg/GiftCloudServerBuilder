@@ -1549,7 +1549,7 @@
     </goal>
     <goal name="xdat:configureRestletAutowire">
         <j:set var="org.restlet.autoWire" value="true"/>
-        <j:set var="xdat.url.withoutProtocolPrefix" value="${context.getVariable('xdat.url').replace('http://', '')}"/>
+        <j:set var="xdat.url.withoutProtocolPrefix" value="${context.getVariable('xdat.url').replace('http://', '').replace('https://', '')}"/>
 	    <j:if test="${context.getVariable('xdat.url.withoutProtocolPrefix').indexOf('/') &lt; 0
 	    			|| context.getVariable('xdat.url.withoutProtocolPrefix').matches('\S+\/\s*$')}">
 	        <j:set var="org.restlet.autoWire" value="false"/>

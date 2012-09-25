@@ -115,7 +115,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.jar"/>

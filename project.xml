@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-config</artifactId>
-			<version>1.6</version>
+			<version>1.6.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

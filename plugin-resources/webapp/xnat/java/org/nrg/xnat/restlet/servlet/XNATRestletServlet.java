@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
+import org.nrg.config.services.SiteConfigurationService;
 import org.nrg.dcm.DicomSCPManager;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
@@ -58,6 +59,8 @@ public class XNATRestletServlet extends ServerServlet {
     public void init() throws ServletException {
         super.init();
 
+        XDAT.getContextService().getBean(SiteConfigurationService.class).setConfigFilesLocationsRoot(this.getServletContext().getRealPath("/"));
+        
         updateAuthTable();
 
         XNATRestletServlet.REST_CONFIG=this.getServletConfig();

@@ -322,6 +322,23 @@ function ProjectEditor(_config) {
                 	}
                     
                 	this.modifyProject = function () {
+                        if (confirm("Modifying the primary project of an imaging session will result in the moving of files on the file server into the new project's storage space.  Are you sure you want to make this change?")) {
+                        	if(showReason){
+                    			var justification=new XNAT.app.requestJustification("file","Project Modification Justification",this._modifyProject,this);
+                    		}else{
+                    			var passthrough= new XNAT.app.passThrough(this._modifyProject,this);
+                    			passthrough.fire();
+                    		}
+                        	;
+                        } else {
+                            this.cancel();
+                        }
+                    }
+                	
+                	this._modifyProject=function(arg1,arg2,container){
+                	    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
+                		openModalPanel("modify_project", "Modifying project, please wait...");
+
                         var callback = {
                                 success:function (o) {
                                 	if( this.subjectNeedsToBeSharedIntoNewProject ) {
@@ -339,16 +356,14 @@ function ProjectEditor(_config) {
                                 cache:false, // Turn off caching for IE
                                 scope:this
                         }
-
-                        if (confirm("Modifying the primary project of an imaging session will result in the moving of files on the file server into the new project's storage space.  Are you sure you want to make this change?")) {
-                            openModalPanel("modify_project", "Modifying project, please wait...");
-
-                            var url = this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json&XNAT_CSRF=" + csrfToken;
-                            YAHOO.util.Connect.asyncRequest('PUT', url, callback);
-                        } else {
-                            this.cancel();
-                        }
-                    }
+                        
+                        var params="";		
+                 	   	params+="event_reason="+event_reason;
+                 	   	params+="&event_type=WEB_FORM";
+                 	   	params+="&event_action=Modified project";
+                        var url = this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json&XNAT_CSRF=" + csrfToken+"&"+params;
+                        YAHOO.util.Connect.asyncRequest('PUT', url, callback);
+                	}                	
                     
                 	this.shareSubjectIntoNewProject = function () {
                 		
@@ -493,21 +508,6 @@ function SubjectEditor(_config) {
                     } else if (this.form.new_subject.selectedValue == 0) {
                         alert("Please select a subject");
                     } else {
-                        var settingsCallback = {
-                            success:function (o) {
-                                window.currentSubject = this.selector.new_subject;
-                                window.currentSubjectLabel = this.selector.new_subject_name;
-                                closeModalPanel("modify_subject");
-                                this.selector.onModification.fire();
-                                this.cancel();
-                            },
-                            failure:function (o) {
-                                alert("ERROR (" + o.status + "): Failed to modify subject.");
-                                closeModalPanel("modify_subject");
-                            },
-                            scope:this
-                        }
-
                         if (this.selector.config.uri == undefined) {
                             window.currentSubject = this.selector.new_subject;
                             window.currentSubjectLabel = this.selector.new_subject_name;
@@ -516,9 +516,12 @@ function SubjectEditor(_config) {
                             this.cancel();
                         } else {
                             if (confirm("Modifying the subject of an experiment may result in the moving of files on the file server into the new subject's storage space.  Are you sure you want to make this change?")) {
-                                openModalPanel("modify_subject", "Modifying subject, please wait...");
-
-                                YAHOO.util.Connect.asyncRequest('PUT', serverRoot + "/REST/projects/" + window.currentProject + "/subjects/" + this.selector.new_subject + "/experiments/" + window.currentID + "?format=json&XNAT_CSRF=" + csrfToken, settingsCallback);
+                            	if(showReason){
+                        			var justification=new XNAT.app.requestJustification("file","Subject Modification Justification",XNAT.app._modifySubject,this);
+                        		}else{
+                        			var passthrough= new XNAT.app.passThrough(XNAT.app._modifySubject,this);
+                        			passthrough.fire();
+                        		}
                             } else {
                                 this.cancel();
                             }
@@ -553,6 +556,35 @@ function SubjectEditor(_config) {
         this.refresh();
     }
 }
+
+
+
+XNAT.app._modifySubject=function(arg1,arg2,container){
+	openModalPanel("modify_subject", "Modifying subject, please wait...");
+
+	var settingsCallback = {
+        success:function (o) {
+            window.currentSubject = this.selector.new_subject;
+            window.currentSubjectLabel = this.selector.new_subject_name;
+            closeModalPanel("modify_subject");
+            this.selector.onModification.fire();
+            this.cancel();
+        },
+        failure:function (o) {
+            alert("ERROR (" + o.status + "): Failed to modify subject.");
+            closeModalPanel("modify_subject");
+        },
+        scope:this
+    }
+
+    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
+    var params="";		
+	   	params+="event_reason="+event_reason;
+	   	params+="&event_type=WEB_FORM";
+	   	params+="&event_action=Modified subject";
+
+    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + "/REST/projects/" + window.currentProject + "/subjects/" + this.selector.new_subject + "/experiments/" + window.currentID + "?format=json&XNAT_CSRF=" + csrfToken+"&"+params, settingsCallback);
+	}    
 
 function LabelEditor(_config) {
     this.config = _config;
@@ -646,19 +678,6 @@ function LabelEditor(_config) {
                         return;
                     }
 
-                    var settingsCallback = {
-                        success:function (o) {
-                            window.currentLabel = window.selectedLabel;
-                            closeModalPanel("modify_new_label");
-                            this.selector.onModification.fire();
-                            this.cancel();
-                        },
-                        failure:function (o) {
-                            alert("ERROR (" + o.status + "): Failed to modify session ID.");
-                            closeModalPanel("modify_new_label");
-                        }, scope:this
-                    }
-
                     if (this.selector.config.uri == undefined) {
                         window.currentLabel = window.selectedLabel;
                         closeModalPanel("modify_new_label");
@@ -666,8 +685,12 @@ function LabelEditor(_config) {
                         this.cancel();
                     } else {
                         if (confirm("Modifying the " + this.selector.config.header + " of an imaging session will result in the moving of files on the file server within the project's storage space.  Are you sure you want to make this change?")) {
-                            openModalPanel("modify_new_label", "Modifying " + this.selector.config.header + ", please wait...");
-                            YAHOO.util.Connect.asyncRequest('PUT', this.selector.config.uri + "?label=" + window.selectedLabel + "&format=json&XNAT_CSRF=" + csrfToken, settingsCallback);
+                        	if(showReason){
+                    			var justification=new XNAT.app.requestJustification("file","Session Modification Justification",XNAT.app._modifyLabel,this);
+                    		}else{
+                    			var passthrough= new XNAT.app.passThrough(XNAT.app._modifyLabel,this);
+                    			passthrough.fire();
+                    		}
                         }
                     }
                 }
@@ -740,6 +763,32 @@ function LabelEditor(_config) {
 
 
 }
+
+
+XNAT.app._modifyLabel=function(arg1,arg2,container){
+	openModalPanel("modify_new_label", "Modifying " + this.selector.config.header + ", please wait...");
+
+	 var settingsCallback = {
+         success:function (o) {
+             window.currentLabel = window.selectedLabel;
+             closeModalPanel("modify_new_label");
+             this.selector.onModification.fire();
+             this.cancel();
+         },
+         failure:function (o) {
+             alert("ERROR (" + o.status + "): Failed to modify session ID.");
+             closeModalPanel("modify_new_label");
+         }, scope:this
+     }
+	 
+    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
+    var params="";		
+	   	params+="event_reason="+event_reason;
+	   	params+="&event_type=WEB_FORM";
+	   	params+="&event_action=Modified label";
+     
+    YAHOO.util.Connect.asyncRequest('PUT', this.selector.config.uri + "?label=" + window.selectedLabel + "&format=json&XNAT_CSRF=" + csrfToken + "&" + params, settingsCallback);
+}  
 
 window.success = function (subject_id) {
     if (window.subjectForm != undefined) {

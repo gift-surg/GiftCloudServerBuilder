@@ -131,7 +131,7 @@ function toggle_ul(n){
                     <dt class="auditIcon $!wv.getWorkflow().getCategory()"></dt>
                     <dd class="auditItem">$!wv.getMessage() on <a href="/REST/services/audit/$!wv.getWorkflow().getDataType()/$!wv.getWorkflow().getId()">$!wv.getWorkflow().getId()</a> </dd>
                     <dd class="auditAgent">by $!wv.getUsername()</dd>
-                    <dd class="auditTime">$!turbineUtils.formatDate($wv.getDate(),"yyyy-MM-dd HH:mm:ss")</dd>
+                    <dd class="auditTime">$!turbineUtils.formatDateTimeSeconds($wv.getDate())</dd>
                 </dl>
 				#if($!wv.getWorkflow().getJustification())
 				<dl>

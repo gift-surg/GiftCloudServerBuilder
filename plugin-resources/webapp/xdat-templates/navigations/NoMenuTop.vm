@@ -3,7 +3,7 @@ $page.setBgColor($ui.bgcolor)
 
 <div id="user_bar" class="no_menu">
     #if($last_login)
-        <span id="last_login">Last login: $turbineUtils.formatDate($last_login,"MM-dd-yyyy hh:mm")</span>
+        <span id="last_login">Last login: $turbineUtils.formatDateTime($last_login)</span>
 	#end
 	#if($data.getSession().getAttribute("user"))
         #if($data.getSession().getAttribute("user").getUsername()=="guest")

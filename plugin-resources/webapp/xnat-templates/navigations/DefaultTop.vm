@@ -65,7 +65,7 @@
 <div id="user_bar">
     <img id="attention_icon" src="$content.getURI('images/attention.png')" style="display:none;" alt="attention needed - click for more info" title="attention needed - click for more info">
     #if($last_login)
-        <span id="last_login">Last login: $turbineUtils.formatDate($last_login,"MM-dd-yyyy hh:mm")</span>
+        <span id="last_login">Last login: $turbineUtils.formatDateTime($last_login)</span>
     #end
     #if($data.getSession().getAttribute("user").getUsername()=="guest")
         <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>

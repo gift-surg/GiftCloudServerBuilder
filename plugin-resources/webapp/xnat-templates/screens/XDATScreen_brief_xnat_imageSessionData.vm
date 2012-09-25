@@ -7,7 +7,7 @@ $!template.setLayoutTemplate("ScreenOnly.vm")
 <tr><th align="left">Patient ID:</th><td>$!session.getDcmpatientid()</td></tr>
 <tr><th align="left">Patient Name:</th><td>$!session.getDcmpatientname()</td></tr>
 <tr><th align="left">Modality:</th><td>$!session.getModality()</td></tr>
-<tr><th align="left">Date:</th><td>$turbineUtils.formatDate($!session.getDate(),"MM/dd/yy")</td></tr>
+<tr><th align="left">Date:</th><td>$turbineUtils.formatDate($!session.getDate())</td></tr>
 </table>
 <div>
 	<h3>Scans</h3>

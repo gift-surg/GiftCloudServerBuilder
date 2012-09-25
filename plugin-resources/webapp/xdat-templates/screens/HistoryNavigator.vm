@@ -29,7 +29,7 @@ td._old{
 <ul>
 	<li><a class="versionLink" onclick="viewAllVersions();">View All</a></li>
 	#foreach($chKey in $change_sets.keySet())
-		<li><a class="versionLink" onclick="viewVersion('$turbineUtils.formatDate($chKey,"yyyy-MM-dd HH:mm:ss.SSS")',this);">$turbineUtils.formatDate($chKey,"MMM dd, yyyy HH:mm:ss.SSS")</a></li>
+		<li><a class="versionLink" onclick="viewVersion('$turbineUtils.formatDate($chKey,"yyyy-MM-dd HH:mm:ss.SSS")',this);">$turbineUtils.formatDateTimeSeconds($chKey)</a></li>
 	#end
 </ul>
 		</td>

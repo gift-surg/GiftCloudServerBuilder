@@ -121,7 +121,7 @@ $!template.setLayoutTemplate("/Default.vm")
                     <dt class="auditIcon $!wv.getWorkflow().getCategory()"></dt>
                     <dd class="auditItem">#if($!wv.getMessage())$!wv.getMessage() #else [Unknown Event] #end #if($!wv.getWorkflow().getId())on <a href="/REST/services/audit/$!wv.getWorkflow().getDataType()/$!wv.getWorkflow().getId()">$!wv.getWorkflow().getId()</a> #end <a title="expand" id="a_$wv.getDate()" href="#" class="auditButton"></a></dd>
                     <dd class="auditAgent">#if($!wv.getUsername()) by $!wv.getUsername() #else by [Unknown] #end</dd>
-                    <dd class="auditTime">#if($wv.getDate())$!turbineUtils.formatDate($wv.getDate(),"yyyy-MM-dd HH:mm:ss")#else [Unknown] #end</dd>
+                    <dd class="auditTime">#if($wv.getDate())$!turbineUtils.formatDateTimeSeconds($wv.getDate())#else [Unknown] #end</dd>
                     #if($!wv.getWorkflow().getJustification())
 						<dd class="justification">$!wv.getWorkflow().getJustification()</dd>
 					#end
@@ -132,7 +132,7 @@ $!template.setLayoutTemplate("/Default.vm")
                 <!-- hide this by default, show on click of parent -->
                     <ul class="workflow_history_details"> 
                		#foreach($sum in $wv.getChangeSummaries())
-                      <li><span class="auditDatetime">$!turbineUtils.formatDate($sum.getDate(),"yyyy-MM-dd HH:mm:ss")</span> $!sum.toString()</li>
+                      <li><span class="auditDatetime">$!turbineUtils.formatDateTimeSeconds($sum.getDate())</span> $!sum.toString()</li>
 
             		<ul class="workflow_history_details"> 
 				

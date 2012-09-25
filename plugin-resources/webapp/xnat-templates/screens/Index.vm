@@ -2,10 +2,6 @@
 <DIV class="warning">$data.message</DIV><br>
 #end
 
-## #if($last_login)
-##	<DIV style="text-align:right;">Last login: $turbineUtils.formatDate($last_login,"MM-dd-yyyy hh:mm")</DIV>
-##		#end
-
 #if(0 < $par_count)
 <div class="warning">You have been invited to join $par_count project(s).&nbsp;
 <button onclick="window.location='$content.getURI("/app/template/PARManager.vm")'">Review</button>

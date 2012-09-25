@@ -8,7 +8,7 @@
 		#else
 			style="color:green;white-space:nowrap;">
 		#end
-		$turbineUtils.formatDate($!workflow.getLaunchTime(),"yyyy.MM.dd"):&nbsp;$!workflow.getOnlyPipelineName()
+		$turbineUtils.formatDate($!workflow.getLaunchTime()):&nbsp;$!workflow.getOnlyPipelineName()
 		#if($workflow.getStatus()!="Complete")
 			&nbsp;&nbsp;$!workflow.getPercentagecomplete()
 		#end

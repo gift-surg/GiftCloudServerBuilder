@@ -158,6 +158,7 @@
 						<xs:element name="field" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="name"/>
 									<xdat:field>
 										<xdat:relation uniqueComposite="NAME"/>
 									</xdat:field>
@@ -261,6 +262,7 @@
 						<xs:element name="field" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="name"/>
 									<xdat:field>
 										<xdat:relation uniqueComposite="SUBJECT_NAME"/>
 									</xdat:field>
@@ -476,6 +478,7 @@
 						<xs:element name="field" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="name"/>
 									<xdat:field>
 										<xdat:relation uniqueComposite="NAME"/>
 									</xdat:field>
@@ -2638,6 +2641,7 @@ rebinning, 6=FORE)</xs:documentation>
 						<xs:element name="field" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="name"/>
 									<xdat:field>
 										<xdat:relation uniqueComposite="NAME"/>
 									</xdat:field>
@@ -3790,6 +3794,7 @@ rebinning, 6=FORE)</xs:documentation>
 						<xs:element name="field" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="name"/>
 									<xdat:field>
 										<xdat:relation uniqueComposite="NAME"/>
 									</xdat:field>

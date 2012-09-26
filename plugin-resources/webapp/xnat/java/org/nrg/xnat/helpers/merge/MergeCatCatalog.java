@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.model.CatCatalogI;
@@ -90,13 +91,15 @@ public class MergeCatCatalog implements Callable<MergeSessionsA.Results<Boolean>
 			}else if(ci!=null){
 				//backup existing file
 				//the entry should be copied to the .history catalog, the file will be moved separately
-				result.getAfter().add(new Callable<Boolean>(){
-					@Override
-					public Boolean call() throws Exception {
-						File f=FileUtils.BuildHistoryFile(CatalogUtils.getFile(destEntry, destCatFile.getParentFile().getAbsolutePath()),EventUtils.getTimestamp(ci));
-						CatalogUtils.addCatHistoryEntry(destCatFile, (CatCatalogBean)dest, f.getAbsolutePath(), (CatEntryBean)entry, ci);
-						return true;
-					}});
+				if(CatalogUtils.maintainFileHistory()){
+					result.getAfter().add(new Callable<Boolean>(){
+						@Override
+						public Boolean call() throws Exception {
+							File f=FileUtils.BuildHistoryFile(CatalogUtils.getFile(destEntry, destCatFile.getParentFile().getAbsolutePath()),EventUtils.getTimestamp(ci));
+							CatalogUtils.addCatHistoryEntry(destCatFile, (CatCatalogBean)dest, f.getAbsolutePath(), (CatEntryBean)entry, ci);
+							return true;
+						}});
+				}
 			}
 		}
 		

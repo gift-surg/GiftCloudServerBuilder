@@ -23,6 +23,7 @@ import org.nrg.transaction.RollbackException;
 import org.nrg.transaction.Run;
 import org.nrg.transaction.Transaction;
 import org.nrg.transaction.TransactionException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
@@ -333,18 +334,20 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 					}},new OldFileHandlerI(){
 						@Override
 						public boolean handle(File f) {
-							try {
-								FileUtils.MoveToHistory(f, EventUtils.getTimestamp(c));
-							} catch (FileNotFoundException e) {
-								logger.error("",e);
-								return false;
-							} catch (IOException e) {
-								logger.error("",e);
-								return false;
+							if(CatalogUtils.maintainFileHistory()){
+								try {
+									FileUtils.MoveToHistory(f, EventUtils.getTimestamp(c));
+								} catch (FileNotFoundException e) {
+									logger.error("",e);
+									return false;
+								} catch (IOException e) {
+									logger.error("",e);
+									return false;
+								}
 							}
 							return true;
 						}});
-
+				
 				if(!FileUtils.HasFiles(srcDIR2.getParentFile())){
 					FileUtils.DeleteFile(srcDIR2.getParentFile());
 				}

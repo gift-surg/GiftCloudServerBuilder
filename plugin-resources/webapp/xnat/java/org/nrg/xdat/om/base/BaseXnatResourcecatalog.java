@@ -16,6 +16,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.base.BaseElement;
@@ -162,7 +163,9 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
 
 
     public void deleteWithBackup(String rootPath, UserI user, EventMetaI c) throws Exception{
-		backupToHistory(rootPath, user, c);
+    	if(CatalogUtils.maintainFileHistory()){
+    		backupToHistory(rootPath, user, c);
+    	}
 			
     	deleteFromFileSystem(rootPath);
     }

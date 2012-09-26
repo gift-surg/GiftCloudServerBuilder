@@ -27,6 +27,7 @@ import java.util.zip.ZipOutputStream;
 
 import com.twmacinta.util.MD5;
 import org.apache.log4j.Logger;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatCatalogMetafieldBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -951,10 +952,20 @@ public class CatalogUtils {
 		return false;
 	}
 
+	private static Boolean _maintainFileHistory=null;
+	public static Boolean maintainFileHistory(){
+		if(_maintainFileHistory==null){
+			_maintainFileHistory=XDAT.getBoolSiteConfigurationProperty("audit.maintain-file-history", false);
+		}
+		return _maintainFileHistory;
+	}
+	
 	public static void moveToHistory(File catFile, CatCatalogBean cat, File f, CatEntryBean entry, EventMetaI ci) throws Exception {
 		//move existing file to audit trail
-		final File newFile=FileUtils.MoveToHistory(f,EventUtils.getTimestamp(ci));
-		addCatHistoryEntry(catFile,cat,newFile.getAbsolutePath(),entry,ci);
+		if(CatalogUtils.maintainFileHistory()){
+			final File newFile=FileUtils.MoveToHistory(f,EventUtils.getTimestamp(ci));
+			addCatHistoryEntry(catFile,cat,newFile.getAbsolutePath(),entry,ci);
+		}
 	}
 
 	public static void addCatHistoryEntry(File catFile, CatCatalogBean cat, String f, CatEntryBean entry, EventMetaI ci) throws Exception {

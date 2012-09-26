@@ -665,7 +665,7 @@ function validateDate(sel){
   }
 
 
-function appendImage(obj,img_name){
+function appendImage(obj,img_name,msg){
 if(obj!=null){
 	  if(typeof obj == 'string'){
 			// Determine if the argument is a form id or a form name.
@@ -677,6 +677,7 @@ if(obj!=null){
 	  if(obj.appendedImage==undefined){
 	    obj.appendedImage = document.createElement("img");
 	    obj.appendedImage.style.marginLeft="5pt";
+	    if(msg!=undefined)obj.appendedImage.title=msg;
 	    if(obj.nextSibling==null)
 	    {
 	    	obj.parentNode.insertBefore(obj.appendedImage,obj.nextSibling);

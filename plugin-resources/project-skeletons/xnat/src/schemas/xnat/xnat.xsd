@@ -3870,6 +3870,15 @@ rebinning, 6=FORE)</xs:documentation>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="otherQcScanData">
+		<xs:complexContent>
+			<xs:extension base="xnat:qcScanData">
+				<xs:sequence>
+					<xs:element name="other" type="xs:string" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 	<!-- Session level QC assessment -->
 	<xs:complexType name="qcManualAssessorData">
 		<xs:complexContent>

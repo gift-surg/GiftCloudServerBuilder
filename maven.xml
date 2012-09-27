@@ -40,10 +40,6 @@
             <attainGoal name="xdat:verifyPLPGSQL"/>
         </j:if>
         <attainGoal name="xdat:copyMavenJars"/>
-        <!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
-        <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
-          <copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
-        </u:available>-->
         <ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
         <maven:makeAbsolutePath var="xdat.root_schemas" path="schemas" basedir="${basedir}"/>
         <ant:echo>ROOT SCHEMA: ${xdat.root_schemas}</ant:echo>
@@ -144,10 +140,6 @@
         <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
             <j:set var="xdat.project.includeXNAT" value="true"/>
         </j:if>
-        <!--  REMOVE HARD CODED REFERENCE TO VERSION 1.0
-        <u:available file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar">
-          <copy tofile="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.jar" file="${basedir}/plugin-resources/repository/xdat/jars/XDAT-1.jar"/>
-        </u:available>-->
         <ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
         <maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
         <!-- CLEAN TURBINE JAR -->
@@ -880,7 +872,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -923,7 +915,7 @@
             <arg value="false"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -959,7 +951,7 @@
             <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1000,7 +992,7 @@
             <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1044,7 +1036,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1086,7 +1078,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1134,7 +1126,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1188,7 +1180,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1470,7 +1462,7 @@
         <attainGoal name="xdat:updateCSS"/>
         <attainGoal name="xdat:updateImages"/>
         <attainGoal name="xdat:updateFilesFromModules"/>
-        <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.jar"/>
+        <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.1.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.1.jar"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
         </copy>
@@ -1570,7 +1562,7 @@
             <arg value="${xdat.project.name}"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1688,7 +1680,7 @@
             <classpath>
                 <pathelement location="./classes"/>
                 <pathelement location="./deployments/${xdat.project.name}/target/classes"/>
-                <pathelement location="./lib/xdat-1.6.jar"/>
+                <pathelement location="./lib/xdat-1.6.1.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>

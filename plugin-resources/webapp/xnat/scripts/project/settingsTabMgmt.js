@@ -54,7 +54,7 @@ function fullConfigHandler() {
         };
 
         var allControls = [ 
-		       	'siteId', 'siteUrl', 'siteAdminEmail', 'dcmAppletLink', 'enableCsrfToken'
+		       	'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'
 		       	, 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
 		       	, 'requireLogin', 'enableNewRegistrations'
 		       	, 'error', 'issue', 'newUser', 'update'

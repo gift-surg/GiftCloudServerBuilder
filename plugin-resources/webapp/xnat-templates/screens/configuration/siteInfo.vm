@@ -38,7 +38,7 @@
                     </tr>
                     <tr>
                         <th align="left">Applet Link</th>
-                        <td><input type="checkbox" id="dcmAppletLink" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
+                        <td><input type="checkbox" id="showapplet" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
                     </tr>
                     <tr>
                         <td colspan="2">Should a prominent link to the applet show up on the left bar of the index page?</td>
@@ -83,5 +83,5 @@ function addSiteInfoMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'dcmAppletLink', 'enableCsrfToken'];
+var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'];
 </script>

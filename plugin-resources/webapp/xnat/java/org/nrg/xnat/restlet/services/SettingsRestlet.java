@@ -128,9 +128,10 @@ public class SettingsRestlet extends SecureResource {
         return null;
     }
 
-    private Map<String, Object> getArcSpecAsMap() throws IOException, ConfigServiceException {
-        Map<String, Object> settings = new HashMap<String, Object>();
+    private Map<Object, Object> getArcSpecAsMap() throws IOException, ConfigServiceException {
+    	Map<Object, Object> settings = new HashMap<Object, Object>();
 
+        settings.putAll(XDAT.getSiteConfiguration());
         settings.put("siteId", _arcSpec.getSiteId());
         settings.put("siteUrl", _arcSpec.getSiteUrl());
         settings.put("siteAdminEmail", _arcSpec.getSiteAdminEmail());
@@ -138,7 +139,6 @@ public class SettingsRestlet extends SecureResource {
         settings.put("requireLogin", _arcSpec.getRequireLogin());
         settings.put("enableNewRegistrations", _arcSpec.getEnableNewRegistrations());
         settings.put("archivePath", _arcSpec.getGlobalArchivePath());
-        settings.put("checksums", XDAT.getSiteConfigurationProperty("checksums"));
         settings.put("prearchivePath", _arcSpec.getGlobalPrearchivePath());
         settings.put("cachePath", _arcSpec.getGlobalCachePath());
         settings.put("buildPath", _arcSpec.getGlobalBuildPath());
@@ -146,7 +146,6 @@ public class SettingsRestlet extends SecureResource {
         settings.put("pipelinePath", _arcSpec.getGlobalpaths().getPipelinepath());
         settings.put("dcmPort", _arcSpec.getDcm_dcmPort());
         settings.put("dcmAe", _arcSpec.getDcm_dcmAe());
-        settings.put("dcmAppletLink", XDAT.getSiteConfigurationProperty("showapplet"));
         settings.put("enableCsrfToken", _arcSpec.getEnableCsrfToken());
         settings.put("error", getSubscribersForEvent(NotificationType.Error));
         settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
@@ -154,7 +153,6 @@ public class SettingsRestlet extends SecureResource {
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
         settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
         settings.put("restMockCallMap", getFormattedRestMockCallMap());
-        settings.put("enableDicomReceiver", XDAT.getSiteConfigurationProperty("enableDicomReceiver"));
 
         return settings;
     }
@@ -335,14 +333,6 @@ public class SettingsRestlet extends SecureResource {
                 _arcSpec.getGlobalpaths().setArchivepath(archivePath);
                 XFT.SetArchiveRootPath(archivePath);
                 dirtied = true;
-            } else if (property.equals("checksums")) {
-                final String checksums = map.get("checksums");
-                try {
-                    XDAT.setSiteConfigurationProperty("checksums", checksums);
-                } catch (ConfigServiceException exception) {
-                    throw new Exception("Error setting the checksums site info property", exception);
-                }
-                dirtied = true;
             } else if (property.equals("prearchivePath")) {
                 final String prearchivePath = map.get("prearchivePath");
                 _arcSpec.getGlobalpaths().setPrearchivepath(prearchivePath);
@@ -374,14 +364,6 @@ public class SettingsRestlet extends SecureResource {
             } else if (property.equals("dcmAe")) {
                 _arcSpec.setDcm_dcmAe(map.get("dcmAe"));
                 dirtied = true;
-            } else if (property.equals("dcmAppletLink")) {
-                final String dcmAppletLink = map.get("dcmAppletLink");
-                try {
-                    XDAT.setSiteConfigurationProperty("showapplet", dcmAppletLink);
-                } catch (ConfigServiceException exception) {
-                    throw new Exception("Error setting the dcmAppletLink site info property", exception);
-                }
-                dirtied = true;
             } else if (property.equals("enableCsrfToken")) {
                 final String enableCsrfToken = map.get("enableCsrfToken");
                 _arcSpec.setEnableCsrfToken(enableCsrfToken);
@@ -410,16 +392,14 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the REST service mock call map", exception);
                 }
                 dirtied = true;
-            } else if (property.equals("enableDicomReceiver")) {
-                final String enableDicomReceiver = map.get("enableDicomReceiver");
-                try {
-                    XDAT.setSiteConfigurationProperty("enableDicomReceiver", enableDicomReceiver);
-                } catch (ConfigServiceException exception) {
-                    throw new Exception("Error setting the enableDicomReceiver site info property", exception);
-                }
-                dirtied = true;
             } else {
-                _log.warn(XDAT.getUserDetails().getUsername() + " tried to update an unknown property value: " + property);
+                try {
+	                XDAT.setSiteConfigurationProperty(property, map.get(property));
+	            } 
+                catch (ConfigServiceException exception) {
+	                throw new Exception(String.format("Error setting the '%s' site info property", property), exception);
+	            }
+                dirtied = true;
             }
         }
         if (dirtied || dirtiedNotifications) {            

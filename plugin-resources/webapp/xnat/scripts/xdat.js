@@ -532,8 +532,16 @@ function validateDate(sel){
     cal1.handleSelect = function(type,args,obj) {
         var dates = args[0];
 		var date = dates[0];
-		var year = date[0], month = date[1], day = date[2];
+		var year = date[0], month = date[1].toString(), day = date[2].toString();
 
+		if(month !=null && month!=undefined && month.length==1){
+			month="0"+month;
+		}
+
+		if(day !=null && day!=undefined && day.length==1){
+			day="0"+day;
+		}
+		
 		this.text_input.value = month + "/" + day + "/" + year;
 		this.text_input.calendar.hide();
 		try{this.text_input.onblur();}catch(e){};

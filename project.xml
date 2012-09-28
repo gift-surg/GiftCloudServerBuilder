@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-framework</artifactId>
-			<version>1.6</version>
+			<version>1.6.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-mail</artifactId>
-			<version>1.6</version>
+			<version>1.6.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-notify</artifactId>
-			<version>1.6</version>
+			<version>1.6.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -413,7 +413,7 @@
 		<dependency>
 			<groupId>PlexiViewer</groupId>
 			<artifactId>plexiviewer</artifactId>
-			<version>1.6</version>
+			<version>1.6.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

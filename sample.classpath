@@ -114,13 +114,13 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
@@ -131,15 +131,15 @@
   <classpathentry kind="lib" path="plugin-resources/repository/org.ostermiller/jars/utils-1.07.00.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/oro/jars/oro-2.0.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/parser/jars/parser-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_pipeline-1.6.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_pipeline-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_tools-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_tools-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/plexiviewer-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/plexiviewer-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/com.noelios.restlet-1.1.6.jar"/>
@@ -201,8 +201,8 @@
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6-source.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-*-source.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-*.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>

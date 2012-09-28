@@ -881,9 +881,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -924,9 +924,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -960,9 +960,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1001,9 +1001,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1044,9 +1044,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1087,9 +1087,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1135,9 +1135,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1161,7 +1161,7 @@
             <j:set var="beans.jar.name" value="beans"/>
         </j:if>
         <j:if test="${context.getVariable('beans.jar.version') ==null}">
-            <j:set var="beans.jar.version" value="1.6"/>
+            <j:set var="beans.jar.version" value="1.6.1"/>
         </j:if>
         <java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
@@ -1188,9 +1188,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1571,9 +1571,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>
@@ -1623,7 +1623,7 @@
                     <j:set var="beans.jar.name" value="beans"/>
                 </j:if>
                 <j:if test="${context.getVariable('beans.jar.version') ==null}">
-                    <j:set var="beans.jar.version" value="1.6"/>
+                    <j:set var="beans.jar.version" value="1.6.1"/>
                 </j:if>
                 <j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
                 <j:set var="beans.jar.exists" value="false"/>
@@ -1689,9 +1689,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.1.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.1.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.1.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.5.RELEASE.jar"/>

@@ -946,8 +946,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
 
         try {
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), create,read,delete,edit,activate,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent());
-
+        	if(group.getDisplayname().equals("Owners")){
+        		group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), create,read,delete,edit,activate,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent());
+        	}else{
+        		group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE,read,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent());
+        	}
+        	
             Iterator iter = ess.iterator();
             while (iter.hasNext())
             {

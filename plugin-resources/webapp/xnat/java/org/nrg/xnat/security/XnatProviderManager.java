@@ -158,7 +158,7 @@ public class XnatProviderManager extends ProviderManager {
                 continue;
             }
             if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
-                if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName().equals(provider.toString())){
+                if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName().equalsIgnoreCase(provider.toString())){
                     //This is a different LDAP provider than the one that was selected.
                     continue;
                 }

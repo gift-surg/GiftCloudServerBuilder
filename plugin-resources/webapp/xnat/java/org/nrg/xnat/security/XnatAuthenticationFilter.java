@@ -105,6 +105,15 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
             if(user_auths.size()==1){
                 auth=user_auths.get(0).getAuthMethod();
                 cached_methods.put(username.intern(),auth.intern());
+            // The list may contain localdb auth method even when password is empty and LDAP authentication is used (MRH)    
+            } else if(user_auths.size()>1){
+            	for (XdatUserAuth uauth : user_auths) {
+           			if (!uauth.getAuthMethod().equalsIgnoreCase("localdb")) {
+           				auth=uauth.getAuthMethod();
+            			cached_methods.put(username.intern(),auth.intern());
+            			break;
+           			}
+            	}
             } else if (AliasToken.isAliasFormat(username)) {
                 auth = "token";
                 cached_methods.put(username.intern(), auth.intern());

@@ -1243,7 +1243,7 @@
     <!-- ================================================================ -->
     <goal name="xdat:buildGenericExecutables" description="Generate SH and BAT files with classpath defined appropriately">
         <!-- BUILD BAT TEMPLATE -->
-        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;"/>
+        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes"/>
         <j:if test="${context.getVariable('xdat.url') != null}">
             <j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
         </j:if>
@@ -1252,8 +1252,9 @@
             <j:set var="xdat.url.text" value=" "/>
         </j:if>
         <j:forEach var="dep" items="${pom.dependencies}">
-            <j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
+            <j:set var="absolute.lib.path" value="${absolute.lib.path};${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
         </j:forEach>
+        <j:set var="absolute.lib.path" value="${absolute.lib.path}&quot;"/>
         <delete file="${basedir}/plugin-resources/misc/template2.bat"/>
         <copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
         <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
@@ -1308,10 +1309,11 @@
             <j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
         </j:if>
         <!-- BUILD BAT TEMPLATE -->
-        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;;&quot;${basedir}/deployments/${xdat.project.name}/target/classes&quot;"/>
+        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes;${basedir}/deployments/${xdat.project.name}/target/classes"/>
         <j:forEach var="dep" items="${pom.dependencies}">
-            <j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
+            <j:set var="absolute.lib.path" value="${absolute.lib.path};${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
         </j:forEach>
+        <j:set var="absolute.lib.path" value="${absolute.lib.path}&quot;"/>
         <delete file="${basedir}/plugin-resources/misc/template2.bat"/>
         <copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
         <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>

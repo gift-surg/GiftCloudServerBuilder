@@ -1511,6 +1511,7 @@
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/org" preservelastmodified="true">
             <fileset dir="${class.dir}/org"/>
         </copy>
+        <mkdir dir="${class.dir}/com"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/com" preservelastmodified="true">
             <fileset dir="${class.dir}/com"/>
         </copy>

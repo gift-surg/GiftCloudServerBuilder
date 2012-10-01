@@ -99,7 +99,7 @@ public class XNATRestletServlet extends ServerServlet {
      */
     private void updateAuthTable(){
         JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
-        List<XdatUserAuth> unmapped = template.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth WHERE auth_method='"+XdatUserAuthService.LOCALDB+"')", new RowMapper<XdatUserAuth>() {
+        List<XdatUserAuth> unmapped = template.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth)", new RowMapper<XdatUserAuth>() {
             @Override
             public XdatUserAuth mapRow(final ResultSet resultSet, final int i) throws SQLException {
                 final String login = resultSet.getString("login");

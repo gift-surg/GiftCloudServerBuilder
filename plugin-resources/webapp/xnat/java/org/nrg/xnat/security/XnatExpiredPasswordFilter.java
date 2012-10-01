@@ -68,19 +68,29 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     }
                     username = alias.getXdatUserId();
                 }
-                boolean isExpired=true;
+                boolean isExpired = false;
                 String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
                 if(interval.equals("-1")){
                 	chain.doFilter(request, response);
                 }
                 else{
-	                try{
-	                    List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
-	                        public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
-	                            return rs.getBoolean(1);
+	                try {
+	                    List<Integer> count = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT COUNT(*) FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] { username }, new RowMapper<Integer>() {
+	                        public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+	                            return rs.getInt(1);
 	                        }
 	                    });
-	                    isExpired = expired.get(0);
+                        // If the user has a corresponding localdb entries, we can check the expired password. Otherwise
+                        // the default remains true because we don't control non-localdb passwords and can't enforce
+                        // expiry values on those passwords.
+                        if (count.get(0) > 0) {
+                            List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated) > (Interval '" + interval + "')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
+                                public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                    return rs.getBoolean(1);
+                                }
+                            });
+                            isExpired = expired.get(0);
+                        }
 	                }
 	                catch(Exception e){
 	                    logger.error(e);

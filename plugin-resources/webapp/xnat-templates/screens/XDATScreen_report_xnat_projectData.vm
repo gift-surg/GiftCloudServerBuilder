@@ -9,7 +9,9 @@ IMG{
 }
 </style>
 #set($subject_count=$project.getSubjectCount())
-#set($protocol=$om.getStudyprotocol().get(0))
+#if($om.getStudyprotocol().size() >= 1)
+	#set($protocol=$om.getStudyprotocol().get(0))
+#end
 	<STYLE>
 	 TABLE.dataTable{
 	   cellpadding:0;

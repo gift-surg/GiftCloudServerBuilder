@@ -47,8 +47,9 @@
         <property name="maximumSessions" value="${security.sessions.concurrent_max}"/>
         <property name="exceptionIfMaximumExceeded" value="true"/>
     </bean>
+    <bean id="xnatLogoutSuccessHandler" class="org.nrg.xnat.security.XnatLogoutSuccessHandler" p:openXnatLogoutSuccessUrl="/" p:securedXnatLogoutSuccessUrl="/app/template/Login.vm"/>
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
-        <constructor-arg index="0" value="/app/template/Login.vm"/>
+        <constructor-arg index="0" ref="xnatLogoutSuccessHandler" type="org.springframework.security.web.authentication.logout.LogoutSuccessHandler"/>
         <constructor-arg index="1">
             <list>
                 <ref bean="xnatLogoutHandler"/>

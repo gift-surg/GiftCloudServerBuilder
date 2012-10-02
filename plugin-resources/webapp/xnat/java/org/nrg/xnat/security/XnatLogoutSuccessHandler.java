@@ -43,33 +43,35 @@ public class XnatLogoutSuccessHandler extends AbstractAuthenticationTargetUrlReq
 
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
-        setDefaultTargetUrl(isRequiredLogin() ? _securedXnatLogoutSuccessUrl : _openXnatLogoutSuccessUrl);
+        setDefaultTargetUrl(getRequiredLogoutSuccessUrl());
         super.handle(request, response, authentication);
     }
 
-    private boolean isRequiredLogin() {
-        // First check for null arcSpace, initialize if null.
-        if (_arcSpec == null) {
-            initializeArcSpecInstance();
-        }
-        // If it's STILL null, then arcSpec hasn't been initialized in the database, so just say false.
-        if (_arcSpec == null) {
-            return false;
+    private String getRequiredLogoutSuccessUrl() {
+        ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
+
+        // Check for null arcSpec.
+        if (arcSpec == null) {
+            _log.warn("Found null arc spec, returning secured URL for uninitiated system.");
+            return _securedXnatLogoutSuccessUrl;
         }
         // If it's not null, see what it's got to say.
-        return _arcSpec.getRequireLogin();
-    }
-
-    // TODO: This is probably going to cause trouble eventually since an existing instance doesn't reflect changes made
-    // after instantiation. But we don't want to grab an arc spec instance on every logout. Or do we? What's the load?
-    private synchronized void initializeArcSpecInstance() {
-        if (_arcSpec == null) {
-            _arcSpec = ArcSpecManager.GetInstance();
+        final Boolean requireLogin = arcSpec.getRequireLogin();
+        if (requireLogin == null) {
+            _log.warn("Found null require login setting, returning secured URL for uninitiated system.");
+            return _securedXnatLogoutSuccessUrl;
         }
+
+        final String returnUrl = requireLogin ? _securedXnatLogoutSuccessUrl : _openXnatLogoutSuccessUrl;
+
+        if (_log.isDebugEnabled()) {
+            _log.debug("Found require login set to: " + requireLogin + ", setting required logout success URL to: " + returnUrl);
+        }
+
+        return returnUrl;
     }
 
     private static final Log _log = LogFactory.getLog(XnatLogoutSuccessHandler.class);
-    private static ArcArchivespecification _arcSpec;
 
     private String _openXnatLogoutSuccessUrl;
     private String _securedXnatLogoutSuccessUrl;

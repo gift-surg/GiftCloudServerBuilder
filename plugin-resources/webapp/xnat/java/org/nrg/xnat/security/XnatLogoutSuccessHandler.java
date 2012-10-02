@@ -9,19 +9,17 @@
  */
 package org.nrg.xnat.security;
 
-import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nrg.xft.XFT;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import java.io.IOException;
 
 /**
  * Handles the navigation on logout by delegating to the {@link AbstractAuthenticationTargetUrlRequestHandler} base
@@ -48,20 +46,7 @@ public class XnatLogoutSuccessHandler extends AbstractAuthenticationTargetUrlReq
     }
 
     private String getRequiredLogoutSuccessUrl() {
-        ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
-
-        // Check for null arcSpec.
-        if (arcSpec == null) {
-            _log.warn("Found null arc spec, returning secured URL for uninitiated system.");
-            return _securedXnatLogoutSuccessUrl;
-        }
-        // If it's not null, see what it's got to say.
-        final Boolean requireLogin = arcSpec.getRequireLogin();
-        if (requireLogin == null) {
-            _log.warn("Found null require login setting, returning secured URL for uninitiated system.");
-            return _securedXnatLogoutSuccessUrl;
-        }
-
+        final boolean requireLogin = XFT.GetRequireLogin();
         final String returnUrl = requireLogin ? _securedXnatLogoutSuccessUrl : _openXnatLogoutSuccessUrl;
 
         if (_log.isDebugEnabled()) {

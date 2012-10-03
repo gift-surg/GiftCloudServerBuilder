@@ -49,6 +49,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 
 public class XDATChangePassword extends VelocitySecureAction {
@@ -104,7 +105,7 @@ public class XDATChangePassword extends VelocitySecureAction {
 					logger.error("Error Storing User", e);
 					return;
 				}
-				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(oldUser.getUsername(), "localdb", "");
+				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(oldUser.getUsername(), XdatUserAuthService.LOCALDB, "");
 				auth.setPasswordUpdated(new java.util.Date());
 				XDAT.getXdatUserAuthService().update(auth);
 				data.getSession().setAttribute("expired",new Boolean(false));
@@ -172,7 +173,7 @@ public class XDATChangePassword extends VelocitySecureAction {
 				}
                 TurbineUtils.setUser(data, user);
 		    	
-				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), "localdb", "");
+				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(user.getUsername(), XdatUserAuthService.LOCALDB, "");
 				auth.setPasswordUpdated(new java.util.Date());
 				XDAT.getXdatUserAuthService().update(auth);	
                 

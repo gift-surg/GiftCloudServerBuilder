@@ -7,6 +7,7 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationToken;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
@@ -108,14 +109,14 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
             // The list may contain localdb auth method even when password is empty and LDAP authentication is used (MRH)    
             } else if(user_auths.size()>1){
             	for (XdatUserAuth uauth : user_auths) {
-           			if (!uauth.getAuthMethod().equalsIgnoreCase("localdb")) {
+           			if (!uauth.getAuthMethod().equalsIgnoreCase(XdatUserAuthService.LOCALDB)) {
            				auth=uauth.getAuthMethod();
             			cached_methods.put(username.intern(),auth.intern());
             			break;
            			}
             	}
             } else if (AliasToken.isAliasFormat(username)) {
-                auth = "token";
+                auth = XdatUserAuthService.TOKEN;
                 cached_methods.put(username.intern(), auth.intern());
             }
         }

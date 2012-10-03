@@ -5,6 +5,7 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -144,7 +145,7 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
         if (token == null) {
             throw new UsernameNotFoundException("Unable to locate token with alias: " + username);
         }
-        return XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(token.getXdatUserId(), "localdb");
+        return XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(token.getXdatUserId(), XdatUserAuthService.LOCALDB);
     }
 
     private AliasTokenService getService() {

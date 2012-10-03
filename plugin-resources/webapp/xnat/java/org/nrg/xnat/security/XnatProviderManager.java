@@ -3,6 +3,7 @@ package org.nrg.xnat.security;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -269,6 +271,10 @@ public class XnatProviderManager extends ProviderManager {
             		Integer uid=XDATUser.getUserid(ua.getXdatUsername());
             		if(uid!=null){
 	    	            try {
+	    	            	if(ua.getFailedLoginAttempts().equals(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS)){
+	    	            		AdminUtils.sendAdminEmail(ua.getXdatUsername() +" account temporarily disabled.", "User "+ ua.getXdatUsername() +" has been temporarily disabled due to excessive failed login attempts. The user's account will be automatically enabled at "+ org.nrg.xft.utils.DateUtils.format(DateUtils.addSeconds(Calendar.getInstance().getTime(), AuthUtils.LOCKOUT_DURATION),"MMM-dd-yyyy HH:mm:ss")+".");
+	    					}
+	    	            	
 							XFTItem item = XFTItem.NewItem("xdat:user_login",null);
 							item.setProperty("xdat:user_login.user_xdat_user_id",uid);
 							item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());

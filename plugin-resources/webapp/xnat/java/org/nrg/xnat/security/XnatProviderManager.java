@@ -1,6 +1,17 @@
 package org.nrg.xnat.security;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -9,29 +20,26 @@ import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
-import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.AuthUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.SpringSecurityMessageSource;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
 
 public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
@@ -273,6 +281,10 @@ public class XnatProviderManager extends ProviderManager {
             		Integer uid=XDATUser.getUserid(ua.getXdatUsername());
             		if(uid!=null){
 	    	            try {
+	    	            	if(ua.getFailedLoginAttempts().equals(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS)){
+	    	            		AdminUtils.sendAdminEmail(ua.getXdatUsername() +" account temporarily disabled.", "User "+ ua.getXdatUsername() +" has been temporarily disabled due to excessive failed login attempts. The user's account will be automatically enabled at "+ org.nrg.xft.utils.DateUtils.format(DateUtils.addSeconds(Calendar.getInstance().getTime(), AuthUtils.LOCKOUT_DURATION),"MMM-dd-yyyy HH:mm:ss")+".");
+	    					}
+	    	            	
 							XFTItem item = XFTItem.NewItem("xdat:user_login",null);
 							item.setProperty("xdat:user_login.user_xdat_user_id",uid);
 							item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());

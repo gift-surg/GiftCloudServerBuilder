@@ -1,14 +1,5 @@
 package org.nrg.xnat.security;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,39 +15,34 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.AuthUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
-import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
+import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.ProviderNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.CredentialsContainer;
-import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.*;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
     private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
     private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
 
-
     private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
 
     private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
-    private AuthenticationManager parent;
     private Properties properties;
 
     private static final FailedAttemptsManager failures= new FailedAttemptsManager();
 
     private static String PASSWORD_EXPIRATION="-1";
     private Map<String, AuthenticationProviderConfigurator> _configurators;
+    private List<AuthenticationProvider> _standaloneProviders;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -120,12 +106,17 @@ public class XnatProviderManager extends ProviderManager {
                 providers.addAll(configurator.getAuthenticationProviders(id, name, providerMap.get(prov)));
             }
         }
+
+        if (_standaloneProviders != null) {
+            providers.addAll(_standaloneProviders);
+        }
+
         setProviders(providers);
     }
 
-    public void setProperties(List<String> filenames) {
+    public void setProperties(List<String> fileNames) {
         properties = new Properties();
-        for(String filename:filenames){
+        for(String filename:fileNames){
             String path = "../../../../../../"+filename;
             URL url = getClass().getResource(path);
             if (url != null) {
@@ -142,30 +133,53 @@ public class XnatProviderManager extends ProviderManager {
         _configurators = configurators;
     }
 
+    public void setStandaloneProviders(List<AuthenticationProvider> providers) {
+        _standaloneProviders = providers;
+    }
+
     @Override
     public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
         Class<? extends Authentication> toTest = authentication.getClass();
         AuthenticationException lastException = null;
         Authentication result = null;
+        List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>();
 
-        for (AuthenticationProvider provider : getProviders()) {
-            if (!provider.supports(toTest)) {
-                continue;
-            }
-            if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
-            	XnatAuthenticationProvider xnatAuthenticationProvider = (XnatAuthenticationProvider) provider;
-                if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderId().equalsIgnoreCase(xnatAuthenticationProvider.getID())){
-                    //This is a different LDAP provider than the one that was selected.
+        // HACK: This is a hack to work around open XNAT auth issue. If this is a bare un/pw auth token, use anon auth.
+        if (authentication.getClass() == UsernamePasswordAuthenticationToken.class && authentication.getName().equalsIgnoreCase("guest")) {
+            final AnonymousAuthenticationProvider anonymousAuthenticationProvider = XDAT.getContextService().getBean(AnonymousAuthenticationProvider.class);
+            providers.add(anonymousAuthenticationProvider);
+            authentication = new AnonymousAuthenticationToken(anonymousAuthenticationProvider.getKey(), authentication.getPrincipal(), Arrays.<GrantedAuthority>asList(new GrantedAuthorityImpl("ROLE_ANONYMOUS")));
+        } else {
+            for (AuthenticationProvider candidate : getProviders()) {
+                if (!candidate.supports(toTest)) {
                     continue;
                 }
+                if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
+                    if (!(candidate instanceof XnatLdapAuthenticationProvider)) {
+                        continue;
+                    }
+                    XnatLdapAuthenticationProvider ldapCandidate = (XnatLdapAuthenticationProvider) candidate;
+                    if (!((XnatLdapUsernamePasswordAuthenticationToken) authentication).getProviderId().equalsIgnoreCase(ldapCandidate.getID())){
+                        //This is a different LDAP provider than the one that was selected.
+                        continue;
+                    }
+                }
+                providers.add(candidate);
             }
+        }
 
+        assert providers.size() > 0: "No provider found for authentication of type " + authentication.getClass().getSimpleName();
+
+        for (AuthenticationProvider provider : providers) {
             logger.debug("Authentication attempt using " + provider.getClass().getName());
 
             try {
                 result = provider.authenticate(authentication);
-
                 if (result != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Found a provider that worked for " + authentication.getName() + ": " + provider.getClass().getSimpleName());
+                    }
+
                     copyDetails(authentication, result);
                     break;
                 }
@@ -192,18 +206,6 @@ public class XnatProviderManager extends ProviderManager {
             }
         }
 
-        if (result == null && parent != null) {
-            // Allow the parent to try.
-            try {
-                result = parent.authenticate(authentication);
-            } catch (ProviderNotFoundException e) {
-                // ignore as we will throw below if no other exception occurred prior to calling parent and the parent
-                // may throw ProviderNotFound even though a provider in the child already handled the request
-            } catch (AuthenticationException e) {
-                lastException = e;
-            }
-        }
-
         if (result != null) {
             boolean eraseCredentialsAfterAuthentication = false;
             if (eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
@@ -216,21 +218,19 @@ public class XnatProviderManager extends ProviderManager {
             failures.clearCount(authentication);
 
             return result;
-        }else{
+        } else {
             //increment failed login attempt
             failures.addFailedLoginAttempt(authentication);
             
         }
 
         // Parent was null, or didn't authenticate (or throw an exception).
-
         if (lastException == null) {
             lastException = new ProviderNotFoundException(messages.getMessage("ProviderManager.providerNotFound",
                     new Object[] {toTest.getName()}, "No AuthenticationProvider found for {0}"));
         }
 
         eventPublisher.publishAuthenticationFailure(lastException, authentication);
-
         throw lastException;
     }
 

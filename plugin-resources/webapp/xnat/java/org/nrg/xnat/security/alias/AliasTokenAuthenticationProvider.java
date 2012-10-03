@@ -74,7 +74,7 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
 
     @Override
     public String getName() {
-        return _name;
+        return StringUtils.isBlank(_name) ? getClass().toString() : _name;
     }
 
     public void setName(final String name) {

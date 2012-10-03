@@ -117,6 +117,7 @@
         <property name="requiredChannel" value="${security.channel}" />
     </bean>
 
+    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
     <bean id="databaseAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator" p:configuratorId="db"/>
     <bean id="ldapAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.LdapAuthenticationProviderConfigurator" p:configuratorId="ldap"/>
 
@@ -126,6 +127,11 @@
         		<value>WEB-INF/conf/services.properties</value>
         		<value>WEB-INF/conf/services-custom.properties</value>
         	</list>
+        </property>
+        <property name="standaloneProviders">
+            <util:list>
+                <ref bean="aliasTokenAuthProvider"/>
+            </util:list>
         </property>
         <property name="authenticationProviderConfigurators">
             <map key-type="java.lang.String" value-type="org.nrg.xnat.security.config.AuthenticationProviderConfigurator">
@@ -160,8 +166,6 @@
         <property name="changePasswordDestination" value="/app/action/XDATChangePassword"/>
     </bean>
 	
-    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
-
     <bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>
 
 </beans>

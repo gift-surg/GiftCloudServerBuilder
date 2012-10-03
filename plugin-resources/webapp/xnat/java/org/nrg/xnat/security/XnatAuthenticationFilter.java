@@ -1,15 +1,21 @@
 package org.nrg.xnat.security;
 
-import com.google.common.collect.Maps;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XdatUserAuth;
-import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationToken;
+import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
@@ -22,11 +28,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.codec.Base64;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
@@ -65,33 +67,75 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 
         //SHOULD we be throwing an exception if the username is null?
 
-        String auth_method=request.getParameter("login_method");
-        if(StringUtils.isEmpty(auth_method) && !StringUtils.isEmpty(username)){
+        String providerName=request.getParameter("login_method");
+        UsernamePasswordAuthenticationToken authRequest = null;
+        
+        if(StringUtils.isEmpty(providerName) && !StringUtils.isEmpty(username)){
             //try to guess the auth_method
-            auth_method=retrieveAuthMethod(username);
+        	String auth_method = retrieveAuthMethod(username);
             if(StringUtils.isEmpty(auth_method)){
                 throw new BadCredentialsException("Missing login_method parameter.");
             }
+            else {
+                authRequest=buildUPTokenForAuthMethod(auth_method,username,password);
+            }
         }
-
-        UsernamePasswordAuthenticationToken authRequest = buildUPToken(auth_method,username,password);
+        else {
+            authRequest=buildUPTokenForProviderName(providerName,username,password);
+        }
 
         setDetails(request, authRequest);
 
         return super.getAuthenticationManager().authenticate(authRequest);
     }
+    
+    public static UsernamePasswordAuthenticationToken buildUPTokenForAuthMethod(String authMethod, String username, String password){
+        XnatAuthenticationProvider chosenProvider = findAuthenticationProviderByAuthMethod(authMethod);
+        return buildUPToken(chosenProvider, username, password);
+    }
+    
+    public static UsernamePasswordAuthenticationToken buildUPTokenForProviderName(String providerName, String username, String password){
+        XnatAuthenticationProvider chosenProvider = findAuthenticationProviderByProviderName(providerName);
+        return buildUPToken(chosenProvider, username, password);
+    }
+    
+    private interface XnatAuthenticationProviderMatcher  {
+    	boolean matches(XnatAuthenticationProvider provider);
+    }
+    
+    private static XnatAuthenticationProvider findAuthenticationProviderByAuthMethod(final String authMethod){
+    	return findAuthenticationProvider(new XnatAuthenticationProviderMatcher() {
+			@Override
+			public boolean matches(XnatAuthenticationProvider provider) {
+				return provider.getAuthMethod().equalsIgnoreCase(authMethod);
+			}
+		});
+    }
 
-    public static UsernamePasswordAuthenticationToken buildUPToken(String id, String username, String password){
+    private static XnatAuthenticationProvider findAuthenticationProviderByProviderName(final String providerName){
+    	return findAuthenticationProvider(new XnatAuthenticationProviderMatcher() {
+			@Override
+			public boolean matches(XnatAuthenticationProvider provider) {
+				return provider.getName().equalsIgnoreCase(providerName);
+			}
+		});
+    }
+
+    private static XnatAuthenticationProvider findAuthenticationProvider(XnatAuthenticationProviderMatcher matcher){
         List<AuthenticationProvider> prov = XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class).getProviders();
-        AuthenticationProvider chosenProvider = null;
-        for(AuthenticationProvider p : prov){
-            if(p.toString().equalsIgnoreCase(id)){
-                chosenProvider = p;
+        for(AuthenticationProvider ap : prov){
+        	XnatAuthenticationProvider xap = (XnatAuthenticationProvider) ap;
+            if(matcher.matches(xap)){
+            	return xap;
             }
         }
-        if (chosenProvider instanceof XnatLdapAuthenticationProvider) {
-            return new XnatLdapUsernamePasswordAuthenticationToken(username, password, id);
-        } else  if (chosenProvider instanceof AliasTokenAuthenticationProvider) {
+        return null;
+    }
+    
+    private static UsernamePasswordAuthenticationToken buildUPToken(XnatAuthenticationProvider provider, String username, String password){
+        if (provider instanceof XnatLdapAuthenticationProvider) {
+            return new XnatLdapUsernamePasswordAuthenticationToken(username, password, provider.getID());
+        } else  if (provider instanceof AliasTokenAuthenticationProvider) {
             return new AliasTokenAuthenticationToken(username, Long.parseLong(password));
         } else {
             return new XnatDatabaseUsernamePasswordAuthenticationToken(username, password);
@@ -122,13 +166,4 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         }
         return auth;
     }
-
-    private AliasTokenService getService() {
-        if (_service == null) {
-            _service = XDAT.getContextService().getBean(AliasTokenService.class);
-        }
-        return _service;
-    }
-
-    private AliasTokenService _service;
 }

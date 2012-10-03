@@ -1,23 +1,26 @@
 package org.nrg.xnat.restlet.extensions;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nrg.xdat.XDAT;
 import org.nrg.xnat.restlet.XnatRestlet;
-import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.XnatAuthenticationFilter;
 import org.nrg.xnat.security.XnatProviderManager;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 @XnatRestlet(value = "/services/auth", secure = false)
 public class AuthenticationRestlet extends Resource {
@@ -79,7 +82,7 @@ public class AuthenticationRestlet extends Resource {
             }
         }
 
-        UsernamePasswordAuthenticationToken authRequest = XnatAuthenticationFilter.buildUPToken(_authMethod, _username, _password);
+        UsernamePasswordAuthenticationToken authRequest = XnatAuthenticationFilter.buildUPTokenForAuthMethod(_authMethod, _username, _password);
         XnatProviderManager manager = XDAT.getContextService().getBean(XnatProviderManager.class);
         Authentication authentication = manager.doAuthentication(authRequest);
         if (authentication.isAuthenticated()) {

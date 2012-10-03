@@ -9,7 +9,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -83,7 +82,7 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
             if (authenticationIsRequired(username)) {
                 UsernamePasswordAuthenticationToken authRequest = 
-                	XnatAuthenticationFilter.buildUPToken(XnatAuthenticationFilter.retrieveAuthMethod(username), username,password);
+                	XnatAuthenticationFilter.buildUPTokenForAuthMethod(XnatAuthenticationFilter.retrieveAuthMethod(username), username,password);
                 authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 
                 Authentication authResult;

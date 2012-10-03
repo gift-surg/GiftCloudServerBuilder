@@ -3,7 +3,6 @@ package org.nrg.xnat.security.alias;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
-import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
@@ -89,6 +88,11 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
 
     public void setId(final String id) {
         _id = id;
+    }
+
+    @Override
+    public String getAuthMethod() {
+        return XdatUserAuthService.TOKEN;
     }
 
     @Override

@@ -21,4 +21,6 @@ public interface XnatAuthenticationProvider extends AuthenticationProvider {
      * @return <b>true</b> if the provider should be visible to and usable by users.
      */
     abstract public boolean isVisible();
+    
+    abstract public String getAuthMethod();
 }

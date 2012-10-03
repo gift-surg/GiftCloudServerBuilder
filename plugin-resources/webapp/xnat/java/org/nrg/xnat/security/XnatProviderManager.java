@@ -1,5 +1,14 @@
 package org.nrg.xnat.security;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,35 +18,31 @@ import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
-import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.AuthUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
+import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.SpringSecurityMessageSource;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-
 public class XnatProviderManager extends ProviderManager {
     private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
     private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
-    private static final String SECURITY_PASSWORD_COMPLEXITY_PROPERTY = "security.password_complexity";
-    private static final String SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY = "security.password_complexity_message";
     private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
 
 
@@ -49,8 +54,6 @@ public class XnatProviderManager extends ProviderManager {
     private Properties properties;
 
     private static final FailedAttemptsManager failures= new FailedAttemptsManager();
-    private static String PASSWORD_COMPLEXITY="";
-    private static String PASSWORD_COMPLEXITY_MESSAGE="";
 
     private static String PASSWORD_EXPIRATION="-1";
     private Map<String, AuthenticationProviderConfigurator> _configurators;
@@ -68,14 +71,6 @@ public class XnatProviderManager extends ProviderManager {
         if(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY)!=null){
             AuthUtils.LOCKOUT_DURATION=Integer.valueOf(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY));
             if(AuthUtils.LOCKOUT_DURATION>0)AuthUtils.LOCKOUT_DURATION=-(AuthUtils.LOCKOUT_DURATION); //LOCKOUT must be negative for date comparison to work
-        }
-
-        if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY)!=null){
-            PASSWORD_COMPLEXITY=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_PROPERTY);
-        }
-
-        if(properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY)!=null){
-            PASSWORD_COMPLEXITY_MESSAGE=properties.getProperty(SECURITY_PASSWORD_COMPLEXITY_MESSAGE_PROPERTY);
         }
 
         if(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY)!=null){
@@ -158,7 +153,8 @@ public class XnatProviderManager extends ProviderManager {
                 continue;
             }
             if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
-                if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName().equalsIgnoreCase(provider.toString())){
+            	XnatAuthenticationProvider xnatAuthenticationProvider = (XnatAuthenticationProvider) provider;
+                if (!((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderId().equalsIgnoreCase(xnatAuthenticationProvider.getID())){
                     //This is a different LDAP provider than the one that was selected.
                     continue;
                 }
@@ -310,7 +306,7 @@ public class XnatProviderManager extends ProviderManager {
         final String method;
         final String provider;
         if(authentication instanceof XnatLdapUsernamePasswordAuthenticationToken){
-            provider=((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderName();
+            provider=((XnatLdapUsernamePasswordAuthenticationToken)authentication).getProviderId();
             method=XdatUserAuthService.LDAP;
         }else{
             provider=XnatDatabaseUserDetailsService.DB_PROVIDER;

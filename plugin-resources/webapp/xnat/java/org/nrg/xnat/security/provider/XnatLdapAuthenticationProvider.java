@@ -1,10 +1,11 @@
 package org.nrg.xnat.security.provider;
 
-import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.ldap.authentication.*;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider implements XnatAuthenticationProvider {
@@ -56,6 +57,11 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider i
 	public String getID(){
 		return ID;
 	}
+
+    @Override
+    public String getAuthMethod() {
+        return XdatUserAuthService.LDAP;
+    }
 
     /**
      * Indicates whether the provider should be visible to and selectable by users. <b>false</b> usually indicates an

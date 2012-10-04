@@ -117,7 +117,7 @@
         <property name="requiredChannel" value="${security.channel}" />
     </bean>
 
-    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
+    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider" p:name="token"/>
     <bean id="databaseAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator" p:configuratorId="db"/>
     <bean id="ldapAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.LdapAuthenticationProviderConfigurator" p:configuratorId="ldap"/>
 

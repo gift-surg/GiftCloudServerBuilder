@@ -53,11 +53,6 @@ public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenti
         plaintextDatabaseAuthProvider.setID(id);
         providers.add(plaintextDatabaseAuthProvider);
 
-        AliasTokenAuthenticationProvider aliasTokenAuthenticationProvider = new AliasTokenAuthenticationProvider();
-        aliasTokenAuthenticationProvider.setId("token");
-        aliasTokenAuthenticationProvider.setName("token");
-        providers.add(aliasTokenAuthenticationProvider);
-
         return providers;
     }
 

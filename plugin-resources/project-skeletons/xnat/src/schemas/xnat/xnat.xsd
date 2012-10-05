@@ -97,6 +97,7 @@
 						<xs:element name="alias" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="alias"/>
 									<xdat:field uniqueComposite="VALUE">
 										<xdat:relation uniqueComposite="VALUE"/>
 									</xdat:field>
@@ -237,6 +238,7 @@
 			<xs:element name="addID" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>
+						<xdat:element displayIdentifiers="name"/>
 						<xdat:field uniqueComposite="UNIQUE_NAME_VALUE">
 							<xdat:relation uniqueComposite="UNIQUE_SUBJECT_NAME"/>
 						</xdat:field>
@@ -1112,6 +1114,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="reconstructedImageData">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="ID"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="image_session_ID" type="xs:string">
 				<xs:annotation>
@@ -1209,6 +1216,9 @@
 	</xs:complexType>
 	<xs:complexType name="investigatorData">
 		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="lastname"/>
+			</xs:appinfo>
 			<xs:documentation>An indivudal who maintains authority over experimental data</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -1278,7 +1288,7 @@
 		<xs:annotation>
 			<xs:documentation>Generic volumetric region type</xs:documentation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true" matchByValues="true"/>
+				<xdat:element ignoreWarnings="true" matchByValues="true" displayIdentifiers="name"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence minOccurs="0">
@@ -1288,6 +1298,7 @@
 						<xs:element name="subregion" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element displayIdentifiers="name"/>
 									<xdat:field>
 										<xdat:relation uniqueComposite="true"/>
 									</xdat:field>
@@ -1342,7 +1353,7 @@
 	<xs:complexType name="validationData">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true"/>
+				<xdat:element ignoreWarnings="true"  displayIdentifiers="status"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
@@ -1378,6 +1389,7 @@
 						<xs:element name="tag" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element  displayIdentifiers="name"/>
 									<xdat:field uniqueComposite="catalog_tag">
 										<xdat:relation uniqueComposite="catalog_tag"/>
 									</xdat:field>
@@ -1700,6 +1712,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="abstractProtocol">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="ID"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:attribute name="ID" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:appinfo>
@@ -2024,6 +2041,7 @@ rectilinear, 7=Emission rectilinear)</xs:documentation>
 											<xs:element name="frame" minOccurs="0" maxOccurs="unbounded">
 												<xs:annotation>
 													<xs:appinfo>
+														<xdat:element displayIdentifiers="number"/>
 														<xdat:field>
 															<xdat:relation uniqueComposite="true"/>
 														</xdat:field>
@@ -2529,6 +2547,7 @@ rebinning, 6=FORE)</xs:documentation>
 					<xs:element name="addField" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:appinfo>
+								<xdat:element displayIdentifiers="name"/>
 								<xdat:field>
 									<xdat:relation uniqueComposite="ADD_FIELD_NAME"/>
 								</xdat:field>
@@ -3759,6 +3778,11 @@ rebinning, 6=FORE)</xs:documentation>
 	</xs:complexType>
 	<!-- Base Scan QC data. Should be applicable to all modalities -->
 	<xs:complexType name="qcScanData">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element displayIdentifiers="imageScan_ID"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="imageScan_ID" type="xs:string">
 				<xs:annotation>

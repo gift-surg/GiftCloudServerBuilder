@@ -137,7 +137,7 @@
 	<xs:complexType name="field_mapping">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true"/>
+				<xdat:element ignoreWarnings="true" displayIdentifiers="field"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:attribute name="field" type="xs:string" use="required"/>
@@ -163,7 +163,7 @@
 	<xs:complexType name="field_mapping_set">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true"/>
+				<xdat:element ignoreWarnings="true" displayIdentifiers="method"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
@@ -246,6 +246,7 @@
 	<xs:complexType name="primary_security_field">
 		<xs:annotation>
 			<xs:appinfo>
+				<xdat:element  displayIdentifiers="primary_security_field"/>
 				<xdat:field uniqueComposite="UNIQUE" size="255"/>
 			</xs:appinfo>
 		</xs:annotation>
@@ -296,6 +297,7 @@
 						<xs:element name="listing_action" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:appinfo>
+									<xdat:element  displayIdentifiers="element_action_name"/>
 									<xdat:field>
 										<xdat:relation relationType="single" uniqueComposite="true"/>
 									</xdat:field>
@@ -696,7 +698,7 @@
 	<xs:complexType name="criteria_set">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true"/>
+				<xdat:element ignoreWarnings="true" displayIdentifiers="method"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
@@ -731,7 +733,7 @@
 	<xs:complexType name="criteria">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true"/>
+				<xdat:element ignoreWarnings="true" displayIdentifiers="schema_field"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
@@ -743,6 +745,11 @@
 		<xs:attribute name="override_value_formatting" type="xs:boolean" use="optional" default="0"/>
 	</xs:complexType>
 	<xs:complexType name="search_field">
+		<xs:annotation>
+			<xs:appinfo>
+				<xdat:element ignoreWarnings="true" displayIdentifiers="field_ID"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="element_name" type="xs:string">
 				<xs:annotation>

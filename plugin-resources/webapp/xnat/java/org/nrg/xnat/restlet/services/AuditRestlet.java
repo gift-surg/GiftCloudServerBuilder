@@ -63,11 +63,19 @@ public class AuditRestlet extends SecureResource {
 		}
 	}
 	
+	private ItemI retrieve(final String xsiType, List<String> pks, List<String> ids) throws Exception{
+		CriteriaCollection cc = new CriteriaCollection("AND");
+		for(int i=0;i<pks.size();i++){
+			cc.addClause(xsiType+"/"+pks.get(i), ids.get(i));
+		}
+		
+		return ItemSearch.GetItems(xsiType, cc, this.user, false).getFirst();
+	}
+	
 	public ItemI retrieveItemByIds(final String xsiType, List<String> ids) throws ActionException{		
 		try {
 			GenericWrapperElement element=GenericWrapperElement.GetElement(xsiType);
 			
-			CriteriaCollection cc = new CriteriaCollection("AND");
 			
 			List<String> pks=element.getPkNames();
 			
@@ -75,22 +83,18 @@ public class AuditRestlet extends SecureResource {
 				throw new ClientException("Missing required primary key values");
 			}
 			
-			for(int i=0;i<element.getPkNames().size();i++){
-				cc.addClause(element.getXSIType()+"/"+pks.get(i), ids.get(i));
+			ItemI i=retrieve(xsiType, pks, ids);
+			
+			if(i==null){
+				i=retrieve(xsiType+"_history", pks, ids);
 			}
 			
-			ItemI i=ItemSearch.GetItems(xsiType, cc, this.user, false).getFirst();
-			
-			if(i !=null){
-				Authorizer.getInstance().authorizeRead(i.getItem(), user);
-			}
+			Authorizer.getInstance().authorizeRead(i.getItem(), user);
 			
 			return i;
 		} catch (ElementNotFoundException e) {
 			throw new ClientException(e);
-		}  catch (ActionException e) {
-			throw e;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
 		}
 	}

@@ -38,7 +38,23 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
         XDATUser user = (XDATUser)request.getSession().getAttribute("user");
         Object passwordExpired = request.getSession().getAttribute("expired");
         ArcArchivespecification _arcSpec = ArcSpecManager.GetInstance();
-        if(passwordExpired!=null && !(Boolean)passwordExpired){
+        if(request.getSession()!=null && request.getSession().getAttribute("forcePasswordChange")!=null && (Boolean)request.getSession().getAttribute("forcePasswordChange")){
+        	 String referer = request.getHeader("Referer");
+             String uri = request.getRequestURI();
+
+        	if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)){
+                //If you're already on the change password page, continue on without redirect.
+                chain.doFilter(req, res);
+            }
+            else if(referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination))){
+                //If you're on a request within the change password page, continue on without redirect.
+                chain.doFilter(req, res);
+            }
+            else{
+            	response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+            }
+        }
+        else if(passwordExpired!=null && !(Boolean)passwordExpired){
             //If the date of password change was checked earlier in the session and found to be not expired, do not send them to the expired password page.
             chain.doFilter(request, response);
         }

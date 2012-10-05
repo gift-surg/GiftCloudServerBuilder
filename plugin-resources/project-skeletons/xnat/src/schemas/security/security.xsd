@@ -137,7 +137,7 @@
 	<xs:complexType name="field_mapping">
 		<xs:annotation>
 			<xs:appinfo>
-				<xdat:element ignoreWarnings="true" displayIdentifiers="field"/>
+				<xdat:element ignoreWarnings="true" displayIdentifiers="field_value"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:attribute name="field" type="xs:string" use="required"/>

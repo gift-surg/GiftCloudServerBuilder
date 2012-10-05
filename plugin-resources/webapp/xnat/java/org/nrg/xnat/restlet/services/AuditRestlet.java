@@ -89,7 +89,9 @@ public class AuditRestlet extends SecureResource {
 				i=retrieve(xsiType+"_history", pks, ids);
 			}
 			
-			Authorizer.getInstance().authorizeRead(i.getItem(), user);
+			if(i!=null){
+				Authorizer.getInstance().authorizeRead(i.getItem(), user);
+			}
 			
 			return i;
 		} catch (ElementNotFoundException e) {

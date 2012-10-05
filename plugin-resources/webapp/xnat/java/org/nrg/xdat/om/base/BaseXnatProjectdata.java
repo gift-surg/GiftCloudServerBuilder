@@ -2062,6 +2062,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 				group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
 
+				wrk.setDataType(group.getXSIType());
+				wrk.setId(group.getXdatUsergroupId().toString());
+				wrk.setExternalid(this.getId());
+				
 				if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
 				    UserGroup ug= new UserGroup(group.getId());
 				    ug.init(group);
@@ -2069,6 +2073,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)this.getUser(), (XDATUser)this.getUser(),ci);
 				}
+				
 				PersistentWorkflowUtils.complete(wrk, ci);
 			} catch (Exception e) {
 				PersistentWorkflowUtils.fail(wrk, ci);

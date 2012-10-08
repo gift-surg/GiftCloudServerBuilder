@@ -181,9 +181,14 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 	private void addCS(Map<Number,WorkflowView> current,ChangeSummary cs){
 		boolean matched=false;
 		for(WorkflowView wv:current.values()){
-			if(cs.getNumber().equals(wv.getWorkflow().getWorkflowId())){
-				wv.cs.add(cs);
-				matched=true;
+			Number n1=cs.getNumber();
+			Number n2=(wv.getWorkflow()==null)?null:wv.getWorkflow().getWorkflowId();
+			
+			if(n1!=null && n2 !=null){
+				if(cs.getNumber().equals(wv.getWorkflow().getWorkflowId())){
+					wv.cs.add(cs);
+					matched=true;
+				}
 			}
 		}
 		

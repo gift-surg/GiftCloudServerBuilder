@@ -2058,7 +2058,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             
         	EventMetaI ci = wrk.buildEvent();
         	try {
-				SaveItemHelper.authorizedSave(group,this.getUser(), true, true,ci);
+        		XDATUser u=(XDATUser)this.getUser();
+				SaveItemHelper.authorizedSave(group,u, true, true,ci);
 
 				group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
 
@@ -2071,7 +2072,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				    ug.init(group);
 				    ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
 
-				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)this.getUser(), (XDATUser)this.getUser(),ci);
+				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, u, u,ci);
+				    
+				    //add a workflow entry for the user audit trail
+				    PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, u, u.getXSIType(),u.getXdatUserId().toString(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));
+				    PersistentWorkflowUtils.complete(wrk2, wrk2.buildEvent());
 				}
 				
 				PersistentWorkflowUtils.complete(wrk, ci);

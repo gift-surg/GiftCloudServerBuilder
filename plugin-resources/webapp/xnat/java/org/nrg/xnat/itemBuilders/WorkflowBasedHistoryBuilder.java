@@ -194,7 +194,7 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 		
 		if(!matched){
 			//query for workflow
-			if(cs.getDate()!=null && cs.getNumber().equals(cs.getDate().getTime())){
+			if(cs.getDate()!=null && !cs.getNumber().equals(cs.getDate().getTime())){
 				PersistentWorkflowI wrk=getWorkflowById(cs.getNumber());
 				if(wrk!=null){
 					WorkflowView wv=new WorkflowView();

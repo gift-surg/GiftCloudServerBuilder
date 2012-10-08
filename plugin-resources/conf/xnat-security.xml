@@ -34,8 +34,15 @@
         <constructor-arg value="/app/template/PostRegister.vm" />
     </bean> 
 
-    <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
-        p:loginFormUrl="/app/template/Login.vm"/>
+    <bean id="loginUrlAuthenticationEntryPoint" class="org.nrg.xnat.security.XnatAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/app/template/Login.vm"/>
+        <property name="noninteractivePaths">
+            <list value-type="java.lang.String">
+                <value>/data</value>
+                <value>/REST</value>
+            </list>
+        </property>
+    </bean>
 
     <bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
         <property name="sessionRegistry" ref="sessionRegistry" />
@@ -117,7 +124,7 @@
         <property name="requiredChannel" value="${security.channel}" />
     </bean>
 
-    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
+    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider" p:name="token"/>
     <bean id="databaseAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator" p:configuratorId="db"/>
     <bean id="ldapAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.LdapAuthenticationProviderConfigurator" p:configuratorId="ldap"/>
 

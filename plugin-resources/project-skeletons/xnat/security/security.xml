@@ -555,6 +555,7 @@
 			<xdat:lastname>boss</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
 			<xdat:primary_password encrypt="0">boss</xdat:primary_password>
+			<xdat:verified>1</xdat:verified>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
 					<xdat:allowed_actions>
@@ -578,6 +579,7 @@
 			<xdat:lastname>Admin</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
 			<xdat:primary_password encrypt="1">cfokl</xdat:primary_password>
+			<xdat:verified>1</xdat:verified>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
 					<xdat:allowed_actions>
@@ -611,6 +613,7 @@
 			<xdat:lastname>Guest</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
 			<xdat:primary_password encrypt="0">guest</xdat:primary_password>
+			<xdat:verified>1</xdat:verified>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
 					<xdat:allowed_actions>

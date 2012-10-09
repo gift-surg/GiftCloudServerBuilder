@@ -22,6 +22,16 @@
                     <tr>
                         <td colspan="2">If true, user accounts will be enabled automatically when the user registers. Users will be able to access the site and any 'public' projects immediately. If false, the site adminstrator will be required to manually enable user accounts. Either way the administrator receives an email notification when a user registers.</td>
                     </tr>
+					<tr>
+                        <td colspan="2" style="line-height:4px">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th align="left">User Email Verification?</th>
+                        <td><input type="checkbox" id="emailVerification" onchange="window.registrationManager.dirtyForm();" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">If true, users will receive an email after registering for an account and must click a link in the email to verify their email address before they are able to use their account. If false, no verification emails will be sent and users will not be required to verify their email before using their account. Either way the administrator receives an email notification when a user registers.</td>
+                    </tr>
                 </table>
             </div>
         </td>
@@ -51,5 +61,5 @@ function addRegistrationMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addRegistrationMgmtMonitor);
-var registrationControls = ['requireLogin', 'enableNewRegistrations'];
+var registrationControls = ['requireLogin', 'enableNewRegistrations', 'emailVerification'];
 </script>

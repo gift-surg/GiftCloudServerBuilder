@@ -609,7 +609,10 @@ public class XnatLdapAuthenticator extends Authenticator {
 					logger.info(u.getFirstname() + ": disabled");
 					throw new XDATUser.EnabledException(u.getLogin());
 				}
-
+				if (!u.isVerified()) {
+					logger.info(u.getFirstname() + ": unverified");
+					throw new XDATUser.VerifiedException(u.getLogin());
+				}
 				if ((!u.isActive()) && (!u.checkRole("Administrator"))) {
 					logger.info(u.getFirstname() + ": needs activation");
 					throw new XDATUser.ActivationException(u.getLogin());

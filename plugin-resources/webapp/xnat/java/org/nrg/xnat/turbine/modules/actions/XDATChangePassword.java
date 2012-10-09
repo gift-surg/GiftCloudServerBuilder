@@ -221,13 +221,13 @@ public class XDATChangePassword extends VelocitySecureAction {
        	context.put("user", user);
        	action.doPerform(data, context);
        }else if (!StringUtils.isEmpty(nextAction) && nextAction.indexOf("XDATLoginUser")==-1 && !nextAction.equals(org.apache.turbine.Turbine.getConfiguration().getString("action.login"))){
-      	 if (XFT.GetUserRegistration()){
+      	 if (XFT.GetUserRegistration() && !XDAT.verificationOn()){
           	 data.setAction(nextAction);
                VelocityAction action = (VelocityAction) ActionLoader.getInstance().getInstance(nextAction);
                action.doPerform(data, context);
       	 }
 		 }else if (!StringUtils.isEmpty(nextPage) && !nextPage.equals(org.apache.turbine.Turbine.getConfiguration().getString("template.home")) ) {
-			 if (XFT.GetUserRegistration()){
+			 if (XFT.GetUserRegistration() && !XDAT.verificationOn()){
           	 data.setScreenTemplate(nextPage);
 			 }
 		 }

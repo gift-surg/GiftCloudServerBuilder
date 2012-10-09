@@ -56,7 +56,7 @@ function fullConfigHandler() {
         var allControls = [ 
 		       	'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'
 		       	, 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
-		       	, 'requireLogin', 'enableNewRegistrations'
+		       	, 'requireLogin', 'enableNewRegistrations', 'emailVerification'
 		       	, 'error', 'issue', 'newUser', 'update'
 		       	, 'anonScript'
 		       	, 'dcmPort', 'dcmAe', 'enableDicomReceiver'

@@ -4,6 +4,7 @@ package org.nrg.xnat.restlet.resources;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatCtsessiondata;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -281,7 +282,7 @@ public class ScanResource  extends ItemResource {
 			}
 			try {
 			
-			if(!user.canDelete(session)){
+			if(!user.canDelete(session) || XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
 					return;
 			}

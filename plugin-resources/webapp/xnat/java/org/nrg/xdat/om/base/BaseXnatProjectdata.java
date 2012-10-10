@@ -18,6 +18,7 @@ import java.util.List;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.display.DisplayField;
 import org.nrg.xdat.model.ArcPathinfoI;
@@ -1852,6 +1853,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         if(!user.canDelete(this)){
         	throw new InvalidPermissionException("User cannot delete project:" + getId());
         }
+
+    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
+        	throw new InvalidPermissionException("User cannot delete project:" + getId());
+    	}
         
     	for (XnatSubjectdata subject : getParticipants_participant()){
             if (subject!=null){

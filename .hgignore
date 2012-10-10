@@ -38,6 +38,7 @@ syntax: regexp
 ^pipeline
 ^plugin-resources/cache
 ^projects
+^modules
 # ignore emacs backups
 ~$
 # ignore generated bean files, but not ones in the sub directories

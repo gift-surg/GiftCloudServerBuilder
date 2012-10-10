@@ -95,6 +95,9 @@
                 <value>/app/action/XDATRegisterUser*</value>
                 <value>/app/template/Error.vm*</value>
                 <value>/app/template/PostRegister.vm*</value>
+                <value>/app/template/VerifyEmail.vm*</value>
+                <value>/app/template/VerificationSent.vm*</value>
+                <value>/app/template/ResendVerification.vm*</value>
                 <value>/favicon.ico</value>
                 <value>/data/version</value>
                 <value>/REST/version</value>

@@ -549,30 +549,7 @@
 		</xdat:group>
 	</xdat:groups>
 	<xdat:users>
-		<xdat:user enabled="1">
-			<xdat:login>boss</xdat:login>
-			<xdat:firstname>boss</xdat:firstname>
-			<xdat:lastname>boss</xdat:lastname>
-			<xdat:email>test@test.com</xdat:email>
-			<xdat:primary_password encrypt="0">boss</xdat:primary_password>
-			<xdat:assigned_roles>
-				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
-					<xdat:allowed_actions>
-						<xdat:allowed_action action_name="admin" display_name="Administration" sequence="1"/>
-					</xdat:allowed_actions>
-				</xdat:assigned_role>
-				<xdat:assigned_role description="can authenticate user permissions" role_name="Bossman" sequence="1"/>
-				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
-					<xdat:allowed_actions>
-						<xdat:allowed_action action_name="browse" display_name="Browse" sequence="4"/>
-						<xdat:allowed_action action_name="super_search" display_name="Super Search" sequence="2"/>
-						<xdat:allowed_action action_name="search" display_name="Search" sequence="1"/>
-						<xdat:allowed_action action_name="MyXNAT" display_name="My XNAT" sequence="5"/>
-					</xdat:allowed_actions>
-				</xdat:assigned_role>
-			</xdat:assigned_roles>
-		</xdat:user>
-		<xdat:user enabled="1">
+		<xdat:user enabled="1" verified="true">
 			<xdat:login>admin</xdat:login>
 			<xdat:firstname>Admin</xdat:firstname>
 			<xdat:lastname>Admin</xdat:lastname>
@@ -605,7 +582,7 @@
 				<xdat:groupID>ALL_DATA_ADMIN</xdat:groupID>
 			</xdat:groups>
 		</xdat:user>
-		<xdat:user enabled="1">
+		<xdat:user enabled="1" verified="true">
 			<xdat:login>guest</xdat:login>
 			<xdat:firstname>XNAT</xdat:firstname>
 			<xdat:lastname>Guest</xdat:lastname>

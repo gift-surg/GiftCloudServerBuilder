@@ -22,6 +22,9 @@
 								<TD align=left>Email:</TD><TD>$!item.getProperty("email")</TD>
 							</tr>
 							<tr>
+								<TD align=left>Verified:</TD><TD>#if($item.getBooleanProperty("verified"))YES #else NO #end</TD>
+							</tr>
+							<tr>
 								<TD align=left>Enabled:</TD><TD>#if($item.getBooleanProperty("enabled"))YES #else NO #end</TD>
 							</tr>
 							<!--<tr>

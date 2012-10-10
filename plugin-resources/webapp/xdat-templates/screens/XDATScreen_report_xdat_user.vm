@@ -433,7 +433,6 @@ addGroup("$!groupid.getGroupid()");
 	  var select =document.createElement("SELECT");
 	  select.id="all_projects";
 	  select.options[select.options.length]=new Option("(SELECT)","");
-        var invalidIds = new Array();
 	  for(var atl=0;atl<alltags.length;atl++){
             var projectId = alltags[atl];
             if (!hasTag(projectId)) {
@@ -442,21 +441,9 @@ addGroup("$!groupid.getGroupid()");
                     var displayName = project.getDisplayName();
                     if (displayName) {
                         select.options[select.options.length] = new Option(displayName, projectId);
-                    } else {
-                        invalidIds.push(projectId);
-	    }
-                } else {
-                    invalidIds.push(projectId);
-	  }
+                    }
+                }
             }
-        }
-        if (invalidIds.length > 0) {
-            var message = '<p>XNAT detected configuration errors for the following project IDs:</p><ul>';
-            for (var index = 0; index < invalidIds.length; index++) {
-                message += "<li>" + invalidIds[index] + "</li>";
-            }
-            message += "</ul><p>Please make a note of these IDs and <a href='$link.setPage("ReportIssue.vm")'>report them to your system administrator</a>.</p>";
-            showMessage('page_body', 'Invalid Project IDs', message);
         }
         select.onchange = function () {
             populateLevels(this);

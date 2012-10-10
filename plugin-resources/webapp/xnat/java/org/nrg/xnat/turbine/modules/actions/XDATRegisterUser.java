@@ -11,6 +11,7 @@ import org.apache.turbine.modules.ActionLoader;
 import org.apache.turbine.modules.actions.VelocityAction;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
@@ -30,13 +31,13 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
          	context.put("user", user);
          	action.doPerform(data, context);
          }else if (!StringUtils.isEmpty(nextAction) && nextAction.indexOf("XDATLoginUser")==-1 && !nextAction.equals(org.apache.turbine.Turbine.getConfiguration().getString("action.login"))){
-        	 if (XFT.GetUserRegistration()){
+        	 if (XFT.GetUserRegistration() & !XDAT.verificationOn()){
             	 data.setAction(nextAction);
                  VelocityAction action = (VelocityAction) ActionLoader.getInstance().getInstance(nextAction);
                  action.doPerform(data, context);
         	 }
 		 }else if (!StringUtils.isEmpty(nextPage) && !nextPage.equals(org.apache.turbine.Turbine.getConfiguration().getString("template.home")) ) {
-			 if (XFT.GetUserRegistration()){
+			 if (XFT.GetUserRegistration() && !XDAT.verificationOn()){
             	 data.setScreenTemplate(nextPage);
 			 }
 		 }

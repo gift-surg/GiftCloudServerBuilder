@@ -549,13 +549,12 @@
 		</xdat:group>
 	</xdat:groups>
 	<xdat:users>
-		<xdat:user enabled="1">
+		<xdat:user enabled="1" verified="true">
 			<xdat:login>admin</xdat:login>
 			<xdat:firstname>Admin</xdat:firstname>
 			<xdat:lastname>Admin</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
 			<xdat:primary_password encrypt="1">cfokl</xdat:primary_password>
-			<xdat:verified>1</xdat:verified>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
 					<xdat:allowed_actions>
@@ -583,13 +582,12 @@
 				<xdat:groupID>ALL_DATA_ADMIN</xdat:groupID>
 			</xdat:groups>
 		</xdat:user>
-		<xdat:user enabled="1">
+		<xdat:user enabled="1" verified="true">
 			<xdat:login>guest</xdat:login>
 			<xdat:firstname>XNAT</xdat:firstname>
 			<xdat:lastname>Guest</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
 			<xdat:primary_password encrypt="0">guest</xdat:primary_password>
-			<xdat:verified>1</xdat:verified>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
 					<xdat:allowed_actions>

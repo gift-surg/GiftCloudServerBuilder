@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xdat.turbine.utils.AdminUtils;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.AuthUtils;
@@ -304,14 +306,17 @@ public class XnatProviderManager extends ProviderManager {
             		Integer uid=XDATUser.getUserid(ua.getXdatUsername());
             		if(uid!=null){
 	    	            try {
-	    	            	if(ua.getFailedLoginAttempts().equals(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS)){
-	    	            		AdminUtils.sendAdminEmail(ua.getXdatUsername() +" account temporarily disabled.", "User "+ ua.getXdatUsername() +" has been temporarily disabled due to excessive failed login attempts. The user's account will be automatically enabled at "+ org.nrg.xft.utils.DateUtils.format(DateUtils.addSeconds(Calendar.getInstance().getTime(), AuthUtils.LOCKOUT_DURATION),"MMM-dd-yyyy HH:mm:ss")+".");
-	    					}
 	    	            	
 							XFTItem item = XFTItem.NewItem("xdat:user_login",null);
 							item.setProperty("xdat:user_login.user_xdat_user_id",uid);
 							item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());
 							SaveItemHelper.authorizedSave(item,null,true,false,(EventMetaI)null);
+							
+	    	            	if(ua.getFailedLoginAttempts().equals(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS)){
+	    	            		String expiration=TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));
+	    	            		System.out.println("Locked out " + ua.getXdatUsername() + " user account until "+expiration);
+	    	            		AdminUtils.sendAdminEmail(ua.getXdatUsername() +" account temporarily disabled.", "User "+ ua.getXdatUsername() +" has been temporarily disabled due to excessive failed login attempts. The user's account will be automatically enabled at "+ expiration+".");
+	    					}
 						} catch (Exception e) {
 							//ignore
 						}

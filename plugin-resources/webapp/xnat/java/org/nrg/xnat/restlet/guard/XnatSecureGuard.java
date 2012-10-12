@@ -89,7 +89,7 @@ public class XnatSecureGuard extends Filter {
 		// But, if the user is already logged into the website and navigates
 		// to a REST GET, they shouldn't have to re-login , TO
 		final HttpServletRequest httpRequest = getHttpServletRequest(request);
-		final XDATUser sessionUser = getSessionUser();
+		final XDATUser sessionUser = getSessionUser(httpRequest);
 		if (sessionUser != null) {
 				//Check for a CsrfToken if necessary.
 				try {
@@ -122,8 +122,13 @@ public class XnatSecureGuard extends Filter {
 		return false;
 	}
 
-	private XDATUser getSessionUser() {
-		return XDAT.getUserDetails();
+	private XDATUser getSessionUser(HttpServletRequest httpRequest) {
+		if(XDAT.getUserDetails()!=null){
+			return XDAT.getUserDetails();
+		}
+		else{
+			return (XDATUser) httpRequest.getSession().getAttribute(SecureResource.USER_ATTRIBUTE);
+		}
 	}
 
 	private void attachUser(Request request, XDATUser user) {

@@ -106,13 +106,10 @@ public class XDATChangePassword extends VelocitySecureAction {
 				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(oldUser.getUsername(), XdatUserAuthService.LOCALDB, "");
 				auth.setPasswordUpdated(new java.util.Date());
 				XDAT.getXdatUserAuthService().update(auth);
-				//data.getSession().setAttribute("expired",new Boolean(false));
-				//data.getSession().setAttribute("forcePasswordChange",false);
-				//data.setMessage("Password changed.");
+				data.getSession().setAttribute("expired",new Boolean(false));
+				data.getSession().setAttribute("forcePasswordChange",false);
+				data.setMessage("Password changed.");
 				
-				//Due to bug that was causing users to not be logged in correctly after password change, we redirect users to the login page after changing their password.
-				data.setMessage("Password changed. Please log in.");
-                data.setScreenTemplate("Login.vm");
 			}
 			catch (Exception e)
 			{

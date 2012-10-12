@@ -12,7 +12,16 @@ import org.apache.log4j.Logger;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XdatUserAuth;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
+import org.nrg.xdat.turbine.utils.AccessLogger;
+import org.nrg.xft.XFTItem;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationToken;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
@@ -28,6 +37,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.codec.Base64;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
@@ -86,7 +96,43 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 
         setDetails(request, authRequest);
 
-        return super.getAuthenticationManager().authenticate(authRequest);
+        try {
+			return super.getAuthenticationManager().authenticate(authRequest);
+		} catch (AuthenticationException e) {
+			 if (!StringUtils.isBlank(username)) {
+				 Integer uid=retrieveUserId(username);
+				 if(uid!=null){
+					try {
+						XFTItem item = XFTItem.NewItem("xdat:user_login",null);
+						item.setProperty("xdat:user_login.user_xdat_user_id",uid);
+						item.setProperty("xdat:user_login.ip_address",AccessLogger.GetRequestIp(request));
+						item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());
+						SaveItemHelper.authorizedSave(item,null,true,false,(EventMetaI)null);
+					} catch (Exception e1) {
+						//ignore... throw the authentication exception
+					}
+				 }
+			 }
+			throw e;
+		}
+    }
+    
+    private static Map<String,Integer> checked=Maps.newHashMap();
+    public static Integer retrieveUserId(String username){
+    	synchronized(checked){
+	    	if(username==null){
+	    		return null;
+	    	}
+	    	
+	    	if(checked.containsKey(username)){
+	    		return checked.get(username);
+	    	}
+	    	
+	    	Integer i=XDATUser.getUserid(username);
+	    	checked.put(username, i);
+	    	
+	    	return i;
+    	}
     }
     
     public static UsernamePasswordAuthenticationToken buildUPTokenForAuthMethod(String authMethod, String username, String password){

@@ -324,6 +324,14 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 				return getChangeSummaries().get(0).getDate();
 			}
 		}
+		
+		public String getEscapedStatus(){
+			if(workflow!=null && workflow.getStatus()!=null){
+				return workflow.getStatus().replace(" ", "_");
+			}else{
+				return null;
+			}
+		}
 	
 		
 		public String getUsername() throws XFTInitException, ElementNotFoundException, FieldNotFoundException, ParseException{

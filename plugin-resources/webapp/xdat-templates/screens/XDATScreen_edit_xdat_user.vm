@@ -9,6 +9,7 @@ $page.setVlinkColor($ui.vlink)
 #parse("/screens/userValidationJS.vm")
 
 <form name="form1" method="post" action="$link.setAction("ModifyUser")" onsubmit="if(validateUsername(document.getElementById('xdat:user.login')) && validatePassword(document.getElementById('xdat:user.primary_password')))return true;else return false;">
+	<input type="hidden" name="xdat:user.xdat_user_id" value="$!item.getProperty("xdat_user_id")"/>
 <table border="0" width="95%">
 	<tr>
 		<TH align=center colspan=2>User Details</TH>

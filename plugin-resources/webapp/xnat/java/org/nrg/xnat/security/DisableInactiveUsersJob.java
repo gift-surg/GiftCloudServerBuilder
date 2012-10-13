@@ -54,7 +54,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 						try {
 							XDATUser u=new XDATUser((String)row[0]);
 							u.setEnabled("0");
-							XDATUser.ModifyUser(null, u, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "Disabled due to inactivity"));
+							XDATUser.ModifyUser(u, u, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "Disabled due to inactivity"));
 							
 							String expiration=TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));
     	            		System.out.println("Locked out " + u.getLogin() + " user account until "+expiration);

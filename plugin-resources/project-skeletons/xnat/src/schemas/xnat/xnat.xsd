@@ -3791,6 +3791,7 @@ rebinning, 6=FORE)</xs:documentation>
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="rater" type="xs:string" minOccurs="0"/>
 			<xs:element name="coverage" type="xs:string" minOccurs="0"/>
 			<xs:element name="motion" type="xs:string" minOccurs="0"/>
 			<xs:element name="otherImageArtifacts" minOccurs="0">

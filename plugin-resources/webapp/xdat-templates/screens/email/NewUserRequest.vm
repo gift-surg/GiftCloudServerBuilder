@@ -18,7 +18,7 @@
         </tbody>
     </table>
 
-    <p>This account has been created but will be disabled until you enable the account.</p>
+    <p>This account has been created but will be disabled until you enable the account. You must log in before enabling the account.</p>
 
     <p><a href="$server/app/action/DisplayItemAction/search_value/$username/search_element/xdat:user/search_field/xdat:user.login">Review and Enable</a></p>
 

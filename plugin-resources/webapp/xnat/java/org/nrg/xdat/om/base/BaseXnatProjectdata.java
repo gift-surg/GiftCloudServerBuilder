@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
@@ -72,10 +73,7 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
-import org.nrg.xft.event.persist.PersistentWorkflowUtils.ActionNameAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
-import org.nrg.xft.event.persist.PersistentWorkflowUtils.IDAbsent;
-import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
@@ -876,17 +874,33 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     }
 
     public String addGroupMember(String group_id, XDATUser newUser,XDATUser currentUser, EventMetaI ci) throws Exception{
-		final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
+    	final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
     	if(!currentUser.canDelete(this)){
     		throw new InvalidPermissionException("User cannot modify project " + this.getId());
     	}
+    	boolean isOwner=false;
+    	for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
+			if (entry.getValue().getTag().equals(this.getId())) {
+				for (XdatUserGroupid map : newUser.getGroups_groupid()) {
+					if (map.getGroupid().equals(entry.getValue().getId()) && !map.getGroupid().equals(group_id)) {
+						if(!map.getGroupid().endsWith("_owner")){
+							SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
+						}else{
+							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
+						}
+					}
+				}
+			}
+		}
 		
-		XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
-    	if(t.size()==0){
-            final XdatUserGroupid map = new XdatUserGroupid((UserI)currentUser);
-            map.setProperty(map.getXSIType() +".groups_groupid_xdat_user_xdat_user_id", newUser.getXdatUserId());
-            map.setGroupid(group_id);
-            SaveItemHelper.authorizedSave(map,currentUser, false, false,ci);
+    	if(!isOwner){
+			XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
+	    	if(t.size()==0){
+	            final XdatUserGroupid map = new XdatUserGroupid((UserI)currentUser);
+	            map.setProperty(map.getXSIType() +".groups_groupid_xdat_user_xdat_user_id", newUser.getXdatUserId());
+	            map.setGroupid(group_id);
+	            SaveItemHelper.authorizedSave(map,currentUser, false, false,ci);
+	    	}
     	}
         return group_id;
     }
@@ -901,7 +915,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	if(t.size()>0){
     		final String query = "DELETE FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
 
-    		PersistentWorkflowI wrk= PersistentWorkflowUtils.buildOpenWorkflow(currentUser, this.SCHEMA_ELEMENT_NAME, this.getId(), this.getId(), ci);
+    		PersistentWorkflowI wrk= PersistentWorkflowUtils.buildOpenWorkflow(currentUser, newUser.getXSIType(), newUser.getXdatUserId().toString(), this.getId(), ci);
     		try {
 				PoolDBUtils.ExecuteNonSelectQuery(query,getDBName(), currentUser.getLogin());
 
@@ -912,7 +926,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				throw e;
 			}
     	}
-    	
     }
     
     public boolean initGroup(final String id, final String displayName, Boolean create,Boolean read,Boolean delete,Boolean edit,Boolean activate,boolean activateChanges,List<ElementSecurity> ess) throws Exception{

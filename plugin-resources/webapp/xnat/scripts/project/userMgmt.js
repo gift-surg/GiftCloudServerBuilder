@@ -227,7 +227,7 @@ function UserManager(user_mgmt_div_id, pID){
 					if(send){
 						params+="&sendmail=true";
 					}
-					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails+ "?XNAT_CSRF=" + csrfToken,that.insertCallback,params,that);
+					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails+ "?" + params,that.insertCallback,params,that);
 				};
 			};
 

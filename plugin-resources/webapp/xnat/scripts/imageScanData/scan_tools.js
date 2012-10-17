@@ -841,7 +841,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				td.appendChild(dA);
 				td.appendChild(document.createTextNode(" "));
 			}
-			if(this.scanSet.options.allowDataDeletion==undefined || this.scanSet.options.allowDataDeletion=="true"){
+			if((XNAT.app.preventDataDeletion==undefined || !XNAT.app.preventDataDeletion) && (this.scanSet.options.allowDataDeletion==undefined || this.scanSet.options.allowDataDeletion=="true")){
 				var dA=document.createElement("a");
 				var dIMG=document.createElement("img");
 				dIMG.src=serverRoot+"/images/delete.gif";

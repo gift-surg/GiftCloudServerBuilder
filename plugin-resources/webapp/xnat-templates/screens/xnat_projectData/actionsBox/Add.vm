@@ -2,7 +2,7 @@
 
 <!-- xnat_projectData/actionsBox/Add -->
 
-#if($data.getSession().getAttribute("user").canEdit($project))
+#if($data.getSession().getAttribute("user").canEdit("xnat:subjectData/project",$project.getId()))
 				           <li class="yuimenuitem"> 
             <a class="yuimenuitemlabel" href="#insertbox">Add</a>
             <DIV ID="insertbox" class="yuimenu">

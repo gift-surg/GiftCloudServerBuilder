@@ -2091,11 +2091,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				wrk.setExternalid(this.getId());
 				
 				if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
+				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, u, u,ci);
+				    
 				    UserGroup ug= new UserGroup(group.getId());
 				    ug.init(group);
 				    ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
-
-				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, u, u,ci);
 				    
 				    //add a workflow entry for the user audit trail
 				    PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, u, u.getXSIType(),u.getXdatUserId().toString(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));

@@ -882,7 +882,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
 			if (entry.getValue().getTag()!=null && entry.getValue().getTag().equals(this.getId())) {
 				if(entry.getValue().getId().equals(group_id)){
-					throw new ClientException(Status.CLIENT_ERROR_CONFLICT, "User role already exists",new Exception());
+					return group_id;
 				}
 				
 				//find mapping object to delete

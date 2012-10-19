@@ -72,7 +72,7 @@ public class ManageProjectAccess extends SecureAction {
                         XDATUser newUOM = new XDATUser(newU);
                         final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUOM.getLogin() + ")"));
         				
-                        project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP, newUOM, TurbineUtils.getUser(data),c);
+                        project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP, newUOM, TurbineUtils.getUser(data),c,true);
     		            PersistentWorkflowUtils.save(wrk2,c);
     		        }
                     if (sendmail){
@@ -113,7 +113,7 @@ public class ManageProjectAccess extends SecureAction {
                     for (XdatUser newU : al){
                         XDATUser newUOM = new XDATUser(newU);
 						final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUOM.getLogin() + ")"));
-                        project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.MEMBER_GROUP, newUOM, TurbineUtils.getUser(data),c);
+                        project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.MEMBER_GROUP, newUOM, TurbineUtils.getUser(data),c,true);
     		            PersistentWorkflowUtils.complete(wrk2,c);
                     }
                     if (sendmail){
@@ -154,7 +154,7 @@ public class ManageProjectAccess extends SecureAction {
                     for (XdatUser newU : al){
                         XDATUser newUOM = new XDATUser(newU);
                         final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUOM.getLogin() + ")"));
-                        project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.COLLABORATOR_GROUP, newUOM, TurbineUtils.getUser(data),c);
+                        project.addGroupMember(project.getId() + "_" + BaseXnatProjectdata.COLLABORATOR_GROUP, newUOM, TurbineUtils.getUser(data),c,true);
                         PersistentWorkflowUtils.complete(wrk2, c);
                     }
                     if (sendmail){

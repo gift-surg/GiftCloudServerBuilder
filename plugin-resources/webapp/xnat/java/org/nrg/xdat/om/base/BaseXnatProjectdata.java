@@ -873,30 +873,32 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         }
     }
 
-    public String addGroupMember(String group_id, XDATUser newUser,XDATUser currentUser, EventMetaI ci) throws Exception{
+    public String addGroupMember(String group_id, XDATUser newUser,XDATUser currentUser, EventMetaI ci, boolean checkExisting) throws Exception{
     	final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
     	if(!currentUser.canDelete(this)){
     		throw new InvalidPermissionException("User cannot modify project " + this.getId());
     	}
     	boolean isOwner=false;
-    	for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
-			if (entry.getValue().getTag()!=null && entry.getValue().getTag().equals(this.getId())) {
-				if(entry.getValue().getId().equals(group_id)){
-					return group_id;
-				}
-				
-				//find mapping object to delete
-				for (XdatUserGroupid map : newUser.getGroups_groupid()) {
-					if (map.getGroupid().equals(entry.getValue().getId())) {
-						if(!map.getGroupid().endsWith("_owner")){
-							SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
-						}else{
-							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
+    	if(checkExisting){
+			for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
+				if (entry.getValue().getTag()!=null && entry.getValue().getTag().equals(this.getId())) {
+					if(entry.getValue().getId().equals(group_id)){
+						return group_id;
+					}
+					
+					//find mapping object to delete
+					for (XdatUserGroupid map : newUser.getGroups_groupid()) {
+						if (map.getGroupid().equals(entry.getValue().getId())) {
+							if(!map.getGroupid().endsWith("_owner")){
+								SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
+							}else{
+								throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
+							}
 						}
 					}
 				}
 			}
-		}
+    	}
 		
     	if(!isOwner){
 			XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
@@ -1476,7 +1478,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 ug.init(group);
                 ((XDATUser)user).getGroups().put(group.getId(),ug);
 
-                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user,c);
+                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user,c,true);
             }
         }
 
@@ -2091,11 +2093,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				wrk.setExternalid(this.getId());
 				
 				if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
-				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, u, u,ci);
-				    
 				    UserGroup ug= new UserGroup(group.getId());
 				    ug.init(group);
 				    ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
+				    
+				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, u, u,ci,false);
 				    
 				    //add a workflow entry for the user audit trail
 				    PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, u, u.getXSIType(),u.getXdatUserId().toString(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));

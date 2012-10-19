@@ -167,7 +167,7 @@ public class ProcessAccessRequest extends SecureAction {
 				    }
 				}
 				
-				project.addGroupMember(project.getId() + "_" + access_level.toLowerCase(), otherU, user,c);
+				project.addGroupMember(project.getId() + "_" + access_level.toLowerCase(), otherU, user,c,true);
 				
 				ProjectAccessRequest par = ProjectAccessRequest.RequestPARByUserProject(otherU.getXdatUserId(),project.getId(), user);
 				par.setApproved(true);

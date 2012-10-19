@@ -564,7 +564,7 @@ public class ProjectAccessRequest {
 				if (!level.startsWith(project.getId())) {
 					level = project.getId() + "_" + level;
 				}
-				user.addGroup(project.addGroupMember(level, user, user,c));
+				user.addGroup(project.addGroupMember(level, user, user,c,true));
 
 				WorkflowUtils.complete(wrk, c);
 				

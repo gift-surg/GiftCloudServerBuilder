@@ -236,7 +236,7 @@ public class ProjectMemberResource extends SecureResource {
 					    	EventMetaI c=wrk.buildEvent();
 							
 								try {
-									proj.addGroupMember(group.getId(), newUser, user,WorkflowUtils.setStep(wrk, "Add " + newUser.getLogin()));
+									proj.addGroupMember(group.getId(), newUser, user,WorkflowUtils.setStep(wrk, "Add " + newUser.getLogin()),true);
 									WorkflowUtils.complete(wrk, c);
 									
 									if (sendmail){

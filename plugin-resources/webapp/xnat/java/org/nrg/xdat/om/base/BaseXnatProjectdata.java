@@ -880,9 +880,14 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	}
     	boolean isOwner=false;
     	for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
-			if (entry.getValue().getTag().equals(this.getId())) {
+			if (entry.getValue().getTag()!=null && entry.getValue().getTag().equals(this.getId())) {
+				if(entry.getValue().getId().equals(group_id)){
+					throw new ClientException(Status.CLIENT_ERROR_CONFLICT, "User role already exists",new Exception());
+				}
+				
+				//find mapping object to delete
 				for (XdatUserGroupid map : newUser.getGroups_groupid()) {
-					if (map.getGroupid().equals(entry.getValue().getId()) && !map.getGroupid().equals(group_id)) {
+					if (map.getGroupid().equals(entry.getValue().getId())) {
 						if(!map.getGroupid().endsWith("_owner")){
 							SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
 						}else{

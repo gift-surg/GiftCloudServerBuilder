@@ -792,3 +792,17 @@ function toggle_ul(n){
 		a.style.backgroundPosition="left top";
 	}
 }
+
+function getValueById(id){
+	var box=document.getElementById(id);
+	if(box==undefined){
+		return {"value":""};
+	}
+	if(box.value==undefined){
+		if(box.selectedIndex!=undefined){
+			return {"value":box.options[box.selectedIndex].value,obj:box};
+		}
+	}else{
+		return {"value":box.value,obj:box};
+	}
+}

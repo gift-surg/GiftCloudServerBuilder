@@ -101,6 +101,8 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(null);
                     onUnsuccessfulAuthentication(request, response, failed);
+                    
+                	XnatAuthenticationFilter.logFailedAttempt(username, request);//originally I put this in the onUnsuceessfulAuthentication method, but that would force me to re-parse the username
 
                     if (ignoreFailure) {
                         chain.doFilter(request, response);
@@ -125,7 +127,7 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
         chain.doFilter(request, response);
 	}
-	
+    
     /**
      * The session handling strategy which will be invoked immediately after an authentication request is
      * successfully processed by the <tt>AuthenticationManager</tt>. Used, for example, to handle changing of the

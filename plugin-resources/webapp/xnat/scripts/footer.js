@@ -146,6 +146,30 @@ SelectValidator.prototype = {  validate: function () {
 }
 };
 
+function RadioButtonValidator(name,box){
+	this.name=name;
+	
+	this.box=box;
+}
+
+RadioButtonValidator.prototype = {  validate: function () {
+	var passedBoxes=document.getElementsByName(this.name);
+    var valid=false;
+    for(var stoppedBoxI=0; stoppedBoxI<passedBoxes.length;stoppedBoxI++){
+  	  var stoppedBox=passedBoxes[stoppedBoxI];
+  	  if(stoppedBox.checked){
+  		valid=true;
+  	  }
+    }
+    
+    if(!valid){
+    	stoppedBox.focus();
+        return false;
+    }else{
+        return true;
+    }
+}}
+
 YAHOO.util.Event.onDOMReady( function()
 {
     var myforms = document.getElementsByTagName("form");
@@ -179,7 +203,8 @@ YAHOO.util.Event.onDOMReady( function()
 		                	try{
 		                		validators[elementId]._ok=true;
 		                		for (var iVc = 0; iVc < validators[elementId].length; iVc++) {
-		    	                    if (!validators[elementId][iVc].validate()) {
+		                			var tempValidator=validators[elementId][iVc];
+		    	                    if (!tempValidator.validate()) {
 		    	                        validators[elementId]._ok = false;
 		    	                        validators._ok = false;
 		    	                        this.focus = validators[elementId][iVc].box;

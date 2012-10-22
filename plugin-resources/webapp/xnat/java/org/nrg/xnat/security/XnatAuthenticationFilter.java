@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpRequest;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
@@ -99,22 +100,27 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         try {
 			return super.getAuthenticationManager().authenticate(authRequest);
 		} catch (AuthenticationException e) {
-			 if (!StringUtils.isBlank(username)) {
-				 Integer uid=retrieveUserId(username);
-				 if(uid!=null){
-					try {
-						XFTItem item = XFTItem.NewItem("xdat:user_login",null);
-						item.setProperty("xdat:user_login.user_xdat_user_id",uid);
-						item.setProperty("xdat:user_login.ip_address",AccessLogger.GetRequestIp(request));
-						item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());
-						SaveItemHelper.authorizedSave(item,null,true,false,(EventMetaI)null);
-					} catch (Exception e1) {
-						//ignore... throw the authentication exception
-					}
-				 }
-			 }
+			 logFailedAttempt(username, request);
 			throw e;
 		}
+    }
+    
+    public static void logFailedAttempt(String username, HttpServletRequest req){
+    	if (!StringUtils.isBlank(username)) {
+	    	 Integer uid=retrieveUserId(username);
+			 if(uid!=null){
+				try {
+					XFTItem item = XFTItem.NewItem("xdat:user_login",null);
+					item.setProperty("xdat:user_login.user_xdat_user_id",uid);
+					item.setProperty("xdat:user_login.ip_address",AccessLogger.GetRequestIp(req));
+					item.setProperty("xdat:user_login.login_date",java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime());
+					SaveItemHelper.authorizedSave(item,null,true,false,(EventMetaI)null);
+				} catch (Exception e1) {
+					logger.error("",e1);
+					//ignore... throw the authentication exception
+				}
+			 }
+    	}
     }
     
     private static Map<String,Integer> checked=Maps.newHashMap();

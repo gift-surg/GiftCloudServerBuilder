@@ -569,7 +569,7 @@
         <!--
             Now copy everything in the modules extraction directory into the projects/prjname folder.
         -->
-        <copy todir="projects/${xdat.project.name}" preservelastmodified="true">
+        <copy todir="projects/${xdat.project.name}" preservelastmodified="true" overwrite="true">
             <fileset dir="${modules.extraction.dir}"/>
         </copy>
     </goal>

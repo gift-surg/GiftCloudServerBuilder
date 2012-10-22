@@ -94,15 +94,18 @@ public class ScanResource  extends ItemResource {
 		XFTItem item = null;			
 
 		try {
-			String dataType=null;
-			if(this.session instanceof XnatMrsessiondata){
-				dataType="xnat:mrScanData";
-			}else if(this.session instanceof XnatPetsessiondata){
-				dataType="xnat:petScanData";
-			}else if(this.session instanceof XnatCtsessiondata){
-				dataType="xnat:ctScanData";
-			}
+			String dataType=this.session.getXSIType();
+//			
+//			String dataType=null;
+//			if(this.session instanceof XnatMrsessiondata){
+//				dataType="xnat:mrScanData";
+//			}else if(this.session instanceof XnatPetsessiondata){
+//				dataType="xnat:petScanData";
+//			}else if(this.session instanceof XnatCtsessiondata){
+//				dataType="xnat:ctScanData";
+//			}
 			item=this.loadItem(dataType,true);
+			item=this.loadItem(dataType, true);
 
 			if(item==null){
 				String xsiType=this.getQueryVariable("xsiType");
@@ -240,7 +243,7 @@ public class ScanResource  extends ItemResource {
 				}
 
 			}else{
-				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only Scan documents can be PUT to this address.");
+				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only Scan documents can be PUT to this address. Expected: xnat:imageScanData  Received: " + dataType );
 			}
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);

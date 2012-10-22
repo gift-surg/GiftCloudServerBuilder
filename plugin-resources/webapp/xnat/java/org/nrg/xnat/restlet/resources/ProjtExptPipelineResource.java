@@ -202,7 +202,8 @@ public class ProjtExptPipelineResource extends SecureResource {
 						}
 					}catch(Exception e) {
 						e.printStackTrace();
-						getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+						logger.error("Pipeline step " + step + " for project " + proj.getId() + " doesnt exist");
+						//getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 					}
 				}
 			} catch (Exception e) {

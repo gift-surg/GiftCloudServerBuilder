@@ -3,8 +3,8 @@ package org.nrg.xnat.security.alias;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
-import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.services.AliasTokenService;
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,7 +74,7 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
 
     @Override
     public String getName() {
-        return _name;
+        return StringUtils.isBlank(_name) ? getClass().toString() : _name;
     }
 
     public void setName(final String name) {
@@ -88,6 +88,11 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
 
     public void setId(final String id) {
         _id = id;
+    }
+
+    @Override
+    public String getAuthMethod() {
+        return XdatUserAuthService.TOKEN;
     }
 
     @Override
@@ -144,7 +149,12 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
         if (token == null) {
             throw new UsernameNotFoundException("Unable to locate token with alias: " + username);
         }
-        return XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(token.getXdatUserId(), "localdb");
+        /*
+         * We don't really know which provider the user was authenticated under when this token was created.
+         * The hack is to return the user details for the most recent successful login of the user, as that is likely the provider that was used.
+         * Not perfect, but better than just hardcoding to localdb provider (cause then it won't work for a token created by an LDAP-authenticated user).
+         */
+        return XDAT.getXdatUserAuthService().getUserDetailsByUsernameAndMostRecentSuccessfulLogin(token.getXdatUserId());
     }
 
     private AliasTokenService getService() {

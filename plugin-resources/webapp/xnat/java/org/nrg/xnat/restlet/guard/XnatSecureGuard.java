@@ -123,8 +123,12 @@ public class XnatSecureGuard extends Filter {
 	}
 
 	private XDATUser getSessionUser(HttpServletRequest httpRequest) {
-		return (XDATUser) httpRequest.getSession().getAttribute(
-				SecureResource.USER_ATTRIBUTE);
+		if(XDAT.getUserDetails()!=null){
+			return XDAT.getUserDetails();
+		}
+		else{
+			return (XDATUser) httpRequest.getSession().getAttribute(SecureResource.USER_ATTRIBUTE);
+		}
 	}
 
 	private void attachUser(Request request, XDATUser user) {

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.nrg.action.ClientException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractdemographicdataI;
 import org.nrg.xdat.model.XnatAbstractresourceI;
@@ -1359,6 +1360,10 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	if(msg!=null){
     		logger.error(msg);
     		return msg;
+    	}
+    	
+    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
+    		return "User account cannot delete experiments";
     	}
     	
     	if(!sub.getProject().equals(proj.getId())){

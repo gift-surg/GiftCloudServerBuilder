@@ -3,6 +3,7 @@ package org.nrg.xnat.restlet.resources;
 
 import java.sql.SQLException;
 
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
@@ -240,10 +241,10 @@ public class ReconResource extends ItemResource {
 			}
 			try {
 			
-			if(!user.canDelete(session)){
+			if(!user.canDelete(session) || XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
-					return;
-				}
+				return;
+			}
 
 				final PersistentWorkflowI workflow=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, session.getXSIType(), session.getId(), (proj==null)?session.getProject():proj.getId(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getDeleteAction(recon.getXSIType())));
 				final EventMetaI ci=workflow.buildEvent();

@@ -1,4 +1,5 @@
-<script type="text/javascript" src="$content.getURI("scripts/settingsManager.js")"></script>						         
+<script type="text/javascript" src="$content.getURI("scripts/settingsManager.js")"></script>	
+#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-quarantine","true")))
  <table id="quarantine_table">
   <tr>
    <td colspan="2" class="highlighted" id="quarantine_container">
@@ -18,9 +19,9 @@
 </table>
 <script>
 window.quarantine=(new RadioSettingsManager(document.getElementById('quarantine_container'),{'URI':serverRoot+'/REST/projects/$project.getId()/quarantine_code/','radio_ids':['yes_quarantine','no_quarantine'],'current_value':'$quar','button':'project_quarantine_save'}));
-</script>
-						
+</script>		
 	<br/>
+#end
 <table id="prearchive_table">
  <tr>
   <td colspan="2" class="highlighted" id="prearchive_container">

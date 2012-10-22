@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.nrg.action.ClientException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatExperimentdataFieldI;
@@ -543,6 +544,10 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	
     	String msg=expt.canDelete(proj,user);
 
+    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
+    		return "User account cannot delete experiments";
+    	}
+    	
     	if(msg!=null){
     		logger.error(msg);
     		return msg;

@@ -138,6 +138,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("smtpHost", _arcSpec.getSmtpHost());
         settings.put("requireLogin", _arcSpec.getRequireLogin());
         settings.put("enableNewRegistrations", _arcSpec.getEnableNewRegistrations());
+        settings.put("emailVerification", XDAT.getSiteConfigurationProperty("emailVerification"));
         settings.put("archivePath", _arcSpec.getGlobalArchivePath());
         settings.put("prearchivePath", _arcSpec.getGlobalPrearchivePath());
         settings.put("cachePath", _arcSpec.getGlobalCachePath());
@@ -390,6 +391,14 @@ public class SettingsRestlet extends SecureResource {
                     XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the REST service mock call map", "rest", "mockCallMap", getUnformattedRestMockCallMap(callMap));
                 } catch (ConfigServiceException exception) {
                     throw new Exception("Error setting the REST service mock call map", exception);
+                }
+                dirtied = true;
+            } else if (property.equals("emailVerification")) {
+                final String emailVerification = map.get("emailVerification");
+                try {
+                    XDAT.setSiteConfigurationProperty("emailVerification", emailVerification);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the emailVerification site info property", exception);
                 }
                 dirtied = true;
             } else {

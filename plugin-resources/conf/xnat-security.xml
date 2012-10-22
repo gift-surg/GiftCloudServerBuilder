@@ -34,8 +34,15 @@
         <constructor-arg value="/app/template/PostRegister.vm" />
     </bean> 
 
-    <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
-        p:loginFormUrl="/app/template/Login.vm"/>
+    <bean id="loginUrlAuthenticationEntryPoint" class="org.nrg.xnat.security.XnatAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/app/template/Login.vm"/>
+        <property name="noninteractivePaths">
+            <list value-type="java.lang.String">
+                <value>/data</value>
+                <value>/REST</value>
+            </list>
+        </property>
+    </bean>
 
     <bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
         <property name="sessionRegistry" ref="sessionRegistry" />
@@ -47,8 +54,9 @@
         <property name="maximumSessions" value="${security.sessions.concurrent_max}"/>
         <property name="exceptionIfMaximumExceeded" value="true"/>
     </bean>
+    <bean id="xnatLogoutSuccessHandler" class="org.nrg.xnat.security.XnatLogoutSuccessHandler" p:openXnatLogoutSuccessUrl="/" p:securedXnatLogoutSuccessUrl="/app/template/Login.vm"/>
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
-        <constructor-arg index="0" value="/app/template/Login.vm"/>
+        <constructor-arg index="0" ref="xnatLogoutSuccessHandler" type="org.springframework.security.web.authentication.logout.LogoutSuccessHandler"/>
         <constructor-arg index="1">
             <list>
                 <ref bean="xnatLogoutHandler"/>
@@ -87,6 +95,9 @@
                 <value>/app/action/XDATRegisterUser*</value>
                 <value>/app/template/Error.vm*</value>
                 <value>/app/template/PostRegister.vm*</value>
+                <value>/app/template/VerifyEmail.vm*</value>
+                <value>/app/template/VerificationSent.vm*</value>
+                <value>/app/template/ResendVerification.vm*</value>
                 <value>/favicon.ico</value>
                 <value>/data/version</value>
                 <value>/REST/version</value>
@@ -116,6 +127,7 @@
         <property name="requiredChannel" value="${security.channel}" />
     </bean>
 
+    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider" p:name="token"/>
     <bean id="databaseAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator" p:configuratorId="db"/>
     <bean id="ldapAuthenticationProviderConfigurator" class="org.nrg.xnat.security.config.LdapAuthenticationProviderConfigurator" p:configuratorId="ldap"/>
 
@@ -125,6 +137,11 @@
         		<value>WEB-INF/conf/services.properties</value>
         		<value>WEB-INF/conf/services-custom.properties</value>
         	</list>
+        </property>
+        <property name="standaloneProviders">
+            <util:list>
+                <ref bean="aliasTokenAuthProvider"/>
+            </util:list>
         </property>
         <property name="authenticationProviderConfigurators">
             <map key-type="java.lang.String" value-type="org.nrg.xnat.security.config.AuthenticationProviderConfigurator">
@@ -159,8 +176,6 @@
         <property name="changePasswordDestination" value="/app/action/XDATChangePassword"/>
     </bean>
 	
-    <bean id="aliasTokenAuthProvider" class="org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider"/>
-
     <bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>
 
 </beans>

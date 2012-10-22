@@ -9,7 +9,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -83,7 +82,7 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
             if (authenticationIsRequired(username)) {
                 UsernamePasswordAuthenticationToken authRequest = 
-                	XnatAuthenticationFilter.buildUPToken(XnatAuthenticationFilter.retrieveAuthMethod(username), username,password);
+                	XnatAuthenticationFilter.buildUPTokenForAuthMethod(XnatAuthenticationFilter.retrieveAuthMethod(username), username,password);
                 authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 
                 Authentication authResult;
@@ -102,6 +101,8 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(null);
                     onUnsuccessfulAuthentication(request, response, failed);
+                    
+                	XnatAuthenticationFilter.logFailedAttempt(username, request);//originally I put this in the onUnsuceessfulAuthentication method, but that would force me to re-parse the username
 
                     if (ignoreFailure) {
                         chain.doFilter(request, response);
@@ -126,7 +127,7 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
         chain.doFilter(request, response);
 	}
-	
+    
     /**
      * The session handling strategy which will be invoked immediately after an authentication request is
      * successfully processed by the <tt>AuthenticationManager</tt>. Used, for example, to handle changing of the

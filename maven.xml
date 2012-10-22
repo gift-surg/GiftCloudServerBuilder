@@ -1243,7 +1243,7 @@
     <!-- ================================================================ -->
     <goal name="xdat:buildGenericExecutables" description="Generate SH and BAT files with classpath defined appropriately">
         <!-- BUILD BAT TEMPLATE -->
-        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;"/>
+        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes"/>
         <j:if test="${context.getVariable('xdat.url') != null}">
             <j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
         </j:if>
@@ -1252,8 +1252,9 @@
             <j:set var="xdat.url.text" value=" "/>
         </j:if>
         <j:forEach var="dep" items="${pom.dependencies}">
-            <j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
+            <j:set var="absolute.lib.path" value="${absolute.lib.path};${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
         </j:forEach>
+        <j:set var="absolute.lib.path" value="${absolute.lib.path}&quot;"/>
         <delete file="${basedir}/plugin-resources/misc/template2.bat"/>
         <copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
         <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
@@ -1308,10 +1309,11 @@
             <j:set var="xdat.url.text" value=" -url ${xdat.url} "/>
         </j:if>
         <!-- BUILD BAT TEMPLATE -->
-        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes&quot;;&quot;${basedir}/deployments/${xdat.project.name}/target/classes&quot;"/>
+        <j:set var="absolute.lib.path" value="&quot;${basedir}/classes;${basedir}/deployments/${xdat.project.name}/target/classes"/>
         <j:forEach var="dep" items="${pom.dependencies}">
-            <j:set var="absolute.lib.path" value="${absolute.lib.path};&quot;${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}&quot;"/>
+            <j:set var="absolute.lib.path" value="${absolute.lib.path};${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
         </j:forEach>
+        <j:set var="absolute.lib.path" value="${absolute.lib.path}&quot;"/>
         <delete file="${basedir}/plugin-resources/misc/template2.bat"/>
         <copy tofile="${basedir}/plugin-resources/misc/template2.bat" file="${basedir}/plugin-resources/misc/template.bat"/>
         <ant:replace file="${basedir}/plugin-resources/misc/template2.bat" token="%CLASS_PATH%" value="${absolute.lib.path}"/>
@@ -1509,6 +1511,7 @@
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/org" preservelastmodified="true">
             <fileset dir="${class.dir}/org"/>
         </copy>
+        <mkdir dir="${class.dir}/com"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/classes/com" preservelastmodified="true">
             <fileset dir="${class.dir}/com"/>
         </copy>
@@ -1542,8 +1545,9 @@
     <goal name="xdat:configureRestletAutowire">
         <j:set var="org.restlet.autoWire" value="true"/>
         <j:set var="xdat.url.withoutProtocolPrefix" value="${context.getVariable('xdat.url').replace('http://', '').replace('https://', '')}"/>
-	    <j:if test="${context.getVariable('xdat.url.withoutProtocolPrefix').indexOf('/') &lt; 0
-	    			|| context.getVariable('xdat.url.withoutProtocolPrefix').matches('\S+\/\s*$')}">
+        <j:set var="xdat.url.withoutTrailingSlash" value="${context.getVariable('xdat.url.withoutProtocolPrefix').replaceAll('/$', '')}"/>
+	    <j:if test="${context.getVariable('xdat.url.withoutTrailingSlash').indexOf('/') &lt; 0
+	    			|| context.getVariable('xdat.url.withoutTrailingSlash').matches('\S+\/\s*$')}">
 	        <j:set var="org.restlet.autoWire" value="false"/>
         </j:if>
         <ant:replace file="${basedir}/deployments/${xdat.project.name}/conf/${xdat.project.name}-web.xml">

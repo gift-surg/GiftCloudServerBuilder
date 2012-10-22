@@ -3,24 +3,20 @@ package org.nrg.xnat.security.tokens;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 public class XnatLdapUsernamePasswordAuthenticationToken extends UsernamePasswordAuthenticationToken{
-	private String providerName;
+	private static final long serialVersionUID = 4020331737088633595L;
+	private String providerId;
 
 	public XnatLdapUsernamePasswordAuthenticationToken(Object principal,
-			Object credentials) {
-		this(principal, credentials,"");
-	}
-
-	public XnatLdapUsernamePasswordAuthenticationToken(Object principal,
-			Object credentials, String name) {
+			Object credentials, String providerId) {
 		super(principal, credentials);
-		providerName = name;
+		this.providerId = providerId;
 	}
 	
-	public String getProviderName(){
-		return providerName;
+	public String getProviderId(){
+		return providerId;
 	}
 	
 	public String toString(){
-		return getPrincipal()+providerName;
+		return getPrincipal()+providerId;
 	}
 }

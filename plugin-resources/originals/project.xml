@@ -776,7 +776,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomEdit</artifactId>
-			<version>2.3.0</version>
+			<version>3.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1756,34 +1756,6 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.8</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.8</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>3.8</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		  
 	</dependencies>
 	<build>
 		<!-- This setting is important. The source tree will be merged -->

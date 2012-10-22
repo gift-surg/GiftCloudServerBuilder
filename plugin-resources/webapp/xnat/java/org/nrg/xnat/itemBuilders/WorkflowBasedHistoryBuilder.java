@@ -161,27 +161,63 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 			}
 			
 			final Collection<? extends PersistentWorkflowI> workflows=getWorkflows(i,id,user);
-			
-			final Map<Date,ChangeSummary> copy=new Hashtable<Date,ChangeSummary>(changesByDate);
-			
-			//merge ChangeSummaries and Workflows 
+						
+			//pre load local workflows 
 			for(final PersistentWorkflowI wrk: workflows){
 				WorkflowView wv=new WorkflowView();
 				wv.setWorkflow(wrk);
-				for(Map.Entry<Date,ChangeSummary> cs:copy.entrySet()){
-					if(cs.getValue().getNumber().equals(wrk.getWorkflowId())){
-						wv.cs.add(changesByDate.remove(cs.getKey()));
-					}
-				}
 				result.put(wrk.getWorkflowId(), wv);
 			}
+
 			
 			for(ChangeSummary cs:changesByDate.values()){
-				addChangeSummary(cs);
+				addCS(result,cs);
 			}
 		}
 		
 		return result;
+	}
+	
+	private void addCS(Map<Number,WorkflowView> current,ChangeSummary cs){
+		boolean matched=false;
+		for(WorkflowView wv:current.values()){
+			Number n1=cs.getNumber();
+			Number n2=(wv.getWorkflow()==null)?null:wv.getWorkflow().getWorkflowId();
+			
+			if(n1!=null && n2 !=null){
+				if(cs.getNumber().equals(wv.getWorkflow().getWorkflowId())){
+					wv.cs.add(cs);
+					matched=true;
+				}
+			}
+		}
+		
+		if(!matched){
+			//query for workflow
+			if(cs.getDate()!=null && !cs.getNumber().equals(cs.getDate().getTime())){
+				PersistentWorkflowI wrk=getWorkflowById(cs.getNumber());
+				if(wrk!=null){
+					WorkflowView wv=new WorkflowView();
+					wv.setWorkflow(wrk);
+					wv.cs.add(cs);
+					result.put(wrk.getWorkflowId(), wv);
+				}else{
+					addChangeSummary(cs);
+				}
+			}else{
+				addChangeSummary(cs);
+			}
+		}
+	}
+	
+	private List<Number> queried=Lists.newArrayList();
+	public PersistentWorkflowI getWorkflowById(Number n){
+		if(!queried.contains(n)){
+			queried.add(n);
+			return WrkWorkflowdata.getWrkWorkflowdatasByWrkWorkflowdataId(n, user, false);
+		}
+		
+		return null;
 	}
 	
 	public static  Collection<? extends PersistentWorkflowI> getWorkflows(ItemI i, String id,XDATUser user){
@@ -286,6 +322,14 @@ public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,Workflow
 				return workflow.getLaunchTimeDate();
 			}else{
 				return getChangeSummaries().get(0).getDate();
+			}
+		}
+		
+		public String getEscapedStatus(){
+			if(workflow!=null && workflow.getStatus()!=null){
+				return workflow.getStatus().replace(" ", "_");
+			}else{
+				return null;
 			}
 		}
 	

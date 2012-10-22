@@ -98,7 +98,7 @@ ts_makeSortable(newTable);
 
 <h3>New Users</h3>
 <div id="new_us">
-$qm.execute("SELECT login,firstname,lastname,email,enabled ,projects FROM xdat_user u  LEFT JOIN xdat_user_meta_data meta ON u.user_info=meta.meta_data_id  LEFT JOIN (  SELECT groups_groupid_xdat_user_xdat_user_id, TRIM(', ' FROM xs_a_concat(tag || ' (' || displayname ||')' || ', '))AS projects  FROM xdat_user_groupid map LEFT JOIN xdat_userGroup ug ON map.groupid=ug.id GROUP BY groups_groupid_xdat_user_xdat_user_id ) projects ON u.xdat_user_id=projects.groups_groupid_xdat_user_xdat_user_id WHERE meta.insert_date > (NOW()-interval '$duration1') AND meta.insert_date < (NOW()-interval '$duration2')")
+$qm.execute("SELECT login,firstname,lastname,email,verified,enabled ,projects FROM xdat_user u  LEFT JOIN xdat_user_meta_data meta ON u.user_info=meta.meta_data_id  LEFT JOIN (  SELECT groups_groupid_xdat_user_xdat_user_id, TRIM(', ' FROM xs_a_concat(tag || ' (' || displayname ||')' || ', '))AS projects  FROM xdat_user_groupid map LEFT JOIN xdat_userGroup ug ON map.groupid=ug.id GROUP BY groups_groupid_xdat_user_xdat_user_id ) projects ON u.xdat_user_id=projects.groups_groupid_xdat_user_xdat_user_id WHERE meta.insert_date > (NOW()-interval '$duration1') AND meta.insert_date < (NOW()-interval '$duration2')")
 </div>
 <script type="text/javascript">
 var newTable = document.getElementById("new_us").firstChild;

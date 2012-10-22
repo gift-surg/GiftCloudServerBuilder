@@ -7,6 +7,7 @@
 			<lastname>Doe</lastname>
 			<email>j.doe@somecompany.com</email>
 			<primary_password encrypt="true">manager</primary_password>
+			<verified>1</verified>
 			<assigned_roles>
 				<assigned_role role_name="Administrator" description="can change user permissions"/>
 				<assigned_role role_name="SiteUser" description="views webpages"/>

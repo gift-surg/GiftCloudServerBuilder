@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.velocity.VelocityContext;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUsergroup;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -231,12 +232,13 @@ public class ProjectMemberResource extends SecureResource {
 						boolean sendmail=Boolean.parseBoolean(email);
 						
 						for(XDATUser newUser: newUsers){
-							final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.SCHEMA_ELEMENT_NAME,proj.getId(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT + " (" + newUser.getLogin() + ")"));
+							final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, user.getXSIType(),user.getXdatUserId().toString(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT));
 					    	EventMetaI c=wrk.buildEvent();
 							
 								try {
-									proj.addGroupMember(group.getId(), newUser, user,WorkflowUtils.setStep(wrk, "Add " + newUser.getLogin()));
+									proj.addGroupMember(group.getId(), newUser, user,WorkflowUtils.setStep(wrk, "Add " + newUser.getLogin()),true);
 									WorkflowUtils.complete(wrk, c);
+									
 									if (sendmail){
 										try {
 											VelocityContext context = new VelocityContext();
@@ -264,6 +266,9 @@ public class ProjectMemberResource extends SecureResource {
 			} catch (InvalidItemException e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			} catch (ActionException e) {
+				getResponse().setStatus(e.getStatus());
+				return;
 			} catch (Exception e) {
 				logger.error("",e);
 					getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

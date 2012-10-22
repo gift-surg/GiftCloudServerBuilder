@@ -1,9 +1,7 @@
 package org.nrg.xnat.security.provider;
 
-import java.util.regex.Pattern;
-
+import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
 public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider implements XnatAuthenticationProvider {
@@ -47,8 +45,11 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
 		return ID;
 	}
 	
+    @Override
+    public String getAuthMethod() {
+        return XdatUserAuthService.LOCALDB;
+    }
+
     private String displayName = "";
     private String ID = "";
-    private int expiration = -1;
-    private Pattern complexity;
 }

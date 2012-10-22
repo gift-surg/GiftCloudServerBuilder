@@ -1,7 +1,7 @@
 #* @vtlvariable name="login_methods" type="java.util.List" *#
 <form name="form1" method="post" action="$content.getURI('')/j_spring_security_check">
     #set($showLoginMethodRow = true)
-    #if($login_methods && $login_methods.size() == 1)
+    #if(!($login_methods) || $login_methods.size() == 1)
         <input type="hidden" id="login_method" name="login_method" value="$login_methods.get(0)"/>
         #set($showLoginMethodRow = false)
     #end

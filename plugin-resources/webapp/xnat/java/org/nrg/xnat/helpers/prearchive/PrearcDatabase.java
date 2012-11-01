@@ -56,56 +56,57 @@ public final class PrearcDatabase {
     private static String prearcPath;
 
     /**
-     * Initialize the cache with a path to the prearchive and/or a delegate object
-     * that syncs up the cache with some permanent store.
-     * @param prearcPath
-     * @throws SQLException
+     * The default initializer uses the file system as this cache's permanent store.
+     * @param recreateDBMSTablesFromScratch    Indicates whether the prearchive database tables should be rebuilt from
+     *                                         scratch.
      * @throws IllegalStateException
      * @throws SessionException
-     * @throws IOException 
+     * @throws IOException
      */
-    public static void initDatabase(String prearcPath, boolean recreateDBMSTablesFromScratch) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
-        if (!PrearcDatabase.ready) {
-            PrearcDatabase.prearcPath = prearcPath;
-            PrearcDatabase.sessionDelegate = new FileSystemSessionData(PrearcDatabase.prearcPath);
-            if(recreateDBMSTablesFromScratch) {
-                PrearcDatabase.createDatabase();
-            }
-            PrearcDatabase.ready = true;
-        }
-    }
-
-    public static void initDatabase(String prearcPath, SessionDataDelegate sp, boolean recreateDBMSTablesFromScratch) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
-        if (!PrearcDatabase.ready){ 
-            PrearcDatabase.prearcPath = prearcPath;
-            PrearcDatabase.sessionDelegate = sp;
-            if(recreateDBMSTablesFromScratch) {
-                PrearcDatabase.createDatabase();
-            }
-            PrearcDatabase.ready = true;}
-    }
-
-    public static void initDatabase(SessionDataDelegate sp, boolean recreateDBMSTablesFromScratch) throws Exception , SQLException, IllegalStateException, SessionException, IOException {
-        if (!PrearcDatabase.ready){ 
-            PrearcDatabase.prearcPath = PrearcDatabase.getPrearcPath();
-            PrearcDatabase.sessionDelegate = sp;
-            if(recreateDBMSTablesFromScratch) {
-                PrearcDatabase.createDatabase();
-            }
-            PrearcDatabase.ready = true;}
+    public static void initDatabase(final boolean recreateDBMSTablesFromScratch) throws Exception {
+        initDatabase(null, null, recreateDBMSTablesFromScratch);
     }
 
     /**
-     * The default initializer uses the file system as this cache's permanent store
-     * @throws SQLException
+     * Initialize the cache with a path to the prearchive that syncs up the cache with the permanent store.
+     * @param prearcPath                       Indicates the prearchive path.
+     * @param recreateDBMSTablesFromScratch    Indicates whether the prearchive database tables should be rebuilt from
+     *                                         scratch.
      * @throws IllegalStateException
      * @throws SessionException
-     * @throws IOException 
+     * @throws IOException
      */
-    public static void initDatabase(boolean recreateDBMSTablesFromScratch) throws Exception, SQLException, IllegalStateException, SessionException, IOException {
-        if (!PrearcDatabase.ready){ 
-            PrearcDatabase.prearcPath = PrearcDatabase.getPrearcPath();
-            PrearcDatabase.sessionDelegate = new FileSystemSessionData(PrearcDatabase.prearcPath);
+    public static void initDatabase(final String prearcPath, final boolean recreateDBMSTablesFromScratch) throws Exception {
+        initDatabase(prearcPath, null, recreateDBMSTablesFromScratch);
+    }
+
+    /**
+     * Initialize the cache with a session data delegate that syncs up the cache with the permanent store.
+     * @param delegate                         Carries the session data delegate.
+     * @param recreateDBMSTablesFromScratch    Indicates whether the prearchive database tables should be rebuilt from
+     *                                         scratch.
+     * @throws IllegalStateException
+     * @throws SessionException
+     * @throws IOException
+     */
+    public static void initDatabase(SessionDataDelegate delegate, boolean recreateDBMSTablesFromScratch) throws Exception {
+        initDatabase(null, delegate, recreateDBMSTablesFromScratch);
+    }
+
+    /**
+     * Initialize the cache with the prearchive path and a session data delegate that syncs up the cache with the
+     * permanent store.
+     * @param prearcPath                       Indicates the prearchive path.
+     * @param delegate                         Carries the session data delegate.
+     * @param recreateDBMSTablesFromScratch    Indicates whether the prearchive database tables should be rebuilt from scratch.
+     * @throws IllegalStateException
+     * @throws SessionException
+     * @throws IOException
+     */
+    public static void initDatabase(String prearcPath, SessionDataDelegate delegate, boolean recreateDBMSTablesFromScratch) throws Exception {
+        if (!PrearcDatabase.ready){
+            PrearcDatabase.prearcPath = StringUtils.isBlank(prearcPath) ? PrearcDatabase.getPrearcPath() : prearcPath;
+            PrearcDatabase.sessionDelegate = delegate != null ? delegate : new FileSystemSessionData(PrearcDatabase.prearcPath);
             if(recreateDBMSTablesFromScratch) {
                 PrearcDatabase.createDatabase();
             }
@@ -116,8 +117,8 @@ public final class PrearcDatabase {
         PrearcDatabase.sessionDelegate.setSm(sm);
     }
 
-    private static void createDatabase() throws Exception, SQLException, IllegalStateException, SessionException, IOException {
-        PrearcDatabase.createTable(tableWithSchema);
+    private static void createDatabase() throws Exception {
+        PrearcDatabase.createTable();
         PrearcDatabase.refresh();
     }
 
@@ -133,15 +134,14 @@ public final class PrearcDatabase {
     /**
      * Create the table if it doesn't exist. Should only be called once. Delete table argument
      * on class load.
-     * @param table
-     * @throws SQLException 
+     * @throws Exception
      */
-    private static void createTable (String table) throws SQLException, Exception{
+    private static void createTable() throws Exception {
         try {
             new SessionOp<Void>() {
-                public Void op() throws Exception, SQLException, SessionException {
-                    String query ="SELECT relname FROM pg_catalog.pg_class WHERE  relname=LOWER('" + PrearcDatabase.table + "');";
-                    String exists =(String)PoolDBUtils.ReturnStatisticQuery(query, "relname", null,null);
+                public Void op() throws Exception {
+                    String query ="SELECT relname FROM pg_catalog.pg_class WHERE relname=LOWER('" + PrearcDatabase.table + "');";
+                    String exists = (String) PoolDBUtils.ReturnStatisticQuery(query, "relname", null,null);
                     if (exists==null){
                         PoolDBUtils.ExecuteNonSelectQuery(tableSql, null , null);
                     }
@@ -158,21 +158,19 @@ public final class PrearcDatabase {
     /**
      * Populate the table with sessions in the prearchive directory. Should only be called
      * once on class load.
-     * @param table
-     * @throws Throwable 
-     * @throws SessionException 
+     * @throws SessionException
      * @throws SAXException
      * @throws SQLException 
      * @throws IOException 
      * @throws IllegalStateException 
      */
-    private static void populateTable (String table) throws Exception, SQLException, SessionException, IllegalStateException, IOException {
+    private static void populateTable() throws Exception {
         PrearcDatabase.addSessions(PrearcDatabase.sessionDelegate.get());
     }
 
-    private static void addSessions (final Collection<SessionData> ss) throws Exception, IllegalStateException, SQLException, SessionException {
+    private static void addSessions (final Collection<SessionData> ss) throws Exception {
         new SessionOp<Void>() {
-            public java.lang.Void op () throws Exception, SQLException , SessionException {
+            public java.lang.Void op () throws Exception {
                 PreparedStatement statement = this.pdb.getPreparedStatement(null, PrearcDatabase.insertSql());
                 for (final SessionData s : ss) {
                     for (int i = 0; i < DatabaseSession.values().length; i++) {
@@ -191,10 +189,10 @@ public final class PrearcDatabase {
      * @param s               The session
      * @throws SQLException
      */
-    public static void addSession(final SessionData s) throws Exception, SQLException, SessionException {
+    public static void addSession(final SessionData s) throws Exception {
         PrearcDatabase.checkArgs(s);
         new SessionOp<Void>(){
-            public java.lang.Void op() throws Exception, SQLException, SessionException {
+            public java.lang.Void op() throws Exception {
                 int rowCount = PrearcDatabase.countOf(s.getFolderName(),s.getTimestamp(),s.getProject());
                 if (rowCount >= 1) {
                     throw new SessionException("Trying to add an existing session");
@@ -214,17 +212,15 @@ public final class PrearcDatabase {
 
     /**
      * Parse the given uri and return a list of sessions in the database.
-     * @param uri
-     * @return
-     * @throws java.util.IllegalFormatException Thrown if the uri cannot be parsed 
-     * @throws SQLException Thrown if there is an issue with the database connection.
-     * @throws SessionException 
+     * @param uri    The URI from which projects should be retrieved.
+     * @return A list of session data objects containing the projects present at the indicated URI.
+     * @throws Exception Thrown if there is an issue with the database connection.
      */
-    public static List<SessionData> getProjects (String uri) throws java.util.IllegalFormatException, Exception, SQLException, SessionException {
+    public static List<SessionData> getProjects (String uri) throws Exception {
         final PrearcUriParserUtils.ProjectsParser parser = new PrearcUriParserUtils.ProjectsParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_PROJECT_URI));
         final List<String> projects = parser.readUri(uri);
         return new SessionOp<List<SessionData>>(){
-            public List<SessionData> op() throws SQLException, SessionException, Exception{
+            public List<SessionData> op() throws Exception {
                 List<SessionData> ls = new ArrayList<SessionData>();
                 String sql = DatabaseSession.PROJECT.allMatchesSql(projects.toArray(new String[projects.size()]));
                 ResultSet rs;
@@ -244,17 +240,15 @@ public final class PrearcDatabase {
 
     /**
      * Parse uri and return a specific session in the database
-     * @param uri
-     * @return
-     * @throws java.util.IllegalFormatException
-     * @throws SQLException
-     * @throws SessionException
+     * @param uri    The URI from which to retrieve a session.
+     * @return The retrieved session
+     * @throws Exception
      */
-    public static SessionData getSession (String uri) throws java.util.IllegalFormatException, Exception, SQLException, SessionException {
+    public static SessionData getSession (String uri) throws Exception {
         final PrearcUriParserUtils.SessionParser parser = new PrearcUriParserUtils.SessionParser(new PrearcUriParserUtils.UriParser(XNATApplication.PREARC_SESSION_URI));
         final Map<String,String> sess = parser.readUri(uri);
         return new SessionOp<SessionData>() {
-            public SessionData op() throws Exception, SQLException, SessionException {
+            public SessionData op() throws Exception {
                 return PrearcDatabase.getSession(sess.get("SESSION_LABEL"), sess.get("SESSION_TIMESTAMP"), sess.get("PROJECT_ID"));
             }
         }.run();
@@ -263,17 +257,16 @@ public final class PrearcDatabase {
 
     /**
      * Path to the project in the users prearchive directory
-     * @param proj
-     * @return
+     * @param project    The project for which you want to retrieve the path.
+     * @return The path to the project.
      */
-    static String projectPath (String proj) {
-        return StringUtils.join(new String[]{PrearcDatabase.prearcPath,proj});
+    static String projectPath (String project) {
+        return StringUtils.join(new String[]{PrearcDatabase.prearcPath, project});
     }
 
     /**
      * Generate prepared SQL statement to insert a session.
-     * TODO : Move this into DatabaseSession
-     * @return
+     * @return The insert SQL for the current schema and table.
      */
     private static String insertSql () {
         List<String> ss = new ArrayList<String>();
@@ -290,33 +283,9 @@ public final class PrearcDatabase {
      * @throws IOException 
      * @throws ClassNotFoundException 
      */
-    public static void refresh() throws IllegalStateException, Exception, SQLException, SessionException, IOException {
-        try {
-            PrearcDatabase.deleteRows();
-            PrearcDatabase.populateTable(PrearcDatabase.tableWithSchema);
-            // PrearcDatabase.conn.commit();
-        }
-        catch (SQLException e) {
-            //			try {
-            //				// PrearcDatabase.conn.rollback();
-            //			}
-            //			catch (SQLException s) {
-            //				throw s;
-            //			}
-            throw e;
-        }
-        catch (SessionException e) {
-            //			try {
-            //				// PrearcDatabase.conn.rollback();
-            //			}
-            //			catch (SQLException s) {
-            //				throw s;
-            //			}
-            throw e;
-        }
-        finally {
-            // PrearcDatabase.conn.close();
-        }
+    public static void refresh() throws Exception {
+        PrearcDatabase.deleteRows();
+        PrearcDatabase.populateTable();
     }
 
     /**
@@ -332,7 +301,7 @@ public final class PrearcDatabase {
      * @throws SQLException 
      * @throws Exception 
      */
-    private static synchronized boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception, SessionException, SyncFailedException, SQLException{
+    private static synchronized boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception {
         if (null == newProj || newProj.isEmpty()) {
             throw new SessionException("New project argument is null or empty");
         }
@@ -343,21 +312,20 @@ public final class PrearcDatabase {
                 PrearcDatabase.sessionDelegate.move(sd, newProj);
                 return null;
             }
-            void cacheSync() throws SQLException, SessionException, Exception {
+            void cacheSync() throws Exception {
                 PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>(){
-                    public Void op () throws SQLException, SessionException, Exception {
+                    public Void op () throws Exception {
                         try {
                             PrearcDatabase._unsafeDeleteSession(sess, timestamp,proj);
-                            SessionData newSd = sd;
-                            newSd.setProject(newProj);
-                            newSd.setStatus(PrearcUtils.PrearcStatus.READY);
+                            sd.setProject(newProj);
+                            sd.setStatus(PrearcUtils.PrearcStatus.READY);
 
                             final File projectF=new File(PrearcDatabase.getPrearcPath(),newProj);
-                            final File tsdir=new File(projectF, timestamp);
-                            final File session=new File(tsdir, sess);
-                            newSd.setUrl(session.getAbsolutePath());
+                            final File timestampDir=new File(projectF, timestamp);
+                            final File session=new File(timestampDir, sess);
+                            sd.setUrl(session.getAbsolutePath());
 
-                            PrearcDatabase.addSession(newSd);
+                            PrearcDatabase.addSession(sd);
                         } catch (SyncFailedException e) {
                             logger.error(e);
                             throw new IllegalStateException(e.getMessage());
@@ -371,7 +339,7 @@ public final class PrearcDatabase {
                 return sd.getStatus().equals(PrearcStatus.MOVING);
             }
         };
-        boolean ran = true;
+        boolean ran;
         Exception e = null;
         try {
             ran = l.run();
@@ -388,7 +356,7 @@ public final class PrearcDatabase {
         return true;
     }
 
-    public static boolean moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception, SessionException, SyncFailedException, SQLException {
+    public static boolean moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception {
         final SessionData sd = PrearcDatabase.getSession(sess,timestamp,proj);
         if (!sd.getStatus().equals(PrearcStatus.MOVING) && markSession(sd.getSessionDataTriple(), PrearcStatus.MOVING)) {
         	if (!proj.equals(newProj)) {

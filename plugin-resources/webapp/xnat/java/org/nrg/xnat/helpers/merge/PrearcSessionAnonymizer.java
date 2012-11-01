@@ -88,8 +88,8 @@ public class PrearcSessionAnonymizer extends AnonymizerA {
 		boolean needsAnonymization = true;
 		if (codes != null && codes.length != 0) {
 			Code last = codes[codes.length - 1];
-			Configuration c = this.getScript();
-			if (last.getCodeValue().equals(new Long(c.getId()).toString())) {
+			Configuration configuration = this.getScript();
+			if (configuration != null && last.getCodeValue().equals(Long.toString(configuration.getId()))) {
 				needsAnonymization = false;
 			}
 		}

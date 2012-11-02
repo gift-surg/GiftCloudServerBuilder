@@ -4,7 +4,7 @@
   <classpathentry kind="src" path="projects/xnat/src/java"/>
   <classpathentry kind="src" path="src"/>
   <classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
-  <classpathentry combineaccessrules="false" kind="src" path="/xdat"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/core"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-2.7.6.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar"/>
@@ -51,10 +51,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.1.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-2.3.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/org.apache.poi/jars/poi-3.8.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/org.apache.poi/jars/poi-ooxml-3.8.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/org.apache.poi/jars/poi-ooxml-schemas-3.8.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-3.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.2.0.jar"/>
@@ -201,8 +198,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-*-source.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-*.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>

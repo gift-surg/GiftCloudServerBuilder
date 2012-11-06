@@ -46,22 +46,10 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 		td2.appendChild(this.labelContainer);
 		
 		this.labelContainer.appendChild(this.labelInput);
-		
-		var labelToggler=document.createElement("span");
-		labelToggler.id="toggleLabels";
-		
-		this.labelContainer.appendChild(labelToggler);
-		
-		this.label_auto=document.createElement("div");
-		this.label_auto.id="label_auto";
-		this.labelContainer.appendChild(this.label_auto);
-		
+				
 		tr.appendChild(td1);		
 		tr.appendChild(td2);
 		tb.appendChild(tr);
-		
-		 XNAT.app._label.oPushButtonD = new YAHOO.widget.Button({container:"toggleLabels"});   
-		  YAHOO.util.Dom.setStyle("toggleLabels","display","none");
 		
 		this.panel.setBody(bd);
 		
@@ -198,40 +186,6 @@ XNAT.app._label.labelLoaderP=function(){
 		closeModalPanel("labels_loading");
 		
 		document.getElementById("new_label").disabled=false;
-	    var oDS=new YAHOO.util.LocalDataSource(XNAT.app._label.labelLoader.list);
-	    oDS.responseSchema = {fields : ["label"]};  
-	    
-	    XNAT.app._label.oAC= new YAHOO.widget.AutoComplete("new_label","label_auto",oDS);
-	    XNAT.app._label.oAC.prehighlightClassName = "yui-ac-prehighlight";   
-	    XNAT.app._label.oAC.useShadow = true;   
-	    XNAT.app._label.oAC.minQueryLength = 0;
-	    
-		if(XNAT.app._label.labelLoader.list.length>0){
-	       //show label button     
-	       var toggleD = function(e) {   
-	          //YAHOO.util.Event.stopEvent(e);   
-	          if(!YAHOO.util.Dom.hasClass("toggleLabels", "open")) {   
-	             YAHOO.util.Dom.addClass("toggleLabels", "open")   
-	          }   
-	            
-	          // Is open   
-	          if(XNAT.app._label.oAC.isContainerOpen()) {   
-	             XNAT.app._label.oAC.collapseContainer();   
-	          }     
-	          else {   
-	             // Is closed 
-	             XNAT.app._label.oAC.getInputEl().focus(); // Needed to keep widget active   
-	             setTimeout(function() { // For IE   
-	                 XNAT.app._label.oAC.sendQuery("");   
-	             },0);   
-	          }
-	       }
-	       XNAT.app._label.oPushButtonD.on("click", toggleD);   
-	       XNAT.app._label.oAC.containerCollapseEvent.subscribe(function(){YAHOO.util.Dom.removeClass("toggleLabels", "open")});   
-	       YAHOO.util.Dom.setStyle("toggleLabels","display","");
-	    }else{
-	       YAHOO.util.Dom.setStyle("toggleLabels","display","none");
-	    }
 	}
 }
 

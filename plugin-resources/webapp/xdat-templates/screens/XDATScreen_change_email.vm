@@ -8,7 +8,7 @@ $page.setVlinkColor($ui.vlink)
 	{
 		if(YUIDOM.get('new_email').value == YUIDOM.get('confirm_email').value)
 		{
-			if(YUIDOM.get('new_email')!="" && YUIDOM.get('new_email').value.indexOf('@')>-1){
+			if(YUIDOM.get('new_email')!="" && YUIDOM.get('new_email').value.indexOf('@')>-1 && YUIDOM.get('new_email').value.indexOf(' ')==-1){
 				return true;
 			}else{
 				alert("Please enter a valid email address");

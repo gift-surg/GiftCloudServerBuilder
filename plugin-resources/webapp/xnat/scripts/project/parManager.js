@@ -107,7 +107,7 @@ function PARManager(_div,_obj){
 				newDisplay.appendChild(row);
 				
 				row=document.createElement("div");
-				row.innerHTML="<b>Project ID: " + p.id +"</b>";
+				row.innerHTML="<b>" + XNAT.app.displayNames.singular.project + " ID: " + p.id +"</b>";;
 				if(p.pi!=undefined && p.pi!=""){
 					row.innerHTML+="&nbsp;&nbsp;&nbsp;<b>PI: "+ p.pi +"</b>";
 				}

@@ -12,39 +12,39 @@
     #launchUploadAppletForm tr { height: 25px ; line-height: 25px ; vertical-align: middle ; }
 </style>
 <form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='applet' onsubmit="popupWSize('about:blank',720,860,'applet'); return true;">
-            <h3>Upload Image Sessions</h3>
+            <h3>Upload Image $displayManager.getPluralDisplayNameForImageSession()</h3>
                 <p style="width:500px;margin-top:10px;margin-bottom:20px;">
-                    DICOM and ECAT files can be uploaded using this online upload tool. Begin by selecting the project,
-                    subject, and date for the session you wish to upload and then click the <b>Launch Uploader</b>
+                    DICOM and ECAT files can be uploaded using this online upload tool. Begin by selecting the $displayManager.getSingularDisplayNameForProject().toLowerCase(),
+                    $displayManager.getSingularDisplayNameForSubject().toLowerCase(), and date for the $displayManager.getSingularDisplayNameForImageSession().toLowerCase() you wish to upload and then click the <b>Launch Uploader</b>
                     button. You will need Java installed in order and operational to use the uploader.
                     <a href="http://www.java.com/en/download/testjava.jsp" target="_blank">Check here</a> to verify that
                     your Java is working.
                 </p>
         <table>
         <tr>
-            <th align="left"><label for="project" class="select_label">Project</label></th>
+            <th align="left"><label for="project" class="select_label">$displayManager.getSingularDisplayNameForProject()</label></th>
             <td><select id="project" name="project" style="width:100%;min-width:200px;" disabled=true></select></td>
         </tr>
         <tr>
-            <th align="left"><label for="part_id" class="select_label">Subject</label></th>
+            <th align="left"><label for="part_id" class="select_label">$displayManager.getSingularDisplayNameForSubject()</label></th>
             <td><select id="part_id" name="part_id" style="width:100%;min-width:200px;" disabled=true>
-                <option>(Select a project)</option>
+                <option>(Select a $displayManager.getSingularDisplayNameForProject().toLowerCase())</option>
             </select></td>
         </tr>
       </table>
  <div id="hideIfProtocol" >
       <table border="0">       
         <tr>
-            <th align="left"><label for="session_date" class="select_label">Session Date</label></th>
+            <th align="left"><label for="session_date" class="select_label">$displayManager.getSingularDisplayNameForImageSession() Date</label></th>
             <td>
                 <input type="text" id="session_date" name="session_date"/>
-                <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "Session Date");</script>
+                <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "$displayManager.getSingularDisplayNameForImageSession() Date");</script>
             </td>
         </tr>
         <tr>
             <td>&nbsp;</td>
             <td>
-                <input type="checkbox" id="no_session_date" name="no_session_date" value="true"/> <label for="no_session_date">I don't know the date or my session doesn't have a date</label>
+                <input type="checkbox" id="no_session_date" name="no_session_date" value="true"/> <label for="no_session_date">I don't know the date or my $displayManager.getSingularDisplayNameForImageSession().toLowerCase() doesn't have a date</label>
             </td>
         </tr>
           </table>

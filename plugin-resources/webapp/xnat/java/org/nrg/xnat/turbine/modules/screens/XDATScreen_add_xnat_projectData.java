@@ -7,6 +7,7 @@ import java.util.Hashtable;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
@@ -72,7 +73,7 @@ public class XDATScreen_add_xnat_projectData extends EditScreenA {
             context.put("subjectAssessors", subjectAssessors);
             context.put("mrAssessors", mrAssessors);
             context.put("petAssessors", petAssessors);
-		    context.put("page_title","New Project");
+	    context.put("page_title", "New " + DisplayManager.GetInstance().getSingularDisplayNameForProject());
 		    
 			if (item.getProperty("ID")!=null)
 			{

@@ -65,7 +65,7 @@ $page.setVlinkColor($ui.vlink)
 <br>
 <div class="edit_title">SCID Info</div>
 #parse("/screens/xnat_edit_subjectAssessorData.vm")
-<div class="edit_header1">Session Info</div><br>
+<div class="edit_header1">$displayManager.getSingularDisplayNameForImageSession() Info</div><br>
 
 
 <table class="session_info_edit">
@@ -73,7 +73,7 @@ $page.setVlinkColor($ui.vlink)
 	#textEditRow("Time" "xnat_a:scidResearchData/time")
 	#textEditRow("Visit ID" "xnat_a:scidResearchData/visit_id")
 	#textEditRow("Administrator" "xnat_a:scidResearchData/administrator")
-	#textEditRow("Subject Age" "xnat_a:scidResearchData/age")
+	#textEditRow("${displayManager.getSingularDisplayNameForSubject()} Age" "xnat_a:scidResearchData/age")
 	<tr><td colspan=2>#parse("/screens/EditProjectSpecificFields.vm")</td></tr>
 </table>
 

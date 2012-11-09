@@ -1,5 +1,5 @@
 ##<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
-$page.setTitle("MR Session Details")
+$page.setTitle("${om.getSchemaElement().getSingularDescription()} Details")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 #if ($turbineUtils.GetPassedParameter("popup",$data))

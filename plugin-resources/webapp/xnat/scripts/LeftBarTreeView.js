@@ -59,10 +59,10 @@ function LeftBarTreeView(_config){
  	root.treeManager=this;
  	if(XNAT.app.showLeftBarProjects){
 	 	//define project node
-	 	this.projNode=new YAHOO.widget.TextNode({label:"Projects",ID:"proj"},root,this.open_array.contains("proj"));
+	 	this.projNode=new YAHOO.widget.TextNode({label:XNAT.app.displayNames.plural.project,ID:"proj"},root,this.open_array.contains("proj"));
 	 	 	
 	 	var apNode=new YAHOO.widget.TextNode({label:"Recent",ID:"projectData.r",
-	 	title:"Projects visited in the last 30 days."},this.projNode,this.open_array.contains("projectData.r"));
+	 	title:XNAT.app.displayNames.plural.project+" visited in the last 30 days."},this.projNode,this.open_array.contains("projectData.r"));
 	 	apNode.setDynamicLoad(function(node, fnLoadComplete){
 	 		var callback={
 		      success:function(oResponse){
@@ -93,7 +93,7 @@ function LeftBarTreeView(_config){
 
 	 	if(XNAT.app.showLeftBarFavorites){
 		 	var fpNode=new YAHOO.widget.TextNode({label:"Favorite",ID:"projectData.f",
-		 	title:"Projects added to your list of favorites."},this.projNode,this.open_array.contains("projectData.f"));
+		 	title:XNAT.app.displayNames.plural.project+" added to your list of favorites."},this.projNode,this.open_array.contains("projectData.f"));
 		 	fpNode.setDynamicLoad(function(node, fnLoadComplete){
 		 		var callback={
 			      success:function(oResponse){
@@ -123,18 +123,18 @@ function LeftBarTreeView(_config){
 		 	},this);
 	 	}
 	 	
-	 	var opNode=new YAHOO.widget.TextNode({label:"My projects",ID:"projectData.my",
+	 	var opNode=new YAHOO.widget.TextNode({label:"My " + XNAT.app.displayNames.plural.project.toLowerCase(),ID:"projectData.my",
 	 	URL:serverRoot +'/REST/projects?format=search_xml&accessible=true',
-	 	title:"Projects you have access to.",
+	 	title:XNAT.app.displayNames.plural.project+" you have access to.",
 	 	isLeaf:true},this.projNode,false);
 	 	opNode.isLeaf=true;
 	 	this.tree.searches.push(opNode.data.ID);
 	 	 	
 	 	//VIEW ALL
-	 	var cpNode=new YAHOO.widget.TextNode({label:"Other projects",
+	 	var cpNode=new YAHOO.widget.TextNode({label:"Other " + XNAT.app.displayNames.plural.project.toLowerCase(),
 	 	ID:"projectData.a",
 	 	URL:serverRoot +'/REST/projects?format=search_xml&accessible=false',
-	 	title:"Projects you don't have access to, but are available upon request."},this.projNode,false);
+	 	title:XNAT.app.displayNames.plural.project+" you don't have access to, but are available upon request."},this.projNode,false);
 	 	cpNode.isLeaf=true;
 	 	this.tree.searches.push(cpNode.data.ID);
  	}

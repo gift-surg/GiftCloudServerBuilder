@@ -35,7 +35,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
  <th align="left"><A title="Term used to describe one instance of this data.">Singular</A></th>
  <th align="left"><A title="Term used to describe more then one occurrence of this data.">Plural</A></th>
  <th align="left"><A title="Short code used in the creation of IDs">Code</A></th>
- <th align="left"><A title="Whether or not unspecified users can use this data-type in its projects.">Accessible</th>
+ <th align="left"><A title="Whether or not unspecified users can use this data-type in its $displayManager.getPluralDisplayNameForProject().toLowerCase().">Accessible</th>
  <th align="left"><A title="Whether or not access to data of this type should be restricted.">Secured</A></th>
  <th align="left"><A title="Whether or not data of this type should be searchable.">Searchable</A></th>
  <th align="left"><A title="Whether or not data of this type should be browseable.">Browseable</A></th>

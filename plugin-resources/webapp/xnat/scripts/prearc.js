@@ -104,7 +104,7 @@ function Prearc(servletURL, name) {
 		
       } else {
 				alert("Error " + instance.listreq.status
-	     			 + " getting session list for prearchive " + instance.name);
+	     			 + " getting " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " list for prearchive " + instance.name);
       }
     } else {
       if (instance.div.firstChild && 'p' == instance.div.firstChild.tagName) {
@@ -118,7 +118,7 @@ function Prearc(servletURL, name) {
   this.removeCallback = function() {
     if (4 == instance.removeReq.readyState) {
       if (200 != instance.removeReq.status) {
-      	new HtmlAlert(window, 'Failed to remove session', instance.removeReq.responseText);
+      	new HtmlAlert(window, 'Failed to remove ' + XNAT.app.displayNames.singular.imageSession.toLowerCase(), instance.removeReq.responseText);
       }
       instance.finishRemove();
     }
@@ -127,7 +127,7 @@ function Prearc(servletURL, name) {
   this.moveCallback = function() {
   	if (4 == instance.moveReq.readyState) {
   		if (200 != instance.moveReq.status) {
-  			new HtmlAlert(window, 'Failed to move session', instance.moveReq.responseText);
+  			new HtmlAlert(window, 'Failed to move ' + XNAT.app.displayNames.singular.imageSession.toLowerCase(), instance.moveReq.responseText);
    		}
   		for (var i in instance.postMoveSession) {
   			instance.postMoveSession[i]();
@@ -147,7 +147,7 @@ Prearc.prototype.setRemoveHandler = function(f) {
 Prearc.prototype.createRemoveRequest = function(name, path) {
   var instance = this;
   return function() {
-    if (confirm('Really remove session ' + name + ' from prearchive?')) {
+    if (confirm('Really remove ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' ' + name + ' from prearchive?')) {
       if (window.XMLHttpRequest) {
 				instance.removeReq = new XMLHttpRequest();
       } else if (window.ActiveXObject) {
@@ -212,7 +212,7 @@ Prearc.prototype.buildSessionTableLayout = function() {
   var th = document.createElement('th');
   tr.appendChild(th);
   th.className = 'session_name';
-  th.appendChild(document.createTextNode('Session/subject'));
+  th.appendChild(document.createTextNode(XNAT.app.displayNames.singular.imageSession + '/' + XNAT.app.displayNames.singular.subject));
 
   // empty heading for trash column
   tr.appendChild(document.createElement('th'));
@@ -223,7 +223,7 @@ Prearc.prototype.buildSessionTableLayout = function() {
   th = document.createElement('th');
   tr.appendChild(th);
   th.className = 'timestamp';
-  th.appendChild(document.createTextNode('Session date/time'));
+  th.appendChild(document.createTextNode(XNAT.app.displayNames.singular.imageSession + ' date/time'));
 
   th = document.createElement('th');
   tr.appendChild(th);
@@ -242,7 +242,7 @@ Prearc.prototype.moveSessionTo = function(session, destName) {
     this.div.removeChild(this.div.firstChild);
   }
   var p = document.createElement('p');
-  p.appendChild(document.createTextNode('Moving session ' + session + ' to ' + destName + '...'));
+  p.appendChild(document.createTextNode('Moving ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' ' + session + ' to ' + destName + '...'));
   this.div.appendChild(p);
 
 	url = this.moveURL + '&to=' + destName + '&path=' + session;
@@ -277,23 +277,23 @@ Prearc.prototype.moveSessionTo = function(session, destName) {
 Prearc.prototype.getMoveOpTDs = function() {
 	var theTable = this.div.firstChild;
 	if (null == theTable || 'TABLE' != theTable.tagName) {
-		throw new Error('Could not locate prearchive session table');
+		throw new Error('Could not locate prearchive ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' table');
 	}
 
 	var theTableBody = theTable.lastChild;
 	if (null == theTableBody || 'TBODY' != theTableBody.tagName) {
-		throw new Error('Could not locate prearchive session table content');
+		throw new Error('Could not locate prearchive ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' table content');
 	}
 	
 	var tds = new Array();
 	for (var rowi = 0; rowi < theTableBody.childNodes.length; rowi++) {	// row 0 is table header
 		var theRow = theTableBody.childNodes[rowi];
 		if (5 != theRow.childNodes.length) {
-			throw new Error('Prearchive session table row has improper format');
+			throw new Error('Prearchive ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' table row has improper format');
 		}
 		var moveTD = theRow.childNodes[2];
 		if ('TD' != moveTD.tagName || 'move-op' != moveTD.className) {
-			throw new Error('Prearchive session table row has unexpected content: ' + moveTD.tagName + ' (' + moveTD.className + ')');
+			throw new Error('Prearchive ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' table row has unexpected content: ' + moveTD.tagName + ' (' + moveTD.className + ')');
 		}
 		tds.push(moveTD);
 	}

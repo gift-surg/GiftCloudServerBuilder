@@ -11,6 +11,7 @@ import java.util.Hashtable;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
@@ -85,13 +86,13 @@ public class XDATScreen_edit_xnat_projectData extends EditScreenA {
                         
 			if (item.getProperty("ID")==null)
 			{
-			    context.put("page_title","New project");
+			    context.put("page_title","New " + DisplayManager.GetInstance().getSingularDisplayNameForProject().toLowerCase());
 			}else{
                 ArcProject p = ArcSpecManager.GetInstance().getProjectArc(item.getStringProperty("ID"));
                 if (p!=null){
                     context.put("arcP", p);
                 }
-			    context.put("page_title","Edit Project Details");
+			    context.put("page_title","Edit " + DisplayManager.GetInstance().getSingularDisplayNameForProject() + " Details");
 			}
 		} catch (Exception e) {
 			logger.error("",e);

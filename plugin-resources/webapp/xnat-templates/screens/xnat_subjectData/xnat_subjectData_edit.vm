@@ -21,7 +21,7 @@
 		<TD>
 	<table align="left" cellspacing="5" cellpadding="1" width=300 border=0>
 		<tr>
-        	<td colspan=4>Matching subjects found for specified identifier.
+        	<td colspan=4>Matching $displayManager.getPluralDisplayNameForSubject().toLowerCase() found for specified identifier.
         	</td>
         </tr>
 		<tr>

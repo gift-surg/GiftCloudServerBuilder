@@ -54,7 +54,7 @@ window.manager = new SubjectFinder(project,subjectFinderForm);
 window.create_subject_link+="/project/$project/destination/JS_Parent_Return.vm";
 
 window.success=function(subject_id){
-  window.manager.message("The subject you entered was stored.");
+  window.manager.message("The $displayManager.getSingularDisplayNameForSubject().toLowerCase() you entered was stored.");
   window.manager.selectById(subject_id);
   if(window.manager.subjectForm!=undefined){
     window.manager.subjectForm.close();

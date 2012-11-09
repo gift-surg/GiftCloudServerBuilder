@@ -138,7 +138,7 @@ return true
 <table align="left">
 <tr>
 <td WIDTH="250">
-<h3><img src="$content.getURI("images/number_2.gif")" border=0> Enter Session or Subject IDs below. (Optional)</h3>
+<h3><img src="$content.getURI("images/number_2.gif")" border=0> Enter $displayManager.getSingularDisplayNameForImageSession() or $displayManager.getSingularDisplayNameForSubject() IDs below. (Optional)</h3>
 (Ids can be separated with a comma or RTN)<BR>
 <INPUT type="hidden" name="COMBO0_FIELDS" value="xnat:mrSessionData.SESSION_ID_in,xnat:subjectData.MAP_in,xnat:subjectData.LAB_ID_in"/>
 <TEXTAREA NAME="COMBO0" COLS=30 ROWS=20></TEXTAREA>
@@ -151,7 +151,7 @@ return true
 		</td>
   </tr>
   <tr>
-			<td>Session ID</td>
+			<td>$displayManager.getSingularDisplayNameForImageSession() ID</td>
 			<td style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
 				#xdatSearchField($sessionElement $sessionElement.getDisplayField("SESSION_ID"))
 			</td>
@@ -163,7 +163,7 @@ return true
 			</td>
   </tr>
   <tr>
-			<td>Session Type</td>
+			<td>$displayManager.getSingularDisplayNameForImageSession() Type</td>
 			<td style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
 				#xdatSearchField($sessionElement $sessionElement.getDisplayField("TYPE"))
 			</td>

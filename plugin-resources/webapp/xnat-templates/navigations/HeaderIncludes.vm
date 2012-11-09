@@ -29,13 +29,27 @@
                       * Parent namespace that templates can use to put their
                       * own namespace
                       */
-                     app: {},
+                     app: {
+    					 displayNames : {
+    					 	singular : {
+    							project : "$displayManager.getSingularDisplayNameForProject()",
+    							subject : "$displayManager.getSingularDisplayNameForSubject()",
+    							imageSession : "$displayManager.getSingularDisplayNameForImageSession()",
+    							mrSession : "$displayManager.getSingularDisplayNameForMRSession()"
+    						},
+    						plural : {
+    							project : "$displayManager.getPluralDisplayNameForProject()",
+    							subject : "$displayManager.getPluralDisplayNameForSubject()",
+    							imageSession : "$displayManager.getPluralDisplayNameForImageSession()",
+    							mrSession : "$displayManager.getPluralDisplayNameForMRSession()"
+    						}
+    					 }
+					 },
                      images:{
                         grnChk:"$content.getURI("images/checkmarkGreen.gif")",
                         redChk:"$content.getURI("images/checkmarkRed.gif")"
                      }
                    };
-
     }
 
     var serverRoot = "$content.getURI('')";

@@ -5,10 +5,10 @@
 			<b>Enter Search Criteria<b><br>
 <TABLE VALIGN="top">
   	<TR>
-		<TD COLSPAN=6><b><u>Subject Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
+		<TD COLSPAN=6><b><u>$displayManager.getSingularDisplayNameForSubject() Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
 	</TR>
 	<TR>
-  		<TD>Subject<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData.SUBJECTID_equals,xnat:subjectData.ADD_IDS_equals"/></TD>
+  		<TD>$displayManager.getSingularDisplayNameForSubject()<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData.SUBJECTID_equals,xnat:subjectData.ADD_IDS_equals"/></TD>
   		
   		<TD>
   			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")"/>
@@ -31,11 +31,11 @@
   		</TD>
   	</TR>
   	<TR>
-		<TD COLSPAN=6><b><u>Session Fields</u></b></TD>
+		<TD COLSPAN=6><b><u>$displayManager.getSingularDisplayNameForImageSession() Fields</u></b></TD>
 	</TR>
 #set($user=$data.getSession().getAttribute("user"))
   	<TR>
-  		<TD>Session ID</TD>
+  		<TD>$displayManager.getSingularDisplayNameForImageSession() ID</TD>
   		<TD>
   			<INPUT type="hidden" name="xnat:mrSessionData.COMBO1_FIELDS" value="xnat:mrSessionData/ID_equals,xnat:mrSessionData/label_equals,xnat:mrSessionData/sharing/share/label_equals"/>
 			<INPUT size="10" type="text" name="xnat:mrSessionData.COMBO1" value="$!search.getWebFormValue("xnat:mrSessionData.COMBO1")"/>
@@ -47,7 +47,7 @@
   		</TD>
   		
   #set($mr_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
-					<TD>Project</TD>
+					<TD>$displayManager.getSingularDisplayNameForProject()</TD>
   		<TD ROWSPAN="2">
   				#set($TYPE_value=$!search.getWebFormValue("${schemaElement.getFullXMLName()}.PROJECTS_equals"))
   			<select name="${schemaElement.getFullXMLName()}.PROJECTS_equals" MULTIPLE SIZE="6">
@@ -86,8 +86,8 @@
   				<TR>
   					<TD VALIGN="top">
 						<SELECT name="xnat:mrSessionData.COMBO0_FIELDS">
-			  				<option value="xnat:mrSessionData/ID_in,xnat:mrSessionData/label_in,xnat:mrSessionData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:mrSessionData.COMBO0_FIELDS")=="xnat:mrSessionData/ID_in,xnat:mrSessionData/label_in,xnat:mrSessionData/sharing/share/label_in")SELECTED#end>SESSION ID</option>
-			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:mrSessionData.COMBO0_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>SUBJECT</option>
+			  				<option value="xnat:mrSessionData/ID_in,xnat:mrSessionData/label_in,xnat:mrSessionData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:mrSessionData.COMBO0_FIELDS")=="xnat:mrSessionData/ID_in,xnat:mrSessionData/label_in,xnat:mrSessionData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForImageSession().toUpperCase() ID</option>
+			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:mrSessionData.COMBO0_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForSubject().toUpperCase()</option>
 			  			</SELECT><BR>
 						<TEXTAREA NAME="xnat:mrSessionData.COMBO0" COLS=18 ROWS=14>$!search.getWebFormValue("xnat:mrSessionData.COMBO0")</TEXTAREA>
 					</TD>

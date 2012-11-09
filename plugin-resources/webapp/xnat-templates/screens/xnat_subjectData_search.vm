@@ -5,10 +5,10 @@
 			<b>Enter Search Criteria<b><br>
 <TABLE VALIGN="top">
 	<TR>
-		<TD COLSPAN=6><b><u>Participant Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
+		<TD COLSPAN=6><b><u>$displayManager.getSingularDisplayNameForSubject() Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
 	</TR>
 	<TR>
-  		<TD>Subject ID</TD>
+  		<TD>$displayManager.getSingularDisplayNameForSubject() ID</TD>
   		<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData/ID_equals,xnat:subjectData/label_equals,xnat:subjectData/sharing/share/label_equals"/>
   		<TD>
   			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")"/>
@@ -45,7 +45,7 @@
   		
   		
   #set($sub_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
-					<TD>Project</TD>
+					<TD>$displayManager.getSingularDisplayNameForProject()</TD>
   		<TD ROWSPAN="2">
   				#set($TYPE_value=$!search.getWebFormValue("${schemaElement.getFullXMLName()}.PROJECTS_equals"))
   			<select name="${schemaElement.getFullXMLName()}.PROJECTS_equals" MULTIPLE SIZE="6">
@@ -77,7 +77,7 @@
   				<TR>
   					<TD VALIGN="top">
 						<SELECT name="xnat:subjectData.COMBO1_FIELDS">
-			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:subjectData.COMBO1_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>SUBJECT</option>
+			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:subjectData.COMBO1_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForSubject().toUpperCase()</option>
 			  			</SELECT><BR>
 						<TEXTAREA NAME="xnat:subjectData.COMBO1" COLS=18 ROWS=14>$!search.getWebFormValue("xnat:subjectData.COMBO1")</TEXTAREA>
 					</TD>

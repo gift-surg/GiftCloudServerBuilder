@@ -40,19 +40,19 @@ function ProjectList(_menu, _options){
 	};
 	
 	this.initFailure=function(o){
-		this.displayError("ERROR " + o.status+ ": Failed to load project list.");
+		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
 	};
 	
 	this.completeInit=function(o){
 		try{
 		    this.projectResultSet= eval("(" + o.responseText +")");
 		}catch(e){
-			this.displayError("ERROR " + o.status+ ": Failed to parse project list.");
+			this.displayError("ERROR " + o.status+ ": Failed to parse " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
 		}
 		try{
 		    this.render();
 		}catch(e){
-			this.displayError("ERROR : Failed to render project list.");
+			this.displayError("ERROR : Failed to render " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
 		}
 	};
 	

@@ -9,7 +9,7 @@
              <DIV class="bd">
               <ul class="first-of-type">
               <li class="yuimenuitem">
-                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_edit_xnat_subjectData.vm").addPathInfo('project',$project.getId())">Subject</A>
+                <a class="yuimenuitemlabel" href="$link.setPage("XDATScreen_edit_xnat_subjectData.vm").addPathInfo('project',$project.getId())">$displayManager.getSingularDisplayNameForSubject()</A>
               </li>
               #foreach($dataType in $exptCounts.keySet())
                #set($ed=$!data.getSession().getAttribute("user").getBrowseableElementDisplay($dataType))	

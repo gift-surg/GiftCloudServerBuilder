@@ -1,4 +1,4 @@
-<DIV class="edit_header2" align="center">Projects</div>
+<DIV class="edit_header2" align="center">$displayManager.getPluralDisplayNameForProject()</div>
 <style type="text/css">
 ul.leftMenu{
 	list-style: none;

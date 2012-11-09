@@ -1,7 +1,7 @@
 <form method="post" action="$link.setAction("AdminProjectAccess")"> 
 <TABLE>
  <TR>
-  <TH>Project</TH>
+  <TH>$displayManager.getSingularDisplayNameForProject()</TH>
   <TH>Private</TH>
   <TH>Protected</TH>
   <TH>Public</TH>

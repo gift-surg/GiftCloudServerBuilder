@@ -1,9 +1,9 @@
 <div class="yui-skin-sam" style="">
-  <h1>Accessible projects</h1>
-  You already have access to these projects.
+  <h1>Accessible $displayManager.getPluralDisplayNameForProject().toLowerCase()</h1>
+  You already have access to these $displayManager.getPluralDisplayNameForProject().toLowerCase().
   <div id="primary_projects"></div>
-  <h1>Other projects</h1>
-  These projects have been added by other users.
+  <h1>Other $displayManager.getPluralDisplayNameForProject().toLowerCase()</h1>
+  These $displayManager.getPluralDisplayNameForProject().toLowerCase() have been added by other users.
   <div id="other_projects"></div>
 </div>
 <script>

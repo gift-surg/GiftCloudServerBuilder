@@ -7,6 +7,7 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -47,9 +48,11 @@ public class XDATScreen_edit_xnat_subjectData extends EditScreenA {
             
             if (subject.getProperty("ID")==null)
             {
-                context.put("page_title","Enter a new subject");
+		context.put("page_title", "Enter a new "
+			+ DisplayManager.GetInstance().getSingularDisplayNameForSubject().toLowerCase());
             }else{
-                context.put("page_title","Edit an existing subject");
+		context.put("page_title", "Edit an existing "
+			+ DisplayManager.GetInstance().getSingularDisplayNameForSubject().toLowerCase());
             }
             
             if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data))!=null){

@@ -186,13 +186,13 @@ width:700;
  </TR>
 #end
  <TR>
-  <TD COLSPAN="2"><h3 style="margin-bottom:0px">Project Owners</h3></TD>
+  <TD COLSPAN="2"><h3 style="margin-bottom:0px">$displayManager.getSingularDisplayNameForProject() Owners</h3></TD>
  </TR>
  <TR>
   <TD COLSPAN="2">
    <TABLE  CLASS="groupDisplay">
     <TR>
-  	   <TD valign="top">Study owners can read, insert, modify and delete project, subject and experiment data.</TD>
+  	   <TD valign="top">Study owners can read, insert, modify and delete $displayManager.getSingularDisplayNameForProject().toLowerCase(), $displayManager.getSingularDisplayNameForSubject().toLowerCase() and experiment data.</TD>
   	  </TR>
   	 </TABLE>
   </TD>
@@ -207,13 +207,13 @@ width:700;
   <TD COLSPAN="2">&nbsp;</TD>
  </TR>
  <TR>
-  <TD COLSPAN="2"><h3 style="margin-bottom:0px">Project Members</h3></TD>
+  <TD COLSPAN="2"><h3 style="margin-bottom:0px">$displayManager.getSingularDisplayNameForProject() Members</h3></TD>
  </TR>
  <TR>
   <TD COLSPAN="2">
     <TABLE CLASS="groupDisplay">
   	  <TR>
-  	   <TD valign="top">Study members can read, insert and modify subject and experiment data, but cannot delete content and cannot edit project settings.</TD>
+  	   <TD valign="top">Study members can read, insert and modify $displayManager.getSingularDisplayNameForSubject().toLowerCase() and experiment data, but cannot delete content and cannot edit $displayManager.getSingularDisplayNameForProject().toLowerCase() settings.</TD>
   	   </TR>
   	 </TABLE>
   </TD>
@@ -228,13 +228,13 @@ width:700;
   <TD COLSPAN="2">&nbsp;</TD>
  </TR>
  <TR>
-  <TD COLSPAN="2"><h3 style="margin-bottom:0px">Project Collaborators</h3></TD>
+  <TD COLSPAN="2"><h3 style="margin-bottom:0px">$displayManager.getSingularDisplayNameForProject() Collaborators</h3></TD>
  </TR>
  <TR>
   <TD COLSPAN="2">
   	 <TABLE  CLASS="groupDisplay">
   	  <TR>
-  	   <TD valign="top">Study collaborators can read, download and use project, subject and experiment data, but cannot edit or delete any content.</TD>
+  	   <TD valign="top">Study collaborators can read, download and use $displayManager.getSingularDisplayNameForProject().toLowerCase(), $displayManager.getSingularDisplayNameForSubject().toLowerCase() and experiment data, but cannot edit or delete any content.</TD>
   	  </TR>
   	 </TABLE>
 </TD>

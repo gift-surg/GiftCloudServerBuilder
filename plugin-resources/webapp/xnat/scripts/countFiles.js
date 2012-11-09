@@ -41,7 +41,7 @@ function callback() {
                            if (scanDIV)
                            {
                              var text =    "<TR valign='top' border='0'>";
-                             text = text + "   <TD border=0 align=left colspan='4'><BR><strong>The following files were not listed in the session information document:</TD>";
+                             text = text + "   <TD border=0 align=left colspan='4'><BR><strong>The following files were not listed in the " XNAT.app.displayNames.singular.imageSession.toLowerCase() + " information document:</TD>";
                              text = text + "</TR>";
                              text = text + "<TR valign=top border=0>"; 
                              text = text + "<TD border=0 align=left><strong>	<A name=\"LINK5000\" HREF=\"#LINK5000\" onClick=\"return blocking(5000);\"><img ID=\"IMG5000\" src=\"" + serverRoot + "/images/plus.jpg\" border=0> misc </A></strong></TD>";

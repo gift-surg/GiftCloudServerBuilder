@@ -142,7 +142,7 @@ function ScanEditor(_sessionID,_scanID,_options){
 
 	this.initFailure=function(o){
 		closeModalPanel("load_scan");
-		this.displayError("ERROR " + o.status+ ": Failed to load subject list.");
+		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
 	};
 
 	this.completeInit=function(o){

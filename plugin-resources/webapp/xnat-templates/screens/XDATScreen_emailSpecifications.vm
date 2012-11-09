@@ -73,7 +73,7 @@
 
  <TR>
 
-   <TD align="left">Would you like the Site Admin to receive a copy of Project Access Requests/Approvals.</TD>
+   <TD align="left">Would you like the Site Admin to receive a copy of $displayManager.getSingularDisplayNameForProject() Access Requests/Approvals.</TD>
 
  </tr>
 

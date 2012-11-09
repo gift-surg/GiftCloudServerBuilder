@@ -13,7 +13,7 @@ width:1px;
  <DIV id="exptSummary" class="yui-navset">
   <ul class="yui-nav" style="">
       <li class="selected"><a href="#tab1"><em>Details<span class="spacer"></span></em></a></li>
-      <li><a href="#tab2"><em>Projects<span class="spacer"></span></em></a></li>
+      <li><a href="#tab2"><em>$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span></em></a></li>
   </ul>
  <div class="yui-content">   
   <div id="tab1"><p>

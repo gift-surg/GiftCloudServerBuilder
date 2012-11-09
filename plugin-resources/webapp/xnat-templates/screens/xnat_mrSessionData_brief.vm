@@ -1,6 +1,6 @@
 ACCESSION :   $!item.Id
-SESSION ID:   $!item.Label
-SUBJECT ID:   $!item.getSubjectData().getId() 
+$displayManager.getSingularDisplayNameForImageSession().toUpperCase() ID:   $!item.Label
+$displayManager.getSingularDisplayNameForSubject().toUpperCase() ID:   $!item.getSubjectData().getId() 
 AGE:          $!item.getSubjectAge()
 GENDER:       $!item.SubjectData.GenderText
 HANDEDNESS:   $!item.SubjectData.HandedText

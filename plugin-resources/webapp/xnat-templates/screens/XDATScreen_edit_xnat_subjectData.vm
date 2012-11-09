@@ -1,5 +1,5 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-$page.setTitle("Add Subject")
+$page.setTitle("Add ${displayManager.getSingularDisplayNameForSubject()}")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 #set ( $subjectHeadings = ["ID","Labels", "Date" ] )

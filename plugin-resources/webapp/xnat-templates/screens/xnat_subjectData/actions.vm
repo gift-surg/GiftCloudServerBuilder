@@ -39,6 +39,6 @@
 
                    if(expt!=null)_a.push(expt);
                    expt=null;
-					 _a.push({"label": "Subject $!om.getIdentifier($project) ($!om.getId())","ru":"/REST/projects/$project/subjects/$om.getId()","redirect":serverRoot+"/REST/projects/$project",canRead:true,checked:true,xsiType:window.available_elements.getByName("$om.getXSIType()").singular,date:"",primary_label:"$!om.getIdentifier($project)","hasProject":"true"});
+					 _a.push({"label": "$displayManager.getSingularDisplayNameForSubject() $!om.getIdentifier($project) ($!om.getId())","ru":"/REST/projects/$project/subjects/$om.getId()","redirect":serverRoot+"/REST/projects/$project",canRead:true,checked:true,xsiType:window.available_elements.getByName("$om.getXSIType()").singular,date:"",primary_label:"$!om.getIdentifier($project)","hasProject":"true"});
 	
 				</script>

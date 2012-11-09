@@ -3,7 +3,7 @@
       <td colspan="3">
           ##<font face="$ui.sansSerifFonts" size="3" style="line-height:20px;">
               <span class="ui_sansSerifFonts" style="line-height:20px;">
-                <b>Create Subject</b>
+                <b>Create $displayManager.getSingularDisplayNameForSubject()</b>
               </span>
           ##</font>
       </td>
@@ -112,7 +112,7 @@
 			<td><input type="text" name="weight" ID="subject_weight"/></td>
 		</tr>
 		<tr>
-			#formLabel("Projects")
+			#formLabel("$displayManager.getPluralDisplayNameForProject()")
 			  <td>
 			  <select ID="subject_project" name="project">
 						<option value="bad">(SELECT)</option>
@@ -125,6 +125,6 @@
 		</tr>
 				<tr>
 			  <td>&nbsp;</td><td>
-			  <input id="save_subject" type="button" onclick="submitSubjectStore();return false;" value="Save Subject"/></td>
+			  <input id="save_subject" type="button" onclick="submitSubjectStore();return false;" value="Save $displayManager.getSingularDisplayNameForSubject()"/></td>
 		</tr>
    </table>

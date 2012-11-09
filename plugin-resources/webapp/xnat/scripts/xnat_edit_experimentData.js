@@ -117,7 +117,7 @@ function validateExperimentForm()
     
     if (rootProjectName==null){
       document.getElementById(elementName+"/project").focus();
-      alert("Please select a project.");
+      alert("Please select a " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
       return false;
     }
         

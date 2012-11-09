@@ -7,7 +7,7 @@
                     <tr>
                         <td colspan="2">
                             This is the site-wide anonymization script applied to all incoming and archiving DICOM resources. This script
-                            can also be supplemented by anonymization operations specified at the project level.
+                            can also be supplemented by anonymization operations specified at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.
                         </td>
                     </tr>
                     <tr>

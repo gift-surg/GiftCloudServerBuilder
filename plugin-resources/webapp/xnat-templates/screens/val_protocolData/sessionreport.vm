@@ -49,7 +49,7 @@ TH {
 
 <a name="LINK${scanCounter}" href="#LINK${scanCounter}" onClick=" return blocking($scanCounter);">
 		  <img ID="IMG$scanCounter" src="$content.getURI("images/plus.jpg")" border=0>
-	Session Validation: <font class="status $field">$protocolValidation.getProtocolCheck_status().toUpperCase()</font>
+	$displayManager.getSingularDisplayNameForImageSession() Validation: <font class="status $field">$protocolValidation.getProtocolCheck_status().toUpperCase()</font>
 </a>
 
 <span ID="span$!{scanCounter}" style="position:relative; display:none; background-color:ffa07a; ">

@@ -73,7 +73,7 @@ function UserManager(user_mgmt_div_id, pID){
 	                        {key:"email",label:"Email",sortable:true}];
 
 	this.init=function(){
-		this.initLoader=prependLoader(this.project_table_div,"Loading project users");
+		this.initLoader=prependLoader(this.project_table_div,"Loading " + XNAT.app.displayNames.singular.project.toLowerCase() + " users");
 		this.initLoader.render();
 		//load from search xml from server
 		this.initCallback={
@@ -88,7 +88,7 @@ function UserManager(user_mgmt_div_id, pID){
 
 	this.initFailure=function(o){
 		this.initLoader.close();
-		this.displayError("ERROR " + o.status+ ": Failed to load project user list.");
+		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " user list.");
 		if(o.status==401){
 			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
 			window.location=serverRoot+"/app/template/Login.vm";
@@ -100,7 +100,7 @@ function UserManager(user_mgmt_div_id, pID){
 			this.userResultSet= eval("(" + o.responseText +")");
 			this.render();
 		}catch(e){
-			this.displayError("ERROR " + o.status+ ": Failed to parse project user list.");
+			this.displayError("ERROR " + o.status+ ": Failed to parse " + XNAT.app.displayNames.singular.project.toLowerCase() + " user list.");
 		}
 		this.initLoader.close();
 		if(this.allUserResultSet==undefined)

@@ -41,7 +41,7 @@
 #set($guest="private")
 #end
 <input type="hidden" id="current_accessibility" value="$guest"/>
-						       <DIV style="font-weight:700;">&nbsp;Define Default Project Accessibility</DIV>
+						       <DIV style="font-weight:700;">&nbsp;Define Default $displayManager.getSingularDisplayNameForProject() Accessibility</DIV>
        <TABLE cellpadding="5" cellspacing="0">
             <TR><TD NOWRAP><input id="private_access" onclick="if(document.getElementById('current_accessibility').value!=this.value)document.getElementById('accessibility_save').disabled=false;else document.getElementById('accessibility_save').disabled=true;" type="radio" name="accessibility" value="private" #if($guest=="private")CHECKED#end/> Private</TD><TD>Only you and study members will be able to access study data.</TD></TR>
             <TR><TD NOWRAP><input id="protected_access" onclick="if(document.getElementById('current_accessibility').value!=this.value)document.getElementById('accessibility_save').disabled=false;else document.getElementById('accessibility_save').disabled=true;" type="radio" name="accessibility" value="protected" #if($guest=="protected")CHECKED#end /> Protected</TD><TD>All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data.</TD></TR>
@@ -52,7 +52,7 @@
 						 </tr>
  <tr>
   <td colspan="2" class="highlighted" id="invite_container">
-						       <DIV style="font-weight:700;">&nbsp;Project Invitations</DIV>
+						       <DIV style="font-weight:700;">&nbsp;$displayManager.getSingularDisplayNameForProject() Invitations</DIV>
 <script type="text/javascript" src="$content.getURI("scripts/project/parManager.js")"></script>
 <div id="pil"></div>
 </div>

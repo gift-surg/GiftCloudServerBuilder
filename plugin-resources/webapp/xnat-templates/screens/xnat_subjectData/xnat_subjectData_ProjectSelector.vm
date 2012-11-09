@@ -13,7 +13,7 @@
   #set($project=$item.getProperty("project"))
 #end
 <TABLE><TR><TH ALIGN="left">
-Primary Project: </TH><TD>
+Primary $displayManager.getSingularDisplayNameForProject(): </TH><TD>
 #if($item.getProperty("project"))
 <INPUT ID="$item.getXSIType()/project" type="hidden" name="$item.getXSIType()/project" value="$item.getProperty("project")">
 #if($projectMap.get($item.getProperty("project")))
@@ -36,14 +36,14 @@ $item.getProperty("project")
 #end
 </SELECT>
 #else
-ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.  Please create a $displayManager.getSingularDisplayNameForProject().toLowerCase() before attempting to insert this item.
 #end
 #end
 </TD>
 </TR>
 <TR>
- <TH ALIGN="left"><label ID='${item.getXSIType()}_label'>#if($item.instanceOf("xnat:subjectData"))Subject#else Experiment#end
-'s ID within this project:</label></TH>
+ <TH ALIGN="left"><label ID='${item.getXSIType()}_label'>#if($item.instanceOf("xnat:subjectData"))$displayManager.getSingularDisplayNameForSubject()#else Experiment#end
+'s ID within this $displayManager.getSingularDisplayNameForProject().toLowerCase():</label></TH>
  <TD>
 <INPUT class="required" size="10" type="text" value="$!item.getProperty("label")" id="$item.getXSIType()/label" name="$item.getXSIType()/label" ONCHANGE="identifierChanged();"/>
  </TD>
@@ -51,8 +51,8 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
 </TR>
 #if($displayGroup)
 <TR>
- <TH ALIGN="left"><label ID='${item.getXSIType()}_group'>#if($item.instanceOf("xnat:subjectData"))Subject#else Experiment#end
-'s research group within this project:</label></TH>
+ <TH ALIGN="left"><label ID='${item.getXSIType()}_group'>#if($item.instanceOf("xnat:subjectData"))$displayManager.getSingularDisplayNameForSubject()#else Experiment#end
+'s research group within this $displayManager.getSingularDisplayNameForProject().toLowerCase():</label></TH>
  <TD>
  <INPUT size="10" type="text" value="$!item.getProperty("group")" id="$item.getXSIType()/group" name="$item.getXSIType()/group" value="$!item.getProperty("group")"/>
  </TD>

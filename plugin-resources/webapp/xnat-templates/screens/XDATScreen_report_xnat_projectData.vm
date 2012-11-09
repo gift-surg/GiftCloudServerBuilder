@@ -74,7 +74,7 @@ IMG{
 						     <DIV id="congratsBody" class="containerBody">
 						       <DIV class="containerItem edit_header2" style="white-space:normal;line-height:18px"><FONT size="+1">Security Warning</FONT></DIV>
 				       <DIV class="containerItem" style="white-space:normal;">
-				       Your account has not been granted access to this project's data.  If you would like to view this data, you will need to request access.
+				       Your account has not been granted access to this $displayManager.getSingularDisplayNameForProject().toLowerCase()'s data.  If you would like to view this data, you will need to request access.
 				       </DIV><DIV class="containerItem" style="white-space:normal;">
 				       &nbsp;&nbsp;&nbsp;&bull; <A href="$link.setPage("RequestProjectAccess.vm").addPathInfo("project","$!{project.getId()}").addPathInfo("popup","$!popup")">Request Access.</A></DIV>
 				     </DIV>

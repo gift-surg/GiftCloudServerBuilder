@@ -32,7 +32,7 @@ $proj
 </SELECT>
 <input type="button" value="Add" ONCLICK="restShare()"/>
 #else
-ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.  Please create a $displayManager.getSingularDisplayNameForProject().toLowerCase() before attempting to insert this item.
 #end
 </div>
 				<script type="text/javascript" src="$content.getURI("scripts/BasePopup.js")"></script>
@@ -68,7 +68,7 @@ shared_projects.push({id:"$pp.getProperty("project")",
    		{key:"button", label:"Unshare",formatter:function(el, oRecord, oColumn, oData) {
 			el.innerHTML=el.innerHTML = "<button type=\"button\" class=\"yui-dt-button\"><img border=\"0\" src=\""+serverRoot +"/images/close.gif\"/></button>";
    	    }},
-   		{label:"Project",key:"name"},
+   		{label:"$displayManager.getSingularDisplayNameForProject()",key:"name"},
    		{label:"Label",key:"label"},
    		{label:"Group",key:"group"},
    		{label:"Note",key:"expts",formatter:function(elCell, oRecord, oColumn, oData){
@@ -86,7 +86,7 @@ shared_projects.push({id:"$pp.getProperty("project")",
       		else{ 
       		   		document.getElementById("sharing_summary_table").style.display="block";
       		}
-      		document.getElementById("sharing_summary_title").innerHTML="This experiment has been shared into <b>$om.getSharing_share().size()</b> project(s):";
+      		document.getElementById("sharing_summary_title").innerHTML="This experiment has been shared into <b>$om.getSharing_share().size()</b> $displayManager.getSingularDisplayNameForProject().toLowerCase()(s):";
    }
    refreshSharing();
 		
@@ -94,16 +94,16 @@ shared_projects.push({id:"$pp.getProperty("project")",
    	   		    var oRecord = this.getRecord(oArgs.target);
    	   		    
    	   		    if(oRecord.getData("id")==window.primary_project){
-   	   		       alert("Unable to remove project owner.  Contact a system administrator.");
+   	   		       alert("Unable to remove $displayManager.getSingularDisplayNameForProject().toLowerCase() owner.  Contact a system administrator.");
    	   		       return;
    	   		    }
    	   		    
    	   		    if(oRecord.getData("expts")>0){
-   	   		       alert("This project has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that project, or seperately delete the created experiments.");
+   	   		       alert("This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or seperately delete the created experiments.");
    	   		       return;
    	   		    }
    	   		    
-   	   		    if(confirm("Are you sure you want to remove this experiment from the " + oRecord.getData("name") + " project?\r\n\r\nAny experiments for this experiment will also be removed from the project.")){
+   	   		    if(confirm("Are you sure you want to remove this experiment from the " + oRecord.getData("name") + " $displayManager.getSingularDisplayNameForProject().toLowerCase()?\r\n\r\nAny experiments for this experiment will also be removed from the $displayManager.getSingularDisplayNameForProject().toLowerCase().")){
    	   		     var deleteCallback={
 								             success:function(o){
 				             	   closeModalPanel("share");
@@ -142,7 +142,7 @@ shared_projects.push({id:"$pp.getProperty("project")",
      refreshSharing();
 		   },this,this);
 				  }else{
-				    alert("Please specify a project.");
+				    alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase().");
 				  }
 				}
 </script>

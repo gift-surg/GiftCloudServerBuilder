@@ -279,7 +279,7 @@ function drawFiles(){
 #set($currentStep="step3")
     <table align="center" cellspacing="0" border="0">
       <tr>
-        <td valign="top"><p class="style9">There are a few guidelines to follow for preparing your image data for upload.  The image files should be stored in seperate session directories (i.e. one session per sub-folder, many scans per session).  Once you have the data organized, it should be placed into Zip or tar gzipped archive files.  These files should not exceed 500 MB, so you may need to break your study data into multiple archive files. Use the form below to upload each file.  
+        <td valign="top"><p class="style9">There are a few guidelines to follow for preparing your image data for upload.  The image files should be stored in seperate $displayManager.getSingularDisplayNameForImageSession().toLowerCase() directories (i.e. one $displayManager.getSingularDisplayNameForImageSession().toLowerCase() per sub-folder, many scans per $displayManager.getSingularDisplayNameForImageSession().toLowerCase()).  Once you have the data organized, it should be placed into Zip or tar gzipped archive files.  These files should not exceed 500 MB, so you may need to break your study data into multiple archive files. Use the form below to upload each file.  
  </p><p class="style9">
 Once the image data have been uploaded, it may take several hours for the database to prepare it for completion.  An email will be sent to you with instructions for continuing.
 </p><hr /></td>

@@ -62,7 +62,7 @@
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;Indicate why frames were unacceptable</td>
 	<td>
-		#set($reason_unacceptable_options = ["Subject Motion"])
+		#set($reason_unacceptable_options = ["$displayManager.getSingularDisplayNameForSubject() Motion"])
 		#xdatSelectBoxWSingleValue("xnat:qcManualAssessorData/scans/scan[$scan_counter][@xsi:type=xnat:petQcScanData]/reasonFramesUnacceptable" $item $reason_unacceptable_options $vr)
 	</td>
 </tr>

@@ -27,9 +27,9 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 
         #if($part_id && $project)
 
-            <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
+            <p id="selected_project" class="selected"><b class="label">$displayManager.getSingularDisplayNameForProject(): </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
 
-            <p id="selected_subject" class="selected"><b class="label">Subject: </b> <span class="selected_label" title="$part_id"></span> <select id="part_id" name="part_id" style="display:none;"></select></p>
+            <p id="selected_subject" class="selected"><b class="label">$displayManager.getSingularDisplayNameForSubject(): </b> <span class="selected_label" title="$part_id"></span> <select id="part_id" name="part_id" style="display:none;"></select></p>
 
             <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
 
@@ -65,9 +65,9 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 
         #elseif($project)
 
-            <p id="selected_project" class="selected"><b class="label">Project: </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
+            <p id="selected_project" class="selected"><b class="label">$displayManager.getSingularDisplayNameForProject(): </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
 
-            <p><b class="label">Subject: </b> <select id="part_id" name="part_id"></select></p>
+            <p><b class="label">$displayManager.getSingularDisplayNameForSubject(): </b> <select id="part_id" name="part_id"></select></p>
 
             <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
 
@@ -97,8 +97,8 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 
         #else
 
-            <p><span class="label">Project: </span> <select disabled="disabled" id="project" name="project"></select></p>
-            <p><span class="label">Subject: </span> <select disabled="disabled" id="part_id" name="part_id"></select></p>
+            <p><span class="label">$displayManager.getSingularDisplayNameForProject(): </span> <select disabled="disabled" id="project" name="project"></select></p>
+            <p><span class="label">$displayManager.getSingularDisplayNameForSubject(): </span> <select disabled="disabled" id="part_id" name="part_id"></select></p>
 
             <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
 
@@ -392,11 +392,11 @@ jq(document).ready(function(){
                 jq('#form1').submit();
             }
             else {
-                alert('Please select a subject.');
+                alert('Please select a $displayManager.getSingularDisplayNameForSubject().toLowerCase().');
             }
         }
         else {
-            alert('Please select a project.');
+            alert('Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().');
         }
 
     });

@@ -36,7 +36,7 @@
     }
     window.subjectEditor.panel.show();
    }else{
-     alert("Please select a project before selecting a subject.");
+     alert("Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase() before selecting a $displayManager.getSingularDisplayNameForSubject().toLowerCase().");
      modifyProject();
    }
   }

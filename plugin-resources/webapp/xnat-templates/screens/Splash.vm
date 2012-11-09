@@ -1,5 +1,5 @@
 <!-- Splash -->
-<div>$!systemName currently contains $proj_count Projects, $sub_count Subjects, and $isd_count Imaging Sessions.
+<div>$!systemName currently contains $proj_count $displayManager.getPluralDisplayNameForProject().toLowerCase(), $sub_count $displayManager.getPluralDisplayNameForSubject().toLowerCase(), and $isd_count imaging $displayManager.getPluralDisplayNameForImageSession().toLowerCase().
 </div>
 <br/>
 <STYLE>
@@ -14,7 +14,7 @@ width:1px;
 				  var frontTabs=new YAHOO.widget.TabView('front_search');
 				  
 				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'Projects<span class="spacer"></span>',
+				  		  label:'$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:projectData',
 				  		  cacheData:true,
 				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
@@ -22,7 +22,7 @@ width:1px;
 				  }));
 				  
 				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'Subjects<span class="spacer"></span>',
+				  		  label:'$displayManager.getPluralDisplayNameForSubject()<span class="spacer"></span>',
 				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:subjectData',
 				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
 				  		  cacheData:true
@@ -56,7 +56,7 @@ width:1px;
  <tr>
   <td width="" valign="top">
  <DIV ID="projectsContainer" class="container">
-     <DIV class="withColor containerTitle">Projects</DIV>
+     <DIV class="withColor containerTitle">$displayManager.getPluralDisplayNameForProject()</DIV>
 						     <DIV ID="projectsBody" class="containerBody">
 			      #parse("/screens/minProjectsList.vm")
 						     </DIV>

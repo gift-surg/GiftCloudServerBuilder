@@ -5,7 +5,7 @@
 	<BR/><BR/>
 #set($scanCounter=7900)
 
-<A name="LINK${scanCounter}" HREF="#LINK${scanCounter}" onClick=" return blocking($scanCounter);"><img ID="IMG$scanCounter" src="$content.getURI("images/plus.jpg")" border=0> <font face="$ui.sansSerifFonts" size="4" style="line-height:18px;"><b>Session QC Status</b></font></a>
+<A name="LINK${scanCounter}" HREF="#LINK${scanCounter}" onClick=" return blocking($scanCounter);"><img ID="IMG$scanCounter" src="$content.getURI("images/plus.jpg")" border=0> <font face="$ui.sansSerifFonts" size="4" style="line-height:18px;"><b>$displayManager.getSingularDisplayNameForImageSession() QC Status</b></font></a>
 
 	<span ID="span$!scanCounter" style="position:relative; display:none;">
 		<br>

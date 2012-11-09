@@ -139,7 +139,7 @@ $newpipeline.getDescription()
 		<TD colspan="2" align="left"> 
 		    <TABLE>
 			<TR>
-			  <TD><b>Launch pipeline automatically when session is archived?</b></TD><TD><input type="checkbox"  name="auto_archive" $checked/></TD>
+			  <TD><b>Launch pipeline automatically when $displayManager.getSingularDisplayNameForImageSession().toLowerCase() is archived?</b></TD><TD><input type="checkbox"  name="auto_archive" $checked/></TD>
 			</TR>
 			</TABLE>
 		</TD>
@@ -156,7 +156,7 @@ $newpipeline.getDescription()
 	#set ($parameters =$newpipeline.getParameters_parameter())
 	#if ($parameters.size() > 0)
 	<TR>
-	   <TD><b>Project specific pipeline parameters:</b></TD>
+	   <TD><b>$displayManager.getSingularDisplayNameForProject() specific pipeline parameters:</b></TD>
 	   <TD>&nbsp;</td>	
 	</TR>
 	<TR>
@@ -199,7 +199,7 @@ $newpipeline.getDescription()
 			#end
 	#else 
 	<TR>
-		<TD colspan="2" align="left">There are no paramaters to set for this pipeline. Click on Submit button to add this pipeline to your project</TD>
+		<TD colspan="2" align="left">There are no paramaters to set for this pipeline. Click on Submit button to add this pipeline to your $displayManager.getSingularDisplayNameForProject().toLowerCase()</TD>
 	</TR>
  
 	#end

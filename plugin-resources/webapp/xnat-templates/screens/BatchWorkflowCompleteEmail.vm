@@ -19,7 +19,7 @@ $errors.size() error(s) occured.
 #end
 </p>
 #end
-<br><br><p>Details for this project are available at <a href="$server">the website</a>.</p>
+<br><br><p>Details for this $displayManager.getSingularDisplayNameForProject().toLowerCase() are available at <a href="$server">the website</a>.</p>
 
 <br><br>
 The $system Team

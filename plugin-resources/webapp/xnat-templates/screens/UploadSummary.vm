@@ -3,5 +3,5 @@ $!template.setLayoutTemplate("ScreenOnly.vm")
 #if ($data.getMessage()!="File Uploaded.")
 <DIV class="error">$data.message</DIV><br>
 #else
-Your file was successfully uploaded.  Click <A TARGET="_parent" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","prearchives").addPathInfo("project","$!project")">here</A> to review and archive your uploaded sessions.
+Your file was successfully uploaded.  Click <A TARGET="_parent" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","prearchives").addPathInfo("project","$!project")">here</A> to review and archive your uploaded $displayManager.getPluralDisplayNameForImageSession().toLowerCase().
 #end

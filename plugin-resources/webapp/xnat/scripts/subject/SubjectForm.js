@@ -53,7 +53,7 @@ this.draw=function(){
 	td1.align="left";
 	td2 = document.createElement("TD");
 	
-	td1.innerHTML="Project";
+	td1.innerHTML=XNAT.app.displayNames.singular.project;
 	td2.innerHTML=this.subject.getProject();
 	
 	tr.appendChild(td1);
@@ -768,7 +768,7 @@ this.save=function(callBack){
                if (msg.indexOf("Matched pre-existing")!=-1)
                {
 	               var subjectDIV = document.getElementById("message");
-	               this.callback.message("<br><font color='red'>" + msg + "</font><br>The following archive subjects matched your search. Please select the correct subject.");
+	               this.callback.message("<br><font color='red'>" + msg + "</font><br>The following archive " + XNAT.app.displayNames.plural.subject.toLowerCase() + " matched your search. Please select the correct " + XNAT.app.displayNames.singular.subject.toLowerCase() + ".");
 					
 				   if (handler.items.length>0){	       
 	               		this.callback.showMatchedSubjects(handler.items);
@@ -781,7 +781,7 @@ this.save=function(callBack){
                }else{
 	                 if (msg.indexOf("Subject Stored.")!=-1)
 	                 {
-		                   this.callback.message("The subject you entered was stored.");
+		                   this.callback.message("The " + XNAT.app.displayNames.singular.subject.toLowerCase() + " you entered was stored.");
 		                   this.callback.select(handler.root);
 	                 }else{
 		                   this.callback.message(msg);

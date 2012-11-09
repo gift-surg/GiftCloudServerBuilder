@@ -3,7 +3,7 @@
 	<hr>
 		   			#parse("screens/ProjectSelector.vm")
 <HR>
-		   <DIV class="edit_header1">Subject Details</div><br>
+		   <DIV class="edit_header1">$displayManager.getSingularDisplayNameForSubject() Details</div><br>
 			#parse("/screens/SubjectFinder.vm")
 <HR>
 <script type="text/javascript">

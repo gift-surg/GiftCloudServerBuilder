@@ -1,11 +1,11 @@
 #if($project!=$om.getProject())
 						<table align="left">
 								<tr>
-						            	<TH align="left">Primary Project</TH>
+						            	<TH align="left">Primary $displayManager.getSingularDisplayNameForProject()</TH>
 						            	<TD>$!om.getProjectDisplayID()</TD>
 							</tr>
 								<tr>
-						            	<TH align="left"><label ID='${om.getXSIType()}_label'>ID within primary project</label></TH>
+						            	<TH align="left"><label ID='${om.getXSIType()}_label'>ID within primary $displayManager.getSingularDisplayNameForProject().toLowerCase()</label></TH>
 						            	<TD>$!om.getLabel()</TD>
 							</tr>
 							</table>
@@ -19,10 +19,10 @@
 
  #if($om.getSharing_share().size()>0)
 <DIV class="container" style="overflow:none">
-    <DIV class="withColor containerTitle">Project Participation</DIV>
+    <DIV class="withColor containerTitle">$displayManager.getSingularDisplayNameForProject() Participation</DIV>
     <DIV class="containerBody">
        <TABLE> 
-        <tr><th>Project</th><th>ID</th></tr>
+        <tr><th>$displayManager.getSingularDisplayNameForProject()</th><th>ID</th></tr>
        #foreach($pp in $om.getSharing_share())
         #if($read_projects.contains($pp.getProperty("project")))
          <TR><TD>$pp.getProjectDisplayID()</TD>

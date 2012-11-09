@@ -88,7 +88,7 @@ $page.setVlinkColor($ui.vlink)
 <br>
 <div class="edit_title">Yale Global Tic Severity Scale</div>
 #parse("/screens/xnat_edit_subjectAssessorData.vm")
-<div class="edit_header1">Session Info</div><br>
+<div class="edit_header1">$displayManager.getSingularDisplayNameForImageSession() Info</div><br>
 
 <table class="session_info_edit">
 	#dateEditRow("Date" "xnat_a:ygtssData/date")

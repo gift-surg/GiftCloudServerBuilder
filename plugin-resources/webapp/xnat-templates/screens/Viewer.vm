@@ -24,7 +24,7 @@ $page.setTitle("Viewer: $om.Id")
     </tr>
     <tr style="border-style:none;">
         <td style="border-style:none;" >
-    	    <b>Session information</b>
+    	    <b>$displayManager.getSingularDisplayNameForImageSession() information</b>
 	 </td>
 	        <td style="border-style:none;" valign="top" align="right">
 	    <a class=b HREF="" onClick="return popup('$link.setPage('ViewerHelp.vm').addPathInfo('popup','true')','$om.Id')">Help</a>
@@ -35,7 +35,7 @@ $page.setTitle("Viewer: $om.Id")
 	    <textarea
 			rows="10"
 			cols="32"
-			style="font-family:'courier'; font-style:normal; font-weight:normal; font-size:12px; border-style:ridge;">SESSION ID:   $om.Label
+			style="font-family:'courier'; font-style:normal; font-weight:normal; font-size:12px; border-style:ridge;">$displayManager.getSingularDisplayNameForImageSession().toUpperCase() ID:   $om.Label
 LAB ID:       $!om.SubjectData.LabId
 MAP#:         $!om.SubjectData.Map
 AGE:          $age

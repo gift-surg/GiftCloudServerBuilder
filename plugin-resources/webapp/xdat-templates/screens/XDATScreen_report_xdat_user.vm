@@ -184,7 +184,7 @@ function summaryTabManagerInit(){
                          <TABLE border="1" width="80%">
                                  <TR><TD valign="top">
                                          <Table border="0" width="100%">	
-								<TR><TH align=left colspan="2">STEP 2: Assign project membership and roles
+								<TR><TH align=left colspan="2">STEP 2: Assign $displayManager.getSingularDisplayNameForProject().toLowerCase() membership and roles
 								</TH></TR>
 			<TR>
 			<TD align=left colspan=2 valign=top><DIV ID="groupDIV"></DIV>
@@ -332,7 +332,7 @@ addGroup("$!groupid.getGroupid()");
 	  var tBody = document.createElement("TBODY");
 	  t.appendChild(tBody);
 	     
-	  //Sorts selectedgroups and selectedtags arrays by project name
+	  //Sorts selectedgroups and selectedtags arrays by $displayManager.getSingularDisplayNameForProject().toLowerCase() name
 	  	var found = true;
         var tempGroup;
         var tempTag;
@@ -427,7 +427,7 @@ addGroup("$!groupid.getGroupid()");
 	  addGroupDIV.appendChild(t);
 	  
 	  var td = document.createElement("TD");
-	  td.innerHTML="Add to project:";
+	  td.innerHTML="Add to $displayManager.getSingularDisplayNameForProject().toLowerCase():";
 	  tr.appendChild(td);
 	  
 	  var select =document.createElement("SELECT");

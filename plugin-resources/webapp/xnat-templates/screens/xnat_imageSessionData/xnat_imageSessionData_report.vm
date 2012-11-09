@@ -6,11 +6,11 @@
 #end
 		<script type="text/javascript" src="$content.getURI("scripts/FileViewer.js")"></script>
 <script type="text/javascript">
-document.title = "Session: $!item.getProperty('label')";
+document.title = "$displayManager.getSingularDisplayNameForImageSession(): $!item.getProperty('label')";
 </script>
 #set($subject = $mr.getSubjectData())
 			#if($item.needsActivation())
-			<div id="quarantine_div" class="error" style="background-color:#FFCC33;">This session is in quarantine.&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="toggleQuarantine();">Activate</a></div><br>
+			<div id="quarantine_div" class="error" style="background-color:#FFCC33;">This $displayManager.getSingularDisplayNameForImageSession().toLowerCase() is in quarantine.&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="toggleQuarantine();">Activate</a></div><br>
 			#end
 		#addCustomScreens($om.getXSIType() "report/errors") 
 			#parse($turbineUtils.getTemplateName("_title",$om.getXSIType(),$project))

@@ -7,7 +7,7 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 	XNAT.app._label.currentLabel=currentLabel;
 	
 	if(this.config.header==undefined){
-		this.config.header="Session";
+		this.config.header=XNAT.app.displayNames.singular.imageSession;
 	}
 	
     this.onModification=new YAHOO.util.CustomEvent("modification",this);
@@ -91,7 +91,7 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 				    }
 				    
 				    if(matchedExisting){
-				       alert("This " + this.selector.config.header + " is already in use in this project.  Please modify and resubmit.");
+				       alert("This " + this.selector.config.header + " is already in use in this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Please modify and resubmit.");
 				       labelBox.focus();
 				       return;
 				    }
@@ -103,7 +103,7 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 			        	        this.selector.onModification.fire();
 			        	        this.cancel();
 					}else{
-					    if(confirm("Modifying the " + this.selector.config.header + " of an imaging session will result in the moving of files on the file server within the project's storage space.  Are you sure you want to make this change?")){
+					    if(confirm("Modifying the " + this.selector.config.header + " of an imaging " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " will result in the moving of files on the file server within the " + XNAT.app.displayNames.singular.project.toLowerCase() + "'s storage space.  Are you sure you want to make this change?")){
 					    	if(showReason){
                     			var justification=new XNAT.app.requestJustification("label_change","Label Modification Justification",XNAT.app.modifyLabel,this);
                     		}else{

@@ -96,7 +96,7 @@ function initComponents() {
     function addClick(e) { 
 	var label = this.get("label");
 	var addMoreText = "Add More Pipelines";
-	var showMineText = "Show Project Pipelines";
+	var showMineText = "Show $displayManager.getSingularDisplayNameForProject() Pipelines";
 
 	if (label == addMoreText) {
 	  window.pipelineManager.getAdditionalPipelines();

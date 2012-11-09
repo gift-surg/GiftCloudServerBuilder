@@ -113,7 +113,7 @@ SCID
 		</table></td>
 		<td valign="top"><table>
 			<tr>
-				<td class="attr_name">Subject:</td>
+				<td class="attr_name">$displayManager.getSingularDisplayNameForSubject():</td>
 				<td>
 					<A CLASS=b HREF="$link.setAction('DisplayItemAction').addPathInfo('search_element','xnat:subjectData').addPathInfo('search_field','xnat:subjectData.ID').addPathInfo('search_value',$part_id).addPathInfo('popup','$!popup').addPathInfo('project','$!project')">
 					#if($project)

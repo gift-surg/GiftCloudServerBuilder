@@ -51,14 +51,14 @@ $page.setVlinkColor($ui.vlink)
 <br>
 <div class="edit_title">Unified Parkinson's Disease Rating Scale</div>
 #parse("screens/xnat_edit_subjectAssessorData.vm")
-<div class="edit_header1">Session Info</div><br>
+<div class="edit_header1">$displayManager.getSingularDisplayNameForImageSession() Info</div><br>
 
 <table class="session_info_edit">
 	#dateEditRow("Date" "xnat_a:updrs3Data/date")
 	#textEditRow("Time" "xnat_a:updrs3Data/time")
 	#textEditRow("Visit ID" "xnat_a:updrs3Data/visit_id")
 	#textEditRow("Age" "xnat_a:updrs3Data/age")
-	#boolRadioEditRow("Problem with Session?" "xnat_a:updrs3Data/problem" false)
+	#boolRadioEditRow("Problem with ${displayManager.getSingularDisplayNameForImageSession()}?" "xnat_a:updrs3Data/problem" false)
 	#boolRadioEditRow("In Scanner?" "xnat_a:updrs3Data/inScanner" false)
 	<tr><th>Clicker</th></tr>
 	#textEditRow("Right" "xnat_a:updrs3Data/clicker/right")

@@ -165,7 +165,7 @@ function populateHiddenForm(){
     </DIV>
  <table width="25%" border="0" align="center">
 <TR>
- <TD>Project</TD>
+ <TD>$displayManager.getSingularDisplayNameForProject()</TD>
  <TD>
  #parse("/screens/ProjectSelectBox.vm")
  </TD>

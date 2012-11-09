@@ -43,7 +43,7 @@ function ProjectLoader(_options) {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load project list.");
+        this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
     };
 
     this.completeInit = function (o) {
@@ -63,7 +63,7 @@ function ProjectLoader(_options) {
 
             this.onLoadComplete.fire();
         } catch (e) {
-            this.displayError("ERROR " + o.status + ": Failed to parse project list.");
+            this.displayError("ERROR " + o.status + ": Failed to parse " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
         }
 
     };
@@ -109,7 +109,7 @@ function SubjectLoader(_options) {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load subject list.");
+        this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
     };
 
     this.completeInit = function (o) {
@@ -130,7 +130,7 @@ function SubjectLoader(_options) {
             }
         } catch (e) {
             if (o.status != 200) {
-                this.displayError("ERROR " + o.status + ": Failed to parse subject list.");
+                this.displayError("ERROR " + o.status + ": Failed to parse " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
             } else {
                 this.displayError("EXCEPTION: " + e.toString());
             }
@@ -257,7 +257,7 @@ function ProjectEditor(_config) {
                 fixedcenter:true,
                 visible:false
             });
-            this.panel.setHeader("Project modification");
+            this.panel.setHeader(XNAT.app.displayNames.singular.project + " modification");
 
             var bd = document.createElement("form");
 
@@ -271,7 +271,7 @@ function ProjectEditor(_config) {
             td1 = document.createElement("th");
             td2 = document.createElement("td");
 
-            td1.innerHTML = "Project:";
+            td1.innerHTML = XNAT.app.displayNames.singular.project + ":";
             td1.align = "left";
             this.selectBox = document.createElement("select");
             this.selectBox.id = "new_project";
@@ -298,7 +298,7 @@ function ProjectEditor(_config) {
 	                            failure:function (o) {
 	                            	if( o.status == 404 ) {
 		                            	// subject not currently owned by or shared into the new project, warn user that we must do this to change the project
-	                                    if (confirm("As part of this change, the system will attempt to share this session's subject into the new project.  Is this OK?")) {
+	                                    if (confirm("As part of this change, the system will attempt to share this " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + "'s " + XNAT.app.displayNames.singular.subject.toLowerCase() + " into the new " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Is this OK?")) {
 	                                    	this.subjectNeedsToBeSharedIntoNewProject = true;
 	    	                            	this.modifyProject();
 	                                    } else {
@@ -307,7 +307,7 @@ function ProjectEditor(_config) {
 	                                }
 	                            	else {	
 	                            		// some systemic error occured
-		                            	alert("ERROR (" + o.status + "): Failed to modify project.");
+		                            	alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
 		                                closeModalPanel("modify_project");
 	                            	}
 	                            },
@@ -322,9 +322,9 @@ function ProjectEditor(_config) {
                 	}
                     
                 	this.modifyProject = function () {
-                        if (confirm("Modifying the primary project of an imaging session will result in the moving of files on the file server into the new project's storage space.  Are you sure you want to make this change?")) {
+                        if (confirm("Modifying the primary " + XNAT.app.displayNames.singular.project.toLowerCase() + " of an imaging " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " will result in the moving of files on the file server into the new " + XNAT.app.displayNames.singular.project.toLowerCase() + "'s storage space.  Are you sure you want to make this change?")) {
                         	if(showReason){
-                    			var justification=new XNAT.app.requestJustification("file","Project Modification Justification",this._modifyProject,this);
+                    			var justification=new XNAT.app.requestJustification("file",XNAT.app.displayNames.singular.project + " Modification Justification",this._modifyProject,this);
                     		}else{
                     			var passthrough= new XNAT.app.passThrough(this._modifyProject,this);
                     			passthrough.fire();
@@ -337,7 +337,7 @@ function ProjectEditor(_config) {
                 	
                 	this._modifyProject=function(arg1,arg2,container){
                 	    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
-                		openModalPanel("modify_project", "Modifying project, please wait...");
+                		openModalPanel("modify_project", "Modifying " + XNAT.app.displayNames.singular.project.toLowerCase() + ", please wait...");
 
                         var callback = {
                                 success:function (o) {
@@ -350,7 +350,7 @@ function ProjectEditor(_config) {
                                     this.cancel();
                                 },
                                 failure:function (o) {
-                                    alert("ERROR (" + o.status + "): Failed to modify project.");
+                                    alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
                                     closeModalPanel("modify_project");
                                 },
                                 cache:false, // Turn off caching for IE
@@ -384,10 +384,10 @@ function ProjectEditor(_config) {
                     this.selector.new_project_name = this.form.new_project.options[this.form.new_project.selectedIndex].text;
 
                     if (this.selector.new_project == window.currentProject) {
-                        alert("No project modification found.");
+                        alert("No " + XNAT.app.displayNames.singular.project.toLowerCase() + " modification found.");
                         this.cancel();
                     } else if (this.form.new_project.selectedIndex == 0) {
-                        alert("Please select a project");
+                        alert("Please select a " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
                     } else {
                         if (this.selector.config.uri == undefined) {
                             window.currentProject = this.selector.new_project;
@@ -410,7 +410,7 @@ function ProjectEditor(_config) {
 
             if (window.projectLoader == undefined) {
                 window.projectLoader = new ProjectLoader({selects:[this.selectBox], defaultValue:window.currentProject, member:true, owner:true});
-                openModalPanel("projects_loading", "Loading projects...");
+                openModalPanel("projects_loading", "Loading " + XNAT.app.displayNames.plural.project.toLowerCase() + "...");
                 window.projectLoader.onLoadComplete.subscribe(function (obj) {
                     closeModalPanel("projects_loading");
                 })
@@ -438,7 +438,7 @@ function SubjectEditor(_config) {
                 fixedcenter:true,
                 visible:false
             });
-            this.panel.setHeader("Subject modification");
+            this.panel.setHeader(XNAT.app.displayNames.singular.subject + " modification");
 
             var bd = document.createElement("form");
 
@@ -453,7 +453,7 @@ function SubjectEditor(_config) {
             td2 = document.createElement("td");
             td3 = document.createElement("td");
 
-            td1.innerHTML = "Subject:";
+            td1.innerHTML = XNAT.app.displayNames.singular.subject + ":";
             td1.align = "left";
 
             window.subjectBox = document.createElement("select");
@@ -469,7 +469,7 @@ function SubjectEditor(_config) {
                 this.chs = document.createElement("input");
                 this.chs.id = "create_subject_button";
                 this.chs.type = "button";
-                this.chs.value = "CREATE SUBJECT";
+                this.chs.value = "CREATE " + XNAT.app.displayNames.singular.subject.toUpperCase();
                 this.chs.project = window.currentProject;
                 this.chs.create_subject_link = this.config.create_subject_link;
                 this.chs.onclick = function () {
@@ -483,7 +483,7 @@ function SubjectEditor(_config) {
                         if (window.subjectForm.opener == null) window.subjectForm.opener = self;
                         return window.subjectForm;
                     } else {
-                        alert("Please select a project.");
+                        alert("Please select a " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
                     }
                 }
                 td3.appendChild(this.chs);
@@ -503,10 +503,10 @@ function SubjectEditor(_config) {
                     this.selector.new_subject_name = this.form.new_subject.options[this.form.new_subject.selectedIndex].text;
 
                     if (this.selector.new_subject == window.currentSubject) {
-                        alert("No subject modification found.");
+                        alert("No " + XNAT.app.displayNames.singular.subject.toLowerCase() + " modification found.");
                         this.cancel();
                     } else if (this.form.new_subject.selectedValue == 0) {
-                        alert("Please select a subject");
+                        alert("Please select a " + XNAT.app.displayNames.singular.subject.toLowerCase());
                     } else {
                         if (this.selector.config.uri == undefined) {
                             window.currentSubject = this.selector.new_subject;
@@ -515,9 +515,9 @@ function SubjectEditor(_config) {
                             this.selector.onModification.fire();
                             this.cancel();
                         } else {
-                            if (confirm("Modifying the subject of an experiment may result in the moving of files on the file server into the new subject's storage space.  Are you sure you want to make this change?")) {
+                            if (confirm("Modifying the " + XNAT.app.displayNames.singular.subject.toLowerCase() + " of an experiment may result in the moving of files on the file server into the new " + XNAT.app.displayNames.singular.subject.toLowerCase() + "'s storage space.  Are you sure you want to make this change?")) {
                             	if(showReason){
-                        			var justification=new XNAT.app.requestJustification("file","Subject Modification Justification",XNAT.app._modifySubject,this);
+                        			var justification=new XNAT.app.requestJustification("file",XNAT.app.displayNames.singular.subject + " Modification Justification",XNAT.app._modifySubject,this);
                         		}else{
                         			var passthrough= new XNAT.app.passThrough(XNAT.app._modifySubject,this);
                         			passthrough.fire();
@@ -549,7 +549,7 @@ function SubjectEditor(_config) {
                 closeModalPanel("subjects_loading");
             });
 
-            openModalPanel("subjects_loading", "Loading subject...");
+            openModalPanel("subjects_loading", "Loading " + XNAT.app.displayNames.singular.subject.toLowerCase() + "...");
             window.subjectLoader.load(window.currentProject, {selects:[window.subjectBox], defaultValue:window.currentSubject});
         }
 
@@ -560,7 +560,7 @@ function SubjectEditor(_config) {
 
 
 XNAT.app._modifySubject=function(arg1,arg2,container){
-	openModalPanel("modify_subject", "Modifying subject, please wait...");
+	openModalPanel("modify_subject", "Modifying " XNAT.app.displayNames.singular.subject.toLowerCase() + ", please wait...");
 
 	var settingsCallback = {
         success:function (o) {
@@ -571,7 +571,7 @@ XNAT.app._modifySubject=function(arg1,arg2,container){
             this.cancel();
         },
         failure:function (o) {
-            alert("ERROR (" + o.status + "): Failed to modify subject.");
+            alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.subject.toLowerCase() + ".");
             closeModalPanel("modify_subject");
         },
         scope:this
@@ -590,7 +590,7 @@ function LabelEditor(_config) {
     this.config = _config;
 
     if (this.config.header == undefined) {
-        this.config.header = "Session";
+        this.config.header = XNAT.app.displayNames.singular.imageSession;
     }
 
     this.onModification = new YAHOO.util.CustomEvent("modification", this);
@@ -673,7 +673,7 @@ function LabelEditor(_config) {
                     }
 
                     if (matchedExisting) {
-                        alert("This " + this.selector.config.header + " is already in use in this project.  Please modify and resubmit.");
+                        alert("This " + this.selector.config.header + " is already in use in this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Please modify and resubmit.");
                         label.focus();
                         return;
                     }
@@ -684,9 +684,9 @@ function LabelEditor(_config) {
                         this.selector.onModification.fire();
                         this.cancel();
                     } else {
-                        if (confirm("Modifying the " + this.selector.config.header + " of an imaging session will result in the moving of files on the file server within the project's storage space.  Are you sure you want to make this change?")) {
+                        if (confirm("Modifying the " + this.selector.config.header + " of an imaging " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " will result in the moving of files on the file server within the " + XNAT.app.displayNames.singular.project.toLowerCase() + "'s storage space.  Are you sure you want to make this change?")) {
                         	if(showReason){
-                    			var justification=new XNAT.app.requestJustification("file","Session Modification Justification",XNAT.app._modifyLabel,this);
+                    			var justification=new XNAT.app.requestJustification("file",XNAT.app.displayNames.singular.imageSession + " Modification Justification",XNAT.app._modifyLabel,this);
                     		}else{
                     			var passthrough= new XNAT.app.passThrough(XNAT.app._modifyLabel,this);
                     			passthrough.fire();
@@ -776,7 +776,7 @@ XNAT.app._modifyLabel=function(arg1,arg2,container){
              this.cancel();
          },
          failure:function (o) {
-             alert("ERROR (" + o.status + "): Failed to modify session ID.");
+             alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " ID.");
              closeModalPanel("modify_new_label");
          }, scope:this
      }

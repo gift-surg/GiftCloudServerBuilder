@@ -155,7 +155,7 @@ function prog(theform) {
         return false;
     }
     if (document.getElementById("project").selectedIndex == 0) {
-        alert("Please select a project.");
+        alert("Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().");
         return false;
     }
     disableForm(theform);
@@ -354,7 +354,7 @@ function makeTheFormGo() {
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td><h3>Additional Options for Uploading Sessions</h3></td>
+        <td><h3>Additional Options for Uploading $displayManager.getPluralDisplayNameForImageSession()</h3></td>
     </tr>
     <tr>
         <td>&nbsp;</td>
@@ -373,8 +373,8 @@ function makeTheFormGo() {
             <div style="width:500px">Raw image files can be zipped (.zip or .tar.gz) and uploaded using the form. This
                 tool currently supports DICOM and ECAT files. Selecting 'Prearchive' will place your images into a
                 temporary holding space. You will then have the ability to review the details and match the data to the
-                proper subject & session id. If you are confident the data will be mapped properly, you can directly
-                'Archive' the files and specify whether the resulting session should go into a quarantine state.
+                proper $displayManager.getSingularDisplayNameForSubject().toLowerCase() & $displayManager.getSingularDisplayNameForImageSession().toLowerCase() id. If you are confident the data will be mapped properly, you can directly
+                'Archive' the files and specify whether the resulting $displayManager.getSingularDisplayNameForImageSession().toLowerCase() should go into a quarantine state.
             </div>
         </td>
     </tr>
@@ -395,7 +395,7 @@ function makeTheFormGo() {
 
                 <TABLE border=0>
                     <TR>
-                        <TH align="left">Project</TH>
+                        <TH align="left">$displayManager.getSingularDisplayNameForProject()</TH>
                         <TD>
                             #if(!$session)
                                 <select id="project" name="project" disabled=true></select>
@@ -408,7 +408,7 @@ function makeTheFormGo() {
 
                     #if($session)
                         <TR>
-                            <TH align="left">Session</TH>
+                            <TH align="left">$displayManager.getSingularDisplayNameForImageSession()</TH>
                             <TD>$!session.getLabel()</TD>
                         </TR>
                     #end
@@ -610,7 +610,7 @@ function makeTheFormGo() {
     if (breadcrumbs != null) {
         var bread = "";
         #if($project)
-            bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>PROJECT: $!project</a>";
+            bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>$displayManager.getSingularDisplayNameForProject().toUpperCase(): $!project</a>";
             bread = bread + "&nbsp;>&nbsp;Upload Images";
         #end
         breadcrumbs.innerHTML = bread;

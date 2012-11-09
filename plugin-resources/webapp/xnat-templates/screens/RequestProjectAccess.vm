@@ -9,7 +9,7 @@
   </TD>
  </TR>
  <TR>
-  <TD>Upon submission of this form an email will be sent to the project manager.  The manager will be asked to give you access to this project.  Once the manager approves or denies your access, an email will be sent to you.
+  <TD>Upon submission of this form an email will be sent to the $displayManager.getSingularDisplayNameForProject().toLowerCase() manager.  The manager will be asked to give you access to this $displayManager.getSingularDisplayNameForProject().toLowerCase().  Once the manager approves or denies your access, an email will be sent to you.
   </TD>
  </TR>
  <TR>

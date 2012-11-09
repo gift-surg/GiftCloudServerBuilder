@@ -1,7 +1,7 @@
 <div id="logo" align="center">#parse("/screens/Logo_Email.vm")</div>
 <hr>
 <div id="content">The upload process you initiated at $date has completed.<br>
-<br>Please <a href="$server/app/action/XDATActionRouter/xdataction/data_management">return to the site</a> and continue inserting your project.
+<br>Please <a href="$server/app/action/XDATActionRouter/xdataction/data_management">return to the site</a> and continue inserting your $displayManager.getSingularDisplayNameForProject().toLowerCase().
 
 <br><br><b>Summary</b>
   <br>$successfuls.size() file(s) were uploaded successfully.

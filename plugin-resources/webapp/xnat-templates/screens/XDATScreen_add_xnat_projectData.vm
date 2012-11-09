@@ -30,9 +30,9 @@ $page.setVlinkColor($ui.vlink)
 	
 	<TR><TD>
 							      <DIV class="container" style="width:750px;float:left;margin:5px;">
-						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 1: Enter project details</DIV>
+						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 1: Enter $displayManager.getSingularDisplayNameForProject().toLowerCase() details</DIV>
 						       <DIV class="containerBody">
-						        <DIV class="containerItem">Define the details of this project.  The 'Abbreviation' should be a single word or acronym which will identify your project.  It will be used on the file system to name directories and files, so it shouldn't contain any wild characters or spaces.  The 'Running Title' will be used throughout the website to identify your project.<br><hr></DIV>
+						        <DIV class="containerItem">Define the details of this $displayManager.getSingularDisplayNameForProject().toLowerCase().  The 'Abbreviation' should be a single word or acronym which will identify your $displayManager.getSingularDisplayNameForProject().toLowerCase().  It will be used on the file system to name directories and files, so it shouldn't contain any wild characters or spaces.  The 'Running Title' will be used throughout the website to identify your $displayManager.getSingularDisplayNameForProject().toLowerCase().<br><hr></DIV>
 						        <DIV class="containerItem">
 									 #set( $parentTemplate = 'add' )
 						        	 #parse("/screens/xnat_projectData/edit/details.vm")
@@ -44,11 +44,11 @@ $page.setVlinkColor($ui.vlink)
 
 						      							<DIV class="container" style="width:750px;float:left;margin:5px;">
 
-						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 2: Define Project Accessibility</DIV>
+						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 2: Define $displayManager.getSingularDisplayNameForProject() Accessibility</DIV>
 
 						       <DIV class="containerBody">
 
-						        <DIV class="containerItem">Select the accessibility of your project.<br><hr></DIV> 
+						        <DIV class="containerItem">Select the accessibility of your $displayManager.getSingularDisplayNameForProject().toLowerCase().<br><hr></DIV> 
 
 						        <DIV class="containerItem">
 
@@ -135,7 +135,7 @@ function validateProjectForm(){
 
   if(document.getElementById("xnat:projectData/ID").value==""){
 
-    alert("Please specify a project abbreviation.");
+    alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
 
     document.getElementById("xnat:projectData/ID").focus();
 
@@ -147,7 +147,7 @@ function validateProjectForm(){
 
   if(document.getElementById("xnat:projectData/name").value==""){
 
-    alert("Please specify a project title.");
+    alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() title.");
 
     document.getElementById("xnat:projectData/name").focus();
 

@@ -3,19 +3,19 @@
 			<div class="withColor withThinBorder">
 <table border="0" cellpadding=5>
  <tr>
-  <th align="left">Project</th>
+  <th align="left">$displayManager.getSingularDisplayNameForProject()</th>
   <td>
 			#parse($turbineUtils.getTemplateName("project.vm",$om.getXSIType(),$project,"edit"))
   </td>
  </tr>
  <tr>
-  <th align="left">Subject</th>
+  <th align="left">$displayManager.getSingularDisplayNameForSubject()</th>
   <td>
   			#parse($turbineUtils.getTemplateName("subject.vm",$om.getXSIType(),$project,"edit"))
   </td>
  </tr>
  <tr>
-  <th align="left">Session</th>
+  <th align="left">$displayManager.getSingularDisplayNameForImageSession()</th>
   <td>
   			#parse($turbineUtils.getTemplateName("label.vm",$om.getXSIType(),$project,"edit"))
   </td>

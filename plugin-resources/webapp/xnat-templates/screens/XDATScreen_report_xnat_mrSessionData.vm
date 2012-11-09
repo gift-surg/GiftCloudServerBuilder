@@ -5,6 +5,6 @@ $page.setVlinkColor($ui.vlink)
 <DIV class="error">$data.message</DIV><br>
 #end
 <script type="text/javascript">
-document.title = "MR Session: $!item.getProperty('xnat:mrSessionData.label')";
+document.title = "$om.getSchemaElement().getSingularDescription(): $!item.getProperty('xnat:mrSessionData.label')";
 </script>
 			#parse($turbineUtils.getTemplateName("_report",$om.getXSIType(),$project))

@@ -2,7 +2,7 @@
 			<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_tools.js')"></SCRIPT>
 <table border="0" cellpadding=5>
  <tr>
-  <th align="left">Project</th>
+  <th align="left">$displayManager.getSingularDisplayNameForProject()</th>
   <td>
 			#parse($turbineUtils.getTemplateName("project.vm",$om.getXSIType(),$project,"edit"))
   </td>

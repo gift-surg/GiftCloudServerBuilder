@@ -1,7 +1,7 @@
 <TABLE>
 				<TR><TH align="left">Title</TH><TD>		<input id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95" onkeydown="subOnEnter(event,this);"/></TD></TR>
 														<TR><TH align="left">Running Title</TH><TD>		<input id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24" onkeydown="subOnEnter(event,this);" /> (24 characters maximum.)</TD></TR>
-<TR><TH align="left" NOWRAP>Project Abbreviation</TH><TD>
+<TR><TH align="left" NOWRAP>$displayManager.getSingularDisplayNameForProject() Abbreviation</TH><TD>
 		#if( $parentTemplate != 'add' )
 		<input id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")" />
 		$item.getProperty("xnat:projectData/ID")
@@ -158,7 +158,7 @@ function stringCamelCaps(val)
         var temp = val;
 		var regex=/^[0-9A-Za-z_-]+$/g;
         if(!(regex.test(temp))){
-			alert("No special characters allowed in project abbreviation.");
+			alert("No special characters allowed in $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
 			return "";
 		}
         var newVal = '';

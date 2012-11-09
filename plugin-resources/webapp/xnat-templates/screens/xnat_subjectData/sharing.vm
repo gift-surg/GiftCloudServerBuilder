@@ -3,7 +3,7 @@
 #set($read_projects=$user.getAllowedValues("$item.getXSIType()","$item.getXSIType()/project","read"))
 #set($projectMap = $user.getCachedItemValuesHash("xnat:projectData",null,false,"xnat:projectData/ID","xnat:projectData/secondary_ID"))
 <div>
-  This subject is owned by: <b>$!om.getProjectDisplayID()</b>.
+  This $displayManager.getSingularDisplayNameForSubject().toLowerCase() is owned by: <b>$!om.getProjectDisplayID()</b>.
 </div>
 <div class="spacer">&nbsp;</div>
 <div style="margin-bottom:5px">
@@ -38,7 +38,7 @@ $proj
 <input type="button" value="Share All" ONCLICK="restShare(true)"/>-->
 #end
 #else
-ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.  Please create a $displayManager.getSingularDisplayNameForProject().toLowerCase() before attempting to insert this item.
 #end
 </div>
 <style type="text/css">   
@@ -90,7 +90,7 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
 				    else
 				   	   el.innerHTML="N/A";
    	    }},
-   		{label:"Project",key:"name"},
+   		{label:"$displayManager.getSingularDisplayNameForProject()",key:"name"},
    		{label:"Label",key:"label",formatter:function(elCell, oRecord, oColumn, oData){
      			elCell.innerHTML = oRecord.getData("label");
      			if(oRecord.getData("canEdit"))elCell.innerHTML+=			"<a onclick=\"modifyLabel({'id':'" + oRecord.getData("id") +"','name':'" + oRecord.getData("name") +"','label':'" + oRecord.getData("label") +"','group':'" + oRecord.getData("group") +"','expts':'" + oRecord.getData("expts") +"','canEdit':" + oRecord.getData("canEdit") +",'record':'" + oRecord.getCount() +"'})\">		<img border='0' src='$content.getURI("images/e.gif")'/></a>";
@@ -111,7 +111,7 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
       		else{ 
       		   		document.getElementById("sharing_summary_table").style.display="block";
       		}
-      		document.getElementById("sharing_summary_title").innerHTML="This subject has been shared into <b>" + XNAT.app.subject.cfDT.getRecordSet().getRecords().length + "</b> project(s):";
+      		document.getElementById("sharing_summary_title").innerHTML="This $displayManager.getSingularDisplayNameForSubject().toLowerCase() has been shared into <b>" + XNAT.app.subject.cfDT.getRecordSet().getRecords().length + "</b> $displayManager.getSingularDisplayNameForProject().toLowerCase()(s):";
    }
    refreshSharing();
 		
@@ -119,16 +119,16 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
    	   		    var oRecord = this.getRecord(oArgs.target);
    	   		    
    	   		    if(oRecord.getData("id")==XNAT.app.subject.primary_project){
-   	   		       alert("Unable to remove project owner.  Contact a system administrator.");
+   	   		       alert("Unable to remove $displayManager.getSingularDisplayNameForProject() owner.  Contact a system administrator.");
    	   		       return;
    	   		    }
    	   		    
    	   		    if(oRecord.getData("expts")>0){
-   	   		       alert("This project has created experiments which would be deleted by this action.  Please either modify the ownership of this subject to match that project, or seperately delete the created experiments.");
+   	   		       alert("This $displayManager.getSingularDisplayNameForProject() has created experiments which would be deleted by this action.  Please either modify the ownership of this $displayManager.getSingularDisplayNameForSubject().toLowerCase() to match that $displayManager.getSingularDisplayNameForProject(), or seperately delete the created experiments.");
    	   		       return;
    	   		    }
    	   		    
-   	   		    if(confirm("Are you sure you want to remove this subject from the " + oRecord.getData("name") + " project?\r\n\r\nAny experiments for this subject will also be removed from the project.")){
+   	   		    if(confirm("Are you sure you want to remove this $displayManager.getSingularDisplayNameForSubject().toLowerCase() from the " + oRecord.getData("name") + " $displayManager.getSingularDisplayNameForProject()?\r\n\r\nAny experiments for this $displayManager.getSingularDisplayNameForSubject().toLowerCase() will also be removed from the $displayManager.getSingularDisplayNameForProject().")){
    	   		     var deleteCallback={
 								             success:function(o){
 				             	   closeModalPanel("share");
@@ -138,13 +138,13 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
 								             },
 				             failure:function(o){
 				             	   closeModalPanel("share");
-								             	   alert("Unable to remove subject from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
+								             	   alert("Unable to remove $displayManager.getSingularDisplayNameForSubject().toLowerCase() from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
 								             },
                              cache:false, // Turn off caching for IE
 				             scope:this,
 				             argument:{"oRecord":oRecord,"oArgs":oArgs}
 			           };
-			           openModalPanel("share","Un-sharing subject...");
+			           openModalPanel("share","Un-sharing $displayManager.getSingularDisplayNameForSubject().toLowerCase()...");
 			           var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
 			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/'+ label +'?format=json&XNAT_CSRF='+csrfToken+'&event_reason=standard unshare';
    				        YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
@@ -175,12 +175,12 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
      refreshSharing();
 		   },this,this);
 				  }else{
-				    alert("Please specify a project.");
+				    alert("Please specify a $displayManager.getSingularDisplayNameForProject().");
 				  }
 				}
 				
 				function modifyLabel(row){
-    var config ={uri:serverRoot +"/REST/projects/" + row.id +"/subjects",header:"Subject","currentLabel":row.label,"project":row.id,"row":row};
+    var config ={uri:serverRoot +"/REST/projects/" + row.id +"/subjects",header:"$displayManager.getSingularDisplayNameForSubject()","currentLabel":row.label,"project":row.id,"row":row};
 
     if(XNAT.app._label==undefined)XNAT.app._label=new Object();
     XNAT.app._label.LabelEditor=new XNAT.app._label.LabelEditorP(config,config.uri,config.currentLabel);

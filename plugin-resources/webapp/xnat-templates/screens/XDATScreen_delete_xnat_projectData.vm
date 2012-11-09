@@ -5,7 +5,7 @@
     <li yuiConfig='{"type":"TaskNode","expanded":true,"ru":"/REST/projects/$om.getId()","redirectHome":true,"canRead":true,"xsiType":"Project","date":"","primary_label":"$om.getId()"}' class="expanded">Delete Entire Project
       <ul>
   		  	    #foreach($sub in $om.getParticipants_participant())
-  		  	    <li yuiConfig='{"type":"TaskNode","ru":"/REST/projects/$om.getId()/subjects/$sub.getId()" #if($sub.canRead($user)),"canRead":true#else,"canRead":false#end,"xsiType":"Subject","date":"",primary_label:"$!sub.getIdentifier($om.getId())"}'>Subject: $!sub.getIdentifier($om.getId(),false)
+  		  	    <li yuiConfig='{"type":"TaskNode","ru":"/REST/projects/$om.getId()/subjects/$sub.getId()" #if($sub.canRead($user)),"canRead":true#else,"canRead":false#end,"xsiType":"Subject","date":"",primary_label:"$!sub.getIdentifier($om.getId())"}'>$displayManager.getSingularDisplayNameForSubject(): $!sub.getIdentifier($om.getId(),false)
   		  	      <ul>
   		  	        #foreach($expt in $sub.getExperiments_experiment())
   		  	          <li yuiConfig='{"type":"TaskNode","ru":"/REST/projects/$om.getId()/subjects/$sub.getId()/experiments/$expt.getId()" #if($expt.canRead($user)),"canRead":true#else,"canRead":false#end,"xsiType":"$!expt.getItem().getProperName()","date":"$!expt.getDate()",primary_label:"$!expt.getIdentifier($om.getId())"}'>$!expt.getItem().getProperName(): $!expt.getDate() $expt.getIdentifier($om.getId()) $!expt.getType() $!expt.getSessionType()

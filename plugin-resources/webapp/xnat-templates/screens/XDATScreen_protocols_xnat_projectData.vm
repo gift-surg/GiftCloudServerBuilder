@@ -1,14 +1,14 @@
-<DIV><a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$om.getId()")'>PROJECT: $!om.getDisplayName()</a>&nbsp;&nbsp;>&nbsp;&nbsp;Protocols</DIV><BR>
+<DIV><a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$om.getId()")'>$displayManager.getSingularDisplayNameForProject().toUpperCase(): $!om.getDisplayName()</a>&nbsp;&nbsp;>&nbsp;&nbsp;Protocols</DIV><BR>
 <TABLE>
  <TR>
   <TD valign="top" width="300">
-  <DIV class="edit_header2" style="line-height:18px;">Project Protocol Management</DIV>
-The project protocol management page allows you to specify what variables are used by a given project 
+  <DIV class="edit_header2" style="line-height:18px;">$displayManager.getSingularDisplayNameForProject() Protocol Management</DIV>
+The $displayManager.getSingularDisplayNameForProject().toLowerCase() protocol management page allows you to specify what variables are used by a given $displayManager.getSingularDisplayNameForProject().toLowerCase() 
 protocol.  In addition to the default
 variables, users can specify an unlimited number of additional variables.  
-These 'custom' variables are grouped together in sets, and can be re-used by other projects, 
-allowing for inter-project standardization independent of the specified schema-model.  
-(The default setting of 'project-specific' prevents the variables from being shared with other projects.)
+These 'custom' variables are grouped together in sets, and can be re-used by other $displayManager.getPluralDisplayNameForProject().toLowerCase(), 
+allowing for inter-$displayManager.getSingularDisplayNameForProject().toLowerCase() standardization independent of the specified schema-model.  
+(The default setting of 'project-specific' prevents the variables from being shared with other $displayManager.getPluralDisplayNameForProject().toLowerCase().)
 <br><br>
 <b>Instructions:</b> Select the protocol you would like to modify. First, check the existing variable groups to see if the variable you desire already exists.  If so, add the relevant groups by checking their boxes and clicking <b>Save</b>. 
 If the desired variables are not already there, create a new variable set using the link below to include the new variable.<br><br>

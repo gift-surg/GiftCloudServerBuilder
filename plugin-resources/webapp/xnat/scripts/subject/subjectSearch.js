@@ -44,7 +44,7 @@ this.draw=function(){
 	
 	var th = document.createElement("TH");
 	th.align="left";
-	th.innerHtml="Subject";
+	th.innerHtml=XNAT.app.displayNames.singular.subject;
 	tr.appendChild(th);
 	
 	
@@ -243,7 +243,7 @@ this.submitSearch=function(_id,_autoSelect){
 				this.renderSubjects(this.matchedSubjects);
 				}
 			}else{
-				this.setMessage("No matching subjects found.");
+				this.setMessage("No matching " + XNAT.app.displayNames.plural.subject.toLowerCase() + " found.");
 			}
 			
 		}

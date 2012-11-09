@@ -141,7 +141,7 @@ $!template.setLayoutTemplate("NoMenu.vm")
 			</TD>
  </TR>
   <TR>
-   <TD colspan="2">If true, user accounts will be enabled automatically when the user registers.  Users will be able to access the site and any 'public' projects immediately.  If false, the site adminstrator will be required to manually enable user accounts.  Either way the administrator receives an email notification when a user registers.
+   <TD colspan="2">If true, user accounts will be enabled automatically when the user registers.  Users will be able to access the site and any 'public' $displayManager.getPluralDisplayNameForProject().toLowerCase() immediately.  If false, the site adminstrator will be required to manually enable user accounts.  Either way the administrator receives an email notification when a user registers.
    </TD>
  </TR>
  <TR>

@@ -1,6 +1,6 @@
 
 <tr>
-  <th align="left">Session</th>
+  <th align="left">$displayManager.getSingularDisplayNameForImageSession()</th>
   <td><input type="text" id="$!item.getXSIType()/label" name="$!item.getXSIType()/label" value="$!item.getProperty("label")"  onchange="this.verified=false;this.value=fixSpaces(this.value);" onblur="if(this.value!='')verifyExptId(this);"/></td>
  </tr>
  <input type="hidden" id="$!item.getXSIType()/ID" name="$!item.getXSIType()/ID"/>
@@ -59,7 +59,7 @@ function verifyExptId(obj){
     
    if (rootProjectName==null){
       document.getElementById(elementName+"/project").focus();
-      alert("Please select a project.");
+      alert("Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().");
       return false;
    }
         

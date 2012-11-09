@@ -316,7 +316,7 @@ this.draw=function(){
 
 				}
 
-				confirmString+=".  Would you like to use the pre-exising group in this project?";
+				confirmString+=".  Would you like to use the pre-exising group in this " + XNAT.app.displayNames.singular.project.toLowerCase() + "?";
 
 				if(confirm(confirmString))
 
@@ -396,7 +396,7 @@ this.draw=function(){
 
 	labe.childNodes[1].style.display="inline";
 
-	labe.childNodes[1].innerHTML="Project Specific?";
+	labe.childNodes[1].innerHTML=XNAT.app.displayNames.singular.project + " Specific?";
 
 	td2.childNodes[1].appendChild(labe);
 

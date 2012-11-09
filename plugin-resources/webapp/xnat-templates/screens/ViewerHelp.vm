@@ -60,7 +60,7 @@ To adjust max and/or min intensity  of an image:
 
 <h3><a name="blankScanData">Why are Scan and Data choices blank? </a></h3>
 <p>
-	Scan and Data Choices are displayed for built images. The session that you chose may not have been built.
+	Scan and Data Choices are displayed for built images. The $displayManager.getSingularDisplayNameForImageSession().toLowerCase() that you chose may not have been built.
 <p align="right"><small><a href="#top">Top</a></small></p>
 
 <h3> <a name="tooSlow"> Why do some images like ASEG take more than a minute to load? </a> </h3>

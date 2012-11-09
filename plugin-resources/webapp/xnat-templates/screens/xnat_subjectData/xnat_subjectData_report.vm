@@ -27,7 +27,7 @@ if(XNAT.app.subject==undefined)XNAT.app.subject=new Object();
 			<table width="100%">				
 				<TR>
 					<TD align="left" valign="middle">
-<DIV class="edit_title">Subject Details: #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</DIV>
+<DIV class="edit_title">$displayManager.getSingularDisplayNameForSubject() Details: #if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</DIV>
 					</TD>
 				</TR>
 			</TABLE>
@@ -49,7 +49,7 @@ width:1px;
  <DIV id="subjectSummary" class="yui-navset">
   <ul class="yui-nav" style="">
       <li class="selected"><a href="#tab1"><em>Details<span class="spacer"></span></em></a></li>
-      <li><a href="#tab2"><em>Projects<span class="spacer"></span></em></a></li>
+      <li><a href="#tab2"><em>$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span></em></a></li>
   </ul>
  <div class="yui-content">   
   <div id="tab1"><p>

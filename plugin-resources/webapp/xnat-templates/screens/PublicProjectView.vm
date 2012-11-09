@@ -115,7 +115,7 @@ function selectProtocol(sel){
 </SCRIPT>
 
 <DIV>
-Projects:
+$displayManager.getPluralDisplayNameForProject():
  <SELECT ID="projects" ONCHANGE="selectProject(this);">
   <OPTION value="">(SELECT)</OPTION>
   #foreach($project in $projects)

@@ -15,15 +15,15 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 
 <!-- <div class='instructions'> -->
 <!-- 	<p> -->
-<!-- 	The sessions listed below have been uploaded but not yet placed in the archive. -->
-<!-- 	Click on a session name to examine that session and, optionally, -->
+<!-- 	The $displayManager.getPluralDisplayNameForImageSession().toLowerCase() listed below have been uploaded but not yet placed in the archive. -->
+<!-- 	Click on a $displayManager.getSingularDisplayNameForImageSession().toLowerCase() name to examine that $displayManager.getSingularDisplayNameForImageSession().toLowerCase() and, optionally, -->
 <!-- 	move it to the archive.  Click the <kbd>remove</kbd> icon -->
-<!-- 	to delete the session. -->
+<!-- 	to delete the $displayManager.getSingularDisplayNameForImageSession().toLowerCase(). -->
 <!-- 	</p> -->
 <!-- 	<p> -->
 <!-- 	If you have uploaded any files to the FTP server, they will appear above the -->
-<!-- 	sessions, in the FTP inbox.  <kbd>Import</kbd> those files to organize them into sessions -->
-<!-- 	in the session list. -->
+<!-- 	$displayManager.getPluralDisplayNameForImageSession().toLowerCase(), in the FTP inbox.  <kbd>Import</kbd> those files to organize them into $displayManager.getPluralDisplayNameForImageSession().toLowerCase() -->
+<!-- 	in the $displayManager.getSingularDisplayNameForImageSession().toLowerCase() list. -->
 <!-- 	</p> -->
 <!-- 	<p> -->
 <!-- 	<div class="colorkey"> -->
@@ -78,7 +78,7 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <!-- var prearcs; -->
 
 
-<!-- // Returns a function that issues a session move request appropriate -->
+<!-- // Returns a function that issues a $displayManager.getSingularDisplayNameForImageSession().toLowerCase() move request appropriate -->
 <!-- // for the selected option of a move-op select box. -->
 <!-- createMoveOp = function(selector, from) { -->
 <!-- 	return function() { -->
@@ -94,16 +94,16 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <!-- } -->
 
 
-<!-- // Sets up the move operations, one per session. -->
+<!-- // Sets up the move operations, one per $displayManager.getSingularDisplayNameForImageSession().toLowerCase(). -->
 <!-- // Requires the move-op selectors to be in place, so this should be -->
-<!-- // invoked after the session list generation. -->
+<!-- // invoked after the $displayManager.getSingularDisplayNameForImageSession().toLowerCase() list generation. -->
 <!-- buildMoveOps = function() { -->
-<!--   // Set up the move operations, one per session. -->
+<!--   // Set up the move operations, one per $displayManager.getSingularDisplayNameForImageSession().toLowerCase(). -->
 <!--   var moveOpTDs = activePrearc.prearc.getMoveOpTDs(); -->
 <!--   for (var i = 0; i < moveOpTDs.length; i++) { -->
 <!--   	var selector = moveOpTDs[i].firstChild; -->
 <!--   	if (null == selector || 'SELECT' != selector.tagName) { -->
-<!--   		alert('Invalid session table: expected selector element, found ' + selector); -->
+<!--   		alert('Invalid $displayManager.getSingularDisplayNameForImageSession().toLowerCase() table: expected selector element, found ' + selector); -->
 <!--   		return; -->
 <!--   	} -->
 
@@ -201,11 +201,11 @@ $!template.setLayoutTemplate("DefaultExptList.vm")
 <!-- 		var label = prearc_name; -->
 <!-- 		switch (prearc.sessionCount) { -->
 <!-- 			case '1': -->
-<!-- 				label += " (1 session)"; -->
+<!-- 				label += " (1 $displayManager.getSingularDisplayNameForImageSession().toLowerCase())"; -->
 <!-- 				break; -->
 						
 <!-- 			default: -->
-<!-- 				label += " (" + prearc.sessionCount + " sessions)"; -->
+<!-- 				label += " (" + prearc.sessionCount + " $displayManager.getPluralDisplayNameForImageSession().toLowerCase())"; -->
 <!-- 				break; -->
 <!-- 		} -->
 <!-- 		var option = new Option(label, prearc_name); -->

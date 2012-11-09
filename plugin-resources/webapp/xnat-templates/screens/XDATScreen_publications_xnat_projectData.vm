@@ -1,4 +1,4 @@
-<DIV class="edit_header2">Project Publications Management</DIV>
+<DIV class="edit_header2">$displayManager.getSingularDisplayNameForProject() Publications Management</DIV>
 <form name="form1" method="post" action="$link.setAction("ModifyItem")">
 		<input id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")"/>
 <TABLE border=0>

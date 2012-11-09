@@ -1,5 +1,5 @@
 <div width="100%" style="clear:left;width:100%">
-<h3> You've been invited to join the following projects:</h3>
+<h3> You've been invited to join the following $displayManager.getPluralDisplayNameForProject().toLowerCase():</h3>
 
 <script type="text/javascript" src="$content.getURI("scripts/project/parManager.js")"></script>
 <div id="pil"></div>

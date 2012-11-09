@@ -49,7 +49,7 @@ From:
 
 <script type="text/javascript" src="$content.getURI("scripts/sortable_us.js")"></script>
 
-<h3>New Projects</h3>
+<h3>New $displayManager.getPluralDisplayNameForProject()</h3>
 <div id="new_projects">
 $qm.execute("select meta.insert_date as \"Date Created\", textcat(textcat(use.firstname, ' '),use.lastname) as \"Creator\", invest.lastname as \"Investigator\", proj.id as \"ID\", proj.name as \"Name\", proj.secondary_id as \"Secondary ID\", proj.description as \"Description\", proj.keywords as \"Keywords\" from xnat_projectdata_meta_data meta join xnat_projectdata proj on proj.projectdata_info = meta.meta_data_id left join xnat_investigatordata invest on proj.pi_xnat_investigatordata_id = invest.xnat_investigatordata_id left join xdat_user use on meta.insert_user_xdat_user_id = use.xdat_user_id where meta.insert_date > (NOW()-interval '$duration1') AND meta.insert_date < (NOW()-interval '$duration2')")
 </div>

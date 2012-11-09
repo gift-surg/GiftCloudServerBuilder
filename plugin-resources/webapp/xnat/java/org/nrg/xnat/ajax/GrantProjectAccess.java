@@ -13,6 +13,7 @@ import org.apache.turbine.services.velocity.TurbineVelocity;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.TurbineException;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -47,7 +48,9 @@ public class GrantProjectAccess {
             context.put("admin_email",AdminUtils.getAdminEmailId());
             context.put("projectOM",project);
             //SEND email to user
-            ProjectAccessRequest.InviteUser(context, email, user, user.getFirstname() + " " + user.getLastname() + " has invited you to join the " + project.getName() + " project.");
+	    ProjectAccessRequest.InviteUser(context, email, user, user.getFirstname() + " " + user.getLastname()
+		    + " has invited you to join the " + project.getName() + " "
+		    + DisplayManager.GetInstance().getSingularDisplayNameForProject().toLowerCase() + ".");
         }catch(Exception e){
         	
         }

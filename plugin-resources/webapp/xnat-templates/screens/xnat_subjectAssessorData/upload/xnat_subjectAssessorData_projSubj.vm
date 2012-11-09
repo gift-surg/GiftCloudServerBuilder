@@ -1,5 +1,5 @@
  <tr>
-  <th align="left">Project</th>
+  <th align="left">$displayManager.getSingularDisplayNameForProject()</th>
   <td>
   	#if(! $!item.getProperty("project"))
   		<select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true ></select>
@@ -12,7 +12,7 @@
   </td>
  </tr>
  <tr>
-  <th align="left">Subject: </th>
+  <th align="left">$displayManager.getSingularDisplayNameForSubject(): </th>
 
 ## #if ($!subject != "")
 #if (!$subject)
@@ -30,7 +30,7 @@
   #if(!$subject || $!item.getProperty("project") == "")
 	  <td><select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id"></select></td>
 	  #if(!$preventSubject)
-	    <td><a onclick="createSubjectForm();">Add New Subject</a></td>
+	    <td><a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a></td>
 	  #end	  
   #else
 	<td>
@@ -74,11 +74,11 @@ function createSubjectForm(){
    	 	window.create_subject_link ="$link.setPage('XDATScreen_edit_xnat_subjectData.vm').addPathInfo('popup','true')";
    	 	var project = document.getElementById("xnat:mrSessionData/project").value;
    	 	if ((project == "")&&($item.user.canRead($item))&&($item.user.canEdit($item))&&($item.user.canCreate($item))&&($item.user.canActivate($item))&&($item.user.canDelete($item))){
-   	 		alert('Please Add Yourself as a "Member" of the Project');
+   	 		alert('Please Add Yourself as a "Member" of the $displayManager.getSingularDisplayNameForProject()');
    	 		return;
    	 	}
    	 	if (project == ""){
-   	 		alert('Please Select a Project First');
+   	 		alert('Please Select a $displayManager.getSingularDisplayNameForProject() First');
    	 		return;
    	 	}
 window.create_subject_link+="/project/" + project + "/destination/JS_Parent_Return.vm";
@@ -88,7 +88,7 @@ window.create_subject_link+="/project/" + project + "/destination/JS_Parent_Retu
 	}
 	
 	window.success=function(subject_id){
-  //window.psm("The subject you entered was stored.");
+  //window.psm("The $displayManager.getSingularDisplayNameForSubject().toLowerCase() you entered was stored.");
   if(this.subjectForm!=undefined){
     this.subjectForm.close();
 		    this.subjectForm=null;

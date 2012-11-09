@@ -5,7 +5,7 @@
 							<TR>							
 							<TH class="underscore">Experiment</TH>
 							<TH class="underscore">Date</TH>
-							<TH class="underscore">Project</TH>
+							<TH class="underscore">$displayManager.getSingularDisplayNameForProject()</TH>
 							</TR>
 								
 								#foreach ($assessor in $om.getMinimalLoadAssessors())

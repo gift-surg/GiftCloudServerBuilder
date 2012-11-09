@@ -36,7 +36,7 @@
 							         <TR>
 							           <TH align="left" class="underscore">Date</TH>
 							           <TH align="left" class="underscore">Experiment</TH>
-							           <TH align="left" class="underscore">Project</TH>
+							           <TH align="left" class="underscore">$displayManager.getSingularDisplayNameForProject()</TH>
 							           <TH align="left" class="underscore">Label</TH>
 							         </TR>
 								 								#foreach ($assessor in $subject.getMinimalLoadAssessors())
@@ -60,7 +60,7 @@
         <TR>
            <TH align="left" class="underscore">Date</TH>
            <TH align="left" class="underscore">Experiment</TH>
-           <TH align="left" class="underscore">Project</TH>
+           <TH align="left" class="underscore">$displayManager.getSingularDisplayNameForProject()</TH>
            <TH align="left" class="underscore">Label</TH>
         </TR>
 								 								#foreach ($assessor in $subject.getMinimalLoadAssessors())

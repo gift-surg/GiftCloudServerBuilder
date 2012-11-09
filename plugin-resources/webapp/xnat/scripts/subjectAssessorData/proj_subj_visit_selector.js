@@ -35,20 +35,20 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load project list.");
+        this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
     };
 
     this.completeInit = function (o) {
         try {
             this.projectResultSet = eval("(" + o.responseText + ")");
         } catch (e) {
-            this.displayError("ERROR " + o.status + ": Failed to parse project list.");
+            this.displayError("ERROR " + o.status + ": Failed to parse " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
         }
         try {
             this.renderProjects();
             this.rigDateControls();
         } catch (e) {
-            this.displayError("ERROR : Failed to render project list: " + e.toString());
+            this.displayError("ERROR : Failed to render " + XNAT.app.displayNames.singular.project.toLowerCase() + " list: " + e.toString());
         }
     };
 
@@ -129,16 +129,16 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                         });
 
                     } catch (e) {
-                        o.argument.displayError("ERROR " + o.status + ": Failed to parse subject list.");
+                        o.argument.displayError("ERROR " + o.status + ": Failed to parse " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
                     }
                     try {
                         o.argument.renderSubjects();
                     } catch (e) {
-                        o.argument.displayError("ERROR : Failed to render subject list.");
+                        o.argument.displayError("ERROR : Failed to render " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
                     }
                 },
                 failure:function () {
-                    alert("Failed to load subjects.")
+                    alert("Failed to load " + XNAT.app.displayNames.plural.subject.toLowerCase() + ".");
                 },
                 cache:false, // Turn off caching for IE
                 argument:this
@@ -155,7 +155,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
             //noinspection JSUnresolvedVariable
             YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/data/projects/' + this.projectID + '/subjects?format=json&timestamp=' + (new Date()).getTime(), subjCallback);
         } catch (e) {
-            alert('failed to load subjects');
+            alert('failed to load ' + XNAT.app.displayNames.plural.subject.toLowerCase());
         }
     };
 
@@ -166,7 +166,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
 
         //noinspection JSUnresolvedVariable
         if (this.subjectResultSet.ResultSet.Result.length == 0) {
-            this.showMessage('No subjects found', 'The selected project has no subjects recorded yet. You should create a subject with which to associate uploaded session data.', true);
+            this.showMessage("No " + XNAT.app.displayNames.plural.subject.toLowerCase() + " found", "The selected " + XNAT.app.displayNames.singular.project.toLowerCase() + " has no " + XNAT.app.displayNames.plural.subject.toLowerCase() + " recorded yet. You should create a " + XNAT.app.displayNames.singular.subject.toLowerCase() + " with which to associate uploaded " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " data.", true);
             return;
         }
 
@@ -240,7 +240,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
             			//check date format to be sure it has a 4 digit year
             			if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(sessionDate)){
             			  activate = false;
-            			  this.displayError("ERROR: Session Date must be in mm/dd/yyyy format."); 
+            			  this.displayError("ERROR: " + XNAT.app.displayNames.singular.imageSession + " Date must be in mm/dd/yyyy format."); 
             			} else {
             		      activate = true;
             			}

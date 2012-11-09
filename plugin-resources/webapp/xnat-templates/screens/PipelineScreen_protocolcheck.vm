@@ -18,14 +18,14 @@ $page.setVlinkColor($ui.vlink)
 <TD>
 <b>
   <font face="$ui.sansSerifFonts">
-	      Session: $sessionId 
+	      $displayManager.getSingularDisplayNameForImageSession(): $sessionId 
   </font>
 </b>
 </TD>
 <TD>
 <b>
   <font face="$ui.sansSerifFonts">
-	      Project: $om.getProject()
+	      $displayManager.getSingularDisplayNameForProject(): $om.getProject()
   </font>
 </b>
 </TD>

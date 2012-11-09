@@ -70,7 +70,7 @@ this.draw=function(){
 	lab.appendChild(this.radioOption1);
 	var optionTxt = document.createElement("DIV");
 	optionTxt.style.display="inline";
-	optionTxt.innerHTML="Option 1: Find subject in archive";
+	optionTxt.innerHTML="Option 1: Find " + XNAT.app.displayNames.singular.subject.toLowerCase() + " in archive";
 	lab.appendChild(optionTxt);
 	this.option1Label.appendChild(lab);
 	
@@ -87,7 +87,7 @@ this.draw=function(){
 	lab.appendChild(this.radioOption2);
 	var optionTxt = document.createElement("DIV");
 	optionTxt.style.display="inline";
-	optionTxt.innerHTML="Option 2: Create a new subject";
+	optionTxt.innerHTML="Option 2: Create a new " + XNAT.app.displayNames.singular.subject.toLowerCase();
 	lab.appendChild(optionTxt);
 	this.option2Label.appendChild(lab);
 }
@@ -126,7 +126,7 @@ this.select=function(subject){
 	this.selectBox.className="withThinBorder";
 	
 	this.selectBox.appendChild(document.createElement("DIV"));
-	this.selectBox.childNodes[0].innerHTML="&nbsp;<b>Selected Subject<BR></b>";
+	this.selectBox.childNodes[0].innerHTML="&nbsp;<b>Selected " + XNAT.app.displayNames.singular.subject + "<BR></b>";
 	this.selectBox.childNodes[0].style.textAlign="center";
 	this.selectBox.childNodes[0].className="withColor withThinBorder";
 	
@@ -162,7 +162,7 @@ this.select=function(subject){
  	td1.colSpan="2";
  	var input = document.createElement("INPUT");
  	input.type="button";
- 	input.value="Change Subject";
+ 	input.value="Change " + XNAT.app.displayNames.singular.subject;
  	input.manager=this;
  	input.onclick=function(){
  		this.manager.showOption1();
@@ -200,7 +200,7 @@ this.getFormManager=function(){
    	  }
 	 
    	  if(window.create_subject_link==undefined){
-   	  	alert("Unable to load create subject form.");
+   	  	alert("Unable to load create " + XNAT.app.displayNames.singular.subject.toLowerCase() + " form.");
    	  	return;
    	  }
    	  this.subjectForm=window.open(window.create_subject_link, '','width=500,height=550,status=yes,resizable=yes,scrollbars=yes,toolbar=no');

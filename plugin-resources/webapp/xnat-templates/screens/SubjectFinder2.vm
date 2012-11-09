@@ -278,7 +278,7 @@ function processSubjectSearchResults() {
             {
     
    var subjectDIV = document.getElementById("subject_match_msg");
-   subjectDIV.innerHTML="<b>The following subject was selected.</b><br><br>";
+   subjectDIV.innerHTML="<b>The following $displayManager.getSingularDisplayNameForSubject().toLowerCase() was selected.</b><br><br>";
    subjectDIV = document.getElementById("create_message");
    subjectDIV.innerHTML="";
    subjectDIV = document.getElementById("save_subject");
@@ -312,15 +312,15 @@ function processSubjectSearchResults() {
                            if (msg.indexOf("Matched pre-existing")!=-1)
                            {
                            var subjectDIV = document.getElementById("message");
-                           subjectDIV.innerHTML="<br><font color='red'>" + msg + "</font><br>The following archive subjects matched your search. Please select the correct subject.";
+                           subjectDIV.innerHTML="<br><font color='red'>" + msg + "</font><br>The following archive $displayManager.getPluralDisplayNameForSubject().toLowerCase() matched your search. Please select the correct $displayManager.getSingularDisplayNameForSubject().toLowerCase().";
                            findTab();
                            }else{
                              if (msg.indexOf("Subject Stored.")!=-1)
                              {
                                var subjectDIV = document.getElementById("message");
-                               subjectDIV.innerHTML="The subject you entered was stored.";
+                               subjectDIV.innerHTML="The $displayManager.getSingularDisplayNameForSubject().toLowerCase() you entered was stored.";
                                var subjectDIV = document.getElementById("subject_match_msg");
-                               subjectDIV.innerHTML="<b>The subject you entered was stored.</b><br><br>";
+                               subjectDIV.innerHTML="<b>The $displayManager.getSingularDisplayNameForSubject().toLowerCase() you entered was stored.</b><br><br>";
                                matchSubject(0);
                              }else{
                                var subjectDIV = document.getElementById("message");
@@ -330,11 +330,11 @@ function processSubjectSearchResults() {
                            }
                         }else{
                            var subjectDIV = document.getElementById("message");
-                           subjectDIV.innerHTML="<br>The following archive subjects matched your search. Please select the correct subject.";
+                           subjectDIV.innerHTML="<br>The following archive $displayManager.getPluralDisplayNameForSubject().toLowerCase() matched your search. Please select the correct$displayManager.getSingularDisplayNameForSubject().toLowerCase().";
                         }
                    }else{
                       var subjectDIV = document.getElementById("message");
-                      subjectDIV.innerHTML="<br>The following archive subjects matched your search. Please select the correct subject.";
+                      subjectDIV.innerHTML="<br>The following archive $displayManager.getPluralDisplayNameForSubject().toLowerCase() matched your search. Please select the correct $displayManager.getSingularDisplayNameForSubject().toLowerCase().";
                    }
                  }else{
                    if (rootAttributes)
@@ -346,11 +346,11 @@ function processSubjectSearchResults() {
                            subjectDIV.innerHTML="<br><font color='red'>" + msg + "</font>";
                         }else{
                    var subjectDIV = document.getElementById("message");
-                   subjectDIV.innerHTML="<br><font color='red'><b>No Matching Subjects Found.</b></font>";
+                   subjectDIV.innerHTML="<br><font color='red'><b>No Matching $displayManager.getPluralDisplayNameForSubject() Found.</b></font>";
                         }
                    }else{
                    var subjectDIV = document.getElementById("message");
-                   subjectDIV.innerHTML="<br><font color='red'><b>No Matching Subjects Found.</b></font>";
+                   subjectDIV.innerHTML="<br><font color='red'><b>No Matching $displayManager.getPluralDisplayNameForSubject() Found.</b></font>";
                    }
                    var matchesDIV = document.getElementById("matches");
                    document.getElementById("matches").style.display='none';
@@ -437,7 +437,7 @@ function renderMatchingSubjects(){
 <tr>
 <td NOWRAP>
 	<DIV ID="findLabel">
-	<input ID="findLabelOption" name="option" type="radio" ONCLICK="findTab();" checked/> <label for="findLabelOption"><b>Option 1: Find subject in archive</b></label>
+	<input ID="findLabelOption" name="option" type="radio" ONCLICK="findTab();" checked/> <label for="findLabelOption"><b>Option 1: Find $displayManager.getSingularDisplayNameForSubject().toLowerCase() in archive</b></label>
 	</DIV>
 </td>
 </tr>
@@ -446,7 +446,7 @@ function renderMatchingSubjects(){
 <span ID="subject_search_span">
    <table>
      <tr>
-      <td>Subject</td><td><input ID="subject_search" type="text" name="subject_search"/></td><td><input ONCLICK="sendSubjectSearch();return false;" type="button" name="subject_submit" value="Search"/></td>
+      <td>$displayManager.getSingularDisplayNameForSubject()</td><td><input ID="subject_search" type="text" name="subject_search"/></td><td><input ONCLICK="sendSubjectSearch();return false;" type="button" name="subject_submit" value="Search"/></td>
      </tr>
      <tr>
       <td colspan="3"><DIV ID="message"></DIV></td>
@@ -461,7 +461,7 @@ function renderMatchingSubjects(){
 <tr>
 <td NOWRAP>
 	<DIV ID="createLabel">
-	<input ID="createLabelOption" name="option" type="radio" ONCLICK="createTab();"/> <label for="createLabelOption"><b>Option 2: Create a new subject</b></label>
+	<input ID="createLabelOption" name="option" type="radio" ONCLICK="createTab();"/> <label for="createLabelOption"><b>Option 2: Create a new $displayManager.getSingularDisplayNameForSubject().toLowerCase()</b></label>
 	</DIV>
 </td>
 </tr>
@@ -470,7 +470,7 @@ function renderMatchingSubjects(){
 <span ID="subject_create_span">
 <table>
      <tr>
-      <td colspan="3">						<font face="$ui.sansSerifFonts" size="3" style="line-height:20px;"><b>Create Subject</b></font></td>
+      <td colspan="3">						<font face="$ui.sansSerifFonts" size="3" style="line-height:20px;"><b>Create $displayManager.getSingularDisplayNameForSubject()</b></font></td>
      </tr>
      <tr>
       <td colspan="3">						<DIV ID="create_message"></DIV></td>
@@ -494,7 +494,7 @@ function renderMatchingSubjects(){
 #end
 </SELECT>
 #else
-ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.  Please create a $displayManager.getSingularDisplayNameForProject().toLowerCase() before attempting to insert this item.
 #end
 </td>
 </tr>
@@ -657,7 +657,7 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
 		</td></tr>
 				<tr>
 			  <td>&nbsp;</td><td>
-			  <input id="save_subject" type="button" onclick="submitSubjectStore();return false;" value="Save Subject"/></td>
+			  <input id="save_subject" type="button" onclick="submitSubjectStore();return false;" value="Save $displayManager.getSingularDisplayNameForSubject()"/></td>
 		</tr>
    </table>
 </span>
@@ -671,7 +671,7 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
 <input ID="subject_id" type="hidden" name="$!{item.getXSIType()}.subject_ID" value="$!part.getId()" />
 <table  class="withColor">
      <tr>
-      <td colspan="2" align="center"><DIV ID="subject_match_msg"><b>The following subject was selected.</b><br><br></DIV></td>
+      <td colspan="2" align="center"><DIV ID="subject_match_msg"><b>The following $displayManager.getSingularDisplayNameForSubject().toLowerCase() was selected.</b><br><br></DIV></td>
      </tr>
      <tr>
       <td colspan="2" align="center">
@@ -702,7 +702,7 @@ ERROR:  No projects exist.  Please create a project before attempting to insert 
       </td>
      </tr>
      <tr>
-      <td colspan="2" align="center">&nbsp;<input type="button" value="Change Subject" ONCLICK="findTab();return false;"/></td>
+      <td colspan="2" align="center">&nbsp;<input type="button" value="Change $displayManager.getSingularDisplayNameForSubject()" ONCLICK="findTab();return false;"/></td>
      </tr>
 </table>
 </span>
@@ -836,7 +836,7 @@ function submitSubjectStore()
 	   
      if(project=="" || project==null)
     {
-     alert("Please select a valid project.");
+     alert("Please select a valid $displayManager.getSingularDisplayNameForProject().toLowerCase().");
      return;
     }
 	  #end

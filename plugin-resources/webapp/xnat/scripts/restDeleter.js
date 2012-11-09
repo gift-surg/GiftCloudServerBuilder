@@ -2,7 +2,7 @@ RestDeleter = function(_array,_config) {
 	RestDeleter.superclass.constructor.call(this,"rest_deleter",_config);
 	this.a=_array;
 	_config.title="Deletion Manager";
-	_config.footer="Are you sure you want to permanently remove this data from the archive?&nbsp;&nbsp;(Data shared into this project will be un-shared, rather than deleted)";
+	_config.footer="Are you sure you want to permanently remove this data from the archive?&nbsp;&nbsp;(Data shared into this " + XNAT.app.displayNames.singular.project.toLowerCase() + " will be un-shared, rather than deleted)";
 	this.trArray=new Array();
 
 	
@@ -37,7 +37,7 @@ RestDeleter = function(_array,_config) {
 		}
 		var tr=tb.appendChild(document.createElement("tr"));
 		var td1=tr.appendChild(document.createElement("td"));
-		td1.innerHTML="Are you sure you want to permanently remove this data from the archive?<br />(Data shared into this project will be un-shared, rather than deleted.)";
+		td1.innerHTML="Are you sure you want to permanently remove this data from the archive?<br />(Data shared into this " + XNAT.app.displayNames.singular.project.toLowerCase() + " will be un-shared, rather than deleted.)";
 		td1.style.color="red";
 
 		if(showReason){

@@ -29,7 +29,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 
 	this.initFailure = function(o) {
 		this.displayError("ERROR " + o.status
-				+ ": Failed to load project list.");
+				+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
 	};
 
 	this.completeInit = function(o) {
@@ -37,12 +37,12 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 			this.projectResultSet = eval("(" + o.responseText + ")");
 		} catch (e) {
 			this.displayError("ERROR " + o.status
-					+ ": Failed to parse project list.");
+					+ ": Failed to parse " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
 		}
 		try {
 			this.renderProjects();
 		} catch (e) {
-			this.displayError("ERROR : Failed to render project list: "
+			this.displayError("ERROR : Failed to render " + XNAT.app.displayNames.singular.project.toLowerCase() + " list: "
 					+ e.toString());
 		}
 	};
@@ -112,17 +112,17 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 
 					} catch (e) {
 						o.argument.displayError("ERROR " + o.status
-								+ ": Failed to parse subject list.");
+								+ ": Failed to parse " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
 					}
 					try {
 						o.argument.renderSubjects();
 					} catch (e) {
 						o.argument
-								.displayError("ERROR : Failed to render subject list.");
+								.displayError("ERROR : Failed to render " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
 					}
 				},
 				failure : function(o) {
-					alert("Failed to load subjects.")
+					alert("Failed to load " + XNAT.app.displayNames.plural.subject.toLowerCase() + ".");
 				},
                 cache:false, // Turn off caching for IE
 				argument : this
@@ -141,7 +141,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 					+ window.csrfToken + '&format=json&timestamp='
 					+ (new Date()).getTime(), subjCallback);
 		} catch (e) {
-			alert('failed to load subjects');
+			alert('failed to load ' + XNAT.app.displayNames.plural.subject.toLowerCase());
 		}
 	}
 
@@ -298,7 +298,7 @@ function fixSessionID(val) {
 	newVal = newVal.replace(/[}]/, "_");
 
 	if (newVal != temp) {
-		alert("Removing invalid characters in session.");
+		alert("Removing invalid characters in " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".");
 	}
 	return newVal;
 }
@@ -333,7 +333,7 @@ function verifyExptId(obj) {
 						document.getElementById(elementName + "/ID").value = match.id;
 						document.getElementById(elementName + "/label").verified = true;
 
-						document.getElementById("label_msg").innerHTML = "* Matches existing session. Continuing could modify that session. <ul><li>Select append to only add new content to existing session.</li><li>Select overwrite to overwrite existing content.</li></ul>";
+						document.getElementById("label_msg").innerHTML = "* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". <ul><li>Select append to only add new content to existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".</li><li>Select overwrite to overwrite existing content.</li></ul>";
 						if (document.getElementById("label_opts").innerHTML == "")
 							document.getElementById("label_opts").innerHTML = "<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
 						veid = true;

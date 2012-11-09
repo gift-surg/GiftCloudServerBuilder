@@ -27,6 +27,6 @@ $proj
 #end
 </SELECT>
 #else
-ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.  Please create a $displayManager.getSingularDisplayNameForProject().toLowerCase() before attempting to insert this item.
 #end
 #end

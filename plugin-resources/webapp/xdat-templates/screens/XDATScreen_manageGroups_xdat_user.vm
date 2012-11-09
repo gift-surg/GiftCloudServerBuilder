@@ -23,7 +23,7 @@ $page.setVlinkColor($ui.vlink)
 							#if($projectGroups.size()>0)
 	<TR><TD>
 							 <Table border="0">
-							  <TR><TH align="left" colspan="3">Project Groups<BR><BR></TH></TR>
+							  <TR><TH align="left" colspan="3">$displayManager.getSingularDisplayNameForProject() Groups<BR><BR></TH></TR>
 #foreach($group in $projectGroups.keySet())
  #set($localGroups = $projectGroups.get($group))
    <TR>

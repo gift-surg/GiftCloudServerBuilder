@@ -1,4 +1,4 @@
-<DIV class="containerItem"><A HREF="$link.setPage("XDATScreen_add_xnat_projectData.vm")" >Create new project</A></DIV>
+<DIV class="containerItem"><A HREF="$link.setPage("XDATScreen_add_xnat_projectData.vm")" >Create new $displayManager.getSingularDisplayNameForProject().toLowerCase()</A></DIV>
 						       <DIV class="containerItem"><A HREF="$link.setPage("XDATScreen_super_search.vm")" >Search</A></DIV>
 						       <DIV class="containerItem"><A HREF="$link.setPage("XDATScreen_prearchives.vm")" >Go to prearchive</A></DIV>
 <SCRIPT language="javascript">

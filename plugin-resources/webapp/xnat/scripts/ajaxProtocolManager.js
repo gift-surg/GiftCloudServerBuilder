@@ -232,7 +232,7 @@ this.draw=function(){
 		this.clearProtocolBox();
 		this.drawProtocolBox();
 	}else if (this.protocol.xsiType=='xnat:abstractProtocol'){
-		alert("WARNING: This project is using a deprecated protocol.")
+		alert("WARNING: This " + XNAT.app.displayNames.singular.project.toLowerCase() + " is using a deprecated protocol.")
 	}else{
 		
 	}

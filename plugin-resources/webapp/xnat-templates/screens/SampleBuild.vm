@@ -15,7 +15,7 @@ $page.setVlinkColor($ui.vlink)
 
 <b>
   ##<font face="verdana,geneva,helvetica ">
-	      Session: $mr.getId()
+	      $displayManager.getSingularDisplayNameForImageSession(): $mr.getId()
   ##</font>
   
 </b>

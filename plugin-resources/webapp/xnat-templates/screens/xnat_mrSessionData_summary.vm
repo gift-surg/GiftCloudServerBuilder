@@ -1,4 +1,4 @@
-<div class="edit_title">MR Session Summary</div>
+<div class="edit_title">$om.getSchemaElement().getSingularDescription() Summary</div>
 <table>
 	<tr>
 		<td>Patient name</td>

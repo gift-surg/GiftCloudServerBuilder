@@ -27,7 +27,7 @@ $page.setVlinkColor($ui.vlink)
 <form class="noHide" name="DownloadImages" method="post" action="$link.setAction("DownloadImages").setPage("ClosePage.vm")">
 <b>
   <font face="$ui.sansSerifFonts" size="3">
-	      Session: $sessionId 
+	      $displayManager.getSingularDisplayNameForImageSession(): $sessionId 
   </font>
 </b>
 <table border=0 width="100%" bordercolor="#CC3333">

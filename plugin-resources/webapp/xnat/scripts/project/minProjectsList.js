@@ -8,7 +8,7 @@ function MinProjectsList(_div, _options){
   }
   
 	this.init=function(){
-		this.initLoader=prependLoader(this.div,"Loading projects");
+		this.initLoader=prependLoader(this.div,"Loading " + XNAT.app.displayNames.plural.project.toLowerCase());
 		this.initLoader.render();
 		
 		//load from search xml from server
@@ -45,7 +45,6 @@ function MinProjectsList(_div, _options){
 	};
 	
 	this.initFailure=function(o){
-		//displayError("ERROR " + o.status+ ": Failed to load project list.");
 		this.initLoader.close();
 	};
 	
@@ -53,13 +52,11 @@ function MinProjectsList(_div, _options){
 		try{
 		    this.projectResultSet= eval("(" + o.responseText +")");
 		}catch(e){
-			//displayError("ERROR " + o.status+ ": Failed to parse project list.");
 		}
 		this.initLoader.close();
 		try{
 		    this.render();
 		}catch(e){
-			//displayError("ERROR : Failed to render project list.");
 		}
 	};
 	
@@ -93,7 +90,7 @@ function MinProjectsList(_div, _options){
 			newDisplay.appendChild(row);
 			
 			row=document.createElement("div");
-			row.innerHTML="<b>Project ID: " + p.id +"</b>";
+			row.innerHTML="<b>" + XNAT.app.displayNames.singular.project + " ID: " + p.id +"</b>";
 			if(p.pi!=undefined && p.pi!=""){
 				row.innerHTML+="&nbsp;&nbsp;&nbsp;<b>PI: "+ p.pi +"</b>";
 			}
@@ -110,17 +107,17 @@ function MinProjectsList(_div, _options){
 			row=document.createElement("div");
 			if(p["user_role_"+this.projectResultSet.ResultSet.xdat_user_id]==""){
 				if(p.project_access=="public"){
-					row.innerHTML="This is an <b>open access</b> project.";
+					row.innerHTML="This is an <b>open access</b> " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}else{
-					row.innerHTML="<a href='" + serverRoot + "/app/template/RequestProjectAccess.vm/project/" + p.id + "'>Request access</a> to this project."
+					row.innerHTML="<a href='" + serverRoot + "/app/template/RequestProjectAccess.vm/project/" + p.id + "'>Request access</a> to this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}
 			}else{
 				if(p["user_role_"+this.projectResultSet.ResultSet.xdat_user_id]=="Owners"){
-					row.innerHTML="You are an <b>owner</b> for this project.";
+					row.innerHTML="You are an <b>owner</b> for this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}else if(p["user_role_"+this.projectResultSet.ResultSet.xdat_user_id]=="Members"){
-					row.innerHTML="You are a <b>member</b> for this project.";
+					row.innerHTML="You are a <b>member</b> for this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}else if(p["user_role_"+this.projectResultSet.ResultSet.xdat_user_id]=="Collaborators"){
-					row.innerHTML="You are a <b>collaborator</b> for this project.";
+					row.innerHTML="You are a <b>collaborator</b> for this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}
 			}
 			newDisplay.appendChild(row);

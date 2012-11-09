@@ -16,7 +16,7 @@ function confirmValues(_focus){
 	  if(subBox.value!=""){
 	  	 if(subBox.obj.selectedIndex!=undefined){
 	  	 	if(subBox.obj.options[subBox.obj.selectedIndex].style.color=="red"){
-	  	 		document.getElementById("subj_msg").innerHTML="* This subject does not exist, and will be automatically created.  To populate demographic details for this subject please use the 'Add New Subject' link.";
+	  	 		document.getElementById("subj_msg").innerHTML="* This " + XNAT.app.displayNames.singular.subject.toLowerCase() + " does not exist, and will be automatically created.  To populate demographic details for this " + XNAT.app.displayNames.singular.subject.toLowerCase() + " please use the 'Add New " + XNAT.app.displayNames.singular.subject + "' link.";
 	  	 	}else{
 	  	 		document.getElementById("subj_msg").innerHTML="";
 	  	 	}
@@ -116,7 +116,7 @@ function fixSessionID(val)
         newVal = newVal.replace(/[{]/,"_");
         newVal = newVal.replace(/[}]/,"_");
         if(newVal!=temp){
-      	  alert("Removing invalid characters in session.");
+      	  alert("Removing invalid characters in " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".");
         }
         return newVal;
 }

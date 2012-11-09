@@ -11,7 +11,7 @@ $page.addAttribute("onLoad", "document.form1.participant.focus();")
     <table width="450">
 	<tr>
 		<td colspan="2">
-		<br>Is this participant correct?
+		<br>Is this $displayManager.getSingularDisplayNameForSubject().toLowerCase() correct?
 		<br><br></td>
 	</tr>
 					<tr>

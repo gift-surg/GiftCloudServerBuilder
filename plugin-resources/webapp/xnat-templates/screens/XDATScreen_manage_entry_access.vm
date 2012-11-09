@@ -8,7 +8,7 @@ var elementName="$!item.getXSIType()";
 		   var projects = document.getElementById('projects');
 		   if (projects.selectedIndex==0)
 		   {
-		       alert('Please select a project.');
+		       alert('Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().');
 		       return false;
 		   }
 		    
@@ -21,7 +21,7 @@ var elementName="$!item.getXSIType()";
 		         
 		         if(thisInput.value==proj)
 		         {
-		           alert("Project already exists");
+		           alert("$displayManager.getSingularDisplayNameForProject() already exists");
 		           return false;
 		         }
 			       }
@@ -69,10 +69,10 @@ var elementName="$!item.getXSIType()";
 		</script>
 <form method="post" action="$link.setAction("ManageEntryAccess")" name="form1" id="form1" ONSUBMIT="return validateForm();">
 <DIV ID="PROJECT_BOX">
-<DIV class="edit_header1">Project Info</DIV>
+<DIV class="edit_header1">$displayManager.getSingularDisplayNameForProject() Info</DIV>
 <DIV ID="projectSpacer">&nbsp;</DIV>
 <DIV class="edit_header3">
-Project:
+$displayManager.getSingularDisplayNameForProject():
 <INPUT type="hidden" name="project" value="$!project"/>
 #set($create_projects=$data.getSession().getAttribute("user").getAllowedValues("$item.getXSIType()","$item.getXSIType()/project","create"))
 #set($read_projects=$data.getSession().getAttribute("user").getAllowedValues("$item.getXSIType()","$item.getXSIType()/project","read"))
@@ -97,16 +97,16 @@ $proj
 </SELECT>
 <input type="button" value="Add" ONCLICK="addNewProject();"/>
 #else
-ERROR:  No projects exist.  Please create a project before attempting to insert this item.
+ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.  Please create a $displayManager.getSingularDisplayNameForProject().toLowerCase() before attempting to insert this item.
 #end
 </DIV>
 <DIV ID="projectSpacer">&nbsp;</DIV>
 <DIV class="container" style="width:none;height:none;max-height:none;">
-			 <DIV class="withColor containerTitle">Project Labels</DIV>
+			 <DIV class="withColor containerTitle">$displayManager.getSingularDisplayNameForProject() Labels</DIV>
 			<DIV class="containerBody">
     <TABLE>
        <thead>
-       <TR><TH>Project</TH><TH>ID</TH><TH>Group</TH></TR>
+       <TR><TH>$displayManager.getSingularDisplayNameForProject()</TH><TH>ID</TH><TH>Group</TH></TR>
        </thead>
        <tbody ID="projects_project">
        #set($ppCount =0) 

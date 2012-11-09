@@ -61,7 +61,7 @@ $page.setVlinkColor($ui.vlink)
 								</tr>
 							-->
 							<tr>
-								<td>Image Session ID</td>
+								<td>$displayManager.getSingularDisplayNameForImageSession() ID</td>
 								<td>
 									#set($imageSession_ID = $item.getStringProperty("xnat:qcManualAssessorData/imageSession_ID"))
 									#if ($imageSession_ID)

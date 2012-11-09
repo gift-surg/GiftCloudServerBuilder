@@ -44,7 +44,7 @@ $page.setVlinkColor($ui.vlink)
 <form name="BuildPipeline" method="post" action="$link.setAction("BuildPipelineActions")" >
 <b>
   ##<font face="$ui.sansSerifFonts">
-	      Session: $sessionId 
+	      $displayManager.getSingularDisplayNameForImageSession(): $sessionId 
   ##</font>
 </b>
 <br>

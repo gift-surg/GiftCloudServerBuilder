@@ -1,4 +1,4 @@
-			<b>Project:</b> <SELECT ID="project" name="project" ONCHANGE="updateProtocolSelect();"></select>&nbsp; <b>Protocol:		</b><SELECT ID="protocol" name="protocol"></select>
+			<b>$displayManager.getSingularDisplayNameForProject():</b> <SELECT ID="project" name="project" ONCHANGE="updateProtocolSelect();"></select>&nbsp; <b>Protocol:		</b><SELECT ID="protocol" name="protocol"></select>
 			
 	<script type="text/javascript">
 	var protocolPKs = new Array();

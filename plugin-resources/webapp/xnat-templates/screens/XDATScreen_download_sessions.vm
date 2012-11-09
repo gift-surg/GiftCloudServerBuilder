@@ -24,7 +24,7 @@
         }
 
         if (!sessionsSelected) {
-            alert("Please select at least one imaging session from section 1.");
+            alert("Please select at least one imaging $displayManager.getSingularDisplayNameForImageSession().toLowerCase() from section 1.");
             return false;
         }
 
@@ -85,7 +85,7 @@
 <TABLE border="0">
 <TR>
     <TD>
-        <DIV class="edit_header2"><img src="$content.getURI("images/number_1.gif")" border=0> Confirm Sessions for download</DIV>
+        <DIV class="edit_header2"><img src="$content.getURI("images/number_1.gif")" border=0> Confirm $displayManager.getPluralDisplayNameForImageSession() for download</DIV>
     </TD>
     <TD></TD>
     <TD>
@@ -339,11 +339,11 @@
         </TR>
         <TR>
             <TD><input type="checkbox" name="projectIncludedInPath" value="true"/>
-            <TD>Include project in file paths</TD>
+            <TD>Include $displayManager.getSingularDisplayNameForProject().toLowerCase() in file paths</TD>
         </TR>
         <TR>
             <TD><input type="checkbox" name="subjectIncludedInPath" value="true"/>
-            <TD>Include subject in file paths</TD>
+            <TD>Include $displayManager.getSingularDisplayNameForSubject().toLowerCase() in file paths</TD>
         </TR>
         <TR>
             <TD><input type="checkbox" name="simplified" checked value="true"/>

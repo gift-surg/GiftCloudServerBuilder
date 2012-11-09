@@ -18,7 +18,7 @@ var pageID = currentTime.getTime() + '_';
 	 
 function TabManagerInit(){
 	    window.tab_manager.init(stored_searches);
-	    window.tab_manager.load({DESC:"Subjects"});
+	    window.tab_manager.load({DESC:"$displayManager.getPluralDisplayNameForSubject()"});
 	}
 	
 	YAHOO.util.Event.onDOMReady(TabManagerInit);

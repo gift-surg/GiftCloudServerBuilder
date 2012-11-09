@@ -8,7 +8,7 @@ function validateSubjectAssessorForm()
    if (subject=="")
    {
      window.manager.showOption1();
-     alert("Please select a subject before proceeding.");
+     alert("Please select a " + XNAT.app.displayNames.singular.subject.toLowerCase() + " before proceeding.");
      return false;
    }
    return validateExperimentForm();

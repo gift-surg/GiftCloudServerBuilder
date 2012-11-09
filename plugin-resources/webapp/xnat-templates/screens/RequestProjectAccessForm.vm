@@ -12,14 +12,14 @@
  </TR>
  <TR><TD>
 
-The following user has requested $access_level access to the $projectOM.getName() Project.  
-Allowing the user to access the project will 
+The following user has requested $access_level access to the $projectOM.getName() $displayManager.getSingularDisplayNameForProject().  
+Allowing the user to access the $displayManager.getSingularDisplayNameForProject().toLowerCase() will 
 #if($access_level=="owner")
-mean the user can read, download, edit and manage anything affiliated with this project.
+mean the user can read, download, edit and manage anything affiliated with this $displayManager.getSingularDisplayNameForProject().toLowerCase().
 #elseif($access_level=="member")
-mean the user can read, download and edit the project's subject and experiment data. 
+mean the user can read, download and edit the $displayManager.getSingularDisplayNameForProject().toLowerCase()'s $displayManager.getSingularDisplayNameForSubject().toLowerCase() and experiment data. 
 #else
-mean the user can read and download the project's subject and experiment data.  The user will NOT be able to edit the data.
+mean the user can read and download the $displayManager.getSingularDisplayNameForProject().toLowerCase()'s $displayManager.getSingularDisplayNameForSubject().toLowerCase() and experiment data.  The user will NOT be able to edit the data.
 #end
 </TD></TR>
 <TR><TD><BR>

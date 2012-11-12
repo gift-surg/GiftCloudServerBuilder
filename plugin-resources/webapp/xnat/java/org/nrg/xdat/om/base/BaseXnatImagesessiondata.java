@@ -925,18 +925,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                             
                             if (element.equalsIgnoreCase(XnatQcmanualassessordata.SCHEMA_ELEMENT_NAME))
                             {
-                                if (this.manQC == null)
+                                if (this.getUser().canRead(child))
                                 {
-                                    if (this.getUser().canRead(child))
-                                    {
-                                        this.manQC = new XnatQcmanualassessordata(child.getCurrentDBVersion(false));
-                                        minLoadAssessors.add(this.manQC);
-                                    }else{
-                                        minLoadAssessors.add(new XnatQcmanualassessordata(child));
-                                    }
-                                }else{
-                                	this.manQC = new XnatQcmanualassessordata(child.getCurrentDBVersion(false));
+                                    this.manQC = new XnatQcmanualassessordata(child.getCurrentDBVersion(false));
                                     minLoadAssessors.add(this.manQC);
+                                }else{
+                                    minLoadAssessors.add(new XnatQcmanualassessordata(child));
                                 }
                             }else if (element.equalsIgnoreCase(XnatQcassessmentdata.SCHEMA_ELEMENT_NAME))
                             {

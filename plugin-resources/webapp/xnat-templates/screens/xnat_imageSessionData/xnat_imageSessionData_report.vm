@@ -38,11 +38,7 @@ document.title = "Session: $!item.getProperty('label')";
 			#parse("/screens/ReportProjectSpecificFields.vm")
 	  </td>
 	 </tr>
-<tr>
-	<td>
 	 #parse("/screens/qc_summary.vm")
-	</td>
-</tr>
 <tr>
 	<td>
 		#addCustomScreens($om.getXSIType() "report/preScans") 

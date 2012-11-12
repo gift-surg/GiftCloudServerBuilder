@@ -1,4 +1,5 @@
 #set($scanAssessors =$!om.getScanAssessors())
+
 #if ($scanAssessors.size()>0)
 <tr>
 <td align=left colspan=2 valign=top>

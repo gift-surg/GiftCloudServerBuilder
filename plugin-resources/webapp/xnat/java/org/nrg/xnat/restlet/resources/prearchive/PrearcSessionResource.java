@@ -293,6 +293,8 @@ public final class PrearcSessionResource extends SecureResource {
         }
 
         String screen=this.getQueryVariable("screen");
+        String popup=StringUtils.equalsIgnoreCase(this.getQueryVariable("popup"), "true") ? "true":"false";
+        
         
         final MediaType mt = overrideVariant(variant);
         if (MediaType.TEXT_HTML.equals(mt) || StringUtils.isNotEmpty(screen)) 
@@ -306,7 +308,7 @@ public final class PrearcSessionResource extends SecureResource {
                     this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Projects in the unassigned folder cannot be archived.");
                     return null;
                 }
-                getResponse().redirectSeeOther(getContextPath()+String.format("/app/action/LoadImageData/project/%s/timestamp/%s/folder/%s/popup/false",project,timestamp,session));
+                getResponse().redirectSeeOther(getContextPath()+String.format("/app/action/LoadImageData/project/%s/timestamp/%s/folder/%s/popup/%s",project,timestamp,session,popup));
                 return null;
             }
 

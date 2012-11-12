@@ -39,6 +39,31 @@
             <td>
                 <input type="text" id="session_date" name="session_date"/>
                 <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "$displayManager.getSingularDisplayNameForImageSession() Date");</script>
+		</tr>
+		<tr>
+			<th align="left"><label for="session_time" class="select_label">Session Time</label></th>
+			<td>
+#set ($hours=[["08","8AM",8],["09","9AM",9],["10","10AM",10],["11","11AM",11],["12","12PM",12],["13","1PM",13],["14","2PM",14],["15","3PM",15],["16","4PM",16],["17","5PM",17],["18","6PM",18],["19","7PM",19],["20","8PM",20],["21","9PM",21],["22","10PM",22],["23","11PM",23],["00","12AM",0],["01","1AM",1],["02","2AM",2],["03","3AM",3],["04","4AM",4],["05","5AM",5],["06","6AM",6],["07","7AM",7]]	)
+<select id="session_time_h" name="session_time_h">
+        <option value="">HH</option>
+        #foreach ($hour in $hours)
+              <option value="$hour.get(0)" >$hour.get(1)</option>
+        #end
+      </select>:
+
+      <select id="session_time_m" name="session_time_m">
+        <option value="">MM</option>
+        #foreach ($minute in [ 0..59 ])
+           #if($minute<10)
+           		#set($minuteD="0$minute")
+           #else
+           		#set($minuteD="$minute")
+           #end
+              <option value="$minuteD" >$minuteD</option>
+        #end
+      </select>
+      (time is optional)
+         
             </td>
         </tr>
         <tr>

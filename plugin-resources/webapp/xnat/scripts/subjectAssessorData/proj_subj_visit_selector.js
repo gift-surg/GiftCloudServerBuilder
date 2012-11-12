@@ -105,6 +105,8 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         noSessionDate.manager = this;
         noSessionDate.onclick = function() {
             document.getElementById("session_date").disabled = this.checked;
+            document.getElementById("session_time_h").disabled = this.checked;
+            document.getElementById("session_time_m").disabled = this.checked;
             this.manager.manageLaunchUploaderButton();
         }
     };
@@ -212,6 +214,8 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                 
             }
             document.getElementById("session_date").value = '';
+            document.getElementById("session_time_h").selectedIndex = 'HH';
+            document.getElementById("session_time_m").selectedIndex = 'MM';
             this.manager.manageLaunchUploaderButton();
         }
     };

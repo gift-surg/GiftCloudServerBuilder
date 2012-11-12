@@ -51,7 +51,10 @@ function validateUsername(obj,button_id){
 	   	      alert("Username cannot begin with a number.  Please modify.");
 	   	      obj.focus();
 	   	   }else{
-	   	   	   if(isAlphaNumeric(obj.value)){
+	   	   	   if(obj.value.length>40){
+	   	   		   alert("Username cannot exceed 40 characters");
+	   	   		   obj.focus();
+	   	   	   }else if(isAlphaNumeric(obj.value)){
 	   	   	      valid= true;
 	   	   	   }else{
 	   	   	      alert("Username cannot contain special characters.  Please modify.");

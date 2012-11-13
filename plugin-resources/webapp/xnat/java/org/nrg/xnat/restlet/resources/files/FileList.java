@@ -14,21 +14,9 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.collections.CollectionUtils;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ecs.xhtml.address;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.dcm.Dcm2Jpg;
@@ -41,15 +29,9 @@ import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -152,33 +134,6 @@ public class FileList extends XNATCatalogTemplate {
         if(this.parent!=null && this.security!=null){
             try {
                 if(user.canEdit(this.security)){
-                    String securityId=null;
-                    if(proj==null){
-                        if(parent.getItem().instanceOf("xnat:experimentData")){
-                            securityId=((XnatExperimentdata)parent).getId();
-                            proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
-                        }else if(security.getItem().instanceOf("xnat:experimentData")){
-                            securityId=((XnatExperimentdata)security).getId();
-                            proj = ((XnatExperimentdata)security).getPrimaryProject(false);
-                        }else if(parent.getItem().instanceOf("xnat:subjectData")){
-                            securityId=((XnatSubjectdata)parent).getId();
-                            proj = ((XnatSubjectdata)parent).getPrimaryProject(false);
-                        }else if(security.getItem().instanceOf("xnat:subjectData")){
-                            securityId=((XnatSubjectdata)security).getId();
-                            proj = ((XnatSubjectdata)security).getPrimaryProject(false);
-                        }
-                    }else{
-                        if(parent.getItem().instanceOf("xnat:experimentData")){
-                            securityId=((XnatExperimentdata)parent).getId();
-                        }else if(security.getItem().instanceOf("xnat:experimentData")){
-                            securityId=((XnatExperimentdata)security).getId();
-                        }else if(parent.getItem().instanceOf("xnat:subjectData")){
-                            securityId=((XnatSubjectdata)parent).getId();
-                        }else if(security.getItem().instanceOf("xnat:subjectData")){
-                            securityId=((XnatSubjectdata)security).getId();
-                        }
-                    }
-
                     final Object resourceIdentifier;
 
                     if(resource==null){
@@ -198,13 +153,12 @@ public class FileList extends XNATCatalogTemplate {
                     final boolean overwrite=this.isQueryVariableTrue("overwrite");
                     final boolean extract=this.isQueryVariableTrue("extract");
 
-
                     PersistentWorkflowI wrk=PersistentWorkflowUtils.getWorkflowByEventId(user,getEventId());
                     if(wrk==null && resource!=null && "SNAPSHOTS".equals(resource.getLabel())){
                         if(getSecurityItem() instanceof XnatExperimentdata){
-                            Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user,((ArchivableItem)security).getId());
-                            if(wrks!=null && wrks.size()==1){
-                                wrk=(WrkWorkflowdata)CollectionUtils.get(wrks, 0);
+                            Collection<? extends PersistentWorkflowI> workflows = PersistentWorkflowUtils.getOpenWorkflows(user,((ArchivableItem)security).getId());
+                            if(workflows!=null && workflows.size()==1){
+                                wrk=(WrkWorkflowdata)CollectionUtils.get(workflows, 0);
                                 if(!"xnat_tools/AutoRun.xml".equals(wrk.getPipelineName())){
                                     wrk=null;
                                 }
@@ -244,7 +198,6 @@ public class FileList extends XNATCatalogTemplate {
             } catch (Exception e) {
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
                 logger.error("",e);
-                return;
             }
         }
     }
@@ -280,7 +233,7 @@ public class FileList extends XNATCatalogTemplate {
 
                         final File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
                         final String parentPath=catFile.getParent();
-                        final CatCatalogBean cat=(CatCatalogBean)catResource.getCleanCatalog(proj.getRootArchivePath(), false,null,null);
+                        final CatCatalogBean cat = catResource.getCleanCatalog(proj.getRootArchivePath(), false,null,null);
 
                         CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
                         if(e != null){
@@ -312,7 +265,7 @@ public class FileList extends XNATCatalogTemplate {
 	                            //update for file deletion
 	                            CatalogUtils.writeCatalogToFile(cat, catFile);
 	
-	                            CatalogUtils.moveToHistory(catFile,cat,f,(CatEntryBean)entry,ci);
+	                            CatalogUtils.moveToHistory(catFile, f,(CatEntryBean)entry,ci);
 	
 	                            //if parent folder is empty, then delete folder
 	                            if(FileUtils.CountFiles(f.getParentFile(),true)==0){
@@ -329,15 +282,12 @@ public class FileList extends XNATCatalogTemplate {
                         }
                     }else{
                         this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"File missing");
-                        return;
                     }
                 }else{
                     this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
-                    return;
                 }
             } catch (Exception e) {
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
-                return;
             }
         }
     }
@@ -347,7 +297,7 @@ public class FileList extends XNATCatalogTemplate {
      * else returns table of files
      */
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) {
         MediaType mt = overrideVariant(variant);
         try {
             if(proj==null){
@@ -557,7 +507,7 @@ public class FileList extends XNATCatalogTemplate {
                 String baseURI=this.getBaseURI();
 
                 if(cat!=null){
-                    table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),false,entryFilter,proj,locator));
+                    table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource, false,entryFilter,proj,locator));
                 }
             }else{
 
@@ -624,8 +574,7 @@ public class FileList extends XNATCatalogTemplate {
                         if (mt.equals(MediaType.IMAGE_JPEG) && Dcm2Jpg.isDicom(f)) {
                             try {
                                 byte[] jpeg = Dcm2Jpg.convert(f);
-                                ByteArrayInputStream bais = new ByteArrayInputStream(jpeg);
-                                return new InputRepresentation(bais, mt);
+                                return new InputRepresentation(new ByteArrayInputStream(jpeg), mt);
                             }
                             catch (IOException e) {
                                 this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to convert this file to jpeg : " + e.getMessage());
@@ -719,7 +668,7 @@ public class FileList extends XNATCatalogTemplate {
     private Map<String,String> getSessionMaps(){
         Map<String,String> session_ids=new Hashtable<String,String>();
         if(assesseds.size()>0){
-//IOWA customization: to inlcude project and subject in path
+            //IOWA customization: to include project and subject in path
             boolean projectIncludedInPath = this.isQueryVariableTrue("projectIncludedInPath");
             boolean subjectIncludedInPath = this.isQueryVariableTrue("subjectIncludedInPath");
             for(XnatExperimentdata session:assesseds){
@@ -845,7 +794,7 @@ public class FileList extends XNATCatalogTemplate {
                     if(filepath==null|| filepath.equals("")){
 
                         if(cat!=null){
-                            table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource,catResource.getTagString(),isZip || (index!=null),entryFilter,proj,locator));
+                            table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath,(catResource.getBaseURI()!=null)?catResource.getBaseURI() + "/files":baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files",catResource, isZip || (index!=null),entryFilter,proj,locator));
                         }
                     }else{
                     	

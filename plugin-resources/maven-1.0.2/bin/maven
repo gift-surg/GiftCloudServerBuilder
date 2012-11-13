@@ -145,11 +145,15 @@ fi
 
 # For Darwin, use classes.jar for TOOLS_JAR
 TOOLS_JAR="${JAVA_HOME}/lib/tools.jar"
-if $darwin; then
-  TOOLS_JAR="/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Classes/classes.jar"
-  # Fix provided for OS X Lion: JAVA_HOME is set differently and classes.jar is in a different relative location.
-  if [ ! -e $TOOLS_JAR ]; then
-    TOOLS_JAR=`echo $JAVA_HOME | sed 's#/Home##'`/Classes/classes.jar
+# First check to see if tools.jar exists: new versions of OS X use standard JDK structure.
+# Only do darwin-specific changes if that doesn't exist.
+if [ ! -e $TOOLS_JAR ]; then
+  if $darwin; then
+    TOOLS_JAR="/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Classes/classes.jar"
+    # Fix provided for OS X Lion: JAVA_HOME is set differently and classes.jar is in a different relative location.
+    if [ ! -e $TOOLS_JAR ]; then
+      TOOLS_JAR=`echo $JAVA_HOME | sed 's#/Home##'`/Classes/classes.jar
+    fi
   fi
 fi
 

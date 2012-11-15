@@ -111,13 +111,13 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
@@ -152,29 +152,29 @@
   <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-jcl-1.5.8.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.beans-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context.support-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.core-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.expression-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.jdbc-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.orm-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.oxm-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.beans-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context.support-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.core-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.expression-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.jdbc-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.orm-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.oxm-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web-3.0.7.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.7.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-ldap-1.3.1.RELEASE-all.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-acl-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-aspects-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-config-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-core-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-ldap-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-openid-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.5.RELEASE.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-web-3.0.5.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-acl-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-aspects-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-config-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-core-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-ldap-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-openid-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.8.RELEASE.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-web-3.0.8.RELEASE.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/gsi-classes-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.5.jar"/>
@@ -198,7 +198,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>

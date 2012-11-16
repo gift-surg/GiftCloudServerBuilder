@@ -68,7 +68,7 @@ $page.setVlinkColor($ui.vlink)
 #end
 #set($formName="#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()")
        <DIV class="edit_title">$formName</DIV><br>
-<form method="post" action="$target?XNAT_CSRF=$!XNAT_CSRF" name="form1" id="form1" onsubmit="return validateForm();">
+<form method="post" action="$target?XNAT_CSRF=$!{XNAT_CSRF}" name="form1" id="form1" onsubmit="return validateForm();">
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
     #if($om.getId())
                       #parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))
@@ -159,7 +159,7 @@ $page.setVlinkColor($ui.vlink)
 	#end
       <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
       <input type="submit" name="eventSubmit_doInsert" value="Submit"/>
-
+	  #addCustomScreens($om.getXSIType() "edit/preFormClose") 
   </form>
 
 <!-- END xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->

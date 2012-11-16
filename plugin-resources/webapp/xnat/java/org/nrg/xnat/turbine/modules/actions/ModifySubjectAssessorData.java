@@ -168,7 +168,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
 
                     found = found.getCurrentDBVersion(false);
 
-                    
+					postProcessing(found, data, context);
 
                     SchemaElement se = SchemaElement.GetElement(found.getXSIType());
                     if (TurbineUtils.HasPassedParameter("destination", data)){

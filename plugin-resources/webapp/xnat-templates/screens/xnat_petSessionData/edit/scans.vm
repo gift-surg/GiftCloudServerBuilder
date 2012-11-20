@@ -96,12 +96,14 @@
     listing.render();
   });
       
-  if(window.scanSet.scans.length==0){
-    for(var newC=0;newC<2;newC++){
-      var tempScan = window.classMapping.newInstance("xnat:petScanData");
-      window.scanSet.new_scans.push(tempScan);
-    }
-  }
+  #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-addition","true")))
+      if(window.scanSet.scans.length==0){
+        for(var newC=0;newC<2;newC++){
+          var tempScan = window.classMapping.newInstance("xnat:petScanData");
+          window.scanSet.new_scans.push(tempScan);
+        }
+      }
+    #end
       
   window.scanSet.onLoad.fire();
 </script>

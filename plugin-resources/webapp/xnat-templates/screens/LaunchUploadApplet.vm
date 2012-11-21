@@ -11,7 +11,7 @@
     #launchUploadAppletForm th { padding: 0 ; }
     #launchUploadAppletForm tr { height: 25px ; line-height: 25px ; vertical-align: middle ; }
 </style>
-<form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='applet' onsubmit="popupWSize('about:blank',720,860,'applet'); return true;">
+<form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='_self' onsubmit="popupWSize('about:blank',720,860,'_self'); return true;">
             <h3>Upload Image $displayManager.getPluralDisplayNameForImageSession()</h3>
                 <p style="width:500px;margin-top:10px;margin-bottom:20px;">
                     DICOM and ECAT files can be uploaded using this online upload tool. Begin by selecting the $displayManager.getSingularDisplayNameForProject().toLowerCase(),
@@ -40,8 +40,9 @@
                 <input type="text" id="session_date" name="session_date"/>
                 <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "$displayManager.getSingularDisplayNameForImageSession() Date");</script>
 		</tr>
+#if ($requireTime == "true")
 		<tr>
-			<th align="left"><label for="session_time" class="select_label">Session Time</label></th>
+			<th align="left"><label for="session_time" class="select_label">$displayManager.getSingularDisplayNameForImageSession() Time</label></th>
 			<td>
 #set ($hours=[["08","8AM",8],["09","9AM",9],["10","10AM",10],["11","11AM",11],["12","12PM",12],["13","1PM",13],["14","2PM",14],["15","3PM",15],["16","4PM",16],["17","5PM",17],["18","6PM",18],["19","7PM",19],["20","8PM",20],["21","9PM",21],["22","10PM",22],["23","11PM",23],["00","12AM",0],["01","1AM",1],["02","2AM",2],["03","3AM",3],["04","4AM",4],["05","5AM",5],["06","6AM",6],["07","7AM",7]]	)
 <select id="session_time_h" name="session_time_h">
@@ -62,10 +63,10 @@
               <option value="$minuteD" >$minuteD</option>
         #end
       </select>
-      (time is optional)
          
             </td>
         </tr>
+#end
         <tr>
             <td>&nbsp;</td>
             <td>
@@ -85,6 +86,7 @@
      <br>
 
      <input type="hidden" id="session_id" name="session_id" value=""/>
+
      <input type="submit" id="gojuice" name="gojuice" value="Launch Uploader" disabled="true" style="min-width:135px;font-size:13px;" />
 
  </div> <!-- end of hideIfProtocol -->

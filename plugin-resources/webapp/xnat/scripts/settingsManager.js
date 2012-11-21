@@ -135,6 +135,8 @@ function scriptGet (_dom,_obj) {
     if(o.status==401){
       alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
       window.location=serverRoot+"/app/template/Login.vm";
+    }else if(o.status==404){
+      // just means the script doesn't yet exist. This is likely ok.
     }else{
       // this.disableDOM(false);
       alert("ERROR " + o.status + " (" + o.statusText + ") ");
@@ -223,7 +225,11 @@ function scriptGet (_dom,_obj) {
       var parsedResponse = parseResponse(o);
       var status = false;
       if (parsedResponse.ResultSet.Result.length !== 0) {
+    	  if( parsedResponse.ResultSet.Result[0].edit == undefined){ //sort of a hack to get this code to work with generic nrg_config return values
+    		  status = parsedResponse.ResultSet.Result[0].status === "enabled" ? true : false;
+    	  } else {
 	status = parsedResponse.ResultSet.Result[0].edit === "true" ? true : false;
+    	  }
       }
       this.initial.status=status;
       this.current.status=status;
@@ -235,6 +241,12 @@ function scriptGet (_dom,_obj) {
       var script = "";
       if (parsedResponse.ResultSet.Result.length !== 0) {
 	script = parsedResponse.ResultSet.Result[0].script;
+	//sort of a hack to get this code to work with generic nrg_config return values
+	if(script == undefined ){
+		script = parsedResponse.ResultSet.Result[0].contents;
+	}
+	
+	
 	YAHOO.util.Connect.asyncRequest('GET', this.obj.getStatus, {success : statusGet, failure : this.onFailure, cache : false, scope : this});
       }
       this.initial.script = script;

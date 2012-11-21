@@ -45,7 +45,7 @@ import org.restlet.resource.Variant;
  *	Examples:
  *
  *		/config/{tool-name}/{PATH_TO_FILE}?status=disabled   PUT   disable a configuration
- *		/config/{tool-name}/{PATH_TO_FILE}?status=enabled    PUT   enable a configuration
+ *		/config/{tool-name}/{PATH_TO_FILE}?status=enabled || status=true    PUT   enable a configuration
  *		/config/{tool-name}/{PATH_TO_FILE}?version=1         GET   get a version of a config
  *		/config/{tool-name}/{PATH_TO_FILE}?action=getHistory GET   get a list of all the configurations
  *				
@@ -271,7 +271,7 @@ public class ConfigResource extends SecureResource {
 			//if this is a status update, do it and return
 			if(this.getQueryVariable("status") != null ) {
 				//   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}&status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}&status={enabled, disabled} 
-				final boolean enable = "enabled".equals(this.getQueryVariable("status")) ? true : false;
+				final boolean enable = "enabled".equals(this.getQueryVariable("status")) || "true".equals(this.getQueryVariable("status")); 
 				if(enable){
 					configService.enable(user.getUsername(), reason, toolName, path, getProjectId);
 				} else {

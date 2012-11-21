@@ -80,14 +80,19 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
             this.projectBox.manager = this;
 
             this.projectBox.onchange = function () {
+            	
                 if (this.selectedIndex > 0) {
-                    this.manager.projectID = this.options[this.selectedIndex].value;
-                    this.manager.loadSubjects();
+                	if(this.manager.projectID != this.options[this.selectedIndex].value) {
+                	
+                		window.location.href = serverRoot + "/app/template/LaunchUploadApplet.vm/popup/true/project/"+this.options[this.selectedIndex].value;
+                	}
                 }
             };
 
             if (this.projectBox.selectedIndex > 0) {
-                this.projectBox.onchange();
+            	
+            	this.projectBox.manager.projectID = this.projectBox.options[this.projectBox.selectedIndex].value;
+        		this.projectBox.manager.loadSubjects();
             }
         }
 
@@ -105,8 +110,12 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         noSessionDate.manager = this;
         noSessionDate.onclick = function() {
             document.getElementById("session_date").disabled = this.checked;
-            document.getElementById("session_time_h").disabled = this.checked;
-            document.getElementById("session_time_m").disabled = this.checked;
+            if(document.getElementById("session_time_h") != undefined) {
+                document.getElementById("session_time_h").disabled = this.checked;
+            }
+            if(document.getElementById("session_time_m") != undefined) {
+            	document.getElementById("session_time_m").disabled = this.checked;
+            }
             this.manager.manageLaunchUploaderButton();
         }
     };
@@ -214,8 +223,12 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                 
             }
             document.getElementById("session_date").value = '';
-            document.getElementById("session_time_h").selectedIndex = 'HH';
-            document.getElementById("session_time_m").selectedIndex = 'MM';
+            if(document.getElementById("session_time_h") != undefined) {
+            	document.getElementById("session_time_h").selectedIndex = 'HH';
+            }
+            if(document.getElementById("session_time_m") != undefined) {
+            	document.getElementById("session_time_m").selectedIndex = 'MM';
+            }
             this.manager.manageLaunchUploaderButton();
         }
     };

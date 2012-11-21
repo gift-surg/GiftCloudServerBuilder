@@ -1,11 +1,19 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.turbine.modules.screens;
 
+import java.util.concurrent.Callable;
+
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.nrg.config.services.ConfigService;
+import org.nrg.xdat.XDAT;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.AppletConfig;
 import org.nrg.xnat.utils.XnatHttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,5 +57,71 @@ public class UploadApplet extends SecureScreen {
             context.put("session_date", "no_session_date");
         }
 		context.put("arc", ArcSpecManager.GetInstance());
+		
+		XDATUser user = TurbineUtils.getUser(data);
+		String projectName = (String)context.get("project");
+		
+		//grab the applet config. Project level if it exists, otherwise, do the site-wide
+		ConfigService configService = XDAT.getConfigService();
+		Callable<Long> getProjectId = null;
+		
+		Callable<Long> nullCallable = new Callable<Long>() { public Long call() { return null; }};
+		
+		if(projectName != null){
+			final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
+			try {
+				if(!user.canRead(("xnat:subjectData/project").intern(), p.getId())){
+					getProjectId = nullCallable;
+				}
+			} catch (Exception e){
+				getProjectId = nullCallable;
+			}
+			getProjectId = new Callable<Long>() { public Long call() { return new Long((Integer)p.getItem().getProps().get("projectdata_info"));}};
+		} else {
+			getProjectId = nullCallable;
+		}
+		
+		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, getProjectId);
+		
+		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())){
+			//try to pull a site-wide config
+			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, nullCallable);
+		}
+		if(config != null){
+			String json = config.getContents();
+	    	
+	        if (json != null) {
+	        	
+	        	
+	        	
+	            try {            	
+	            	//we have JSON, so, create applet parameters from it.
+	            	ObjectMapper mapper = new ObjectMapper();
+	            	AppletConfig jsonParams = mapper.readValue(json, AppletConfig.class);
+	            	StringBuilder sb = new StringBuilder();
+	            	if(jsonParams.getParameters() != null){
+	            		for(String key:jsonParams.getParameters().keySet()){
+	            			sb.append("parameters['").append(key).append("'] = '").append(jsonParams.getParameters().get(key)).append("';\n");
+	            		}
+	            	}
+	
+	            	context.put("appletParams", sb.toString());
+	            	
+	                
+	            } catch (Exception exception) {
+	                logger.equals(exception);
+	            }
+	        }
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 }

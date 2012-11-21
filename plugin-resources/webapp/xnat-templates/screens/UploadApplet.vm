@@ -35,6 +35,7 @@ function loadApplet() {
     var attributes = { code: 'org.nrg.upload.ui.UploadAssistantApplet', codebase: '$content.getURI("applet/")', width: 800, height: 500, archive: 'UploadAssistant-1.6.2-SNAPSHOT.jar, DicomEdit-3.0.0.jar, DicomUtils-1.2.0.jar, antlr-2.7.7.jar, antlr-runtime-3.4.jar, common-1.2.0.jar, commons-codec-1.5.jar, commons-httpclient-3.1.jar, commons-lang-2.6.jar, commons-logging-1.1.1.jar, dcm4che-core-2.0.25.jar, dicom-xnat-sop-1.6.0.jar, dicom-xnat-util-1.6.0.jar, ecat-edit-0.1.2.jar, ecat-io-0.1.0.jar, nrg-framework-1.6.2-SNAPSHOT.jar, guava-12.0.1.jar, jcalendar-1.4.jar, json-20080701.jar, jsr305-1.3.9.jar, log4j-1.2.16.jar, looks-2.4.1.jar, nrgutil-1.0.1.jar, org.restlet-1.1.10.jar, slf4j-api-1.6.6.jar, slf4j-log4j12-1.6.6.jar, stringtemplate-3.2.1.jar, jackson-mapper-asl-1.8.11.jar, jackson-core-asl-1.8.11.jar, spring-beans-3.0.7.RELEASE.jar, spring-core-3.0.7.RELEASE.jar, spring-web-3.0.7.RELEASE.jar, wizard-1.1.jar' };
     var parameters = { 'xnat-url': '$!arc.getSiteUrl()', 'xnat-admin-email': '$!arc.getSiteAdminEmail()', 'xnat-description': '$!arc.getSiteId()', 'n-upload-threads': '4', 'fixed-size-streaming': 'true', 'java_arguments': '-Djnlp.packEnabled=true', 'jsessionid': '$jsessionid'};
 
+parameters['window-name'] = this.window.name;
 
 #if( $project )
         parameters['xnat-project'] = '$project';
@@ -63,7 +64,7 @@ function loadApplet() {
             parameters['xnat-scan-type'] = '$scan_type';
     #end
 #end
-
+$!appletParams
     deployJava.runApplet(attributes, parameters, '1.6');
 }
 

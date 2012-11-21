@@ -153,6 +153,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
         settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
+        settings.put("appletScript", XDAT.getConfigService().getConfigContents("applet", "settings"));
         settings.put("restMockCallMap", getFormattedRestMockCallMap());
 
         return settings;
@@ -385,7 +386,15 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the site-wide anonymization script", exception);
                 }
                 dirtied = true;
-            } else if (property.equals("restMockCallMap")) {
+            } else if (property.equals("appletScript")) {
+                final String appletScript = map.get("appletScript");
+                try {
+                    XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the site-wide applet settings", "applet", "settings", appletScript);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the site-wide applet settings", exception);
+                }
+                dirtied = true;
+            }  else if (property.equals("restMockCallMap")) {
                 final String callMap = map.get("restMockCallMap");
                 try {
                     XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the REST service mock call map", "rest", "mockCallMap", getUnformattedRestMockCallMap(callMap));

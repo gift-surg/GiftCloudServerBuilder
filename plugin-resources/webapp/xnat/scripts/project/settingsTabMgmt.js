@@ -30,6 +30,9 @@ function fullConfigHandler() {
     if(window.anonymizationManager==undefined) {
         missing.push('Anonymization');
     }
+    if(window.appletManager==undefined) {
+        missing.push('Applet');
+    }
     if(window.dicomReceiverManager==undefined) {
         missing.push('DICOM Receiver');
     }
@@ -59,6 +62,7 @@ function fullConfigHandler() {
 		       	, 'requireLogin', 'enableNewRegistrations', 'emailVerification'
 		       	, 'error', 'issue', 'newUser', 'update'
 		       	, 'anonScript'
+		       	, 'applet'
 		       	, 'dcmPort', 'dcmAe', 'enableDicomReceiver'
         ];
         var data = buildSettingsUpdateRequestBody(allControls);
@@ -80,6 +84,7 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
+        document.getElementById('applet_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
         showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
     }
@@ -126,6 +131,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	if(document.getElementById("anonymization_reset_button")){
     		document.getElementById("anonymization_reset_button").disabled = false;
     	}
+    	if(document.getElementById("applet_reset_button")){
+    		document.getElementById("applet_reset_button").disabled = false;
+    	}
     	if(document.getElementById("dicomReceiver_reset_button")){
     		document.getElementById("dicomReceiver_reset_button").disabled = false;
     	}
@@ -145,6 +153,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
     	}
     	if(document.getElementById("anonymization_reset_button")){
     		document.getElementById("anonymization_reset_button").disabled = true;
+    	}
+    	if(document.getElementById("applet_reset_button")){
+    		document.getElementById("applet_reset_button").disabled = true;
     	}
     	if(document.getElementById("dicomReceiver_reset_button")){
     		document.getElementById("dicomReceiver_reset_button").disabled = true;

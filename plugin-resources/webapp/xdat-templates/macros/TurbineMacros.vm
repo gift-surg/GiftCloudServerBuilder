@@ -253,14 +253,14 @@
   #set($value = "$!item.getBooleanProperty($name)")
 
   #if ($value == "true")
-  <input type="radio" name="$name" value="1" ONCLICK="return $!{onchange}(true);" CHECKED/>&nbsp;yes
-  <input type="radio" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
+  <input type="radio" id="${name}_1" name="$name" value="1" ONCLICK="return $!{onchange}(true);" CHECKED/>&nbsp;yes
+  <input type="radio" id="${name}_0" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
   #elseif ($value == "false")
-  <input type="radio" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
-  <input type="radio" name="$name" value="0" ONCLICK="return $!{onchange}(false);" CHECKED/>&nbsp;no
+  <input type="radio" id="${name}_1" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
+  <input type="radio" id="${name}_0" name="$name" value="0" ONCLICK="return $!{onchange}(false);" CHECKED/>&nbsp;no
   #else
-  <input type="radio" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
-  <input type="radio" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
+  <input type="radio" id="${name}_1" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
+  <input type="radio" id="${name}_0" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
   #end
 #end
 

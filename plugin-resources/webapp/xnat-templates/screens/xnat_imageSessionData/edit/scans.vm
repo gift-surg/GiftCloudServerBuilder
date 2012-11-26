@@ -83,7 +83,11 @@ XNAT.app.scans={};
     #set($scan=$om.getSortedScans().get($scani))
     var tempScan = window.classMapping.newInstance("$!scan.getXSIType()");
     tempScan.setProperty("ID","$!scan.getId()");
-    tempScan.setProperty("type","$!scan.getType()");
+	#if($scan.getType())
+    	tempScan.setProperty("type","$!scan.getType()");
+	#else
+    	tempScan.setProperty("type","$!scan.getSeriesDescription()");
+	#end
     tempScan.setProperty("quality","$!scan.getQuality()");
     tempScan.setProperty("note","$!scan.getNote()");
     tempScan.setProperty("series_description","$!scan.getSeriesDescription()");
@@ -103,13 +107,16 @@ XNAT.app.scans={};
   });
       
       
-  if(window.scanSet.scans.length==0){
-    for(var newC=0;newC<5;newC++){
-      var tempScan = window.classMapping.newInstance(getDefaultScanXSIType());
-      window.scanSet.new_scans.push(tempScan);
-    }
-  }
+  #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-addition","true")))
+      if(window.scanSet.scans.length==0){
+        for(var newC=0;newC<5;newC++){
+          var tempScan = window.classMapping.newInstance(getDefaultScanXSIType());
+          window.scanSet.new_scans.push(tempScan);
+        }
+      }
+  #end
   
+  XNAT.app.sTMod=$turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-type-modification","true"))
       
   window.scanSet.onLoad.fire();
 </script>

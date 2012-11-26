@@ -608,18 +608,10 @@ function LabelEditor(_config) {
             window.labelInput.value = window.currentLabel;
             window.labelInput.name = "new_label";
 
-            window.labelToggler = document.createElement("span");
-            window.labelToggler.id = "toggleLabels";
-
-            this.label_auto = document.createElement("div");
-            this.label_auto.id = "label_auto";
-
             this.labelContainer = document.createElement("div");
             this.labelContainer.id = "complete_container";
             this.labelContainer.width = "100px";
             this.labelContainer.appendChild(window.labelInput);
-            this.labelContainer.appendChild(window.labelToggler);
-            this.labelContainer.appendChild(this.label_auto);
 
             //modality
             tr = document.createElement("tr");
@@ -635,9 +627,6 @@ function LabelEditor(_config) {
             tr.appendChild(td1);
             tr.appendChild(td2);
             tb.appendChild(tr);
-
-            var oPushButtonD = new YAHOO.widget.Button({container:window.labelToggler});
-            window.labelToggler.style.display = "none";
 
             this.panel = new YAHOO.widget.Dialog("labelDialog", {
                 close:true,
@@ -719,42 +708,6 @@ function LabelEditor(_config) {
             closeModalPanel("labels_loading");
 
             window.labelInput.disabled = false;
-            var oDS = new YAHOO.util.LocalDataSource(window.exptLoader.list);
-            oDS.responseSchema = {fields:["label"]};
-
-            window.oAC = new YAHOO.widget.AutoComplete(window.labelInput, "label_auto", oDS);
-            window.oAC.prehighlightClassName = "yui-ac-prehighlight";
-            window.oAC.useShadow = true;
-            window.oAC.minQueryLength = 0;
-
-            if (window.exptLoader.list.length > 0) {
-                //show label button
-                var toggleD = function (e) {
-                    //YAHOO.util.Event.stopEvent(e);
-                    if (!YAHOO.util.Dom.hasClass(window.labelToggler, "open")) {
-                        YAHOO.util.Dom.addClass(window.labelToggler, "open")
-                    }
-
-                    // Is open
-                    if (window.oAC.isContainerOpen()) {
-                        window.oAC.collapseContainer();
-                    }
-                    else {
-                        // Is closed
-                        window.oAC.getInputEl().focus(); // Needed to keep widget active
-                        setTimeout(function () { // For IE
-                            window.oAC.sendQuery("");
-                        }, 0);
-                    }
-                }
-                oPushButtonD.on("click", toggleD);
-                window.oAC.containerCollapseEvent.subscribe(function () {
-                    YAHOO.util.Dom.removeClass(window.labelToggler, "open")
-                });
-                window.labelToggler.style.display = "";
-            } else {
-                window.labelToggler.style.display = "none";
-            }
         });
 
         openModalPanel("labels_loading", "Loading " + this.config.header + "s...");

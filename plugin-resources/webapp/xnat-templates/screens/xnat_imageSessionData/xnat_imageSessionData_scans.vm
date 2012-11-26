@@ -7,8 +7,13 @@
   <tr style="border-style:none;">
     <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Scan</th>
     <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Type</th>
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.display-series-description","true")))
 	<th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Series Desc</th>
-    <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Usability</th>
+		#set($fileIndex="3")
+	#else
+		#set($fileIndex="4")
+	#end
+	<th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Usability</th>
 	<th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Files</th>
     <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Note</th>
   </tr>
@@ -26,7 +31,9 @@
         </a>
       </td>
       <td border=0 align=left NOWRAP>$!scan.getProperty("type")</td>
+	  #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.display-series-description","true")))
 	  <td border=0 align=left NOWRAP>$!scan.getProperty("series_description")</td>
+	  #end
       <td border=0 class="quality-$!scan.getProperty("quality")" style="font-weight:bold; text-align:left;"  NOWRAP>
       $!scan.getProperty("quality")
       </td>
@@ -54,7 +61,7 @@
   #end	
   #if($scanWFiles>0)
        <tr>
-               <td colspan="4" align="right">
+               <td colspan="$fileIndex" align="right">
                </td>
                <td NOWRAP >
                        <div ID="total_dicom_files" class="totals">

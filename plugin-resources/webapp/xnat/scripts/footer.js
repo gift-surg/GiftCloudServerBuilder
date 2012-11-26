@@ -26,6 +26,12 @@ YAHOO.util.Event.onDOMReady(function(){
                     _addValidation(myforms[iFc][fFc],new SelectValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RequiredSelect));
                 }
             }
+
+            if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'float')){
+                if(myforms[iFc][fFc].nodeName=="INPUT"){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.FloatTextBox));
+                }
+            }
         }
     }
 
@@ -76,14 +82,37 @@ function validateBox(box,_checkFunction){
 }
 
 XNAT.app.validatorImpls.RequiredTextBox={
+	message:"Required field.",
 	isValid:function(_box){
 		return (_box.value!="");
+	}
+}
+
+XNAT.app.validatorImpls.FloatTextBox={
+	message:"Value must be a floating point decimal.",
+	isValid:function(_box){
+		if(_box.value!=""){
+			var temp=_box.value.trim().replace(/\s+/g,"");
+			if(temp!=_box.value){
+				return false;
+			}
+			if(!isNaN(parseFloat(temp)) && isFinite(temp)){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return true;
+		}
 	}
 }
 
 //declaring the constructor
 function TextboxValidator(box,_validator) {
 	this._validator=_validator;
+	if(this._validator.message){
+		this.message=this._validator.message;
+	}
     this.box = box;
 }
 // declaring instance methods
@@ -117,6 +146,7 @@ function validateSelect(sel){
 }
 
 XNAT.app.validatorImpls.RequiredSelect={
+	message:"Required field.",
 	isValid:function(sel){
 		return (sel.options[sel.selectedIndex].value!="");
 	}
@@ -202,19 +232,21 @@ YAHOO.util.Event.onDOMReady( function()
 	                	if(validators[elementId] instanceof Array){
 		                	try{
 		                		validators[elementId]._ok=true;
+		                		this.message=undefined;
 		                		for (var iVc = 0; iVc < validators[elementId].length; iVc++) {
 		                			var tempValidator=validators[elementId][iVc];
 		    	                    if (!tempValidator.validate()) {
 		    	                        validators[elementId]._ok = false;
 		    	                        validators._ok = false;
 		    	                        this.focus = validators[elementId][iVc].box;
+		    	                        this.message=tempValidator.message;
 		    	                    }
 		    	                }
 		                		
 		                		if(validators[elementId]._ok){
 		                	        removeAppendImage(validators[elementId].box);
 		                		}else{
-		                	        appendImage(validators[elementId].box,"/images/checkmarkRed.gif");
+		                	        appendImage(validators[elementId].box,"/images/checkmarkRed.gif",this.message);
 		                		}
 		                	}catch(e){
 		                		alert("Error performing validation")

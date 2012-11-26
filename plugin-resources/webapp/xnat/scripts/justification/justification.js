@@ -35,8 +35,19 @@ XNAT.app.ConfirmWJustification=function(_yuioptions){
 		var tb = document.createElement("tbody");
 		table.appendChild(tb);
 		bd.appendChild(table);
+		
+		//message (optional)
+		if(this.yuioptions.message!=undefined){
+			tr=document.createElement("tr");
+			td1=document.createElement("td");
+			td1.colSpan="2";
+			td1.innerHTML=this.yuioptions.message;
+			
+			tr.appendChild(td1);
+			tb.appendChild(tr);
+		}
 
-		//delete files
+		//justification
 		tr=document.createElement("tr");
 		td1=document.createElement("th");
 		td2=document.createElement("td");		
@@ -52,6 +63,17 @@ XNAT.app.ConfirmWJustification=function(_yuioptions){
 		tr.appendChild(td1);
 		tr.appendChild(td2);
 		tb.appendChild(tr);
+		
+		//message (optional)
+		if(this.yuioptions.note!=undefined){
+			tr=document.createElement("tr");
+			td1=document.createElement("td");
+			td1.colSpan="2";
+			td1.innerHTML=this.yuioptions.note;
+			
+			tr.appendChild(td1);
+			tb.appendChild(tr);
+		}
 
 		this.panel.setBody(bd);
 
@@ -87,11 +109,16 @@ XNAT.app.passThrough=function(_function,scope){
 	}
 }
 
-XNAT.app.requestJustification=function(_id,_header,_function,scope){
+XNAT.app.requestJustification=function(_id,_header,_function,scope,yuioptions){
 	this.id=_id;
 	this.onCompletion=new YAHOO.util.CustomEvent("complete",this);
 	
-	this.options=new Object();
+	if(yuioptions==undefined){
+		this.options=new Object();
+	}else{
+		this.options=yuioptions;
+	}
+
 	this.options.header=_header;
 	
 	this.dialog=new XNAT.app.ConfirmWJustification(this.options);

@@ -331,7 +331,7 @@ function checkProgress(){
  </tr>
  <tr id="option1">
   <td>
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html&XNAT_CSRF=$!XNAT_CSRF")" onSubmit="return prog(this);">
+<form ID="uploadFORM" class="noHide" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html&XNAT_CSRF=$!XNAT_CSRF")" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="popup" value="true"/>
 <INPUT TYPE="hidden" name="threshhold" value="51516279"/>
 

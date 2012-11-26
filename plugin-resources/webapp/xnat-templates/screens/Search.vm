@@ -16,10 +16,15 @@
 <div class="yui-skin-sam">
 <table width="100%">
  <tr>
+	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-left-bar","true")))
   <td valign="top" class="leftBar" width="191px" style="border:solid 1px #AAAAAA">
-   <div id="l_tv"></div>
-   <div style="width:190px">&nbsp;</div>
+       <div id="l_tv"></div>
+       <div style="width:190px">&nbsp;</div>
   </td>
+	#else
+	<div id="l_tv" style="display:none"></div>
+	#end
+	
   <td valign="top">
 #if ($data.message)
 <DIV class="error">$data.message</DIV><br/>

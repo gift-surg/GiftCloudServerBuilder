@@ -182,6 +182,7 @@ this.save=function(){
 		     postData = postData + "&xml="+this.group.toXML("");
 		     postData = postData + "&allowDataDeletion=false";
 		     postData = postData + "&XNAT_CSRF=" + csrfToken;
+		     postData = postData + "&event_reason=standard";
 			  
 			 var catCallback={
 				success:this.handleSuccessPost,

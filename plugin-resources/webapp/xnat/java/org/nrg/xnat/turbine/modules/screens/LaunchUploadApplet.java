@@ -24,7 +24,6 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xnat.protocol.Protocol;
 import org.nrg.xnat.utils.AppletConfig;
 import org.nrg.xnat.utils.XnatHttpUtils;
 import org.restlet.data.MediaType;

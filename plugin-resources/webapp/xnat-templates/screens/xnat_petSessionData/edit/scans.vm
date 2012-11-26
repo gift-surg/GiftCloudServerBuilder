@@ -81,7 +81,11 @@
     #set($scan=$om.getSortedScans().get($scani))
     var tempScan = window.classMapping.newInstance("$!scan.getXSIType()");
     tempScan.setProperty("ID","$!scan.getId()");
-    tempScan.setProperty("type","$!scan.getType()");
+	#if($scan.getType())
+    	tempScan.setProperty("type","$!scan.getType()");
+	#else
+    	tempScan.setProperty("type","$!scan.getSeriesDescription()");
+	#end
     tempScan.setProperty("quality","$!scan.getQuality()");
     tempScan.setProperty("note","$!scan.getNote()");
     tempScan.stats="$!scanprops.get($scani).get("files") files, $!scanprops.get($scani).get("size") MB";
@@ -104,6 +108,8 @@
         }
       }
     #end
+
+  XNAT.app.sTMod=$turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-type-modification","true"))
       
   window.scanSet.onLoad.fire();
 </script>

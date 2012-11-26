@@ -251,6 +251,10 @@ function ScanEditor(_sessionID,_scanID,_options){
 			td1.align="left";
 
 			var type_container=document.createElement('div');
+			if(!XNAT.app.sTMod && this.scan.extension.Type){
+				type_container.style.display='none';
+				td2.innerHTML=this.scan.extension.Type;
+			}
 			td2.appendChild(type_container);
 
 			this.type_input = document.createElement('input');
@@ -1023,7 +1027,16 @@ function scanListingEditor(_tbody,_scanSet,_options){
                         scan.type_input.id=elementName + scanXPath(modality, scanTypeTable) + "/type";
                         scan.type_input.name=elementName +scanXPath(modality, scanTypeTable) + "/type";
 
-			td.appendChild(scan.type_input);
+
+			if(!XNAT.app.sTMod && scan.extension.Type){ 
+				td.innerHTML=scan.extension.Type;
+				var d=td.appendChild(document.createElement("div"));
+				d.appendChild(scan.type_input);
+				d.style.display='none';
+			}else{
+				td.appendChild(scan.type_input);
+			}
+			
 			tr.appendChild(td);
 
 			//type

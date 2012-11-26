@@ -560,7 +560,7 @@ function SubjectEditor(_config) {
 
 
 XNAT.app._modifySubject=function(arg1,arg2,container){
-	openModalPanel("modify_subject", "Modifying " XNAT.app.displayNames.singular.subject.toLowerCase() + ", please wait...");
+	openModalPanel("modify_subject", "Modifying " + XNAT.app.displayNames.singular.subject.toLowerCase() + ", please wait...");
 
 	var settingsCallback = {
         success:function (o) {

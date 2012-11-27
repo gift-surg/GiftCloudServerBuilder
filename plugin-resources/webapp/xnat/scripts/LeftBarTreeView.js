@@ -173,8 +173,9 @@ function LeftBarTreeView(_config){
 	 	}
  	}
  	
- 	this.tree.draw();
- 	
+ 	try{
+ 		this.tree.draw();
+ 	}catch(e){}
  	
  }
  

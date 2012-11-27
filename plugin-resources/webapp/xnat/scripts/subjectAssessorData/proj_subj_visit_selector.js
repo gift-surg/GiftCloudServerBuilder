@@ -98,11 +98,13 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
 
         // This whole construct is so that the calendar can find its way back to the manager object.
         var sessionDateCalendar = document.getElementById("cal_session_date");
-        sessionDateCalendar.calendar.selectEvent.subscribe(function () {
-            //noinspection JSUnresolvedVariable
-        	window.projectSubjectVisitManager.manageLaunchUploaderButton();
+        if(sessionDateCalendar != null){
+        	sessionDateCalendar.calendar.selectEvent.subscribe(function () {
+            	//noinspection JSUnresolvedVariable
+        		window.projectSubjectVisitManager.manageLaunchUploaderButton();
             
-        }, sessionDateCalendar, false);
+        	}, sessionDateCalendar, false);
+        }
     };
 
     this.rigDateControls = function () {
@@ -248,6 +250,12 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         	if(activate == null){
         		var sessionDate = document.getElementById("session_date").value;
         		var noSessionDate = document.getElementById("no_session_date").checked;
+        		//this is here because if the applet settings script says "requireDate":"false" the no_session_date is a hidden field instead of a checkbox
+        		if(noSessionDate == false){
+        			if(document.getElementById("no_session_date").value == "true") {
+        			   noSessionDate = true;	
+        			}
+        		}
 
         		// If any of these are true, what project this is doesn't matter.
         		if (this.projectBox.selectedIndex == 0 || this.subjectBox.selectedIndex == 0 || (!sessionDate && !noSessionDate)) {

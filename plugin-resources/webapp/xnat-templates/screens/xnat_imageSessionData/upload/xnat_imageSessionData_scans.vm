@@ -98,7 +98,7 @@ Other
 			<td>	<!-- width="127" align="center" -->
 				<SELECT id="${datatype}/scans/scan[$scani]/quality" name="${datatype}/scans/scan[$scani]/quality">
 					<OPTION VALUE="" selected>(SELECT)</OPTION>
-					#foreach ($quality in $qualityLabels())
+					#foreach ($quality in $qualityLabels)
 					<OPTION VALUE="$quality">$quality</OPTION>
 					#end
 				</SELECT>

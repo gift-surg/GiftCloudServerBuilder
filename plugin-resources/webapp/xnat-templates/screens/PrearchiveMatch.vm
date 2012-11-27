@@ -134,7 +134,7 @@
 		  #end
 			</td>
      <td><select name="match${rowCount}.scan${scanCount}_USE">
-     #foreach ($quality in $qualityLabels())
+     #foreach ($quality in $qualityLabels)
      <option value="$quality">$quality</option>
      #end
      </select>

@@ -7,6 +7,7 @@
 
 if(XNAT==undefined)XNAT=new Object();
 if(XNAT.validators==undefined)XNAT.validators=new Object();
+if(XNAT.formValidators==undefined)XNAT.formValidators=new Object();
 if(XNAT.app.validatorImpls==undefined)XNAT.app.validatorImpls=new Object();
  
 /********************
@@ -14,7 +15,7 @@ if(XNAT.app.validatorImpls==undefined)XNAT.app.validatorImpls=new Object();
  */
 var forms=0;
 
-
+//review form and add validation functions for required fields
 YAHOO.util.Event.onDOMReady(function(){
     var myforms = document.getElementsByTagName("form");
     for(var iFc=0;iFc<myforms.length;iFc++){
@@ -37,7 +38,7 @@ YAHOO.util.Event.onDOMReady(function(){
 
 });
 
-//this delays the call to add validatoin until after the dom is loaded
+//this method is used to add a form field validator.  The validator object should contain 'box' which is the form field input object and 'validate()' which returns true or false.
 function addValidator(_element,_validator){
     YAHOO.util.Event.onDOMReady(function(){
         _addValidation(_element,_validator);
@@ -68,6 +69,27 @@ function _addValidation(_element,_validator){
     }
     
     XNAT.validators[_form.ID][_element.id].push(_validator);
+}
+
+//add form level validation method.  it should contain 'form' which is the form object and 'validate()' which returns true/false
+function addFormValidator(_validator){
+    YAHOO.util.Event.onDOMReady(function(){
+        _addFormValidation(_validator);
+    });
+}
+
+//this method should only be called once the dom is loaded
+function _addFormValidation(_validator){
+  var _form=_validator.form;
+  if(_form.ID==undefined){
+      _form.ID="form" + forms++;
+  }
+
+  if(XNAT.formValidators[_form.ID]==undefined){
+      XNAT.formValidators[_form.ID]=new Array();
+  }
+  
+  XNAT.formValidators[_form.ID].push(_validator);
 }
 
 function validateBox(box,_checkFunction){
@@ -209,14 +231,11 @@ YAHOO.util.Event.onDOMReady( function()
             myForm.ID = "form" + forms++;
         }
 
-        //function to hide forms while they are being submitted, unless they have a noHide class
-        if(!YUIDOM.hasClass(myForm,'noHide')){
-            YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            	if(!YUIDOM.hasClass(this,'noHide')){//check again in case class was added after build
-            		concealContent("Submitting... Please wait.");
-            	}
-            });
+        //take the statically defined onsubmit action and add it as a yui event instead.  it will be executed after form field validation, but before other submit actions
+        if (!myForm.userDefinedSubmit) {
+            myForm.userDefinedSubmit = myForm.onsubmit;
         }
+        myForm.onsubmit = null;
 
         //function to add validation to any form elements with specific classes (required, etc)
         //an array of validator functions is stored in XNAT.validators.  They are tied to the form by the form's ID.
@@ -258,36 +277,46 @@ YAHOO.util.Event.onDOMReady( function()
             		alert("Error performing validation")
             		validators._ok=false;
             	}
-
+            	
+            	//finished form field validation
                 if (!validators._ok) {
                     YAHOO.util.Event.stopEvent(env);
                     showContent();
                     if(this.focus!=undefined)
                         this.focus.focus();
+
+                    return false;
                 }
             }
-        });
 
-        //take the statically defined onsubmit action and add it as a yui event instead
-        if (!myForm.userDefinedSubmit) {
-            myForm.userDefinedSubmit = myForm.onsubmit;
-        }
-        myForm.onsubmit = null;
-        YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            var result = (this.userDefinedSubmit) ? this.userDefinedSubmit() : undefined;
-            if (result == undefined) {
-                result = true;
-            }
-            if(!result){
-                YAHOO.util.Event.stopEvent(env);
-                showContent();
-            }
-        },null,myForm);
+        	try{
+                //execute user defined form submit action
+                var result = (this.userDefinedSubmit) ? this.userDefinedSubmit() : undefined;
+                if (result == undefined) {
+                    result = true;
+                }
+                if(!result){
+                    YAHOO.util.Event.stopEvent(env);
+                    showContent();
+                    return false;
+                }
 
-        //function to replace empty strings with NULL in form elements with a nullable class
-        YAHOO.util.Event.on(myForm,"submit",function(env,var2){
-            if (this.ID) {
-                if(XNAT.validators[this.ID]==undefined || XNAT.validators[this.ID]._ok){
+                //execute additional form level validation which should run after other validation but before form completion
+                if(XNAT.formValidators!=undefined){
+	                var formValidators = XNAT.formValidators[this.ID];
+	                if(formValidators!=undefined){
+	                	for(var iFVc=0;iFVc<formValidators.length;iFVc++){
+	                		if (formValidators[iFVc].validate!=undefined && !(formValidators[iFVc].validate())) {
+	                			YAHOO.util.Event.stopEvent(env);
+	                            showContent();
+	                            return false;
+		                    }
+	                	}
+	                }
+                }
+                
+                //check for nullable fields and make them NULL if they are ""
+                if (this.ID) {
                     for(var iFc=0;iFc<this.length;iFc++){
                         if(YUIDOM.hasClass(this[iFc],'nullable')){
                             if((this[iFc].nodeName=="INPUT" || this[iFc].nodeName=="TEXTAREA") && this[iFc].value==""){
@@ -296,8 +325,21 @@ YAHOO.util.Event.onDOMReady( function()
                         }
                     }
                 }
-            }
-        });
+                
+
+                //hide the forms
+            	if(!YUIDOM.hasClass(this,'noHide')){//check if we are forbidden from hiding this form
+            		concealContent("Submitting... Please wait.");
+            	}
+            	
+            	return result;
+        	}catch(e){
+        		alert("An error occured during form validation.");
+        		YAHOO.util.Event.stopEvent(env);
+                showContent();
+                return false;
+        	}
+        },null,myForm);
     }
 });
 

@@ -34,6 +34,7 @@
 	<xs:element name="OtherDicomSession" type="xnat:otherDicomSessionData"/>
 	<xs:element name="SubjectVariables" type="xnat:subjectVariablesData"/>
 	<xs:element name="PETSession" type="xnat:petSessionData"/>
+	<xs:element name="PETMRSession" type="xnat:petmrSessionData"/>
 	<xs:element name="MRScan" type="xnat:mrScanData"/>
 	<xs:element name="CTScan" type="xnat:ctScanData"/>
 	<xs:element name="PETScan" type="xnat:petScanData"/>
@@ -1974,6 +1975,133 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="petmrSessionData">
+		<xs:annotation>
+			<xs:documentation>An event in which scans are obtained by a device capable of both PET and MR acquisitions</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xnat:imageSessionData">
+				<xs:sequence minOccurs="0">
+					<xs:element name="coil" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Free form text to indicate the coil used in this scanning session</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:maxLength value="255"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="fieldStrength" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Free form text to indicate the field strength used in this scanning session</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:maxLength value="255"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="marker" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Free form text to indicate method used to mark left-right (e.g. Vitamin E capsule)</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:maxLength value="255"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="stabilization" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Free form text to indicate method used to stabilize head</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:maxLength value="255"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="studyType" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Study descriptor</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="patientID" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Patient identification descriptor</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="patientName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Patient name (free format ASCII)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="tracer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Radio-Pharmaceutical</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="dose" minOccurs="0">
+									<xs:complexType>
+										<xs:simpleContent>
+											<xs:extension base="xs:float">
+												<xs:attribute name="units" type="xs:string" use="optional"/>
+											</xs:extension>
+										</xs:simpleContent>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="specificActivity" type="xs:float" minOccurs="0"/>
+								<xs:element name="totalMass" minOccurs="0">
+									<xs:complexType>
+										<xs:simpleContent>
+											<xs:extension base="xs:float">
+												<xs:attribute name="units" type="xs:string" use="optional"/>
+											</xs:extension>
+										</xs:simpleContent>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="intermediate" minOccurs="0">
+									<xs:complexType>
+										<xs:simpleContent>
+											<xs:extension base="xs:float">
+												<xs:attribute name="units" type="xs:string" use="optional"/>
+											</xs:extension>
+										</xs:simpleContent>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="isotope" minOccurs="0">
+									<xs:complexType>
+										<xs:simpleContent>
+											<xs:extension base="xs:string">
+												<xs:attribute name="half-life" type="xs:float" use="optional">
+													<xs:annotation>
+														<xs:documentation>half-life in seconds</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:extension>
+										</xs:simpleContent>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="transmissions" type="xs:integer" minOccurs="0"/>
+								<xs:element name="transmissions_starttime" type="xs:dateTime" minOccurs="0"/>
+							</xs:sequence>
+							<xs:attribute name="name" type="xs:string"/>
+							<xs:attribute name="startTime" type="xs:dateTime" use="optional"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="start_time" type="xs:dateTime" minOccurs="0"/>
+					<xs:element name="start_time_scan" type="xs:dateTime" minOccurs="0"/>
+					<xs:element name="start_time_injection" type="xs:dateTime" minOccurs="0"/>
+					<xs:element name="blood_glucose" type="xs:float" minOccurs="0"/>
+					<xs:element name="blood_glucose_units" type="xs:string" minOccurs="0"/>
+					<xs:element name="blood_glucose_time" type="xs:dateTime" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
 	<xs:complexType name="petScanData">
 		<xs:annotation>
 			<xs:documentation>Information about an individual PET scan sequence</xs:documentation>

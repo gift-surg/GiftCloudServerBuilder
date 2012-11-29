@@ -1,5 +1,5 @@
 <!-- Sequence: 10 -->
 <!-- allowGuest: true -->
-<li><a href="http://docs.xnat.org/XNAT+Desktop">XNAT Desktop (XND)</a></li>
+<li><a href="https://wiki.xnat.org/display/XNAT16/XNAT+Desktop">XNAT Desktop (XND)</a></li>
 <li><a href="http://nrg.wustl.edu/projects/DICOM/DicomBrowser.jsp">DICOM Browser</a></li>
-<li><a href="http://docs.xnat.org/XNAT+Tools#XNAT%20Client%20Tools-Developed%20by%20NRG-XNAT%20web%20services%20client%20tools%20%28NRG%29">Command Prompt Tools</a></li>
+<li><a href="https://wiki.xnat.org/display/XNAT16/XNAT+Client+Tools">Command Prompt Tools</a></li>

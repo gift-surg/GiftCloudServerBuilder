@@ -49,6 +49,10 @@ public class XDATScreen_add_experiment extends SecureScreen {
             context.put("tag", TurbineUtils.GetPassedParameter("tag", data));
         }
 
+        if (TurbineUtils.HasPassedParameter("visit_id", data)){
+            context.put("visit_id", TurbineUtils.GetPassedParameter("visit_id", data));
+        }
+
         String part_id = null;
         String project= null;
         XnatSubjectdata subj=null;

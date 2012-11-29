@@ -88,7 +88,7 @@ $page.setVlinkColor($ui.vlink)
 	</TR>
 </TABLE>
 </form>
-<SCRIPT type="javascript">
+<script>
 function validateProjectForm(){
   if(document.getElementById("xnat:projectData/ID").value==""){
     alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
@@ -111,4 +111,6 @@ function validateProjectForm(){
   return true;
 }
 
-</SCRIPT>
+
+
+</script>

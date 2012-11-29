@@ -333,9 +333,7 @@ function verifyExptId(obj) {
 						document.getElementById(elementName + "/ID").value = match.id;
 						document.getElementById(elementName + "/label").verified = true;
 
-						document.getElementById("label_msg").innerHTML = "* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". <ul><li>Select append to only add new content to existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".</li><li>Select overwrite to overwrite existing content.</li></ul>";
-						if (document.getElementById("label_opts").innerHTML == "")
-							document.getElementById("label_opts").innerHTML = "<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
+						XNAT.app.handleMatch();
 						veid = true;
 					} else {
 						document.getElementById(elementName + "/ID").value = "";
@@ -355,4 +353,10 @@ function verifyExptId(obj) {
 	} catch (e) {
 		alert('Failed to validate expt id:' + e.message);
 	}
+}
+
+XNAT.app.handleMatch=function(){
+	document.getElementById("label_msg").innerHTML = "* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". <ul><li>Select append to only add new content to existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".</li><li>Select overwrite to overwrite existing content.</li></ul>";
+	if (document.getElementById("label_opts").innerHTML == "")
+		document.getElementById("label_opts").innerHTML = "<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
 }

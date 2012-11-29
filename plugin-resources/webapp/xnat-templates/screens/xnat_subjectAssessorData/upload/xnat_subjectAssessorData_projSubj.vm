@@ -44,8 +44,9 @@
  <tr>
   <td align="left" colspan="3"><div style="color:red" id="subj_msg"></div></td>
  </tr>
+ 		<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
+
 #parse($turbineUtils.getTemplateName("_session.vm",$om.getXSIType(),$project,"upload"))
-		<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
 
 
 

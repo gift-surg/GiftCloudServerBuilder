@@ -3,6 +3,7 @@ function EmailPopupForm(_search,_div){
 	this._search=_search;
 	
 	this.init=function(){
+		try{
 		var popupDIV = document.createElement("DIV");
 		popupDIV.id="all_users_popup";
 		var popupHD = document.createElement("DIV");
@@ -128,7 +129,7 @@ function EmailPopupForm(_search,_div){
 		tr.appendChild(td);
 		tbody.appendChild(tr);
 		
-		if (user_email){
+		if (user_email!=undefined && user_email!=""){
 			var input = document.createElement("INPUT");
 			input.type="hidden";
 			input.name="email_from_address"; 
@@ -245,6 +246,10 @@ function EmailPopupForm(_search,_div){
 					
 		
 		popupBD.appendChild(table);
+		}catch(e){
+			alert(e.message);
+			throw e;
+		}
 	}
 	
 	this.emailFailure=function(o){

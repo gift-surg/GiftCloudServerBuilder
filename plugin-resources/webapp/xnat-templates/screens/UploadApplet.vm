@@ -68,32 +68,33 @@ $!appletParams
     deployJava.runApplet(attributes, parameters, '1.6');
 }
 
-if (YAHOO.util.Cookie.get("appletLoadNotification") == null) {
-    var dialog = new YAHOO.widget.SimpleDialog("dialog", {
-        width:"20em",
-        close:false,
-        fixedcenter:true,
-        constraintoviewport:true,
-        modal:true,
-        icon:YAHOO.widget.SimpleDialog.ICON_WARN,
-        visible:true,
-        draggable:false,
-        buttons: [{ text:'OK', isDefault:true, handler: function() {
-            this.hide();
-            var tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            YAHOO.util.Cookie.set("appletLoadNotification", true, { expires: tomorrow });
-            loadApplet();
-        } }]
-    });
+// temporarily removed because calling loadApplet() in the dialog caused the window to lose all HTML...
+//if (YAHOO.util.Cookie.get("appletLoadNotification") == null) {
+//   var dialog = new YAHOO.widget.SimpleDialog("dialog", {
+//        width:"20em",
+//        close:false,
+//        fixedcenter:true,
+//        constraintoviewport:true,
+//        modal:true,
+//        icon:YAHOO.widget.SimpleDialog.ICON_WARN,
+//        visible:true,
+//        draggable:false,
+//        buttons: [{ text:'OK', isDefault:true, handler: function() {
+//            this.hide();
+//            var tomorrow = new Date();
+//            tomorrow.setDate(tomorrow.getDate() + 1);
+//            YAHOO.util.Cookie.set("appletLoadNotification", true, { expires: tomorrow });
+//            loadApplet();
+//        } }]
+//    });
 
-    dialog.render(document.getElementById('layout_content'));
-    dialog.setHeader('Applet now loading...');
-    dialog.setBody('This page will load the XNAT image upload applet. This may take some time. Please be patient and allow the applet to fully load. Click <b>OK</b> to begin.');
-    dialog.bringToTop();
-    dialog.show();
-} else {
+//    dialog.render(document.getElementById('layout_content'));
+//    dialog.setHeader('Applet now loading...');
+//    dialog.setBody('This page will load the XNAT image upload applet. This may take some time. Please be patient and allow the applet to fully load. Click <b>OK</b> to begin.');
+//    dialog.bringToTop();
+//    dialog.show();
+//} else {
     loadApplet();
-}
+//}
 </script>
 

@@ -1220,7 +1220,7 @@ public abstract class SecureResource extends Resource {
 		EventMetaI c=wrk.buildEvent();
 		
 		try {
-			if(SaveItemHelper.authorizedSave(sub,user,false,false,c)){
+			if(SaveItemHelper.authorizedSave(sub,user,overwriteSecurity,allowDataDeletion,c)){
 				WorkflowUtils.complete(wrk, c);
 				MaterializedView.DeleteByUser(user);
 			}

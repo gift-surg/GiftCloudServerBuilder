@@ -84,7 +84,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                 if (this.selectedIndex > 0) {
                 	if(this.manager.projectID != this.options[this.selectedIndex].value) {
                 	
-                		window.location.href = serverRoot + "/app/template/LaunchUploadApplet.vm/project/"+this.options[this.selectedIndex].value;
+                		window.location.href = serverRoot + "/app/template/LaunchUploadApplet.vm/popup/true/project/"+this.options[this.selectedIndex].value;
                 	}
                 }
             };

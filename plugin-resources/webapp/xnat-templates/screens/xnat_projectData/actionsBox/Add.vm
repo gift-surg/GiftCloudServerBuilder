@@ -34,7 +34,7 @@
             </DIV>
            </li>
            <li class="yuimenuitem">
-            <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','LaunchUploadApplet').addPathInfo('project',$project.getId())">Upload Images</A>
+            <a class="yuimenuitemlabel" href="#" onclick="popupWSize('$link.setAction("XDATActionRouter").addPathInfo('xdataction','LaunchUploadApplet').addPathInfo('project',$project.getId())/popup/true',720,860); return false;">Upload Images</A>
             
            </li>
            <li class="yuimenuitem">

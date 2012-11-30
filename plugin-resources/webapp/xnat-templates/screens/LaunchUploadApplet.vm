@@ -11,7 +11,7 @@
     #launchUploadAppletForm th { padding: 0 ; }
     #launchUploadAppletForm tr { height: 25px ; line-height: 25px ; vertical-align: middle ; }
 </style>
-<form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")' method="post" target='_self' >
+<form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")/popup/true' method="post" target='_self' onsubmit="popupWSize('about:blank',720,860,'_self'); return true;">
             <h3>Upload Image $displayManager.getPluralDisplayNameForImageSession()</h3>
                 <p style="width:500px;margin-top:10px;margin-bottom:20px;">
                     DICOM and ECAT files can be uploaded using this online upload tool. Begin by selecting the $displayManager.getSingularDisplayNameForProject().toLowerCase(),

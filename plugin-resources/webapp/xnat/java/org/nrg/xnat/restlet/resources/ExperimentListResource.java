@@ -173,7 +173,7 @@ public class ExperimentListResource  extends QueryOrganizerResource {
 						"LEFT JOIN (" +
 							"SELECT DISTINCT ON (isd.id) isd.ID AS SESSION_ID, scan.ID AS FIRST_SCAN_ID, MANUAL_QC.ID AS MANUAL_QC_ID FROM xnat_imagesessiondata isd LEFT JOIN xnat_imagescanData scan ON isd.id=scan.image_session_id LEFT JOIN ( 	SELECT DISTINCT ON (iad.imagesession_id) iad.id, iad.imagesession_id FROM xnat_imageAssessorData iad LEFT JOIN xnat_experimentdata expt ON iad.id=expt.id 	LEFT JOIN xdat_meta_element xme ON expt.extension=xme.xdat_meta_element_id WHERE xme.element_name='xnat:qcManualAssessorData') MANUAL_QC ON isd.id=MANUAL_QC.imagesession_id" +
 						") FIRST_SCAN ON isd.id=FIRST_SCAN.SESSION_ID " +
-						"WHERE (MANUAL_QC_ID IS NULL AND emd.status = 'active') " +
+						"WHERE (MANUAL_QC_ID IS NULL AND emd.status != 'obsolete') " +
 					")SEARCH WHERE id IS NOT NULL ORDER BY action_date DESC";
 					
 				

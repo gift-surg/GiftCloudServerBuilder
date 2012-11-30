@@ -1295,525 +1295,15 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         allFiles.append("   {\n");
         allFiles.append("       var change=null;\n");
         allFiles.append("       var node=null;\n");
-        if (this.hasSRBData())
-        {
-            loadSRBFiles();
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">SCANS</TH><TD>");
-            for(XnatImagescandataI scan : this.getSortedScans()){
-                    String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(scan.getId(),"-",""),"*","AST");
-                    XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get(SCAN_ABBR + parsedScanID);
-                    if (scanDIR!=null)
-                    {
-                        ArrayList scanFiles= scanDIR.getRelativeFileNames();
-                        if (scanFiles.size()>0)
-                        {
-                            Iterator files = scanFiles.iterator();
-                            boolean hasContent= false;
-                            boolean hasFunctionText=false;
-                            StringBuffer scanLinkBuffer = new StringBuffer();
-                            while (files.hasNext())
-                            {
-                                String file = (String) files.next();
-
-                                scanLinkBuffer.append("<b>").append(file).append("</b><BR>");
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }
-                            if (hasContent){
-                                sb.append("\n");
-                                if (hasFunctionText)
-                                {
-                                    sb.append("<INPUT type=\"checkbox\" id=\"scan").append(parsedScanID).append("\" name=\"scan").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                                }
-                                sb.append("<span class=\"trigger\" onClick=\"blocking('scan").append(parsedScanID).append("');\">");
-                                sb.append("<img ID=\"IMGscan").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;");
-                                sb.append("<b>").append(scan.getId()).append("</b>&nbsp;");
-                                if (scan.getType()!=null)
-                                {
-                                    sb.append("(" + scan.getType() + ")&nbsp;");
-                                }
-                                if (hasFunctionText)
-                                {
-                                    int count = scanDIR.getCount();
-                                    long size = scanDIR.getSize();
-
-                                    NumberFormat formatter = NumberFormat.getInstance();
-                                    formatter.setMinimumFractionDigits(2);
-                                    formatter.setMaximumFractionDigits(2);
-
-                                    String stats= count
-                                            + " files, "
-                                            + formatter.format(((float) ((float)size / 1048576))) + "Mb";
-                                    sb.append(stats + "&nbsp;");
-                                }
-                                sb.append("</span>");
-                                sb.append("<BR><span class=\"branch\" ID=\"spanscan").append(parsedScanID).append("\">");
-                                sb.append(scanLinkBuffer);
-                                sb.append("</span><BR>");
-
-                                if (hasFunctionText){
-                                    allFiles.append("       \n");
-                                    allFiles.append("       change = \"scan").append(parsedScanID).append("\";\n");
-                                    allFiles.append("       node = document.getElementById(change);\n");
-                                    allFiles.append("       node.checked=checkAll.checked;\n");
-                                }
-                            }else{
-                                sb.append("<span class=\"trigger\"><b>"+ scan.getId() + "</b>&nbsp;(" + scan.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this scan.</span><BR>");
-                            }
-                        }else{
-                            sb.append("<span class=\"trigger\"><b>"+ scan.getId() + "</b>&nbsp;(" + scan.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this scan.</span><br>");
-                        }
-                    }
-            }
-            sb.append("</TD></TR>");
-
-            sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">RECONSTRUCTIONS</TH><TD>");
-            Iterator reconIter= this.getReconstructions_reconstructedimage().iterator();
-            while (reconIter.hasNext())
+        
+        sb.append("  <TR>");
+        sb.append("    <TD VALIGN=\"top\" ALIGN=\"left\"><b>SCANS</b></TD><TD>");
+        for(XnatImagescandataI scan : this.getSortedScans()){
+            ArrayList fileGrouping = new ArrayList();
+            List scanFiles= scan.getFile();
+            if (scanFiles.size()>0)
             {
-                XnatReconstructedimagedata recon = (XnatReconstructedimagedata)reconIter.next();
-                String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(recon.getId(),"-",""),"*","AST");
-                XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get("recon" + parsedScanID);
-                if (scanDIR!=null)
-                {
-                    ArrayList outFiles = scanDIR.getRelativeFileNames();
-                    if (outFiles.size()>0)
-                    {
-                        Iterator files =outFiles.iterator();
-                        boolean hasContent= false;
-                        boolean hasFunctionText=false;
-                        StringBuffer scanLinkBuffer = new StringBuffer();
-                        while (files.hasNext())
-                        {
-                        String file = (String) files.next();
-
-                        scanLinkBuffer.append("<b>").append(file).append("</b><BR>");
-                        hasContent=true;
-                        hasFunctionText=true;
-                        fileCount++;
-                    }
-                   if (hasContent){
-                        sb.append("\n");
-                        if (hasFunctionText){
-                            sb.append("<INPUT type=\"checkbox\" id=\"recon").append(parsedScanID).append("\" name=\"recon").append(parsedScanID).append("\" CHECKED/>&nbsp;");
-                        }
-                        sb.append("<span class=\"trigger\" onClick=\"blocking('recon").append(parsedScanID).append("');\">");
-                        sb.append("<img ID=\"IMGrecon").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(recon.getId()).append("</b>&nbsp;");
-                        if (recon.getType()!=null)
-                            sb.append("(" + recon.getType() + ")&nbsp;");
-
-                        if (hasFunctionText)
-                        {
-                            int count = scanDIR.getCount();
-                            long size = scanDIR.getSize();
-
-                            NumberFormat formatter = NumberFormat.getInstance();
-                            formatter.setMinimumFractionDigits(2);
-                            formatter.setMaximumFractionDigits(2);
-
-                            String stats= count
-                                    + " files, "
-                                    + formatter.format(((float) ((float)size / 1048576))) + "Mb";
-                            sb.append(stats + "&nbsp;");
-                        }
-                        sb.append("</span>");
-                        sb.append("<BR><span class=\"branch\" ID=\"spanrecon").append(parsedScanID).append("\">");
-                        sb.append(scanLinkBuffer);
-
-                        sb.append("</span><BR>");
-
-                        if (hasFunctionText){
-                            allFiles.append("       \n");
-                            allFiles.append("       change = \"recon").append(parsedScanID).append("\";\n");
-                            allFiles.append("       node = document.getElementById(change);\n");
-                            allFiles.append("       node.checked=checkAll.checked;\n");
-                        }
-                    }else{
-                        sb.append("<span class=\"trigger\"><b>"+ recon.getId() + "</b>&nbsp;(" + recon.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this reconstruction.</span><BR>");
-                    }
-                    }else{
-                        sb.append("<span class=\"trigger\"><b>"+ recon.getId() + "</b>&nbsp;(" + recon.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this reconstruction.</span><BR>");
-                    }
-                }
-            }
-            sb.append("</TD></TR>");
-
-
-            sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">ASSESSMENTS</TH><TD>");
-            for(XnatImageassessordataI assess : this.getAssessors_assessor()){
-                try {
-                    String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(assess.getId(),"-",""),"*","AST");
-                    XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get("assess" + parsedScanID);
-
-                    if (scanDIR!=null)
-                    {
-                        ArrayList outFiles = scanDIR.getRelativeFileNames();
-                        if (outFiles.size()>0)
-                        {
-                            Iterator files =outFiles.iterator();
-
-                            boolean hasContent= false;
-                            boolean hasFunctionText=false;
-                            StringBuffer scanLinkBuffer = new StringBuffer();
-                            while (files.hasNext())
-                            {
-                                String file = (String) files.next();
-                                scanLinkBuffer.append("<b>").append(file).append("</b><BR>");
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }
-                            if (hasContent){
-
-                                sb.append("\n");
-                                if (hasFunctionText){
-                                    sb.append("<INPUT type=\"checkbox\" id=\"assess").append(parsedScanID).append("\" name=\"assess").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                                }
-                                sb.append("<span class=\"trigger\" onClick=\"blocking('assess").append(parsedScanID).append("');\">");
-                                sb.append("<img ID=\"IMGassess").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(assess.getId()).append("</b>&nbsp;");
-                                sb.append("(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")&nbsp;");
-
-                                if (hasFunctionText)
-                                {
-                                    int count = scanDIR.getCount();
-                                    long size = scanDIR.getSize();
-
-                                    NumberFormat formatter = NumberFormat.getInstance();
-                                    formatter.setMinimumFractionDigits(2);
-                                    formatter.setMaximumFractionDigits(2);
-
-                                    String stats= count
-                                            + " files, "
-                                            + formatter.format(((float) ((float)size / 1048576))) + "Mb";
-                                    sb.append(stats + "&nbsp;");
-                                }
-                                sb.append("</span>");
-                                sb.append("<BR>\n<span class=\"branch\" ID=\"spanassess").append(parsedScanID).append("\">");
-                                sb.append(scanLinkBuffer);
-                                sb.append("</span><BR>");
-
-                                if (hasFunctionText)
-                                {
-                                    allFiles.append("       \n");
-                                    allFiles.append("       change = \"assess").append(parsedScanID).append("\";\n");
-                                    allFiles.append("       node = document.getElementById(change);\n");
-                                    allFiles.append("       node.checked=checkAll.checked;\n");
-                                }
-                            }else{
-                                sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
-                            }
-                        }else{
-                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
-                        }
-                    }
-                } catch (ElementNotFoundException e) {
-                    logger.error("",e);
-                }
-            }
-            sb.append("</TD></TR>");
-            sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">UPLOADS</TH><TD>");
-            int uploadCount=0;
-            Iterator uploadsIter= this.getResources_resource().iterator();
-            while (uploadsIter.hasNext())
-            {
-                XnatAbstractresource assess = (XnatAbstractresource)uploadsIter.next();
-                try {
-                    String parsedScanID= assess.getXnatAbstractresourceId().toString();
-                    XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get("upload" + parsedScanID);
-
-                    if (scanDIR!=null)
-                    {
-                        ArrayList outFiles = scanDIR.getRelativeFileNames();
-                        if (outFiles.size()>0)
-                        {
-                            Iterator files =outFiles.iterator();
-
-                            boolean hasContent= false;
-                            boolean hasFunctionText=false;
-                            StringBuffer scanLinkBuffer = new StringBuffer();
-                            while (files.hasNext())
-                            {
-                                String file = (String) files.next();
-                                scanLinkBuffer.append("<b>").append(file).append("</b><BR>");
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }
-                            if (hasContent){
-
-                                sb.append("\n");
-                                if (hasFunctionText){
-                                    sb.append("<INPUT type=\"checkbox\" id=\"upload").append(parsedScanID).append("\" name=\"uploads").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                                }
-                                sb.append("<span class=\"trigger\" onClick=\"blocking('uploads").append(parsedScanID).append("');\">");
-                                sb.append("<img ID=\"IMGuploads").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(uploadCount++).append("</b>&nbsp;");
-                                sb.append("(" + assess.getItem().getProperName() + ")&nbsp;");
-
-                                if (hasFunctionText)
-                                {
-                                    int count = scanDIR.getCount();
-                                    long size = scanDIR.getSize();
-
-                                    NumberFormat formatter = NumberFormat.getInstance();
-                                    formatter.setMinimumFractionDigits(2);
-                                    formatter.setMaximumFractionDigits(2);
-
-                                    String stats= count
-                                            + " files, "
-                                            + formatter.format(((float) ((float)size / 1048576))) + "Mb";
-                                    sb.append(stats + "&nbsp;");
-                                }
-                                sb.append("</span>");
-                                sb.append("<BR>\n<span class=\"branch\" ID=\"spanuploads").append(parsedScanID).append("\">");
-                                sb.append(scanLinkBuffer);
-                                sb.append("</span><BR>");
-
-                                if (hasFunctionText)
-                                {
-                                    allFiles.append("       \n");
-                                    allFiles.append("       change = \"uploads").append(parsedScanID).append("\";\n");
-                                    allFiles.append("       node = document.getElementById(change);\n");
-                                    allFiles.append("       node.checked=checkAll.checked;\n");
-                                }
-                            }else{
-                                sb.append("<span class=\"trigger\"><b>"+ uploadCount++ + "</b>&nbsp;(" + assess.getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
-                            }
-                        }else{
-                            sb.append("<span class=\"trigger\"><b>"+ uploadCount++ + "</b>&nbsp;(" + assess.getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
-                        }
-                    }
-                } catch (ElementNotFoundException e) {
-                    logger.error("",e);
-                }
-            }
-            sb.append("</TD></TR>");
-
-            sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">MISC</TH><TD>");
-            XNATDirectory scanDIR = (XNATDirectory)this.fileGroups.get("misc0");
-            if (scanDIR!=null)
-            {
-                ArrayList outFiles = scanDIR.getRelativeFileNames();
-                if (outFiles.size()>0)
-                {
-                    Iterator files =outFiles.iterator();
-
-                    boolean hasContent= false;
-                    boolean hasFunctionText=false;
-                    StringBuffer scanLinkBuffer = new StringBuffer();
-                    while (files.hasNext())
-                    {
-                        String file = (String) files.next();
-                        scanLinkBuffer.append("<b>").append(file).append("</b><BR>");
-                        hasContent=true;
-                        hasFunctionText=true;
-                        fileCount++;
-                    }
-                    String parsedScanID= "misc0" ;
-                    if (hasContent){
-
-                        sb.append("\n");
-                        if (hasFunctionText){
-                            sb.append("<INPUT type=\"checkbox\" id=\"").append(parsedScanID).append("\" name=\"").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                       }
-                        sb.append("<span class=\"trigger\" onClick=\"blocking('").append(parsedScanID).append("');\">");
-                        sb.append("<img ID=\"IMG").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>MISC</b>&nbsp;");
-
-                        if (hasFunctionText)
-                        {
-                            int count = scanDIR.getCount();
-                            long size = scanDIR.getSize();
-
-                            NumberFormat formatter = NumberFormat.getInstance();
-                            formatter.setMinimumFractionDigits(2);
-                            formatter.setMaximumFractionDigits(2);
-
-                            String stats= count
-                                    + " files, "
-                                    + formatter.format(((float) ((float)size / 1048576))) + "Mb";
-                            sb.append(stats + "&nbsp;");
-                        }
-                        sb.append("</span>");
-                        sb.append("<BR>\n<span class=\"branch\" ID=\"span").append(parsedScanID).append("\">");
-                        sb.append(scanLinkBuffer);
-                        sb.append("</span><BR>");
-
-                        if (hasFunctionText)
-                        {
-                            allFiles.append("       \n");
-                            allFiles.append("       change = \"").append(parsedScanID).append("\";\n");
-                            allFiles.append("       node = document.getElementById(change);\n");
-                            allFiles.append("       node.checked=checkAll.checked;\n");
-                        }
-                    }else{
-                        sb.append("<span class=\"trigger\"><b>MISC</b>&nbsp;</span><br><span class=\"branch\" style=\"display: block;\">No misc files found.</span><BR>");
-                    }
-                }else{
-                    sb.append("<span class=\"trigger\"><b>MISC</b>&nbsp;</span><br><span class=\"branch\" style=\"display: block;\">No misc files found.</span><BR>");
-                }
-            }
-            sb.append("</TD></TR>");
-
-            allFiles.append("   }");
-            allFiles.append("   </script>");
-
-            sb.insert(0,"    </TH></TR>");
-
-            if (fileCount>0)
-            {
-                sb.insert(0,"<INPUT type=\"checkbox\" name=\"all_files\" VALUE=\"CHECKED\" ONCLICK=\"allFilesCheckAll(this)\" CHECKED/>&nbsp;Select All");
-            }
-            sb.insert(0,"    <TD></TD><TH VALIGN=\"top\" ALIGN=\"left\">");
-            sb.insert(0,"  <TR>");
-            sb.insert(0,"<TABLE>");
-            return allFiles.toString() + "<BR>" + sb.toString();
-        }else{
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">SCANS</TH><TD>");
-            for(XnatImagescandataI scan : this.getSortedScans()){
-                ArrayList fileGrouping = new ArrayList();
-                List scanFiles= scan.getFile();
-                if (scanFiles.size()>0)
-                {
-                    Iterator files = scanFiles.iterator();
-                    boolean hasContent= false;
-                    boolean hasFunctionText=false;
-                    StringBuffer scanLinkBuffer = new StringBuffer();
-                    while (files.hasNext())
-                    {
-                        XnatAbstractresource xnatFile = (XnatAbstractresource) files.next();
-                        ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
-                        if (miscDir==null){
-                            miscDir=xnatFile.getFullPath(rootPath);
-                            int mrIndex = miscDir.toLowerCase().indexOf("/" + getArchiveDirectoryName().toLowerCase() +"/");
-                            if (mrIndex==-1){
-                                String sPath = rootPath.replace('\\', '/');
-                                sPath = sPath.replace("//", "/");
-                                if (miscDir.startsWith(sPath)){
-                                    int index =miscDir.indexOf(File.separator,sPath.length()+1);
-                                    if (index==-1){
-                                        index =miscDir.indexOf("/",sPath.length()+1);
-                                        if (index==-1){
-                                            index =miscDir.indexOf("\\",sPath.length()+1);
-                                        }
-                                        if (index==-1){
-                                            index =miscDir.indexOf("\\",sPath.length()+1);
-                                        }else{
-                                            miscDir = null;
-                                        }
-                                    }else{
-                                        miscDir = miscDir.substring(0,index);
-                                    }
-                                }else{
-                                    int index = miscDir.indexOf(achive.getName());
-                                    if (index==-1){
-                                        miscDir=null;
-                                    }else{
-                                        index += achive.getName().length()+1;
-                                        miscDir = miscDir.substring(0,index);
-                                    }
-                                }
-                            }else{
-                                mrIndex += getArchiveDirectoryName().length()+2;
-                                miscDir = miscDir.substring(0,mrIndex);
-                            }
-                        }
-
-                        Iterator iter = jFiles.iterator();
-                        while (iter.hasNext())
-                        {
-                            File f = (File)iter.next();
-                            if (f.exists())
-                            {
-                                String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
-                                scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
-                                fileGrouping.add(fileID);
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }else{
-                                scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
-                                hasContent=true;
-                            }
-                        }
-
-                        if (xnatFile instanceof XnatResourcecatalog){
-                            File f = ((XnatResourcecatalog)xnatFile).getCatalogFile(rootPath);
-                            if (f.exists())
-                            {
-                                String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
-                                scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
-                                fileGrouping.add(fileID);
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }else{
-                                scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
-                                hasContent=true;
-                            }
-                        }
-                    }
-                    String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(scan.getId(),"-",""),"*","AST");
-                    if (hasContent){
-                        sb.append("\n");
-                        if (hasFunctionText)
-                        {
-                            sb.append("<INPUT type=\"checkbox\" id=\"scan").append(parsedScanID).append("\" name=\"scan").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                            this.fileGroups.put("scan" +parsedScanID,fileGrouping);
-                        }
-                        sb.append("<span class=\"trigger\" onClick=\"blocking('scan").append(parsedScanID).append("');\">");
-                        sb.append("<img ID=\"IMGscan").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;");
-                        sb.append("<b>").append(scan.getId()).append("</b>&nbsp;");
-                        if (scan.getType()!=null)
-                        {
-                            sb.append("(" + scan.getType() + ")");
-                        }
-                        sb.append("</span>");
-                        sb.append("<BR><span class=\"branch\" ID=\"spanscan").append(parsedScanID).append("\">");
-                        sb.append(scanLinkBuffer);
-                        sb.append("</span><BR>");
-
-                        if (hasFunctionText){
-                            allFiles.append("       \n");
-                            allFiles.append("       change = \"scan").append(parsedScanID).append("\";\n");
-                            allFiles.append("       node = document.getElementById(change);\n");
-                            allFiles.append("       node.checked=checkAll.checked;\n");
-                        }
-                    }else{
-                        sb.append("<span class=\"trigger\"><b>"+ scan.getId() + "</b>&nbsp;(" + scan.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this scan.</span><BR>");
-                    }
-                }else{
-                    sb.append("<span class=\"trigger\"><b>"+ scan.getId() + "</b>&nbsp;(" + scan.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this scan.</span><br>");
-                }
-            }
-            sb.append("</TD></TR>");
-
-            sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-            sb.append("  <TR>");
-            sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">RECONSTRUCTIONS</TH><TD>");
-            Iterator reconIter= this.getReconstructions_reconstructedimage().iterator();
-            while (reconIter.hasNext())
-            {
-                XnatReconstructedimagedata recon = (XnatReconstructedimagedata)reconIter.next();
-                ArrayList fileGrouping = new ArrayList();
-                List outFiles = recon.getOut_file();
-                if (outFiles.size()>0)
-                {
-                    Iterator files =outFiles.iterator();
+                Iterator files = scanFiles.iterator();
                 boolean hasContent= false;
                 boolean hasFunctionText=false;
                 StringBuffer scanLinkBuffer = new StringBuffer();
@@ -1821,6 +1311,41 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 {
                     XnatAbstractresource xnatFile = (XnatAbstractresource) files.next();
                     ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
+                    if (miscDir==null){
+                        miscDir=xnatFile.getFullPath(rootPath);
+                        int mrIndex = miscDir.toLowerCase().indexOf("/" + getArchiveDirectoryName().toLowerCase() +"/");
+                        if (mrIndex==-1){
+                            String sPath = rootPath.replace('\\', '/');
+                            sPath = sPath.replace("//", "/");
+                            if (miscDir.startsWith(sPath)){
+                                int index =miscDir.indexOf(File.separator,sPath.length()+1);
+                                if (index==-1){
+                                    index =miscDir.indexOf("/",sPath.length()+1);
+                                    if (index==-1){
+                                        index =miscDir.indexOf("\\",sPath.length()+1);
+                                    }
+                                    if (index==-1){
+                                        index =miscDir.indexOf("\\",sPath.length()+1);
+                                    }else{
+                                        miscDir = null;
+                                    }
+                                }else{
+                                    miscDir = miscDir.substring(0,index);
+                                }
+                            }else{
+                                int index = miscDir.indexOf(achive.getName());
+                                if (index==-1){
+                                    miscDir=null;
+                                }else{
+                                    index += achive.getName().length()+1;
+                                    miscDir = miscDir.substring(0,index);
+                                }
+                            }
+                        }else{
+                            mrIndex += getArchiveDirectoryName().length()+2;
+                            miscDir = miscDir.substring(0,mrIndex);
+                        }
+                    }
 
                     Iterator iter = jFiles.iterator();
                     while (iter.hasNext())
@@ -1856,258 +1381,366 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                         }
                     }
                 }
-                String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(recon.getId(),"-",""),"*","AST");
+                String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(scan.getId(),"-",""),"*","AST");
                 if (hasContent){
                     sb.append("\n");
-                    if (hasFunctionText){
-                        sb.append("<INPUT type=\"checkbox\" id=\"recon").append(parsedScanID).append("\" name=\"recon").append(parsedScanID).append("\" CHECKED/>&nbsp;");
-                        this.fileGroups.put("recon" +parsedScanID,fileGrouping);
+                    if (hasFunctionText)
+                    {
+                        sb.append("<INPUT type=\"checkbox\" id=\"scan").append(parsedScanID).append("\" name=\"scan").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
+                        this.fileGroups.put("scan" +parsedScanID,fileGrouping);
                     }
-                    sb.append("<span class=\"trigger\" onClick=\"blocking('recon").append(parsedScanID).append("');\">");
-                    sb.append("<img ID=\"IMGrecon").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(recon.getId()).append("</b>&nbsp;");
-                    if (recon.getType()!=null)
-                        sb.append("(" + recon.getType() + ")");
+                    sb.append("<span class=\"trigger\" onClick=\"blocking('scan").append(parsedScanID).append("');\">");
+                    sb.append("<img ID=\"IMGscan").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;");
+                    sb.append("<b>").append(scan.getId()).append("</b>&nbsp;");
+                    if (scan.getType()!=null)
+                    {
+                        sb.append("(" + scan.getType() + ")");
+                    }
                     sb.append("</span>");
-                    sb.append("<BR><span class=\"branch\" ID=\"spanrecon").append(parsedScanID).append("\">");
+                    sb.append("<BR><span class=\"branch\" ID=\"spanscan").append(parsedScanID).append("\">");
                     sb.append(scanLinkBuffer);
-
                     sb.append("</span><BR>");
 
                     if (hasFunctionText){
                         allFiles.append("       \n");
-                        allFiles.append("       change = \"recon").append(parsedScanID).append("\";\n");
+                        allFiles.append("       change = \"scan").append(parsedScanID).append("\";\n");
                         allFiles.append("       node = document.getElementById(change);\n");
                         allFiles.append("       node.checked=checkAll.checked;\n");
                     }
                 }else{
-                    sb.append("<span class=\"trigger\"><b>"+ recon.getId() + "</b>&nbsp;(" + recon.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this reconstruction.</span><BR>");
+                    sb.append("<span class=\"trigger\"><b>"+ scan.getId() + "</b>&nbsp;(" + scan.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this scan.</span><BR>");
                 }
-                }else{
-                    sb.append("<span class=\"trigger\"><b>"+ recon.getId() + "</b>&nbsp;(" + recon.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this reconstruction.</span><BR>");
-                }
+            }else{
+                sb.append("<span class=\"trigger\"><b>"+ scan.getId() + "</b>&nbsp;(" + scan.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this scan.</span><br>");
             }
-            sb.append("</TD></TR>");
+        }
+        sb.append("</TD></TR>");
 
-            try {
-                sb.append("<TR><TD>&nbsp;</TD></TR>");
+        sb.append("<TR><TD>&nbsp;</TD></TR>");
 
-                    sb.append("  <TR>");
-                    sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">ASSESSMENTS</TH><TD>");
-                    for(XnatImageassessordataI assess : this.getAssessors_assessor()){
-                        ArrayList fileGrouping = new ArrayList();
-                        List outFiles = assess.getOut_file();
-                        if (outFiles.size()>0)
-                        {
-                            Iterator files =outFiles.iterator();
+        sb.append("  <TR>");
+        int c=0;
+        sb.append("    <TD VALIGN=\"top\" ALIGN=\"left\">");
+        Iterator reconIter= this.getReconstructions_reconstructedimage().iterator();
+        while (reconIter.hasNext())
+        {
+            XnatReconstructedimagedata recon = (XnatReconstructedimagedata)reconIter.next();
+            ArrayList fileGrouping = new ArrayList();
+            List outFiles = recon.getOut_file();
+            if (outFiles.size()>0)
+            {
+                Iterator files =outFiles.iterator();
+            boolean hasContent= false;
+            boolean hasFunctionText=false;
+            StringBuffer scanLinkBuffer = new StringBuffer();
+            while (files.hasNext())
+            {
+                XnatAbstractresource xnatFile = (XnatAbstractresource) files.next();
+                ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
 
-                            boolean hasContent= false;
-                            boolean hasFunctionText=false;
-                            StringBuffer scanLinkBuffer = new StringBuffer();
-                            while (files.hasNext())
-                            {
-                                XnatAbstractresource xnatFile = (XnatAbstractresource) files.next();
-                                ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
-
-                                Iterator iter = jFiles.iterator();
-                                while (iter.hasNext())
-                                {
-                                    File f = (File)iter.next();
-                                    if (f.exists())
-                                    {
-                                        String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
-                                        scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
-                                        fileGrouping.add(fileID);
-                                        hasContent=true;
-                                        hasFunctionText=true;
-                                        fileCount++;
-                                    }else{
-                                        scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
-                                        hasContent=true;
-                                    }
-                                }
-
-                                if (xnatFile instanceof XnatResourcecatalog){
-                                    File f = ((XnatResourcecatalog)xnatFile).getCatalogFile(rootPath);
-                                    if (f.exists())
-                                    {
-                                        String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
-                                        scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
-                                        fileGrouping.add(fileID);
-                                        hasContent=true;
-                                        hasFunctionText=true;
-                                        fileCount++;
-                                    }else{
-                                        scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
-                                        hasContent=true;
-                                    }
-                                }
-                            }
-                            String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(assess.getId(),"-",""),"*","AST");
-                            if (hasContent){
-
-                                sb.append("\n");
-                                if (hasFunctionText){
-                                    sb.append("<INPUT type=\"checkbox\" id=\"assess").append(parsedScanID).append("\" name=\"assess").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                                    this.fileGroups.put("assess" +parsedScanID,fileGrouping);
-                                }
-                                sb.append("<span class=\"trigger\" onClick=\"blocking('assess").append(parsedScanID).append("');\">");
-                                sb.append("<img ID=\"IMGassess").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(assess.getId()).append("</b>&nbsp;");
-                                sb.append("(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")");
-                                sb.append("</span>");
-                                sb.append("<BR>\n<span class=\"branch\" ID=\"spanassess").append(parsedScanID).append("\">");
-                                sb.append(scanLinkBuffer);
-                                sb.append("</span><BR>");
-
-                                if (hasFunctionText)
-                                {
-                                    allFiles.append("       \n");
-                                    allFiles.append("       change = \"assess").append(parsedScanID).append("\";\n");
-                                    allFiles.append("       node = document.getElementById(change);\n");
-                                    allFiles.append("       node.checked=checkAll.checked;\n");
-                                }
-                            }else{
-                                sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
-                            }
-                        }else{
-                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
-                        }
-                    }
-                    sb.append("</TD></TR>");
-            } catch (ElementNotFoundException e1) {
-                logger.error("",e1);
-            }
-
-                sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-                    sb.append("  <TR>");
-                    sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">ADDITIONAL RESOURCES</TH><TD>");
-                    Iterator uploadsIter= this.getResources_resource().iterator();
-                    while (uploadsIter.hasNext())
+                Iterator iter = jFiles.iterator();
+                while (iter.hasNext())
+                {
+                    File f = (File)iter.next();
+                    if (f.exists())
                     {
-                        XnatAbstractresource xnatFile = (XnatAbstractresource)uploadsIter.next();
-                        ArrayList fileGrouping = new ArrayList();
-                        ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
+                        String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
+                        scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
+                        fileGrouping.add(fileID);
+                        hasContent=true;
+                        hasFunctionText=true;
+                        fileCount++;
+                    }else{
+                        scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
+                        hasContent=true;
+                    }
+                }
+
+                if (xnatFile instanceof XnatResourcecatalog){
+                    File f = ((XnatResourcecatalog)xnatFile).getCatalogFile(rootPath);
+                    if (f.exists())
+                    {
+                        String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
+                        scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
+                        fileGrouping.add(fileID);
+                        hasContent=true;
+                        hasFunctionText=true;
+                        fileCount++;
+                    }else{
+                        scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
+                        hasContent=true;
+                    }
+                }
+            }
+            String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(recon.getId(),"-",""),"*","AST");
+            if (hasContent){
+            	if(c++==0)
+                    sb.append("<b>RECONSTRUCTIONS</b></TD><TD>");
+                sb.append("\n");
+                if (hasFunctionText){
+                    sb.append("<INPUT type=\"checkbox\" id=\"recon").append(parsedScanID).append("\" name=\"recon").append(parsedScanID).append("\" CHECKED/>&nbsp;");
+                    this.fileGroups.put("recon" +parsedScanID,fileGrouping);
+                }
+                sb.append("<span class=\"trigger\" onClick=\"blocking('recon").append(parsedScanID).append("');\">");
+                sb.append("<img ID=\"IMGrecon").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(recon.getId()).append("</b>&nbsp;");
+                if (recon.getType()!=null)
+                    sb.append("(" + recon.getType() + ")");
+                sb.append("</span>");
+                sb.append("<BR><span class=\"branch\" ID=\"spanrecon").append(parsedScanID).append("\">");
+                sb.append(scanLinkBuffer);
+
+                sb.append("</span><BR>");
+
+                if (hasFunctionText){
+                    allFiles.append("       \n");
+                    allFiles.append("       change = \"recon").append(parsedScanID).append("\";\n");
+                    allFiles.append("       node = document.getElementById(change);\n");
+                    allFiles.append("       node.checked=checkAll.checked;\n");
+                }
+            }else{
+            	if(c++==0)
+                    sb.append("<b>RECONSTRUCTIONS</b></TD><TD>");
+                sb.append("<span class=\"trigger\"><b>"+ recon.getId() + "</b>&nbsp;(" + recon.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this reconstruction.</span><BR>");
+            }
+            }else{
+            	if(c++==0)
+                    sb.append("<b>RECONSTRUCTIONS</b></TD><TD>");
+                sb.append("<span class=\"trigger\"><b>"+ recon.getId() + "</b>&nbsp;(" + recon.getType() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this reconstruction.</span><BR>");
+            }
+        }
+        sb.append("</TD></TR>");
+
+        try {
+            sb.append("<TR><TD>&nbsp;</TD></TR>");
+
+                sb.append("  <TR>");
+                sb.append("    <TD VALIGN=\"top\" ALIGN=\"left\">");
+                c=0;
+                for(XnatImageassessordataI assess : this.getAssessors_assessor()){
+                    ArrayList fileGrouping = new ArrayList();
+                    List outFiles = assess.getOut_file();
+                    if (outFiles.size()>0)
+                    {
+                        Iterator files =outFiles.iterator();
 
                         boolean hasContent= false;
                         boolean hasFunctionText=false;
                         StringBuffer scanLinkBuffer = new StringBuffer();
-
-                        Iterator iter = jFiles.iterator();
-                        while (iter.hasNext())
+                        while (files.hasNext())
                         {
-                            File f = (File)iter.next();
-                            if (f.exists())
-                            {
-                                String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
-                                scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
-                                fileGrouping.add(fileID);
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }else{
-                                scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
-                                hasContent=true;
-                            }
-                        }
+                            XnatAbstractresource xnatFile = (XnatAbstractresource) files.next();
+                            ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
 
-                        if (xnatFile instanceof XnatResourcecatalog){
-                            File f = ((XnatResourcecatalog)xnatFile).getCatalogFile(rootPath);
-                            if (f.exists())
+                            Iterator iter = jFiles.iterator();
+                            while (iter.hasNext())
                             {
-                                String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
-                                scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
-                                fileGrouping.add(fileID);
-                                hasContent=true;
-                                hasFunctionText=true;
-                                fileCount++;
-                            }else{
-                                scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
-                                hasContent=true;
+                                File f = (File)iter.next();
+                                if (f.exists())
+                                {
+                                    String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
+                                    scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
+                                    fileGrouping.add(fileID);
+                                    hasContent=true;
+                                    hasFunctionText=true;
+                                    fileCount++;
+                                }else{
+                                    scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
+                                    hasContent=true;
+                                }
                             }
-                        }
 
-                        String label = xnatFile.getLabel();
-                        if (label==null){
-                            label = xnatFile.getXnatAbstractresourceId().toString();
-                        }
-                        if(xnatFile instanceof XnatResourcecatalog){
-                            if (((XnatResourcecatalog)xnatFile).getTags_tag().size()>0){
-                                int counter =0;
-                                label +="&nbsp;&nbsp;Tags: ";
-                                for(XnatAbstractresourceTagI tag : xnatFile.getTags_tag()){
-                                    if (counter++>0)label+=", ";
-                                    label+=tag.getTag();
+                            if (xnatFile instanceof XnatResourcecatalog){
+                                File f = ((XnatResourcecatalog)xnatFile).getCatalogFile(rootPath);
+                                if (f.exists())
+                                {
+                                    String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
+                                    scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
+                                    fileGrouping.add(fileID);
+                                    hasContent=true;
+                                    hasFunctionText=true;
+                                    fileCount++;
+                                }else{
+                                    scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
+                                    hasContent=true;
                                 }
                             }
                         }
-
-                        String parsedScanID= xnatFile.getXnatAbstractresourceId().toString();
+                        String parsedScanID= StringUtils.ReplaceStr(StringUtils.ReplaceStr(assess.getId(),"-",""),"*","AST");
                         if (hasContent){
+                        	if(c++==0)
+                                sb.append("<b>ASSESSMENTS</b></TD><TD>");
 
                             sb.append("\n");
                             if (hasFunctionText){
-                                sb.append("<INPUT type=\"checkbox\" id=\"uploads").append(parsedScanID).append("\" name=\"uploads").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
-                                this.fileGroups.put("uploads" +parsedScanID,fileGrouping);
+                                sb.append("<INPUT type=\"checkbox\" id=\"assess").append(parsedScanID).append("\" name=\"assess").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
+                                this.fileGroups.put("assess" +parsedScanID,fileGrouping);
                             }
-                            sb.append("<span class=\"trigger\" onClick=\"blocking('uploads").append(parsedScanID).append("');\">");
-                            sb.append("<img ID=\"IMGuploads").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(label).append("</b>&nbsp;");
-                            sb.append("");
+                            sb.append("<span class=\"trigger\" onClick=\"blocking('assess").append(parsedScanID).append("');\">");
+                            sb.append("<img ID=\"IMGassess").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(assess.getId()).append("</b>&nbsp;");
+                            sb.append("(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")");
                             sb.append("</span>");
-                            sb.append("<BR>\n<span class=\"branch\" ID=\"spanuploads").append(parsedScanID).append("\">");
+                            sb.append("<BR>\n<span class=\"branch\" ID=\"spanassess").append(parsedScanID).append("\">");
                             sb.append(scanLinkBuffer);
                             sb.append("</span><BR>");
 
                             if (hasFunctionText)
                             {
                                 allFiles.append("       \n");
-                                allFiles.append("       change = \"uploads").append(parsedScanID).append("\";\n");
+                                allFiles.append("       change = \"assess").append(parsedScanID).append("\";\n");
                                 allFiles.append("       node = document.getElementById(change);\n");
                                 allFiles.append("       node.checked=checkAll.checked;\n");
                             }
                         }else{
-                            sb.append("<span class=\"trigger\"><b>"+ label + "</b>&nbsp;</span><br><span class=\"branch\" style=\"display: block;\">No files found for this upload.</span><BR>");
+                        	if(c++==0)
+                                sb.append("<b>ASSESSMENTS</b></TD><TD>");
+                            sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files found for this assessment.</span><BR>");
                         }
-                    }
-                    sb.append("</TD></TR>");
-
-            if (miscDir!=null){
-                File misc = new File(miscDir);
-                if(misc.exists()){
-                    sb.append("<TR><TD>&nbsp;</TD></TR>");
-
-                    sb.append("  <TR>");
-                    sb.append("    <TH VALIGN=\"top\" ALIGN=\"left\">MISC FILES</TH><TD>");
-                    String dirListing = listDirectoryToHTML(misc,server,"",0).toString();
-                    sb.append(dirListing);
-                    sb.append("</TD></TR>");
-                    sb.append("</TABLE>");
-
-                    if (dirListing.length()>0){
-                        fileCount++;
-                        allFiles.append("       \n");
-                        allFiles.append("       f").append(misc.getName() + "0").append("CheckAll(checkAll);\n");
-                        allFiles.append("       change = \"dir_").append(misc.getName() + "/").append("\";\n");
-                        allFiles.append("       node = document.getElementById(change);\n");
-                        allFiles.append("       node.checked=checkAll.checked;\n");
+                    }else{
+                    	if(c++==0)
+                            sb.append("<b>ASSESSMENTS</b></TD><TD>");
+                        sb.append("<span class=\"trigger\"><b>"+ assess.getId() + "</b>&nbsp;(" + ((XnatImageassessordata)assess).getItem().getProperName() + ")</span><br><span class=\"branch\" style=\"display: block;\">No files defined for this assessment.</span><BR>");
                     }
                 }
-            }
-
-
-            allFiles.append("   }");
-            allFiles.append("   </script>");
-
-            sb.insert(0,"    </TH></TR>");
-            sb.insert(0,"    <TD></TD><TH VALIGN=\"top\" ALIGN=\"left\">");
-
-            if (fileCount>0)
-            {
-                sb.insert(0,"<INPUT type=\"checkbox\" name=\"all_files\" VALUE=\"CHECKED\" ONCLICK=\"allFilesCheckAll(this)\" CHECKED/>&nbsp;Select All");
-            }
-            sb.insert(0,"  <TR>");
-            sb.insert(0,"<TABLE>");
-            return allFiles.toString() + "<BR>" + sb.toString();
+                sb.append("</TD></TR>");
+        } catch (ElementNotFoundException e1) {
+            logger.error("",e1);
         }
+
+            sb.append("<TR><TD>&nbsp;</TD></TR>");
+
+                sb.append("  <TR>");
+                sb.append("    <TD VALIGN=\"top\" ALIGN=\"left\">");
+                c=0;
+                Iterator uploadsIter= this.getResources_resource().iterator();
+                while (uploadsIter.hasNext())
+                {
+                    XnatAbstractresource xnatFile = (XnatAbstractresource)uploadsIter.next();
+                    ArrayList fileGrouping = new ArrayList();
+                    ArrayList jFiles = xnatFile.getCorrespondingFiles(rootPath);
+
+                    boolean hasContent= false;
+                    boolean hasFunctionText=false;
+                    StringBuffer scanLinkBuffer = new StringBuffer();
+
+                    Iterator iter = jFiles.iterator();
+                    while (iter.hasNext())
+                    {
+                        File f = (File)iter.next();
+                        if (f.exists())
+                        {
+                            String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
+                            scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
+                            fileGrouping.add(fileID);
+                            hasContent=true;
+                            hasFunctionText=true;
+                            fileCount++;
+                        }else{
+                            scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
+                            hasContent=true;
+                        }
+                    }
+
+                    if (xnatFile instanceof XnatResourcecatalog){
+                        File f = ((XnatResourcecatalog)xnatFile).getCatalogFile(rootPath);
+                        if (f.exists())
+                        {
+                            String fileID = this._files.addFile(f.getAbsolutePath(),f,FileTracker.KNOWN);
+                            scanLinkBuffer.append("<b>").append(f.getName()).append("</b><BR>");
+                            fileGrouping.add(fileID);
+                            hasContent=true;
+                            hasFunctionText=true;
+                            fileCount++;
+                        }else{
+                            scanLinkBuffer.append("\n").append(f.getName()).append("&nbsp;(File off-line)<BR>");
+                            hasContent=true;
+                        }
+                    }
+
+                    String label = xnatFile.getLabel();
+                    if (label==null){
+                        label = xnatFile.getXnatAbstractresourceId().toString();
+                    }
+                    if(xnatFile instanceof XnatResourcecatalog){
+                        if (((XnatResourcecatalog)xnatFile).getTags_tag().size()>0){
+                            int counter =0;
+                            label +="&nbsp;&nbsp;Tags: ";
+                            for(XnatAbstractresourceTagI tag : xnatFile.getTags_tag()){
+                                if (counter++>0)label+=", ";
+                                label+=tag.getTag();
+                            }
+                        }
+                    }
+
+                    String parsedScanID= xnatFile.getXnatAbstractresourceId().toString();
+                    if (hasContent){
+                    	if(c++==0)
+                            sb.append("<b>ADDITIONAL RESOURCES</b></TD><TD>");
+
+                        sb.append("\n");
+                        if (hasFunctionText){
+                            sb.append("<INPUT type=\"checkbox\" id=\"uploads").append(parsedScanID).append("\" name=\"uploads").append(parsedScanID).append("\" VALUE=\"CHECKED\" CHECKED/>&nbsp;");
+                            this.fileGroups.put("uploads" +parsedScanID,fileGrouping);
+                        }
+                        sb.append("<span class=\"trigger\" onClick=\"blocking('uploads").append(parsedScanID).append("');\">");
+                        sb.append("<img ID=\"IMGuploads").append(parsedScanID).append("\" src=\"").append(server).append("/images/plus.jpg\" border=0/>&nbsp;<b>").append(label).append("</b>&nbsp;");
+                        sb.append("");
+                        sb.append("</span>");
+                        sb.append("<BR>\n<span class=\"branch\" ID=\"spanuploads").append(parsedScanID).append("\">");
+                        sb.append(scanLinkBuffer);
+                        sb.append("</span><BR>");
+
+                        if (hasFunctionText)
+                        {
+                            allFiles.append("       \n");
+                            allFiles.append("       change = \"uploads").append(parsedScanID).append("\";\n");
+                            allFiles.append("       node = document.getElementById(change);\n");
+                            allFiles.append("       node.checked=checkAll.checked;\n");
+                        }
+                    }else{
+                    	if(c++==0)
+                            sb.append("<b>ADDITIONAL RESOURCES</b></TD><TD>");
+                        sb.append("<span class=\"trigger\"><b>"+ label + "</b>&nbsp;</span><br><span class=\"branch\" style=\"display: block;\">No files found for this upload.</span><BR>");
+                    }
+                }
+                sb.append("</TD></TR>");
+
+        if (miscDir!=null){
+            File misc = new File(miscDir);
+            if(misc.exists()){
+                sb.append("<TR><TD>&nbsp;</TD></TR>");
+
+                sb.append("  <TR>");
+                sb.append("    <TD VALIGN=\"top\" ALIGN=\"left\"><b>MISC FILES</b></TD><TD>");
+                String dirListing = listDirectoryToHTML(misc,server,"",0).toString();
+                sb.append(dirListing);
+                sb.append("</TD></TR>");
+                sb.append("</TABLE>");
+
+                if (dirListing.length()>0){
+                    fileCount++;
+                    allFiles.append("       \n");
+                    allFiles.append("       f").append(misc.getName() + "0").append("CheckAll(checkAll);\n");
+                    allFiles.append("       change = \"dir_").append(misc.getName() + "/").append("\";\n");
+                    allFiles.append("       node = document.getElementById(change);\n");
+                    allFiles.append("       node.checked=checkAll.checked;\n");
+                }
+            }
+        }
+
+
+        allFiles.append("   }");
+        allFiles.append("   </script>");
+
+        sb.insert(0,"    </TH></TR>");
+        sb.insert(0,"    <TD></TD><TH VALIGN=\"top\" ALIGN=\"left\">");
+
+        if (fileCount>0)
+        {
+            sb.insert(0,"<INPUT type=\"checkbox\" name=\"all_files\" VALUE=\"CHECKED\" ONCLICK=\"allFilesCheckAll(this)\" CHECKED/>&nbsp;Select All");
+        }
+        sb.insert(0,"  <TR>");
+        sb.insert(0,"<TABLE>");
+        return allFiles.toString() + "<BR>" + sb.toString();
     }
 
     /**

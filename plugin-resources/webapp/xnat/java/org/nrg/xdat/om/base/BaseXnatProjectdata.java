@@ -1478,7 +1478,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 ug.init(group);
                 ((XDATUser)user).getGroups().put(group.getId(),ug);
 
-                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user,c,true);
+                this.addGroupMember(this.getId() + "_" + OWNER_GROUP, (XDATUser)user, (XDATUser)user,c,false);
             }
         }
 

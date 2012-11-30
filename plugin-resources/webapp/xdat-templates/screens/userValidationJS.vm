@@ -13,7 +13,8 @@
                                                                           validators.valuesMatch('xdat:user.primary_password')]),
                                validateInput('xdat:user.firstname', [validators.nonEmpty]),
                                validateInput('xdat:user.lastname', [validators.nonEmpty]),
-                               validateInput('xdat:user.email', [validators.nonEmpty])]
+                               validateInput('xdat:user.email', [validators.nonEmpty,
+                                   validators.isEmail()])];
 	   
             // if any of the validations failed, stop form submission
             for (var i=0; i < validations.length; i++){
@@ -53,6 +54,12 @@
 	        		return inputToCompare.value == input.value;
 	        	}
 	        },
+            isEmail: function(){
+                var emailReg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,})$/;
+                return function(input) {
+                    return emailReg.test(input.value);
+                }
+            },
             regex: function(regex){
                 return function(input){
                 	return input.value.match(regex)

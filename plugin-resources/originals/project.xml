@@ -650,7 +650,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>ExtAttr</artifactId>
-			<version>2.2.0</version>
+			<version>4.0.0</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -659,7 +659,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>SessionBuilders</artifactId>
-			<version>1.6.0</version>
+			<version>1.6.1</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -668,7 +668,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>DicomDB</artifactId>
-			<version>3.1.0</version>
+			<version>4.0.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -677,7 +677,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-mx</artifactId>
-			<version>1.6.0</version>
+			<version>1.6.2-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -686,7 +686,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-sop</artifactId>
-			<version>1.6.0</version>
+			<version>1.6.2-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -695,7 +695,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-util</artifactId>
-			<version>1.6.0</version>
+			<version>1.6.2-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

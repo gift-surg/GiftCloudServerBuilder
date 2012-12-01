@@ -80,6 +80,11 @@
 		<security:custom-filter after="SECURITY_CONTEXT_FILTER" ref="expiredPasswordFilter"/>
         <security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
         <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
+        <!-- Adding the openid-login tag activates Spring Security's support for OpenID  -->
+        <!-- security:openid-login
+                login-page="/app/template/Login.vm"
+                authentication-failure-url="/app/template/Login.vm?failed=true"
+                default-target-url="/"/ -->
         <security:session-management session-authentication-strategy-ref="sas"/>
     </security:http>
 

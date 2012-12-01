@@ -1,19 +1,5 @@
 package org.nrg.xnat.security;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
@@ -24,48 +10,23 @@ import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
-import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTItem;
-import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.AuthUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.AnonymousAuthenticationProvider;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.ProviderNotFoundException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.CredentialsContainer;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.*;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+
 public class XnatProviderManager extends ProviderManager {
-    private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
-    private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
-    private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
-
-    private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
-
-    private AuthenticationEventPublisher eventPublisher = new AuthenticationAttemptEventPublisher();
-    protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
-    private Properties properties;
-
-    private static String PASSWORD_EXPIRATION="-1";
-    private Map<String, AuthenticationProviderConfigurator> _configurators;
-    private List<AuthenticationProvider> _standaloneProviders;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -137,29 +98,6 @@ public class XnatProviderManager extends ProviderManager {
         setProviders(providers);
     }
 
-    public void setProperties(List<String> fileNames) {
-        properties = new Properties();
-        for(String filename:fileNames){
-            String path = "../../../../../../"+filename;
-            URL url = getClass().getResource(path);
-            if (url != null) {
-                try {
-                    properties.load(url.openStream());
-                } catch (IOException e) {
-                    logger.error(e);
-                }
-            }
-        }
-    }
-
-    public void setAuthenticationProviderConfigurators(Map<String, AuthenticationProviderConfigurator> configurators) {
-        _configurators = configurators;
-    }
-
-    public void setStandaloneProviders(List<AuthenticationProvider> providers) {
-        _standaloneProviders = providers;
-    }
-
     @Override
     public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
         Class<? extends Authentication> toTest = authentication.getClass();
@@ -182,7 +120,7 @@ public class XnatProviderManager extends ProviderManager {
                         continue;
                     }
                     XnatLdapAuthenticationProvider ldapCandidate = (XnatLdapAuthenticationProvider) candidate;
-                    if (!((XnatLdapUsernamePasswordAuthenticationToken) authentication).getProviderId().equalsIgnoreCase(ldapCandidate.getID())){
+                    if (!((XnatLdapUsernamePasswordAuthenticationToken) authentication).getProviderId().equalsIgnoreCase(ldapCandidate.getProviderId())) {
                         //This is a different LDAP provider than the one that was selected.
                         continue;
                     }
@@ -194,13 +132,13 @@ public class XnatProviderManager extends ProviderManager {
         assert providers.size() > 0: "No provider found for authentication of type " + authentication.getClass().getSimpleName();
 
         for (AuthenticationProvider provider : providers) {
-            logger.debug("Authentication attempt using " + provider.getClass().getName());
+            _log.debug("Authentication attempt using " + provider.getClass().getName());
 
             try {
                 result = provider.authenticate(authentication);
                 if (result != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Found a provider that worked for " + authentication.getName() + ": " + provider.getClass().getSimpleName());
+                    if (_log.isDebugEnabled()) {
+                        _log.debug("Found a provider that worked for " + authentication.getName() + ": " + provider.getClass().getSimpleName());
                     }
 
                     copyDetails(authentication, result);
@@ -219,7 +157,7 @@ public class XnatProviderManager extends ProviderManager {
                             , "", "", "", new VelocityContext()
                     );
                 } catch (Exception exception) {
-                    logger.error("Error occurred sending new user request email", exception);
+                    _log.error("Error occurred sending new user request email", exception);
                 }
                 lastException = e;
 
@@ -251,86 +189,33 @@ public class XnatProviderManager extends ProviderManager {
         }
     }
 
-    private void copyDetails(Authentication source, Authentication destination) {
-        if ((destination instanceof AbstractAuthenticationToken) && (destination.getDetails() == null)) {
-            AbstractAuthenticationToken token = (AbstractAuthenticationToken) destination;
-
-            token.setDetails(source.getDetails());
+    public void setProperties(List<String> fileNames) {
+        properties = new Properties();
+        for (String filename : fileNames) {
+            String path = "../../../../../../" + filename;
+            URL url = getClass().getResource(path);
+            if (url != null) {
+                try {
+                    properties.load(url.openStream());
+                } catch (IOException e) {
+                    _log.error(e);
+                }
+            }
         }
     }
 
-    private static final class AuthenticationAttemptEventPublisher implements AuthenticationEventPublisher {
+    public void setAuthenticationProviderConfigurators(Map<String, AuthenticationProviderConfigurator> configurators) {
+        _configurators = configurators;
+    }
     	
-        private final FailedAttemptsManager failedAttemptsManager = new FailedAttemptsManager();
-        private final LastSuccessfulLoginManager lastSuccessfulLoginManager = new LastSuccessfulLoginManager();
-
-        public void publishAuthenticationFailure(AuthenticationException exception, Authentication authentication) {
-            //increment failed login attempt
-        	failedAttemptsManager.addFailedLoginAttempt(authentication);
-        }
-        public void publishAuthenticationSuccess(Authentication authentication) {
-        	failedAttemptsManager.clearCount(authentication);
-        	lastSuccessfulLoginManager.updateLastSuccessfulLogin(authentication);
-        }
+    public void setStandaloneProviders(List<AuthenticationProvider> providers) {
+        _standaloneProviders = providers;
     }
 
     public String getExpirationInterval(){
         return PASSWORD_EXPIRATION;
     }
     
-    private static class LastSuccessfulLoginManager {
-    	private void updateLastSuccessfulLogin(Authentication auth) {
-            XdatUserAuth ua=getUserByAuth(auth);
-            if(ua!=null){
-            	Date now = java.util.Calendar.getInstance(TimeZone.getDefault()).getTime();
-                ua.setLastSuccessfulLogin(now);
-                XDAT.getXdatUserAuthService().update(ua);
-            }
-        }
-    }
-
-    private static class FailedAttemptsManager {
-        /**
-         * Increments failed Login count
-         * @param auth    The authentication that failed.
-         *
-         */
-        private synchronized void addFailedLoginAttempt(final Authentication auth){
-            XdatUserAuth ua=getUserByAuth(auth);
-            if(ua!=null){
-            	if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
-                    ua.setFailedLoginAttempts(ua.getFailedLoginAttempts()+1);
-                    XDAT.getXdatUserAuthService().update(ua);
-	            }
-	            
-            	if(StringUtils.isNotEmpty(ua.getXdatUsername())){
-            		Integer uid=XDATUser.getUserid(ua.getXdatUsername());
-            		if(uid!=null){
-	    	            try {							
-	    	            	if(ua.getFailedLoginAttempts().equals(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS)){
-	    	            		String expiration=TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));
-	    	            		System.out.println("Locked out " + ua.getXdatUsername() + " user account until "+expiration);
-	    	            		AdminUtils.sendAdminEmail(ua.getXdatUsername() +" account temporarily disabled.", "User "+ ua.getXdatUsername() +" has been temporarily disabled due to excessive failed login attempts. The user's account will be automatically enabled at "+ expiration+".");
-	    					}
-						} catch (Exception e) {
-							//ignore
-						}
-            		}
-            	}
-            }
-        }
-
-        public void clearCount(final Authentication auth) {
-            if(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS>0 ){
-                XdatUserAuth ua=getUserByAuth(auth);
-                if(ua!=null){
-                    ua.setFailedLoginAttempts(0);
-                    XDAT.getXdatUserAuthService().update(ua);
-                }
-            }
-        }
-    }
-
     public static XdatUserAuth getUserByAuth(Authentication authentication) {
         if(authentication==null){
             return null;
@@ -354,4 +239,96 @@ public class XnatProviderManager extends ProviderManager {
 
         return XDAT.getXdatUserAuthService().getUserByNameAndAuth(u, method, provider);
     }
+
+    private void copyDetails(Authentication source, Authentication destination) {
+        if ((destination instanceof AbstractAuthenticationToken) && (destination.getDetails() == null)) {
+            AbstractAuthenticationToken token = (AbstractAuthenticationToken) destination;
+
+            token.setDetails(source.getDetails());
+}
+    }
+
+    private static final class AuthenticationAttemptEventPublisher implements AuthenticationEventPublisher {
+
+        private final FailedAttemptsManager failedAttemptsManager = new FailedAttemptsManager();
+        private final LastSuccessfulLoginManager lastSuccessfulLoginManager = new LastSuccessfulLoginManager();
+
+        public void publishAuthenticationFailure(AuthenticationException exception, Authentication authentication) {
+            //increment failed login attempt
+            failedAttemptsManager.addFailedLoginAttempt(authentication);
+        }
+
+        public void publishAuthenticationSuccess(Authentication authentication) {
+            failedAttemptsManager.clearCount(authentication);
+            lastSuccessfulLoginManager.updateLastSuccessfulLogin(authentication);
+        }
+    }
+
+    private static final class LastSuccessfulLoginManager {
+        private void updateLastSuccessfulLogin(Authentication auth) {
+            XdatUserAuth ua = getUserByAuth(auth);
+            if (ua != null) {
+                Date now = java.util.Calendar.getInstance(TimeZone.getDefault()).getTime();
+                ua.setLastSuccessfulLogin(now);
+                XDAT.getXdatUserAuthService().update(ua);
+            }
+        }
+    }
+
+    private static final class FailedAttemptsManager {
+        /**
+         * Increments failed Login count
+         *
+         * @param auth The authentication that failed.
+         */
+        private synchronized void addFailedLoginAttempt(final Authentication auth) {
+            XdatUserAuth ua = getUserByAuth(auth);
+            if (ua != null) {
+                if (AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS > 0) {
+                    ua.setFailedLoginAttempts(ua.getFailedLoginAttempts() + 1);
+                    XDAT.getXdatUserAuthService().update(ua);
+                }
+
+                if (StringUtils.isNotEmpty(ua.getXdatUsername())) {
+                    Integer uid = XDATUser.getUserid(ua.getXdatUsername());
+                    if (uid != null) {
+                        try {
+                            if (ua.getFailedLoginAttempts().equals(AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS)) {
+                                String expiration = TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));
+                                System.out.println("Locked out " + ua.getXdatUsername() + " user account until " + expiration);
+                                AdminUtils.sendAdminEmail(ua.getXdatUsername() + " account temporarily disabled.", "User " + ua.getXdatUsername() + " has been temporarily disabled due to excessive failed login attempts. The user's account will be automatically enabled at " + expiration + ".");
+                            }
+                        } catch (Exception e) {
+                            //ignore
+                        }
+                    }
+                }
+            }
+        }
+
+        public void clearCount(final Authentication auth) {
+            if (AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS > 0) {
+                XdatUserAuth ua = getUserByAuth(auth);
+                if (ua != null) {
+                    ua.setFailedLoginAttempts(0);
+                    XDAT.getXdatUserAuthService().update(ua);
+                }
+            }
+        }
+    }
+
+    private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
+    private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
+    private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
+
+    private static String PASSWORD_EXPIRATION = "-1";
+
+    private static final Log _log = LogFactory.getLog(XnatProviderManager.class);
+
+    protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+
+    private final AuthenticationEventPublisher eventPublisher = new AuthenticationAttemptEventPublisher();
+    private Properties properties;
+    private Map<String, AuthenticationProviderConfigurator> _configurators;
+    private List<AuthenticationProvider> _standaloneProviders;
 }

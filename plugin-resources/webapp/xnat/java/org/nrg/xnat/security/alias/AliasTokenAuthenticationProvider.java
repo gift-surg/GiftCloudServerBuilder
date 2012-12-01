@@ -33,7 +33,7 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
         String alias = (String) authentication.getPrincipal();
         AliasToken token = getService().locateToken(alias);
         if (token == null) {
-            throw new BadCredentialsException("No valid alias token found for alias", alias);
+            throw new BadCredentialsException("No valid alias token found for alias: " + alias);
         }
         // Translate the token into the actual user name and allow the DAO to retrieve the user object.
         return super.authenticate(authentication);
@@ -82,12 +82,12 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
     }
 
     @Override
-    public String getID() {
-        return _id;
+    public String getProviderId() {
+        return _providerId;
     }
 
-    public void setId(final String id) {
-        _id = id;
+    public void setProviderId(final String id) {
+        _providerId = id;
     }
 
     @Override
@@ -104,15 +104,14 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         if (authentication.getCredentials() == null) {
             logger.debug("Authentication failed: no credentials provided");
-
-            throw new BadCredentialsException("The submitted token was invalid", userDetails);
+            throw new BadCredentialsException("The submitted alias token was empty.");
         }
 
         String alias = ((AliasTokenAuthenticationToken) authentication).getAlias();
         long secret = ((AliasTokenAuthenticationToken) authentication).getSecret();
         String userId = getService().validateToken(alias, secret);
         if (StringUtils.isBlank(userId) || !userId.equals(userDetails.getUsername())) {
-            throw new BadCredentialsException("The submitted token was invalid", userDetails);
+            throw new BadCredentialsException("The submitted alias token was invalid: " + alias);
         }
     }
 
@@ -152,7 +151,7 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
         /*
          * We don't really know which provider the user was authenticated under when this token was created.
          * The hack is to return the user details for the most recent successful login of the user, as that is likely the provider that was used.
-         * Not perfect, but better than just hardcoding to localdb provider (cause then it won't work for a token created by an LDAP-authenticated user).
+         * Not perfect, but better than just hard-coding to localdb provider (cause then it won't work for a token created by an LDAP-authenticated user).
          */
         return XDAT.getXdatUserAuthService().getUserDetailsByUsernameAndMostRecentSuccessfulLogin(token.getXdatUserId());
     }
@@ -166,5 +165,5 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
 
     private AliasTokenService _service;
     private String _name;
-    private String _id;
+    private String _providerId;
 }

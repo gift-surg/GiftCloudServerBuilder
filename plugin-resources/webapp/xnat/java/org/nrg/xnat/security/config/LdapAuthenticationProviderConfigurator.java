@@ -24,25 +24,29 @@ public class LdapAuthenticationProviderConfigurator extends AbstractAuthenticati
     @Override
     public List<AuthenticationProvider> getAuthenticationProviders(String id, String name, Map<String, String> properties) {
         try {
-            String address = properties.get("address");
-            XnatLdapUserDetailsMapper ldapUserDetailsContextMapper = new XnatLdapUserDetailsMapper(id);
-            XnatLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new XnatLdapAuthoritiesPopulator();
-            DefaultSpringSecurityContextSource ldapServer = new DefaultSpringSecurityContextSource(address);
-            ldapServer.setUserDn(properties.get("userdn"));
-            ldapServer.setPassword(properties.get("password"));
-            ldapServer.afterPropertiesSet();
-            FilterBasedLdapUserSearch ldapSearchBean = new FilterBasedLdapUserSearch(properties.get("search.base"), properties.get("search.filter"), ldapServer);
-            BindAuthenticator ldapBindAuthenticator = new BindAuthenticator(ldapServer);
-            ldapBindAuthenticator.setUserSearch(ldapSearchBean);
-            XnatLdapAuthenticationProvider ldapAuthProvider = new XnatLdapAuthenticationProvider(ldapBindAuthenticator, ldapAuthoritiesPopulator);
-            ldapAuthProvider.setUserDetailsContextMapper(ldapUserDetailsContextMapper);
+            XnatLdapAuthenticationProvider ldapAuthProvider = new XnatLdapAuthenticationProvider(getBindAuthenticator(properties, getLdapContextSource(properties)), new XnatLdapAuthoritiesPopulator());
+            ldapAuthProvider.setUserDetailsContextMapper(new XnatLdapUserDetailsMapper(id, properties));
             ldapAuthProvider.setName(name);
-            ldapAuthProvider.setID(id);
+            ldapAuthProvider.setProviderId(id);
             return Arrays.asList(new AuthenticationProvider[] { ldapAuthProvider });
         } catch (Exception exception) {
             _log.error("Something went wrong when configuring the LDAP authentication provider", exception);
             return null;
         }
+    }
+
+    private BindAuthenticator getBindAuthenticator(final Map<String, String> properties, final DefaultSpringSecurityContextSource ldapServer) {
+        BindAuthenticator ldapBindAuthenticator = new BindAuthenticator(ldapServer);
+        ldapBindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(properties.get("search.base"), properties.get("search.filter"), ldapServer));
+        return ldapBindAuthenticator;
+    }
+
+    private DefaultSpringSecurityContextSource getLdapContextSource(final Map<String, String> properties) throws Exception {
+        return new DefaultSpringSecurityContextSource(properties.get("address")) {{
+            setUserDn(properties.get("userdn"));
+            setPassword(properties.get("password"));
+            afterPropertiesSet();
+        }};
     }
 
     private static final Log _log = LogFactory.getLog(LdapAuthenticationProviderConfigurator.class);

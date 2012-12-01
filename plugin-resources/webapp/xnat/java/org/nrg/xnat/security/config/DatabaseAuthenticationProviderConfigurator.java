@@ -2,7 +2,6 @@ package org.nrg.xnat.security.config;
 
 import org.nrg.xdat.XDAT;
 import org.nrg.xnat.security.XnatObfuscatedPasswordEncoder;
-import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,7 +25,7 @@ public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenti
         sha2DatabaseAuthProvider.setUserDetailsService(detailsService);
         sha2DatabaseAuthProvider.setPasswordEncoder(encoder);
         sha2DatabaseAuthProvider.setName(name);
-        sha2DatabaseAuthProvider.setID(id);
+        sha2DatabaseAuthProvider.setProviderId(id);
         providers.add(sha2DatabaseAuthProvider);
 
         XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
@@ -34,7 +33,7 @@ public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenti
         sha2ObfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
         sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
         sha2ObfuscatedDatabaseAuthProvider.setName(name);
-        sha2ObfuscatedDatabaseAuthProvider.setID(id);
+        sha2ObfuscatedDatabaseAuthProvider.setProviderId(id);
         providers.add(sha2ObfuscatedDatabaseAuthProvider);
 
         XnatDatabaseAuthenticationProvider obfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
@@ -42,7 +41,7 @@ public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenti
         obfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
         obfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder3);
         obfuscatedDatabaseAuthProvider.setName(name);
-        obfuscatedDatabaseAuthProvider.setID(id);
+        obfuscatedDatabaseAuthProvider.setProviderId(id);
         providers.add(obfuscatedDatabaseAuthProvider);
 
         XnatDatabaseAuthenticationProvider plaintextDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
@@ -50,7 +49,7 @@ public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenti
         plaintextDatabaseAuthProvider.setUserDetailsService(detailsService);
         plaintextDatabaseAuthProvider.setPasswordEncoder(encoder4);
         plaintextDatabaseAuthProvider.setName(name);
-        plaintextDatabaseAuthProvider.setID(id);
+        plaintextDatabaseAuthProvider.setProviderId(id);
         providers.add(plaintextDatabaseAuthProvider);
 
         return providers;

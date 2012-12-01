@@ -36,13 +36,13 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
 		displayName = newName;
 	}
 	
-	public void setID(String newID){
-		ID = newID;
+    @Override
+    public String getProviderId() {
+        return _providerId;
 	}
 	
-    @Override
-	public String getID(){
-		return ID;
+    public void setProviderId(String providerId) {
+        _providerId = providerId;
 	}
 	
     @Override
@@ -51,5 +51,5 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
     }
 
     private String displayName = "";
-    private String ID = "";
+    private String _providerId = "";
 }

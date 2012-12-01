@@ -1,5 +1,7 @@
 package org.nrg.xnat.security.provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,9 +12,6 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider implements XnatAuthenticationProvider {
 	
-	private String displayName = "";
-	private String ID = "";
-	
 	public XnatLdapAuthenticationProvider(LdapAuthenticator authenticator) {
 		super(authenticator);
 	}
@@ -22,7 +21,7 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider i
 	}
 
 	@Override
-	public boolean supports(Class<? extends Object> authentication) {
+	public boolean supports(Class<?> authentication) {
 		boolean supports = false;
 		if(XnatLdapUsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)){
 			supports = true;
@@ -33,6 +32,9 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider i
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Authentication auth = super.authenticate(authentication);
+        if (_log.isDebugEnabled()) {
+            _log.debug("Found auth object of type: " + auth.getClass() + " (principal is: " + auth.getPrincipal().getClass() + ")");
+        }
 		return auth;
 	}
 	
@@ -41,21 +43,22 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider i
 		return getName();
 	}
 	
-	public void setName(String newName){
-		displayName = newName;
+    @Override
+    public String getName() {
+        return _displayName;
 	}
 	
-	public void setID(String newID){
-		ID = newID;
+    public void setName(String newName){
+        _displayName = newName;
 }
 	
     @Override
-    public String getName() {
-        return displayName;
+	public String getProviderId(){
+		return _providerId;
     }
 
-	public String getID(){
-		return ID;
+    public void setProviderId(String providerId){
+        _providerId = providerId;
 	}
 
     @Override
@@ -73,4 +76,9 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider i
     public boolean isVisible() {
         return true;
     }
+
+    private static final Log _log = LogFactory.getLog(XnatLdapAuthenticationProvider.class);
+
+    private String _displayName = "";
+    private String _providerId = "";
 }

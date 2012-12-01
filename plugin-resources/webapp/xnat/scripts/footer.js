@@ -33,6 +33,12 @@ YAHOO.util.Event.onDOMReady(function(){
                     _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.FloatTextBox));
                 }
             }
+
+            if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'alphaNumSP')){
+                if(myforms[iFc][fFc].nodeName=="INPUT"){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.AlphaNumSTextBox));
+                }
+            }
         }
     }
 
@@ -123,6 +129,17 @@ XNAT.app.validatorImpls.FloatTextBox={
 			}else{
 				return false;
 			}
+		}else{
+			return true;
+		}
+	}
+}
+
+XNAT.app.validatorImpls.AlphaNumSTextBox={
+	message:"Value must be alpha numeric text (no special characters).",
+	isValid:function(_box){
+		if(_box.value!=""){
+			return _box.value.match('^[A-Za-z0-9 ,.]+$');
 		}else{
 			return true;
 		}

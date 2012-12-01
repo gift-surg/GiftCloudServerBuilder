@@ -8,7 +8,7 @@
                   </tr>
                   <tr>
                    <th align="left">User Name</th>
-                   <td><input type="text" id="xdat:user.login" name="xdat:user.login"  ONCHANGE="validateUsername(this,'Register');"/>
+                   <td><input class="required alphaNumSP" type="text" id="xdat:user.login" name="xdat:user.login"  ONCHANGE="validateUsername(this,'Register');"/>
                    </td>
                   </tr>
                   <tr>
@@ -18,12 +18,12 @@
                   </tr>
                   <tr>
                    <th align="left">First Name</th>
-                   <td><input type="text" id="xdat:user.firstname" name="xdat:user.firstname" />
+                   <td><input class="required alphaNumSP" type="text" id="xdat:user.firstname" name="xdat:user.firstname" />
                    </td>
                   </tr>
                   <tr>
                    <th align="left">Last Name</th>
-                   <td><input type="text" id="xdat:user.lastname" name="xdat:user.lastname" />
+                   <td><input class="required alphaNumSP" type="text" id="xdat:user.lastname" name="xdat:user.lastname" />
                    </td>
                   </tr>
                   <tr>

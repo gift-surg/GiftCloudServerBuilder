@@ -401,6 +401,7 @@ function SearchXMLManager(_xml){
 	this.fillVersionBox=function(element_name){
 		var versions=this.versionMap[element_name];
 		var allVersion=null;
+		this.versionSelector.options.length=0;
 		for(var lvC=0;lvC<versions.length;lvC++){
 			var version=versions[lvC];
 			if(version.name=="brief" || version.name=="detailed"){

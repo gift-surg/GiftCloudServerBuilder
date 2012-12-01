@@ -18,8 +18,12 @@
   function modifySubject(){
    if(window.currentProject!=""){
     if(window.subjectEditor==undefined){
-      
-      var config ={"create_subject_link":create_subject_link};
+      var config=new Object();
+	  
+	  #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-subject-create-from-expt-edit","true")))
+	  	config.create_subject_link=create_subject_link;
+	  #end
+
       if(window.currentID!=""){
         config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentID;
       }

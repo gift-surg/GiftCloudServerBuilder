@@ -21,21 +21,21 @@ $page.setVlinkColor($ui.vlink)
 			<INPUT type="hidden" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" />
 		</TD>
 	#else
-	<TD><INPUT type="text" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" ONCHANGE="validateUsername(this,'eventSubmit_doSetup');"/></TD>
+	<TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" ONCHANGE="validateUsername(this,'eventSubmit_doSetup');"/></TD>
 	#end
 	</tr>
 	<tr>
-		<TD align=right>Password:</TD><TD><INPUT type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" value="$!item.getProperty("xdat:user.primary_password")" autocomplete="off"/></TD>
+		<TD align=right>Password:</TD><TD><INPUT class="required" type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" value="$!item.getProperty("xdat:user.primary_password")" autocomplete="off"/></TD>
 	</tr>
 	#xdatHiddenBox("xdat:user.enabled" $item "false")
 	<tr>
-		<TD align=right>First Name:</TD><TD><INPUT type="text" name="xdat:user.firstname" value="$!item.getProperty("firstname")"/></TD>
+		<TD align=right>First Name:</TD><TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.firstname" name="xdat:user.firstname" value="$!item.getProperty("firstname")"/></TD>
 	</tr>
 	<tr>
-		<TD align=right>Last Name:</TD><TD><INPUT type="text" name="xdat:user.lastname" value="$!item.getProperty("lastname")"/></TD>
+		<TD align=right>Last Name:</TD><TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.lastname" name="xdat:user.lastname" value="$!item.getProperty("lastname")"/></TD>
 	</tr>
 	<tr>
-		<TD align=right>Email:</TD><TD><INPUT type="text" name="xdat:user.email" value="$!item.getProperty("email")"/></TD>
+		<TD align=right>Email:</TD><TD><INPUT class="required" type="text" id="xdat:user.email" name="xdat:user.email" value="$!item.getProperty("email")"/></TD>
 	</tr>
 	#xdatEditProps($item $edit_screen)
 	<TR><TD COLSPAN=2 ALIGN=center><input type="submit" id="eventSubmit_doSetup" name="eventSubmit_doSetup" value="Submit"/></TD></TR>

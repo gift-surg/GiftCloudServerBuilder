@@ -59,7 +59,7 @@ $navigation.setTemplate("/bodyOpen.vm")
 			<table valign="bottom">
 				<tr>
 				    <td valign="bottom" align="right">
-						<div VALIGN="bottom" align="right"><a href="http://www.xnat.org"><img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a></div>
+						<div VALIGN="bottom" align="right">$navigation.setTemplate("/powered_by.vm")</div>
 					</td>
 				</tr>
 			</table>

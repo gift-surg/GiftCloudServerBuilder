@@ -53,7 +53,7 @@ $navigation.setTemplate("/bodyOpen.vm")
 </table>
 
 <div id="xnat_power" style="">
-    <a target="_blank" href="http://www.xnat.org/" style=""><img src="$content.getURI('images/xnat_power_small.jpg')"></a>
+    $navigation.setTemplate("/powered_by.vm")
 </div>
 
 ## insert any template-specific code here that needs to be directly before closing </body> tag

@@ -1,0 +1,3 @@
+<a target="_blank" href="http://www.xnat.org/">
+	<img src="$content.getURI("images/xnat_power_small.jpg")" border=0>
+</a>

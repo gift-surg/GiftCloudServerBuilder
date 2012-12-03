@@ -41,11 +41,12 @@ import com.google.common.collect.Maps;
 public class AuditRestlet extends SecureResource {
 	ItemI item;
 	final String key;
+	final String xsiType;
 
 	public AuditRestlet(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		String xsiType=this.filepath.substring(0, filepath.indexOf("/"));
+		xsiType=this.filepath.substring(0, filepath.indexOf("/"));
 		key=this.filepath.substring(filepath.indexOf("/")+1);
 		
 
@@ -55,7 +56,7 @@ public class AuditRestlet extends SecureResource {
 			item=retrieveItemByIds(xsiType, ids);
 		} catch (ActionException e) {
 			respondToException(e,e.getStatus());
-		}
+		} 
 
 		if(item!=null){
 	        this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
@@ -119,6 +120,14 @@ public class AuditRestlet extends SecureResource {
 				
 				if(hasQueryVariable("includeFiles")){
 					params.put("includeFiles", getQueryVariable("includeFiles"));
+				}
+				
+				if(xsiType!=null){
+					params.put("xsiType", xsiType);
+				}
+				
+				if(key!=null){
+					params.put("key", key);
 				}
 				
 				if(hasQueryVariable("includeDetails")){

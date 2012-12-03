@@ -704,7 +704,7 @@
 		<dependency>
 			<groupId>ecat</groupId>
 			<artifactId>ecat4xnat</artifactId>
-			<version>1.6.0</version>
+			<version>1.6.2-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

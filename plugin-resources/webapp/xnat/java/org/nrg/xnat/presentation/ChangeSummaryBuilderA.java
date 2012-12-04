@@ -303,43 +303,13 @@ public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 	final static String resource_count="file_count".intern();
 	
 	protected void markModifications(Map<Date,ChangeSummary> sb, Map<String,String> headers, FlattenedItem fi, FlattenedItem previous){
-//		if(headers.containsKey(addfiles[0]) && headers.containsKey(addfiles[1])){
-////			Integer previous_count=0;
-////			Integer new_count=0;
-//			for(Map.Entry<String,String> header:headers.entrySet()){
-//				if(differBy(fi,previous,header.getKey())){
-////					if(header.getKey().equals(addfiles[0])){
-////						new_count=(Integer)fi.getFields().getParams().get(addfiles[0]);
-////						if(new_count==null)new_count=0;
-////						previous_count=(Integer)previous.getFields().getParams().get(addfiles[0]);
-////						if(previous_count==null)previous_count=0;
-////					}else 
-//					if(!header.getKey().equals(addfiles[1])){
-//						registerEvent(sb,fi.getItemObject(),fi.getCreateEventId(),MODIFIED,buildFieldEvent(header.getKey(),header.getValue(),fi,previous),(fi.getModifiedUsername()==null)?fi.getCreateUsername():fi.getModifiedUsername(),fi.getStartDate(),fi.getParents());
-//					}
-//				}
-//			}
-////			if(new_count>0 || previous_count>0){
-////				List<ItemObject> ps=new ArrayList<ItemObject>();
-////				ps.addAll(fi.getParents());
-////				ps.add(fi.getItemObject());
-////				
-////				FieldEvent fe = new FieldEvent("count", "count", new_count, previous_count);
-////				registerEvent(sb,new ItemObject("file_summary","file_summary","file_summary"),fi.getCreateEventId(),MODIFIED,fe,(fi.getModifiedUsername()==null)?fi.getCreateUsername():fi.getModifiedUsername(),fi.getStartDate(),ps);
-//////				if(previous_count>new_count)
-//////					registerEvent(sb,new ItemObject("file_summary",previous_count-new_count,previous_count-new_count),fi.getCreateEventId(),REMOVED,(FieldEvent)null,(fi.getModifiedUsername()==null)?fi.getCreateUsername():fi.getModifiedUsername(),fi.getStartDate(),ps);
-//////				else
-//////					registerEvent(sb,new ItemObject("file",new_count-previous_count,new_count-previous_count),fi.getCreateEventId(),ADDED,(FieldEvent)null,(fi.getModifiedUsername()==null)?fi.getCreateUsername():fi.getModifiedUsername(),fi.getStartDate(),ps);
-////			}
-//		}else{
-			for(Map.Entry<String,String> header:headers.entrySet()){
-				if(!conceal.contains(header.getKey())){
-					if(differBy(fi,previous,header.getKey())){
-						registerEvent(sb,fi.getItemObject(),fi.getCreateEventId(),fi.getStartDate(),builder.build(fi.getItemObject(), MODIFIED, buildFieldEvent(header.getKey(),header.getValue(),fi,previous), (fi.getModifiedUsername()==null)?fi.getCreateUsername():fi.getModifiedUsername(), fi.getParents(),fi));
-					}
+		for(Map.Entry<String,String> header:headers.entrySet()){
+			if(!conceal.contains(header.getKey())){
+				if(differBy(fi,previous,header.getKey())){
+					registerEvent(sb,fi.getItemObject(),fi.getCreateEventId(),fi.getStartDate(),builder.build(fi.getItemObject(), MODIFIED, buildFieldEvent(header.getKey(),header.getValue(),fi,previous), (fi.getModifiedUsername()==null)?fi.getCreateUsername():fi.getModifiedUsername(), fi.getParents(),fi));
 				}
 			}
-//		}
+		}
 	}
 
 	protected  void build(FlattenedItemA.ChildCollection all_props,final String label,Map<Date,ChangeSummary> sb, Integer parent) throws Exception{

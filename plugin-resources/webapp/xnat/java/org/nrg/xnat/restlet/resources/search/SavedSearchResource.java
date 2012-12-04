@@ -315,7 +315,7 @@ public class SavedSearchResource extends ItemResource {
 						}else{
 							SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed stored search"));
 						}
-					}else if(user.getGroup("ALL_DATA_ADMIN")!=null){
+					}else if(user.isSiteAdmin()){
 						SaveItemHelper.authorizedDelete(search.getItem(), user,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN,"Removed stored search"));
 					}else{						
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);

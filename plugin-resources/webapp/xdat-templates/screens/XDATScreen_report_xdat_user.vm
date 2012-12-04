@@ -562,19 +562,26 @@ addGroup("$!groupid.getGroupid()");
 								: This allows users to access the Administrative pages of the web interface.
 								</TD></TR>
 							  #set($groupCounter=0)
+							  
+																#if($turbineUtils.toBoolean($siteConfig.getProperty("security.allow-data-admins","true")))
 																<TR>
-																<TD align=left colspan="4">Allow All Data Access: </TD>
+																	<TD align=left colspan="4">Allow All Data Access: </TD>
 																</tr>
 																<TR>
-																<TD align=left nowrap>
+																	<TD align=left nowrap>
 <INPUT TYPE="radio" id="data_none" name="xdat:user.groups.groupID[$groupCounter].groupID" value="" CHECKED/> <label for="data_none">No</label>
 								</TD>
-																<TD align=left nowrap>
+								<TD align=left nowrap>
 <INPUT TYPE="radio" id="data_access" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ACCESS" #if($userObject.getGroup("ALL_DATA_ACCESS"))CHECKED#end/> <label for="data_access">Read Only</label>
 								</TD>
 								<TD align=left nowrap>
 <INPUT TYPE="radio" id="data_admin" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ADMIN" #if($userObject.getGroup("ALL_DATA_ADMIN"))CHECKED#end/> <label for="data_admin">Read, Edit & Delete</label>
-								</TD><TD align=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								</TD>
+																</TR>
+																#end
+																<TR>
+																	<TD colspan="3">&nbsp;</TD>
+								<TD align=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
                                                 <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                     #else

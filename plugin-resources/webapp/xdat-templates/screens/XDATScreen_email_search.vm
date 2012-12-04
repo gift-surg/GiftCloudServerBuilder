@@ -35,7 +35,7 @@
 						<TD align="left"><input type="text" name="EMAILID_1" size="30"></TD>
 					</tr>
 					<TR>
-						<TD align="left">(Seperate multiple e-mail addresses with commas.)</TD>
+						<TD align="left">(Separate multiple e-mail addresses with commas.)</TD>
 					</tr>
 					<TR>
 						<TD><HR color="$colorCode"></TD>

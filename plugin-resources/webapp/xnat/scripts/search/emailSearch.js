@@ -170,7 +170,7 @@ function EmailPopupForm(_search,_div){
 		td.align="left";
 		td.colspan="2";
 		td.border="0";
-		td.innerHTML="(Seperate multiple e-mail addresses with commas.)";
+		td.innerHTML="(Separate multiple e-mail addresses with commas.)";
 		tr.appendChild(td);
 		tbody.appendChild(tr);
 	

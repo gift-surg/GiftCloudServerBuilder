@@ -4,7 +4,7 @@
 <BR><BR>
 	<B>Numeric search:</B>
 	<UL>
-		<LI>Search criteria must be seperated by a comma, which acts as an OR.  <BR>
+		<LI>Search criteria must be separated by a comma, which acts as an OR.  <BR>
 		Thus, <i>8,10,15</i> would return results where the field is equal to 8, 10 OR 15.
 		</LI>
 		<LI>Negative numbers whould be enclosed in parenthesis <i>(-5)</i>.</LI>
@@ -18,7 +18,7 @@
 		<LI>If the value is in single quotes <i>'brown'</i>, then the search will return the results which match exactly.
 		<BR>Otherwise, the search will return results which contain the text (case independent).  Thus, <i>brown</i> returns <i>brownster</i>, <i>brown</i> or <i>BROWN</i> records.
 		</LI>
-		<LI>Search criteria may be seperated by a comma or an empty space, which acts as an OR.  <BR>
+		<LI>Search criteria may be separated by a comma or an empty space, which acts as an OR.  <BR>
 		Thus, <i>brown,'richard' pete</i> would return results where the field is like <i>brown</i>, equal to <i>richard</i> OR like <i>pete</i>.
 		</LI>
 		<LI><i>%</i> or <i>*</i> can be used as a wildcard value.</LI>

@@ -1045,7 +1045,7 @@ function initEmailForm(_search){
 			td= document.createElement("TD");
 			td.align="left";
 			td.colspan="2";
-			td.innerHTML="(Seperate multiple e-mail addresses with commas.)";
+			td.innerHTML="(Separate multiple e-mail addresses with commas.)";
 			tr.appendChild(td);
 			tbody.appendChild(tr);
 		

@@ -4,7 +4,11 @@
 							</tr>
 													<tr>
 			  #formLabel("Date Added")
-									  <TD>$turbineUtils.formatDateTime($!om.InsertDate) ($!om.InsertUser.Login)</TD>
+									  <TD>
+										#if($om.getInsertDate())
+										$turbineUtils.formatDateTime($!om.InsertDate) ($!om.InsertUser.Login)
+										#end
+									  </TD>
 							</tr>
 						#if($!item.getProperty("date"))
 							<tr>

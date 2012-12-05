@@ -1,3 +1,54 @@
+
+XNAT.app.resizableTables=new Array();  
+/* 
+ * Per CSS, the containing #layout_content div will resize itself 
+ * to fit wide content, constrained to the width of the window.  
+ *
+ * This function fires when the user resizes the browser window. 
+ * It measures the width of the window and the standard YUI data table. 
+ * If the table content is wider than the window, it will resize #layout_content
+ * However, #layout_content has a minimum width per CSS that matches the page template.
+ */
+XNAT.app.tableSizer=function(){
+	var windowWidth = $(window).innerWidth(); 
+	var divWidth = $('#layout_content_data').width(); /* what happens when there are more than one of these on a page? */
+	var tableWidth = $('table.x_rs_t').width(); /* what happens if there are more than one of these on a page? */
+	
+	for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
+		XNAT.app.setTableHeight(XNAT.app.resizableTables[tSc]);
+	}
+	
+	if (tableWidth > (windowWidth-60)) {
+		var setWidth = windowWidth - 60;
+		if(setWidth<925)setWidth=925;
+		$('#layout_content_data').css('width',setWidth);
+		$('#search_tabs').css('width',setWidth);
+	}
+	
+}
+
+XNAT.app.setTableHeight=function(div_id){
+	var windowHeight = $(window).innerHeight();
+	var tableHeight = $('table.x_rs_t').height();
+	var container = document.getElementById(div_id); 
+	var tablePosition = $(container).offset(); 
+	
+	/* max height is total screen height minus space for table header & chrome */ 
+	var maxTableHeight = (tableHeight < windowHeight) ? tableHeight + 60 : windowHeight-60;
+	var minTableHeight = 300; 
+	
+	/* available height is visible screen height below the starting Y point of the table, plus room for table header & chrome */
+	var availableTableHeight = windowHeight - (tablePosition.top)- 30; 
+	availableTableHeight = (availableTableHeight > maxTableHeight) ? maxTableHeight : availableTableHeight;
+	availableTableHeight = (availableTableHeight < minTableHeight) ? minTableHeight : availableTableHeight;
+	
+	/* set dimensions of table containers */
+	$(container).css('height',availableTableHeight);
+}
+ 
+$(document).ready(function() { XNAT.app.tableSizer(); });
+$(window).resize(function() { XNAT.app.tableSizer(); });  
+
 function DataTableSearch(_div_table_id,obj,_config,_options){
   if(obj!=undefined){
     this.obj=obj;
@@ -298,6 +349,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     }
     //alert(out_txt);
 
+    try{
+    	//resize
+	    if(!XNAT.app.resizableTables.contains(this.div_table_id)){
+	    	XNAT.app.resizableTables.push(this.div_table_id);
+	    }
+	    
+	    XNAT.app.tableSizer();
+    }catch(e){}
   };
 
   this.purge=function(){

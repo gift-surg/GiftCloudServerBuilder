@@ -3,6 +3,10 @@
 .ygtvlabel{
   /* font-size:9px; */
 }
+#search_tabs { 
+	font-size:12px;
+	min-height: 300px;
+}
 </style>
 <script type="text/javascript" src="$content.getURI("scripts/generated/xdat_stored_search.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/generated/xdat_search_field.js")"></script>

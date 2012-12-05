@@ -99,3 +99,4 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
 	    });
   sgApplet.get();
 </script>
+#addCustomScreens($om.getXSIType() "report/manage_tab") 

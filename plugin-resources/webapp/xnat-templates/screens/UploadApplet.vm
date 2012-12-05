@@ -14,6 +14,10 @@
 <div id='appletDiv'>
 </div>
 <script type="text/javascript">
+  //refresh timeout interval so applet doesn't lose its session.
+  jq(document).ready(function() {
+    setInterval(function(){handleOk();}, 60000);
+  });
 // The upload applet requires at least Java 1.5 (because of the wizard library).
 // We use Java's deployJava.js (http://java.sun.com/javase/6/docs/technotes/guides/jweb/deployment_advice.html)
 // to ensure that a supported version of the JRE exists on the client.

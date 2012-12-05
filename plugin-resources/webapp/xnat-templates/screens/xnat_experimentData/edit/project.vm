@@ -4,9 +4,11 @@
    <div id="project_placeholder">$!om.getProjectDisplayID()</div><input type="hidden" id="$om.getXSIType()/project" name="$om.getXSIType()/project" value="$!om.getProject()"/>
   </td>
   <td>
+	#if($data.getSession().getAttribute("user").canDelete($om.getItem()))
    <a onclick="modifyProject();">
     		<img border="0" src="$content.getURI("images/e.gif")"/>
    </a>
+   #end
   </td>
  </tr>
 </table>

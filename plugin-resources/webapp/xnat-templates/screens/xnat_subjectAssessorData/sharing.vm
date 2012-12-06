@@ -9,7 +9,7 @@
   <div ID="sharing_summary_title" style="margin-bottom:5px"></div>
   <div ID="sharing_summary_table"></div>
 </div>
-<div class="lockable">
+<div class="">
 Share into 
 #if($create_projects.size()>0)
 <SELECT ID="s_projects" name="projects">

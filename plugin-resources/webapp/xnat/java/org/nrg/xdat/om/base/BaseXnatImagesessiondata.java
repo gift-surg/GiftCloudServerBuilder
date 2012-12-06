@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 
 import org.nrg.dcm.CopyOp;
 import org.nrg.transaction.*;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -2787,6 +2788,21 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				{
 					return "User cannot delete experiments for project " + proj.getId();
 				}
+
+
+				//unshare children before unsharing parent
+					final  List<XnatImageassessordata> expts = (expt).getAssessors_assessor();
+			        for (XnatImageassessordataI exptI : expts){
+			        	final XnatImageassessordata assess = (XnatImageassessordata)exptI;
+			        	if(assess.getProject().equals(proj.getId())){
+			        		return "This operation would delete an experiment (rather than un-share).  Please move experiment ("+expt.getId()+") to another project or manually delete.";
+			        		
+			        	}
+			            msg= assess.delete(proj,user,false,c);
+			            if(msg!=null){
+			            	return msg;
+			            }
+			        }
 				
 				int index = 0;
 				int match = -1;
@@ -2802,11 +2818,6 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				if(match==-1)return null;
 				
 				this.removeSharing_share(match);
-
-				final  List<XnatImageassessordataI> expts = expt.getAssessors_assessor();
-		        for (XnatImageassessordataI iad : expts){
-		        	((XnatImageassessordata)iad).delete(proj,user,false,c);
-		        }
 		        
 				return null;
 			} catch (SQLException e) {
@@ -2817,6 +2828,11 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 				return e.getMessage();
 			}
 		}else{
+
+	    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
+	    		return "User account cannot delete experiments";
+	    	}
+	    	
 			try {
 			
 				if(!user.canDelete(this)){

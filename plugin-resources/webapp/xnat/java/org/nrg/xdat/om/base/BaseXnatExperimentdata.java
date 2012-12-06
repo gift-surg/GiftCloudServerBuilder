@@ -6,7 +6,6 @@
  */
 package org.nrg.xdat.om.base;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -18,6 +17,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.nrg.action.ClientException;
@@ -27,31 +27,31 @@ import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatExperimentdataFieldI;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatImageassessordataI;
 import org.nrg.xdat.model.XnatProjectdataI;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatFielddefinitiongroup;
+import org.nrg.xdat.om.XnatImageassessordata;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.base.auto.AutoXnatExperimentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.DBPoolException;
@@ -543,10 +543,6 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	}
     	
     	String msg=expt.canDelete(proj,user);
-
-    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
-    		return "User account cannot delete experiments";
-    	}
     	
     	if(msg!=null){
     		logger.error(msg);
@@ -563,6 +559,23 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 					return "User cannot delete experiments for project " + proj.getId();
 				}
 				
+
+				//unshare children before unsharing parent
+				if(expt instanceof XnatImagesessiondata){
+					final  List<XnatImageassessordata> expts = ((XnatImagesessiondata)expt).getAssessors_assessor();
+			        for (XnatImageassessordataI exptI : expts){
+			        	final XnatImageassessordata assess = (XnatImageassessordata)exptI;
+			        	if(assess.getProject().equals(proj.getId())){
+			        		return "This operation would delete an experiment (rather than un-share).  Please move experiment ("+expt.getId()+") to another project or manually delete.";
+			        		
+			        	}
+			            msg= assess.delete(proj,user,false,c);
+			            if(msg!=null){
+			            	return msg;
+			            }
+			        }
+				}
+				
 				int index = 0;
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
@@ -577,7 +590,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				if(match==-1)return null;
 				
 				this.removeSharing_share(match);
-				return null;
+		        return null;
 			} catch (SQLException e) {
 				logger.error("",e);
 				return e.getMessage();
@@ -586,6 +599,10 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				return e.getMessage();
 			}
 		}else{
+
+	    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
+	    		return "User account cannot delete experiments";
+	    	}
 			try {
 			
 				if(!user.canDelete(this)){

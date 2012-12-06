@@ -1362,10 +1362,6 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     		return msg;
     	}
     	
-    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
-    		return "User account cannot delete experiments";
-    	}
-    	
     	if(!sub.getProject().equals(proj.getId())){
 			try {
 				SecurityValues values = new SecurityValues();
@@ -1375,6 +1371,20 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				{
 					return null;
 				}
+
+				//unshare children before unsharing parent
+				final  List<XnatSubjectassessordataI> expts = sub.getExperiments_experiment();
+		        for (XnatSubjectassessordataI exptI : expts){
+		        	final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
+		        	if(expt.getProject().equals(proj.getId())){
+		        		return "This operation would delete an experiment (rather than un-share).  Please modify experiment ("+expt.getId()+").";
+		        		
+		        	}
+		            msg=expt.delete(proj,user,false,c);
+		            if(msg!=null){
+		            	return msg;
+		            }
+		        }
 				
 				int index = 0;
 				int match = -1;
@@ -1391,12 +1401,6 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				
 				this.removeSharing_share(match);
 				
-				final  List<XnatSubjectassessordataI> expts = sub.getExperiments_experiment();
-		        for (XnatSubjectassessordataI exptI : expts){
-		        	final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
-		            expt.delete(proj,user,false,c);
-		        }
-				
 				return null;
 			} catch (SQLException e) {
 				logger.error("",e);
@@ -1406,6 +1410,11 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 				return e.getMessage();
 			}
 		}else{
+	    	
+	    	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
+	    		return "User account cannot delete experiments";
+	    	}
+	    	
 			try {
 			
 				if(!user.canDelete(this)){

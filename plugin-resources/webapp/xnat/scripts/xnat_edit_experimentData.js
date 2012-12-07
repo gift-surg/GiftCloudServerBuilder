@@ -138,11 +138,22 @@ function validateExperimentForm()
    
 	 //label
    if(document.getElementById(elementName+"/label").value!=""){
+	   var subset = new xdat_criteria_set();
+		 subset.setMethod("AND");
+	   
   	 var crit= new xdat_criteria();
 	 crit.setSchemaField("xnat:experimentData/label");
 	 crit.setComparisonType("=");
 	 crit.setValue(document.getElementById(elementName+"/label").value);	
-	 critset.addCriteria(crit);
+	 subset.addCriteria(crit);
+	 
+	 crit= new xdat_criteria();
+	 crit.setSchemaField("xnat:experimentData/project");
+	 crit.setComparisonType("=");
+	 crit.setValue(rootProjectName);	
+	 subset.addCriteria(crit);
+	 
+	 critset.addChildSet(subset);
    }
 	 
 	 if(critset.Criteria.length==0){

@@ -38,7 +38,7 @@ public class DbBackedProjectIdentifier implements DicomProjectIdentifier {
         for (final DicomDerivedString extractor : extractors) {
             final Object alias = extractor.apply(o);
             if (null != alias && ! "".equals(alias)) {
-                final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
+        	final XnatProjectdata p = XnatProjectdata.getProjectByIDorAlias(alias.toString(), user, false);
                 if (null != p && canCreateIn(user, p)) {
                     return p;
                 }

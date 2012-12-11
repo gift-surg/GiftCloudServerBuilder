@@ -5,7 +5,7 @@
   <TD><h3>$projectOM.getName() access invitation.</h3></TD>
  </TR>
  <TR><TD>
-$user.getFirstname() $user.getLastname() has invited you to join the $projectOM.getName() $displayManager.getSingularDisplayNameForProject().  
+$user.getFirstname() $user.getLastname() has invited you to join the $projectOM.getName() project.  
 #if($projectOM.getDescription())
 Project Description: $projectOM.getDescription()
 #end

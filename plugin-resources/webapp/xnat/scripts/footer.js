@@ -22,7 +22,11 @@ YAHOO.util.Event.onDOMReady(function(){
         for(var fFc=0;fFc<myforms[iFc].length;fFc++){
             if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'required')){
                 if(myforms[iFc][fFc].nodeName=="INPUT" || myforms[iFc][fFc].nodeName=="TEXTAREA"){
-                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RequiredTextBox));
+                	if(myforms[iFc][fFc].nodeName=="INPUT" && myforms[iFc][fFc].type=="radio"){
+                		_addValidation(myforms[iFc][fFc],new RadioButtonValidator(myforms[iFc][fFc].name,myforms[iFc][fFc]));
+                	}else{
+                		_addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RequiredTextBox));
+                   	}
                 }else if(myforms[iFc][fFc].nodeName=="SELECT"){
                     _addValidation(myforms[iFc][fFc],new SelectValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RequiredSelect));
                 }
@@ -215,6 +219,7 @@ SelectValidator.prototype = {  validate: function () {
 }
 };
 
+
 function RadioButtonValidator(name,box){
 	this.name=name;
 	
@@ -349,7 +354,7 @@ YAHOO.util.Event.onDOMReady( function()
             		concealContent("Submitting... Please wait.");
             	}
             	
-            	return result;
+                return result;
         	}catch(e){
         		alert("An error occured during form validation.");
         		YAHOO.util.Event.stopEvent(env);

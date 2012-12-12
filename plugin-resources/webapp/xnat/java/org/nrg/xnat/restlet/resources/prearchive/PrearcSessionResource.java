@@ -3,12 +3,21 @@
  */
 package org.nrg.xnat.restlet.resources.prearchive;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.framework.constants.PrearchiveCode;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
@@ -16,13 +25,13 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
-import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -34,10 +43,8 @@ import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.*;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -197,15 +204,23 @@ public final class PrearcSessionResource extends SecureResource {
         }else if (POST_ACTION_COMMIT.equals(action)) {
             try {
                 if (PrearcDatabase.setStatus(session, timestamp, project, PrearcUtils.PrearcStatus.BUILDING)) {
+                    final SessionData sd = PrearcDatabase.getSession(session, timestamp, project);
+                    if (null == sd.getAutoArchive() && !Strings.isNullOrEmpty(project)) {
+                        final XnatProjectdata p = XnatProjectdata.getProjectByIDorAlias(project, user, false);
+                        PrearcDatabase.setAutoArchive(session, timestamp, project, PrearchiveCode.code(p.getArcSpecification().getPrearchiveCode()));
+                    }
                     PrearcDatabase.buildSession(sessionDir, session, timestamp, project, (String) params.get(VISIT), (String) params.get(PROTOCOL));
                     PrearcUtils.resetStatus(user, project, timestamp, session,true);
 
                     final FinishImageUpload uploader=new FinishImageUpload(null, user, new PrearcSession(project,timestamp,session,params,user), null, false, true, false);
-
-                    if(uploader.isAutoArchive()){
-                        returnString(wrapPartialDataURI(uploader.call()),Status.REDIRECTION_PERMANENT);
-                    }else{
-                        returnString(wrapPartialDataURI(uploader.call()), MediaType.TEXT_URI_LIST,Status.SUCCESS_OK);
+                    try {
+                        if(uploader.isAutoArchive()){
+                            returnString(wrapPartialDataURI(uploader.call()),Status.REDIRECTION_PERMANENT);
+                        }else{
+                            returnString(wrapPartialDataURI(uploader.call()), MediaType.TEXT_URI_LIST,Status.SUCCESS_OK);
+                        }
+                    } finally {
+                        uploader.close();
                     }
                 } else {
                     this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "session document locked");

@@ -58,7 +58,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai_imageio-1.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.2-SNAPSHOT.jar"/>

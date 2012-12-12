@@ -22,12 +22,14 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
 import org.nrg.dcm.xnat.DICOMSessionBuilder;
 import org.nrg.dcm.xnat.XnatAttrDef;
 import org.nrg.ecat.xnat.PETSessionBuilder;
 import org.nrg.xft.XFT;
+import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -43,7 +45,7 @@ import com.google.common.collect.Lists;
  * Initially this only supports DICOM and ECAT.  But, it is a step towards allowing other implementations.
  */
 public class XNATSessionBuilder implements Callable<Boolean>{
-	static Logger logger = Logger.getLogger(XNATSessionBuilder.class);
+	private final Logger logger = LoggerFactory.getLogger(XNATSessionBuilder.class);
 	
 	//config params for loading injecting a different executor for pooling the session builders.
 	private static final String exec_fileName = "session-builder.properties";
@@ -96,14 +98,14 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 						}
 						builderClasses.add(new BuilderConfig(key,c,seq));
 					} catch (NumberFormatException e) {
-						logger.error("",e);
+						LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 					} catch (ClassNotFoundException e) {
-						logger.error("",e);
+					    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("",e);
+		    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 		}
 		
 		if(!CollectionUtils.exists(builderClasses, new Predicate(){
@@ -204,7 +206,9 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 			}else if(bc.getCode().equals(ECAT)){
 				//hard coded implementation for ECAT
 				PETSessionBuilder builder=new PETSessionBuilder(dir,fw,params.get(PROJECT_PARAM));
-
+				logger.debug("assigning session params for ECAT session builder from {}", params);
+				builder.setSessionLabel(params.get("label"));
+				builder.setSubject(params.get("subject_ID"));
 				if(!isInPrearchive){
 					builder.setIsInPrearchive(isInPrearchive);
 				}
@@ -254,19 +258,19 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 			try {
 				exec=loader.buildNoArgs(Executors.newFixedThreadPool(PropertiesHelper.GetIntegerProperty(exec_fileName,exec_identifier+".size",2)));
 			} catch (IllegalArgumentException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			} catch (SecurityException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			} catch (ConfigurationException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			} catch (InstantiationException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			} catch (IllegalAccessException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			} catch (InvocationTargetException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			} catch (NoSuchMethodException e) {
-				logger.error("",e);
+			    LoggerFactory.getLogger(XNATSessionBuilder.class).error("",e);
 			}
 		}
 		

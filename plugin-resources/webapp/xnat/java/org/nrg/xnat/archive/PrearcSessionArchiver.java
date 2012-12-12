@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -16,7 +15,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
-import org.nrg.framework.utilities.Reflection;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusPublisherI;
@@ -182,7 +180,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 */
 	private void fixSessionLabel()  throws ClientException,ServerException {
 		String label = (String)params.get(PARAM_SESSION);
-
+		
 		if(StringUtils.isEmpty(label)){
 			label = (String)params.get(URIManager.EXPT_LABEL);
 			}
@@ -191,15 +189,22 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			label = (String)params.get(LABEL2);
 			}
 
+		if (StringUtils.isEmpty(label)) {
+		    label = src.getDcmpatientid();
+		}
+		
+		if (StringUtils.isEmpty(label)) {
+		    label = src.getId();
+		}
+
+        if (StringUtils.isEmpty(label)) {
+            label = prearcSession.getFolderName();
+        }
+
 		if (StringUtils.isNotEmpty(label)) {
 			src.setLabel(XnatImagesessiondata.cleanValue(label));
 		}
 
-		if (!XNATUtils.hasValue(src.getLabel())) {
-			if (XNATUtils.hasValue(src.getDcmpatientid())) {
-				src.setLabel(XnatImagesessiondata.cleanValue(src.getDcmpatientid()));
-			}
-		}
 		if (!XNATUtils.hasValue(src.getLabel())) {
 			failed("unable to deduce session label");
 			throw new ClientException("unable to deduce session label");
@@ -553,8 +558,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 				logger.error("", e1);
 			}
 
-			postArchive(user,src,params);
-			
 			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
 				TriggerPipelines tp=new TriggerPipelines(src,false,user,waitFor);
 				tp.call();
@@ -591,26 +594,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 		completed("archiving operation complete");
 		return url;
 
-	}
-	
-	public interface PostArchiveAction {
-		public Boolean execute(XDATUser user, XnatImagesessiondata src, Map<String,Object> params);
-	}
-	
-	private void postArchive(XDATUser user, XnatImagesessiondata src, Map<String,Object> params){
-		List<Class<?>> classes;
-	     try {
-	    	 classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.postArchive");
-
-	    	 if(classes!=null && classes.size()>0){
-				 for(Class<?> clazz: classes){
-					 PostArchiveAction action=(PostArchiveAction)clazz.newInstance();
-					 action.execute(user,src,params);
-				 }
-			 }
-	     } catch (Exception exception) {
-	         throw new RuntimeException(exception);
-	     }
 	}
 
 	public void setStep(String step,PersistentWorkflowI workflow,EventMetaI c){

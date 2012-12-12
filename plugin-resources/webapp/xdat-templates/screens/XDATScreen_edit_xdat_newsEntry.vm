@@ -37,7 +37,7 @@ $page.setVlinkColor($ui.vlink)
 							<TR><TD>date</TD><TD>#xdatTextBox("xdat:newsEntry/date" $item "" $vr)</TD></TR>
 							<TR><TD>title</TD><TD>#xdatStringBox("xdat:newsEntry/title" $item "" $vr)</TD></TR>
 							<TR><TD>description</TD>
-							<TD><textarea name="xdat:newsEntry/description" cols=50 rows=4>$item.getProperty("xdat:newsEntry/description")</textarea></TD></TR>
+							<TD><textarea name="xdat:newsEntry/description" cols=50 rows=4>$!item.getProperty("xdat:newsEntry/description")</textarea></TD></TR>
 							<TR><TD>link</TD><TD>#xdatStringBoxWSize("xdat:newsEntry/link" $item "" $vr 30)</TD></TR>
 													#xdatHiddenBox("xdat:newsEntry/xdat_newsEntry_id" $item "")
 						</TABLE>

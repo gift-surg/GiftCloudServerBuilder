@@ -13,7 +13,7 @@ function fullConfigHandler() {
         return;
     }
 
-    var missing = new Array();
+    var missing = [];
 
     if(window.registrationManager==undefined) {
         missing.push('Registration');
@@ -47,7 +47,13 @@ function fullConfigHandler() {
         this.fullConfigCallback = {
             success : function() {
                 showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
-                window.location.replace(serverRoot);
+                var destination;
+                if (serverRoot) {
+                    destination = serverRoot;
+                } else {
+                    destination = "/";
+                }
+                window.location.replace(destination);
             },
             failure : function(o) {
                 showMessage('page_body', 'Error', 'Your settings were not successfully saved: ' + o);
@@ -110,8 +116,6 @@ function SettingsTabManager(settingsTabDivId, settings) {
 	this.settings_tab_table_div.id = "settings_tab_table";
 	this.settings_tab_mgmt_div.appendChild(this.settings_tab_table_div);
 	this.settings_svc_url = serverRoot + '/data/services/settings/';
-
-	
 
     this.dirtyFlag = false;
 
@@ -185,8 +189,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
 			for (var index = 0; index < this.settings.length; index++) {
 				var setting = this.settings[index];
                 var control = document.getElementById(setting);
-                var value = eval('resultSet.ResultSet.Result.' + setting);
-                control.defaultValue = value;
+                control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
                 this.controls.push(control);
                 if (!this.firstControl) {
                     this.firstControl = control;
@@ -336,11 +339,14 @@ function buildSettingsUpdateRequestBody(controls) {
 		else {
 			control = controls[index];
 		}
-		if (data) {
-			data += '&';
-		}
-		var value = (control.type == 'checkbox' ? control.checked : control.value);
-		data += control.id + '=' + encodeURIComponent(value);
+        // Filter out null control: happens when some text controls have no content.
+        if (control != null) {
+            if (data) {
+                data += '&';
+            }
+            var value = (control.type == 'checkbox' ? control.checked : control.value);
+            data += control.id + '=' + encodeURIComponent(value);
+        }
 	}
 
 	return data;

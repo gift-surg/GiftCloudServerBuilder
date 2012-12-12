@@ -235,7 +235,7 @@ public class FileList extends XNATCatalogTemplate {
                         final String parentPath=catFile.getParent();
                         final CatCatalogBean cat = catResource.getCleanCatalog(proj.getRootArchivePath(), false,null,null);
 
-                        CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                        CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryByURI(cat, filepath);
                         if(e != null){
                         	entries.add(e);
                     	}

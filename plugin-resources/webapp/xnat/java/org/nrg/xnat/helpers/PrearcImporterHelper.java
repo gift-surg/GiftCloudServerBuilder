@@ -6,7 +6,6 @@ package org.nrg.xnat.helpers;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -168,7 +167,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		final List<PrearcSession> sessions= new ArrayList<PrearcSession>();
 		
 		for(final File f:files){
-			try {
+		    try {
 				sessions.add(new PrearcSession(f));
 			} catch (Exception e) {
 				throw new ServerException(e.getMessage(),e);

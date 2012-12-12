@@ -54,6 +54,7 @@ public class ImageUploadHelper extends StatusProducer implements Callable<List<F
 	public List<File> call() throws ClientException,ServerException
 	{
 		final PrearcImporter pw = PrearcImporterFactory.getFactory().getPrearcImporter(project, dest, src);
+		pw.setAdditionalValues(additionalValues);
 		for(final StatusListenerI listener: this.getListeners()){
 			pw.addStatusListener(listener);
 		}

@@ -180,7 +180,7 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 */
 	private void fixSessionLabel()  throws ClientException,ServerException {
 		String label = (String)params.get(PARAM_SESSION);
-
+		
 		if(StringUtils.isEmpty(label)){
 			label = (String)params.get(URIManager.EXPT_LABEL);
 			}
@@ -189,15 +189,22 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			label = (String)params.get(LABEL2);
 			}
 
+		if (StringUtils.isEmpty(label)) {
+		    label = src.getDcmpatientid();
+		}
+		
+		if (StringUtils.isEmpty(label)) {
+		    label = src.getId();
+		}
+
+        if (StringUtils.isEmpty(label)) {
+            label = prearcSession.getFolderName();
+        }
+
 		if (StringUtils.isNotEmpty(label)) {
 			src.setLabel(XnatImagesessiondata.cleanValue(label));
 		}
 
-		if (!XNATUtils.hasValue(src.getLabel())) {
-			if (XNATUtils.hasValue(src.getDcmpatientid())) {
-				src.setLabel(XnatImagesessiondata.cleanValue(src.getDcmpatientid()));
-			}
-		}
 		if (!XNATUtils.hasValue(src.getLabel())) {
 			failed("unable to deduce session label");
 			throw new ClientException("unable to deduce session label");

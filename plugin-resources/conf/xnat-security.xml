@@ -36,10 +36,18 @@
 
     <bean id="loginUrlAuthenticationEntryPoint" class="org.nrg.xnat.security.XnatAuthenticationEntryPoint">
         <property name="loginFormUrl" value="/app/template/Login.vm"/>
-        <property name="noninteractivePaths">
+        <property name="dataPaths">
             <list value-type="java.lang.String">
-                <value>/data</value>
-                <value>/REST</value>
+                <value>/data/**</value>
+                <value>/REST/**</value>
+            </list>
+        </property>
+        <property name="interactiveAgents">
+            <list value-type="java.lang.String">
+                <value>.*MSIE.*</value>
+                <value>.*Mozilla.*</value>
+                <value>.*AppleWebKit.*</value>
+                <value>.*Opera.*</value>
             </list>
         </property>
     </bean>

@@ -47,21 +47,21 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-3.1.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.2-SNAPSHOT.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-4.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-3.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-2.2.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-4.0.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai_imageio-1.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar"/>

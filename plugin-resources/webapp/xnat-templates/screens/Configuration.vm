@@ -48,7 +48,7 @@ IMG{
                         #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-mock-rest-config", "false")))
                             <li><a href="#mockRestConfig"><em>Mock REST Calls<span class="spacer"></span></em></a></li>
                         #end
-                        #if(!$initialize != true)
+                        #if(!$initialize)
                             #foreach($tab in $tabs)
                                 <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
                             #end

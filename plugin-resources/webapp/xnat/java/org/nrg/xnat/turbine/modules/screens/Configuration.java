@@ -15,9 +15,11 @@ public class Configuration extends AdminScreen {
         if (arcSpec == null) {
             arcSpec = ArcSpecManager.initialize(TurbineUtils.getUser(data));
             context.put("initialize", true);
+        } else {
+            context.put("initialize", false);
         }
         context.put("arc", arcSpec);
-        setDefaultTabs("siteInfo", "fileSystem", "registration", "notifications", "anonymization", "dicomReceiver");
+        setDefaultTabs("siteInfo", "fileSystem", "registration", "notifications", "anonymization", "applet", "dicomReceiver");
         cacheTabs(context, "configuration");
     }
 }

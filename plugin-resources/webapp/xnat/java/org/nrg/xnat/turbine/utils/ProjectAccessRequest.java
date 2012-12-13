@@ -538,11 +538,6 @@ public class ProjectAccessRequest {
 
 			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
 			
-			if(!user.canDelete(project)){
-				throw new InvalidPermissionException("User cannot modify project settings");
-			}
-			
-			
 			PersistentWorkflowI wrk=WorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,projectID,projectID,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, t, EventUtils.ADD_USER_TO_PROJECT, reason, comment));
 			EventMetaI c=wrk.buildEvent();
 

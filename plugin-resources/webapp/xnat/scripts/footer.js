@@ -18,6 +18,9 @@ var forms=0;
 YAHOO.util.Event.onDOMReady(function(){
     var myforms = document.getElementsByTagName("form");
     for(var iFc=0;iFc<myforms.length;iFc++){
+    	if(skipValidationOnForm(myforms[iFc])) {
+    		continue;
+    	}
         for(var fFc=0;fFc<myforms[iFc].length;fFc++){
             if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'required')){
                 if(myforms[iFc][fFc].nodeName=="INPUT" || myforms[iFc][fFc].nodeName=="TEXTAREA"){
@@ -30,6 +33,10 @@ YAHOO.util.Event.onDOMReady(function(){
     }
 
 });
+
+function skipValidationOnForm(form) {
+	return YAHOO.util.Dom.hasClass(form,'optOutOfXnatDefaultFormValidation');	
+}
 
 //this delays the call to add validatoin until after the dom is loaded
 function addValidator(_element,_validator){
@@ -175,6 +182,9 @@ YAHOO.util.Event.onDOMReady( function()
     var myforms = document.getElementsByTagName("form");
     for (var i=0; i<myforms.length; i++) {
         var myForm = myforms[i];
+    	if(skipValidationOnForm(myForm)) {
+    		continue;
+    	}        
         if(!myForm.ID) {
             myForm.ID = "form" + forms++;
         }

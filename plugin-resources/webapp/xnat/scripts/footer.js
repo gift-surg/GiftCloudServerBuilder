@@ -193,7 +193,7 @@ YAHOO.util.Event.onDOMReady( function()
         if(!YUIDOM.hasClass(myForm,'noHide')){
             YAHOO.util.Event.on(myForm,"submit",function(env,var2){
             	if(!YUIDOM.hasClass(this,'noHide')){//check again in case class was added after build
-            		concealContent("Submitting... Please wait.");
+            		concealContent();
             	}
             });
         }

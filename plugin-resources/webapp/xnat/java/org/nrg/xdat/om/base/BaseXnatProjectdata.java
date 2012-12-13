@@ -874,49 +874,49 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     }
 
     public String addGroupMember(String group_id, XDATUser newUser,XDATUser currentUser, EventMetaI ci, boolean checkExisting) throws Exception{
-    	final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
-    	if(!currentUser.canDelete(this)){
-    		throw new InvalidPermissionException("User cannot modify project " + this.getId());
-    	}
-    	boolean isOwner=false;
-    	if(checkExisting){
-			for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
-				if (entry.getValue().getTag()!=null && entry.getValue().getTag().equals(this.getId())) {
-					if(entry.getValue().getId().equals(group_id)){
-						return group_id;
-					}
-					
-					//find mapping object to delete
-					for (XdatUserGroupid map : newUser.getGroups_groupid()) {
-						if (map.getGroupid().equals(entry.getValue().getId())) {
-							if(!map.getGroupid().endsWith("_owner")){
-								SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
-							}else{
-								throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
+	    	final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
+	    	if(!currentUser.canDelete(this) && !currentUser.getLogin().equals(newUser.getLogin())){//equal user skips security here.
+	    		throw new InvalidPermissionException("User cannot modify project " + this.getId());
+	    	}
+	    	boolean isOwner=false;
+	    	if(checkExisting){
+				for (Map.Entry<String, UserGroup> entry : newUser.getGroups().entrySet()) {
+					if (entry.getValue().getTag()!=null && entry.getValue().getTag().equals(this.getId())) {
+						if(entry.getValue().getId().equals(group_id)){
+							return group_id;
+						}
+
+						//find mapping object to delete
+						for (XdatUserGroupid map : newUser.getGroups_groupid()) {
+							if (map.getGroupid().equals(entry.getValue().getId())) {
+								if(!map.getGroupid().endsWith("_owner")){
+									SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
+								}else{
+									throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
+								}
 							}
 						}
 					}
 				}
-			}
-    	}
-		
-    	if(!isOwner){
-			XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
-	    	if(t.size()==0){
-	            final XdatUserGroupid map = new XdatUserGroupid((UserI)currentUser);
-	            map.setProperty(map.getXSIType() +".groups_groupid_xdat_user_xdat_user_id", newUser.getXdatUserId());
-	            map.setGroupid(group_id);
-	            SaveItemHelper.authorizedSave(map,currentUser, false, false,ci);
 	    	}
-    	}
-        return group_id;
+
+	    	if(!isOwner){
+				XFTTable t=XFTTable.Execute(confirmquery,newUser.getDBName(), newUser.getUsername());
+		    	if(t.size()==0){
+		            final XdatUserGroupid map = new XdatUserGroupid((UserI)currentUser);
+		            map.setProperty(map.getXSIType() +".groups_groupid_xdat_user_xdat_user_id", newUser.getXdatUserId());
+		            map.setGroupid(group_id);
+		            SaveItemHelper.authorizedSave(map,currentUser, false, false,ci);
+		    	}
+	    	}
+	        return group_id;
     }
 
     public void removeGroupMember(String group_id, XDATUser newUser,XDATUser currentUser,EventDetails ci) throws Exception{
     	if(!currentUser.canDelete(this)){
     		throw new InvalidPermissionException("User cannot modify project " + this.getId());
     	}
-    	
+
     	final String confirmquery = "SELECT * FROM xdat_user_groupid WHERE groupid='" + group_id + "' AND groups_groupid_xdat_user_xdat_user_id=" + newUser.getXdatUserId() + ";";
     	XFTTable t=XFTTable.Execute(confirmquery,currentUser.getDBName(), currentUser.getUsername());
     	if(t.size()>0){
@@ -934,12 +934,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			}
     	}
     }
-    
+
     public boolean initGroup(final String id, final String displayName, Boolean create,Boolean read,Boolean delete,Boolean edit,Boolean activate,boolean activateChanges,List<ElementSecurity> ess) throws Exception{
     	PersistentWorkflowI wrk=null;
     	final ArrayList<XdatUsergroup> groups = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", id, this.getUser(), true);
     	boolean modified=false;
-    	
+
         //init owners
         XdatUsergroup group = null;
         if (groups.size()==0){
@@ -972,7 +972,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         	}else{
         		group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.FALSE,read,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent());
         	}
-        	
+
             Iterator iter = ess.iterator();
             while (iter.hasNext())
             {
@@ -982,7 +982,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 if(group.setPermissions(es.getElementName(),es.getElementName() + "/project", getId(), create,read,delete,edit,activate,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent())){
                 	modified=true;
                 }
-                     
+
                 if(group.setPermissions(es.getElementName(),es.getElementName() + "/sharing/share/project", getId(), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,wrk.buildEvent())){
                 	modified=true;
                 }
@@ -1001,22 +1001,22 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         try {
 			if(modified){
 				PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
-				
+
 				EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
-				
+
 			}
 		} catch (Exception e1) {
             if(wrk!=null) WorkflowUtils.fail(wrk, wrk.buildEvent());
             logger.error("",e1);
 		}
-		
+
 		return modified;
     }
 
     public boolean initGroups() throws Exception{
     	boolean modified=false;
     	final long startTime = Calendar.getInstance().getTimeInMillis();
-    	
+
     	final ArrayList<ElementSecurity> ess = new ArrayList<ElementSecurity>();
         try {
         	ess.addAll(ElementSecurity.GetElementSecurities().values());
@@ -1024,7 +1024,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             logger.error("",e2);
         }
         if (XFT.VERBOSE)System.out.println("Group init() BEGIN: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
-        
+
         for (final ElementSecurity es:(ArrayList<ElementSecurity>)ess.clone())
         {
             try {
@@ -1040,13 +1040,13 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			}
         }
 
-        
+
        initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
 
        initGroup(getId() + "_" + MEMBER_GROUP,"Members", Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
-       
+
        initGroup(getId() + "_" + COLLABORATOR_GROUP,"Collaborators",Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, ess);
         return modified;
     }
@@ -1056,16 +1056,16 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
     	SaveItemHelper.authorizedSave(project, user,overrideSecurity,false,ci);
 		XFTItem item =project.getItem().getCurrentDBVersion(false);
-		
+
 		XnatProjectdata postSave = new XnatProjectdata(item);
 	    postSave.getItem().setUser(user);
-	
+
 	    postSave.initGroups();
-	        
+
 	    user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
-	
+
 	    postSave.initArcProject(null, user,ci);
-	
+
 	    user.clearLocalCache();
 		MaterializedView.DeleteByUser(user);
 	    ElementSecurity.refresh();
@@ -1645,7 +1645,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	if(!user.canDelete(this)){
     		throw new InvalidPermissionException("User cannot modify project " + this.getId());
     	}
-    	
+
     	if(arcP==null){
     		 XFTItem item = XFTItem.NewItem("arc:project", user);
     	     arcP = new ArcProject(item);
@@ -1869,7 +1869,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     public void delete(boolean removeFiles, XDATUser user, EventMetaI ci)throws SQLException,Exception{
     	boolean preventProjectDelete=false;
         boolean preventProjectDeleteByP=false;
-        
+
         if(!user.canDelete(this)){
         	throw new InvalidPermissionException("User cannot delete project:" + getId());
         }
@@ -1877,7 +1877,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	if(XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
         	throw new InvalidPermissionException("User cannot delete project:" + getId());
     	}
-        
+
     	for (XnatSubjectdata subject : getParticipants_participant()){
             if (subject!=null){
             	boolean preventSubjectDelete=false;
@@ -1892,7 +1892,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                     final XnatSubjectassessordata expt = (XnatSubjectassessordata)exptI;
 
                     if(expt.getProject().equals(getId())){
-                        if(user.canDelete(expt)){                        	
+                        if(user.canDelete(expt)){
                             if (removeFiles){
                             	final List<XFTItem> hash = expt.getItem().getChildrenOfType("xnat:abstractResource");
 
@@ -1959,7 +1959,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 		if (!preventProjectDelete && !preventProjectDeleteByP){
 			final File arc=new File(this.getRootArchivePath());
-			
+
 			PrearcUtils.deleteProject(this.getId());
 			SaveItemHelper.authorizedDelete(getItem().getCurrentDBVersion(), user,ci);
 
@@ -2019,7 +2019,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	        } catch (Throwable e) {
 	            logger.error("",e);
 	        }
-	        
+
 	        try {
 				if(arc.exists() && removeFiles)FileUtils.MoveToCache(arc);
 			} catch (Exception e) {
@@ -2042,7 +2042,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		if(StringUtils.IsEmpty(this.getId())){
 			throw new IllegalArgumentException();
 		}
-		
+
 		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
@@ -2061,14 +2061,14 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
-		
+
 
         XdatUsergroup group = new XdatUsergroup((UserI)this.getUser());
         group.setId(getId() + "_" + OWNER_GROUP);
         group.setDisplayname("Owners");
         group.setTag(getId());
 
-        
+
         XFTItem existing=this.getCurrentDBVersion();
         if(existing==null){
         	Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+this.getId()+"';", "COUNT", null, null);
@@ -2076,11 +2076,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         		throw new Exception("Project '"+this.getId() + "' was used in a previously deleted project and cannot be reused.");
         	}
         }
-        
+
         UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
         if(ownerG==null){
         	PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, (XDATUser)this.getUser(), this.getXSIType(),this.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));
-            
+
         	EventMetaI ci = wrk.buildEvent();
         	try {
         		XDATUser u=(XDATUser)this.getUser();
@@ -2091,19 +2091,19 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				wrk.setDataType(group.getXSIType());
 				wrk.setId(group.getXdatUsergroupId().toString());
 				wrk.setExternalid(this.getId());
-				
+
 				if(!((XDATUser)this.getUser()).getGroups().containsKey(group.getId())){
 				    UserGroup ug= new UserGroup(group.getId());
 				    ug.init(group);
 				    ((XDATUser)this.getUser()).getGroups().put(group.getId(),ug);
-				    
+
 				    this.addGroupMember(this.getId() + "_" + OWNER_GROUP, u, u,ci,false);
-				    
+
 				    //add a workflow entry for the user audit trail
 				    PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, u, u.getXSIType(),u.getXdatUserId().toString(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));
 				    PersistentWorkflowUtils.complete(wrk2, wrk2.buildEvent());
 				}
-				
+
 				PersistentWorkflowUtils.complete(wrk, ci);
 			} catch (Exception e) {
 				PersistentWorkflowUtils.fail(wrk, ci);
@@ -2121,7 +2121,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure {
 		return new File(getRootArchivePath(),"resources");
 	}
-	
+
 	public boolean isAutoArchive(){
 		Integer i= ArcSpecManager.GetInstance().getAutoQuarantineCodeForProject(this.getId());
 		if(i==null || i<4){
@@ -2130,7 +2130,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			return true;
 }
 	}
-	
+
 	public static XnatProjectdata getProjectByIDorAlias(String pID,XDATUser user,boolean preLoad){
 		XnatProjectdata proj=null;
 		if(pID!=null){
@@ -2146,7 +2146,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				proj = matches.get(0);
 			}
 		}
-		
+
 		return proj;
 	}
 
@@ -2168,10 +2168,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e1);
 			}
 			EventMetaI c=wrk.buildEvent();
-			
+
 			try {
 				String id=createProject(project, user, allowDataDeletion,allowMatchingID, c, accessibility);
-				
+
 				user.clearLocalCache();
 				ElementSecurity.refresh();
 				try {
@@ -2192,14 +2192,14 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	public static String createProject(XnatProjectdata project, XDATUser user, boolean allowDataDeletion, boolean allowMatchingID,EventMetaI event,String accessibility) throws ActionException{
 		try {
 			project.initNewProject(user,allowDataDeletion,allowMatchingID,event);
-	
+
 			final ValidationResults vr = project.validate();
-	
+
 			if (vr != null && !vr.isValid())
 			{
 				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, vr.toFullString(),null);
 			}
-	
+
 			project.save(user,true,false,event);
 		} catch (ClientException e) {
 			throw e;
@@ -2209,29 +2209,29 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		}
 		try {
 			XFTItem item =project.getItem().getCurrentDBVersion(false);
-	
+
 			XnatProjectdata postSave = new XnatProjectdata(item);
 			postSave.getItem().setUser(user);
-	
+
 			postSave.initGroups();
-	
+
 			if (accessibility==null){
 				accessibility="protected";
 			}
-	
+
 			if (!accessibility.equals("private"))
 				project.initAccessibility(accessibility, true,user,event);
-	
+
 			user.refreshGroup(postSave.getId() + "_" + OWNER_GROUP);
-	
+
 			postSave.initArcProject(null, user,event);
-	
-			
-			
+
+
+
 			return postSave.getId();
 		} catch (Exception e) {
 			throw new ServerException(e);
 		}
 	}
-	
+
 }

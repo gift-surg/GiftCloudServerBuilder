@@ -65,6 +65,18 @@ public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoi
             _log.debug("Evaluating data path request: " + strippedUri + ", user agent: " + userAgent);
             }
 
+        if(strippedUri!=null && strippedUri.indexOf("/action/AcceptProjectAccess/par/")>-1){
+        	int index=strippedUri.indexOf("/par/")+5;
+        	if(strippedUri.length()>index){//par number included?
+        		String parS=strippedUri.substring(index);
+        		if(parS.indexOf("/")>-1){
+        			parS=parS.substring(0,parS.indexOf("/"));
+        		}
+        		
+        		request.getSession().setAttribute("par", parS);
+        	}
+        }
+        
         if (isDataPath(strippedUri) && !isInteractiveAgent(userAgent)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;

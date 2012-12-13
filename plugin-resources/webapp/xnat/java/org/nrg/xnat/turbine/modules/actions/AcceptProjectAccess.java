@@ -14,7 +14,7 @@ public class AcceptProjectAccess extends SecureAction {
     static org.apache.log4j.Logger logger = Logger.getLogger(AcceptProjectAccess.class);
 
     XnatProjectdata project=null;
-    
+
 	@Override
 	public void doPerform(RunData data, Context context) throws Exception {
 		final Integer parID = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("par",data));
@@ -39,8 +39,8 @@ public class AcceptProjectAccess extends SecureAction {
 			data.setScreenTemplate("Index.vm");
 		}else{
 			par.process(user,true, getEventType(data), getReason(data), getComment(data));
-	        
-			this.redirectToReportScreen(project, data);
+
+			this.redirectToReportScreen(XnatProjectdata.getProjectByIDorAlias(par.getProjectID(), user, false), data);
 		}
 	}
 

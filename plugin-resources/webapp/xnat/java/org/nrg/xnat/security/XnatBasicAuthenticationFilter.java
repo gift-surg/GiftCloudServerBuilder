@@ -9,6 +9,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -109,7 +110,7 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
                     } else {
                         //getAuthenticationEntryPoint().commence(request, response, failed);
                     	//throw failed;
-                    	response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Login attempt failed. Please try again.");
+                    	response.sendError(HttpServletResponse.SC_UNAUTHORIZED, AdminUtils.GetLoginFailureMessage());
                     }
 
                     return;

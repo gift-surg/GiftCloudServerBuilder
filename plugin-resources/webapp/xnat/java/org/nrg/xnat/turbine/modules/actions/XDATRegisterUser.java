@@ -26,7 +26,15 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 
         data.setScreenTemplate("Index.vm");
         
-         if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("par",data))!=null){
+        String parID = (String)TurbineUtils.GetPassedParameter("par",data);
+		
+		if(StringUtils.isEmpty(parID) && data.getSession().getAttribute("par")!=null){
+			parID=(String)data.getSession().getAttribute("par");
+			data.getParameters().add("par", parID);
+			data.getSession().removeAttribute("par");
+		}
+        
+         if (parID!=null){
          	AcceptProjectAccess action = new AcceptProjectAccess();
          	context.put("user", user);
          	action.doPerform(data, context);
@@ -64,6 +72,10 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
         
         String parID = (String)TurbineUtils.GetPassedParameter("par",data);
 		
+		if(StringUtils.isEmpty(parID) && data.getSession().getAttribute("par")!=null){
+			parID=(String)data.getSession().getAttribute("par");
+		}
+		
 		if(!StringUtils.isEmpty(parID)){ 
 			ProjectAccessRequest par =ProjectAccessRequest.RequestPARById(Integer.valueOf(parID), null);
 			if(par!=null){
@@ -83,6 +95,10 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 		}
 		
 		String parID = (String)TurbineUtils.GetPassedParameter("par",data);
+		
+		if(StringUtils.isEmpty(parID) && data.getSession().getAttribute("par")!=null){
+			parID=(String)data.getSession().getAttribute("par");
+		}
 		
 		if(!StringUtils.isEmpty(parID)){ 
 			ProjectAccessRequest par =ProjectAccessRequest.RequestPARById(Integer.valueOf(parID), null);

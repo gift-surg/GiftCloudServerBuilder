@@ -19,6 +19,9 @@ var forms=0;
 YAHOO.util.Event.onDOMReady(function(){
     var myforms = document.getElementsByTagName("form");
     for(var iFc=0;iFc<myforms.length;iFc++){
+    	if(skipValidationOnForm(myforms[iFc])) {
+    		continue;
+    	}
         for(var fFc=0;fFc<myforms[iFc].length;fFc++){
             if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'required')){
                 if(myforms[iFc][fFc].nodeName=="INPUT" || myforms[iFc][fFc].nodeName=="TEXTAREA"){
@@ -48,7 +51,11 @@ YAHOO.util.Event.onDOMReady(function(){
 
 });
 
-//this method is used to add a form field validator.  The validator object should contain 'box' which is the form field input object and 'validate()' which returns true or false.
+function skipValidationOnForm(form) {
+	return YAHOO.util.Dom.hasClass(form,'optOutOfXnatDefaultFormValidation');	
+}
+
+//this delays the call to add validatoin until after the dom is loaded
 function addValidator(_element,_validator){
     YAHOO.util.Event.onDOMReady(function(){
         _addValidation(_element,_validator);
@@ -249,6 +256,9 @@ YAHOO.util.Event.onDOMReady( function()
     var myforms = document.getElementsByTagName("form");
     for (var i=0; i<myforms.length; i++) {
         var myForm = myforms[i];
+    	if(skipValidationOnForm(myForm)) {
+    		continue;
+    	}        
         if(!myForm.ID) {
             myForm.ID = "form" + forms++;
         }
@@ -351,7 +361,7 @@ YAHOO.util.Event.onDOMReady( function()
 
                 //hide the forms
             	if(!YUIDOM.hasClass(this,'noHide')){//check if we are forbidden from hiding this form
-            		concealContent("Submitting... Please wait.");
+            		concealContent();
             	}
             	
                 return result;

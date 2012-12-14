@@ -266,6 +266,9 @@ function DaysArray(n) {
 }
 
 function concealContent(message){
+	if(!message) {
+		message = "Submitting... Please wait.";
+	}
     var layout2 = document.getElementById("layout_content2");
     if (layout2) {
         layout2.className="warning";

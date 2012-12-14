@@ -62,6 +62,7 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
         }
         final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
         xdatUserDetails.validateUserLogin();
+        super.additionalAuthenticationChecks(userDetails, authentication);
     }
 
     private String displayName = "";

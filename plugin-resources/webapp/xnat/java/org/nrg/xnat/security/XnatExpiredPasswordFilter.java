@@ -1,6 +1,8 @@
 package org.nrg.xnat.security;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -12,6 +14,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XDATUserDetails;
@@ -38,20 +41,25 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
         XDATUser user = (XDATUser)request.getSession().getAttribute("user");
         Object passwordExpired = request.getSession().getAttribute("expired");
         ArcArchivespecification _arcSpec = ArcSpecManager.GetInstance();
+        final String referer = request.getHeader("Referer");
         if(request.getSession()!=null && request.getSession().getAttribute("forcePasswordChange")!=null && (Boolean)request.getSession().getAttribute("forcePasswordChange")){
-        	 String referer = request.getHeader("Referer");
-             String uri = request.getRequestURI();
-
-        	if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)){
-                //If you're already on the change password page, continue on without redirect.
-                chain.doFilter(req, res);
-            }
-            else if(referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination))){
-                //If you're on a request within the change password page, continue on without redirect.
-                chain.doFilter(req, res);
-            }
-            else{
-            	response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+            try {
+                String refererPath = null;
+                String uri = new URI(request.getRequestURI()).getPath();
+                if (!StringUtils.isBlank(referer)) {
+                    refererPath = new URI(referer).getPath();
+                }
+                if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)) {
+                    //If you're already on the change password page, continue on without redirect.
+                    chain.doFilter(req, res);
+                } else if(!StringUtils.isBlank(refererPath) && (changePasswordPath.equals(refererPath) || changePasswordDestination.equals(refererPath))) {
+                    //If you're on a request within the change password page, continue on without redirect.
+                    chain.doFilter(req, res);
+                } else {
+                    response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+                }
+            } catch (URISyntaxException ignored) {
+                //
             }
         }
         else if(passwordExpired!=null && !(Boolean)passwordExpired){
@@ -126,7 +134,6 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
             }
         }
         else{
-            String referer = request.getHeader("Referer");
             String uri = request.getRequestURI();
 
             if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)){

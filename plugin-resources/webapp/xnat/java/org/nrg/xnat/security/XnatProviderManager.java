@@ -144,9 +144,9 @@ public class XnatProviderManager extends ProviderManager {
                     copyDetails(authentication, result);
                     break;
                 }
-            } catch (AccountStatusException e) {
-                // SEC-546: Avoid polling additional providers if auth failure is due to invalid account status
-                throw e;
+            } catch (AccountStatusException exception) {
+                _log.warn("Error occurred authenticating login request", exception);
+                lastException = exception;
             } catch(NewLdapAccountNotAutoEnabledException e) {
                 try {
                     AdminUtils.sendNewUserRequestNotification(

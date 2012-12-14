@@ -3,11 +3,12 @@ package org.nrg.xnat.security.alias;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
+import org.nrg.xdat.entities.XDATUserDetails;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -101,11 +102,17 @@ public class AliasTokenAuthenticationProvider extends AbstractUserDetailsAuthent
     }
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(final UserDetails userDetails, final UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         if (authentication.getCredentials() == null) {
             logger.debug("Authentication failed: no credentials provided");
             throw new BadCredentialsException("The submitted alias token was empty.");
         }
+
+        if (!XDATUserDetails.class.isAssignableFrom(userDetails.getClass())) {
+            throw new AuthenticationServiceException("User details class is not of a type I know how to handle: " + userDetails.getClass());
+        }
+        final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
+        xdatUserDetails.validateUserLogin();
 
         String alias = ((AliasTokenAuthenticationToken) authentication).getAlias();
         long secret = ((AliasTokenAuthenticationToken) authentication).getSecret();

@@ -24,7 +24,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 	private AuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
-    private boolean ignoreFailure = false;
     private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
     
 	private boolean authenticationIsRequired(String username) {
@@ -44,17 +43,14 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
         }
 
         // Handle unusual condition where an AnonymousAuthenticationToken is already present
-        // This shouldn't happen very often, as BasicProcessingFitler is meant to be earlier in the filter
+        // This shouldn't happen very often, as BasicProcessingFilter is meant to be earlier in the filter
         // chain than AnonymousAuthenticationFilter. Nevertheless, presence of both an AnonymousAuthenticationToken
         // together with a BASIC authentication request header should indicate reauthentication using the
         // BASIC protocol is desirable. This behaviour is also consistent with that provided by form and digest,
         // both of which force re-authentication if the respective header is detected (and in doing so replace
         // any existing AnonymousAuthenticationToken). See SEC-610.
-        if (existingAuth instanceof AnonymousAuthenticationToken) {
-            return true;
-        }
+        return existingAuth instanceof AnonymousAuthenticationToken;
 
-        return false;
     }
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
     throws IOException, ServletException {
@@ -103,15 +99,8 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
                     SecurityContextHolder.getContext().setAuthentication(null);
                     onUnsuccessfulAuthentication(request, response, failed);
                     
-                	XnatAuthenticationFilter.logFailedAttempt(username, request);//originally I put this in the onUnsuceessfulAuthentication method, but that would force me to re-parse the username
-
-                    if (ignoreFailure) {
-                        chain.doFilter(request, response);
-                    } else {
-                        //getAuthenticationEntryPoint().commence(request, response, failed);
-                    	//throw failed;
-                    	response.sendError(HttpServletResponse.SC_UNAUTHORIZED, AdminUtils.GetLoginFailureMessage());
-                    }
+                	XnatAuthenticationFilter.logFailedAttempt(username, request);//originally I put this in the onUnsuccessfulAuthentication method, but that would force me to re-parse the username
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, AdminUtils.GetLoginFailureMessage());
 
                     return;
                 }

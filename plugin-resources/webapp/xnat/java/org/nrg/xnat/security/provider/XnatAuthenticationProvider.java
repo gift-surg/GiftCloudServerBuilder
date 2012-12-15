@@ -10,6 +10,9 @@
 package org.nrg.xnat.security.provider;
 
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface XnatAuthenticationProvider extends AuthenticationProvider {
     /**

@@ -1,8 +1,13 @@
 package org.nrg.xnat.security.provider;
 
+import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider implements XnatAuthenticationProvider {
 
@@ -48,6 +53,16 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
     @Override
     public String getAuthMethod() {
         return XdatUserAuthService.LOCALDB;
+    }
+
+    @Override
+    protected void additionalAuthenticationChecks(final UserDetails userDetails, final UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        if (!XDATUserDetails.class.isAssignableFrom(userDetails.getClass())) {
+            throw new AuthenticationServiceException("User details class is not of a type I know how to handle: " + userDetails.getClass());
+        }
+        final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
+        xdatUserDetails.validateUserLogin();
+        super.additionalAuthenticationChecks(userDetails, authentication);
     }
 
     private String displayName = "";

@@ -733,28 +733,33 @@ function ScanSet(_options,_scans){
   				removeAppendImage(scan.type_input);
 	  		}
 
-	  		if(scan.qual_input.selectedIndex==0){
-	  			appendImage(scan.qual_input,"/images/checkmarkRed.gif");
-	  			if(_focus)scan.qual_input.focus();
-	  			isValid=false;
-	  		}else{
-  				removeAppendImage(scan.qual_input);
-	  		}
+
+			if(XNAT.app.concealScanUsability==undefined || XNAT.app.concealScanUsability!=true){
+		  		if(scan.qual_input.selectedIndex==0){
+		  			appendImage(scan.qual_input,"/images/checkmarkRed.gif");
+		  			if(_focus)scan.qual_input.focus();
+		  			isValid=false;
+		  		}else{
+	  				removeAppendImage(scan.qual_input);
+		  		}
+			}
 		}
 
 		for(var csC=0;csC<this.new_scans.length;csC++){
 			var scan=this.new_scans[csC];
 			if(scan.id_input.value==""){
-		  		if(scan.type_input.value!="" || scan.qual_input.selectedIndex>0 || !((scan.note_input.value=="")||(scan.note_input.value=="NULL"))){
+		  		if(scan.type_input.value!="" || 
+		  				((XNAT.app.concealScanUsability==undefined || XNAT.app.concealScanUsability!=true) && (scan.qual_input.selectedIndex>0)) || 
+		  				!((scan.note_input.value=="")||(scan.note_input.value=="NULL"))){
 		  			removeAppendImage(scan.type_input);
-		  			removeAppendImage(scan.qual_input);
+		  			if(XNAT.app.concealScanUsability==undefined || XNAT.app.concealScanUsability!=true)removeAppendImage(scan.qual_input);
 		  			appendImage(scan.id_input,"/images/checkmarkRed.gif");
 		  			if(_focus)scan.id_input.focus();
 		  			isValid=false;
 		  		}else{
 		  			removeAppendImage(scan.id_input);
 		  			removeAppendImage(scan.type_input);
-		  			removeAppendImage(scan.qual_input);
+		  			if(XNAT.app.concealScanUsability==undefined || XNAT.app.concealScanUsability!=true)removeAppendImage(scan.qual_input);
 		  		}
 		  	}else{
 		  		removeAppendImage(scan.id_input);
@@ -766,12 +771,14 @@ function ScanSet(_options,_scans){
 	  				removeAppendImage(scan.type_input);
 		  		}
 
-		  		if(scan.qual_input.selectedIndex==0){
-		  			scan.qual_input.selectedIndex=1;
-		  			scan.qual_input.defaultSelectedIndex=1;
-		  		}else{
-	  				removeAppendImage(scan.qual_input);
-		  		}
+		  		if(XNAT.app.concealScanUsability==undefined || XNAT.app.concealScanUsability!=true){
+			  		if(scan.qual_input.selectedIndex==0){
+			  			scan.qual_input.selectedIndex=1;
+			  			scan.qual_input.defaultSelectedIndex=1;
+			  		}else{
+		  				removeAppendImage(scan.qual_input);
+			  		}
+			  	}
 		  	}
 		}
 
@@ -1039,16 +1046,18 @@ function scanListingEditor(_tbody,_scanSet,_options){
 			
 			tr.appendChild(td);
 
-			//type
-			td= document.createElement("td");
-			if(scan.qual_input==undefined){
-			    scan.qual_input=document.createElement("select");
-			    scan.qual_input.name=elementName + scanXPath(modality,scanTypeTable) + "/quality";
-			    scan.qual_input.options[0]=new Option("(SELECT)","");
-                            populateScanQualitySelector(serverRoot,projectScope,scan.qual_input,1,scan.extension.Quality);
+			if(XNAT.app.concealScanUsability==undefined || XNAT.app.concealScanUsability!=true){
+				//type
+				td= document.createElement("td");
+				if(scan.qual_input==undefined){
+				    scan.qual_input=document.createElement("select");
+				    scan.qual_input.name=elementName + scanXPath(modality,scanTypeTable) + "/quality";
+				    scan.qual_input.options[0]=new Option("(SELECT)","");
+	                            populateScanQualitySelector(serverRoot,projectScope,scan.qual_input,1,scan.extension.Quality);
+				}
+				td.appendChild(scan.qual_input);
+				tr.appendChild(td);
 			}
-			td.appendChild(scan.qual_input);
-			tr.appendChild(td);
 
 			//nte
 			td= document.createElement("td");

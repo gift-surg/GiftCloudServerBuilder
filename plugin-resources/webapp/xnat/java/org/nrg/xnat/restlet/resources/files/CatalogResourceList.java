@@ -2,7 +2,6 @@
 package org.nrg.xnat.restlet.resources.files;
 
 import java.util.Collection;
-import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -33,8 +32,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
-
-import com.google.common.collect.Lists;
 
 public class CatalogResourceList extends XNATTemplate {
     final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanList.class);
@@ -173,7 +170,7 @@ public class CatalogResourceList extends XNATTemplate {
 
         if(recons.size()>0 || scans.size()>0 || expts.size()>0 || sub!=null || proj!=null){
             try {
-                table=this.loadCatalogs(null,false,true);
+                table=this.loadCatalogs(null,false,isQueryVariableTrue("all"));
             } catch (Exception e) {
                 logger.error("",e);
             }

@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.files;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,8 +14,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.collections.CollectionUtils;
-import java.io.ByteArrayInputStream;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
@@ -74,7 +73,7 @@ public class FileList extends XNATCatalogTemplate {
     XnatAbstractresource resource =null;
 
     public FileList(Context context, Request request, Response response) {
-        super(context, request, response,true);
+        super(context, request, response, SecureResource.isQueryVariableTrueHelper(SecureResource.getParameter(request, "all")));
         try {
             if(catalogs!=null && catalogs.size()>0  && resource_ids!=null){
 

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -814,9 +813,13 @@ public abstract class SecureResource extends Resource {
 	}
 
 	protected boolean isQueryVariableTrue(String key) {
-		if (this.getQueryVariable(key) != null) {
-			String v = this.getQueryVariable(key);
-			if (v.equalsIgnoreCase("false") || v.equalsIgnoreCase("0")) {
+	    return isQueryVariableTrueHelper(getQueryVariable(key));
+	}
+
+	protected static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
+		if (queryVariableObj != null && queryVariableObj instanceof String) {
+		    	String queryVariable = (String) queryVariableObj;
+			if (queryVariable.equalsIgnoreCase("false") || queryVariable.equalsIgnoreCase("0")) {
 				return false;
 			} else {
 				return true;
@@ -827,9 +830,13 @@ public abstract class SecureResource extends Resource {
 	}
 
 	protected boolean isQueryVariableFalse(String key){
-		if(this.getQueryVariable(key)!=null){
-			String v= this.getQueryVariable(key);
-			if(v.equalsIgnoreCase("false") || v.equalsIgnoreCase("0")){
+	    return isQueryVariableFalseHelper(getQueryVariable(key));
+	}
+
+	protected static boolean isQueryVariableFalseHelper(String queryVariableObj){
+		if(queryVariableObj!=null && queryVariableObj instanceof String){
+		    String queryVariable = (String) queryVariableObj;
+			if(queryVariable.equalsIgnoreCase("false") || queryVariable.equalsIgnoreCase("0")){
 				return true;
 			}else{
 				return false;

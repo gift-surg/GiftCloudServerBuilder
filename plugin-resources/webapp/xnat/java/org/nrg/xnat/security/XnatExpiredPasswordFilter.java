@@ -33,6 +33,7 @@ import org.springframework.web.filter.GenericFilterBean;
 public class XnatExpiredPasswordFilter extends GenericFilterBean {
     private String changePasswordPath = "";
     private String changePasswordDestination = "";
+    private String logoutDestination = "";
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -49,10 +50,10 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                 if (!StringUtils.isBlank(referer)) {
                     refererPath = new URI(referer).getPath();
                 }
-                if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)) {
+                if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination) || uri.endsWith(logoutDestination)) {
                     //If you're already on the change password page, continue on without redirect.
                     chain.doFilter(req, res);
-                } else if(!StringUtils.isBlank(refererPath) && (changePasswordPath.equals(refererPath) || changePasswordDestination.equals(refererPath))) {
+                } else if(!StringUtils.isBlank(refererPath) && (changePasswordPath.equals(refererPath) || changePasswordDestination.equals(refererPath) || logoutDestination.equals(refererPath))) {
                     //If you're on a request within the change password page, continue on without redirect.
                     chain.doFilter(req, res);
                 } else {
@@ -136,11 +137,11 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
         else{
             String uri = request.getRequestURI();
 
-            if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination)){
+            if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination) || uri.endsWith(logoutDestination)){
                 //If you're already on the change password page, continue on without redirect.
                 chain.doFilter(req, res);
             }
-            else if(referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination))){
+            else if(referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination) || referer.endsWith(logoutDestination))){
                 //If you're on a request within the change password page, continue on without redirect.
                 chain.doFilter(req, res);
             }
@@ -176,7 +177,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                             logger.error(e);
                         }
                         request.getSession().setAttribute("expired", isExpired);
-                        if(username!=null && isExpired && !username.equals("guest")){
+                        if(isExpired && !username.equals("guest")){
                             response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
                         }
                         else{
@@ -194,5 +195,9 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 
     public void setChangePasswordDestination(String path) {
         this.changePasswordDestination = path;
+    }
+
+    public void setLogoutDestination(String path) {
+        this.logoutDestination = path;
     }
 }

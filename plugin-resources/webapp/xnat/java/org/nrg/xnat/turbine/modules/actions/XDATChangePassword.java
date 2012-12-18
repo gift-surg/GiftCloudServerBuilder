@@ -69,7 +69,7 @@ public class XDATChangePassword extends VelocitySecureAction {
 				}
 				XdatUserAuth auth = XDAT.getXdatUserAuthService().getUserByNameAndAuth(oldUser.getUsername(), XdatUserAuthService.LOCALDB, "");
 				auth.setPasswordUpdated(new java.util.Date());
-				auth.setFailedLoginAttempts(new Integer(0));
+				auth.setFailedLoginAttempts(0);
 				XDAT.getXdatUserAuthService().update(auth);
                     data.getSession().setAttribute("expired", false);
 				data.getSession().setAttribute("forcePasswordChange",false);

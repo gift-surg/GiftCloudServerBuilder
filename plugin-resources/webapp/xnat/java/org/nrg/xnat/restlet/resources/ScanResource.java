@@ -6,12 +6,9 @@ import java.util.ArrayList;
 
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.om.XnatCtsessiondata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.Authorizer;
 import org.nrg.xft.XFTItem;
@@ -22,7 +19,6 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PullScanDataFromHeaders;
@@ -262,18 +258,9 @@ public class ScanResource  extends ItemResource {
 
 	@Override
 	public void handleDelete(){
-			if(scan==null&& scanID!=null){
-				if(scan==null && this.session!=null){
-					CriteriaCollection cc= new CriteriaCollection("AND");
-					cc.addClause("xnat:imageScanData/ID", scanID);
-					cc.addClause("xnat:imageScanData/image_session_ID", session.getId());
-					ArrayList<XnatImagescandata> scans=XnatImagescandata.getXnatImagescandatasByField(cc, user, completeDocument);
-					if(scans.size()>0){
-						scan=scans.get(0);
-					}
-				}
-			}
-			
+	    		
+	    		searchForScan();
+	    		
 			if(scan==null){
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified scan.");
 				return;
@@ -303,7 +290,21 @@ public class ScanResource  extends ItemResource {
 	
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
+	    
+    	    	searchForScan();
+		
+		if(scan!=null){
+	        	return this.representItem(scan.getItem(),MediaType.TEXT_XML);
+		}else{
+			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+					"Unable to find the specified scan.");
+			return null;
+		}
+
+	}
+	
+	protected void searchForScan() {
 		if(scan==null&& scanID!=null){
 			if(scan==null && this.session!=null){
 				CriteriaCollection cc= new CriteriaCollection("AND");
@@ -315,14 +316,9 @@ public class ScanResource  extends ItemResource {
 				}
 			}
 		}
-		
-		if(scan!=null){
-	        	return this.representItem(scan.getItem(),MediaType.TEXT_XML);
-		}else{
-			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-					"Unable to find the specified scan.");
-			return null;
-		}
-
+	}
+	
+	protected XnatImagescandata getScan() {
+	    return scan;
 	}
 }

@@ -1,59 +1,55 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 #set ($template = $data.getTemplateInfo())
-$!template.setLayoutTemplate("NoMenu.vm")
+$!template.setLayoutTemplate("Noninteractive.vm")
 $page.setTitle("XDAT -- Register")
 $page.setBgColor($ui.bgcolor)
 <DIV VALIGN="top">
-<form name="form2" method="post" action="$link.setAction("XDATForgotLogin")">
-  <table valign="top" align="center">
-#if ( $data.getMessage() )
-  <tr><td colspan="2">
-      <span style="color:#FF0000;">
-  $data.getMessage()<br><br>
-  </span>
-   </tr></td>
-#end
-    <tr>
-    	<TH colspan="3" align="left">Did you forget your username?</TH>
-    </tr>
-    <tr>
-    	<Td colspan="3" align="left">Enter your email address and the matching username will be emailed to you.</Td>
-    </tr>
-    <tr>
-      #formLabel("Email")
-  	  <TD><input type="text" name="email" value="$!email"></TD>
-  	  <td>
-            ##<font face="$ui.sansSerifFonts">
-         <input class="ui_sansSerifFonts" type="submit" value="Request">
-        ##</font>
-        </td>
-    </tr>
-    <tr>
-    	<Td colspan="3"><br><br></Td>
-    </tr>
-    <tr>
-    	<TH colspan="3"><br/></TH>
-    </tr>
-    <tr>
-    	<TH colspan="3" align="left">Did you forget your password?</TH>
-    </tr>
-    <tr>
-    	<Td colspan="3" align="left">Enter your username and a new password will be emailed to you.</Td>
-    </tr>
-    <tr>
-      #formLabel("Username")
-  	  <TD><input type="text" name="username" value="$!username"></TD>
-  	  <td>
-            ##<font face="$ui.sansSerifFonts">
-         <input class="ui_sansSerifFonts" type="submit" value="Request">
-        ##</font>
-        </td>
-    </tr>
-  </table>
+    <form name="form2" method="post" action="$link.setAction("XDATForgotLogin")">
+        <table valign="top" align="center">
+            #if ( $data.getMessage() )
+                <tr>
+                    <td colspan="2"><span style="color:#FF0000;">$data.getMessage()</span></td>
+                </tr>
+            #end
+            <tr>
+                <TH colspan="3" align="left">Did you forget your username?</TH>
+            </tr>
+            <tr>
+                <Td colspan="3" align="left">Enter your email address and the matching username will be emailed to
+                    you.
+                </Td>
+            </tr>
+            <tr>
+                #formLabel("Email")
+                <TD><input type="text" name="email" value="$!email"></TD>
+                <td>
+                    <input class="ui_sansSerifFonts" type="submit" value="Request">
+                </td>
+            </tr>
+            <tr>
+                <Td colspan="3"><br><br></Td>
+            </tr>
+            <tr>
+                <TH colspan="3"><br/></TH>
+            </tr>
+            <tr>
+                <TH colspan="3" align="left">Did you forget your password?</TH>
+            </tr>
+            <tr>
+                <Td colspan="3" align="left">Enter your username and a new password will be emailed to you.</Td>
+            </tr>
+            <tr>
+                #formLabel("Username")
+                <TD><input type="text" name="username" value="$!username"></TD>
+                <td>
+                    <input class="ui_sansSerifFonts" type="submit" value="Request">
+                </td>
+            </tr>
+        </table>
         #foreach($key in $data.getParameters().getKeys())
-        	#if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
-        	<input type="hidden" name="$!turbineUtils.escapeParam($key)" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">	
-        	#end
+            #if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")
+                <input type="hidden" name="$!turbineUtils.escapeParam($key)" value="$!turbineUtils.escapeHTML($!turbineUtils.GetPassedParameter($key,$data))">
+            #end
         #end
-</form>
+    </form>
 </DIV>

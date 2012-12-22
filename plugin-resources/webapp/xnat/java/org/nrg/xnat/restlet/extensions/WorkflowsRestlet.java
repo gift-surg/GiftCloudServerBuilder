@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xft.XFTItem;
@@ -14,7 +15,6 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xnat.restlet.XnatRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -96,26 +96,57 @@ public class WorkflowsRestlet extends SecureResource {
 
 		if(expt!=null){
 		   try {
-			    org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
-			    addWorkflowParamsConstraints(cc);
-			    cc.addClause("wrk:workflowData.ID",expt.getId());
-		        if (status != null)
-		          cc.addClause("wrk:workflowData.status",status);	
-		        //cc.addClause("wrk:workflowData.ExternalID",expt.getProject());
-		        cc.addClause("wrk:workflowData.pipeline_name","LIKE","%"+pipeline_name.toLowerCase()+"%");
-		        
-		        if (display.equalsIgnoreCase(DISPLAY_LATEST)) {
-	            	org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc, user, false);
-		            ArrayList workitems = items.getItems("wrk:workflowData.launch_time","DESC");
-	            	XFTItem latestWrkFlow = (XFTItem)workitems.get(0);
-				    return representItem(latestWrkFlow.getItem(), mt);
-	            }else {
-			        org.nrg.xft.search.ItemSearch itemSearch = new org.nrg.xft.search.ItemSearch(user, "wrk:workflowdata", cc);
-	            	XFTTable table = itemSearch.executeToTable(false);
-	        		Hashtable<String,Object> params=new Hashtable<String,Object>();
-	            	params.put("title", "All workflows");
-	            	return representTable(table, mt, params);
-	            }
+			   if (hasWorkFlowParamsFilter()) {
+				   String query = "select * from wrk_workflowdata w ";
+				   query +=	" LEFT JOIN wrk_abstractexecutionenvironment wa ON wa.wrk_abstractexecutionenvironment_id = w.executionenvironment_wrk_abstractexecutionenvironment_id ";
+				   query += " LEFT JOIN wrk_xnatexecutionenvironment x ON wa.wrk_abstractexecutionenvironment_id = x.wrk_abstractexecutionenvironment_id";
+				   query += " LEFT JOIN wrk_xnatexecutionenvironment_parameter xp ON xp.parameters_parameter_wrk_xnatex_wrk_abstractexecutionenvironmen = x.wrk_abstractexecutionenvironment_id";
+				   query += " where w.id='" +expt.getId() +"' and w.pipeline_name like '%"+ pipeline_name+"%' ";
+				   if (status != null) {
+					   query += " and status = '" + status + "'"; 
+				   }
+				   query += addWorkflowParamsConstraints();
+				   query += " ORDER BY launch_time DESC ";
+				   if (display.equalsIgnoreCase(DISPLAY_LATEST)) {
+					   query += " LIMIT 1 ";
+				   }
+			       System.out.println(query);
+			       
+			       
+				   mt = overrideVariant(variant);
+			       
+				   XFTTable table=XFTTable.Execute(query, user.getDBName(), userName);
+				   if (table.size()==1 && table.hasMoreRows()) {
+					   table.nextRow();
+					   String workFlowId = (String)table.getCellValue("wrk_workflowdata_id").toString();
+					  //BAD HERE - two queries just to form the XFTItem
+					   WrkWorkflowdata wrk = WrkWorkflowdata.getWrkWorkflowdatasByWrkWorkflowdataId(workFlowId, user, false);
+					    return representItem(wrk.getItem(), mt);
+				   }else {
+					   Hashtable params = new Hashtable();
+					   return representTable(table, mt, params);
+				   }
+			   }else {
+				   org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
+				    cc.addClause("wrk:workflowData.ID",expt.getId());
+			        if (status != null)
+			          cc.addClause("wrk:workflowData.status",status);	
+			        //cc.addClause("wrk:workflowData.ExternalID",expt.getProject());
+			        cc.addClause("wrk:workflowData.pipeline_name","LIKE","%"+pipeline_name.toLowerCase()+"%");
+			        System.out.println(cc.toString());
+			        if (display.equalsIgnoreCase(DISPLAY_LATEST)) {
+		            	org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc, user, false);
+			            ArrayList workitems = items.getItems("wrk:workflowData.launch_time","DESC");
+		            	XFTItem latestWrkFlow = (XFTItem)workitems.get(0);
+					    return representItem(latestWrkFlow.getItem(), mt);
+		            }else {
+				        org.nrg.xft.search.ItemSearch itemSearch = new org.nrg.xft.search.ItemSearch(user, "wrk:workflowdata", cc);
+		            	XFTTable table = itemSearch.executeToTable(false);
+		        		Hashtable<String,Object> params=new Hashtable<String,Object>();
+		            	params.put("title", "All workflows");
+		            	return representTable(table, mt, params);
+		            }
+			   }
 	       }catch(Exception e) {
 			   _log.error(e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
@@ -169,13 +200,43 @@ public class WorkflowsRestlet extends SecureResource {
 			if (s.startsWith("param_")) {
 				String wrkflow_paramName = s.substring(6);
 				String wrkflow_paramValue = (String)form_params.get(s);
-				cc.addClause("wrk:workflowData.executionEnvironment.parameters.parameter.name", s);
+				cc.addClause("wrk:workflowData.executionEnvironment.parameters.parameter.name", wrkflow_paramName);
 				cc.addClause("wrk:workflowData.executionEnvironment.parameters.parameter",wrkflow_paramValue);
-
 			}
 		}
 		}
 
+	}
+
+	private String addWorkflowParamsConstraints() {
+		String subQuery = " ";
+		if (form_params.size()>0) {
+		for(String s:form_params.keySet()){
+			if (s.startsWith("param_")) {
+				String wrkflow_paramName = s.substring(6);
+				String wrkflow_paramValue = (String)form_params.get(s);
+				subQuery += " and xp.name='" + wrkflow_paramName +"' ";
+				subQuery += " and xp.parameter='" + wrkflow_paramValue +"' ";
+
+			}
+		}
+		}
+		return subQuery;
+	}
+
+	
+	private boolean hasWorkFlowParamsFilter() {
+		boolean has = false;
+		if (form_params.size()>0) {
+			for(String s:form_params.keySet()){
+				if (s.startsWith("param_")) {
+					has = true;
+					break;
+				}
+			}
+			}
+		  
+		return has;
 	}
 	
 }

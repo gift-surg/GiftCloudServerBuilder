@@ -38,10 +38,14 @@ import org.restlet.resource.Variant;
 
 public class CatalogResource extends XNATCatalogTemplate {
 	final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanResource.class);
+	
+	private boolean filePathIsEmpty;  
 
 	public CatalogResource(Context context, Request request, Response response) {
 		super(context, request, response,false);
 		
+		checkForNonEmptyFilePath(this.getRequest().getResourceRef().getRemainingPart());
+
 			try {
 				if(catalogs!=null && catalogs.size()>0){
 					for(Object[] row: catalogs.rows()){
@@ -63,6 +67,28 @@ public class CatalogResource extends XNATCatalogTemplate {
 			}
 	}
 
+        private void checkForNonEmptyFilePath(String remainingUrlPart) {
+        	// we don't care about path separators or query parameters
+        	// everything else will be rejected
+        	filePathIsEmpty = org.apache.commons.lang.StringUtils.isBlank(remainingUrlPart)
+        		|| remainingUrlPart.matches("^/+") || remainingUrlPart.matches("^/*\\?.*");
+        }
+	
+	/**
+	 * See XNAT-1674.  If the client mistakenly passes a file path to us, slap the wrist.
+	 * This is better than discarding the file path and naively processing the request 
+	 * (and say, deleting the whole catalog instead of the individual file delete that was desired).
+	 */
+	private boolean failFastDueToNonEmptyFilePath() {
+	    if(filePathIsEmpty) {
+		return false;
+	    }
+	    else {
+		this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "This resource works at the catalog level only and does not accept file paths.  To work with the resource files, append '/files' after the resource ID.");
+		return true;
+	    }
+	}
+
 	@Override
 	public boolean allowPut() {
 		return true;
@@ -70,7 +96,11 @@ public class CatalogResource extends XNATCatalogTemplate {
 	
 	@Override
 	public void handlePut() {
-		if(this.parent!=null && this.security!=null){
+	    	if(failFastDueToNonEmptyFilePath()) {
+	    	    return;
+	    	}
+
+	    	if(this.parent!=null && this.security!=null){
 			XFTItem item = null;	
 			try {	
 				if(user.canEdit(this.security)){
@@ -196,7 +226,11 @@ public class CatalogResource extends XNATCatalogTemplate {
 
 	@Override
 	public void handleDelete(){
-		if(resources.size()>0 && this.parent!=null && this.security!=null){
+	    	if(failFastDueToNonEmptyFilePath()) {
+	    	    return;
+	    	}
+
+	    	if(resources.size()>0 && this.parent!=null && this.security!=null){
 			for(XnatAbstractresource resource:resources){
 				try {
 					if(user.canDelete(this.security)){
@@ -285,7 +319,11 @@ public class CatalogResource extends XNATCatalogTemplate {
 	
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
+	    	if(failFastDueToNonEmptyFilePath()) {
+	    	    return null;
+	    	}
+	    	
 		this.getAllMatches();
 		
 		if(resources.size()==0){

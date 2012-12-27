@@ -54,7 +54,7 @@ $page.setBgColor($ui.bgcolor)
     </tr>
     <tr>
       #formLabelRequired("Email")
-  	  <TD><input type="text" id="xdat:user.email" name="xdat:user.email" value="$!email"></TD>
+  	  <TD><input type="text" class="email_format" id="xdat:user.email" name="xdat:user.email" value="$!email"></TD>
     </tr>
     <tr>
       #formLabel("Phone")
@@ -81,7 +81,7 @@ $page.setBgColor($ui.bgcolor)
 				      <td></td>
       <td align ="left">
         ##<font face="$ui.sansSerifFonts">
-         <input type="submit" value="Register" id="Register">
+            <input class="validate_email" type="submit" value="Register" id="Register">
         ##</font>
       </td>
     </tr>

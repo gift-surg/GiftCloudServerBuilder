@@ -86,11 +86,11 @@ public class MailRestlet extends SecureResource {
             }
             message.setTos(tos);
             String[] ccs = getAddresses(PARAM_CC);
-            if (ccs == null || ccs.length == 0) {
+            if (!(ccs == null || ccs.length == 0)) {
                 message.setCcs(ccs);
             }
             String[] bccs = getAddresses(PARAM_BCC);
-            if (bccs == null || bccs.length == 0) {
+            if (!(bccs == null || bccs.length == 0)) {
                 message.setBccs(bccs);
             }
 

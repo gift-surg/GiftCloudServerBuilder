@@ -1,3 +1,6 @@
+#* @vtlvariable name="userObject" type="org.nrg.xdat.security.XDATUser" *#
+#* @vtlvariable name="item" type="org.nrg.xft.XFTItem" *#
+#* @vtlvariable name="hasFailedLoginAttempts" type="java.lang.Boolean" *#
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 $page.setTitle("XDAT")
 $page.setLinkColor($ui.alink)
@@ -48,7 +51,24 @@ width:1px;
   
  </DIV>
 </div>
-<script type="text/javascript">  
+<script type="text/javascript">
+function clearFailedLogins() {
+    var callback = {
+        cache:false, // Turn off caching for IE
+        success:function(response) {
+            document.getElementById("reset_user").style.display='none';
+            closeModalPanel("resetting");
+        },
+        failure:function(response){
+            closeModalPanel("resetting");
+            alert("Failed to reset user $userObject.getUsername(): " + response);
+        }
+    };
+
+    openModalPanel("resetting", "Resetting failed user login attempts for user $userObject.getUsername()...");
+    YAHOO.util.Connect.asyncRequest('PUT', serverRoot +'/data/user/actions/$userObject.getUsername()/reset?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp='+ (new Date()).getTime(), callback, null);
+}
+
 function summaryIndexChanged(){
    var activeIndex=this.get("activeIndex");
    YAHOO.util.Cookie.set("${project.getId()}.summary.index",activeIndex);
@@ -85,6 +105,13 @@ function summaryTabManagerInit(){
 						<tr>
 							<th STYLE="border-bottom-width:1px;border-bottom-color:black;border-bottom-style:solid;">Actions</th>
 						</tr>
+                        #if ($item.getBooleanProperty("enabled") && $hasFailedLoginAttempts)
+                            <tr id="reset_user">
+                                <td>
+                                    <a href="#" onclick="clearFailedLogins()">Clear Failed Logins</a>
+                                </td>
+                            </tr>
+                        #end
 						#foreach ($actionObject in $actions)
 							#if ($actionObject.getName().equalsIgnoreCase("activate"))
 								#if ($user.checkRole("Bossman"))

@@ -190,6 +190,9 @@ public class XNATTemplate extends SecureResource {
 			String scanID= (String)getParameter(request,"SCAN_ID");
 		if (scanID != null && this.assesseds.size()>0) {
 			scanID=URLDecoder.decode(scanID);
+			
+			scanID=scanID.replace("[SLASH]", "/");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
+			
 			CriteriaCollection cc = new CriteriaCollection("OR");
 			for(XnatExperimentdata assessed:this.assesseds){
 				CriteriaCollection subcc = new CriteriaCollection("AND");
@@ -207,7 +210,7 @@ public class XNATTemplate extends SecureResource {
 					subcc.add(subsubcc);
 				}
 				cc.add(subcc);
-
+				
 				subcc = new CriteriaCollection("AND");
 				subcc.addClause("xnat:imageScanData/image_session_ID", assessed
 						.getId());

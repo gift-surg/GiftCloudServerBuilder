@@ -225,7 +225,7 @@ function UserManager(user_mgmt_div_id, pID){
 					};
 					var params = "XNAT_CSRF=" + csrfToken + "&format=json";
 					if(send){
-						params+="&sendmail=true";
+						params+="&sendemail=true";
 					}
 					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails+ "?" + params,that.insertCallback,params,that);
 				};

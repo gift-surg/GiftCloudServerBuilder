@@ -186,8 +186,14 @@
 	<bean id="arcSpecFilter" class="org.nrg.xnat.security.XnatArcSpecFilter">
         <property name="configurationPath" value="/app/template/Configuration.vm"/>
         <property name="nonAdminErrorPath" value="/app/template/Unconfigured.vm"/>
-        <property name="changePasswordPath" value="/app/template/ChangePassword.vm"/>
-        <property name="changePasswordDestination" value="/app/action/XDATChangePassword"/>
+        <property name="exemptedPaths">
+            <list value-type="java.lang.String">
+                <value>/app/template/ChangePassword.vm</value>
+                <value>/app/action/XDATChangePassword</value>
+                <value>/app/template/Login.vm</value>
+                <value>/j_spring_security_check</value>
+            </list>
+        </property>
     </bean>
 	
     <bean id="customDatabaseService" class="org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService" p:dataSource-ref="dataSource"/>

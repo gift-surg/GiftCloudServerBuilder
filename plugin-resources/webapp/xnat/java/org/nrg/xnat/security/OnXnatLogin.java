@@ -1,18 +1,8 @@
 package org.nrg.xnat.security;
 
-import java.io.IOException;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
-import org.nrg.xdat.entities.XdatUserAuth;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
@@ -21,6 +11,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.UUID;
 
 public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 
@@ -64,5 +60,4 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
         }
         super.onAuthenticationSuccess(request, response, authentication);
 	}
-
 }

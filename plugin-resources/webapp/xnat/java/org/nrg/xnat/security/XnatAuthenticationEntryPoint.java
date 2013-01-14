@@ -65,11 +65,11 @@ public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoi
             _log.debug("Evaluating data path request: " + strippedUri + ", user agent: " + userAgent);
             }
 
-        if(strippedUri!=null && strippedUri.indexOf("/action/AcceptProjectAccess/par/")>-1){
+        if(strippedUri!=null && strippedUri.contains("/action/AcceptProjectAccess/par/")){
         	int index=strippedUri.indexOf("/par/")+5;
         	if(strippedUri.length()>index){//par number included?
         		String parS=strippedUri.substring(index);
-        		if(parS.indexOf("/")>-1){
+        		if(parS.contains("/")){
         			parS=parS.substring(0,parS.indexOf("/"));
         		}
         		

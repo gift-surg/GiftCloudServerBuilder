@@ -67,24 +67,26 @@ td._old{
 	}
 	
 	function viewVersion(xft_version,_obj){
-		var callback={
-              cache:false, // Turn off caching for IE
-       	      success:function(oResponse){
-			  	var version_view=document.getElementById("version_view");
-				version_view.innerHTML=oResponse.responseText;
-				
-				document.getElementById("version_view").style.display='block';
-				document.getElementById("all_view").style.display='none';
-				
-				closeModalPanel("load_history");
-       	      },
-       	      failure:function(oResponse){
-				closeModalPanel("load_history");
-       	        alert(oResponse);
-       	      }
-       	    };
-       	    
-		openModalPanel("load_history","Compiling historical data...");
+        var callback = {
+            cache: false, // Turn off caching for IE
+            success: function (oResponse) {
+                var version_view = document.getElementById("version_view");
+                version_view.innerHTML = oResponse.responseText;
+
+                document.getElementById("version_view").style.display = 'block';
+                document.getElementById("all_view").style.display = 'none';
+
+                closeModalPanel("load_history");
+            },
+            failure: function (oResponse) {
+                if (!window.leaving) {
+                    closeModalPanel("load_history");
+                    alert(oResponse);
+                }
+            }
+        };
+
+        openModalPanel("load_history","Compiling historical data...");
 		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'$rest_url?format=html&requested_screen=HistoryView&as_of_date=' + xft_version,callback,null);
 		
 		var elements = YAHOO.util.Dom.getElementsByClassName("versionLink");

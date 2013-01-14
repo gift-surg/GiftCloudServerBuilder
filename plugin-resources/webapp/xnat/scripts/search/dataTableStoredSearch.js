@@ -65,12 +65,13 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 	};
 
 	this.initFailure=function(o){
-		//alert("FAILED to load xml.")
-		if(o.status==401){
-			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
-			window.location=serverRoot+"/app/template/Login.vm";
-		}
-	 	this.onInit.fire({});
+        if (!window.leaving) {
+            if(o.status==401){
+                alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+                window.location=serverRoot+"/app/template/Login.vm";
+            }
+            this.onInit.fire({});
+        }
 	};
 	this.completeInit=function(o){
 		this.obj.XML=o.responseText;

@@ -40,7 +40,9 @@ function ProjectList(_menu, _options){
 	};
 	
 	this.initFailure=function(o){
-		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
+        }
 	};
 	
 	this.completeInit=function(o){

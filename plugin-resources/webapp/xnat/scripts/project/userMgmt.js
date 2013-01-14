@@ -88,11 +88,13 @@ function UserManager(user_mgmt_div_id, pID){
 
 	this.initFailure=function(o){
 		this.initLoader.close();
-		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " user list.");
-		if(o.status==401){
-			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
-			window.location=serverRoot+"/app/template/Login.vm";
-		}
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " user list.");
+            if(o.status==401){
+                alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+                window.location=serverRoot+"/app/template/Login.vm";
+            }
+        }
 	};
 
 	this.completeInit=function(o){

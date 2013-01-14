@@ -147,9 +147,10 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 	};
 	
 	this.initFailure=function(o){
-//		window.waitPanel.hide();
-		this.initLoader.close();
-		alert("FAILED to load pipeline list for " + XNAT.app.displayNames.singular.project.toLowerCase() + " " + pID + ".");
+        if (!window.leaving) {
+            this.initLoader.close();
+            alert("FAILED to load pipeline list for " + XNAT.app.displayNames.singular.project.toLowerCase() + " " + pID + ".");
+        }
 	};
 	
 	this.completeInit=function(oResponse){

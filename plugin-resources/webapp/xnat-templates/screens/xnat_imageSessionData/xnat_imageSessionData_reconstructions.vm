@@ -1,18 +1,15 @@
 <!-- BEGIN imageSessionData/xnat_imageSessionData_reconstructions.vm -->
 <script type="text/javascript" src="$content.getURI('scripts/restLister.js')"></SCRIPT>
 <script type="text/javascript">
-	var info=new Object();
+	var info = {};
 	info.uri=serverRoot + "/REST/experiments/$!om.getId()";
    	info.category="reconstructions";
    	var temp=new restLister(info);
 	temp.init();
-    jq(window).bind('beforeunload', function(){
-        temp.leaving = 1;
-    });
 
     function collectFiles(id){
 		clearFiles(id);
-		var list = new Array();
+		var list = [];
 		var tbod = document.getElementById("FILES_scan" + id);
 		var scan = null;
 		var allscans=temp.info.scans;

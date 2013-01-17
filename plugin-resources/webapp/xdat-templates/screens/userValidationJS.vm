@@ -1,3 +1,4 @@
+##modified to prevent values greater then 255 characters.
 <script type="text/javascript" src="$content.getURI("scripts/user/validateUsername.js")"></script>
 <script type="text/javascript">
     XNAT.app.register = {
@@ -7,13 +8,13 @@
             var validators = XNAT.app.register.validators;
 	   
             // execute the validators on the fields, creating a list of boolean results for each field.
-            var validations = [validateInput('xdat:user.login', [validators.nonEmpty]),
-                               validateInput('xdat:user.primary_password', [validators.nonEmpty]),
+            var validations = [validateInput('xdat:user.login', [validators.nonEmpty,validators.max255]),
+                               validateInput('xdat:user.primary_password', [validators.nonEmpty,validators.max255]),
                                validateInput('xdat:user.password_check', [validators.nonEmpty, 
                                                                           validators.valuesMatch('xdat:user.primary_password')]),
-                               validateInput('xdat:user.firstname', [validators.nonEmpty]),
-                               validateInput('xdat:user.lastname', [validators.nonEmpty]),
-                               validateInput('xdat:user.email', [validators.nonEmpty,
+                               validateInput('xdat:user.firstname', [validators.nonEmpty,validators.max255]),
+                               validateInput('xdat:user.lastname', [validators.nonEmpty,validators.max255]),
+                               validateInput('xdat:user.email', [validators.nonEmpty,validators.max255,
                                    validators.isEmail()])];
 	   
             // if any of the validations failed, stop form submission
@@ -47,6 +48,9 @@
         validators: {
             nonEmpty: function(input){
                return input.value.trim().length > 0;
+	        },
+			max255: function(input){
+               return input.value.length < 256;
 	        },
 	        valuesMatch: function(inputIdToCompare){
                 var inputToCompare = document.getElementById(inputIdToCompare);

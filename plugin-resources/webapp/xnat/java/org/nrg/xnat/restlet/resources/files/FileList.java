@@ -265,6 +265,10 @@ public class FileList extends XNATCatalogTemplate {
 	                            CatalogUtils.writeCatalogToFile(cat, catFile);
 	
 	                            CatalogUtils.moveToHistory(catFile, f,(CatEntryBean)entry,ci);
+	                            
+	                            if(this.isQueryVariableTrue("removeFiles")) {
+	                        	f.delete();
+	                            }
 	
 	                            //if parent folder is empty, then delete folder
 	                            if(FileUtils.CountFiles(f.getParentFile(),true)==0){

@@ -125,7 +125,7 @@ XNAT.app.validatorImpls.RequiredTextBox={
 	isValid:function(_box){
 		return (_box.value!="");
 	}
-}
+};
 
 XNAT.app.validatorImpls.FloatTextBox={
 	message:"Value must be a floating point decimal.",
@@ -300,13 +300,13 @@ YAHOO.util.Event.onDOMReady( function()
 		                	        appendImage(validators[elementId].box,"/images/checkmarkRed.gif",this.message);
 		                		}
 		                	}catch(e){
-		                		alert("Error performing validation")
+		                		alert("Error performing validation");
 		                		validators._ok=false;
 		                	}
 	                	}
 	                }
             	}catch(e){
-            		alert("Error performing validation")
+            		alert("Error performing validation");
             		validators._ok=false;
             	}
             	
@@ -403,19 +403,57 @@ jq(window).load(function(){
     // ridding <font> tags of their meaning
     jq('font').attr('face','')/*.attr('size','')*/.css('font-family','Arial, Helvetica, sans-serif');
 
-    // this is not necessary now that z-index issues are resolved
-    /*
-    window.timeLeft_dialog = setInterval(function(){
-        if((jq('#session_timeout_dialog_mask').length > 0) && (jq('#session_timeout_dialog_c').length > 0)){ //check if selected options are loaded
-            jq('body').append(jq('#session_timeout_dialog_mask, #session_timeout_dialog_c'));
-            //jq('#timeout_dialog_wrapper').append(jq('#session_timeout_dialog_c'));
-            clearInterval(window.timeLeft_dialog);
-        }
-    },100);
-    */
-
     jq('#actionsMenu ul ul').addClass('shadowed');
 
+
+    // email verification scripts
+    //
+    function emailFormatVerify(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
+    //
+    // paramaters: email_input = class/id of email input field, empty_alert = true if you want an alert if the email input is empty, confirm_alert = true if you want a confirmation alert
+    var emailValidate = function(email_input,empty_alert,confirm_alert){
+
+        var email_value = jq(email_input).val() ;
+
+        if (email_value.length){
+            if (emailFormatVerify(email_value)) {
+                if (confirm_alert == true) {
+                    alert("Email verified.");
+                }
+            }
+            else {
+                alert("Please enter a proper email address in the format: name@domain.com.");
+                setTimeout(function(){ email_input.focus(); }, 1);
+            }
+        }
+        else {
+            if (empty_alert == true) {
+                alert("Please enter an email address.");
+                setTimeout(function(){ email_input.focus(); }, 1);
+            }
+        }
+
+    };
+    //
+    // validate email when leaving an email input box and don't show a 'verified' alert
+    // use an "onblur" class on input element if you want to validate on blur
+    jq('input.email_format.onblur').blur(function(){
+        emailValidate(this,false,false);
+    });
+    //
+    // validate email when clicking an element with class="validate_email" with no alert
+    jq('.validate_email').click(function(){
+        emailValidate('input.email_format',false,false);
+    });
+
+
+
+
+
+// end footer.js
 });
 
 

@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
@@ -36,9 +37,12 @@ public class XDATScreen_download_sessions extends SecureScreen {
             String value = (String) TurbineUtils.GetPassedParameter("search_value", data);
             
             // TODO: For now, hard-limit this to MR sessions.
-            if ("xnat:mrSessionData".equals(element) && "xnat:mrSessionData.ID".equals(field) && value != null && !"".equals(value)) {
-                sessionList = new ArrayList<String>();
-                sessionList.add(value);
+            if(!StringUtils.IsEmpty(element) && !StringUtils.IsEmpty(field) && !StringUtils.IsEmpty(value)){
+            	SchemaElement se=SchemaElement.GetElement(element);
+            	if(se.getGenericXFTElement().instanceOf("xnat:imageSessionData")){
+            		sessionList = new ArrayList<String>();
+                    sessionList.add(value);
+            	}
             }
 
             // Add the targeted flag so that the page can display based on the single session-targeted action.

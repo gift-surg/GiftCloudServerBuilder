@@ -90,7 +90,7 @@ $page.setVlinkColor($ui.vlink)
 	</TR>
 	
 	<TR>
-		<TD align=left>Usage (comma-dilimited list): Which $displayManager.getPluralDisplayNameForProject().toLowerCase() can use this type if not accessible?</TD>
+		<TD align=left>Usage (comma-delimited list): Which $displayManager.getPluralDisplayNameForProject().toLowerCase() can use this type if not accessible?</TD>
 		<TD align=left>
 #xdatTextBox("xdat:element_security.usage" $item "" $vr)
 		</TD>

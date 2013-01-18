@@ -8,7 +8,7 @@ $page.setVlinkColor($ui.vlink)
 <p>
 #parse("/screens/userValidationJS.vm")
 
-<form name="form1" method="post" action="$link.setAction("ModifyUser")" onsubmit="if(validateUsername(document.getElementById('xdat:user.login')))return true;else return false;">
+<form name="form1" method="post" action="$link.setAction("ModifyUser")" onsubmit="return XNAT.app.register.validateForm();">
 	<input type="hidden" name="xdat:user.xdat_user_id" value="$!item.getProperty("xdat_user_id")"/>
 <table border="0" width="95%">
 	<tr>

@@ -4,19 +4,23 @@
     XNAT.app.register = {
         validateForm: function(e){
             // create a few shortcuts
+			if(!validateUsername(document.getElementById('xdat:user.login'))){
+				return false;
+			}
+			
             var validateInput = XNAT.app.register.validateInput;
             var validators = XNAT.app.register.validators;
 	   
             // execute the validators on the fields, creating a list of boolean results for each field.
             var validations = [validateInput('xdat:user.login', [validators.nonEmpty,validators.max255]),
                                validateInput('xdat:user.primary_password', [validators.nonEmpty,validators.max255]),
-                               validateInput('xdat:user.password_check', [validators.nonEmpty, 
-                                                                          validators.valuesMatch('xdat:user.primary_password')]),
                                validateInput('xdat:user.firstname', [validators.nonEmpty,validators.max255]),
                                validateInput('xdat:user.lastname', [validators.nonEmpty,validators.max255]),
                                validateInput('xdat:user.email', [validators.nonEmpty,validators.max255,
                                    validators.isEmail()])];
-	   
+	   		if(YUIDOM.get('xdat:user.password_check')!=null){
+				validations.push(validateInput('xdat:user.password_check', [validators.nonEmpty, validators.valuesMatch('xdat:user.primary_password')]));
+			}
             // if any of the validations failed, stop form submission
             for (var i=0; i < validations.length; i++){
             	if (!validations[i]){

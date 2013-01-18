@@ -63,9 +63,46 @@ function FileViewer(_obj){
 			var justification=new XNAT.app.requestJustification("file","File Deletion Dialog",this._removeFile,this);
 			justification.item=item;	
 		}else{
-			var passthrough= new XNAT.app.passThrough(this._removeFile,this);
+			passThroughfunc = this._removeFile
+			passThroughObj = this
+
+
+			var handleYes = function() {
+			    //user confirms the deletion of this item;
+			    //this method would perform that deletion;
+			    //when ready, hide the SimpleDialog:
+			    var passthrough= new XNAT.app.passThrough(passThroughfunc,passThroughObj);
 			passthrough.item=item;
 			passthrough.fire();
+			    this.hide();
+			    this.destory();
+			};
+			var handleNo = function() {
+			    //user cancels item deletion; this method
+			    //would handle the cancellation of the
+			    //process.
+			    //when ready, hide the SimpleDialog:
+			    this.hide();
+			    this.destory();
+			};
+			confirm_dialog =  new YAHOO.widget.SimpleDialog("file_remove_confirm",  
+		             { width: "300px", 
+		               fixedcenter: true, 
+		               visible: false, 
+		               draggable: false, 
+		               modal: true,
+		               close: true, 
+		               text: "Confirm File Remove?", 
+		               icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+		               constraintoviewport: true, 
+		               buttons: [ { text:"Yes", handler:handleYes}, 
+		                          { text:"No",  handler:handleNo, isDefault:true  } ] 
+		             } ); 
+			confirm_dialog.setHeader("Confirm Remove!");
+			confirm_dialog.render("page_body");
+			confirm_dialog.show();
+			confirm_dialog.bringToTop();
+
 		}
 	}
 
@@ -98,9 +135,44 @@ function FileViewer(_obj){
 			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeReconstruction,this);
 			justification.item=item;	
 		}else{
-			var passthrough= new XNAT.app.passThrough(this._removeReconstruction,this);
+			passThroughfunc = this._removeReconstruction
+			passThroughObj = this
+
+			var handleYes = function() {
+			    //user confirms the deletion of this item;
+			    //this method would perform that deletion;
+			    //when ready, hide the SimpleDialog:
+			    var passthrough= new XNAT.app.passThrough(passThroughfunc,passThroughObj);
 			passthrough.item=item;
 			passthrough.fire();
+			    this.hide();
+			    this.destory();
+			};
+			var handleNo = function() {
+			    //user cancels item deletion; this method
+			    //would handle the cancellation of the
+			    //process.
+			    //when ready, hide the SimpleDialog:
+			    this.hide();
+			    this.destory();
+			};
+			confirm_dialog =  new YAHOO.widget.SimpleDialog("file_remove_confirm",  
+		             { width: "300px", 
+		               fixedcenter: true, 
+		               visible: false, 
+		               draggable: false, 
+		               modal: true,
+		               close: true, 
+		               text: "Confirm Reconstruction Remove?", 
+		               icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+		               constraintoviewport: true, 
+		               buttons: [ { text:"Yes", handler:handleYes}, 
+		                          { text:"No",  handler:handleNo, isDefault:true  } ] 
+		             } ); 
+			confirm_dialog.setHeader("Confirm Remove!");
+			confirm_dialog.render("page_body");
+			confirm_dialog.show();
+			confirm_dialog.bringToTop();
 		}
    }
 
@@ -133,9 +205,44 @@ function FileViewer(_obj){
 			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeCatalog,this);
 			justification.item=item;	
 		}else{
-			var passthrough= new XNAT.app.passThrough(this._removeCatalog,this);
+			passThroughfunc = this._removeCatalog
+			passThroughObj = this
+
+			var handleYes = function() {
+			    //user confirms the deletion of this item;
+			    //this method would perform that deletion;
+			    //when ready, hide the SimpleDialog:
+			    var passthrough= new XNAT.app.passThrough(passThroughfunc,passThroughObj);
 			passthrough.item=item;
 			passthrough.fire();
+			    this.hide();
+			    this.destory();
+			};
+			var handleNo = function() {
+			    //user cancels item deletion; this method
+			    //would handle the cancellation of the
+			    //process.
+			    //when ready, hide the SimpleDialog:
+			    this.hide();
+			    this.destory();
+			};
+			confirm_dialog =  new YAHOO.widget.SimpleDialog("file_remove_confirm",  
+		             { width: "300px", 
+		               fixedcenter: true, 
+		               visible: false, 
+		               draggable: false, 
+		               modal: true,
+		               close: true, 
+		               text: "Confirm Catalog Remove?", 
+		               icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+		               constraintoviewport: true, 
+		               buttons: [ { text:"Yes", handler:handleYes}, 
+		                          { text:"No",  handler:handleNo, isDefault:true  } ] 
+		             } ); 
+			confirm_dialog.setHeader("Confirm Remove!");
+			confirm_dialog.render("page_body");
+			confirm_dialog.show();
+			confirm_dialog.bringToTop();
 		}
    }
    
@@ -1220,6 +1327,26 @@ function UploadFileForm(_obj){
    	  tr.appendChild(td);
    	  tbody.appendChild(tr);
    	  
+   	  //Overwrite
+   	  tr=document.createElement("tr");
+		tr.style.height="20px";
+   	  
+   	  td=document.createElement("th");
+   	  td.align="left";
+   	  td.innerHTML="Overwrite";
+   	  tr.appendChild(td);
+   	  
+   	  td=document.createElement("td");
+   	  input=document.createElement("input");
+   	  input.type = 'checkbox';
+   	  input.value = 'true';
+   	  input.id="folder_overwrite";
+   	  //input.style.fontSize = "99%";
+   	  td.appendChild(input);
+   	  
+   	  tr.appendChild(td);
+   	  tbody.appendChild(tr);
+   	  
    	  
    	  div.appendChild(document.createTextNode("File To Upload:"));
    	  
@@ -1270,6 +1397,8 @@ function UploadFileForm(_obj){
 		var file_format=document.getElementById("file_format").value.trim();
 		var file_content=document.getElementById("file_content").value.trim();
 		var file_name=document.getElementById("file_name").value.trim();
+		var file_overwrite=document.getElementById("folder_overwrite").checked;
+		
 		if(file_name[0]=="/"){
 			file_name=file_name.substring(1);
 		}
@@ -1284,6 +1413,9 @@ function UploadFileForm(_obj){
 		}
 		if (file_tags > ''){
 			file_params+="&tags="+file_tags;
+		}
+		if (file_overwrite){
+			file_params+="&overwrite=true";
 		}
 			
 		var file_dest = this.selector.obj.uri;

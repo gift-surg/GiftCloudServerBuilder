@@ -368,6 +368,10 @@ body #fileListing_mask { z-index: 101 !important ; }
 body #fileListing_c { z-index: 102 !important ; }
 body #fileListing { z-index: 103 !important ; }
 
+body #file_remove_confirm_mask { z-index: 104 !important ; }
+body #file_remove_confirm_c { z-index: 105 !important ; }
+body #file_remove_confirm { z-index: 106 !important ; }
+
 body #fileUploadDialog_mask { z-index: 201 !important ; }
 body #fileUploadDialog_c { z-index: 202 !important ; }
 body #fileUploadDialog { z-index: 203 !important ; }

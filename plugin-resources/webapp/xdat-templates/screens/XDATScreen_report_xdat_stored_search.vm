@@ -30,7 +30,6 @@ $page.setVlinkColor($ui.vlink)
 							<TR><TD>Description</TD><TD>$!item.getStringProperty("xdat:stored_search/description")</TD></TR>
 							<TR><TD>Pivot Data Type</TD><TD>$!item.getStringProperty("xdat:stored_search/root_element_name")</TD></TR>
 							<TR><TD>Sort By</TD><TD>$!item.getStringProperty("xdat:stored_search/sort_by/element_name") $!item.getStringProperty("xdat:stored_search/sort_by/field_ID")</TD></TR>
-							<TR><TD>Layered Sequence</TD><TD>$!item.getStringProperty("xdat:stored_search/layeredSequence")</TD></TR>
 							<TR><TD>Display Diff Columns</TD><TD>#xdatBooleanDisplay("xdat:stored_search/allow-diff-columns" $item true)</TD></TR>
 							<TR><TD>Limited Access</TD><TD>#xdatBooleanDisplay("xdat:stored_search/secure" $item true)</TD></TR>
 						</TABLE>
@@ -105,17 +104,13 @@ $page.setVlinkColor($ui.vlink)
 																<TR>
 																	<TH>schema_field</TH>
 																	<TH>comparison_type</TH>
-																	<TH>custom_search</TH>
 																	<TH>value</TH>
-																	<TH>override_value_formatting</TH>
 																</TR>
 														#foreach($xdat_criteria_3_COUNTER in [0..$xdat_criteria_3_NUM_ROWS])
 																<TR>
 																	<TD>$!item.getStringProperty("xdat:stored_search/search_where[$xdat_criteria_set_2_COUNTER]/criteria[$xdat_criteria_3_COUNTER]/schema_field")</TD>
 																	<TD>$!item.getStringProperty("xdat:stored_search/search_where[$xdat_criteria_set_2_COUNTER]/criteria[$xdat_criteria_3_COUNTER]/comparison_type")</TD>
-																	<TD>$!item.getStringProperty("xdat:stored_search/search_where[$xdat_criteria_set_2_COUNTER]/criteria[$xdat_criteria_3_COUNTER]/custom_search")</TD>
 																	<TD>$!item.getStringProperty("xdat:stored_search/search_where[$xdat_criteria_set_2_COUNTER]/criteria[$xdat_criteria_3_COUNTER]/value")</TD>
-																	<TD>$!item.getBooleanProperty("xdat:stored_search/search_where[$xdat_criteria_set_2_COUNTER]/criteria[$xdat_criteria_3_COUNTER]/override_value_formatting")</TD>
 																</TR>
 														#end
 													#end

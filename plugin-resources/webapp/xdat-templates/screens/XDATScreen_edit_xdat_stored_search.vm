@@ -246,27 +246,7 @@ return false;
 
 							#end
 
-							</TD></TR>
-
-							
-
-							<TR><TD>Layered Sequence</TD>
-
-							<TD> 
-
-							#if ($item.getProperty("xdat:stored_search/layeredSequence"))
-
-								<input type="text" name="xdat:stored_search/layeredSequence" value="$item.getProperty("xdat:stored_search/layeredSequence")"/>
-
-							#else
-
-								<input type="text" name="xdat:stored_search/layeredSequence" value=""/>
-
-							#end
-
-							</TD></TR>
-
-							
+							</TD></TR>							
 
 							<TR><TD>Display Diff Columns</TD><TD>#xdatBooleanRadio("xdat:stored_search/allow-diff-columns" $item true $vr)</TD></TR>
 
@@ -488,11 +468,7 @@ return false;
 
 													<TD>comparison type</TD>
 
-													<TD>custom search</TD>
-
 													<TD>value</TD>
-
-													<TD>override value formatting</TD>
 
 												</TR>
 
@@ -510,21 +486,7 @@ return false;
 
 														</TD>
 
-														<TD>#xdatTextBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/custom_search" $item "" $vr)</TD>
-
 														<TD>#xdatTextBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/value" $item "" $vr)</TD>
-
-														<TD>
-
-														#if ($item.getBooleanProperty("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/override_value_formatting","false"))
-
-															<INPUT type="checkbox" name="xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/override_value_formatting" value="true" CHECKED/>
-
-														#else
-
-															<INPUT type="checkbox" name="xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/override_value_formatting" value="true" />
-
-														#end
 
 														#xdatHiddenBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/xdat_criteria_id" $item "")
 

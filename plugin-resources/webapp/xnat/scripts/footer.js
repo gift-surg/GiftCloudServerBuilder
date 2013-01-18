@@ -437,17 +437,17 @@ jq(window).load(function(){
         }
 
     };
-    //
-    // validate email when leaving an email input box and don't show a 'verified' alert
-    // use an "onblur" class on input element if you want to validate on blur
-    jq('input.email_format.onblur').blur(function(){
-        emailValidate(this,false,false);
-    });
-    //
-    // validate email when clicking an element with class="validate_email" with no alert
-    jq('.validate_email').click(function(){
-        emailValidate('input.email_format',false,false);
-    });
+//    //This shouldn't execute if you aren't on the user edit page!!!!!
+//    // validate email when leaving an email input box and don't show a 'verified' alert
+//    // use an "onblur" class on input element if you want to validate on blur
+//    jq('input.email_format.onblur').blur(function(){
+//        emailValidate(this,false,false);
+//    });
+//    //
+//    // validate email when clicking an element with class="validate_email" with no alert
+//    jq('.validate_email').click(function(){
+//        emailValidate('input.email_format',false,false);
+//    });
 
 
 

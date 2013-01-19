@@ -1,5 +1,6 @@
-
+//variable to contain a list of ID's for each table that's been loaded in the page
 XNAT.app.resizableTables=new Array();  
+
 /* 
  * Per CSS, the containing #layout_content div will resize itself 
  * to fit wide content, constrained to the width of the window.  
@@ -11,7 +12,7 @@ XNAT.app.resizableTables=new Array();
  */
 XNAT.app.tableSizer=function(){
 	var windowWidth = $(window).innerWidth(); 
-	var divWidth = $('#layout_content_data').width(); /* what happens when there are more than one of these on a page? */
+	var divWidth = $('#layout_content').width(); /* what happens when there are more than one of these on a page? */
 	var tableWidth = $('table.x_rs_t').width(); /* what happens if there are more than one of these on a page? */
 	
 	for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
@@ -21,32 +22,68 @@ XNAT.app.tableSizer=function(){
 	if (tableWidth > (windowWidth-60)) {
 		var setWidth = windowWidth - 60;
 		if(setWidth<925)setWidth=925;
-		$('#layout_content_data').css('width',setWidth);
 		$('#search_tabs').css('width',setWidth);
+		
+		//remove any manually configured widths - necessary after joining 2 tables
+		for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
+			XNAT.app.setItemWidth(XNAT.app.resizableTables[tSc]+"_c",'');
+			XNAT.app.setItemWidth(XNAT.app.resizableTables[tSc]+"_p",'');
+		}
+	}else{
+		$('#search_tabs').css('width','');
+		
+		//need to adjust table width for each table to make sure scrollbar is close to table
+		for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
+			XNAT.app.setTableWidth(XNAT.app.resizableTables[tSc]);			
+		}
 	}
 	
 }
 
+XNAT.app.setItemWidth=function(div_id,width){
+	var d=YUIDOM.get(div_id);
+	if(d!=null){
+		var d2=$(d);
+		d2.css('width',width);
+	}
+}
+
+//adjusts the table width for individual tables
+XNAT.app.setTableWidth=function(div_id){
+	var tableC=YUIDOM.get(div_id);//have to use YUI here because jquery fails to find it.  I think because it contains a period.  But, the YUI element can be passed into jquery.
+	if(tableC!=null){
+		var tableWidth=$(YUIDOM.getFirstChild(tableC)).width();//need the width of the table within the container div.
+
+		var tabsWidth=$('#search_tabs').width();
+		if((tableWidth+18)<tabsWidth){//if table + scrollbar doesn't take up the whole tab
+			XNAT.app.setItemWidth(div_id+"_c",(tableWidth+18));//set table overflow container to barely contain table, so the scrollbar isn't way off to the right.
+		}
+		
+		XNAT.app.setItemWidth(div_id+"_p",tableWidth);//try to set the paging div to be the same length as the table. if its to short it will fix itself
+	}
+}
+
 XNAT.app.setTableHeight=function(div_id){
-	var windowHeight = $(window).innerHeight();
-	var tableHeight = $('table.x_rs_t').height();
-	var container = document.getElementById(div_id); 
-	var tablePosition = $(container).offset(); 
-	
-	/* max height is total screen height minus space for table header & chrome */ 
-	var maxTableHeight = (tableHeight < windowHeight) ? tableHeight + 60 : windowHeight-60;
-	var minTableHeight = 300; 
-	
-	/* available height is visible screen height below the starting Y point of the table, plus room for table header & chrome */
-	var availableTableHeight = windowHeight - (tablePosition.top)- 30; 
-	availableTableHeight = (availableTableHeight > maxTableHeight) ? maxTableHeight : availableTableHeight;
-	availableTableHeight = (availableTableHeight < minTableHeight) ? minTableHeight : availableTableHeight;
-	
-	/* set dimensions of table containers */
-	$(container).css('height',availableTableHeight);
+	if($(div_id)!=null){
+		var windowHeight = $(window).innerHeight();
+		var tableHeight = $('table.x_rs_t').height();
+		var container = document.getElementById(div_id); 
+		var tablePosition = $(container).offset(); 
+		
+		/* max height is total screen height minus space for table header & chrome */ 
+		var maxTableHeight = (tableHeight < windowHeight) ? tableHeight + 60 : windowHeight-60;
+		var minTableHeight = 300; 
+		
+		/* available height is visible screen height below the starting Y point of the table, plus room for table header & chrome */
+		var availableTableHeight = windowHeight - (tablePosition.top)- 30; 
+		availableTableHeight = (availableTableHeight > maxTableHeight) ? maxTableHeight : availableTableHeight;
+		availableTableHeight = (availableTableHeight < minTableHeight) ? minTableHeight : availableTableHeight;
+		
+		/* set dimensions of table containers */
+		$(container).css('height',availableTableHeight);
+	}
 }
  
-$(document).ready(function() { XNAT.app.tableSizer(); });
 $(window).resize(function() { XNAT.app.tableSizer(); });  
 
 function DataTableSearch(_div_table_id,obj,_config,_options){
@@ -186,7 +223,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 						  initialPage		   : (this.config.initialPage!=undefined)?this.config.initialPage:1,
 						  rowsPerPage        : this.config.rowsPerPage,
 						  rowsPerPageOptions : [10,20,40,100,500,5000],
- 						  template           : "<table width='100%'><tr><td>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right'><input type='button' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'><div id='" + this.div_table_id +"_options' class='yuimenubar yuimenubarnav'><div class='bd'><ul class='first-of-type'><li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='#" + this.div_table_id + "ot'>Options</a></li></ul></div></div></td></tr><tr><td style='line-height:11px;font-size:11px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>",
+ 						  template           : "<table width='100%'><tr><td id='" + this.div_table_id +"_xT_pT1'>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right' id='" + this.div_table_id +"_xT_pT3'><input type='button' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'><div id='" + this.div_table_id +"_options' class='yuimenubar yuimenubarnav'><div class='bd'><ul class='first-of-type'><li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='#" + this.div_table_id + "ot'>Options</a></li></ul></div></div></td></tr><tr><td style='line-height:11px;font-size:11px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>",
  						  totalRecords       :  parseInt(this.initResults.ResultSet.totalRecords),
  						  pageReportTemplate : '{currentPage} of {totalPages} Pgs ({totalRecords} Rows)'
 						});

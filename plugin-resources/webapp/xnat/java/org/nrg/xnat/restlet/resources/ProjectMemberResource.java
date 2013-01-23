@@ -233,7 +233,7 @@ public class ProjectMemberResource extends SecureResource {
 						boolean sendmail=Boolean.parseBoolean(email);
 						
 						for(XDATUser newUser: newUsers){
-							final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, user.getXSIType(),user.getXdatUserId().toString(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT));
+							final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, newUser.getXSIType(),newUser.getXdatUserId().toString(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.ADD_USER_TO_PROJECT));
 					    	EventMetaI c=wrk.buildEvent();
 							
 								try {

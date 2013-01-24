@@ -1534,6 +1534,35 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.3.1.Final</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.0.0.GA</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<!-- Runtime dependency for hibernate-validator -->
+			<!-- It will direct hibernate-validator logging to one of the XNAT logging frameworks -->
+			<groupId>org.jboss</groupId>
+			<artifactId>jboss-logging</artifactId>
+			<version>3.1.0.CR2</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>		
+		<dependency>
 			<groupId>jta</groupId>
 			<artifactId>jta</artifactId>
 			<version>1.1</version>

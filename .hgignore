@@ -15,9 +15,6 @@ plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch
 plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar.md5
 plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar
 plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar.md5
-plugin-resources/repository/dcm4che.tool/jars/dcm4che-tool-dcmecho-2.0.25.jar
-plugin-resources/repository/dcm4che.tool/jars/dcm4che-tool-dcmqr-2.0.25.jar
-plugin-resources/repository/commons-cli/jars/commons-cli-1.2.jar
 plugin-resources/misc/template2.*
 Thumbs.db
 out

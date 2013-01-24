@@ -152,14 +152,15 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   };
 
   this.initFailure=function(o){
-    //alert("FAILED to load xml.")
-    if(o.status==401){
-      alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
-      window.location=serverRoot+"/app/template/Login.vm";
-    }else{
-      document.getElementById(this.div_table_id).innerHTML="Failed to create search results.";
-    }
-    this.onInit.fire();
+      if (!window.leaving) {
+          if(o.status==401){
+              alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+              window.location=serverRoot+"/app/template/Login.vm";
+          }else{
+              document.getElementById(this.div_table_id).innerHTML="Failed to create search results.";
+          }
+          this.onInit.fire();
+      }
   };
 
   this.completeInit=function(o){
@@ -266,47 +267,50 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
   }
 
-  this.getPage=function(page){
-    var that = this;
-    var initFailure =  function (o) {
-      if(o.status==401){
-	alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
-	window.location=serverRoot+"/app/template/Login.vm";
-      }
-      /**
-       * If the returnes status is 500, one of the sortBy settings in the cookie was incorrect. In this case 
-       * just ignore the cookie and re-run the request.
-       */
-      else if (o.status == 500) {
-	var url = that.searchURI+"?format=xList&offset="+ ((page-1)*that.config.rowsPerPage) + "&limit="+that.config.rowsPerPage;
-	
-	url += '&XNAT_CSRF=' + csrfToken;
-	
-	YAHOO.util.Connect.asyncRequest('GET', url, initCallback,null,that);
-      }
-      else{
-	document.getElementById(this.div_table_id).innerHTML="Failed to create search results.";}
+    this.getPage = function (page) {
+        var that = this;
+        var initFailure = function (o) {
+            if (!window.leaving) {
+                if (o.status == 401) {
+                    alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+                    window.location = serverRoot + "/app/template/Login.vm";
+                }
+                /**
+                 * If the returnes status is 500, one of the sortBy settings in the cookie was incorrect. In this case
+                 * just ignore the cookie and re-run the request.
+                 */
+                else if (o.status == 500) {
+                    var url = that.searchURI + "?format=xList&offset=" + ((page - 1) * that.config.rowsPerPage) + "&limit=" + that.config.rowsPerPage;
+
+                    url += '&XNAT_CSRF=' + csrfToken;
+
+                    YAHOO.util.Connect.asyncRequest('GET', url, initCallback, null, that);
+                }
+                else {
+                    document.getElementById(this.div_table_id).innerHTML = "Failed to create search results.";
+                }
+            }
+        };
+        this.onInit.fire();
+        var initCallback = {
+            success: this.showPage,
+            failure: initFailure,
+            cache: false, // Turn off caching for IE
+            scope: this
+        };
+
+        openModalPanel("load_data", "Loading data...");
+        this.purge();
+
+        document.getElementById(this.div_table_id).innerHTML = "";
+        var url2 = this.searchURI + "?format=xList" + this.generateRequest(page);
+
+        url2 += '&XNAT_CSRF=' + csrfToken;
+
+        YAHOO.util.Connect.asyncRequest('GET', url2, initCallback, null, this);
     };
-    this.onInit.fire();
-    var initCallback={
-      success:this.showPage,
-      failure:initFailure,
-        cache:false, // Turn off caching for IE
-      scope:this
-    };
 
-    openModalPanel("load_data","Loading data...");
-    this.purge();
-
-    document.getElementById(this.div_table_id).innerHTML = "";
-    var url2 = this.searchURI+"?format=xList"+this.generateRequest(page);
-    
-	url2 += '&XNAT_CSRF=' + csrfToken;
-	
-    YAHOO.util.Connect.asyncRequest('GET',url2,initCallback,null,this);
-  };
-
-  this.generateRequest=function(page){
+    this.generateRequest=function(page){
     var request="&offset=" + ((page-1)*this.config.rowsPerPage) + "&limit="+this.config.rowsPerPage;
     if(this.config.sortedBy!=undefined && this.config.sortedBy.key!=undefined){
       request+="&sortBy="+this.config.sortedBy.key;

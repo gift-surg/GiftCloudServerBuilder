@@ -51,9 +51,11 @@ function FileViewer(_obj){
 //			YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/files?all=true&format=json&timestamp=' + (new Date()).getTime(),countCallback,null,this);
 	}
 	
-	this.handleFailure=function(o){		
-		closeModalPanel("refresh_file");
-		alert("Error loading files");
+	this.handleFailure=function(o){
+        if (!window.leaving) {
+            closeModalPanel("refresh_file");
+            alert("Error loading files");
+        }
 	}
 	   
 	this.removeFile=function(item){		
@@ -66,32 +68,32 @@ function FileViewer(_obj){
 			passthrough.fire();
 		}
 	}
-   
-   this._removeFile=function(arg1,arg2,container){	   
-		var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
-		this.initCallback={
-			success:function(obj1){
-	    		this.refreshCatalogs("file");
-			},
-			failure:function(o){
-	    		closeModalPanel("file");
-				displayError("ERROR " + o.status+ ": Failed to delete file.");
-			},
-            cache:false, // Turn off caching for IE
-			scope:this
-		}
-		
-		openModalPanel("file","Deleting '" + container.item.file_name +"'");
 
-		var params="";		
-		params+="event_reason="+event_reason;
-		params+="&event_type=WEB_FORM";
-		params+="&event_action=File Deleted";
-		
-		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+'?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
-   }
-   
-   this.removeReconstruction=function(item){
+    this._removeFile = function (arg1, arg2, container) {
+        var event_reason = (container == undefined || container.dialog == undefined) ? "" : container.dialog.event_reason;
+        this.initCallback = {
+            success: function (obj1) {
+                this.refreshCatalogs("file");
+            },
+            failure: function (o) {
+                closeModalPanel("file");
+                displayError("ERROR " + o.status + ": Failed to delete file.");
+            },
+            cache: false, // Turn off caching for IE
+            scope: this
+        }
+
+        openModalPanel("file", "Deleting '" + container.item.file_name + "'");
+
+        var params = "";
+        params += "event_reason=" + event_reason;
+        params += "&event_type=WEB_FORM";
+        params += "&event_action=File Deleted";
+
+        YAHOO.util.Connect.asyncRequest('DELETE', container.item.uri + '?XNAT_CSRF=' + csrfToken + '&' + params, this.initCallback, null, this);
+    };
+
+    this.removeReconstruction=function(item){
 	   if(showReason){
 			var justification=new XNAT.app.requestJustification("file","Folder Deletion Dialog",this._removeReconstruction,this);
 			justification.item=item;	
@@ -101,22 +103,22 @@ function FileViewer(_obj){
 			passthrough.fire();
 		}
    }
-   
-   this._removeReconstruction=function(arg1,arg2,container){
-	    var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
-	    this.initCallback={
-			success:function(obj1){
-	    		this.refreshCatalogs("file");
-			},
-			failure:function(o){
-	    		closeModalPanel("file");
-				displayError("ERROR " + o.status+ ": Failed to delete file.");
-			},
-            cache:false, // Turn off caching for IE
-			scope:this
-		}
-		
-	   openModalPanel("file","Deleting reconstruction '" + container.item.reconId +"'");
+
+    this._removeReconstruction = function (arg1, arg2, container) {
+        var event_reason = (container == undefined || container.dialog == undefined) ? "" : container.dialog.event_reason;
+        this.initCallback = {
+            success: function (obj1) {
+                this.refreshCatalogs("file");
+            },
+            failure: function (o) {
+                closeModalPanel("file");
+                displayError("ERROR " + o.status + ": Failed to delete file.");
+            },
+            cache: false, // Turn off caching for IE
+            scope: this
+        };
+
+        openModalPanel("file","Deleting reconstruction '" + container.item.reconId +"'");
 	    
 	   var params="";		
 	   params+="event_reason="+event_reason;
@@ -144,8 +146,10 @@ function FileViewer(_obj){
   				this.refreshCatalogs("file");
 			},
 			failure:function(o){
-	    		closeModalPanel("file");
-				displayError("ERROR " + o.status+ ": Failed to delete file.");
+                if (!window.leaving) {
+                    closeModalPanel("file");
+                    displayError("ERROR " + o.status+ ": Failed to delete file.");
+                }
 			},
             cache:false, // Turn off caching for IE
 			scope:this
@@ -1643,31 +1647,31 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	YAHOO.util.Connect.asyncRequest(method,container.file_dest+params,callback);
 }
 
-XNAT.app._addFolder=function(arg1,arg2,container){	   
-	var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
-	var callback={
-		success:function(obj1){
-			closeModalPanel("add_folder");
-			window.viewer.refreshCatalogs("add_folder");
-			this.cancel();
-		},
-		failure:function(obj1){
-			closeModalPanel("add_folder");
-			if(obj1.status==409){
-				alert('Specified resource already exists.');
-			}else{
-				alert(obj1.toString());
-			}
-			this.cancel();
-		},
-        cache:false, // Turn off caching for IE
-		scope:this
-	}
-	openModalPanel("add_folder","Creating folder.");
-	
-	var params="&event_reason="+event_reason;
-	params+="&event_type=WEB_FORM";
-	params+="&event_action=Folder Created";
-	
-	YAHOO.util.Connect.asyncRequest('PUT',container.file_dest+params,callback);
-}
+XNAT.app._addFolder = function (arg1, arg2, container) {
+    var event_reason = (container == undefined || container.dialog == undefined) ? "" : container.dialog.event_reason;
+    var callback = {
+        success: function (obj1) {
+            closeModalPanel("add_folder");
+            window.viewer.refreshCatalogs("add_folder");
+            this.cancel();
+        },
+        failure: function (obj1) {
+            closeModalPanel("add_folder");
+            if (obj1.status == 409) {
+                alert('Specified resource already exists.');
+            } else {
+                alert(obj1.toString());
+            }
+            this.cancel();
+        },
+        cache: false, // Turn off caching for IE
+        scope: this
+    };
+    openModalPanel("add_folder", "Creating folder.");
+
+    var params = "&event_reason=" + event_reason;
+    params += "&event_type=WEB_FORM";
+    params += "&event_action=Folder Created";
+
+    YAHOO.util.Connect.asyncRequest('PUT', container.file_dest + params, callback);
+};

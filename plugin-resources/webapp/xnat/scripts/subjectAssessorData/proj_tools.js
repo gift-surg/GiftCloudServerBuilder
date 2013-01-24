@@ -43,7 +43,9 @@ function ProjectLoader(_options) {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
+        }
     };
 
     this.completeInit = function (o) {
@@ -109,7 +111,9 @@ function SubjectLoader(_options) {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
+        }
     };
 
     this.completeInit = function (o) {
@@ -159,7 +163,9 @@ function ExptLoader() {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load experiment list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status + ": Failed to load experiment list.");
+        }
     };
 
     this.completeInit = function (o) {
@@ -296,20 +302,22 @@ function ProjectEditor(_config) {
 	                            	this.modifyProject();
 	                            },
 	                            failure:function (o) {
-	                            	if( o.status == 404 ) {
-		                            	// subject not currently owned by or shared into the new project, warn user that we must do this to change the project
-	                                    if (confirm("As part of this change, the system will attempt to share this " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + "'s " + XNAT.app.displayNames.singular.subject.toLowerCase() + " into the new " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Is this OK?")) {
-	                                    	this.subjectNeedsToBeSharedIntoNewProject = true;
-	    	                            	this.modifyProject();
-	                                    } else {
-	                                        this.cancel();
-	                                    }
-	                                }
-	                            	else {	
-	                            		// some systemic error occured
-		                            	alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
-		                                closeModalPanel("modify_project");
-	                            	}
+                                    if (!window.leaving) {
+                                        if( o.status == 404 ) {
+                                            // subject not currently owned by or shared into the new project, warn user that we must do this to change the project
+                                            if (confirm("As part of this change, the system will attempt to share this " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + "'s " + XNAT.app.displayNames.singular.subject.toLowerCase() + " into the new " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Is this OK?")) {
+                                                this.subjectNeedsToBeSharedIntoNewProject = true;
+                                                this.modifyProject();
+                                            } else {
+                                                this.cancel();
+                                            }
+                                        }
+                                        else {
+                                            // some systemic error occured
+                                            alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
+                                            closeModalPanel("modify_project");
+                                        }
+                                    }
 	                            },
                                 cache:false, // Turn off caching for IE
 	                            scope:this
@@ -350,8 +358,10 @@ function ProjectEditor(_config) {
                                     this.cancel();
                                 },
                                 failure:function (o) {
-                                    alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
-                                    closeModalPanel("modify_project");
+                                    if (!window.leaving) {
+                                        alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
+                                        closeModalPanel("modify_project");
+                                    }
                                 },
                                 cache:false, // Turn off caching for IE
                                 scope:this
@@ -571,8 +581,10 @@ XNAT.app._modifySubject=function(arg1,arg2,container){
             this.cancel();
         },
         failure:function (o) {
-            alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.subject.toLowerCase() + ".");
-            closeModalPanel("modify_subject");
+            if (!window.leaving) {
+                alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.subject.toLowerCase() + ".");
+                closeModalPanel("modify_subject");
+            }
         },
         scope:this
     }
@@ -729,8 +741,10 @@ XNAT.app._modifyLabel=function(arg1,arg2,container){
              this.cancel();
          },
          failure:function (o) {
-             alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " ID.");
-             closeModalPanel("modify_new_label");
+             if (!window.leaving) {
+                 alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " ID.");
+                 closeModalPanel("modify_new_label");
+             }
          }, scope:this
      }
 	 
@@ -752,10 +766,11 @@ window.success = function (subject_id) {
 }
 
 window.failure = function (msg) {
-    //window.ProjectSubjectManager.message(msg);
-    if (window.subjectForm != undefined) {
-        window.subjectForm.close();
-        window.subjectForm = null;
+    if (!window.leaving) {
+        if (window.subjectForm != undefined) {
+            window.subjectForm.close();
+            window.subjectForm = null;
+        }
     }
 }
 

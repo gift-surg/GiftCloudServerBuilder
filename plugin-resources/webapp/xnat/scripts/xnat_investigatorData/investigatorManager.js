@@ -13,7 +13,9 @@ function InvestigatorManager(){
 	};
 	
 	this.initFailure=function(o){
-		this.alert("ERROR " + o.status+ ": Failed to load investigator list.");
+        if (!window.leaving) {
+            this.alert("ERROR " + o.status+ ": Failed to load investigator list.");
+        }
 	};
 	
 	this.completeInit=function(o){

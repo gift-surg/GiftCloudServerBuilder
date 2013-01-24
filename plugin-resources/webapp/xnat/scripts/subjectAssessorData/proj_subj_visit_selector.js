@@ -35,7 +35,9 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
     };
 
     this.initFailure = function (o) {
-        this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status + ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " list.");
+        }
     };
 
     this.completeInit = function (o) {
@@ -151,7 +153,9 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                     }
                 },
                 failure:function () {
-                    alert("Failed to load " + XNAT.app.displayNames.plural.subject.toLowerCase() + ".");
+                    if (!window.leaving) {
+                        alert("Failed to load " + XNAT.app.displayNames.plural.subject.toLowerCase() + ".");
+                    }
                 },
                 cache:false, // Turn off caching for IE
                 argument:this

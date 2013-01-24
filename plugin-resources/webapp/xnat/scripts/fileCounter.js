@@ -1,7 +1,7 @@
-function fileCounter(_options){
+function fileCounter(_options) {
 	this.running=false;
 	
-	this.collection=new Array();
+	this.collection = [];
 	
 	this.execute=function(){
 		if(!this.running){
@@ -163,18 +163,15 @@ function fileCounter(_options){
 		}
 		this.start();
 	}
-	
-	this.handleFailure=function(o){
-		this.openItem.destination.style.color="red";
-		this.openItem.destination.innerHTML="ERROR";
-		
-		this.openItem.files=new Array();
-		
-		this.start();
-	}
-}
 
-
+    this.handleFailure = function (o) {
+        if (!window.leaving) {
+            this.openItem.destination.style.color = "red";
+            this.openItem.destination.innerHTML = "ERROR";
+            this.openItem.files = [];
+            this.start();
+        }
+    };
 
     function number_format( number, decimals, dec_point, thousands_sep ) {
       	var n = number, c = isNaN(decimals = Math.abs(decimals)) ? 2 : decimals;
@@ -184,21 +181,20 @@ function fileCounter(_options){
   		return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
     }
 
-	
-
-   function size_format (filesize) {
-      if (filesize >= 1073741824) {
-         filesize = number_format(filesize / 1073741824, 2, '.', '') + ' Gb';
-      } else {
-         if (filesize >= 1048576) {
-             filesize = number_format(filesize / 1048576, 2, '.', '') + ' Mb';
-         } else {
-             if (filesize >= 1024) {
-                 filesize = number_format(filesize / 1024, 0) + ' Kb';
-             } else {
-                 filesize = number_format(filesize, 0) + ' bytes';
-             };
-         };
-      };
-      return filesize;
-   };
+    function size_format(filesize) {
+        if (filesize >= 1073741824) {
+            filesize = number_format(filesize / 1073741824, 2, '.', '') + ' Gb';
+        } else {
+            if (filesize >= 1048576) {
+                filesize = number_format(filesize / 1048576, 2, '.', '') + ' Mb';
+            } else {
+                if (filesize >= 1024) {
+                    filesize = number_format(filesize / 1024, 0) + ' Kb';
+                } else {
+                    filesize = number_format(filesize, 0) + ' bytes';
+                }
+            }
+        }
+        return filesize;
+    }
+}

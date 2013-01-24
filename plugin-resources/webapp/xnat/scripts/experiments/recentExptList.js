@@ -3,7 +3,7 @@ function MinExptList(_div, _options){
   this.div=_div;
   
   if(this.options==undefined){
-  	this.options=new Object();
+  	this.options={};
   	this.options.recent=true;
   }
   
@@ -11,12 +11,12 @@ function MinExptList(_div, _options){
 		this.initLoader=prependLoader(this.div,"Loading recent data");
 		this.initLoader.render();
 		//load from search xml from server
-		this.initCallback={
-			success:this.completeInit,
-			failure:this.initFailure,
-            cache:false, // Turn off caching for IE
-			scope:this
-		}
+		this.initCallback = {
+            success: this.completeInit,
+            failure: this.initFailure,
+            cache: false, // Turn off caching for IE
+            scope: this
+        };
 		
 		var params="";
 		
@@ -28,9 +28,11 @@ function MinExptList(_div, _options){
 	};
 	
 	this.initFailure=function(o){
-		this.displayError("ERROR " + o.status+ ": Failed to load experiment list.");
-		this.initLoader.close();
-	};
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status+ ": Failed to load experiment list.");
+        }
+        this.initLoader.close();
+    };
 	
 	this.completeInit=function(o){
 		try{
@@ -51,8 +53,6 @@ function MinExptList(_div, _options){
 	};
 	
 	this.render=function(){
-		var items=new Array();
-									
 		var display=document.getElementById(this.div);
 		var t = document.createElement("table");
 		t.width="100%";
@@ -163,19 +163,19 @@ function MinExptList(_div, _options){
 		}
 		t.appendChild(tb);
 		display.appendChild(t);
-		//this.menu=new YAHOO.widget.Menu(this.div_id,{itemdata:items,visible:true, scrollincrement:5,position:"static"});
 
 	}
 }
-	
-	function prependLoader(div_id,msg){
-		if(div_id.id==undefined){
-			var div=document.getElementById(div_id);
-		}else{
-			var div=div_id;
-		}
-		var loader_div = document.createElement("div");
-		loader_div.innerHTML=msg;
-		div.parentNode.insertBefore(loader_div,div);
-		return new XNATLoadingGIF(loader_div);
-	}
+
+function prependLoader(div_id, msg) {
+    var div;
+    if (div_id.id == undefined) {
+        div = document.getElementById(div_id);
+    } else {
+        div = div_id;
+    }
+    var loader_div = document.createElement("div");
+    loader_div.innerHTML = msg;
+    div.parentNode.insertBefore(loader_div, div);
+    return new XNATLoadingGIF(loader_div);
+}

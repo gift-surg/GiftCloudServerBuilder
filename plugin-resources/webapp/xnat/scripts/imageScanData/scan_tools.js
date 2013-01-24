@@ -141,8 +141,10 @@ function ScanEditor(_sessionID,_scanID,_options){
   	}
 
 	this.initFailure=function(o){
-		closeModalPanel("load_scan");
-		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
+        if (!window.leaving) {
+            closeModalPanel("load_scan");
+            this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.subject.toLowerCase() + " list.");
+        }
 	};
 
 	this.completeInit=function(o){
@@ -179,187 +181,194 @@ function ScanEditor(_sessionID,_scanID,_options){
 	};
 	
 	this.render=function(){
-		if(this.scan){
-			this.panel=new YAHOO.widget.Dialog("scanDialog",{close:true,
-			   width:"390px",height:"300px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
-			if(this.scanID==undefined)
-				this.panel.setHeader("New Scan Details");
-			else
-				this.panel.setHeader(this.scanID +" Details");
+        if (this.scan) {
+            this.panel = new YAHOO.widget.Dialog("scanDialog", {close: true,
+                width: "390px", height: "300px", underlay: "shadow", modal: true, fixedcenter: true, visible: false});
+            if (this.scanID == undefined)
+                this.panel.setHeader("New Scan Details");
+            else
+                this.panel.setHeader(this.scanID + " Details");
 
-			var modality=this.scan.xsiType;
-			var bd = document.createElement("form");
+            var modality = this.scan.xsiType;
+            var bd = document.createElement("form");
 
-			var table = document.createElement("table");
-			var tb = document.createElement("tbody");
-			table.appendChild(tb);
-			bd.appendChild(table);
+            var table = document.createElement("table");
+            var tb = document.createElement("tbody");
+            table.appendChild(tb);
+            bd.appendChild(table);
 
-			//id
-			var tr=document.createElement("tr");
-			var td1=document.createElement("th");
-			var td2=document.createElement("td");
+            //id
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("th");
+            var td2 = document.createElement("td");
 
-			td1.innerHTML="ID:";
-			td1.align="left";
-			if(this.scan.extension.XnatImagescandataId){
-				td2.innerHTML="<input type='hidden' name='" + modality + "/ID' value='" + this.scan.getProperty("ID") + "'/>"+this.scan.getProperty("ID");
-			}else{
-				td2.innerHTML="<input type='text' name='" + modality + "/ID' value=''/>";
-			}
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
+            td1.innerHTML = "ID:";
+            td1.align = "left";
+            if (this.scan.extension.XnatImagescandataId) {
+                td2.innerHTML = "<input type='hidden' name='" + modality + "/ID' value='" + this.scan.getProperty("ID") + "'/>" + this.scan.getProperty("ID");
+            } else {
+                td2.innerHTML = "<input type='text' name='" + modality + "/ID' value=''/>";
+            }
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tb.appendChild(tr);
 
-			if(this.scan.extension.XnatImagescandataId){
-				this.panel.method='PUT';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/scans/' + this.scanID + '?req_format=form&XNAT_CSRF='+csrfToken;
-				td1.innerHTML+="<input type='hidden' name='" + modality + "/xnat_imageScanData_id' value='" + this.scan.extension.XnatImagescandataId + "'/>";
-			}else{
-				this.panel.method='POST';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/scans?req_format=form&XNAT_CSRF='+csrfToken;
-			}
+            if (this.scan.extension.XnatImagescandataId) {
+                this.panel.method = 'PUT';
+                this.panel.action = serverRoot + '/REST/experiments/' + this.sessionID + '/scans/' + this.scanID + '?req_format=form&XNAT_CSRF=' + csrfToken;
+                td1.innerHTML += "<input type='hidden' name='" + modality + "/xnat_imageScanData_id' value='" + this.scan.extension.XnatImagescandataId + "'/>";
+            } else {
+                this.panel.method = 'POST';
+                this.panel.action = serverRoot + '/REST/experiments/' + this.sessionID + '/scans?req_format=form&XNAT_CSRF=' + csrfToken;
+            }
 
-			//modality
-			tr=document.createElement("tr");
-			td1=document.createElement("th");
-			td2=document.createElement("td");
+            //modality
+            tr = document.createElement("tr");
+            td1 = document.createElement("th");
+            td2 = document.createElement("td");
 
-			td1.innerHTML="Modality:";
-			td1.align="left";
-			var modS="<input type='hidden' name='ELEMENT_0' value='" + modality +"'/>";
-			if(modality=="xnat:mrScanData"){
-				td2.innerHTML="MR" + modS;
-			}else if(modality=="xnat:petScanData"){
-				td2.innerHTML="PET" + modS;
-			}else if(modality=="xnat:ctScanData"){
-				td2.innerHTML="CT" + modS;
-			}else{
-				td2.innerHTML=modality + modS;
-			}
+            td1.innerHTML = "Modality:";
+            td1.align = "left";
+            var modS = "<input type='hidden' name='ELEMENT_0' value='" + modality + "'/>";
+            if (modality == "xnat:mrScanData") {
+                td2.innerHTML = "MR" + modS;
+            } else if (modality == "xnat:petScanData") {
+                td2.innerHTML = "PET" + modS;
+            } else if (modality == "xnat:ctScanData") {
+                td2.innerHTML = "CT" + modS;
+            } else {
+                td2.innerHTML = modality + modS;
+            }
 
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tb.appendChild(tr);
 
-			//type
-			tr=document.createElement("tr");
-			td1=document.createElement("th");
-			td2=document.createElement("td");
+            //type
+            tr = document.createElement("tr");
+            td1 = document.createElement("th");
+            td2 = document.createElement("td");
 
-			td1.innerHTML="Type:";
-			td1.align="left";
+            td1.innerHTML = "Type:";
+            td1.align = "left";
 
-			var type_container=document.createElement('div');
-			if(!XNAT.app.sTMod && this.scan.extension.Type){
-				type_container.style.display='none';
-				td2.innerHTML=this.scan.extension.Type;
-			}
-			td2.appendChild(type_container);
+            var type_container = document.createElement('div');
+            if (!XNAT.app.sTMod && this.scan.extension.Type) {
+                type_container.style.display = 'none';
+                td2.innerHTML = this.scan.extension.Type;
+            }
+            td2.appendChild(type_container);
 
-			this.type_input = document.createElement('input');
-			this.type_input.type='text';
-			this.type_input.id='type';
-			this.type_input.size='20';
-			this.type_input.style.width="180px";
-			this.type_input.name=modality + "/type";
-			if(this.scan.extension.Type){
-				this.type_input.value=this.scan.extension.Type;
-			}
-			type_container.appendChild(this.type_input);
+            this.type_input = document.createElement('input');
+            this.type_input.type = 'text';
+            this.type_input.id = 'type';
+            this.type_input.size = '20';
+            this.type_input.style.width = "180px";
+            this.type_input.name = modality + "/type";
+            if (this.scan.extension.Type) {
+                this.type_input.value = this.scan.extension.Type;
+            }
+            type_container.appendChild(this.type_input);
 
-			this.dToggler = document.createElement("span");
-			this.dToggler.id="toggleTypes";
-			type_container.appendChild(this.dToggler);
+            this.dToggler = document.createElement("span");
+            this.dToggler.id = "toggleTypes";
+            type_container.appendChild(this.dToggler);
 
-			this.auto_type_div = document.createElement('div');
-			this.auto_type_div.id='type_auto_div';
-			type_container.appendChild(this.auto_type_div);
+            this.auto_type_div = document.createElement('div');
+            this.auto_type_div.id = 'type_auto_div';
+            type_container.appendChild(this.auto_type_div);
 
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tb.appendChild(tr);
 
 
-			this.oPushButtonD = new YAHOO.widget.Button({container:this.dToggler});
-			this.dToggler.style.display="none";
+            this.oPushButtonD = new YAHOO.widget.Button({container: this.dToggler});
+            this.dToggler.style.display = "none";
 
-		    this.initCallback={
-				success:this.loadedTypes,
-				failure:this.initTypesFailure,
-                cache:false, // Turn off caching for IE
-				scope:this
-			}
-			if(this.options.project==undefined){
-				YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/scan_types?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
-	   		}else{
-				YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/' + this.options.project + '/scan_types?XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
-	   		}
+            this.initCallback = {
+                success: this.loadedTypes,
+                failure: this.initTypesFailure,
+                cache: false, // Turn off caching for IE
+                scope: this
+            }
+            if (this.options.project == undefined) {
+                YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/REST/scan_types?XNAT_CSRF=' + window.csrfToken + '&format=json', this.initCallback, null, this);
+            } else {
+                YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/REST/projects/' + this.options.project + '/scan_types?XNAT_CSRF=' + window.csrfToken + '&format=json', this.initCallback, null, this);
+            }
 
-			//quality
-			tr=document.createElement("tr");
-			td1=document.createElement("th");
-			td2=document.createElement("td");
+            //quality
+            tr = document.createElement("tr");
+            td1 = document.createElement("th");
+            td2 = document.createElement("td");
 
-			td1.innerHTML="Quality:";
-			td1.align="left";
-			var sel = document.createElement("select");
-			sel.name=modality + "/quality";
-		        sel.options[0]=new Option("(SELECT)","");
-		        populateScanQualitySelector(serverRoot,this.options && this.options.project,sel,1,this.scan.extension.Quality);
-			td2.appendChild(sel);
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
+            td1.innerHTML = "Quality:";
+            td1.align = "left";
+            var sel = document.createElement("select");
+            sel.name = modality + "/quality";
+            sel.options[0] = new Option("(SELECT)", "");
+            populateScanQualitySelector(serverRoot, this.options && this.options.project, sel, 1, this.scan.extension.Quality);
+            td2.appendChild(sel);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tb.appendChild(tr);
 
-			//notes
-			tr=document.createElement("tr");
-			td1=document.createElement("th");
-			td2=document.createElement("td");
+            //notes
+            tr = document.createElement("tr");
+            td1 = document.createElement("th");
+            td2 = document.createElement("td");
 
-			td1.innerHTML="Notes:";
-			td1.align="left";
-			if(this.scan.extension.Note!=undefined && this.scan.extension.Note!=null)
-				td2.innerHTML="<textarea cols='30' rows='4' name='" + modality + "/note'>" +this.scan.extension.Note +"</textarea>";
-			else
-				td2.innerHTML="<textarea cols='30' rows='4' name='" + modality + "/note'></textarea>";
+            td1.innerHTML = "Notes:";
+            td1.align = "left";
+            if (this.scan.extension.Note != undefined && this.scan.extension.Note != null)
+                td2.innerHTML = "<textarea cols='30' rows='4' name='" + modality + "/note'>" + this.scan.extension.Note + "</textarea>";
+            else
+                td2.innerHTML = "<textarea cols='30' rows='4' name='" + modality + "/note'></textarea>";
 
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tb.appendChild(tr);
 
-			this.panel.setBody(bd);
+            this.panel.setBody(bd);
 
-			this.panel.form=bd;
-			this.panel.manager=this;
+            this.panel.form = bd;
+            this.panel.manager = this;
 
-			var buttons=[{text:"Save",handler:{fn:function(){
-				var params = parseForm(this.form);
-				openModalPanel("save_scan","Saving Scan.");
-				YAHOO.util.Connect.asyncRequest(this.method,this.action,{success:function(){
-					closeModalPanel("save_scan");
-					this.manager.onModification.fire();
-					this.cancel();
-				},failure:function(){
-					closeModalPanel("save_scan");
-					alert("FAILED;");
-					this.cancel();
+            var buttons = [
+                {text: "Save", handler: {fn: function () {
+                    var params = parseForm(this.form);
+                    var callback = {
+                        success: function () {
+                            closeModalPanel("save_scan");
+                            this.manager.onModification.fire();
+                            this.cancel();
                         },
-                        cache:false, // Turn off caching for IE
-                        scope:this
-                    }, params);
-			}},isDefault:true},
-			{text:"Cancel",handler:{fn:function(){
-				this.cancel();
-			}}}];
-			this.panel.cfg.queueProperty("buttons",buttons);
+                        failure: function () {
+                            if (!window.leaving) {
+                                closeModalPanel("save_scan");
+                                alert("FAILED;");
+                            }
+                            this.cancel();
+                        },
+                        cache: false, // Turn off caching for IE
+                        scope: this
+                    };
+                    openModalPanel("save_scan", "Saving Scan.");
+                    YAHOO.util.Connect.asyncRequest(this.method, this.action, callback, params);
+                }}, isDefault: true},
+                {text: "Cancel", handler: {fn: function () {
+                    this.cancel();
+                }}}
+            ];
+            this.panel.cfg.queueProperty("buttons", buttons);
 
 
-			this.panel.render("page_body");
+            this.panel.render("page_body");
 
-			this.panel.show();
-		}
-	}
+            this.panel.show();
+        }
+    }
 
 	this.loadedTypes=function(o){
 		this.list= eval("(" + o.responseText +")").ResultSet.Result;
@@ -399,7 +408,9 @@ function ScanEditor(_sessionID,_scanID,_options){
 	}
 
 	this.initTypesFailure=function(o){
-		this.displayError("ERROR " + o.status+ ": Failed to load scan types list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status+ ": Failed to load scan types list.");
+        }
 	};
 }
 
@@ -407,8 +418,10 @@ function loadScans(session_id,project,tbody_id){
 	this.initCallback={
 		success:this.completeScanLoad,
 		failure:function(o){
-			closeModalPanel("scan_summary");
-			this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
+            if (!window.leaving) {
+                closeModalPanel("scan_summary");
+                this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
+            }
 		},
         cache:false, // Turn off caching for IE
 		arguments:{"session_id":session_id,"project":project,"tbody_id":tbody_id}
@@ -521,8 +534,10 @@ function scanDeletor(_options){
 					
 				},
 				failure:function(o){
-					closeModalPanel("delete_scan");
-					this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
+                    if (!window.leaving) {
+                        closeModalPanel("delete_scan");
+                        this.displayError("ERROR " + o.status+ ": Failed to load scan list.");
+                    }
 				},
                 cache:false, // Turn off caching for IE
 				scope:this
@@ -670,8 +685,10 @@ function ScanSet(_options,_scans){
 		this.initCallback={
 			success:this.completeScanLoad,
 			failure:function(o){
-				closeModalPanel("scan_summary");
-				displayError("ERROR " + o.status+ ": Failed to load scan list.");
+                if (!window.leaving) {
+                    closeModalPanel("scan_summary");
+                    displayError("ERROR " + o.status+ ": Failed to load scan list.");
+                }
 			},
 			arguments:{"session_id":this.options.session_id},
             cache:false, // Turn off caching for IE
@@ -970,7 +987,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 									closeModalPanel("scan_type_loading");
 									this.populateAll();
 								},
-								failure:function(obj){},
+								failure: function(obj){},
                                 cache:false, // Turn off caching for IE
 								scope:this
 							}

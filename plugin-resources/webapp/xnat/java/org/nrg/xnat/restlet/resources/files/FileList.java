@@ -133,6 +133,18 @@ public class FileList extends XNATCatalogTemplate {
         if(this.parent!=null && this.security!=null){
             try {
                 if(user.canEdit(this.security)){
+                    if(proj==null){
+                        if(parent.getItem().instanceOf("xnat:experimentData")){
+                            proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+                        }else if(security.getItem().instanceOf("xnat:experimentData")){
+                            proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+                        }else if(parent.getItem().instanceOf("xnat:subjectData")){
+                            proj = ((XnatSubjectdata)parent).getPrimaryProject(false);
+                        }else if(security.getItem().instanceOf("xnat:subjectData")){
+                            proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+                        }
+                    }
+
                     final Object resourceIdentifier;
 
                     if(resource==null){
@@ -266,8 +278,8 @@ public class FileList extends XNATCatalogTemplate {
 	
 	                            CatalogUtils.moveToHistory(catFile, f,(CatEntryBean)entry,ci);
 	                            
-	                            if(this.isQueryVariableTrue("removeFiles")) {
-	                        	f.delete();
+                                if (!this.isQueryVariableFalse("removeFiles") && !f.delete()) {
+                                    logger.warn("Error attempting to delete physical file for deleted resource: " + f.getAbsolutePath());
 	                            }
 	
 	                            //if parent folder is empty, then delete folder
@@ -576,8 +588,7 @@ public class FileList extends XNATCatalogTemplate {
 
                         if (mt.equals(MediaType.IMAGE_JPEG) && Dcm2Jpg.isDicom(f)) {
                             try {
-                                byte[] jpeg = Dcm2Jpg.convert(f);
-                                return new InputRepresentation(new ByteArrayInputStream(jpeg), mt);
+                                return new InputRepresentation(new ByteArrayInputStream(Dcm2Jpg.convert(f)), mt);
                             }
                             catch (IOException e) {
                                 this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to convert this file to jpeg : " + e.getMessage());
@@ -803,7 +814,7 @@ public class FileList extends XNATCatalogTemplate {
                     	
                     	ArrayList<CatEntryI> entries = new ArrayList<CatEntryI>();
                     	
-                    	CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryById(cat, filepath);
+                    	CatEntryBean e = (CatEntryBean)CatalogUtils.getEntryByURI(cat, filepath);
                         if(e != null){
                         	entries.add(e);
                     	}
@@ -880,7 +891,7 @@ public class FileList extends XNATCatalogTemplate {
         if(security !=null){
             downloadName=((ArchivableItem)security).getArchiveDirectoryName();
         }else {
-            downloadName=this.getSessionMaps().get(0);
+            downloadName = this.getSessionMaps().get(Integer.toString(0));
         }
 
         if(mt.equals(MediaType.APPLICATION_ZIP)){

@@ -6,7 +6,6 @@ import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,14 +32,28 @@ public class XnatLdapAuthenticationProvider extends LdapAuthenticationProvider i
 		return supports;
 	}
 	
-	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		Authentication auth = super.authenticate(authentication);
-        if (_log.isDebugEnabled()) {
-            _log.debug("Found auth object of type: " + auth.getClass() + " (principal is: " + auth.getPrincipal().getClass() + ")");
-        }
-		return auth;
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+	Authentication auth = super.authenticate(authentication);
+	if (_log.isDebugEnabled()) {
+	    _log.debug("Found auth object of type: " + auth.getClass() + " (principal is: "
+		    + auth.getPrincipal().getClass() + ")");
 	}
+
+	/*
+	 * Unlike the other authentication providers, we hafta do this check here. This class is on a different branch
+	 * of the class hierarchy, and so doesn't inherit additionalAuthenticationChecks.
+	 */
+	UserDetails userDetails = (UserDetails) auth.getPrincipal();
+	if (!XDATUserDetails.class.isAssignableFrom(userDetails.getClass())) {
+	    throw new AuthenticationServiceException("User details class is not of a type I know how to handle: "
+		    + userDetails.getClass());
+	}
+	final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
+	xdatUserDetails.validateUserLogin();
+
+	return auth;
+    }
 	
 	@Override
 	public String toString(){

@@ -456,9 +456,9 @@ jq(window).load(function(){
 // end footer.js
 });
 
-
-
-
-
-
-
+// Set the leaving flag to false on every load.
+window.leaving = false;
+jq(window).bind('beforeunload', function() {
+    // Then before we unload set that flag to true.
+    window.leaving = true;
+});

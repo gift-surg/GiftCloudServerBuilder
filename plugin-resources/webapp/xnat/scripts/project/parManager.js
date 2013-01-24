@@ -22,8 +22,10 @@ function PARManager(_div,_obj){
 	
 	
 	this.initFailure=function(o){
-		closeModalPanel("par");
-		displayError("ERROR " + o.status+ ": Failed to load par list." + e.toString());
+        if (!window.leaving) {
+            closeModalPanel("par");
+            displayError("ERROR " + o.status+ ": Failed to load par list." + e.toString());
+        }
 	};
 	
 	this.completeInit=function(o){

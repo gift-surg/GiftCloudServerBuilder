@@ -30,8 +30,10 @@ function reconEditor(_sessionID,_reconID,_options){
   	}
 	
 	this.initFailure=function(o){
-		closeModalPanel("load_recon");
-		this.displayError("ERROR " + o.status+ ": Failed to load reconstruction list.");
+        if (!window.leaving) {
+            closeModalPanel("load_recon");
+            this.displayError("ERROR " + o.status+ ": Failed to load reconstruction list.");
+        }
 	};
 	
 	this.completeInit=function(o){
@@ -105,7 +107,7 @@ function reconEditor(_sessionID,_reconID,_options){
 				td1.innerHTML+="<input type='hidden' name='xnat:reconstructedImageData/xnat_reconstructedimagedata_id' value='" + this.recon.XnatReconstructedimagedataId + "'/>";
 			}else{
 				this.panel.method='POST';
-				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/reconstructions?req_format=form&XNAT_CSRF='+csrfToken';
+				this.panel.action=serverRoot +'/REST/experiments/' + this.sessionID +'/reconstructions?req_format=form&XNAT_CSRF='+csrfToken;
 			}
 			
 			//type
@@ -169,8 +171,10 @@ function reconEditor(_sessionID,_reconID,_options){
 					this.manager.onModification.fire();
 					this.cancel();
 				},failure:function(){
-					closeModalPanel("save_recon");
-					alert("FAILED;");
+                    if (!window.leaving) {
+                        closeModalPanel("save_recon");
+                        alert("FAILED;");
+                    }
 					this.cancel();
 				}, cache:false, scope:this},params);
 			}},isDefault:true},
@@ -192,8 +196,10 @@ function loadrecons(session_id,project,tbody_id){
 	this.initCallback={
 		success:this.completereconLoad,
 		failure:function(o){
-			closeModalPanel("recon_summary");
-			this.displayError("ERROR " + o.status+ ": Failed to load recon list.");
+            if (!window.leaving) {
+                closeModalPanel("recon_summary");
+                this.displayError("ERROR " + o.status+ ": Failed to load recon list.");
+            }
 		},
         cache:false, // Turn off caching for IE
 		arguments:{"session_id":session_id,"project":project,"tbody_id":tbody_id}
@@ -279,8 +285,10 @@ function reconDeletor(_options){
 					loadrecons(this.arguments.session_id,this.arguments.project,this.arguments.tbody_id);
 				},
 				failure:function(o){
-					closeModalPanel("delete_recon");
-					this.displayError("ERROR " + o.status+ ": Failed to load recon list.");
+                    if (!window.leaving) {
+                        closeModalPanel("delete_recon");
+                        this.displayError("ERROR " + o.status+ ": Failed to load recon list.");
+                    }
 				},
                 cache:false, // Turn off caching for IE
 				arguments:this.options

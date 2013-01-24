@@ -2,7 +2,6 @@ function restLister(_info) {
     this.info = _info;
     this.loading = 0;
     this.loaded = 0;
-    this.leaving = 0;
 
     this.init = function () {
         if (this.loading == 0) {
@@ -20,14 +19,14 @@ function restLister(_info) {
 
     this.handleFailure = function (error) {
         // If we're leaving, then this is a complete red herring.
-        if (this.leaving != 1) {
+        if (!window.leaving) {
             alert("Error loading resources: [" + error.status + "] " + error.statusText);
             this.loading = 0;
         }
     }
 
     this.processScans = function (o) {
-        this.info.scans = new Array();
+        this.info.scans = [];
         var contents = eval("(" + o.responseText + ")").ResultSet.Result;
         for (var i = 0; i < contents.length; i++) {
             if (contents[i].category == this.info.category) {

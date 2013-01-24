@@ -99,9 +99,11 @@ function SearchXMLManager(_xml){
 		}
 
 	this.valuesFailure=function(o){
-		closeModalPanel("load_cv");
-		this.renderFilterForm2(o.argument.element_name,o.argument.field_id,o.argument.oColumn);
-				}
+        if (!window.leaving) {
+            closeModalPanel("load_cv");
+            this.renderFilterForm2(o.argument.element_name,o.argument.field_id,o.argument.oColumn);
+        }
+    }
 
 	this.processValues=function(o){
 		closeModalPanel("load_cv");
@@ -312,7 +314,11 @@ function SearchXMLManager(_xml){
 
 							this.fillVersionBox(o.argument);
 						},
-						failure:function(o){alert("Failed to load fields for " + o.argument.element_name);},
+						failure: function(o) {
+                            if (!window.leaving) {
+                                alert("Failed to load fields for " + o.argument.element_name);
+                            }
+                        },
                         cache:false, // Turn off caching for IE
 						scope:sm,
 						argument:element_name
@@ -738,7 +744,11 @@ function SearchXMLManager(_xml){
 					alert(e.toString());
 				}
 			},
-			failure:function(o){alert("Failed to load available fields.");},
+			failure: function(o) {
+                if (!window.leaving) {
+                    alert("Failed to load available fields.");
+                }
+            },
             cache:false, // Turn off caching for IE
 			scope:this
 		}

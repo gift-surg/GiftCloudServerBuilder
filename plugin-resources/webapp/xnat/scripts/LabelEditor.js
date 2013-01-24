@@ -132,9 +132,9 @@ XNAT.app.modifyLabel=function(arg1,arg2,container){
 	        this.cancel();
     	},
         failure:function(o){
-       		alert("ERROR (" +o.status +"): Failed to modify label.");
-	        this.selector.onError.fire();
-	        closeModalPanel("modify_new_label");	
+            alert("ERROR (" +o.status +"): Failed to modify label.");
+            this.selector.onError.fire();
+            closeModalPanel("modify_new_label");
     	},
         cache:false, // Turn off caching for IE
         scope:this
@@ -165,7 +165,9 @@ XNAT.app._label.labelLoaderP=function(){
 	};
 	
 	this.initFailure=function(o){
-		this.displayError("ERROR " + o.status+ ": Failed to load current label list.");
+        if (!window.leaving) {
+            this.displayError("ERROR " + o.status+ ": Failed to load current label list.");
+        }
 	};
 	
 	this.completeInit=function(o){

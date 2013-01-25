@@ -68,7 +68,7 @@ public class MergePrearcToArchiveSession extends MergeSessionsA<XnatImagesession
                     try {
                         File f = CatalogUtils.getCatalogFile(root, res);
                         CatCatalogBean cat = CatalogUtils.getCatalog(root, res);
-                        if (CatalogUtils.formalizeCatalog(cat, f.getParentFile().getAbsolutePath(), user, c)) {
+                        if (CatalogUtils.formalizeCatalog(cat, f.getParentFile().getAbsolutePath(), user, c,checksums)) {
                             CatalogUtils.writeCatalogToFile(cat, f, checksums);
                         }
                     } catch (Exception exception) {

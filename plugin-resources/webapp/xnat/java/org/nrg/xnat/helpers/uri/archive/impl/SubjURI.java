@@ -1,13 +1,18 @@
 package org.nrg.xnat.helpers.uri.archive.impl;
 
+import java.util.List;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.ItemI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveURI;
 import org.nrg.xnat.helpers.uri.archive.SubjectURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
+
+import com.google.common.collect.Lists;
 
 public class SubjURI extends ArchiveURI implements ArchiveItemURI,SubjectURII {
 	private XnatSubjectdata subj=null;
@@ -33,7 +38,15 @@ public class SubjURI extends ArchiveURI implements ArchiveItemURI,SubjectURII {
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getSubject();
+	}
+
+	@Override
+	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
+		List<XnatAbstractresourceI> res=Lists.newArrayList();
+		final XnatSubjectdata expt=getSubject();
+		res.addAll(expt.getResources_resource());
+		return res;
 	}
 }

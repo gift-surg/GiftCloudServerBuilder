@@ -1,12 +1,19 @@
 package org.nrg.xnat.helpers.uri.archive;
 
+import java.util.List;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatImageassessordataI;
+import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.model.XnatReconstructedimagedataI;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.archive.impl.ProjSubjURI;
+
+import com.google.common.collect.Lists;
 
 public abstract class ProjSubjSessionURIA extends ProjSubjURI  implements ArchiveItemURI{
 	private XnatImagesessiondata assessed=null;
@@ -39,5 +46,26 @@ public abstract class ProjSubjSessionURIA extends ProjSubjURI  implements Archiv
 	public XnatImagesessiondata getSession(){
 		populateSession();
 		return assessed;
+	}
+
+	@Override
+	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
+		List<XnatAbstractresourceI> res=Lists.newArrayList();
+		final XnatImagesessiondata expt=getSession();
+		res.addAll(expt.getResources_resource());
+		
+		if(includeAll){
+			for(XnatImagescandataI scan:expt.getScans_scan()){
+				res.addAll(scan.getFile());
+			}
+			for(XnatReconstructedimagedataI scan:expt.getReconstructions_reconstructedimage()){
+				res.addAll(scan.getOut_file());
+			}
+			for(XnatImageassessordataI scan:expt.getAssessors_assessor()){
+				res.addAll(scan.getOut_file());
+			}
+		}
+		
+		return res;
 	}
 }

@@ -4,11 +4,11 @@ import java.util.Map;
 
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xft.ItemI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.helpers.uri.archive.SubjectURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 public class ResourcesProjSubjURI extends ResourcesProjURI implements ResourceURII,ArchiveItemURI,SubjectURII{
 	private XnatSubjectdata subject=null;
@@ -44,7 +44,7 @@ public class ResourcesProjSubjURI extends ResourcesProjURI implements ResourceUR
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getSubject();
 	}
 }

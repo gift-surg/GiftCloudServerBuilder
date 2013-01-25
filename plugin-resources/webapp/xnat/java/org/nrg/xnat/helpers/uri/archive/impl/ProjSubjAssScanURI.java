@@ -1,17 +1,21 @@
 package org.nrg.xnat.helpers.uri.archive.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xft.ItemI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
+import org.nrg.xnat.helpers.uri.archive.AssessedURII;
 import org.nrg.xnat.helpers.uri.archive.ProjSubjSessionURIA;
 import org.nrg.xnat.helpers.uri.archive.ScanURII;
-import org.nrg.xnat.helpers.uri.archive.AssessedURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
+
+import com.google.common.collect.Lists;
 
 public class ProjSubjAssScanURI extends ProjSubjSessionURIA  implements ArchiveItemURI,AssessedURII,ScanURII{
 	private XnatImagescandata scan=null;
@@ -47,7 +51,15 @@ public class ProjSubjAssScanURI extends ProjSubjSessionURIA  implements ArchiveI
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getSession();
+	}
+
+	@Override
+	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
+		List<XnatAbstractresourceI> res=Lists.newArrayList();
+		final XnatImagescandata expt=getScan();
+		res.addAll(expt.getFile());
+		return res;
 	}
 }

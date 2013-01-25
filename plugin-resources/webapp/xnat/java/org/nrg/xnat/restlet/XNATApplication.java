@@ -16,7 +16,6 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.restlet.actions.UserSessionId;
-import org.nrg.xnat.restlet.extensions.WorkflowsRestlet;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
 import org.nrg.xnat.restlet.resources.ConfigResource;
 import org.nrg.xnat.restlet.resources.ExperimentListResource;
@@ -62,6 +61,7 @@ import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.restlet.services.AuditRestlet;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.services.MoveFiles;
+import org.nrg.xnat.restlet.services.RefreshCatalog;
 import org.nrg.xnat.restlet.services.RemoteLoggingRestlet;
 import org.nrg.xnat.restlet.services.SettingsRestlet;
 import org.nrg.xnat.restlet.services.mail.MailRestlet;
@@ -314,6 +314,8 @@ public class XNATApplication extends Application {
         router.attach("/services/tokens/{OPERATION}/{TOKEN}/{SECRET}", AliasTokenRestlet.class);
 
         router.attach("/services/audit",AuditRestlet.class);
+        router.attach("/services/refresh/catalog",RefreshCatalog.class);  
+        
         router.attach("/status/{TRANSACTION_ID}",SQListenerRepresentation.class);
 
 

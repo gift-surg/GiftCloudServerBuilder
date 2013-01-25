@@ -4,11 +4,11 @@ import java.util.Map;
 
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xft.ItemI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.archive.ExperimentURII;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 public class ResourcesProjSubjExptURI extends ResourcesProjSubjURI implements ResourceURII,ArchiveItemURI,ExperimentURII{
 	private XnatExperimentdata expt=null;
@@ -44,7 +44,7 @@ public class ResourcesProjSubjExptURI extends ResourcesProjSubjURI implements Re
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getExperiment();
 	}
 }

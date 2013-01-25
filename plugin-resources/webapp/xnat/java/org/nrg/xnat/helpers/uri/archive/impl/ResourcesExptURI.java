@@ -2,13 +2,16 @@ package org.nrg.xnat.helpers.uri.archive.impl;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xft.ItemI;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.archive.ExperimentURII;
 import org.nrg.xnat.helpers.uri.archive.ResourceURIA;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 public class ResourcesExptURI extends ResourceURIA implements ArchiveItemURI,ResourceURII,ExperimentURII{
 	private XnatExperimentdata expt=null;
@@ -34,7 +37,25 @@ public class ResourcesExptURI extends ResourceURIA implements ArchiveItemURI,Res
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getExperiment();
+	}
+
+	@Override
+	public XnatAbstractresourceI getXnatResource() {
+		if(this.getExperiment()!=null){
+			for(XnatAbstractresourceI res:this.getExperiment().getResources_resource()){
+				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+					return res;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public XnatProjectdata getProject() {
+		return this.getExperiment().getProjectData();
 	}
 }

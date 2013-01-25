@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.nrg.xnat.restlet.services;
 
@@ -30,10 +30,33 @@ import com.google.common.collect.Lists;
  *
  *	The refresh catalog restlet is a generic restlet for refreshing catalog entries.
  *
- *  It will review the query string parameters and a multi-part form body.  For each parameter named 'resource' it will refresh the associated catalog
- *  
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN/resources/DICOM
- *  
+ *  It will review the query string parameters and a multi-part form body.  For each parameter named 'resource' it will refresh the associated catalogs
+ *
+ *  Options:
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/reconstructions/RECON/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/reconstructions/RECON
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/assessors/ASSESSOR/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/assessors/ASSESSOR
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT -- will not cascade to children (experiments)
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/projects/PROJECT-- will not cascade to children (subjects or experiments)
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/scans/SCAN/resources/DICOM
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/scans/SCAN
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/reconstructions/RECON/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/reconstructions/RECON
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/assessors/ASSESSOR/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/assessors/ASSESSOR
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/experiments/EXPT
+ *  /services/refresh/catalog?resource=/archive/subjects/SUBJECT/resources/LABEL
+ *  /services/refresh/catalog?resource=/archive/subjects/SUBJECT -- will not cascade to children (experiments)
+ *
+ *  Multiple resource paths can be specified in a single submit using multiple resource parameters on the query string or in a multipart form body
  */
 public class RefreshCatalog extends SecureResource {
 
@@ -50,7 +73,7 @@ public class RefreshCatalog extends SecureResource {
 	public boolean allowPost() {
 		return true;
 	}
-	
+
 	List<String> resources=Lists.newArrayList();
 	ListMultimap<String,Object> otherParams=ArrayListMultimap.create();
 
@@ -63,34 +86,34 @@ public class RefreshCatalog extends SecureResource {
 			}
 		}
 	}
-	
+
 	@Override
-	public void handlePost() {	
+	public void handlePost() {
 		try {
 			final Representation entity = this.getRequest().getEntity();
-			
-			//parse body to identify resources if its multi-part form data  
+
+			//parse body to identify resources if its multi-part form data
 			//TODO: Handle JSON body.
 			if (RequestUtil.isMultiPartFormData(entity)) {
 				loadParams(new Form(entity));
 			}
 			loadQueryVariables();//parse query string to identify resources
-			
+
 			for(final String resource:resources){
 				//parse passed URI parameter
 				URIManager.DataURIA uri=UriParserUtils.parseURI(resource);
-				
+
 				ArchiveItemURI resourceURI=null;
 				if(uri instanceof ArchiveItemURI){
 					resourceURI=(ArchiveItemURI)uri;
 				}else{
 					throw new ClientException("Invalid Resource URI:"+ resource);
 				}
-				
+
 				//call refresh operation
 				ResourceUtils.refreshResourceCatalog(resourceURI, user,this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"));
 			}
-			
+
 			this.getResponse().setStatus(Status.SUCCESS_OK);
 		} catch (ActionException e) {
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
@@ -102,6 +125,6 @@ public class RefreshCatalog extends SecureResource {
 			return;
 		}
 	}
-	
-	
+
+
 }

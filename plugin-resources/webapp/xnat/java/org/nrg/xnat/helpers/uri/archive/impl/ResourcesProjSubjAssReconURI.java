@@ -2,14 +2,16 @@ package org.nrg.xnat.helpers.uri.archive.impl;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xft.ItemI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
+import org.nrg.xnat.helpers.uri.archive.AssessedURII;
 import org.nrg.xnat.helpers.uri.archive.ReconURII;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.helpers.uri.archive.ResourcesProjSubjSessionURIA;
-import org.nrg.xnat.helpers.uri.archive.AssessedURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 public class ResourcesProjSubjAssReconURI extends ResourcesProjSubjSessionURIA  implements AssessedURII,ResourceURII,ArchiveItemURI,ReconURII{
 	private XnatReconstructedimagedata recon=null;
@@ -36,7 +38,34 @@ public class ResourcesProjSubjAssReconURI extends ResourcesProjSubjSessionURIA  
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getSession();
+	}
+
+	@Override
+	public XnatAbstractresourceI getXnatResource() {
+		if(this.getRecon()!=null){
+			String type=(String)this.props.get(URIManager.TYPE);
+			
+			if(type==null){
+				type="out";
+			}
+			
+			if(type.equals("out")){
+				for(XnatAbstractresourceI res:this.getRecon().getOut_file()){
+					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+						return res;
+					}
+				}
+			}else if(type.equals("in")){
+				for(XnatAbstractresourceI res:this.getRecon().getIn_file()){
+					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+						return res;
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 }

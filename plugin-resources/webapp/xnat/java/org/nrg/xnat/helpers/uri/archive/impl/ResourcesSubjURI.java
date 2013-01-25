@@ -2,13 +2,16 @@ package org.nrg.xnat.helpers.uri.archive.impl;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xft.ItemI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.archive.ResourceURIA;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.helpers.uri.archive.SubjectURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 public class ResourcesSubjURI extends ResourceURIA implements ArchiveItemURI,ResourceURII,SubjectURII{
 	private XnatSubjectdata subj=null;
@@ -34,7 +37,26 @@ public class ResourcesSubjURI extends ResourceURIA implements ArchiveItemURI,Res
 	}
 	
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getSubject();
+	}
+
+
+	@Override
+	public XnatAbstractresourceI getXnatResource() {
+		if(this.getSubject()!=null){
+			for(XnatAbstractresourceI res:this.getSubject().getResources_resource()){
+				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+					return res;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public XnatProjectdata getProject() {
+		return this.getSubject().getProjectData();
 	}
 }

@@ -1,16 +1,20 @@
 package org.nrg.xnat.helpers.uri.archive.impl;
 
+import java.util.List;
 import java.util.Map;
 
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xft.ItemI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveURI;
-import org.nrg.xnat.helpers.uri.archive.ReconURII;
 import org.nrg.xnat.helpers.uri.archive.AssessedURII;
+import org.nrg.xnat.helpers.uri.archive.ReconURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
+
+import com.google.common.collect.Lists;
 
 public class ExptReconURI extends ArchiveURI implements ArchiveItemURI,AssessedURII,ReconURII{
 	private XnatReconstructedimagedata recon=null;
@@ -46,7 +50,15 @@ public class ExptReconURI extends ArchiveURI implements ArchiveItemURI,AssessedU
 		return this.recon;
 	}
 
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getSession();
+	}
+
+	@Override
+	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
+		List<XnatAbstractresourceI> res=Lists.newArrayList();
+		final XnatReconstructedimagedata expt=getRecon();
+		res.addAll(expt.getOut_file());
+		return res;
 	}
 }

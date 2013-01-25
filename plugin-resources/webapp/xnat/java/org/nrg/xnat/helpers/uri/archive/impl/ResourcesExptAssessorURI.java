@@ -2,16 +2,19 @@ package org.nrg.xnat.helpers.uri.archive.impl;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xft.ItemI;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
+import org.nrg.xnat.helpers.uri.archive.AssessedURII;
 import org.nrg.xnat.helpers.uri.archive.AssessorURII;
 import org.nrg.xnat.helpers.uri.archive.ResourceURIA;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
-import org.nrg.xnat.helpers.uri.archive.AssessedURII;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 public class ResourcesExptAssessorURI  extends ResourceURIA implements ArchiveItemURI,AssessedURII,ResourceURII,AssessorURII{
 	private XnatImageassessordata expt=null;
@@ -48,7 +51,41 @@ public class ResourcesExptAssessorURI  extends ResourceURIA implements ArchiveIt
 	}
 
 	@Override
-	public ItemI getSecurityItem() {
+	public ArchivableItem getSecurityItem() {
 		return getAssessor();
 	}
+
+	@Override
+	public XnatAbstractresourceI getXnatResource() {
+		if(getAssessor()!=null){
+			String type=(String)this.props.get(URIManager.TYPE);
+			
+			if(type==null){
+				type="out";
+			}
+			
+			if(type.equals("out")){
+				for(XnatAbstractresourceI res:this.getAssessor().getOut_file()){
+					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+						return res;
+					}
+				}
+			}else if(type.equals("in")){
+				for(XnatAbstractresourceI res:this.getAssessor().getIn_file()){
+					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+						return res;
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public XnatProjectdata getProject() {
+		return this.getAssessor().getProjectData();
+	}
+	
+	
 }

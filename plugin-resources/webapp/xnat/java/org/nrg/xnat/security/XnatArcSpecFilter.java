@@ -1,10 +1,8 @@
 package org.nrg.xnat.security;
 
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.springframework.web.filter.GenericFilterBean;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,9 +10,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.nrg.xdat.om.ArcArchivespecification;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.springframework.web.filter.GenericFilterBean;
 
 public class XnatArcSpecFilter extends GenericFilterBean {
 
@@ -51,7 +52,12 @@ public class XnatArcSpecFilter extends GenericFilterBean {
                 chain.doFilter(req, res);
             } else {
                 try {
-                    if (user != null && user.checkRole("Administrator")) {
+                    if(user == null) {
+                	// user not authenticated, let another filter handle the redirect
+                	// (NB: I tried putting this check up with the basic auth check, 
+                	// but you get this weird redirect with 2 login pages on the same screen.  Seems to work here).
+                        chain.doFilter(req, res);
+                    } else if (user.checkRole("Administrator")) {
                         //Otherwise, if the user has administrative permissions, direct the user to the configuration page.
                         response.sendRedirect(TurbineUtils.GetFullServerPath() + _configurationPath);
                     } else {

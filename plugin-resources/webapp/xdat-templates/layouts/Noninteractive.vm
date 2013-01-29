@@ -1,6 +1,7 @@
-<!-- BEGIN Noninteractive.vm -->
 $navigation.setTemplate("/htmlOpen.vm")
 ## insert any template-specific <head> code here
+
+<!-- BEGIN Noninteractive.vm -->
 
 $navigation.setTemplate("/bodyOpen.vm")
 ## insert any template-specific code here that needs to be directly after opening <body> tag
@@ -29,5 +30,6 @@ $navigation.setTemplate("/bodyOpen.vm")
 
 ## insert any template-specific code here that needs to be directly before closing </body> tag
 
-$navigation.setTemplate("/htmlClose.vm")
 <!-- END Noninteractive.vm -->
+
+$navigation.setTemplate("/htmlClose.vm")

@@ -19,6 +19,7 @@
 	<xs:element name="ESVSession" type="xnat:esvSessionData"/>
 	<xs:element name="ESSession" type="xnat:esSessionData"/>
 	<xs:element name="NMSession" type="xnat:nmSessionData"/>
+	<xs:element name="SRSession" type="xnat:srSessionData"/>
 	<xs:element name="DX3DCraniofacialSession" type="xnat:dx3DCraniofacialSessionData"/>
 	<xs:element name="XA3DSession" type="xnat:xa3DSessionData"/>
 	<xs:element name="RFSession" type="xnat:rfSessionData"/>
@@ -51,6 +52,7 @@
 	<xs:element name="ESVScan" type="xnat:esvScanData"/>
 	<xs:element name="ESScan" type="xnat:esScanData"/>
 	<xs:element name="NMScan" type="xnat:nmScanData"/>
+	<xs:element name="SRScan" type="xnat:srScanData"/>
 	<xs:element name="DX3DCraniofacialScan" type="xnat:dx3DCraniofacialScanData"/>
 	<xs:element name="XA3DScan" type="xnat:xa3DScanData"/>
 	<xs:element name="RFScan" type="xnat:rfScanData"/>
@@ -3644,6 +3646,22 @@ rebinning, 6=FORE)</xs:documentation>
 	<xs:complexType name="nmScanData">
 		<xs:annotation>
 			<xs:documentation>Nuclear Medicine Image</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xnat:imageScanData"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="srSessionData">
+		<xs:annotation>
+			<xs:documentation>Structured Report Image Session</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xnat:imageSessionData"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="srScanData">
+		<xs:annotation>
+			<xs:documentation>Structured Report Image</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="xnat:imageScanData"/>

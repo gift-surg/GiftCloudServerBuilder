@@ -1,0 +1,18 @@
+/*
+    CSS for xnatModal script
+*/
+
+.x_modal { display: none ; position: fixed ; left: 0 ; top: 0 ; width: 100% ; height: 100% ; background: #666 ; background: rgba(0,0,0,0.6) ; z-index: 999999990 ; }
+.x_modal .box { position: absolute ; left: 50% ; top: 50% ; overflow: hidden ; background: #fff ; border-color: #444 ; border: 2px solid rgba(0,0,0,0.6) ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ; }
+.x_modal .box .close:hover { cursor: pointer ; }
+.x_modal .box .title { position: relative ; height: 26px ; padding-left: 10px ; font-size: 13px ; font-weight: bold ; line-height: 26px ; vertical-align: middle ; color: #fff ; background: #084FAB ; }
+.x_modal .box .title .close { position: absolute ; top: 1px ; right: 1px ; width: 24px ; height: 24px ; background: url("images/close.gif") center center no-repeat ; }
+.x_modal .box .body { position: relative ; overflow: hidden ; }
+.x_modal .box.scroll .body { overflow-y: scroll ; }
+.x_modal .box .body .inner { padding: 20px ; }
+.x_modal .box .body p { margin: 0 ; }
+.x_modal .box .footer { height: 52px ; padding: 0 20px ; text-align: right ; vertical-align: middle ; background: #e0e0e0 ; border-top: 1px solid #ccc ; }
+.x_modal .box .footer button { display: inline-block ; margin: 14px 0 ; padding: 6px 8px ; font-size: 12px ; }
+.ie8 .x_modal .box .footer button { margin: 10px ; padding: 3px 6px ; }
+.ie9 .x_modal .box .footer button { margin: 12px ; padding: 4px 6px 3px ; }
+.modal_content { display: none ; }

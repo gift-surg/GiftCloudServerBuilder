@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="UTF-8">
+    <title>xModal</title>
+    <style type="text/css">
+        body { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; position: relative ; }
+        .buttons { width: 400px ; height: 150px ; position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
+        /* #modalXML { overflow-y: scroll ; } */
+    </style>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="XMLDisplay/XMLDisplay.css">
+    <script type="text/javascript" src="XMLDisplay/XMLDisplayMod.js"></script>
+    <link type="text/css" rel="stylesheet" href="xModal.css">
+    <script type="text/javascript" src="xModal.js"></script>
+</head>
+<body>
+
+<div class="buttons">
+    <button class="display_xml">Display XML</button>
+    <button class="display_blah">Display Blah</button>
+</div>
+
+
+<!-- this content is displayed when clicking the "Display Blah" button -->
+<div id="blah_content" class="modal_content" style="display:none;">
+    <h1>Blah</h1>
+    <p>Blah blah.</p>
+    <ul>
+        <li>Blah</li>
+        <li>Blah</li>
+        <li>Blah</li>
+        <li>Blah</li>
+        <li>Blah</li>
+        <li>Blah</li>
+    </ul>
+</div>
+
+
+
+<div id="x_modal" class="x_modal">
+    <!--
+        you can put more than one modal on a page
+        just duplicate the html below and give it a unique class
+    -->
+    <!-- use "scroll" class for content that needs to scroll! -->
+    <div class="display_xml scroll" style="display:none;"></div>
+    <div class="blah" style="display:none;"></div>
+</div><!-- /.x_modal -->
+
+<script type="text/javascript">
+
+    // selector for what you're clicking
+    $('.buttons .display_xml').click(function(){
+        xModalOpen(
+                size = 'large',  // size - 'fixed','custom','large','med','small',
+                width = 0,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height = 0,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                box = '.display_xml',  // element of this modal box
+                title = 'Display XML', // text for modal title bar
+                html = '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // main body of modal window
+                footer = '<button class="close" value="close">Close</button>' // content for footer
+        );
+        //LoadXML(id_of_container,xml_source);
+        LoadXML('modalXML','sample.xml');
+    });
+
+    $('.buttons .display_blah').click(function(){
+        xModalOpen(
+                size = 'custom',  // size - 'fixed','custom','large','med','small',
+                width = 300,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height = 100,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                box = '.blah',  // element of this modal box
+                title = 'Blah Blah Blah!!!', // text for modal title bar
+                html = $('#blah_content').html(), // main body of modal window
+                footer = '<button class="close" value="close">Close</button>' // content for footer
+        );
+    });
+
+</script>
+
+</body>
+</html>

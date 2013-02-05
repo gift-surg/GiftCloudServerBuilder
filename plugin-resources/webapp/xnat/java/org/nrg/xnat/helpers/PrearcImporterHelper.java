@@ -127,7 +127,9 @@ public class PrearcImporterHelper extends PrearcImporterA{
 			if(params.containsKey(SESSION)){
 				additionalValues.put("xnat:experimentData/label".intern(), params.remove(SESSION));
 			}
-			
+			if(params.containsKey("TIMEZONE")){
+				additionalValues.put("TIMEZONE", params.get("TIMEZONE"));
+			}
 			if(StringUtils.isEmpty(old_timestamp))old_timestamp=new_timestamp;
 								
 			if(destination_specified || project==null){

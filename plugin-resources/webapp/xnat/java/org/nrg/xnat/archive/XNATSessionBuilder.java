@@ -207,8 +207,10 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				//hard coded implementation for ECAT
 				PETSessionBuilder builder=new PETSessionBuilder(dir,fw,params.get(PROJECT_PARAM));
 				logger.debug("assigning session params for ECAT session builder from {}", params);
+				
 				builder.setSessionLabel(params.get("label"));
 				builder.setSubject(params.get("subject_ID"));
+				builder.setTimezone(params.get("TIMEZONE"));
 				if(!isInPrearchive){
 					builder.setIsInPrearchive(isInPrearchive);
 				}

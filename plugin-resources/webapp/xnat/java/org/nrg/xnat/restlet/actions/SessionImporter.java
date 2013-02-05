@@ -141,6 +141,10 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			if(destination!=null){
 				if(destination instanceof URIManager.PrearchiveURI){
 					prearc_parameters.putAll(destination.getProps());
+					String timezone=(String)params.get("TIMEZONE");
+					if(!StringUtils.isEmpty(timezone)){
+						prearc_parameters.put("TIMEZONE", timezone);
+					}
 				}else{
 					project=PrearcImporterHelper.identifyProject(destination.getProps());
 					if(!StringUtils.isEmpty(project)){
@@ -150,11 +154,16 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 					if(destination.getProps().containsKey(URIManager.SUBJECT_ID)){
 						prearc_parameters.put("subject_ID", destination.getProps().get(URIManager.SUBJECT_ID));
 					}
-			
+
+					String timezone=(String)params.get("TIMEZONE");
+					if(!StringUtils.isEmpty(timezone)){
+						prearc_parameters.put("TIMEZONE", timezone);
+					}
+
 					String expt_id=(String)destination.getProps().get(URIManager.EXPT_ID);
 					if(!StringUtils.isEmpty(expt_id)){
 						expt=getExperimentByIdorLabel(project, expt_id,user);
-					}
+					}					
 			
 					if(expt==null){
 						if(!StringUtils.isEmpty(expt_id)){

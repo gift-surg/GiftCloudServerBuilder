@@ -11,7 +11,7 @@ import org.nrg.action.ServerException;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
-import org.nrg.status.StatusPublisherI;
+import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
@@ -41,7 +41,7 @@ import java.util.concurrent.Callable;
  * @author Timothy R Olsen
  *
  */
-public class FinishImageUpload extends StatusProducer implements Callable<String>,StatusPublisherI {
+public class FinishImageUpload extends StatusProducer implements Callable<String>,StatusProducerI {
     private final org.apache.log4j.Logger logger = Logger.getLogger(FinishImageUpload.class);
 	private final PrearcSession session;
 	private final URIManager.DataURIA destination;

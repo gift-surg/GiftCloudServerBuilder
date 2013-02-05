@@ -1056,6 +1056,9 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 		this.newComparisonBox.options[5]=new Option("<=","<=");
 		this.newComparisonBox.options[6]=new Option("LIKE","LIKE");
 	}
+	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("!=","!=");
+	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IN","IN");
+	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("BETWEEN","BETWEEN");
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IS NULL","IS NULL");
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IS NOT NULL","IS NOT NULL");
 
@@ -1070,6 +1073,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 */
 	this.newComparisonBox.set=this;
 	this.newComparisonBox.onchange=function(){
+		this.set.newTip.innerHTML="";
 		if(this.selectedIndex>0){
 			this.selected_value=this.options[this.selectedIndex].value;
 			if(this.selected_value=="IS NOT NULL" || this.selected_value=="IS NULL"){
@@ -1093,6 +1097,12 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 				this.set.newValueSelectBox.style.display="none";
 				this.set.newValueSelectBox.disabled=true;
 			}
+			
+			if(this.selected_value=="BETWEEN"){
+				this.set.newTip.innerHTML="Separate values with an AND (i.e. 5 AND 7).";
+			}else if(this.selected_value=="IN"){
+				this.set.newTip.innerHTML="Provide a comma separated list of values (i.e. John,Jane).";
+			}
 		}else{
 			this.set.newValueBox.style.display="none";
 			this.set.newValueBox.disabled=true;
@@ -1112,6 +1122,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 		this.set.newValueBox.style.display="none";
 		this.set.newValueSelectBox.disabled=true;
 		this.set.newValueSelectBox.style.display="none";
+		this.set.newTip.innerHTML="";
 	}
 	this.CritDiv.appendChild(this.newComparisonBox);
 	this.CritDiv.appendChild(document.createTextNode(" "));
@@ -1138,37 +1149,61 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	this.newButton.value="More...";
 	this.newButton.set=this;
 	this.newButton.onclick=function(){
-		if(this.set.newComparisonBox.selectedIndex==0){
-			alert("Please select a Comparison for the additional criteria.");
-			this.set.newComparisonBox.disabled=false;
-			this.set.newComparisonBox.focus();
-				return;
+		if(this.set.isValid()){
+			this.set.save();
+			this.set.renderFilters();
 		}
-
-		var c=this.set.newComparisonBox.options[this.set.newComparisonBox.selectedIndex].value;
-		if(c=="IS NULL" || c=="IS NOT NULL"){
-		}else if(c=="="){
-			if(this.set.newValueSelectBox.selectedIndex==0){
-				alert("Please specify a value to match against.");
-				this.set.newValueSelectBox.disabled=false;
-				this.set.newValueSelectBox.focus();
-				return;
-			}
-		}else{
-			if(this.set.newValueBox.value==""){
-				alert("Please specify a value to match against.");
-				this.set.newValueBox.disabled=false;
-				this.set.newValueBox.focus();
-				return;
-			}
-		}
-		this.set.save();
-		this.set.renderFilters();
 		//alert(this.sm.searchDOM.toXML());
 	}
 	this.CritDiv.appendChild(this.newButton);
+	
+	this.newTip=document.createElement("display");
+	this.newTip.style.display="inline";
+	this.newTip.className="filter_tip"
+	this.CritDiv.appendChild(this.newTip);
 
 	return this.xcsContainer;
+}
+
+xdat_criteria_set.prototype.isValid=function(){
+	if(this.newComparisonBox.selectedIndex==0){
+		alert("Please select a Comparison for the additional criteria.");
+		this.newComparisonBox.disabled=false;
+		this.newComparisonBox.focus();
+			return false;
+	}
+
+	var c=this.newComparisonBox.options[this.newComparisonBox.selectedIndex].value;
+	if(c=="IS NULL" || c=="IS NOT NULL"){
+	}else if(c=="="){
+		if(this.newValueSelectBox.selectedIndex==0){
+			alert("Please specify a value to match against.");
+			this.newValueSelectBox.disabled=false;
+			this.newValueSelectBox.focus();
+			return false;
+		}
+	}else if(c=="BETWEEN"){
+		if(this.newValueBox.value==""){
+			alert("Please specify a value to match against.");
+			this.newValueBox.disabled=false;
+			this.newValueBox.focus();
+			return false;
+		}
+		if(this.newValueBox.value.indexOf(" AND ")<1){
+			alert("Please seperate values using an AND.  (i.e. 5 AND 10)");
+			this.newValueBox.disabled=false;
+			this.newValueBox.focus();
+			return false;
+		}
+	}else{
+		if(this.newValueBox.value==""){
+			alert("Please specify a value to match against.");
+			this.newValueBox.disabled=false;
+			this.newValueBox.focus();
+			return false;
+		}
+	}
+	return true;
 }
 
 xdat_criteria_set.prototype.save=function(){
@@ -1556,24 +1591,28 @@ xdat_criteria_set.prototype.needsSubmit=function(_autosubmit){
 	if(this.newElementBox==undefined || this.newElementBox.selectedIndex>0){
 		if(this.newFieldBox==undefined || this.newFieldBox.selectedIndex>0){
 			if(this.newComparisonBox!=undefined && this.newComparisonBox.selectedIndex>0){
-				if(!this.newValueBox.disabled && this.newValueBox.value!=""){
-					if(_autosubmit==undefined || _autosubmit!=true){
-						return true;
-					}else{
-						this.save();
+				if(this.isValid()){
+					if(!this.newValueBox.disabled && this.newValueBox.value!=""){
+						if(_autosubmit==undefined || _autosubmit!=true){
+							return true;
+						}else{
+							this.save();
+						}
+					}else if(!this.newValueSelectBox.disabled && this.newValueSelectBox.selectedIndex>0){
+						if(_autosubmit==undefined || _autosubmit!=true){
+							return true;
+						}else{
+							this.save();
+						}
+					}else if(this.newValueSelectBox.disabled && this.newValueBox.disabled){
+						if(_autosubmit==undefined || _autosubmit!=true){
+							return true;
+						}else{
+							this.save();
+						}
 					}
-				}else if(!this.newValueSelectBox.disabled && this.newValueSelectBox.selectedIndex>0){
-					if(_autosubmit==undefined || _autosubmit!=true){
-						return true;
-					}else{
-						this.save();
-					}
-				}else if(this.newValueSelectBox.disabled && this.newValueBox.disabled){
-					if(_autosubmit==undefined || _autosubmit!=true){
-						return true;
-					}else{
-						this.save();
-					}
+				}else{
+					return true;
 				}
 			}
 		}

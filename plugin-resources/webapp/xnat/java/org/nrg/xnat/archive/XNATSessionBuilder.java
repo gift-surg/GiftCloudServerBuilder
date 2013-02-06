@@ -209,6 +209,7 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				logger.debug("assigning session params for ECAT session builder from {}", params);
 				builder.setSessionLabel(params.get("label"));
 				builder.setSubject(params.get("subject_ID"));
+				builder.setTimezone(params.get("TIMEZONE"));
 				if(!isInPrearchive){
 					builder.setIsInPrearchive(isInPrearchive);
 				}

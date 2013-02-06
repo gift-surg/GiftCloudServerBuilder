@@ -226,6 +226,16 @@ public enum DatabaseSession {
 		public void writeSession (SessionData s, Object o) {
 			s.setProtocol(o);
 		}
+	},
+		TIMEZONE ("TIMEZONE", ColType.VARCHAR, true) {
+			@Override
+			public Object readSession (SessionData s) {
+				return s.getTimeZone();
+			}
+			@Override
+			public void writeSession (SessionData s, Object o) {
+				s.setTimeZone(o);
+			}
 	};
 	/**
 	 * ColType provides a simple mapping from Java objects to java.sql.* objects   

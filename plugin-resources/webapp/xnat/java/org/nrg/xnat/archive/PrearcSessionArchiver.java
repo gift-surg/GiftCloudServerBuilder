@@ -19,7 +19,7 @@ import org.nrg.action.ServerException;
 import org.nrg.framework.utilities.Reflection;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
-import org.nrg.status.StatusPublisherI;
+import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -84,7 +84,7 @@ import org.xml.sax.SAXException;
  *                  Fail
  *
  */
-public final class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusPublisherI {
+public final class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
 	private static final String TRIGGER_PIPELINES = "triggerPipelines";
 
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";

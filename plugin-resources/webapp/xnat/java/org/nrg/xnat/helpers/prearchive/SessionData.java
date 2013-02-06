@@ -27,7 +27,7 @@ public final class SessionData {
 	private PrearcStatus status;
 	private SessionDataTriple sessionTriple = new SessionDataTriple();
 	private Date scan_date;
-	private String scan_time, subject, url, session, tag, source, visit, protocol;
+	private String scan_time, subject, url, session, tag, source, visit, protocol, timeZone;
 	private PrearchiveCode autoArchive;
     private Boolean preventAnon;
     private Boolean preventAutoCommit = Boolean.valueOf(false);
@@ -307,6 +307,19 @@ public final class SessionData {
 		}
 		return this;
 	}	
+	public String getTimeZone() {
+		return timeZone;
+	}
+	public SessionData setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+		return this;
+	}
+	public SessionData setTimeZone(Object o) {
+		if (null != o) {
+			this.setTimeZone((String)o);
+		}
+		return this;
+	}
 	public SessionDataTriple getSessionDataTriple(){
 		return sessionTriple;
 	}

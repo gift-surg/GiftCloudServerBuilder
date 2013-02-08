@@ -15,6 +15,29 @@
         /* #modalXML { overflow-y: scroll ; } */
     </style>
     <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript">
+
+        // where is the 'scripts' directory?
+        //var scripts_dir = '..' ;
+
+        var script_links =
+            'a[href="#"],' +
+            'a[href="#!"],' +
+            'a[href="#*"],' +
+            'a[href="*"],' +
+            'a[href=""],' +
+            'a.script' +
+            '';
+
+        $(document).ready(function(){
+            // prevent default clicks on these:
+            $('body').on('click',script_links,function(s){
+                s.preventDefault();
+                return false ;
+            });
+        });
+
+    </script>
     <link type="text/css" rel="stylesheet" href="XMLDisplay/XMLDisplay.css">
     <script type="text/javascript" src="XMLDisplay/XMLDisplayMod.js"></script>
     <link type="text/css" rel="stylesheet" href="xModal.css">
@@ -44,44 +67,113 @@
 
 
 
-<div id="x_modal" class="x_modal">
-    <!--
-        you can put more than one modal on a page
-        just duplicate the html below and give it a unique class
-    -->
-    <!-- use "scroll" class for content that needs to scroll! -->
-    <div class="display_xml scroll" style="display:none;"></div>
-    <div class="blah" style="display:none;"></div>
-</div><!-- /.x_modal -->
 
 <script type="text/javascript">
 
-    // selector for what you're clicking
-    $('.buttons .display_xml').click(function(){
-        xModalOpen(
-                size = 'large',  // size - 'fixed','custom','large','med','small',
-                width = 0,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-                height = 0,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                box = '.display_xml',  // element of this modal box
-                title = 'Display XML', // text for modal title bar
-                html = '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // main body of modal window
-                footer = '<button class="close" value="close">Close</button>' // content for footer
-        );
-        //LoadXML(id_of_container,xml_source);
-        LoadXML('modalXML','sample.xml');
+    /* *********************************
+     xModal globals
+     ********************************** */
+    // put the css link code on the page and get the xModal.js script
+    //$('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
+    //$.getScript(scripts_dir + '/xModal/xModal.js');
+    // xModal.js requires jQuery
+
+    // what happens when you click 'ok' or press enter (choosing the default selection)?
+    // you'll need one of these for each modal box specified above
+    //
+    function xModalSubmit(box){
+
+        // 'box' needs to match the 'box' parameter in the xModalOpen function that opened the modal
+
+        if (box === 'display_xml'){
+            // doSomething();
+        }
+
+        if (box === 'blah'){
+            // doSomething();
+        }
+
+    }
+    //
+    // if something needs to happen when the user cancels, do that here (function can be empty but must exist)
+    function xModalCancel(box){
+
+
+        if (box === 'display_xml'){
+            alert('You cancelled!');
+        }
+
+        if (box === 'blah'){
+            alert("Bob Oblaw has left the building.");
+        }
+
+
+
+//        function foo(){
+//            alert('foo');
+//        }
+//
+//        function bar(fn){
+//            fn();
+//        }
+//
+//        bar(foo); // alerts 'foo'
+
+
+
+    }
+
+    /* ********************************* */
+
+
+    $(document).ready(function(){
+
+        // selector for what you're clicking to open the modal
+        $('.buttons .display_xml').click(function(){
+
+            xModalOpen({
+                size:     'large',  // size - 'fixed','custom','large','med','small',
+                width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                scroll:   'yes', // does the content need to scroll? (yes/no)
+                box:      'display_xml',  // class name of this modal box
+                title:    'Display XML', // text for modal title bar - if empty will be "Alert" - use space for blank title
+                content:   '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // body content of modal window
+                footer:    {
+                    show: 'yes',
+                    height: '' , // height in px - blank for default - 52px
+                    background: '#f0f0f0', // css for footer background
+                    border: '#e0e0e0', // css for footer border
+                    content: '<a href="#!" class="close default button">Close</a>' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+                },
+                //footer:   '<button class="cancel btn2">Cancel</button> <button class="download btn1" style="color:#fff;">Download</button>', // content for footer - use 'none' for no footer
+                // by default the buttons will go in the footer, this can be overridden by adding 'class="ok button"' and 'class="cancel button"' to the body content
+                ok:       '', // text for submit button - if blank uses "OK"
+                cancel:   '' // text for cancel button - if blank uses "Cancel"
+            });
+
+            //LoadXML(id_of_container,xml_source);
+            LoadXML('modalXML','sample.xml');
+        });
+
+        // selector for what you're clicking to open another modal
+        $('.buttons .display_blah').click(function(){
+            xModalOpen({
+                size: 'fixed',  // size - 'fixed','custom','large','med','small',
+                width: 300,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height: 150,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                box: 'blah',  // element of this modal box
+                title: 'Blah Blah Blah!!!', // text for modal title bar
+                content: $('#blah_content').html(), // main body of modal window
+                footer: {
+                    show: 'yes',
+                    content: '<a href="#!" class="cancel default button">Close</a>' // content for footer
+                }
+            });
+        });
+
     });
 
-    $('.buttons .display_blah').click(function(){
-        xModalOpen(
-                size = 'custom',  // size - 'fixed','custom','large','med','small',
-                width = 300,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-                height = 100,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                box = '.blah',  // element of this modal box
-                title = 'Blah Blah Blah!!!', // text for modal title bar
-                html = $('#blah_content').html(), // main body of modal window
-                footer = '<button class="close" value="close">Close</button>' // content for footer
-        );
-    });
 
 </script>
 

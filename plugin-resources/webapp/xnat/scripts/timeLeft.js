@@ -25,7 +25,6 @@ function parseExpirationTimeTuple (tuple) {
    *                   Used to synchronize the hiding of the warning dialog.
    * - sessionTimeout : A boolean flag that indicates whether this session has timed out. Used to synchronize
    *                    redirecting to the login page. 
-   * - serverResponseTime : store the time it takes for a response to reach the client from the server
    *  
    * The dialogDisplay and sessionTimeout need some explanation. Given the scenario where there are two session tabs A and B
    * (1) Currently a warning dialog pops up only once per session per tab. If a user extends a session in tab A
@@ -74,20 +73,6 @@ var synchronizingCookies = {
     get : function () {
       return synchronizingCookies.get(synchronizingCookies.sessionTimeout.name);
     } 
-  },
-  serverResponseTime : {
-    name : "SERVER_RESPONSE_TIME",
-    set : function (responseTime) {
-      YAHOO.util.Cookie.set(synchronizingCookies.serverResponseTime.name, responseTime, {path : "/"});
-    },
-    get : function () {
-      if (YAHOO.util.Cookie.exists(synchronizingCookies.serverResponseTime.name)) {
-	return parseInt(YAHOO.util.Cookie.get(synchronizingCookies.serverResponseTime.name));
-      }
-      else {
-	return null;
-      }      
-    }
   }
 };
 
@@ -281,10 +266,10 @@ function checkIfFinalCycle () {
  */
 function syncSessionExpirationCookieWithLocal () {
   var cookieExpirationTime = synchronizingCookies.expirationTime.get();
-  if (locals.expirationTime.flag !== cookieExpirationTime.flag) {
+  if (locals.expirationTime.flag !== cookieExpirationTime.flag) { 
     locals.warningDisplayedOnce = false;
     locals.expirationTime.flag = cookieExpirationTime.flag;
-    locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime - synchronizingCookies.serverResponseTime.get());
+    locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime);
   }
   else {
     var oldTime = locals.expirationTime.timeLeft.time;
@@ -374,16 +359,5 @@ function sessionCountdown() {
  */
 refreshSynchronizingCookies();
 initWarningDialog(warningDialog);
-var initialServerTouch = {
-  cache : false,
-  startTime : 0,
-  success : function(res) {
-    if (synchronizingCookies.serverResponseTime.get() === null) {
-      synchronizingCookies.serverResponseTime.set((parseInt(new Date().getTime()) - initialServerTouch.startTime) / 2);
-    }
-    touchCallback.success(res);
-    setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
-  }
-};
-initialServerTouch.startTime = new Date().getTime();  
-YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version?XNAT_CSRF=' + window.csrfToken,initialServerTouch,null);  
+
+setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval); 

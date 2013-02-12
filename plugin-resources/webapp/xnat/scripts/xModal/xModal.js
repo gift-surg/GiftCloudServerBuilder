@@ -2,6 +2,7 @@
     Javascript for xModal
 */
 
+//alert('xModal loaded');
 
 /* *********************************
     xModal Usage
@@ -61,8 +62,13 @@ function xModalSizes(size,width,height /*,box*/){
     window_width = $(window).width();
     window_height = $(window).height();
 
+    // fixed size for size = 'dialog'
+    if (size === 'dialog'){
+        box_width = 350 ;
+        box_height = 200 ;
+    }
     // if size = 'fixed' use the numbers for width and height
-    if (size === 'fixed'){
+    else if ((size === 'fixed')){
         box_width = width ;
         box_height = height ;
     }
@@ -169,6 +175,16 @@ function xModalSizes(size,width,height /*,box*/){
         height: parseInt(box_height - title_height - footer_height)
     });
 
+    // if it's an iframe
+    if ($this_box.find('iframe').length){
+        $this_box.find('.body, .body .inner').css('padding',0);
+        $this_box.find('iframe').css({
+            width: '100%' ,
+            height: parseInt(box_height - title_height - footer_height),
+            border: 'none'
+        });
+    }
+
 
 
 }
@@ -208,7 +224,7 @@ function xModalOpen(xModal /* size,width,height,scroll,box,title,content,footer,
 
     // fill up the modal box
     $this_box.append(
-        '<div class="title round"><span class="inner">' + _title + '</span><div class="close"></div></div>' +
+        '<div class="title round"><span class="inner">' + _title + '</span><div class="close cancel button"></div></div>' +
         '<div class="body"><div class="inner">' + _content + '</div></div>'
     );
 
@@ -295,31 +311,13 @@ $(document).ready(function(){
         );
     }
 
-    if (typeof xModalSubmit === 'function'){
-        xModalSubmit(box);
-    }
-    else {
-        function xModalSubmit(){
-            // if you want something to happen when clicking the 'ok' button, define it on the page that calls this script
-            // like:
-            //if (box === 'box_class'){
-            //    // doSomething();
-            //}
-        }
-    }
-
-    if (typeof xModalCancel === 'function'){
-        xModalCancel(box);
-    }
-    else {
-        function xModalCancel(){
-            // if you want something to happen when the user cancels, define it on the page that calls this script
-            // like:
-            //if (box === 'box_class'){
-            //    // alert('Are you sure you want to cancel?');
-            //}
-        }
-    }
+//    if (typeof xModalSubmit !== 'function'){
+//        var xModalSubmit = null ; // nullify the function if it doesn't exist
+//    }
+//
+//    if (typeof xModalCancel !== 'function'){
+//        var xModalCancel = null ;
+//    }
 
 
     // what happens when clicking the default button
@@ -327,12 +325,12 @@ $(document).ready(function(){
         if ($(this).hasClass('close')){
             xModalClose();
         }
-        if ($(this).hasClass('cancel')){
-            xModalCancel(box);
+        else if ($(this).hasClass('cancel')){
+            xModalCancel();
             xModalClose();
         }
         else {
-            xModalSubmit(box);
+            xModalSubmit();
             xModalClose();
         }
     });
@@ -340,8 +338,11 @@ $(document).ready(function(){
     // press 'esc' key to close
     $body.keydown(function(esc) {
         if (esc.keyCode === 27) {  // key 27 = 'esc'
-            xModalCancel(box);
-            xModalClose();
+            if ($body.hasClass('modal')){
+                //$modal.find('.cancel.button').trigger('click');
+                xModalCancel();
+                xModalClose();
+            }
         }
     });
 
@@ -349,10 +350,12 @@ $(document).ready(function(){
     $body.keydown(function(e) {
         var keyCode = (window.event) ? e.which : e.keyCode;
         if (keyCode === 13) {  // key 13 = 'enter'
-            e.preventDefault();
-            //xModalSubmit(box);
-            $modal.find('.default.button').trigger('click');
-            //xModalClose();
+            if ($body.hasClass('modal')){
+                e.preventDefault();
+                $modal.find('.default.button').trigger('click');
+                //xModalSubmit();
+                //xModalClose();
+            }
         }
     });
 
@@ -362,7 +365,11 @@ $(document).ready(function(){
 $(window).resize(function(){
     if ($('body').hasClass('modal')){
         var width, height ;
-        if (size_type === 'fixed'){
+        if (size_type === 'dialog'){
+            width = 350 ;
+            height = 200 ;
+        }
+        else if (size_type === 'fixed'){
             width = box_width ;
             height = box_height ;
         }

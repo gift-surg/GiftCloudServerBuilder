@@ -48,6 +48,7 @@
 <div class="buttons">
     <button class="display_xml">Display XML</button>
     <button class="display_blah">Display Blah</button>
+    <button class="xnat">XNAT</button>
 </div>
 
 
@@ -81,31 +82,32 @@
     // what happens when you click 'ok' or press enter (choosing the default selection)?
     // you'll need one of these for each modal box specified above
     //
-    function xModalSubmit(box){
-
-        // 'box' needs to match the 'box' parameter in the xModalOpen function that opened the modal
-
-        if (box === 'display_xml'){
-            // doSomething();
-        }
-
-        if (box === 'blah'){
-            // doSomething();
-        }
-
-    }
-    //
-    // if something needs to happen when the user cancels, do that here (function can be empty but must exist)
-    function xModalCancel(box){
-
-
-        if (box === 'display_xml'){
-            alert('You cancelled!');
-        }
-
-        if (box === 'blah'){
-            alert("Bob Oblaw has left the building.");
-        }
+//    function xModalSubmit(box){
+//
+//        // 'box' needs to match the 'box' parameter in the xModalOpen function that opened the modal
+//
+//        if (box === 'display_xml'){
+//            // doSomething();
+//            alert("You're welcome!");
+//        }
+//
+//        if (box === 'blah'){
+//            // doSomething();
+//        }
+//
+//    }
+//    //
+//    // if something needs to happen when the user cancels, do that here (function can be empty but must exist)
+//    function xModalCancel(box){
+//
+//
+//        if (box === 'display_xml'){
+//            alert('You cancelled!');
+//        }
+//
+//        if (box === 'blah'){
+//            alert("Bob Oblaw has left the building.");
+//        }
 
 
 
@@ -121,10 +123,9 @@
 
 
 
-    }
+//    }
 
     /* ********************************* */
-
 
     $(document).ready(function(){
 
@@ -144,33 +145,92 @@
                     height: '' , // height in px - blank for default - 52px
                     background: '#f0f0f0', // css for footer background
                     border: '#e0e0e0', // css for footer border
-                    content: '<a href="#!" class="close default button">Close</a>' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+                    content: '' //<a href="#!" class="close default button">Close</a>' // empty string renders default footer with two buttons (ok/cancel) using values specified below
                 },
                 //footer:   '<button class="cancel btn2">Cancel</button> <button class="download btn1" style="color:#fff;">Download</button>', // content for footer - use 'none' for no footer
                 // by default the buttons will go in the footer, this can be overridden by adding 'class="ok button"' and 'class="cancel button"' to the body content
-                ok:       '', // text for submit button - if blank uses "OK"
-                cancel:   '' // text for cancel button - if blank uses "Cancel"
+                ok:       'Thanks, Dude!', // text for submit button - if blank uses "OK"
+                cancel:   'Close' // text for cancel button - if blank uses "Cancel"
             });
 
             //LoadXML(id_of_container,xml_source);
             LoadXML('modalXML','sample.xml');
+
+            xModalSubmit = function(){
+                // what to do when the thing is submitted
+                alert("You're welcome!");
+            };
+
+            xModalCancel = function(){
+                //alert('Closing now!');
+            };
+
         });
 
         // selector for what you're clicking to open another modal
         $('.buttons .display_blah').click(function(){
+
+            this_box = 'blah' ;
+
             xModalOpen({
-                size: 'fixed',  // size - 'fixed','custom','large','med','small',
-                width: 300,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-                height: 150,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                box: 'blah',  // element of this modal box
+                size: 'dialog',  // size - 'fixed','custom','large','med','small',
+                //width: '',  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                //height: '',  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                box: this_box,  // class of this modal box
                 title: 'Blah Blah Blah!!!', // text for modal title bar
                 content: $('#blah_content').html(), // main body of modal window
                 footer: {
                     show: 'yes',
-                    content: '<a href="#!" class="cancel default button">Close</a>' // content for footer
+                    content: '<a href="#!" class="close default button">Close</a>' // content for footer
                 }
             });
+
+            xModalSubmit = function(){
+                // what to do when the thing is submitted
+            };
+
+            xModalCancel = function(){
+                //alert('Nothing here!');
+            };
+
+
         });
+
+
+        var xnat_iframe = '<iframe src="http://xnat.org"></iframe>';
+
+        $('.buttons .xnat').click(function(){
+
+            xModalOpen({
+                size: 'large',  // size - 'fixed','custom','large','med','small',
+                width: '',  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height: '',  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                scroll: 'no',
+                box: 'xnat',  // class of this modal box
+                title: 'XNAT', // text for modal title bar
+                content: xnat_iframe, // main body of modal window
+                footer: {
+                    show: 'yes',
+                    content: '<a href="#!" class="close default button">Close</a>', // content for footer
+                    height: '',
+                    background: '#f0f0f0',
+                    border: '#e0e0e0'
+                }
+            });
+
+            xModalSubmit = function(){
+                // what to do when the thing is submitted - leave blank if no 'submit' action
+            };
+
+            xModalCancel = function(){
+                // what to do when the thing is cancelled - leave blank if no custom 'cancel' action
+            };
+
+
+        });
+
+
+
 
     });
 

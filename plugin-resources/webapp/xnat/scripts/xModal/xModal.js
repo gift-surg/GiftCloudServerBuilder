@@ -2,7 +2,7 @@
     Javascript for xModal
 */
 
-//alert('xModal loaded');
+console.log('xModal loaded');
 
 /* *********************************
     xModal Usage
@@ -35,6 +35,13 @@
             ok:       'OK', // text for submit button - if blank uses "OK"
             cancel:   'Cancel' // text for cancel button - if blank uses "Cancel"
         });
+        xModalSubmit = function(){
+            // doSomething();
+        };
+        xModalCancel = function(){
+            // if you want to do something else if someone cancels, put it here
+            // it's ok if this is blank -
+        };
     });
     */
 
@@ -186,7 +193,6 @@ function xModalSizes(size,width,height /*,box*/){
     }
 
 
-
 }
 
 
@@ -289,7 +295,14 @@ function xModalClose() {
 
 $(document).ready(function(){
 
+    $head = $('head');
     $body = $('body');
+
+    // make sure the xModal.css is loaded
+    if (!($('link[href*="xModal.css"]').length)){
+        $head.append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
+        console.log('xModal.css added');
+    }
 
     // prevent default clicks on these:
     var script_links =

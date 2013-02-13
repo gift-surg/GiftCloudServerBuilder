@@ -2,7 +2,6 @@
     Javascript for xModal
 */
 
-console.log('xModal loaded');
 
 /* *********************************
     xModal Usage
@@ -13,38 +12,38 @@ console.log('xModal loaded');
 // this requires jQuery
 
 // call the "xModalOpen" function passing in the parameters below
-    // use the 'on' method to work with dynamic elements
-    /*
-    $('body').on('event','#selector',function(){
-        xModalOpen({
-            size:     'fixed',  // size - 'fixed','large','med','small','custom'
-            width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-            height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-            scroll:   'yes', // does the content need to scroll? (yes/no)
-            box:      'confirm',  // class name of this modal box
-            title:    'Confirm Download', // text for modal title bar - if empty will be "Alert" - use space for blank title
-            content:   '(put the content here)', // body content of modal window - pull from existing or dynamic element $('#source').html();
-            footer:    {
-                show: 'yes', // self-explanatory, right? anything but 'yes' will hide the footer
-                height: '' , // height in px - blank for default - 52px
-                background: '', // css for footer background - white if blank
-                border: '', // color for footer top border - white if blank
-                content: '' // empty string renders default footer with two buttons (ok/cancel) using values specified below
-            },
-            // by default the buttons will go in the footer, this can be overridden by adding elements with 'class="ok default button"' and 'class="cancel button"' to the body content
-            ok:       'OK', // text for submit button - if blank uses "OK"
-            cancel:   'Cancel' // text for cancel button - if blank uses "Cancel"
-        });
-        xModalSubmit = function(){
-            // doSomething();
-        };
-        xModalCancel = function(){
-            // if you want to do something else if someone cancels, put it here
-            // it's ok if this is blank -
-        };
-    });
-    */
-
+// use the 'on' method to work with dynamic elements
+//
+//$('body').on('event','#selector',function(){
+//    xModalOpen({
+//        kind:     'fixed',  // kind - 'dialog','loading','fixed','large','med','small','custom'
+//        width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+//        height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+//        scroll:   'yes', // does the content need to scroll? (yes/no)
+//        box:      'confirm',  // class name of this modal box
+//        title:    'Confirm Download', // text for modal title bar - if empty will be "Alert" - use space for blank title
+//        content:   '(put the content here)', // body content of modal window - pull from existing or dynamic element $('#source').html();
+//        footer:    {
+//            show: 'yes', // self-explanatory, right? anything but 'yes' will hide the footer
+//            height: '' , // height in px - blank for default - 52px
+//            background: '', // css for footer background - white if blank
+//            border: '', // color for footer top border - white if blank
+//            content: '' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+//        },
+//        // by default the buttons will go in the footer, this can be overridden by adding elements with 'class="ok default button"' and 'class="cancel button"' to the body content
+//        ok:       'OK', // text for submit button - if blank uses "OK"
+//        cancel:   'Cancel' // text for cancel button - if blank uses "Cancel"
+//    });
+//    xModalSubmit = function(){
+//        // doSomething();
+//    };
+//    xModalCancel = function(){
+//        // if you want to do something else if someone cancels, put it here
+//        // it's ok if this is blank -
+//        xModalClose();
+//    };
+//});
+//
 
 var
     $body,
@@ -53,7 +52,7 @@ var
     box,
     window_width,
     window_height,
-    size_type,
+    x_kind,
     box_width,
     box_height,
     h_margin,
@@ -61,40 +60,45 @@ var
     top_margin,
     ok_btn,
     cancel_btn
-;
+    ;
 
 
-function xModalSizes(size,width,height /*,box*/){
+function xModalSizes(kind,width,height /*,box*/){
 
     window_width = $(window).width();
     window_height = $(window).height();
 
-    // fixed size for size = 'dialog'
-    if (size === 'dialog'){
-        box_width = 350 ;
+// fixed size for kind = 'dialog'
+    if (kind === 'dialog'){
+        box_width = 400 ;
         box_height = 200 ;
     }
-    // if size = 'fixed' use the numbers for width and height
-    else if ((size === 'fixed')){
+    // fixed size for kind = 'loading'
+    else if (kind === 'loading'){
+        box_width = 260 ;
+        box_height = 100 ;
+    }
+    // if kind = 'fixed' use the numbers for width and height
+    else if (kind === 'fixed'){
         box_width = width ;
         box_height = height ;
     }
     // otherwise ignore those numbers and set window size dynamically
     else {
 
-        if (size === 'custom'){
+        if (kind === 'custom'){
             h_margin = width ;
             v_margin = height;
         }
-        if (size === 'large'){
+        if (kind === 'large'){
             h_margin = 100 ;
             v_margin = 100 ;
         }
-        if (size === 'med'){
+        if (kind === 'med'){
             h_margin = 200 ;
             v_margin = 200 ;
         }
-        if (size === 'small'){
+        if (kind === 'small'){
             h_margin = 300 ;
             v_margin = 300 ;
         }
@@ -127,10 +131,13 @@ function xModalSizes(size,width,height /*,box*/){
 
     }
 
-    var body_height = $this_box.find('.body').height() ,
+    $this_box = $('div.x_modal').last().find('.box');
+
+    var
+        //body_height = $this_box.find('.body').height() ,
         title_height = $this_box.find('.title').height() ,
         footer_height = $this_box.find('.footer').height()
-    ;
+        ;
 
     top_margin = parseFloat((-box_height/2));
 
@@ -196,16 +203,19 @@ function xModalSizes(size,width,height /*,box*/){
 }
 
 
-// this is the main function that draws the modal guy
-function xModalOpen(xModal /* size,width,height,scroll,box,title,content,footer,ok,cancel,action */){
+// this is the main function that draws the x_modal guy
+function xModalOpen(xModal){
 
-    //var $body = $('body');
+    $('body').addClass('x_modal_body');
 
-    $body.addClass('modal');
+    $modal = $('div.x_modal').last() ;
 
-    $modal = $('#x_modal') ;
-
-    box = xModal.box ;
+    if (xModal.kind === 'loading'){
+        box = 'loading';
+    }
+    else {
+        box = xModal.box ;
+    }
 
     // throw out the boxes
     $modal.html('');
@@ -216,41 +226,52 @@ function xModalOpen(xModal /* size,width,height,scroll,box,title,content,footer,
     // tell me what it is
     $this_box = $modal.find('.box');
 
-    //$this_box.html('');
-
-    $this_box.addClass(xModal.box);
+    $this_box.addClass(box);
 
     if (xModal.scroll === 'yes'){
         $this_box.addClass('scroll');
     }
 
     // set up the modal contents
-    var _title = (xModal.title > '') ? xModal.title : 'Alert' ;
-    var _content = (xModal.content > '') ? xModal.content : '(no content)' ;
+    var x_title, x_content ;
+    if (xModal.kind === 'loading'){
+        x_title = 'Loading...' ;
+        x_content =
+            '<div style="margin-top:4px;text-align:center;">' +
+                //'loading...' +
+                '<img src="' + scripts_dir + '/xModal/images/loading_anim.gif" alt="loading...">' +
+            '</div>' ;
+    }
+    else {
+        x_title = (xModal.title > '') ? xModal.title : 'Alert' ;
+        x_content = (xModal.content > '') ? xModal.content : '(no content)' ;
+    }
 
     // fill up the modal box
     $this_box.append(
-        '<div class="title round"><span class="inner">' + _title + '</span><div class="close cancel button"></div></div>' +
-        '<div class="body"><div class="inner">' + _content + '</div></div>'
+        '<div class="title round"><span class="inner">' + x_title + '</span><div class="close cancel button"></div></div>' +
+        '<div class="body"><div class="inner">' + x_content + '</div></div>'
     );
 
     // if there's a footer, put it in
-    if (xModal.footer.show === 'yes'){
+    if (typeof xModal.footer !== 'undefined' && xModal.footer.show === 'yes'){
         // if there's footer content, show it
-        if (xModal.footer.content > ''){
+        if (typeof xModal.footer.content !== 'undefined' && xModal.footer.content > ''){
             $this_box.append('<div class="footer"><div class="inner">' + xModal.footer.content + '</div></div>');
         }
         // if no content is specified, show default buttons
         else {
-			ok_btn = (xModal.ok > '') ? xModal.ok : 'OK' ;
-			cancel_btn = (xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
+            ok_btn = (typeof xModal.ok !== 'undefined' && xModal.ok > '') ? xModal.ok : 'OK' ;
+            cancel_btn = (typeof xModal.cancel !== 'undefined' && xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
 			$this_box.append(
 				'<div class="footer"><div class="inner">' +
-					'<a class="cancel btn2 button" href="#!">' + cancel_btn + '</a> ' +
-                    '<a class="ok default btn1 button" href="#!">' + ok_btn + '</a>' +
+                    '<span class="buttons">'+
+                    '<a class="cancel button" href="#!">' + cancel_btn + '</a> ' +
+                    '<a class="ok default button" href="#!">' + ok_btn + '</a>' +
                     //'<button type="submit" class="ok default button" value="ok"' +
                     //' style="position:absolute;left:-9999;top:-9999;"' +
                     //'>ok</button>' +
+                    '</span>' +
 				'</div></div>'
 			);
         }
@@ -273,14 +294,12 @@ function xModalOpen(xModal /* size,width,height,scroll,box,title,content,footer,
             });
         }
 
-        //$modal.find('button.ok.default').focus();
-
     }
 
-    size_type = xModal.size ;
+    x_kind = xModal.kind ;
 
     // size the stuff
-    xModalSizes(xModal.size, xModal.width, xModal.height /* ,box_elem */);
+    xModalSizes(xModal.kind, xModal.width, xModal.height /* ,box_elem */);
 
     $this_box.show();
     $modal.fadeIn(100);
@@ -288,19 +307,19 @@ function xModalOpen(xModal /* size,width,height,scroll,box,title,content,footer,
 }
 
 function xModalClose() {
-    $('body').removeClass('modal');
-    $modal.fadeOut(100);
-    $this_box.html('');
+    // closest the topmost modal
+    var $top_modal = $('div.x_modal').last();
+    $top_modal.fadeOut(100).delay(200).html('');
+    $('body').removeClass('x_modal_body');
 }
 
 $(document).ready(function(){
 
-    $head = $('head');
     $body = $('body');
 
     // make sure the xModal.css is loaded
     if (!($('link[href*="xModal.css"]').length)){
-        $head.append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
+        $('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
         console.log('xModal.css added');
     }
 
@@ -318,43 +337,40 @@ $(document).ready(function(){
         return false ;
     });
 
-    if (!($('#x_modal').length)){
+    if (!($('div.x_modal').length)){
         $body.append(
-            '<div id="x_modal"></div>'
+            '<div class="x_modal"></div>'
         );
     }
 
-//    if (typeof xModalSubmit !== 'function'){
-//        var xModalSubmit = null ; // nullify the function if it doesn't exist
-//    }
-//
-//    if (typeof xModalCancel !== 'function'){
-//        var xModalCancel = null ;
-//    }
 
+    // what happens when clicking a button (close, cancel, default)
+    $body.on('click','div.x_modal:last .button',function(){
 
-    // what happens when clicking the default button
-    $body.on('click','#x_modal .button',function(){
-        if ($(this).hasClass('close')){
-            xModalClose();
-        }
-        else if ($(this).hasClass('cancel')){
-            xModalCancel();
-            xModalClose();
-        }
-        else {
-            xModalSubmit();
-            xModalClose();
+        // there's no escape from loading!
+        if (!($('div.x_modal').last().find('.box').hasClass('loading'))){
+
+            if ($(this).hasClass('close')){
+                xModalClose();
+            }
+            else if ($(this).hasClass('cancel')){
+                xModalCancel();
+                //xModalClose();
+            }
+            else {
+                xModalSubmit();
+                //xModalClose();
+            }
         }
     });
 
     // press 'esc' key to close
     $body.keydown(function(esc) {
         if (esc.keyCode === 27) {  // key 27 = 'esc'
-            if ($body.hasClass('modal')){
-                //$modal.find('.cancel.button').trigger('click');
-                xModalCancel();
-                xModalClose();
+            if ($body.hasClass('x_modal_body')){
+                $('div.x_modal').last().find('.cancel.button').trigger('click');
+                //    xModalCancel();
+                //    xModalClose();
             }
         }
     });
@@ -363,9 +379,9 @@ $(document).ready(function(){
     $body.keydown(function(e) {
         var keyCode = (window.event) ? e.which : e.keyCode;
         if (keyCode === 13) {  // key 13 = 'enter'
-            if ($body.hasClass('modal')){
+            if ($body.hasClass('x_modal_body')){
                 e.preventDefault();
-                $modal.find('.default.button').trigger('click');
+                $('div.x_modal').last().find('.default.button').trigger('click');
                 //xModalSubmit();
                 //xModalClose();
             }
@@ -376,13 +392,17 @@ $(document).ready(function(){
 
 
 $(window).resize(function(){
-    if ($('body').hasClass('modal')){
+    if ($('body').hasClass('x_modal_body')){
         var width, height ;
-        if (size_type === 'dialog'){
-            width = 350 ;
+        if (x_kind === 'dialog'){
+            width = 400 ;
             height = 200 ;
         }
-        else if (size_type === 'fixed'){
+        else if (x_kind === 'loading'){
+            width = 260 ;
+            height = 100 ;
+        }
+        else if (x_kind === 'fixed'){
             width = box_width ;
             height = box_height ;
         }
@@ -390,6 +410,6 @@ $(window).resize(function(){
             width = h_margin ;
             height = v_margin ;
         }
-        xModalSizes(size_type,width,height/*,$this_box*/);
+        xModalSizes(x_kind,width,height/*,$this_box*/);
     }
 });

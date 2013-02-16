@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="UTF-8">
+    <title>xModal</title>
+    <style type="text/css">
+        body { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; position: relative ; }
+        .demo.buttons { width: 400px ; height: 150px ; position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
+            /* #modalXML { overflow-y: scroll ; } */
+    </style>
+    <script type="text/javascript" src="/xnat/scripts/jquery/jquery.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="/xnat/scripts/xModal/xModal.css">
+    <script type="text/javascript" src="/xnat/scripts/xModal/xModal.js"></script>
+</head>
+<body>
+
+<div class="demo buttons">
+    <button id="hello_static_button">Hello (static)</button>
+</div>
+
+
+<div id="hello_static" class="x_modal static">
+    <div class="box round">
+        <div class="title round">
+            <span class="inner">Hello there.</span>  <!-- title -->
+            <div class="close cancel button"></div>
+        </div>
+        <div class="body">
+            <div class="inner">
+
+
+                <!-- body start -->
+
+                <form id="hcpAwesomeForm" action="javascript:alert('submitted!')">
+
+                <p>Hello.</p>
+                <ul>
+                    <li>Hello.</li>
+                    <li>Hello.</li>
+                    <li>I don't know why you say "goodbye," I say "hello."</li>
+                </ul>
+
+                </form>
+
+                <!-- body end -->
+
+
+            </div>
+        </div>
+        <div class="footer">
+            <div class="inner">
+                <span class="buttons">
+                    <a class="cancel button" href="javascript:">Cancel</a>  <!-- "Cancel" button text -->
+                    <a class="ok default button" href="javascript:">OK</a>  <!-- "OK" button text -->
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    /* *********************************
+     xModal globals
+     ********************************** */
+    // put the css link code on the page and get the xModal.js script
+    //$('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
+    //$.getScript(scripts_dir + '/xModal/xModal.js');
+    // xModal.js requires jQuery
+    /* ********************************* */
+
+    var scripts_dir = '/xnat/scripts' ;
+
+    $(document).ready(function(){
+
+        // selector for what you're clicking to open another modal
+        $body.on('click','#hello_static_button',function(){
+
+            xModalOpen({
+                kind: 'fixed',  // size - 'fixed','custom','large','med','small',
+                width: 400,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height: 200,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                box: 'hello_static',  // id of the static modal box we're showing
+                content: 'static',// 'static' value uses existing content
+                footer: {
+                    show: 'no'//,
+                    //content: '<a href="#!" class="close default button">Close</a>' // content for footer
+                }
+            });
+
+            xModalSubmit = function(){
+                $('#hcpAwesomeForm').submit();
+                xModalClose();
+            };
+
+            xModalCancel = function(){
+                xModalClose();
+            };
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

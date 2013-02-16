@@ -20,22 +20,20 @@
         // where is the 'scripts' directory?
         //var scripts_dir = '..' ;
 
-        var script_links =
-            'a[href="#"],' +
-            'a[href="#!"],' +
-            'a[href="#*"],' +
-            'a[href="*"],' +
-            'a[href=""],' +
-            'a.script' +
-            '';
 
-        $(document).ready(function(){
-            // prevent default clicks on these:
-            $('body').on('click',script_links,function(s){
-                s.preventDefault();
-                return false ;
-            });
-        });
+        //<iframe src="xModal_iframe.html"></iframe>
+        function closeMe(iframe){
+            var $iframe_modal = $('iframe[src="'+ iframe +'"]').closest('div.x_modal');
+            $iframe_modal.fadeOut(200);
+            setTimeout(function(){
+                //alert("Closing now.");
+                xModalClose();
+                //$iframe_modal.html('');
+            },400);
+            $('body').removeClass('x_modal_body');
+        }
+
+
 
     </script>
     <link type="text/css" rel="stylesheet" href="XMLDisplay/XMLDisplay.css">
@@ -50,20 +48,58 @@
     <button class="hello">Hello</button>
     <button class="loading">Loading</button>
     <button class="iframe">iframe</button>
+    <br>
+    <a id="hello_static_button" class="hello_static" title="hello_static" data-modal="hello_static">Hello (static)</a>
 </div>
 
 
 <!-- this content is displayed in the modal when clicking the "hello" button -->
-<div id="hello_content" class="modal_content" style="display:none;">
-    <p>Hello.</p>
-    <ul>
-        <li>Hello.</li>
-        <li>Hello.</li>
-        <li>I don't know why you say "goodbye," I say "hello."</li>
-    </ul>
-</div>
+<!--<div id="hello_content" class="modal_content x_modal static" style="display:none;">-->
+    <!--<p>Hello.</p>-->
+    <!--<ul>-->
+        <!--<li>Hello.</li>-->
+        <!--<li>Hello.</li>-->
+        <!--<li>I don't know why you say "goodbye," I say "hello."</li>-->
+    <!--</ul>-->
+<!--</div>-->
 
+<form id="hcpAwesomeForm" action="submit_the_form">
+    <div id="hello_static" class="x_modal static">
+        <div class="box round hello">
+            <div class="title round">
 
+                <!--title-->
+                <span class="inner">Hello!</span>
+
+                <div class="close cancel button"></div>
+            </div>
+            <div class="body">
+                <div class="inner">
+
+                    <!--body-->
+
+                    <p>Hello.</p>
+                    <ul>
+                        <li>Hello.</li>
+                        <li>Hello.</li>
+                        <li>I don't know why you say "goodbye," I say "hello."</li>
+                    </ul>
+
+                    <!-- -->
+
+                </div>
+            </div>
+            <div class="footer">
+                <div class="inner">
+                    <span class="buttons">
+                        <a class="cancel button" href="javascript:">Cancel</a>
+                        <a class="ok default button" href="javascript:">OK</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 
 <script type="text/javascript">
@@ -136,6 +172,42 @@
                 content: $('#hello_content').html(), // main body of modal window
                 footer: {
                     show: 'yes'//,
+                    //content: '<a href="#!" class="close default button">Close</a>' // content for footer
+                }
+            });
+
+            xModalSubmit = function(){
+                // what to do when the thing is submitted
+                alert('It was nice seeing you.');
+                // if you want the page to close, do so here:
+                xModalClose();
+            };
+
+            xModalCancel = function(){
+                // if you want a special action on cancel
+                alert('See if I care!');
+                // if you want the page to close, do so here:
+                xModalClose();
+            };
+
+        });
+
+
+
+        // selector for what you're clicking to open another modal
+        $body.on('click','#hello_static_button',function(){
+
+            var this_box = $(this).attr('title') ;
+
+            xModalOpen({
+                kind: 'fixed',  // size - 'fixed','custom','large','med','small',
+                width: 400,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+                height: 200,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+                box: this_box,  // id of this modal box
+                title: 'Hello!', // text for modal title bar
+                content: 'static',// static content, // main body of modal window
+                footer: {
+                    show: 'no'//,
                     //content: '<a href="#!" class="close default button">Close</a>' // content for footer
                 }
             });

@@ -134,6 +134,8 @@ public abstract class SecureResource extends Resource {
 
 	public static final MediaType APPLICATION_XMIRC_DICOM = MediaType.register(
 	        "application/x-mirc-dicom", "MIRC DICOM");
+	
+	public static final MediaType TEXT_CSV = MediaType.register("text/csv", "CSV");
 
 	protected List<String> actions=null;
 	protected String userName=null;
@@ -193,7 +195,7 @@ public abstract class SecureResource extends Resource {
 			} else if (this.requested_format.equals("json")) {
 				return MediaType.APPLICATION_JSON;
 			} else if (this.requested_format.equals("csv")) {
-				return MediaType.APPLICATION_EXCEL;
+				return TEXT_CSV;
 			} else if (this.requested_format.equals("html")) {
 				return MediaType.TEXT_HTML;
 			} else if (this.requested_format.equals("zip")) {
@@ -437,8 +439,8 @@ public abstract class SecureResource extends Resource {
 				return new XMLTableRepresentation(table,cp,params,MediaType.TEXT_XML);
 			}else if (mt.equals(MediaType.APPLICATION_JSON)){
 				return new JSONTableRepresentation(table,cp,params,MediaType.APPLICATION_JSON);
-			}else if (mt.equals(MediaType.APPLICATION_EXCEL)){
-				return new CSVTableRepresentation(table,cp,params,MediaType.APPLICATION_EXCEL);
+			}else if (mt.equals(MediaType.APPLICATION_EXCEL) || mt.equals(TEXT_CSV)){
+				return new CSVTableRepresentation(table,cp,params,mt);
 			}else if (mt.equals(APPLICATION_XLIST)){
 				Representation rep= new HTMLTableRepresentation(table,cp,params,MediaType.TEXT_HTML,false);
 				rep.setMediaType(MediaType.TEXT_HTML);

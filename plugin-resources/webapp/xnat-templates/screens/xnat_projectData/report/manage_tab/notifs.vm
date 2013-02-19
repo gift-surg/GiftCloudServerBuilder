@@ -1,0 +1,44 @@
+##Copyright 2012 Radiologics, Inc
+##Developer: Tim Olsen tim@radiologics.com
+<table id="notif_script_table">
+  <tr>
+    <td colspan="2" class="highlighted" id="notif_script_container">
+      <DIV style="font-weight:700;">Notifications Configuration</DIV>
+      <TABLE>
+	<TR><TD></TD><TD>Emails should be comma separated (i.e. tim@somewhere.com,jenny@somewhere.com).</TD></TR>
+	<TR><TD></TD><TD><input type="text" name="notif_list" id="notif_list" SIZE="100"/></TD></TR>
+	<TR><TD COLSPAN="2"><input type="button" id="notif_script_save" value="Save" onclick="XNAT.app.notifUpdate();" /></TD></TR>
+      </TABLE>      
+    </td>
+  </tr>
+</table>
+<script>
+  	XNAT.app.notifUpdate=function(){
+        this.notifs=YUIDOM.get("notif_list").value;
+        if(this.notifs.indexOf("'")>-1 || this.notifs.indexOf("\"")>-1){
+        	alert("Notification emails cannot contains quotes.");
+        	return false;
+        }
+        openModalPanel('notifs','Saving Emails');
+        YAHOO.util.Connect.asyncRequest('PUT',serverRoot+"/data/projects/$project.getId()/resources/notifications/files/archival.lst?inbody=true&overwrite=true&content=NOTIFY_ARCHIVAL&XNAT_CSRF=" + window.csrfToken,
+        {	
+        	success : function()
+        	{
+        		closeModalPanel('notifs');
+        		alert("Emails updated.");
+        	},
+        	 failure: function(){
+        	 	closeModalPanel('notifs');
+        	 	alert("Failed to store emails");
+        	 },
+             cache:false, // Turn off caching for IE
+        	 scope: this
+        },
+         this.notifs);
+  	}
+ 	XNAT.app.notifsLoad=function(obj){
+      	YUIDOM.get("notif_list").value = obj.responseText;
+  	}
+  
+  YAHOO.util.Connect.asyncRequest('GET', serverRoot+'/data/projects/$project.getId()/resources/notifications/files/archival.lst', {success : XNAT.app.notifsLoad, failure : function(){}, cache : false, scope : this});
+</script>

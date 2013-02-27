@@ -73,7 +73,7 @@ public class FileList extends XNATCatalogTemplate {
     XnatAbstractresource resource =null;
 
     public FileList(Context context, Request request, Response response) {
-        super(context, request, response, SecureResource.isQueryVariableTrueHelper(SecureResource.getParameter(request, "all")));
+        super(context, request, response, isQueryVariableTrue("all", request));
         try {
             if(catalogs!=null && catalogs.size()>0  && resource_ids!=null){
 

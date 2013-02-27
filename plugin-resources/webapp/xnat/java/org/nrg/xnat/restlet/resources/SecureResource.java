@@ -253,11 +253,15 @@ public abstract class SecureResource extends Resource {
 	 */
 	private Form getQueryVariableForm(){
 		if(f==null){
-			f= getRequest().getResourceRef().getQueryAsForm();
+		    	f=getQueryVariableForm(getRequest());
 		}
 		return f;
 	}
 
+	private static Form getQueryVariableForm(Request request){
+	    	return request.getResourceRef().getQueryAsForm();
+	}
+	
 	public Map<String,String> getQueryVariableMap(){
 		return convertFormToMap(getQueryVariableForm());
 	}
@@ -335,7 +339,11 @@ public abstract class SecureResource extends Resource {
 	}
 
 	public String getQueryVariable(String key){
-		Form f = getQueryVariableForm();
+	    return getQueryVariable(key, getRequest());
+	}
+	
+	public static String getQueryVariable(String key, Request request){
+		Form f = getQueryVariableForm(request);
 		if (f != null && f.getValuesMap().containsKey(key)) {
 			return TurbineUtils.escapeParam(f.getFirstValue(key));
 		}
@@ -816,7 +824,11 @@ public abstract class SecureResource extends Resource {
 	    return isQueryVariableTrueHelper(getQueryVariable(key));
 	}
 
-	protected static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
+	protected static boolean isQueryVariableTrue(String key, Request request) {
+	    return isQueryVariableTrueHelper(getQueryVariable(key, request));
+	}
+
+	private static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
 		if (queryVariableObj != null && queryVariableObj instanceof String) {
 		    	String queryVariable = (String) queryVariableObj;
 			if (queryVariable.equalsIgnoreCase("false") || queryVariable.equalsIgnoreCase("0")) {
@@ -833,7 +845,7 @@ public abstract class SecureResource extends Resource {
 	    return isQueryVariableFalseHelper(getQueryVariable(key));
 	}
 
-	protected static boolean isQueryVariableFalseHelper(String queryVariableObj){
+	private static boolean isQueryVariableFalseHelper(String queryVariableObj){
 		if(queryVariableObj!=null && queryVariableObj instanceof String){
 		    String queryVariable = (String) queryVariableObj;
 			if(queryVariable.equalsIgnoreCase("false") || queryVariable.equalsIgnoreCase("0")){

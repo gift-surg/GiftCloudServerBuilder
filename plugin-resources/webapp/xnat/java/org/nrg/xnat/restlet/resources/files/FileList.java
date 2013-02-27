@@ -90,10 +90,21 @@ public class FileList extends XNATCatalogTemplate {
                     }
 
                 }
-
-                if(resources.size()>0){
-                    resource=resources.get(0);
+            } else if(resource_ids != null) {
+        	// if caller is asking for the files directly by resource ID (e.g. /experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files),
+        	// the catalog will not be found by the superclass
+        	// (unless caller passes all=true, which seems klunky to require given that they are passing in the resource PK).
+        	// So here we provide an alternate path finding the resource
+                for(String resourceID:this.resource_ids){
+                    XnatAbstractresource res=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(resourceID, user, false);
+                    if(res != null) {
+                	resources.add(res);
+                    }
                 }
+            }
+            
+            if(resources.size()>0){
+                resource=resources.get(0);
             }
 
             filepath = this.getRequest().getResourceRef().getRemainingPart();

@@ -23,6 +23,7 @@ import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.turbine.util.TurbineException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.nrg.action.ActionException;
@@ -64,6 +65,7 @@ import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
 import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
+import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
 import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -446,7 +448,18 @@ public abstract class SecureResource extends Resource {
 				rep.setMediaType(MediaType.TEXT_HTML);
 				return rep;
 			}else{
-				return new HTMLTableRepresentation(table,cp,params,MediaType.TEXT_HTML,true);
+				if(mt.equals(MediaType.TEXT_HTML) && this.hasQueryVariable("requested_screen")){
+					try {
+						this.getHttpSession().setAttribute("table", table);
+						params.put("hideTopBar",isQueryVariableTrue("hideTopBar"));
+						return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, this.getQueryVariable("requested_screen"), params);
+					} catch (TurbineException e) {
+						logger.error("",e);
+						return new HTMLTableRepresentation(table,cp,params,MediaType.TEXT_HTML,true);
+					}
+				}else{
+					return new HTMLTableRepresentation(table,cp,params,MediaType.TEXT_HTML,true);
+				}
 			}
 		}else{
 			Representation rep = new StringRepresentation("", mt);

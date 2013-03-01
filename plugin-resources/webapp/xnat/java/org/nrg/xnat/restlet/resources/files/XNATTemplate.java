@@ -4,7 +4,6 @@ package org.nrg.xnat.restlet.resources.files;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -22,7 +21,6 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.FileUtils;
@@ -187,9 +185,8 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-			String scanID= (String)getParameter(request,"SCAN_ID");
+		String scanID= (String)getUrlEncodedParameter(request,"SCAN_ID");
 		if (scanID != null && this.assesseds.size()>0) {
-			scanID=URLDecoder.decode(scanID);
 			
 			scanID=scanID.replace("[SLASH]", "/");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
 			
@@ -251,9 +248,8 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-			String reconID= (String)getParameter(request,"RECON_ID");
+		String reconID= (String)getUrlEncodedParameter(request,"RECON_ID");
 		if (reconID != null && assesseds.size()>0) {
-			reconID=URLDecoder.decode(reconID);
 			CriteriaCollection cc = new CriteriaCollection("OR");
 
 			for(XnatExperimentdata assessed:this.assesseds){

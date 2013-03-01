@@ -4,7 +4,9 @@ package org.nrg.xnat.restlet.resources;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -170,6 +172,15 @@ public abstract class SecureResource extends Resource {
 		return TurbineUtils.escapeParam(request.getAttributes().get(key));
 	}
 
+	public static String getUrlEncodedParameter(Request request,String key){
+	    try {
+		String param = (String) request.getAttributes().get(key);
+		return param == null ? null : TurbineUtils.escapeParam(URLDecoder.decode(param, "UTF-8"));
+	    }
+	    catch(UnsupportedEncodingException e) {
+		throw new RuntimeException(e);
+	    }
+	}
 
 	public void logAccess() {
 		String url = this.getRequest().getResourceRef().toString();

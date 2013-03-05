@@ -56,7 +56,7 @@ function fullConfigHandler() {
                 window.location.replace(destination);
             },
             failure : function(o) {
-                showMessage('page_body', 'Error', 'Your settings were not successfully saved: ' + o);
+                showMessage('page_body', 'Error', 'Your settings were not successfully saved: ' + o.responseText);
             },
             cache : false, // Turn off caching for IE
             scope : this
@@ -75,7 +75,21 @@ function fullConfigHandler() {
 
         var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
         YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.fullConfigCallback, data, this);
+        
+        //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
+        //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
+        document.getElementById('siteInfo_save_button').onclick = saveSettings;
+        document.getElementById('fileSystem_save_button').onclick = saveSettings;
+        document.getElementById('registration_save_button').onclick = saveSettings;
+        document.getElementById('notifications_save_button').onclick = saveSettings;
+        document.getElementById('anonymization_save_button').onclick = saveSettings;
+        document.getElementById('applet_save_button').onclick = saveSettings;
+        document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
     }
+}
+
+function saveSettings(){
+	window.siteInfoManager.saveTabSettings();
 }
 
 function configurationTabManagerInit(initialize) {

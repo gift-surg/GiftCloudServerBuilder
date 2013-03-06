@@ -15,16 +15,16 @@ import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
-import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.utils.WorkflowUtils;
 
@@ -39,6 +39,17 @@ public class AddProject extends SecureAction {
         if (TurbineUtils.HasPassedParameter("tag", data)){
             context.put("tag", TurbineUtils.GetPassedParameter("tag", data));
         }
+        
+        if(!XFT.getBooleanProperty("UI.allow-non-admin-project-creation", true) && !user.isSiteAdmin()){
+        	data.addMessage("Invalid permissions for this operation");
+			TurbineUtils.SetEditItem(found,data);
+            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+            {
+                data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+            }
+            return;
+        }
+        
         try {
             EditScreenA screen = (EditScreenA) ScreenLoader.getInstance().getInstance("XDATScreen_add_xnat_projectData");
             

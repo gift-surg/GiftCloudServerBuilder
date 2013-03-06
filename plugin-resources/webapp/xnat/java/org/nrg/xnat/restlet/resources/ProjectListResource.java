@@ -13,6 +13,7 @@ import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.search.DisplayCriteria;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityManager;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.ViewManager;
@@ -21,7 +22,6 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.DateUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -96,11 +96,14 @@ public class ProjectListResource extends QueryOrganizerResource {
 				}
 
 				if(item.getCurrentDBVersion()==null){
-
-					this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
+					if(XFT.getBooleanProperty("UI.allow-non-admin-project-creation", true) || user.isSiteAdmin()){
+						this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
+					}else{
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
+						return;
+					}
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
-
 				}
 			}
 		} catch (Exception e) {

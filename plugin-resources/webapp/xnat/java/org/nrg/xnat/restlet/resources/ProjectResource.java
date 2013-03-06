@@ -4,6 +4,7 @@ package org.nrg.xnat.restlet.resources;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -221,7 +222,12 @@ public class ProjectResource extends ItemResource {
 							}
 						}
 
-						BaseXnatProjectdata.createProject(project, user, allowDataDeletion,true,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility"));
+						if(XFT.getBooleanProperty("UI.allow-non-admin-project-creation", true) || user.isSiteAdmin()){
+							BaseXnatProjectdata.createProject(project, user, allowDataDeletion,true,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility"));
+						}else{
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
+							return;
+						}
 					}
 				}
 			}else{

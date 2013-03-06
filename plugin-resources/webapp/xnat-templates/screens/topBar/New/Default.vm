@@ -1,6 +1,7 @@
 <!-- Sequence: 10 -->
-
+    #if($siteConfig.getProperty("UI.allow-non-admin-project-creation","true"))
     <li><a href="$link.setPage("XDATScreen_add_xnat_projectData.vm")">$displayManager.getSingularDisplayNameForProject()</a></li>
+     #end
     <!-- -->
     #if ($data.getSession().getAttribute("user").canCreateElement("xnat:subjectData", "xnat:subjectData/project"))
         #if($project)

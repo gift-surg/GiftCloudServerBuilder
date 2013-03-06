@@ -34,21 +34,21 @@ public class XnatProviderManager extends ProviderManager {
             throw new IllegalArgumentException("The list of authentication providers cannot be set to null.");
         }
 
-        if(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_PROPERTY)!=null){
+        if(!StringUtils.isBlank(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_PROPERTY))) {
             AuthUtils.MAX_FAILED_LOGIN_ATTEMPTS=Integer.valueOf(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_PROPERTY));
         }
 
-        if(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY)!=null){
+        if(!StringUtils.isBlank(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY))) {
             AuthUtils.LOCKOUT_DURATION=Integer.valueOf(properties.getProperty(SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY));
             if(AuthUtils.LOCKOUT_DURATION>0)AuthUtils.LOCKOUT_DURATION=-(AuthUtils.LOCKOUT_DURATION); //LOCKOUT must be negative for date comparison to work
         }
 
-        if(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY)!=null){
+        if(!StringUtils.isBlank(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY))) {
             PASSWORD_EXPIRATION=properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY);
         }
 
         String commaDelineatedProviders = properties.getProperty("provider.providers.enabled");
-        assert commaDelineatedProviders != null : "You must specify at least one authentication provider configuration.";
+        assert !StringUtils.isBlank(commaDelineatedProviders) : "You must specify at least one authentication provider configuration.";
         String[] providerArray=commaDelineatedProviders.split("[\\s,]+");
         HashMap<String, HashMap<String, String>> providerMap = new HashMap<String, HashMap<String, String>>();
         for(String prov : providerArray){
@@ -81,9 +81,9 @@ public class XnatProviderManager extends ProviderManager {
             String id = providerMap.get(prov).get("id");
             String type = providerMap.get(prov).get("type");
 
-            assert name != null : "You must provide a name for all authentication provider configurations";
-            assert id != null : "You must provide an ID for all authentication provider configurations";
-            assert type != null : "You must provide a type for all authentication provider configurations";
+            assert !StringUtils.isBlank(name) : "You must provide a name for all authentication provider configurations";
+            assert !StringUtils.isBlank(id) : "You must provide an ID for all authentication provider configurations";
+            assert !StringUtils.isBlank(type) : "You must provide a type for all authentication provider configurations";
 
             if (_configurators.containsKey(type)) {
                 AuthenticationProviderConfigurator configurator = _configurators.get(type);

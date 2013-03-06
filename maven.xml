@@ -120,6 +120,12 @@
             <fileset dir="${basedir}/plugin-resources/webapp/xnat/style"/>
         </copy>
     </goal>
+    <goal name="xdat:updateResources" description="Update resource files">
+        <copy todir="${basedir}/projects/${xdat.project.name}/src/resources" preservelastmodified="true">
+            <fileset dir="${basedir}/plugin-resources/webapp/xnat/resources"/>
+        </copy>
+        <attainGoal name="xdat:updateFavicon" />
+    </goal>
     <goal name="xdat:updateImages" description="Update image files">
         <copy todir="${basedir}/projects/${xdat.project.name}/src/images" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/webapp/xnat/images"/>

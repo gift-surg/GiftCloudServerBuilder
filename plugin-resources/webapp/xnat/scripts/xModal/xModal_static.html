@@ -15,8 +15,8 @@
             /* #modalXML { overflow-y: scroll ; } */
     </style>
     <script type="text/javascript" src="/xnat/scripts/jquery/jquery.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="/xnat/scripts/xModal/xModal.css">
-    <script type="text/javascript" src="/xnat/scripts/xModal/xModal.js"></script>
+    <link type="text/css" rel="stylesheet" href="xModal.css">
+    <script type="text/javascript" src="xModal_static_local.js"></script>
 </head>
 <body>
 
@@ -25,43 +25,47 @@
 </div>
 
 
-<div id="hello_static" class="x_modal static">
-    <div class="box round">
-        <div class="title round">
-            <span class="inner">Hello there.</span>  <!-- title -->
-            <div class="close cancel button"></div>
-        </div>
-        <div class="body">
-            <div class="inner">
+
+
+<div id="modal_form">
+    <!--<div class="box round">-->
+        <!--<div class="title round">-->
+            <!--<span class="inner"></span>  &lt;!&ndash; title &ndash;&gt;-->
+            <!--<div class="close cancel button"></div>-->
+        <!--</div>-->
+        <!--<div class="body">-->
+            <!--<div class="inner">-->
 
 
                 <!-- body start -->
 
-                <form id="hcpAwesomeForm" action="javascript:alert('submitted!')">
 
-                <p>Hello.</p>
-                <ul>
-                    <li>Hello.</li>
-                    <li>Hello.</li>
-                    <li>I don't know why you say "goodbye," I say "hello."</li>
-                </ul>
+                    <form id="hcpAwesomeForm" action="javascript:alert('submitted!')">
 
-                </form>
+                        <p>Hello.</p>
+                        <ul>
+                            <li>Hello.</li>
+                            <li>Hello.</li>
+                            <li>I don't know why you say "goodbye," I say "hello."</li>
+                        </ul>
+
+                    </form>
+
 
                 <!-- body end -->
 
 
-            </div>
-        </div>
-        <div class="footer">
-            <div class="inner">
-                <span class="buttons">
-                    <a class="cancel button" href="javascript:">Cancel</a>  <!-- "Cancel" button text -->
-                    <a class="ok default button" href="javascript:">OK</a>  <!-- "OK" button text -->
-                </span>
-            </div>
-        </div>
-    </div>
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="footer">-->
+            <!--<div class="inner">-->
+                <!--<span class="buttons">-->
+                    <!--<a class="cancel button" href="javascript:">Cancel</a>  &lt;!&ndash; "Cancel" button text &ndash;&gt;-->
+                    <!--<a class="ok default button" href="javascript:">OK</a>  &lt;!&ndash; "OK" button text &ndash;&gt;-->
+                <!--</span>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 
 <script type="text/javascript">
@@ -86,12 +90,16 @@
                 kind: 'fixed',  // size - 'fixed','custom','large','med','small',
                 width: 400,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
                 height: 200,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                box: 'hello_static',  // id of the static modal box we're showing
+                //scroll: 'yes',
+                box: 'modal_form',  // id of the static modal div we're showing
+                title: 'Awesome Static Content Modal',
                 content: 'static',// 'static' value uses existing content
                 footer: {
-                    show: 'no'//,
+                    show: 'yes'//,
                     //content: '<a href="#!" class="close default button">Close</a>' // content for footer
-                }
+                },
+                ok: 'Yes!',
+                cancel: 'No Thank You.'
             });
 
             xModalSubmit = function(){

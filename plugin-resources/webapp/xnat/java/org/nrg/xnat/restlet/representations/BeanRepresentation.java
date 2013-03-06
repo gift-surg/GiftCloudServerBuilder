@@ -8,23 +8,22 @@ import java.io.PrintWriter;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.bean.CatCatalogBean;
+import org.nrg.xdat.bean.base.BaseElement;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 
-@Deprecated
-public class CatalogRepresentation extends OutputRepresentation {
+public class BeanRepresentation extends OutputRepresentation {
 	static org.apache.log4j.Logger logger = Logger.getLogger(ItemXMLRepresentation.class);
-	CatCatalogBean cat = null;
+	BaseElement cat = null;
 	boolean includeSchemaLocations=true;
 	
-	public CatalogRepresentation(CatCatalogBean i,MediaType mt,boolean includeSchemaLocations) {
+	public BeanRepresentation(BaseElement i,MediaType mt,boolean includeSchemaLocations) {
 		super(mt);
 		cat=i;	
 		this.includeSchemaLocations=includeSchemaLocations;
 	}
 
-	public CatalogRepresentation(CatCatalogBean i,MediaType mt) {
+	public BeanRepresentation(BaseElement i,MediaType mt) {
 		super(mt);
 		cat=i;	
 	}

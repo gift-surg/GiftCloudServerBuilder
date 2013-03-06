@@ -97,7 +97,7 @@ function blocking(i)
 {
 	if (!supported)
 	{
-		alert('This link does not work in your browser.');
+        showMessage("page_body", "Notification", "This link does not work in your browser.");
 		return;
 	}
 	var plusLocation = serverRoot+ "/images/plus.jpg";
@@ -372,6 +372,15 @@ String.prototype.endsWith = function(str) {
 	}
 }
 
+String.prototype.getExcerpt = function(desiredLength, excerptIndicator) {
+	if(this.length <= desiredLength) {
+		return this;
+	}
+	else {
+		return this.substr(0, desiredLength - 1).concat(excerptIndicator || "...");
+	}
+}
+
 Array.prototype.contains = function(str) {
 	for(var containsCount=0;containsCount<this.length;containsCount++){
 		if (this[containsCount]==str){
@@ -480,7 +489,7 @@ function validateDate(sel){
         childNodes[childNodeCount].focus();
        }
      }
-     alert("Please select a valid date.");
+       showMessage("page_body", "Notification", "Please select a valid date.");
    }else{
      if(img_div!=undefined)img_div.innerHTML="<img src=\"" + serverRoot+ "/images/checkmarkGreen.gif\"/>";
    }
@@ -518,7 +527,7 @@ function validateDate(sel){
       try {
           var cal1 = new YAHOO.widget.Calendar("cal1", calendarDIV, {context:["cal_" + input.id, "tr", "tl"], title:_title, navigator:true, close:true, visible:false});
       } catch (e) {
-          alert("Found exception creating calendar: " + e);
+          showMessage("page_body", "Notification", "Found exception creating calendar: " + e);
       }
 
     cal1.text_input = input;
@@ -563,12 +572,12 @@ function validateDate(sel){
             this.calendar.cfg.setProperty("pagedate", (firstDate.getMonth()+1) + "/" + firstDate.getFullYear());
             this.calendar.render();
          } else {
-            alert("Invalid date. MM/DD/YYYY");
+            showMessage("page_body", "Notification", "Invalid date. MM/DD/YYYY");
          }
    	    }else if(this.value == "NULL"){
    	    	//don't do anything, they're trying to clear out the value.
    	   	}else{
-   	   		alert("Invalid date. MM/DD/YYYY");
+                  showMessage("page_body", "Notification", "Invalid date. MM/DD/YYYY");
    	   		this.value="";
    	   		this.focus();
    	   	}
@@ -759,7 +768,7 @@ function closeModalPanel(id){
 }
 
 function displayError(msg){
-    alert(msg);
+    showMessage("page_body", "Exception", msg);
 }
 
 function showMessage(divId, title, body) {
@@ -810,4 +819,45 @@ function getValueById(id){
 	}else{
 		return {"value":box.value,obj:box};
 	}
+}
+function addSearchMenuOption(menuMap) {
+    if (!window.menuOptions) {
+        window.menuOptions = [];
+    }
+    window.menuOptions.push(menuMap);
+}
+
+function getSearchMenuOptions() {
+    return window.menuOptions;
+}
+
+function clearSearchMenuOptions() {
+    if (window.menuOptions) {
+        window.menuOptions.length = 0;
+    }
+}
+
+
+XNAT.utils=new Object();
+
+//find the specified object in the specified array using the specified comparator
+XNAT.utils.find=function(array,tofind, comparator){
+	for(var findI=0;findI<array.length;findI++){
+		if(comparator(array[findI],tofind)){
+			return array[findI];
+		}
+	}
+	
+	return null;
+}
+
+//filter the specified array for objects that match the comparator
+XNAT.utils.filter=function(array, comparator){
+	var new_array=new Array();
+	for(var filterI=0;filterI<array.length;filterI++){
+		if(comparator(array[filterI])){
+			new_array.push(array[filterI]);
+		}
+	}
+	return new_array;
 }

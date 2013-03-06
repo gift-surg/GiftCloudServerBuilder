@@ -23,7 +23,7 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
-import org.nrg.xnat.restlet.representations.CatalogRepresentation;
+import org.nrg.xnat.restlet.representations.BeanRepresentation;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.ScanResource;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
@@ -349,7 +349,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 					CatCatalogBean cat= catResource.getCleanCatalog(proj.getRootArchivePath(),includeRoot,null,null);
 			    	
 			    	if(cat!=null)
-						return new CatalogRepresentation(cat,MediaType.TEXT_XML);
+						return new BeanRepresentation(cat,MediaType.TEXT_XML);
 			    	else{
 			    		this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find catalog file.");
 			    	}

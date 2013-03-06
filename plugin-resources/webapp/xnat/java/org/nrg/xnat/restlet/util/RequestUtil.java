@@ -30,6 +30,7 @@ public class RequestUtil {
 		supported_upload_types.put(MediaType.TEXT_ALL, ".txt");
 		supported_upload_types.put(MediaType.TEXT_PLAIN, ".txt");
 		supported_upload_types.put(MediaType.APPLICATION_ALL,"");
+		supported_upload_types.put(SecureResource.TEXT_CSV, ".csv");
 		supported_upload_types.put(SecureResource.APPLICATION_DICOM, ".dcm");
 		supported_upload_types.put(MediaType.APPLICATION_ZIP,".zip");
 		supported_upload_types.put(SecureResource.APPLICATION_XAR,".xar");

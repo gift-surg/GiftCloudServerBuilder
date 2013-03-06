@@ -41,7 +41,7 @@ import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.helpers.resource.direct.ResourceModifierA.UpdateMeta;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
-import org.nrg.xnat.restlet.representations.CatalogRepresentation;
+import org.nrg.xnat.restlet.representations.BeanRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
@@ -434,7 +434,7 @@ public class FileList extends XNATCatalogTemplate {
 
             this.setContentDisposition("files.xcat", false);
 
-            return new CatalogRepresentation(cat, mt,false);
+            return new BeanRepresentation(cat, mt,false);
         }else if(isZIPRequest(mt)){
             ZipRepresentation rep;
             try {

@@ -54,13 +54,16 @@ var
     window_width,
     window_height,
     x_kind,
+    x_title,
+    x_content,
     box_width,
     box_height,
     h_margin,
     v_margin,
     top_margin,
     ok_btn,
-    cancel_btn
+    cancel_btn,
+    close_btn
     ;
 
 
@@ -124,15 +127,8 @@ function xModalSizes(kind,width,height /*,box*/){
         if (box_height <= 500){
             box_height = 500 ;
         }
-        // height no larger than 900px
-        // or not?
-        //if (box_height >= 900){
-        //    box_height = 900 ;
-        //}
 
     }
-
-    //$this_box = $('div.x_modal').last().find('.box');
 
     var
         //body_height = $this_box.find('.body').height() ,
@@ -207,6 +203,12 @@ function xModalSizes(kind,width,height /*,box*/){
 // this is the main function that draws the x_modal guy
 function xModalOpen(xModal){
 
+    x_title = (typeof xModal.title !== 'undefined' && xModal.title > '') ? xModal.title : 'Alert' ;
+    x_content = (typeof xModal.content !== 'undefined' && xModal.content > '') ? xModal.content : '(no content)' ;
+    ok_btn = (typeof xModal.ok !== 'undefined' && xModal.ok > '') ? xModal.ok : 'OK' ;
+    cancel_btn = (typeof xModal.cancel !== 'undefined' && xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
+    close_btn = (typeof xModal.close !== 'undefined' && xModal.close > '') ? xModal.close : 'Close' ;
+
     modal_count = parseInt(modal_count + 1) ;
     var my_modal = 'modal_'+modal_count ;
 
@@ -220,35 +222,26 @@ function xModalOpen(xModal){
     }
 
     if (xModal.content === 'static'){
-        $modal = $('div#'+box+'.x_modal');
+//        $modal = $('div#'+box+'_modal.x_modal.static');
+        $modal = $('div#'+box+'.x_modal.static');
     }
     else {
         $modal = $('div.x_modal').last() ;
-    }
-
-    //alert($modal+', '+my_modal);
-
-
-    // if there's an xModal guy on the page, just use that
-    // otherwise make a new box
-    if (!($modal.hasClass('static'))){
-
         $modal.html('');
-
         // make a new box
         $modal.append('<div class="box round"></div>');
-
         // tell me what it is
-        $this_box = $modal.find('.box');
+    }
 
-        $this_box.addClass(box);
+    $this_box = $modal.find('.box');
+    $this_box.addClass(box);
 
-        if (xModal.scroll === 'yes'){
-            $this_box.addClass('scroll');
-        }
+    // if there's no xModal with 'static' class,
+    // clear the contents and make a new box
+    if (!($modal.hasClass('static'))){
 
         // set up the modal contents
-        var x_title, x_content ;
+        //var x_title, x_content ;
         if (xModal.kind === 'loading'){
             x_title = 'Loading...' ;
             x_content =
@@ -257,15 +250,15 @@ function xModalOpen(xModal){
             '<img src="' + scripts_dir + '/xModal/images/loading_anim.gif" alt="loading...">' +
             '</div>' ;
         }
-        else {
-            x_title = (xModal.title > '') ? xModal.title : 'Alert' ;
-            x_content = (xModal.content > '') ? xModal.content : '(no content)' ;
-        }
+//        else {
+//            x_title = (xModal.title > '') ? xModal.title : 'Alert' ;
+//            x_content = (xModal.content > '') ? xModal.content : '(no content)' ;
+//        }
 
         // fill up the modal box
         $this_box.append(
-        '<div class="title round"><span class="inner">' + x_title + '</span><div class="close cancel button"></div></div>' +
-        '<div class="body"><div class="inner"></div></div>'
+            '<div class="title round"><span class="inner">' + x_title + '</span><div class="close cancel button"></div></div>' +
+            '<div class="body"><div class="inner"></div></div>'
         );
 
         $this_box.find('.body .inner').append(x_content);
@@ -278,8 +271,6 @@ function xModalOpen(xModal){
             }
             // if no content is specified, show default buttons
             else {
-                ok_btn = (typeof xModal.ok !== 'undefined' && xModal.ok > '') ? xModal.ok : 'OK' ;
-                cancel_btn = (typeof xModal.cancel !== 'undefined' && xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
                 $this_box.append(
                 '<div class="footer"><div class="inner">' +
                 '<span class="buttons">'+
@@ -292,31 +283,46 @@ function xModalOpen(xModal){
                 '</div></div>'
                 );
             }
-
-            if (xModal.footer.height > ''){
-                $modal.find('.footer').css({
-                    height: xModal.footer.height
-                });
+            // set up the footer style
+            if (typeof xModal.footer.height !== 'undefined' && xModal.footer.height > ''){
+                $modal.find('.footer').css({height: xModal.footer.height});
             }
-
-            if (xModal.footer.background > ''){
-                $modal.find('.footer').css({
-                    background: xModal.footer.background
-                });
+            if (typeof xModal.footer.background !== 'undefined' && xModal.footer.background > ''){
+                $modal.find('.footer').css({background: xModal.footer.background});
             }
-
-            if (xModal.footer.border > ''){
-                $modal.find('.footer').css({
-                    borderColor: xModal.footer.border
-                });
+            if (typeof xModal.footer.border !== 'undefined' && xModal.footer.border > ''){
+                $modal.find('.footer').css({borderColor: xModal.footer.border});
             }
-
+        }
+        // if 'footer' is not defined, just show buttons in the default footer
+        else {
+            //ok_btn = (typeof xModal.ok !== 'undefined' && xModal.ok > '') ? xModal.ok : 'OK' ;
+            cancel_btn = (typeof xModal.cancel !== 'undefined' && xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
+            $this_box.append(
+                '<div class="footer"><div class="inner">' +
+                    '<span class="buttons">'+
+                    '</span>' +
+                '</div></div>'
+            );
+            if (typeof xModal.ok !== 'undefined' && xModal.ok > ''){
+                $this_box.find('.footer .buttons').append('<a class="ok default button" href="javascript:">' + xModal.ok + '</a>')
+            }
+            else {
+                ok_btn = 'OK'
+            }
         }
 
     }
+    // otherwise use the one with a 'static' class
     else {
-        $this_box = $modal.find('.box');
-        $this_box.addClass(box);
+        $this_box.find('.title .inner').text(x_title);
+        $this_box.find('.footer .buttons .cancel.button').text(cancel_btn);
+        $this_box.find('.footer .buttons .ok.button').text(ok_btn);
+    }
+
+    // scroll the body?
+    if (xModal.scroll === 'yes'){
+        $this_box.addClass('scroll');
     }
 
     x_kind = xModal.kind ;
@@ -344,33 +350,18 @@ $(document).ready(function(){
     $body = $('body');
 
     // make sure the xModal.css is loaded
-    if (!($('link[href*="xModal.css"]').length)){
-        $('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
-        //console.log('xModal.css added');
-    }
+//    if (!($('link[href*="xModal.css"]').length)){
+//        $('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
+//    }
 
-    // prevent default clicks on these:
-    // or maybe not because it makes YUI cry
-//    var script_links =
-//        'a[href="#"],' +
-//        'a[href="#!"],' +
-//        'a[href="#*"],' +
-//        'a[href="*"],' +
-//        'a[href=""],' +
-//        'a.script' +
-//        '';
-//    $body.on('click',script_links,function(s){
-//        s.preventDefault();
-//        return false ;
-//    });
-    // why? because. because we don't want the page jumping around and the href looking handsome
-
-    if (!($('div.x_modal').length) || $('div.x_modal.static').length){
+    // if no div.x_modal or if there's already a div.x_modal.static
+    // put a new empty x_modal div on the page
+    var $static_modal_obj = $('div.x_modal.static') ;
+    if (!($('div.x_modal').length) || !($static_modal_obj.length)){
         $body.append(
-            '<div class="x_modal"></div>'
+        '<div class="x_modal"><div class="box round"></div></div>'
         );
     }
-
 
     // what happens when clicking a button (close, cancel, default)
     $body.on('click','div.x_modal.open .button',function(){
@@ -383,11 +374,11 @@ $(document).ready(function(){
             }
             else if ($(this).hasClass('cancel')){
                 xModalCancel();
-                //xModalClose();
+                // use xModalClose(); in xModalCancel() where xModalOpen() is called
             }
             else {
                 xModalSubmit();
-                //xModalClose();
+                // use xModalClose(); in xModalSubmit() where xModalOpen() is called
             }
         }
     });
@@ -397,8 +388,8 @@ $(document).ready(function(){
         if (esc.keyCode === 27) {  // key 27 = 'esc'
             if ($body.hasClass('x_modal_body')){
                 $('div.x_modal').last().find('.cancel.button').trigger('click');
-                //    xModalCancel();
-                //    xModalClose();
+                //xModalCancel();
+                //xModalClose();
             }
         }
     });

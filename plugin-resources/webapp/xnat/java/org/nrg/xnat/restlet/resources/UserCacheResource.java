@@ -20,6 +20,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.utils.zip.TarUtils;
 import org.nrg.xft.utils.zip.ZipI;
 import org.nrg.xft.utils.zip.ZipUtils;
+import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -35,6 +36,7 @@ import org.restlet.resource.Variant;
 import org.restlet.util.ByteUtils;
 
 import com.google.common.collect.Maps;
+import com.noelios.restlet.util.StringUtils;
 
 public class UserCacheResource extends SecureResource {
 	private static final String _ON_SUCCESS_RETURN_JS = "_onSuccessReturnJS";
@@ -89,17 +91,17 @@ public class UserCacheResource extends SecureResource {
 	        } else if (pXNAME != null && pFILE == null) {
 	        	
 	        	if (isZIPRequest()) {
-	        		returnFileList(userPath,pXNAME);
-	        	} else {
 	        		returnZippedFiles(userPath,pXNAME);
+	        	} else {
+	        		returnFileList(userPath,pXNAME);
 	        	}
 	        	
 	        } else if (pXNAME != null && pFILE != null) {
 	        	
 	        	if (isZIPRequest()) {
-	        		returnFile(userPath,pXNAME,pFILE);
-	        	} else {
 	        		returnZippedFiles(userPath,pXNAME,pFILE);
+	        	} else {
+	        		returnFile(userPath,pXNAME,pFILE);
 	        	}
 	        	
 	        }
@@ -170,7 +172,7 @@ public class UserCacheResource extends SecureResource {
 		
 		String _return =this.retrieveParam(_ON_FAILURE_RETURN_JS);
 		if(_return !=null){
-			getResponse().setEntity(new StringRepresentation("<script>"+_return + "</return>", MediaType.TEXT_HTML));
+			getResponse().setEntity(new StringRepresentation("<script>"+_return + "</script>", MediaType.TEXT_HTML));
 		}else{
 			_return =this.retrieveParam(_ON_FAILURE_RETURN_HTML);
 			if(_return !=null){
@@ -433,16 +435,11 @@ public class UserCacheResource extends SecureResource {
 			
 			ouf.getParentFile().mkdirs();
 			
-       		FileOutputStream fos=new FileOutputStream(ouf);
-	        try {
-				ByteUtils.write(getRequest().getEntity().getStream(), fos);
-			}finally{
-				fos.close();
-			}
+			(new FileWriterWrapper(this.getRequest().getEntity(),fileName)).write(ouf);
 	        
 	        return true;
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 			logger.error("",e);
 			return false;

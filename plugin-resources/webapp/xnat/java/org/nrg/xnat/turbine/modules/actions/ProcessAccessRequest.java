@@ -6,7 +6,6 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +16,6 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.XDAT;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -27,13 +25,11 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.db.DBAction;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
-import org.nrg.xft.security.UserI;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.nrg.xnat.utils.WorkflowUtils;
@@ -185,7 +181,8 @@ public class ProcessAccessRequest extends SecureAction {
             context.put("access_level",access_level);
             context.put("admin_email",AdminUtils.getAdminEmailId());
             context.put("projectOM",project);
-            SendAccessApprovalEmail(context,otherU.getEmail(),user,TurbineUtils.GetSystemName() + " Access Request for " + project.getName() + " Approved");
+            String[] projectOwnerEmails = project.getOwnerEmails().toArray(new String[] {});
+            SendAccessApprovalEmail(context,AdminUtils.getAdminEmailId(),new String[]{otherU.getEmail()},projectOwnerEmails,new String[]{AdminUtils.getAdminEmailId()},TurbineUtils.GetSystemName() + " Access Request for " + project.getName() + " Approved");
         }      
         //data.setScreenTemplate("XDATScreen_manage_xnat_projectData.vm");
         //data.setScreenTemplate("/xnat_projectData/xnat_projectData_summary_management.vm");
@@ -195,15 +192,18 @@ public class ProcessAccessRequest extends SecureAction {
     }
     
     public static void SendAccessApprovalEmail(Context context,String otherUemail,XDATUser user,String subject) throws Exception{
-    	
+	String admin = AdminUtils.getAdminEmailId();
+   	SendAccessApprovalEmail(context, admin, new String[]{otherUemail}, new String[]{user.getEmail()}, new String[]{admin}, subject);
+    }
+
+    public static void SendAccessApprovalEmail(Context context, String from, String[] to, String[] cc, String[] bcc, String subject) throws Exception{
         StringWriter sw = new StringWriter();
         Template template =Velocity.getTemplate("/screens/RequestProjectAccessApprovalEmail.vm");
         template.merge(context,sw);
         String message= sw.toString();
-        String admin = AdminUtils.getAdminEmailId();
 
         try {
-        	XDAT.getMailService().sendHtmlMessage(admin, otherUemail, user.getEmail(), admin, subject, message);
+        	XDAT.getMailService().sendHtmlMessage(from, to, cc, bcc, subject, message);
         } catch (Exception e) {
             logger.error("Unable to send mail",e);
             throw e;

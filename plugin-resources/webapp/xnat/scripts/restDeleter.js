@@ -63,8 +63,13 @@ RestDeleter = function(_array,_config) {
 			alert("Please specify a justification for this operation.");
 			return;
 		}
-			
+		
+		this.setDeleteButtonEnabled(false);	
 		this.process();
+	}
+	
+	this.setDeleteButtonEnabled = function(enabled) {
+		this.popup._aButtons[1].set("disabled", !enabled);
 	}
 	
     this.handleCancel=function(){

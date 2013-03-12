@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.nrg.action.ClientException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
@@ -41,7 +42,6 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatResourceseries;
-import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.base.auto.AutoXnatExperimentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
@@ -620,10 +620,10 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				
 			} catch (SQLException e) {
 				logger.error("",e);
-				return e.getMessage();
+				return org.apache.commons.lang.StringUtils.isBlank(e.getMessage()) ? ExceptionUtils.getStackTrace(e) : e.getMessage();
 			} catch (Exception e) {
 				logger.error("",e);
-				return e.getMessage();
+				return org.apache.commons.lang.StringUtils.isBlank(e.getMessage()) ? ExceptionUtils.getStackTrace(e) : e.getMessage();
 			}
 		}
     	return null;

@@ -203,12 +203,19 @@ function UserManager(user_mgmt_div_id, pID){
 
 			if(unknownUsers.length>0){
 				var confirmMsg=unknownUsers;
-				if(unknownUsers.length>1)
+				if(unknownUsers.length>1) {
 					confirmMsg+=" do not correspond to currently registered accounts.  These users ";
-				else
-					confirmMsg+=" does not correspond to a currently registered accounts.  This user ";
+				} else {
+					confirmMsg+=" does not correspond to a currently registered account.  This user ";
+				}
+				confirmMsg += 'may have an account under another email address.\n\nClick Cancel if you\'d like to edit the email list and try again.\n\nClick OK to go ahead and send an email inviting ';
+				if(unknownUsers.length>1) {
+					confirmMsg+="these users.";
+				} else {
+					confirmMsg+="this user.";
+				}
 
-				if (!confirm(confirmMsg + 'may have an account under another email address.  Select Cancel to hault all emails so you can edit your email list and try again. Or, press OK to send an email inviting this user.')){
+				if (!confirm(confirmMsg)){
 					document.getElementById("invite_email").value='';
 					return false;
 				}

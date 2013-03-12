@@ -16,6 +16,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -47,6 +48,7 @@ public class RequestAccess extends SecureAction {
         context.put("projectOM",project);
         context.put("access_level",access_level);
         context.put("comments",comments);
+        context.put("displayManager", DisplayManager.GetInstance());
         StringWriter sw = new StringWriter();
         Template template;
 		try {

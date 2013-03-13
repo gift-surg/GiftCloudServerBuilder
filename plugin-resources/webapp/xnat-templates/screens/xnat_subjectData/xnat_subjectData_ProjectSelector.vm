@@ -44,8 +44,11 @@ ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.
 <TR>
  <TH ALIGN="left"><label ID='${item.getXSIType()}_label'>#if($item.instanceOf("xnat:subjectData"))$displayManager.getSingularDisplayNameForSubject()#else Experiment#end
 's ID within this $displayManager.getSingularDisplayNameForProject().toLowerCase():</label></TH>
+
  <TD>
-<INPUT class="required" size="10" type="text" value="$!item.getProperty("label")" id="$item.getXSIType()/label" name="$item.getXSIType()/label" ONCHANGE="identifierChanged();"/>
+    <INPUT type="hidden" type="text" value="$!item.getProperty("label")" id="$item.getXSIType()/label" name="$item.getXSIType()/label" />
+    <span id="subject_label_placeholder">$!item.getProperty("label")</span>
+    <a onclick="modifyLabel();"><img border="0" src="$content.getURI("images/e.gif")"/></a>
  </TD>
  <TD></TD>
 </TR>
@@ -60,37 +63,18 @@ ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.
 </TR>
 #end
 </TABLE>
-		
-		<SCRIPT type="text/javascript" LANGUAGE="JavaScript">
-		//USERS can create a 'eventIdentifierChanged' function in calling template if desired
-		function identifierChanged(){
-		  var idBox = document.getElementById("$item.getXSIType()/label");
-		  idBox.value=fixSpaces(idBox.value);
+<script type="text/javascript" src="$content.getURI('scripts/subject/SubjectLabelEditor.js')"></SCRIPT>
+<script type="text/javascript">  
+function modifyLabel(){
+	if(!window.subjectLabelEditor){
+		window.subjectLabelEditor = new XNAT.app.SubjectLabelEditor("$project");
+		window.subjectLabelEditor.onModification.subscribe(function (event, newLabel){
+			document.getElementById("$item.getXSIType()/label").value = newLabel;
+			jq("#subject_label_placeholder").text(newLabel);
+		});
+		window.subjectLabelEditor.render();
+    }
+    window.subjectLabelEditor.show(document.getElementById("$item.getXSIType()/label").value);
 }
-function fixSpaces(val)
-{
-        var temp = stringTrim(val);
-        var newVal = '';
-        temp = temp.split(' ');
-        for(var c=0; c < temp.length; c++) {
-                newVal += temp[c];
-        }
-        
-        newVal = newVal.replace(/[&]/,"_");
-        newVal = newVal.replace(/[?]/,"_");
-        newVal = newVal.replace(/[<]/,"_");
-        newVal = newVal.replace(/[>]/,"_");
-        newVal = newVal.replace(/[(]/,"_");
-        newVal = newVal.replace(/[)]/,"_");
-        if (newVal!=val){
-           alert("Spaces and special characters are not allowed in identifier fields.");
-        }
-        return newVal;
-}
-
-function stringTrim(str)
-{
-   return str.replace(/^\s*|\s*$/g,"");
-}
-		</SCRIPT>
-		<!-- END ProjectSelector.vm -->
+</script> 
+<!-- END ProjectSelector.vm -->

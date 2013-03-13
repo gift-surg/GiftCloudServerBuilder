@@ -56,7 +56,7 @@ function CustomSelectBox(_input,_settings){
 				this.remove(0);
 			}
 			
-			this.options[0]=new Option("(SELECT)","");
+			this.options[0]=new Option("(SELECT)","NULL");
 					
 			if(this.manager.settings.custom!=undefined){
 				for(var tC=0;tC<this.manager.settings.custom.length;tC++){

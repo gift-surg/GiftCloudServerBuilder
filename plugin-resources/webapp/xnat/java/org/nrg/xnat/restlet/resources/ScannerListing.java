@@ -2,7 +2,6 @@
 package org.nrg.xnat.restlet.resources;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.nrg.xdat.om.XnatProjectdata;
@@ -53,7 +52,7 @@ public class ScannerListing  extends SecureResource {
 		}
 		
 		try {
-			String query="SELECT DISTINCT isd.scanner FROM " + scan_table + " mod LEFT JOIN xnat_imageSessionData isd ON mod.id=isd.id LEFT JOIN xnat_experimentData expt ON isd.id=expt.id";
+			String query="SELECT DISTINCT isd.scanner FROM " + scan_table + " mod LEFT JOIN xnat_imageSessionData isd ON mod.id=isd.id LEFT JOIN xnat_experimentData expt ON isd.id=expt.id WHERE isd.scanner IS NOT NULL";
 
 			if(proj!=null)query+=" WHERE expt.project='" + proj.getId() + "'";
 			

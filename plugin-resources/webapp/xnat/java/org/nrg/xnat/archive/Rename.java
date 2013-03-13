@@ -38,7 +38,6 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
@@ -137,8 +136,13 @@ public class Rename  implements Callable<File>{
 				}
 			}
 			
-			//confirm if new directory already exists
-			if(newSessionDir.exists()){		
+			final Collection<? extends PersistentWorkflowI> open=PersistentWorkflowUtils.getOpenWorkflows(user, id);
+			if(!open.isEmpty()){		
+				throw new ProcessingInProgress(((WrkWorkflowdata)CollectionUtils.get(open, 0)).getPipelineName());
+			}
+			
+			//confirm if new directory already exists w/ stuff in it
+			if(newSessionDir.exists() && newSessionDir.list() != null && newSessionDir.list().length > 0){		
 				throw new FolderConflictException();
 			}else{
 				newSessionDir.mkdir();
@@ -147,12 +151,6 @@ public class Rename  implements Callable<File>{
 			//identify existing directory
 			final File oldSessionDir = i.getExpectedCurrentDirectory();
 				
-
-			final Collection<? extends PersistentWorkflowI> open=PersistentWorkflowUtils.getOpenWorkflows(user, id);
-			if(!open.isEmpty()){		
-				throw new ProcessingInProgress(((WrkWorkflowdata)CollectionUtils.get(open, 0)).getPipelineName());
-			}
-			
 			final String message=String.format("Renamed from %s to %s", current_label,newLabel);
 			
 			//add workflow entry    		

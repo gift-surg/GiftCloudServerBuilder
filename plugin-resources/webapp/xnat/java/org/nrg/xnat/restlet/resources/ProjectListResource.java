@@ -163,6 +163,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 				ds.addDisplayField("xnat:projectData", "SECONDARY_ID");
 				ds.addDisplayField("xnat:projectData", "PI");
 				ds.addDisplayField("xnat:projectData", "PROJECT_INVS");
+				ds.addDisplayField("xnat:projectData", "PROJECT_ACCESS");
 				ds.addDisplayField("xnat:projectData", "PROJECT_ACCESS_IMG");
 				ds.addDisplayField("xnat:projectData", "INSERT_DATE");
 				ds.addDisplayField("xnat:projectData", "INSERT_USER");

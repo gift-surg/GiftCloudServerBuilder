@@ -106,8 +106,9 @@ function MinProjectsList(_div, _options){
 			
 			row=document.createElement("div");
 			if(p["user_role_"+this.projectResultSet.ResultSet.xdat_user_id]==""){
-				if(p.project_access=="public"){
-					row.innerHTML="This is an <b>open access</b> " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
+				if(p.project_access && p.project_access.toLowerCase()=="public"){
+					row.innerHTML="This is a <b>public</b> " + XNAT.app.displayNames.singular.project.toLowerCase() + "." + "<br/>"
+					+ "<a href='" + serverRoot + "/app/template/RequestProjectAccess.vm/project/" + p.id + "'>Request write access</a> to this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}else{
 					row.innerHTML="<a href='" + serverRoot + "/app/template/RequestProjectAccess.vm/project/" + p.id + "'>Request access</a> to this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".";
 				}

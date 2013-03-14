@@ -325,10 +325,12 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 	 * @throws AlreadyArchivingException
 	 */
 	private void preventConcurrentArchiving(final String id, final XDATUser user) throws ClientException {
-		Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user, id);
-		if (!wrks.isEmpty()){
-			this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName());
-			throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName(),new Exception());
+		if(!allowDataDeletion){//allow overriding of this behavior via the overwrite parameter
+			Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user, id);
+			if (!wrks.isEmpty()){
+				this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getPipelineName(),new Exception());
+			}
 		}
 	}
 

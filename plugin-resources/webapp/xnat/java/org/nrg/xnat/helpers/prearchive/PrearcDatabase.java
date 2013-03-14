@@ -1794,6 +1794,7 @@ public final class PrearcDatabase {
     
     @SuppressWarnings("serial")
 	public static class SyncFailedException extends IOException{
+    	public Throwable cause=null;
 
 		public SyncFailedException() {
 			super();
@@ -1801,6 +1802,7 @@ public final class PrearcDatabase {
 
 		public SyncFailedException(String message, Throwable cause) {
 			super(message, cause);
+			this.cause=cause;
 		}
 
 		public SyncFailedException(String message) {
@@ -1809,6 +1811,7 @@ public final class PrearcDatabase {
 
 		public SyncFailedException(Throwable cause) {
 			super(cause);
+			this.cause=cause;
 		}
     	
     }

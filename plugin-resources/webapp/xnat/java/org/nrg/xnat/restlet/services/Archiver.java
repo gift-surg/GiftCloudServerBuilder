@@ -21,13 +21,11 @@ import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.archive.PrearcSessionArchiver;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
 import org.nrg.xnat.helpers.uri.URIManager;
-import org.nrg.xnat.helpers.uri.URIManager.ArchiveURI;
-import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
-import org.nrg.xnat.helpers.uri.URIManager.PrearchiveURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.prearchive.BatchPrearchiveActionsA;
@@ -193,7 +191,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				if(!map.getSessionDir().exists()){
 					throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, map.getUrl() + " not found.");
 				}
-				}
+			}
 				
 			Set<StatusListenerI> listeners=(Set<StatusListenerI>)Collections.EMPTY_SET;
 			
@@ -202,22 +200,16 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				
 				final PrearcSession session=sessions.get(0);
 				
-				try {
-					if (!PrearcUtils.canModify(user, session.getProject())) {
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
-						return;
-					}
-					
-					if(PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcStatus.ARCHIVING)){
-						FinishImageUpload.setArchiveReason(session, false);
-						_return = "/data" +PrearcDatabase.archive(session, allowDataDeletion, overwrite,overwrite_files, user, listeners);
-					}else{
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
-						return;
-					}
-				} catch (Exception e) {
-					logger.error("",e);
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				if (!PrearcUtils.canModify(user, session.getProject())) {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
+					return;
+				}
+				
+				if(PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcStatus.ARCHIVING)){
+					FinishImageUpload.setArchiveReason(session, false);
+					_return = "/data" +PrearcDatabase.archive(session, allowDataDeletion, overwrite,overwrite_files, user, listeners);
+				}else{
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Operation already in progress on this prearchive entry.");
 					return;
 				}
 								
@@ -231,41 +223,44 @@ public class Archiver extends BatchPrearchiveActionsA  {
 			}else{				
 				Map<SessionDataTriple,Boolean> m;
 				
-				try {
-					if (!PrearcUtils.canModify(user, sessions.get(0).getProject())) {
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
-						return;
-					}
-					
-					for(PrearcSession ps:sessions){
-						if(!ps.getAdditionalValues().containsKey(EventUtils.EVENT_REASON))
-							ps.getAdditionalValues().put(EventUtils.EVENT_REASON, "Batch archive");
-					}
-					
-					m=PrearcDatabase.archive(sessions, allowDataDeletion, overwrite,overwrite_files, user, listeners);
-				} catch (Exception e) {
-					logger.error("",e);
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				if (!PrearcUtils.canModify(user, sessions.get(0).getProject())) {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
 					return;
 				}
+				
+				for(PrearcSession ps:sessions){
+					if(!ps.getAdditionalValues().containsKey(EventUtils.EVENT_REASON))
+						ps.getAdditionalValues().put(EventUtils.EVENT_REASON, "Batch archive");
+				}
+				
+				m=PrearcDatabase.archive(sessions, allowDataDeletion, overwrite,overwrite_files, user, listeners);
+
 								
-				try {
-					getResponse().setEntity(updatedStatusRepresentation(m.keySet(),overrideVariant(getPreferredVariant())));
-				} catch (Exception e) {
-					logger.error("",e);
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
-					return;
-				}
+				getResponse().setEntity(updatedStatusRepresentation(m.keySet(),overrideVariant(getPreferredVariant())));
 			}
 		} catch (ActionException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
+		} catch (SyncFailedException e) {
+			if(e.cause!=null && e.cause instanceof ActionException){
+				logger.error("",e.cause);
+				this.getResponse().setStatus(((ActionException)e.cause).getStatus(), e.cause.getMessage());
+				return;
+			}else{
+				logger.error("",e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				return;
+			}
 		} catch (ResourceException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
 		} catch (IllegalArgumentException e) {
 			logger.error("",e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+		} catch (Exception e) {
+			logger.error("",e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			return;
 		}
 	}
 	

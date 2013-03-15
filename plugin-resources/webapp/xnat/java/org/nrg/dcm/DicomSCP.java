@@ -43,6 +43,7 @@ import org.nrg.dcm.CStoreService.Specifier;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.DicomObjectIdentifier;
+import org.nrg.xnat.utils.NetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,6 +272,10 @@ public class DicomSCP {
 
 	public void start() throws IOException {
     	if(!isStarted()) {
+    	    	if(! NetUtils.isPortAvailable(device.getNetworkConnection()[0].getPort())) {
+    	    	    logger.error("DICOM SCP port {} is in use; starting webapp with the DICOM receiver disabled.", device.getNetworkConnection()[0].getPort());
+    	    	    return;
+    	    	}
 	        logger.info("starting DICOM SCP on {}:{}",
 	                new Object[] {
 	                device.getNetworkConnection()[0].getHostname(),

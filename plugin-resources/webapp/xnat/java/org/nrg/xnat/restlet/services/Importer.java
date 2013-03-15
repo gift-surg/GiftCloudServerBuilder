@@ -53,6 +53,7 @@ public class Importer extends SecureResource {
 		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
+		this.getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 	}
 
 	@Override
@@ -294,6 +295,8 @@ public class Importer extends SecureResource {
 			final MediaType mt=overrideVariant(variant);
 			if(mt.equals(MediaType.TEXT_HTML)){
 				return buildHTMLresponse(response);
+			}else if(mt.equals(MediaType.TEXT_PLAIN)){
+				return new StringRepresentation(convertListURItoString(response), MediaType.TEXT_PLAIN);
 			}else{
 				return new StringRepresentation(convertListURItoString(response), MediaType.TEXT_URI_LIST);
 			}

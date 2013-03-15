@@ -198,6 +198,8 @@ public abstract class SecureResource extends Resource {
 				return MediaType.APPLICATION_JSON;
 			} else if (this.requested_format.equals("csv")) {
 				return TEXT_CSV;
+			} else if (this.requested_format.equals("txt")) {
+				return MediaType.TEXT_PLAIN;
 			} else if (this.requested_format.equals("html")) {
 				return MediaType.TEXT_HTML;
 			} else if (this.requested_format.equals("zip")) {

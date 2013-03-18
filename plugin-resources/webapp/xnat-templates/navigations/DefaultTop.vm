@@ -79,7 +79,8 @@
     <div class="clear"></div>
 </div><!-- /user_bar -->
 
-#if ($sessionCount > 100 || $sessionIpCount > 1 )
+#if ($sessionCount > 1 || $sessionIpCount > 1 )
+//If you want fewer warnings, you can eliminate $sessionCount > 1 so it will not display a warning for multiple sessions on the same IP, or increase it to $sessionCount > X where X is the maximum number of sessions you can have on the same IP before you get a warning.
 <script type="text/javascript">
     jq(document).ready(function(){
 
@@ -104,13 +105,23 @@
 <div id="warning_bar" style="display:none;">
     <span class="close"><img src="$content.getURI('images/close.gif')"></span>
     <span>
-        ATTENTION: You have $sessionCount sessions open from $sessionIpCount distinct IP addresses.
+        #if ( $sessionIpCount > 1 )
+            ATTENTION: You have $sessionCount sessions open from $sessionIpCount distinct IP addresses.
         <span class="tip_text">(<i>what does this mean?</i>)
             <span class="tip shadowed">
                 You may have multiple browsers open or may be logged in from more than one computer. If you believe that someone other than you has logged in to your account, please contact your site administrator immediately.
                 The IP addresses are: $sessionIpCsv.
             </span>
         </span>
+        #else
+            ATTENTION: You have $sessionCount sessions open from one IP address.
+        <span class="tip_text">(<i>what does this mean?</i>)
+            <span class="tip shadowed">
+                There is more than one session open from this computer (at IP address $sessionIpCsv). You could be logged in to XNAT using the same credentials using multiple browsers or from separate user accounts on your computer. If you believe that someone other than you has logged in to your account, please contact your site administrator immediately.
+            </span>
+        </span>
+
+        #end
     </span>
 </div>
 #end

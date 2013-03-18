@@ -80,7 +80,7 @@
 </div><!-- /user_bar -->
 
 #if ($sessionCount > 1 || $sessionIpCount > 1 )
-//If you want fewer warnings, you can eliminate $sessionCount > 1 so it will not display a warning for multiple sessions on the same IP, or increase it to $sessionCount > X where X is the maximum number of sessions you can have on the same IP before you get a warning.
+##If you want fewer warnings, you can eliminate $sessionCount > 1 so it will not display a warning for multiple sessions on the same IP, or increase it to $sessionCount > X where X is the maximum number of sessions you can have on the same IP before you get a warning.
 <script type="text/javascript">
     jq(document).ready(function(){
 

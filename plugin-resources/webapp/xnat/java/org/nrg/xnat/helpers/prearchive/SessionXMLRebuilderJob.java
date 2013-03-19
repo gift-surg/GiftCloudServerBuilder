@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.inject.Provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
@@ -52,7 +53,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
         if (sds != null && sds.size() > 0) {
             for (final SessionData sessionData : sds) {
                 total++;
-                if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit() && !sessionData.getSource().equals("applet")) {
+                if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit() && !StringUtils.trimToEmpty(sessionData.getSource()).equals("applet")) {
                     File sessionDir = null;
                     try {
                         sessionDir = PrearcUtils.getPrearcSessionDir(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), false);

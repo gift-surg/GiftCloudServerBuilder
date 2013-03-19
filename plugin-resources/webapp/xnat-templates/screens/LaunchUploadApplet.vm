@@ -82,7 +82,7 @@
         <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_visit_selector.js')"></SCRIPT>
         <script type="text/javascript">
             #set($project = $om.getProject())
-            #set($part_id = $om.getId())
+            #set($part_id = $!subject)
             window.projectSubjectVisitManager = new ProjectSubjectVisitSelector("$!project", "$!part_id");
             window.projectSubjectVisitManager.init();
         </script>

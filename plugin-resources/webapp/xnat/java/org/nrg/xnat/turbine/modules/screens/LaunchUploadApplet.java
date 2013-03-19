@@ -5,29 +5,22 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nrg.config.services.ConfigService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.utils.AppletConfig;
 import org.nrg.xnat.utils.XnatHttpUtils;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
 
 /**
  * @author timo
@@ -45,6 +38,10 @@ public class LaunchUploadApplet extends SecureScreen {
 		
 		XDATUser user = TurbineUtils.getUser(data);
 		String projectName = (String)context.get("project");
+		
+		if(StringUtils.trimToEmpty((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)).equals("xnat:subjectData.ID")) {
+		    context.put("subject", StringUtils.trimToEmpty((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
+		}
 		
 		//grab the applet config. Project level if it exists, otherwise, do the site-wide
 		ConfigService configService = XDAT.getConfigService();

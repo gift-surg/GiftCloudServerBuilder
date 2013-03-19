@@ -488,7 +488,7 @@ public final class PrearcDatabase {
     	}
     }
 
-    public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project, final String visit, final String protocol, final String timezone) throws Exception {
+    public static void buildSession (final File sessionDir, final String session, final String timestamp, final String project, final String visit, final String protocol, final String timezone, final String source) throws Exception {
         final SessionData sd = PrearcDatabase.getSession(session, timestamp, project);
         try {
             new LockAndSync<java.lang.Void>(session,timestamp,project,sd.getStatus()) {
@@ -510,6 +510,9 @@ public final class PrearcDatabase {
                     }
                     if (!Strings.isNullOrEmpty(timezone)) {
                     	params.put("TIMEZONE", timezone);
+                    }
+                    if (!Strings.isNullOrEmpty(source)) {
+                    	params.put("SOURCE", source);
                     }
 
                     try {

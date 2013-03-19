@@ -57,6 +57,7 @@ public final class PrearcSessionResource extends SecureResource {
     private static final String VISIT = "VISIT";
     private static final String PROTOCOL = "PROTOCOL";
     private static final String TIMEZONE = "TIMEZONE";
+    private static final String SOURCE = "SOURCE";
 
 
     public static final String POST_ACTION_SET = "set-status";
@@ -147,7 +148,7 @@ public final class PrearcSessionResource extends SecureResource {
         if (POST_ACTION_BUILD.equals(action)) {
             try {
                 if (PrearcDatabase.setStatus(session, timestamp, project, PrearcUtils.PrearcStatus.BUILDING)) {
-                    PrearcDatabase.buildSession(sessionDir, session, timestamp, project, (String) params.get(VISIT), (String) params.get(PROTOCOL), (String) params.get(TIMEZONE));
+                    PrearcDatabase.buildSession(sessionDir, session, timestamp, project, (String) params.get(VISIT), (String) params.get(PROTOCOL), (String) params.get(TIMEZONE), (String) params.get(SOURCE));
                     PrearcUtils.resetStatus(user, project, timestamp, session,true);
                     returnString(wrapPartialDataURI(PrearcUtils.buildURI(project,timestamp,session)), MediaType.TEXT_URI_LIST,Status.SUCCESS_OK);
                 } else {
@@ -210,7 +211,7 @@ public final class PrearcSessionResource extends SecureResource {
                         final XnatProjectdata p = XnatProjectdata.getProjectByIDorAlias(project, user, false);
                         PrearcDatabase.setAutoArchive(session, timestamp, project, PrearchiveCode.code(p.getArcSpecification().getPrearchiveCode()));
                     }
-                    PrearcDatabase.buildSession(sessionDir, session, timestamp, project, (String) params.get(VISIT), (String) params.get(PROTOCOL), (String) params.get(TIMEZONE));
+                    PrearcDatabase.buildSession(sessionDir, session, timestamp, project, (String) params.get(VISIT), (String) params.get(PROTOCOL), (String) params.get(TIMEZONE), (String) params.get(SOURCE));
                     PrearcUtils.resetStatus(user, project, timestamp, session,true);
 
                     final FinishImageUpload uploader=new FinishImageUpload(null, user, new PrearcSession(project,timestamp,session,params,user), null, false, true, false);

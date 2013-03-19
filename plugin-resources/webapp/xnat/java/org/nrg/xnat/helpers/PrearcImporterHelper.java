@@ -130,6 +130,9 @@ public class PrearcImporterHelper extends PrearcImporterA{
 			if(params.containsKey("TIMEZONE")){
 				additionalValues.put("TIMEZONE", params.get("TIMEZONE"));
 			}
+			if(params.containsKey("SOURCE")){
+				additionalValues.put("SOURCE", params.get("SOURCE"));
+			}
 			if(StringUtils.isEmpty(old_timestamp))old_timestamp=new_timestamp;
 								
 			if(destination_specified || project==null){

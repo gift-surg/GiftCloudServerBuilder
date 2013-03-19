@@ -3,6 +3,14 @@
  */
 package org.nrg.xnat.restlet.actions;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
@@ -28,14 +36,6 @@ import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.restlet.data.Status;
 import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 public class SessionImporter extends ImporterHandlerA implements Callable<List<String>> {
 
@@ -145,6 +145,10 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 					if(!StringUtils.isEmpty(timezone)){
 						prearc_parameters.put("TIMEZONE", timezone);
 					}
+					String source=(String)params.get("SOURCE");
+					if(!StringUtils.isEmpty(source)){
+						prearc_parameters.put("SOURCE", source);
+					}
 				}else{
 					project=PrearcImporterHelper.identifyProject(destination.getProps());
 					if(!StringUtils.isEmpty(project)){
@@ -158,6 +162,11 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 					String timezone=(String)params.get("TIMEZONE");
 					if(!StringUtils.isEmpty(timezone)){
 						prearc_parameters.put("TIMEZONE", timezone);
+					}
+
+					String source=(String)params.get("SOURCE");
+					if(!StringUtils.isEmpty(source)){
+						prearc_parameters.put("SOURCE", source);
 					}
 
 					String expt_id=(String)destination.getProps().get(URIManager.EXPT_ID);

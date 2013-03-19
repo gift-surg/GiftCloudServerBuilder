@@ -3,14 +3,32 @@
  */
 package org.nrg.xnat.archive;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.io.ByteStreams;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
-import org.dcm4che2.data.*;
+
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.TransferSyntax;
+import org.dcm4che2.data.VR;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
 import org.dcm4che2.io.StopTagInputHandler;
@@ -30,10 +48,12 @@ import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
-import org.nrg.xnat.helpers.prearchive.*;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.SessionData;
+import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.URIManager;
-import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -43,14 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
 
 /**
  * @author Tim Olsen <olsent@mir.wustl.edu>
@@ -314,6 +329,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setLastBuiltDate(Calendar.getInstance().getTime());
         sess.setSubject(subject);
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
+        sess.setSource(params.get(URIManager.SOURCE));
 
 	// Query the cache for an existing session that has this Study Instance UID and project name.
         // If found the SessionData object we just created is over-ridden with the values from the cache.

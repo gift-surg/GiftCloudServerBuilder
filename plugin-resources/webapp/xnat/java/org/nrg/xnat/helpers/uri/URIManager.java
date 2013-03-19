@@ -52,6 +52,7 @@ public class URIManager {
 	public static final String PROTOCOL_LABEL = "PROTOCOL";
 	public static final String PROJECT_ID = "PROJECT_ID";
 	public static final String TYPE = "TYPE";
+	public static final String SOURCE = "SOURCE";
 
 	
 	private static URIManager manager=null;

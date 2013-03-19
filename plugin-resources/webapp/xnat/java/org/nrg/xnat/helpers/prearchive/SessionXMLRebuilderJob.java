@@ -1,5 +1,13 @@
 package org.nrg.xnat.helpers.prearchive;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.inject.Provider;
+
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
@@ -11,13 +19,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Provider;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.List;
 
 public class SessionXMLRebuilderJob implements JobInterface {
 	@Override
@@ -51,7 +52,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
         if (sds != null && sds.size() > 0) {
             for (final SessionData sessionData : sds) {
                 total++;
-                if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit()) {
+                if (sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING) && !sessionData.getPreventAutoCommit() && !sessionData.getSource().equals("applet")) {
                     File sessionDir = null;
                     try {
                         sessionDir = PrearcUtils.getPrearcSessionDir(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), false);
@@ -70,7 +71,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
                         try {
                             updated++;
                             if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
-                                PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), sessionData.getVisit(), sessionData.getProtocol(), sessionData.getTimeZone());
+                                PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), sessionData.getVisit(), sessionData.getProtocol(), sessionData.getTimeZone(), sessionData.getSource());
                                 PrearcUtils.resetStatus(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), true);
 
                                 final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);

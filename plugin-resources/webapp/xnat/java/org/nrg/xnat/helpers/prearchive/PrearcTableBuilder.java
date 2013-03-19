@@ -5,9 +5,7 @@ package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -21,7 +19,6 @@ import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,7 +28,7 @@ import org.xml.sax.SAXException;
 public class PrearcTableBuilder implements PrearcTableBuilderI {
 	static Logger logger = Logger.getLogger(PrearcTableBuilder.class);
 
-	public final static String[] PREARC_HEADERS = {"project".intern(),"last_mod".intern(),"uploaded".intern(),"scan_date".intern(),"scan_time".intern(),"subject".intern(),"session".intern(),"status".intern(),"url".intern(),"visit".intern(),"protocol".intern(),"TIMEZONE".intern()};
+	public final static String[] PREARC_HEADERS = {"project".intern(),"last_mod".intern(),"uploaded".intern(),"scan_date".intern(),"scan_time".intern(),"subject".intern(),"session".intern(),"status".intern(),"url".intern(),"visit".intern(),"protocol".intern(),"TIMEZONE".intern(),"SOURCE".intern()};
 	
 	public static Object[] buildRow(final Session s,final String urlBase){
 		Object[] row = new Object[PREARC_HEADERS.length];
@@ -47,6 +44,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		row[9]=s.getVisit();
 		row[10]=s.getProtocol();
 		row[11]=s.getTimeZone();
+		row[12]=s.getSource();
 		
 		return row;
 	}
@@ -179,6 +177,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setVisit(this.getVisit());
 			data.setProtocol(this.getProtocol());
 			data.setTimeZone(this.getTimeZone());
+			data.setSource(this.getSource());
 			return this.data;
 		}
 		
@@ -297,6 +296,10 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			//no need to keep timezone in the image session.
 			//return (session!=null)?session.getTimeZone():null;
 			return null;
+		}
+		public String getSource(){
+			return null;
+			
 		}
 		public String getPatientId() {
 			return (session!=null)?session.getDcmpatientid():null;

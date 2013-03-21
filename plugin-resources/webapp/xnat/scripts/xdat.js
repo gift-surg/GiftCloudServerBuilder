@@ -754,7 +754,11 @@ function openModalPanel(id,msg,parentPanel,options){
 	          window.modals[id].parentPanel=parentPanel;
 	      }
 	      window.modals[id].setHeader(msg);
-	      window.modals[id].setBody('<img src="' + serverRoot + '/images/rel_interstitial_loading.gif" />');
+	      if(options.body==undefined){
+	    	  window.modals[id].setBody('<img src="' + serverRoot + '/images/rel_interstitial_loading.gif" />');
+	      }else{
+	    	  window.modals[id].setBody(options.body);
+	      }
 	      window.modals[id].render(document.body);
 	  }
 

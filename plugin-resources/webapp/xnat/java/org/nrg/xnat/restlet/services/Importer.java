@@ -296,7 +296,11 @@ public class Importer extends SecureResource {
 			if(mt.equals(MediaType.TEXT_HTML)){
 				return buildHTMLresponse(response);
 			}else if(mt.equals(MediaType.TEXT_PLAIN)){
-				return new StringRepresentation(convertListURItoString(response), MediaType.TEXT_PLAIN);
+				if(response!=null&& response.size()==1){
+					return new StringRepresentation(wrapPartialDataURI(response.get(0)), MediaType.TEXT_PLAIN);
+				}else{
+					return new StringRepresentation(convertListURItoString(response), MediaType.TEXT_PLAIN);
+				}
 			}else{
 				return new StringRepresentation(convertListURItoString(response), MediaType.TEXT_URI_LIST);
 			}

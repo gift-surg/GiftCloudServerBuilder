@@ -720,20 +720,35 @@ if(obj!=null){
 
 window.modals=new Object();
 
-function openModalPanel(id,msg,parentPanel){
+function openModalPanel(id,msg,parentPanel,options){
 	  if(id==undefined)id="wait";
 	  if(window.modals[id]==undefined){
-		  window.modals[id]=new YAHOO.widget.Panel(id,
-	          {
-	          	   width:"240px",
-	               fixedcenter:true,
-	               close:true,
-	               draggable:false,
-	               zindex:4,
-	               modal:true,
-	               visible:false
-	          }
-	      );
+		  if(options==undefined){
+			  options=new Object();
+		  }
+		  //set defaults
+		  if(options.width==undefined){
+				  options.width="240px";
+		  }
+		  if(options.fixedcenter==undefined){
+			  options.fixedcenter=true;
+		  }
+		  if(options.close==undefined){
+			  options.close=true;
+		  }
+		  if(options.draggable==undefined){
+			  options.draggable=false;
+		  }
+		  if(options.zindex==undefined){
+			  options.zindex=4;
+		  }
+		  if(options.modal==undefined){
+			  options.modal=true;
+		  }
+		  if(options.visible==undefined){
+			  options.visible=false
+          }
+		  window.modals[id]=new YAHOO.widget.Panel(id,options);
 	      if(parentPanel!=undefined){
 	   	      parentPanel.hide();
 	          window.modals[id].parentPanel=parentPanel;

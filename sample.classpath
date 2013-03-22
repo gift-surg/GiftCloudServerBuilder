@@ -51,7 +51,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.2-SNAPSHOT.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-4.0.2.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-3.0.0.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-3.0.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-4.0.0.jar"/>

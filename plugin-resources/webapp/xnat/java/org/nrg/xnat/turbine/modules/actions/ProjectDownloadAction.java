@@ -45,7 +45,7 @@ public class ProjectDownloadAction extends SecureAction {
         	return;
         }
         
-        String query = "SELECT DISTINCT isd.id FROM xnat_imageSessionData isd LEFT JOIN xnat_experimentData expt ON isd.id=expt.id LEFT JOIN xnat_experimentData_share proj ON expt.id=proj.sharing_share_xnat_experimentda_id WHERE proj.project='" + projectId + "' OR expt.project='" + projectId + "';";
+        String query = "SELECT DISTINCT isd.id FROM xnat_imageSessionData isd LEFT JOIN xnat_experimentData expt ON isd.id=expt.id LEFT JOIN xnat_experimentData_meta_data meta ON expt.experimentData_info=meta.meta_data_id LEFT JOIN xnat_experimentData_share proj ON expt.id=proj.sharing_share_xnat_experimentda_id WHERE (proj.project='" + projectId + "' OR expt.project='" + projectId + "') AND (meta.status='active' OR meta.status='locked');";
         
         XFTTable t = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getUsername());
         ArrayList al =t.convertColumnToArrayList("id");

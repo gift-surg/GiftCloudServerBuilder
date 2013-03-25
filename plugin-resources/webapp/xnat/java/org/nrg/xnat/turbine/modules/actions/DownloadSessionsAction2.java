@@ -71,6 +71,9 @@ public class DownloadSessionsAction2 extends SecureAction {
                 	if(scanType.indexOf("/")>-1){
                     	scanType=scanType.replace("/","[SLASH]");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
                     }
+                	if(scanType.indexOf(",")>-1){
+                    	scanType=scanType.replace(",","[COMMA]");
+                    }
                 	
                 	if(scanFormats!=null && scanFormats.length>0){
                 		for(String scanFormat : scanFormats){

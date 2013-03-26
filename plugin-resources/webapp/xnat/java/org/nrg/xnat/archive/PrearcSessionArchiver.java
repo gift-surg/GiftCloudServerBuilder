@@ -191,10 +191,6 @@ public final class PrearcSessionArchiver extends StatusProducer implements Calla
 			}
 
 		if (StringUtils.isEmpty(label)) {
-		    label = src.getDcmpatientid();
-		}
-		
-		if (StringUtils.isEmpty(label)) {
 		    label = src.getId();
 		}
 

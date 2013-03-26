@@ -40,6 +40,7 @@
             <list value-type="java.lang.String">
                 <value>/data/**</value>
                 <value>/REST/**</value>
+                <value>/fs/**</value>
             </list>
         </property>
         <property name="interactiveAgents">
@@ -62,7 +63,7 @@
         <property name="maximumSessions" value="${security.sessions.concurrent_max}"/>
         <property name="exceptionIfMaximumExceeded" value="true"/>
     </bean>
-    <bean id="xnatLogoutSuccessHandler" class="org.nrg.xnat.security.XnatLogoutSuccessHandler" p:openXnatLogoutSuccessUrl="/" p:securedXnatLogoutSuccessUrl="/app/template/Login.vm"/>
+    <bean id="xnatLogoutSuccessHandler" class="org.nrg.xnat.security.XnatLogoutSuccessHandler" p:openXnatLogoutSuccessUrl="/" p:securedXnatLogoutSuccessUrl="/app/template/fv"/>
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
         <constructor-arg index="0" ref="xnatLogoutSuccessHandler" type="org.springframework.security.web.authentication.logout.LogoutSuccessHandler"/>
         <constructor-arg index="1">

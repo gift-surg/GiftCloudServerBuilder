@@ -66,7 +66,7 @@ function buildDicomDir () {
       <INPUT type="hidden" value=$om.getProject() id="project">
       <INPUT type="hidden" value=$om.getSubjectId() id="subject">
     <TR>
-      <TD VALIGN="top" class="withColor" style="border: 1px solid grey;" ROWSPAN="4">
+      <TD VALIGN="top" style="border: 1px solid grey;" ROWSPAN="4">
 	<DIV ID="dataTable" style="dispay:none">
 	  <DIV STYLE="overflow:auto;height:300px;width:300px;">
 	    <TABLE border="0" ID="subTable" cellspacing="0">

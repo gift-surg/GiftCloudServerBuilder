@@ -62,7 +62,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button,
 				var defaultSelected = (this.projectResultSet.ResultSet.Result[pC].id == this.defaultProject) ? true
 						: false;
 				var opt = new Option(
-						this.projectResultSet.ResultSet.Result[pC].secondary_id,
+						this.projectResultSet.ResultSet.Result[pC].secondary_id.replace(/&apos;/g,'\''),
 						this.projectResultSet.ResultSet.Result[pC].id,
 						defaultSelected, defaultSelected);
 				this.projBox.options[pC + 1] = opt;

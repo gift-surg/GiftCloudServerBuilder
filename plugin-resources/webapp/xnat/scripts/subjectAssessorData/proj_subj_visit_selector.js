@@ -71,7 +71,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
                 //noinspection JSUnresolvedVariable
                 var defaultSelected = !!(this.projectResultSet.ResultSet.Result[pC].id == this.defaultProject);
                 //noinspection JSUnresolvedVariable
-                this.projectBox.options[pC + 1] = new Option(this.projectResultSet.ResultSet.Result[pC].secondary_id, this.projectResultSet.ResultSet.Result[pC].id, defaultSelected, defaultSelected);
+                this.projectBox.options[pC + 1] = new Option(this.projectResultSet.ResultSet.Result[pC].secondary_id.replace(/&apos;/g,'\''), this.projectResultSet.ResultSet.Result[pC].id, defaultSelected, defaultSelected);
                 if (defaultSelected) {
                     this.projectBox.selectedIndex = (this.projectBox.options.length - 1);
                 }

@@ -781,9 +781,21 @@ function displayError(msg){
     alert(msg);
 }
 
-function showMessage(divId, title, body) {
-    var dialog = new YAHOO.widget.SimpleDialog("dialog", {
-        width:"20em",
+var msgC=0;
+
+function showMessage(divId, title, body,options) {
+	if(options==undefined){
+		options=new Object();
+	}
+	if(options.width==undefined){
+		options.width="20em";
+	}
+	if(options.height==undefined){
+		options.height="''";
+	}
+    var dialog = new YAHOO.widget.SimpleDialog("dialog"+ msgC++, {
+        width:options.width,
+        height:options.height,
         close:false,
         fixedcenter:true,
         constraintoviewport:true,
@@ -799,6 +811,7 @@ function showMessage(divId, title, body) {
     dialog.setBody(body);
     dialog.bringToTop();
     dialog.show();
+    return dialog;
 }
 
 
@@ -829,4 +842,13 @@ function getValueById(id){
 	}else{
 		return {"value":box.value,obj:box};
 	}
+}
+
+
+//this function can be used to execute a function within the scope of a different object (i.e. the 'this' in the fuction will be the second argument passed in).
+//not sure if there is an easier way to do this...
+XNAT.app.runInScope=function(_function,scope){
+	var runScope=new YAHOO.util.CustomEvent("complete",this);
+	runScope.subscribe(_function, this, scope);
+	runScope.fire();
 }

@@ -369,11 +369,11 @@ $(document).ready(function(){
         // there's no escape from loading!
         if (!($('div.x_modal').last().find('.box').hasClass('loading'))){
 
-            if ($(this).hasClass('close')){
-                xModalClose();
-            }
-            else if ($(this).hasClass('cancel')){
+            if ($(this).hasClass('cancel')){
                 xModalCancel();
+            }
+            else if ($(this).hasClass('close')){
+                xModalClose();
                 // use xModalClose(); in xModalCancel() where xModalOpen() is called
             }
             else {

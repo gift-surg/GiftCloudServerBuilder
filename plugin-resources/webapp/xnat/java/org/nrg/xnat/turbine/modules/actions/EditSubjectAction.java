@@ -9,11 +9,14 @@ package org.nrg.xnat.turbine.modules.actions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.model.XnatSubjectdataAddidI;
@@ -27,13 +30,12 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.collections.ItemCollection;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.utils.SaveItemHelper;
@@ -320,6 +322,10 @@ public class EditSubjectAction extends SecureAction {
             		if(!user.canEdit(sub)){
             			error(new InvalidPermissionException("Unable to save subject " + sub.getId()),data);
             		}
+            		
+            
+            		this.preSave(user, sub, TurbineUtils.GetDataParameterHash(data),wrk.buildEvent());
+            		
             		SaveItemHelper.authorizedSave(sub,TurbineUtils.getUser(data),false,false,ci);            		
             		PersistentWorkflowUtils.complete(wrk,ci);
             		
@@ -369,4 +375,20 @@ public class EditSubjectAction extends SecureAction {
         }
     }
 
+	public interface PreSaveAction {
+		public void execute(XDATUser user, XnatSubjectdata src, Map<String,String> params,EventMetaI event) throws Exception;
+	}
+	
+	private void preSave(XDATUser user, XnatSubjectdata src, Map<String,String> params,EventMetaI event) throws Exception{
+		 List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.subjectEdit.preSave");
+
+    	 if(classes!=null && classes.size()>0){
+			 for(Class<?> clazz: classes){
+				 if(PreSaveAction.class.isAssignableFrom(clazz)){
+					 PreSaveAction action=(PreSaveAction)clazz.newInstance();
+					 action.execute(user,src,params,event);
+				 }
+			 }
+		 }
+	}
 }

@@ -51,7 +51,7 @@ public class XDATChangePassword extends VelocitySecureAction {
                     if (!oldUser.isEnabled()) {
                         throw new Exception("User is not enabled: " + oldUser.getUsername());
                     }
-                    if (!oldUser.isVerified()) {
+                    if (XDAT.verificationOn() && !oldUser.isVerified()) {
                         throw new Exception("User is not verified: " + oldUser.getUsername());
                     }
 

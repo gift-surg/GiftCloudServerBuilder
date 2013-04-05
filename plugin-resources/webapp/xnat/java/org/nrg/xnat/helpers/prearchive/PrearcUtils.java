@@ -45,6 +45,7 @@ public class PrearcUtils {
 	public enum PrearcStatus {
 		RECEIVING,
 		BUILDING,
+        QUEUED,
 		READY, 
 		ARCHIVING,
 		ERROR, 

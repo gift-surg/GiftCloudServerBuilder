@@ -1,6 +1,7 @@
 package org.nrg.xnat.helpers.prearchive;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,7 +10,9 @@ import java.util.Map;
 import org.nrg.xnat.restlet.XNATApplication;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 
-public class SessionDataTriple {
+public class SessionDataTriple implements Serializable {
+    private static final long serialVersionUID = 7764386535994779313L;
+
 	private String folderName;
 	private String timestamp;
 	private String project;

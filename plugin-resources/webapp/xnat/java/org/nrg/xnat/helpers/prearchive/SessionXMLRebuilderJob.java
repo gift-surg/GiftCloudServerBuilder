@@ -10,11 +10,9 @@ import javax.inject.Provider;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.schedule.JobInterface;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xnat.archive.FinishImageUpload;
-import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
-import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -68,28 +66,15 @@ public class SessionXMLRebuilderJob implements JobInterface {
                     double interval = (double) _map.getIntValue("interval");
                     double diff = diffInMinutes(then, now);
                     if (diff >= interval) {
-                        logger.info("committing {}", sessionData.getExternalUrl());
-                        try {
                             updated++;
-                            if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.BUILDING)) {
-                                PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), sessionData.getVisit(), sessionData.getProtocol(), sessionData.getTimeZone(), sessionData.getSource());
-                                PrearcUtils.resetStatus(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), true);
-
-                                final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);
-                                uploader.call();
+                        try {
+                            if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.QUEUED)) {
+                                logger.debug("Creating JMS queue entry for {} to archive {}", user.getUsername(), sessionData.getExternalUrl());
+                                SessionXmlRebuilderRequest request = new SessionXmlRebuilderRequest(user, sessionData, sessionDir);
+                                XDAT.sendJmsRequest(request);
                             }
-                        } catch (SyncFailedException e) {
-                            logger.error("", e);
-                        } catch (SQLException e) {
-                            logger.error("", e);
-                        } catch (SessionException e) {
-                            logger.error("", e);
-                        } catch (IOException e) {
-                            logger.error("", e);
-                        } catch (InvalidPermissionException e) {
-                            logger.error("", e);
-                        } catch (Exception e) {
-                            logger.error("", e);
+                        } catch (Exception exception) {
+                            logger.error("Error when setting prearchive session status to QUEUED", exception);
                         }
                     }
                 }

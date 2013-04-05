@@ -36,9 +36,41 @@
   <classpathentry kind="lib" path="plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-logging/jars/commons-logging-1.0.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar"/>
+  <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar" sourcepath="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar">
+    <attributes>
+      <attribute value="file:plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\activemq-core-5.7.0.jar" sourcepath="plugin-resources\repository\activemq\jars\activemq-core-5.7.0-sources.jar">
+    <attributes>
+      <attribute value="http://activemq.apache.org/maven/5.7.0/apidocs" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1.jar" sourcepath="plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-sources.jar">
+    <attributes>
+      <attribute value="file:plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-javadoc.jar" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="plugin-resources\repository\spring\jars\spring-jms-3.0.7.RELEASE.jar" sourcepath="plugin-resources\repository\spring\jars\spring-jms-3.0.7.RELEASE-sources.jar">
+    <attributes>
+      <attribute value="http://static.springsource.org/spring/docs/3.0.x/javadoc-api" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="plugin-resources\repository\xbean\jars\xbean-spring-3.13.jar" sourcepath="plugin-resources\repository\xbean\jars\xbean-spring-3.13-sources.jar">
+    <attributes>
+      <attribute value="file:plugin-resources\repository\xbean\jars\xbean-spring-3.13-javadoc.jar" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1.jar" sourcepath="plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-sources.jar">
+    <attributes>
+      <attribute value="file:plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-javadoc.jar" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\kahadb-5.7.0.jar" sourcepath="plugin-resources\repository\activemq\jars\kahadb-5.7.0-sources.jar">
+    <attributes>
+      <attribute value="file:plugin-resources\repository\activemq\jars\kahadb-5.7.0-javadoc.jar" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-pool/jars/commons-pool-1.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/cryptix/jars/cryptix-3.2.0.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar"/>

@@ -3,6 +3,7 @@ package org.nrg.xnat.helpers.prearchive;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
@@ -21,7 +22,9 @@ import java.util.Date;
  *  
  * @author aditya siram 
  */
-public final class SessionData {
+public final class SessionData implements Serializable {
+    private static final long serialVersionUID = 7915299491932778685L;
+
 	private Date uploadDate;
 	private Date lastBuiltDate;
 	private PrearcStatus status;

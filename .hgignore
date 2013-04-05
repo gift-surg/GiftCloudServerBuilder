@@ -39,7 +39,6 @@ syntax: regexp
 ^plugin-resources/cache
 ^projects
 ^modules
-^plugin-resources/repository/.*-sources.jar
 # ignore emacs backups
 ~$
 # ignore generated bean files, but not ones in the sub directories

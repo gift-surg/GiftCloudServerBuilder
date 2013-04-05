@@ -85,6 +85,8 @@ import org.xml.sax.SAXException;
  *
  */
 public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
+	public static final String MERGED = "Merged";
+
 	private static final String TRIGGER_PIPELINES = "triggerPipelines";
 
 	public static final String PRE_EXISTS = "Session already exists, retry with overwrite enabled";
@@ -465,7 +467,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			if(justification==null){
 				justification="standard upload";
 			}
-			workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), EventUtils.TRANSFER, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
+			workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), (existing==null)?EventUtils.TRANSFER:MERGED, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
 			workflow.setStepDescription("Validating");
 			c=workflow.buildEvent();
 			try {
@@ -560,6 +562,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				workflow.setStepDescription(PersistentWorkflowUtils.COMPLETE);
 				workflow.setStatus(PersistentWorkflowUtils.COMPLETE);
 				PersistentWorkflowUtils.save(workflow,c);
+				if(workflow instanceof WrkWorkflowdata){
+					((WrkWorkflowdata)workflow).postSave();
+				}
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -574,6 +579,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			try {
 				workflow.setStatus(PersistentWorkflowUtils.FAILED);
 				PersistentWorkflowUtils.save(workflow,c);
+				if(workflow instanceof WrkWorkflowdata){
+					((WrkWorkflowdata)workflow).postSave();
+				}
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -582,6 +590,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			try {
 				workflow.setStatus(PersistentWorkflowUtils.FAILED);
 				PersistentWorkflowUtils.save(workflow,c);
+				if(workflow instanceof WrkWorkflowdata){
+					((WrkWorkflowdata)workflow).postSave();
+				}
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}
@@ -590,6 +601,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			try {
 				workflow.setStatus(PersistentWorkflowUtils.FAILED);
 				PersistentWorkflowUtils.save(workflow,c);
+				if(workflow instanceof WrkWorkflowdata){
+					((WrkWorkflowdata)workflow).postSave();
+				}
 			} catch (Exception e1) {
 				logger.error("", e1);
 			}

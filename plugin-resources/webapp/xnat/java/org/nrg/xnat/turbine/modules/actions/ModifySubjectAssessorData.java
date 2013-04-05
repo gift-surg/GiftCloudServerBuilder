@@ -186,6 +186,8 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     found = found.getCurrentDBVersion(false);
 
 					postProcessing(found, data, context);
+					
+					dynamicPostSave(TurbineUtils.getUser(data),sa,TurbineUtils.GetDataParameterHash(data), wrk);
 
                     SchemaElement se = SchemaElement.GetElement(found.getXSIType());
                     if (TurbineUtils.HasPassedParameter("destination", data)){
@@ -226,6 +228,22 @@ public class ModifySubjectAssessorData extends ModifyItem{
 		 }
 	}
 
+	public interface PostSaveAction {
+		public void execute(XDATUser user, XnatSubjectassessordata src, Map<String,String> params,PersistentWorkflowI wrk) throws Exception;
+	}
+	
+	private void dynamicPostSave(XDATUser user, XnatSubjectassessordata src, Map<String,String> params,PersistentWorkflowI wrk) throws Exception{
+		 List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.sessionEdit.postSave");
+
+    	 if(classes!=null && classes.size()>0){
+			 for(Class<?> clazz: classes){
+				 if(PostSaveAction.class.isAssignableFrom(clazz)){
+					 PostSaveAction action=(PostSaveAction)clazz.newInstance();
+					 action.execute(user,src,params,wrk);
+				 }
+			 }
+		 }
+	}
     /* (non-Javadoc)
      * @see org.nrg.xdat.turbine.modules.actions.ModifyItem#preProcess(org.nrg.xft.XFTItem, org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
      */

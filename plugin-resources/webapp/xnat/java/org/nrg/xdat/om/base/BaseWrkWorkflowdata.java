@@ -20,6 +20,7 @@ import org.nrg.xdat.om.base.auto.AutoWrkWorkflowdata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventManager;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils.CATEGORY;
 import org.nrg.xft.event.EventUtils.TYPE;
@@ -373,5 +374,20 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
 	public void setCategory(CATEGORY v) {
 		this.setCategory(v.toString());
 	}
+	
 
+	/*
+	 * This method is called anytime a workflow entry is saved to the database.  It will trigger an event entry.
+	 */
+	@Override
+	public void postSave() throws Exception {
+		super.postSave();
+		
+		if(getStatus()!=null){			
+			//status changed
+			if(this.getWorkflowId()!=null){
+				EventManager.Trigger(SCHEMA_ELEMENT_NAME, this.getWorkflowId().toString(), this, getStatus());
+			}
+		}
+	}
 }

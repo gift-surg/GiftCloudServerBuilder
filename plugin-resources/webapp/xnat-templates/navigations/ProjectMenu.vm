@@ -3,7 +3,7 @@
 ul.leftMenu{
 	list-style: none;
 	margin: 0;
-	padding: 1;
+	padding: 0;
 	}
 li.leftMenu{
 	/*border:1px solid #DEDEDE;*/

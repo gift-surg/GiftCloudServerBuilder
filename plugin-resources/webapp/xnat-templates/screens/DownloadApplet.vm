@@ -14,4 +14,10 @@
         </td>
     </tr>
 </table>
+<script type="text/javascript">
+    jq(document).ready(function() {
+        // add "applet" class to body to support special handling for applets
+        jq('body').addClass('applet');
+    });
+</script>
 <!-- END: plugin-resources/webapp/xnat-templates/screens/DownloadApplet.vm -->

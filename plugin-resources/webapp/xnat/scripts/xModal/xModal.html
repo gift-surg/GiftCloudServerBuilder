@@ -71,12 +71,14 @@
         // selector for what you're clicking to open the modal
         $body.on('click','.buttons .display_xml',function(){
 
+            var this_box = 'display_xml' ;
+
             xModalOpen({
                 kind:     'large',  // size - 'fixed','custom','large','med','small',
                 width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
                 height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
                 scroll:   'yes', // does the content need to scroll? (yes/no)
-                box:      'display_xml',  // class name of this modal box
+                box:      this_box,  // class or id selector for this modal box
                 title:    'Display XML', // text for modal title bar - if empty will be "Alert" - use space for blank title
                 content:   '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // body content of modal window
                 footer:    {
@@ -94,13 +96,13 @@
             //LoadXML(id_of_container,xml_source);
             LoadXML('modalXML','sample.xml');
 
-            xModalSubmit = function(){
+            xModalSubmit.this_box = function(){
                 // what to do when the thing is submitted
                 alert("You're welcome!");
                 xModalClose();
             };
 
-            xModalCancel = function(){
+            xModalCancel.this_box = function(){
                 //alert('Closing now!');
                 xModalClose();
             };
@@ -122,6 +124,8 @@
                 footer: {
                     show: 'yes'//,
                     //content: '<a href="#!" class="close default button">Close</a>' // content for footer
+                    // not sure which one
+                    //show: 'no'// 'static' xModal has footer in HTML
                 }
             });
 

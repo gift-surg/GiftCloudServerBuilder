@@ -1,6 +1,13 @@
 <!-- BEGIN: plugin-resources/webapp/xnat-templates/screens/XDATScreen_download_xnat_projectData.vm -->
 $page.setTitle("Download: $om.Id")
 
+<script type="text/javascript">
+    jq(document).ready(function() {
+        // add "applet" class to body to support special handling for applets
+        jq('body').addClass('applet');
+    });
+</script>
+
 <h2>Download $om.getName() Images</h2>
 <table border="0" >
     <tr  bgcolor="white">

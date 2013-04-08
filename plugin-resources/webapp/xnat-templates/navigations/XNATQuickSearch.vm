@@ -2,13 +2,11 @@
 <script type="text/javascript">
 <!--
 function DefaultEnterKey(e,button){
-var keynum
-var keychar
-var numcheck
+var keynum, keychar, numcheck ;
 
 if(window.event) // IE
 	{
-	  keynum = e.keyCode
+	  keynum = e.keyCode ;
 	  if (keynum==13){
 	    submitQuickSearch();
 	    return true;
@@ -16,7 +14,7 @@ if(window.event) // IE
 	}
 else if(e) // Netscape/Firefox/Opera
 	{
-	  keynum = e.which
+	  keynum = e.which ;
 	  if (keynum==13){
 	    submitQuickSearch();
 	    return false;

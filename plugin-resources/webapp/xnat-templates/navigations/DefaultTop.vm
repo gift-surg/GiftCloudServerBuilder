@@ -22,24 +22,111 @@
 <script type="text/javascript">
         jq(document).ready(function() {
 
+            var cover_up_count = 0 ;
+
+            function coverApplet(jqObj){
+
+                cover_up_count++ ;
+
+                var cover_up_id = 'cover_up'+cover_up_count ;
+
+                //jq('.applet_cover_up').detach();
+
+                var
+                    //applet_cover = 'applet_cover'+i ,
+                    //jqObjPos = jqObj.position(),
+                    jqObjPos = jqObj.offset(),
+                    jqObjMarginTop = jqObj.css('margin-top'),
+                    //jqObjWidth = parseInt(jqObj.width()+6),
+                    //jqObjHeight = parseInt(jqObj.height()+8),
+                    jqObjWidth = jqObj.outerWidth()+2,
+                    jqObjHeight = jqObj.outerHeight()+2,
+                    jqObjZ = jqObj.css('z-index')
+                ;
+
+                //jqObj.before('<iframe class="applet_cover_up '+applet_cover+'" id="'+applet_cover+'" src="about:blank" width="'+width+'" height="'+height+'"></iframe>');
+                //jqObj.before('<iframe id="'+cover_up_id+'" class="applet_cover_up" src="'+serverRoot+'/scripts/utils/blank.html" width="'+jqObjWidth+'" height="'+jqObjHeight+'"></iframe>');
+                jqObj.before('<iframe id="'+cover_up_id+'" class="applet_cover_up" src="about:blank" width="'+jqObjWidth+'" height="'+jqObjHeight+'"></iframe>');
+
+                jq('#'+cover_up_id).css({
+                    display: 'block',
+                    position: 'fixed',
+                    width: jqObjWidth,
+                    height: jqObjHeight,
+                    marginTop: jqObjMarginTop,
+                    left: jqObjPos.left,
+                    top: jqObjPos.top,
+                    //left: 0,
+                    //top: 0,
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none'//,
+                    //zIndex: jqObjZ-1
+                    //opacity: 0.01
+                });
+
+            }
+
+            function unCoverApplets(jqObj){
+                jqObj.prev('iframe.applet_cover_up').detach();
+            }
+
+            function fadeInNav(jqObj){
+                jqObj.stop('clearQueue','gotoEnd');
+                jqObj.find(' > ul').fadeIn(80).addClass('open');
+            }
+
+            function fadeOutNav(jqObj){
+                jqObj.stop('clearQueue','gotoEnd');
+                jqObj.find(' > ul').fadeOut(100).removeClass('open');
+            }
+
             // fancy fades on hover
-            jq('#main_nav li').hover(
+            jq('#main_nav > ul > li').hover(
                     function() {
-                        jq(this).stop('clearQueue','gotoEnd').find(' > ul').fadeIn(80);
+                        fadeInNav(jq(this));
+                        //jq('#main_nav li').removeClass('open');
+                        if (jq('body').hasClass('applet')){
+                            coverApplet(jq(this).find(' > ul'));
+                        }
                     },
                     function() {
-                        jq(this).stop('clearQueue','gotoEnd').find(' > ul').fadeOut(100);
+                        fadeOutNav(jq(this));
+                        if (jq('body').hasClass('applet')){
+                            unCoverApplets(jq(this).find(' > ul'));
+                        }
+                        // remove the iframe shims
+                        //jq('.applet_cover_up').detach();
+                        //unCoverApplets();
                     }
             );
 
             // modifying widths of 2nd level menu
-            jq('#main_nav li li').hover(function() {
-                var submenu_width = jq(this).outerWidth();
-                jq(this).find(' > ul').css({'left':submenu_width+1});
-            });
+            jq('#main_nav li li').hover(
+                function() {
+                    var submenu_width = jq(this).outerWidth();
+                    jq(this).find(' > ul').css({'left':submenu_width+1});
+    //                if (jq('body').hasClass('applet')){
+    //                    jq('.applet_cover_up').detach();
+    //                    coverApplet(jq(this).find(' > ul'));
+    //                }
+                    fadeInNav(jq(this));
+                    if (jq('body').hasClass('applet')){
+                        coverApplet(jq(this).find(' > ul'));
+                    }
+                },
+                function(){
+                    fadeOutNav(jq(this));
+                    if (jq('body').hasClass('applet')){
+                        unCoverApplets(jq(this).find(' > ul'));
+                    }
+                }
+            );
 
             // give menus with submenus a class of 'more'
             jq('#main_nav li ul , #main_nav li li ul').closest('li').find(' > a').addClass('more');
+            jq('#main_nav li li ul').closest('li').addClass('more');
+            jq('#main_nav li li ul').addClass('subnav');
 
             // clicking the "Logout" link sets the warning bar cookie to 'OPEN' so it's available if needed on next login
             jq('#logout_user').click(function(){
@@ -52,7 +139,7 @@
 
 
 ## preloading background images for main_nav
-<div id="img_preload" style="display:none;">
+<div id="img_preload" style="position:fixed;left:-9999px;top:-9999px;">
     <img src="$content.getURI('images/nav_bkdg.png')" alt="">
     <img src="$content.getURI('images/nav_bkdg_hover.png')" alt="">
 </div>
@@ -127,7 +214,7 @@
 #end
 
 <div id="header" class="main_header">
-    <a id="header_logo" href="$link.setPage("Index.vm")" onmouseover="return true;">
+    <a id="header_logo" href="$link.setPage("Index.vm")">
         #parse("/screens/Logo.vm")
     </a>
 
@@ -154,7 +241,7 @@ $navigation.setTemplate("XNATQuickSearch.vm")
         // adjust width of main nav if logo is wider than 175px
         var hdr_logo_width = jq('#header_logo').width();
         if (hdr_logo_width > 175) {
-            jq('#main_nav').width(932 - hdr_logo_width - 30);
+            jq('#main_nav').width(932 - hdr_logo_width - 20);
         }
 
         //

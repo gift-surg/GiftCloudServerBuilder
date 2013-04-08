@@ -144,7 +144,7 @@ XNAT.app.validatorImpls.FloatTextBox={
 			return true;
 		}
 	}
-}
+};
 
 XNAT.app.validatorImpls.AlphaNumSTextBox={
 	message:"Value must be alpha numeric text (no special characters).",
@@ -155,7 +155,7 @@ XNAT.app.validatorImpls.AlphaNumSTextBox={
 			return true;
 		}
 	}
-}
+};
 
 //declaring the constructor
 function TextboxValidator(box,_validator) {
@@ -200,7 +200,7 @@ XNAT.app.validatorImpls.RequiredSelect={
 	isValid:function(sel){
 		return (sel.options[sel.selectedIndex].value!="");
 	}
-}
+};
 
 
 //declaring the constructor
@@ -249,7 +249,7 @@ RadioButtonValidator.prototype = {  validate: function () {
     }else{
         return true;
     }
-}}
+}};
 
 YAHOO.util.Event.onDOMReady( function()
 {
@@ -385,7 +385,8 @@ XNAT.app.toggle=function (_name){
             elements[trI].style.display="none";
         }
     }
-}
+};
+
 
 
 jq(window).load(function(){
@@ -437,7 +438,10 @@ jq(window).load(function(){
         }
 
     };
-//    //This shouldn't execute if you aren't on the user edit page!!!!!
+
+
+//    // This shouldn't execute if you aren't on the user edit page!!!!!
+//    // (it would only execute on an input with class="email_format")
 //    // validate email when leaving an email input box and don't show a 'verified' alert
 //    // use an "onblur" class on input element if you want to validate on blur
 //    jq('input.email_format.onblur').blur(function(){

@@ -8,6 +8,13 @@ $page.setTitle("Viewer: $om.Id")
 
 #set ($qt='"')
 
+<script type="text/javascript">
+    jq(document).ready(function() {
+        // add "applet" class to body to support special handling for applets
+        jq('body').addClass('applet');
+    });
+</script>
+
 <table border="0" >
     <tr  bgcolor="white">
         <td style="border-style:none;"  valign="top" align="left" colspan="2">

@@ -1,6 +1,3 @@
-## <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-## <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
 <!-- path: /xnat-templates/navigations/HeaderIncludes -->
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -79,7 +76,7 @@
           return this[aeC];
         }
       }
-    }
+    };
 
     #if($project)
      #if($project.getId())
@@ -122,21 +119,20 @@
 <script type="text/javascript" src="$content.getURI("scripts/LeftBarTreeView.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/justification/justification.js")"></script>
-<script type="text/javascript">	
- var YUIDOM=YAHOO.util.Dom;
-
-	YAHOO.util.Event.onDOMReady( function()
-	{
-		var myforms = document.getElementsByTagName("form");
-		for (var i=0; i<myforms.length; i++) {
-			var form = myforms[i];
-			var el = document.createElement("input");
-			el.type = "hidden";
-			el.name = "XNAT_CSRF";
-			el.value = "$!XNAT_CSRF";
-			form.appendChild(el);
-		}
-	});
+<script type="text/javascript" src="$content.getURI("scripts/utils.js")"></script>
+<script type="text/javascript">
+    var YUIDOM=YAHOO.util.Dom;
+    YAHOO.util.Event.onDOMReady(function(){
+        var myforms = document.getElementsByTagName("form");
+        for (var i=0; i<myforms.length; i++) {
+            var form = myforms[i];
+            var el = document.createElement("input");
+            el.type = "hidden";
+            el.name = "XNAT_CSRF";
+            el.value = "$!XNAT_CSRF";
+            form.appendChild(el);
+        }
+    });
 </script>
 
 <!-- YUI css -->

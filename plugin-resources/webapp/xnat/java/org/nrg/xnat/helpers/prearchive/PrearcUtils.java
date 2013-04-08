@@ -51,7 +51,7 @@ public class PrearcUtils {
 		ERROR, 
 		DELETING,
 		MOVING,
-		_RECEIVING,_BUILDING,_ARCHIVING,_DELETING,_MOVING;
+		_RECEIVING,_BUILDING,_QUEUED,_ARCHIVING,_DELETING,_MOVING;
 
 		public static boolean potentiallyReady(PrearcStatus status) {
 			return (status==null || status.equals(READY));			    

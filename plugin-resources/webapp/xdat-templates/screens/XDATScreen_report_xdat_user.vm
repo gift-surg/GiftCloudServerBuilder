@@ -456,7 +456,10 @@ addGroup("$!groupid.getGroupid()");
 	  var td = document.createElement("TD");
 	  td.innerHTML="Add to $displayManager.getSingularDisplayNameForProject().toLowerCase():";
 	  tr.appendChild(td);
-	  
+
+      //Do a case-insensitive sort before adding the options to the dropdown.
+      alltags.sort(function(a,b){a = a.toLowerCase(); b = b.toLowerCase(); if (a>b) return 1; if (a<b) return -1; return 0;});
+
 	  var select =document.createElement("SELECT");
 	  select.id="all_projects";
 	  select.options[select.options.length]=new Option("(SELECT)","");

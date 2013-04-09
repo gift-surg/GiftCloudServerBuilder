@@ -615,8 +615,12 @@
     <!--Copies pertinent applet to the deployment                                      -->
     <!-- ================================================================ -->
     <goal name="xdat:updateApplet">
+        <ant:mkdir dir="projects/${xdat.project.name}/src/applet"/>
+        <copy todir="projects/${xdat.project.name}/src/applet" overwrite="true" preservelastmodified="true">
+            <fileset dir="${basedir}/plugin-resources/webapp/xnat/applet"/>
+        </copy>
         <ant:mkdir dir="deployments/${xdat.project.name}/src/applet"/>
-        <copy todir="deployments/${xdat.project.name}/src/applet" preservelastmodified="true">
+        <copy todir="deployments/${xdat.project.name}/src/applet" overwrite="true" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/webapp/xnat/applet"/>
         </copy>
     </goal>
@@ -1498,8 +1502,8 @@
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/scripts" preservelastmodified="true">
             <fileset dir="${basedir}/projects/${xdat.project.name}/src/scripts"/>
         </copy>
-        <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/applet" preservelastmodified="true">
-            <fileset dir="${basedir}/projects/${xdat.project.name}/src/applet"/>
+        <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/applet" overwrite="true" preservelastmodified="true">
+            <fileset dir="${basedir}/plugin-resources/webapp/xnat/applet"/>
         </copy>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/images" preservelastmodified="true">
             <fileset dir="${basedir}/projects/${xdat.project.name}/src/images"/>

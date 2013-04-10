@@ -41,7 +41,7 @@ function selectDefault(elementName){
   		<TD COLSPAN=2>
   		<FORM name="search$velocityCount" method="post" action="$link.setAction("DisplaySearchAction")">
   			<TABLE>
-			  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+			  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplaysByDesc())
 			  	  <TR><TH>Pivot Element</TH><TD colspan=2>
 		  			<select id="exptType" name="ELEMENT_0" ONCHANGE="return showPaneFromList(this);">
 					  	#foreach ($typeObject in $typeObjects)
@@ -76,7 +76,7 @@ function selectDefault(elementName){
   	<TR VALIGN="top">
   		<TD VALIGN="top">
 		  	<ul>
-			  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+			  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplaysByDesc())
 				  #foreach ($typeObject in $typeObjects)
 				  	<li style="border-bottom:1px solid #6D99B6;padding:3px 5px 5px 5px;"><a href="#" onClick="return showSpan('panel$typeObject.getElementName()')" id="tab$velocityCount">$typeObject.getDescription()</a></li>
 				  #end

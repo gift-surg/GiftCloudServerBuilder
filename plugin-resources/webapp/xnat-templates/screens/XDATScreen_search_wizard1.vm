@@ -15,7 +15,7 @@
  </tr>
  <tr>
   <td valign="top" align="center" style="padding-top:5px;">
-	  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+	  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplaysByPluralDesc())
 	  <select id="exptType" name="ELEMENT_0" ONCHANGE="">
 					  	#foreach ($typeObject in $typeObjects)
 						    #if(!$typeObject.getElementName().equals("xnat:projectData"))

@@ -47,7 +47,7 @@ function selectDefault(elementName){
   		</TR>
   	<TR>
   		<TD colspan=2>
-  		#set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+  		#set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplaysByDesc())
   			<select id="exptType" name="exptType" ONCHANGE="showSpan(this.options[this.selectedIndex].value);">
 			  	#foreach ($typeObject in $typeObjects)
 				  	<option value="panel$typeObject.getElementName()" #if($typeObject.getProperName()=="MrSession") SELECTED #end>$typeObject.getDescription()</option>

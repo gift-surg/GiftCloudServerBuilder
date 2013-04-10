@@ -147,20 +147,21 @@ function LeftBarTreeView(_config){
 
  	if(XNAT.app.showLeftBarBrowse){
 	 	if(window.available_elements!=undefined){
-		 	//define data node
-	 		function sortByElementName(a,b)
-	 		{
-	 			var aName = a.element_name.toLowerCase();
-	 			var bName = b.element_name.toLowerCase();
-	 			if (aName < bName){
-	 		        return -1;
-	 		     }else if (aName > bName){
-	 		       return  1;
-	 		     }else{
-	 		       return 0;
-	 		     }
-	 		}
-	 		window.available_elements.sort(sortByElementName);
+
+             function sortByPlural(a,b)
+             {
+                 var aName = a.plural.toLowerCase();
+                 var bName = b.plural.toLowerCase();
+                 if (aName < bName){
+                     return -1;
+                 }else if (aName > bName){
+                     return  1;
+                 }else{
+                     return 0;
+                 }
+             }
+             window.available_elements.sort(sortByPlural);
+            //define data node
 		 	this.dataNode=new YAHOO.widget.TextNode({label:"Data",ID:"d"},root,this.open_array.contains("d"));
 		 	for(var esC=0;esC<window.available_elements.length;esC++){
 		 		var es=window.available_elements[esC];

@@ -138,7 +138,7 @@ function showSpan(spanName)
   	  <TR VALIGN="top">
   		   <TD VALIGN="top">
 		  	    <ul>
-			       #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+			       #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplaysByDesc())
 			       #foreach ($typeObject in $typeObjects)
 			       	<li style="border-bottom:1px solid #6D99B6;padding:3px 5px 5px 5px;"><a href="#" onClick="return showSpan('panel$typeObject.getElementName()')" id="tab$velocityCount">$typeObject.getDescription()</a></li>
 			       #end
@@ -213,7 +213,7 @@ function showSpan(spanName)
   	<TR VALIGN="top">
   		<TD VALIGN="top">
 		  	<ul>
-			  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplays())
+			  #set ($typeObjects = $data.getSession().getAttribute("user").getSearchableElementDisplaysByDesc())
 				  #foreach ($typeObject in $typeObjects)
 				  	<li style="border-bottom:1px solid #6D99B6;padding:3px 5px 5px 5px;"><a href="#" onClick="return showSpan('panel$typeObject.getElementName()');" id="tab$velocityCount">$typeObject.getDescription()</a></li>
 				  #end

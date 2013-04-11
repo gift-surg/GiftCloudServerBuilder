@@ -4,7 +4,7 @@
 	<table align="left" valign="top">
 		<tr>
 	       <td>
-			<font size="2"><u><b>Browse</b></u><br></font>
+               <b style="text-decoration:underline">Browse</b><br>
 			<table align="left" valign="top">
 			
 			#foreach ($typeObject in $typeObjects)

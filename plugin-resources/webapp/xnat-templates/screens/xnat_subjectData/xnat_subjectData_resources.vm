@@ -1,26 +1,20 @@
 					<!--BEGIN /screens/xnat_subjectData/xnat_subjectData_resources.vm -->
 <style>
-/* custom styles for inline instances */
-.yui-skin-sam .yui-ac-input { position:static;width:20em; vertical-align:middle;}
-.yui-skin-sam .yui-ac-container { width:20em;left:0px;}
-
-/* buttons */
-.yui-ac .yui-button {vertical-align:middle;}
-.yui-ac .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-rt.png")) center center no-repeat }
-.yui-ac .open .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat}
-
-/* custom styles for scrolling container */ 
-	#type_auto_div { 
-    padding-bottom:2em; 
-	}
-	#type_auto_div .yui-ac-content { 
-    max-height:20em;overflow:auto;overflow-x:hidden; /* set scrolling */ 
-    _height:20em; /* ie6 */ 
-	} 
+    /* custom styles for inline instances */
+    .yui-skin-sam .yui-ac-input { position:static;width:20em; vertical-align:middle;}
+    .yui-skin-sam .yui-ac-container { width:20em;left:0;}
+    /* buttons */
+    .yui-ac .yui-button {vertical-align:middle;}
+    .yui-ac .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-rt.png")) center center no-repeat }
+    .yui-ac .open .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat}
+    /* custom styles for scrolling container */
+    #type_auto_div {padding-bottom:2em;}
+    #type_auto_div .yui-ac-content {max-height:20em;overflow:auto;overflow-x:hidden; /* set scrolling */ }
+    .ie6 #type_auto_div .yui-ac-content { height:20em }
 </style>
 		<script type="text/javascript" src="$content.getURI("scripts/FileViewer.js")"></script>
 <script type="text/javascript">
-  var obj=new Object();
+  var obj={};
   obj.uri=serverRoot + "/REST/projects/$!om.getProject()/subjects/$!om.getId()";
   
   #if ($item.canEdit($data.getSession().getAttribute("user")))
@@ -33,8 +27,8 @@
 						    #else
 							      obj.canDelete=false;
 	    					#end
-  obj.catalogs=new Object();
-  obj.catalogs.ids=new Array();
+  obj.catalogs={};
+  obj.catalogs.ids=[];
   window.viewer=new FileViewer(obj);
     
   function showFiles(){

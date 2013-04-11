@@ -20,56 +20,59 @@
 <script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.cookie.js')"></script>
 <!-- main_nav interactions -->
 <script type="text/javascript">
-        jq(document).ready(function() {
 
-            var cover_up_count = 0 ;
+    var cover_up_count = 0 ;
 
-            function coverApplet(jqObj){
+    function coverApplet(jqObj){
 
-                cover_up_count++ ;
+        cover_up_count++ ;
 
-                var cover_up_id = 'cover_up'+cover_up_count ;
+        var cover_up_id = 'cover_up'+cover_up_count ;
 
-                //jq('.applet_cover_up').detach();
+        //jq('.applet_cover_up').detach();
 
-                var
-                    //applet_cover = 'applet_cover'+i ,
-                    //jqObjPos = jqObj.position(),
-                    jqObjPos = jqObj.offset(),
-                    jqObjMarginTop = jqObj.css('margin-top'),
-                    //jqObjWidth = parseInt(jqObj.width()+6),
-                    //jqObjHeight = parseInt(jqObj.height()+8),
-                    jqObjWidth = jqObj.outerWidth()+2,
-                    jqObjHeight = jqObj.outerHeight()+2,
-                    jqObjZ = jqObj.css('z-index')
-                ;
+        var
+        //applet_cover = 'applet_cover'+i ,
+        //jqObjPos = jqObj.position(),
+            jqObjPos = jqObj.offset(),
+            jqObjLeft = jqObjPos.left,
+            jqObjTop = jqObjPos.top,
+            jqObjMarginTop = jqObj.css('margin-top'),
+        //jqObjWidth = parseInt(jqObj.width()+6),
+        //jqObjHeight = parseInt(jqObj.height()+8),
+            jqObjWidth = jqObj.outerWidth()+4,
+            jqObjHeight = jqObj.outerHeight()+2,
+            jqObjZ = jqObj.css('z-index')
+            ;
 
-                //jqObj.before('<iframe class="applet_cover_up '+applet_cover+'" id="'+applet_cover+'" src="about:blank" width="'+width+'" height="'+height+'"></iframe>');
-                //jqObj.before('<iframe id="'+cover_up_id+'" class="applet_cover_up" src="'+serverRoot+'/scripts/utils/blank.html" width="'+jqObjWidth+'" height="'+jqObjHeight+'"></iframe>');
-                jqObj.before('<iframe id="'+cover_up_id+'" class="applet_cover_up" src="about:blank" width="'+jqObjWidth+'" height="'+jqObjHeight+'"></iframe>');
+        //jqObj.before('<iframe class="applet_cover_up '+applet_cover+'" id="'+applet_cover+'" src="about:blank" width="'+width+'" height="'+height+'"></iframe>');
+        //jqObj.before('<iframe id="'+cover_up_id+'" class="applet_cover_up" src="'+serverRoot+'/scripts/utils/blank.html" width="'+jqObjWidth+'" height="'+jqObjHeight+'"></iframe>');
+        jqObj.before('<iframe id="'+cover_up_id+'" class="applet_cover_up" src="about:blank" width="'+jqObjWidth+'" height="'+jqObjHeight+'"></iframe>');
 
-                jq('#'+cover_up_id).css({
-                    display: 'block',
-                    position: 'fixed',
-                    width: jqObjWidth,
-                    height: jqObjHeight,
-                    marginTop: jqObjMarginTop,
-                    left: jqObjPos.left,
-                    top: jqObjPos.top,
-                    //left: 0,
-                    //top: 0,
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none'//,
-                    //zIndex: jqObjZ-1
-                    //opacity: 0.01
-                });
+        jq('#'+cover_up_id).css({
+            display: 'block',
+            position: 'fixed',
+            width: jqObjWidth,
+            height: jqObjHeight,
+            marginTop: jqObjMarginTop,
+            left: jqObjLeft,
+            top: jqObjTop,
+            //left: 0,
+            //top: 0,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none'//,
+            //zIndex: jqObjZ-1
+            //opacity: 0.01
+        });
 
-            }
+    }
 
-            function unCoverApplets(jqObj){
-                jqObj.prev('iframe.applet_cover_up').detach();
-            }
+    function unCoverApplets(jqObj){
+        jqObj.prev('iframe.applet_cover_up').detach();
+    }
+
+    jq(document).ready(function() {
 
             function fadeInNav(jqObj){
                 jqObj.stop('clearQueue','gotoEnd');

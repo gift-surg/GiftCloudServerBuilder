@@ -1,76 +1,81 @@
 <!-- Splash -->
-<div>$!systemName currently contains $proj_count $displayManager.getPluralDisplayNameForProject().toLowerCase(), $sub_count $displayManager.getPluralDisplayNameForSubject().toLowerCase(), and $isd_count imaging $displayManager.getPluralDisplayNameForImageSession().toLowerCase().
+<div>
+    $!systemName currently contains $proj_count $displayManager.getPluralDisplayNameForProject().toLowerCase(),
+    $sub_count $displayManager.getPluralDisplayNameForSubject().toLowerCase(),
+    and $isd_count imaging $displayManager.getPluralDisplayNameForImageSession().toLowerCase().
 </div>
 <br/>
-<STYLE>
-span.spacer{
-height:12px;
-width:1px;
-}
-</STYLE>
-				<div id="front_search" class="yui-navset">
-				</div>
-				<script type="text/javascript">
-				  var frontTabs=new YAHOO.widget.TabView('front_search');
-				  
-				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span>',
-				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:projectData',
-				  		  cacheData:true,
-				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
-				  		  active:true
-				  }));
-				  
-				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'$displayManager.getPluralDisplayNameForSubject()<span class="spacer"></span>',
-				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:subjectData',
-				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
-				  		  cacheData:true
-				  }));
-				  
-				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'MR<span class="spacer"></span>',
-				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:mrSessionData',
-				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
-				  		  cacheData:true
-				  }));
-				  
-				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'PET<span class="spacer"></span>',
-				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:petSessionData',
-				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
-				  		  cacheData:true
-				  }));
-				  
-				  frontTabs.addTab(new YAHOO.widget.Tab({
-				  		  label:'CT<span class="spacer"></span>',
-				  		  dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:ctSessionData',
-				  		  loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
-				  		  cacheData:true
-				  }));
-				</script>
-				
-			<br>
+## this "spacer" thing is not good
+## let's make it go away
+<style>
+    span.spacer{ display:none !important; height: 12px; width: 1px; }
+</style>
 
-<table width="100%">
- <tr>
-  <td width="" valign="top">
- <DIV ID="projectsContainer" class="container">
-     <DIV class="withColor containerTitle">$displayManager.getPluralDisplayNameForProject()</DIV>
-						     <DIV ID="projectsBody" class="containerBody">
-			      #parse("/screens/minProjectsList.vm")
-						     </DIV>
-						 </DIV>
-						  </td>
-						  <td width="10">&nbsp;</td>
-						  <td width="300" valign="top">
-  <DIV ID="dataContainer" class="container">
-     <DIV class="withColor containerTitle">Recent Data Activity</DIV>
-						     <DIV ID="dataBody" class="containerBody">
-						     #parse("/screens/recentExptList.vm")
-						     </DIV>
-						  </DIV>
-						  </td>
-						 </tr>
-						</table>
+<div id="front_search" class="yui-navset"></div>
+
+<script type="text/javascript">
+
+    var frontTabs=new YAHOO.widget.TabView('front_search');
+
+    frontTabs.addTab(new YAHOO.widget.Tab({
+        label:'$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span>',
+        dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:projectData',
+        cacheData:true,
+        loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
+        active:true
+    }));
+
+    frontTabs.addTab(new YAHOO.widget.Tab({
+        label:'$displayManager.getPluralDisplayNameForSubject()<span class="spacer"></span>',
+        dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:subjectData',
+        loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
+        cacheData:true
+    }));
+
+    frontTabs.addTab(new YAHOO.widget.Tab({
+        label:'MR<span class="spacer"></span>',
+        dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:mrSessionData',
+        loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
+        cacheData:true
+    }));
+
+    frontTabs.addTab(new YAHOO.widget.Tab({
+        label:'PET<span class="spacer"></span>',
+        dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:petSessionData',
+        loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
+        cacheData:true
+    }));
+
+    frontTabs.addTab(new YAHOO.widget.Tab({
+        label:'CT<span class="spacer"></span>',
+        dataSrc:serverRoot+'/app/template/DataTypeSearch.vm/dataType/xnat:ctSessionData',
+        loadMethod:"POST",  //Have to set the request to POST because IE caches all GET requests even if cacheData is set to false.
+        cacheData:true
+    }));
+
+</script>
+
+<br>
+
+<table id="splash_table" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td width="" valign="top">
+            <div id="projectsContainer" class="container">
+                <div class="withColor containerTitle">$displayManager.getPluralDisplayNameForProject()</div>
+                <div id="projectsBody" class="containerBody">
+                    #parse("/screens/minProjectsList.vm")
+                </div>
+            </div>
+        </td>
+        <td width="10">&nbsp;</td>
+        <td width="300" valign="top">
+            <div id="dataContainer" class="container">
+                <div class="withColor containerTitle">Recent Data Activity</div>
+                <div id="dataBody" class="containerBody">
+                    #parse("/screens/recentExptList.vm")
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
 <!-- /Splash -->

@@ -187,8 +187,8 @@ jQuery.loadScript = function (url, arg1, arg2) {
             } else {
                 $(this).removeClass('active-handle').parent().removeClass('draggable');
             }
-                console.debug('left: '+$(this).offset().left+', top: '+$(this).offset().top);
-            });
+                //console.debug('left: '+$(this).offset().left+', top: '+$(this).offset().top);
+        });
 
     }
 })(jQuery);

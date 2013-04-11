@@ -54,10 +54,10 @@
 
 ##CREATED BY TIMOTHY OLSEN 3/7/05 FOR USE IN EDIT SCREENS
 #macro (xdatPassItemFormFields $search_element $search_field $search_value $project)
-  <INPUT type="hidden" name="search_element" value="$search_element"/>
-  <INPUT type="hidden" name="search_field" value="$search_field"/>
-  <INPUT type="hidden" name="search_value" value="$search_value"/>
-  <INPUT type="hidden" name="project" value="$project"/>
+  <input type="hidden" name="search_element" value="$search_element"/>
+  <input type="hidden" name="search_field" value="$search_field"/>
+  <input type="hidden" name="search_value" value="$search_value"/>
+  <input type="hidden" name="project" value="$project"/>
 #end
 
 #macro (xdatTextBox $name $item $defaultValue $vr)
@@ -86,13 +86,13 @@
 #end
   #if ($item.getProperty($name))
     #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$id" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$id" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
     #else
-    <input ID="$id" type="text" name="$name" value="$item.getProperty($name)"/>
+    <input id="$id" type="text" name="$name" value="$item.getProperty($name)"/>
     #end
   #else
-  <input ID="$id" type="text" name="$name" value="$defaultValue"/>
+  <input id="$id" type="text" name="$name" value="$defaultValue"/>
   #end
 #end
 
@@ -189,7 +189,7 @@
 
   ## The hidden box is necessary to submit a "false" value if the checkbox is unchecked
   ## If the checkbox is checked, its true value will override the hidden's "false" value
-  <input ID="$name" type="checkbox" name="$name" value="1" #if($value) CHECKED #end />
+  <input id="$name" type="checkbox" name="$name" value="1" #if($value) checked #end />
   <input type="hidden" name="$name" value="0" />
 #end
 
@@ -253,14 +253,14 @@
   #set($value = "$!item.getBooleanProperty($name)")
 
   #if ($value == "true")
-  <input type="radio" id="${name}_1" name="$name" value="1" ONCLICK="return $!{onchange}(true);" CHECKED/>&nbsp;yes
-  <input type="radio" id="${name}_0" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
+  <input type="radio" id="${name}_1" name="$name" value="1" onclick="return $!{onchange}(true);" CHECKED/>&nbsp;yes
+  <input type="radio" id="${name}_0" name="$name" value="0" onclick="return $!{onchange}(false);"/>&nbsp;no
   #elseif ($value == "false")
-  <input type="radio" id="${name}_1" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
-  <input type="radio" id="${name}_0" name="$name" value="0" ONCLICK="return $!{onchange}(false);" CHECKED/>&nbsp;no
+  <input type="radio" id="${name}_1" name="$name" value="1" onclick="return $!{onchange}(true);"/>&nbsp;yes
+  <input type="radio" id="${name}_0" name="$name" value="0" onclick="return $!{onchange}(false);" CHECKED/>&nbsp;no
   #else
-  <input type="radio" id="${name}_1" name="$name" value="1" ONCLICK="return $!{onchange}(true);"/>&nbsp;yes
-  <input type="radio" id="${name}_0" name="$name" value="0" ONCLICK="return $!{onchange}(false);"/>&nbsp;no
+  <input type="radio" id="${name}_1" name="$name" value="1" onclick="return $!{onchange}(true);"/>&nbsp;yes
+  <input type="radio" id="${name}_0" name="$name" value="0" onclick="return $!{onchange}(false);"/>&nbsp;no
   #end
 #end
 
@@ -271,14 +271,14 @@
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
   #else
     #if ($possibleValues.size()==0)
-      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+      <input id="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
       #foreach ($pValue in $possibleValues)
-      <input type="radio" name="$name" VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) CHECKED #end />&nbsp;$pValue
+      <input type="radio" name="$name" value="$pValue" #if($pValue.equals($item.getProperty($name))) checked #end />&nbsp;$pValue
       #end
     #end
   #end
@@ -319,15 +319,15 @@
       <input id="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
     <table align="left" cellpadding="0" cellspacing="0"><tr><td align="left" style="padding-left:0px;">
-      <SELECT id="SEL_$name" name="SEL_$name" onchange="setSelectValue(this);">
-        <OPTION VALUE="">(SELECT)</OPTION>
+      <select id="SEL_$name" name="SEL_$name" onchange="setSelectValue(this);">
+        <option value="">(SELECT)</option>
         #foreach ($pValue in $possibleValues)
-        <OPTION VALUE="$pValue.get(0)" #if($pValue.get(0).equals($item.getProperty($name))) SELECTED #end>$pValue.get(1)</OPTION>
+        <option value="$pValue.get(0)" #if($pValue.get(0).equals($item.getProperty($name))) SELECTED #end>$pValue.get(1)</option>
         #end
-        <OPTION VALUE="">CUSTOM</OPTION>
-      </SELECT>			</td><td align="left"><DIV ID="IND_$name"><a ID="A_$name" ONCLICK="showText(this);">Other</a></DIV>
+        <option value="">CUSTOM</option>
+      </select>			</td><td align="left"><div id="IND_$name"><a id="A_$name" onclick="showText(this);">Other</a></div>
       </td><td>
-<DIV ID="TEXT_$name" style="display:none"> Enter: <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/></DIV>
+<div id="TEXT_$name" style="display:none"> Enter: <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/></div>
 </td></tr></table>
   <script type="text/javascript">
   function setSelectValue(SELECTbox){
@@ -376,15 +376,15 @@
       <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/>
     #else
     <table cellpadding="0" cellspacing="0" align="left"><tr><td align="left">
-      <SELECT id="SEL_$name" name="SEL_$name" ONCHANGE="setSelectValue(this);">
-        <OPTION VALUE="">$lbl</OPTION>
+      <select id="SEL_$name" name="SEL_$name" ONCHANGE="setSelectValue(this);">
+        <option value="">$lbl</option>
         #foreach ($pValue in $possibleValues)
-        <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
+        <option value="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</option>
         #end
-        <OPTION VALUE="">CUSTOM</OPTION>
-      </SELECT>			</td><td align="left"><DIV ID="IND_$name"><a ID="A_$name" ONCLICK="showText(this);">Other</a></DIV>
+        <option value="">CUSTOM</option>
+      </select>			</td><td align="left"><div id="IND_$name"><a id="A_$name" onclick="showText(this);">Other</a></div>
       </td><td>
-<DIV ID="TEXT_$name" style="display:none"> Enter: <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/></DIV>
+<div id="TEXT_$name" style="display:none"> Enter: <input id="$name" type="text" name="$name" value="$!item.getProperty($name)"/></div>
 </td></tr></table>
   <script type="text/javascript">
   function setSelectValue(SELECTbox){
@@ -428,18 +428,18 @@
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$id" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$id" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
   #else
     #if ($possibleValues.size()==0)
-      <input ID="$id" type="text" name="$name" value="$item.getProperty($name)"/>
+      <input id="$id" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
-      <SELECT ID="$id" name="$name">
-        <OPTION VALUE="">(SELECT)</OPTION>
+      <select id="$id" name="$name">
+        <option value="">(SELECT)</option>
         #foreach ($pValue in $possibleValues)
-        <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
+        <option value="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</option>
         #end
-      </SELECT>
+      </select>
     #end
   #end
 #end
@@ -451,17 +451,17 @@
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
   #else
     #if ($possibleValues.size()==0)
-      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+      <input id="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
-      <SELECT ID="$name" name="$name">
+      <select id="$name" name="$name">
         #foreach ($pValue in $possibleValues)
-        <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
+        <option value="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</option>
         #end
-      </SELECT>
+      </select>
     #end
   #end
 #end
@@ -473,18 +473,18 @@
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
   #else
     #if ($possibleValues.size()==0)
-      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+      <input id="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
-      <SELECT ID="$name" name="$name">
-        <OPTION VALUE="">$!lbl</OPTION>
+      <select id="$name" name="$name">
+        <option value="">$!lbl</option>
         #foreach ($pValue in $possibleValues)
-        <OPTION VALUE="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</OPTION>
+        <option value="$pValue" #if($pValue.equals($item.getProperty($name))) SELECTED #end>$pValue</option>
         #end
-      </SELECT>
+      </select>
     #end
   #end
 #end
@@ -497,18 +497,18 @@
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
   #else
     #if ($possibleValues.size()==0)
-      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+      <input id="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
-      <SELECT ID="$name" name="$name">
-        <OPTION VALUE="">$!lbl</OPTION>
+      <select id="$name" name="$name">
+        <option value="">$!lbl</option>
         #foreach ($pValue in $possibleValues)
-        <OPTION VALUE="$pValue.get(0)" #if($pValue.get(0).equals($item.getProperty($name))) SELECTED #end>$pValue.get(1)</OPTION>
+        <option value="$pValue.get(0)" #if($pValue.get(0).equals($item.getProperty($name))) SELECTED #end>$pValue.get(1)</option>
         #end
-      </SELECT>
+      </select>
     #end
   #end
 #end
@@ -524,19 +524,19 @@
   #end
 #end
   #if($item.isPKField($name) && (!$vr.getField($name)))
-    <input ID="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
+    <input id="$name" type="hidden" name="$name" value="$item.getProperty($name)"/>
     $item.getProperty($name)
   #else
     #if ($possibleValues.size()==0)
-      <input ID="$name" type="text" name="$name" value="$item.getProperty($name)"/>
+      <input id="$name" type="text" name="$name" value="$item.getProperty($name)"/>
     #else
-      <SELECT ID="$name" name="$name">
-        <OPTION VALUE="">(SELECT)</OPTION>
+      <select id="$name" name="$name">
+        <option value="">(SELECT)</option>
         #foreach ($pValue in $possibleValues)
         #set($intValue = ($velocityCount - 1) + $offset)
-        <OPTION VALUE="$intValue" #if("$intValue" == "$!item.getProperty($name)") SELECTED #end>$pValue</OPTION>
+        <option value="$intValue" #if("$intValue" == "$!item.getProperty($name)") SELECTED #end>$pValue</option>
         #end
-      </SELECT>
+      </select>
     #end
   #end
 #end
@@ -549,7 +549,7 @@
  #end
    #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
    #set($days = [ 1..31 ])
-   <DIV ID="date_container">
+   <div id="date_container">
          #if($item.getDateProperty($name))
               #set ($expt_date = $!item.getDateProperty($name))
             <select name="${name}.month" onchange="validateDate(this);">
@@ -596,8 +596,8 @@
            #end
         </select>
      #end
-      <div ID="div_img" style="display:inline"></div>
-   </DIV>
+      <div id="div_img" style="display:inline"></div>
+   </div>
 #end
 
 
@@ -660,7 +660,7 @@
 	#set($MonthNotReported = "${name}MonthNotReported")
 	#set($YearNotReported = "${name}YearNotReported")
 
-	<DIV ID="date_container">
+	<div id="date_container">
 	#if($item.getDateProperty($name))
 		#set ($expt_date = $!item.getDateProperty($name))
 
@@ -714,13 +714,13 @@
 		#end
 		</select>
 	#end
-	<div ID="div_img" style="display:inline"></div>
+	<div id="div_img" style="display:inline"></div>
 
-	<INPUT type="hidden" id="${name}DayNotReported" name="${name}DayNotReported" value="$!item.getIntegerProperty($DayNotReported)"/>
-	<INPUT type="hidden" id="${name}MonthNotReported" name="${name}MonthNotReported" value="$!item.getIntegerProperty($MonthNotReported)"/>
-	<INPUT type="hidden" id="${name}YearNotReported" name="${name}YearNotReported" value="$!item.getIntegerProperty($YearNotReported)"/>
+	<input type="hidden" id="${name}DayNotReported" name="${name}DayNotReported" value="$!item.getIntegerProperty($DayNotReported)"/>
+	<input type="hidden" id="${name}MonthNotReported" name="${name}MonthNotReported" value="$!item.getIntegerProperty($MonthNotReported)"/>
+	<input type="hidden" id="${name}YearNotReported" name="${name}YearNotReported" value="$!item.getIntegerProperty($YearNotReported)"/>
 
-	</DIV>
+	</div>
 #end
 
 #macro (xdatViewDateNotReported $name $item)
@@ -945,9 +945,9 @@
   #else
     #set ($dataPopup = "false")
   #end
-  <INPUT type="hidden" name="popup" value="$dataPopup"/>
-  <INPUT type="hidden" name="edit_screen" value="$!edit_screen"/>
-  <INPUT type="hidden" name="ELEMENT_0" value="$!item.getXSIType()"/>
+  <input type="hidden" name="popup" value="$dataPopup"/>
+  <input type="hidden" name="edit_screen" value="$!edit_screen"/>
+  <input type="hidden" name="ELEMENT_0" value="$!item.getXSIType()"/>
 #end
 
 #macro (xdatSearchField $schemaElement $displayField)
@@ -960,22 +960,22 @@
         #end
       </select>
     #else
-        <INPUT size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
+        <input size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
     #end
   #elseif ($displayField.getDataType().equalsIgnoreCase("date"))
-    <TABLE>
-      <TR>
-        <TD>From</TD>
-        <TD><INPUT size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate")" ONCHANGE="return isDate(this.value);"/>
-        </TD>
-      </TR>
-      <TR>
-        <TD>To</TD>
-        <TD><INPUT size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate")" ONCHANGE="return isDate(this.value);"/>
+    <table>
+      <tr>
+        <td>From</td>
+        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate")" ONCHANGE="return isDate(this.value);"/>
+        </td>
+      </tr>
+      <tr>
+        <td>To</td>
+        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate")" ONCHANGE="return isDate(this.value);"/>
 
-        </TD>
-      </TR>
-    </TABLE>
+        </td>
+      </tr>
+    </table>
   #elseif ($displayField.getDataType().equalsIgnoreCase("integer"))
     #if ($displayField.getId().equalsIgnoreCase("INVEST_ID"))
       <select name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals">
@@ -985,16 +985,16 @@
         #end
       </select>
     #else
-      <INPUT size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
+      <input size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
     #end
   #elseif ($displayField.getDataType().equalsIgnoreCase("float"))
-    <INPUT size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
+    <input size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
   #elseif ($displayField.getDataType().equalsIgnoreCase("double"))
-    <INPUT size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
+    <input size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
   #elseif ($displayField.getDataType().equalsIgnoreCase("decimal"))
-    <INPUT size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
+    <input size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
   #else
-    <INPUT size="10" type="text" name="${schemaElement.getFullXMLName()}.$displayField.Id" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}")"/>
+    <input size="10" type="text" name="${schemaElement.getFullXMLName()}.$displayField.Id" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}")"/>
   #end
 #end
 
@@ -1008,18 +1008,18 @@
       #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
       #set($days = [ 1..31 ])
       #set($years = [ 1901..$!turbineUtils.getYear()])
-      <TABLE VALIGN="top" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
+      <table valign="top" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
           #foreach ($displayRow in $elementDisplay.getSearchableFields($cols))
-          <TR >
+          <tr>
             #foreach ($displayField in $displayRow)
-              <TD>$displayField.Header</TD>
-              <TD>
+              <td>$displayField.Header</td>
+              <td>
                 #xdatSearchField($schemaElement $displayField)
-              </TD>
+              </td>
             #end
-          </TR>
+          </tr>
           #end
-      </TABLE>
+      </table>
     #end
   #end
 #end
@@ -1056,7 +1056,7 @@
     // -->
     </script>
     <input id="hide_search" type="button" onClick="toggleSearch()" value="Search >>>">
-    <span ID="hidden_search" style="position:relative; display:none;">
+    <span id="hidden_search" style="position:relative; display:none;">
         #xdatSearchForm($schemaElement $cols)
     </span>
   #end
@@ -1064,14 +1064,14 @@
 
 #macro (xdatSearchForm $schemaElement $cols)
   <FORM name="search" method="post" action="$link.setAction("DisplaySearchAction")">
-    <TABLE>
-      <TR>
-        <TD>
+    <table>
+      <tr>
+        <td>
           #xdatSearchElement($schemaElement $cols)
-        </TD>
-      </TR>
-      <TR><TD ALIGN=right><input type="hidden" name="ELEMENT_0" value="${schemaElement.getFullXMLName()}"/><input type="submit" name="eventSubmit_doPerform" value="Submit Search"/></TD></TR>
-    </TABLE>
+        </td>
+      </tr>
+      <tr><td align=right><input type="hidden" name="ELEMENT_0" value="${schemaElement.getFullXMLName()}"/><input type="submit" name="eventSubmit_doPerform" value="Submit Search"/></td></tr>
+    </table>
   </FORM>
 #end
 
@@ -1194,18 +1194,18 @@
 #end
 
 #macro (formLabel $label)
-<TH class="formLabel">$label</TH>
+<th class="formLabel">$label</th>
 #end
 
 #macro (formLabelRequired $label)
-<TH class="formLabelRequired">
+<th class="formLabelRequired">
     $label
     <b>*</b>
-</TH>
+</th>
 #end
 
 #macro (formSublabel $label)
-<TD class="formSublabel">$label</TD>
+<td class="formSublabel">$label</td>
 #end
 
 #macro (formUnderlineLabel $label)
@@ -1262,7 +1262,7 @@
 *# ------------------------------------------------------------------
 
 #macro (headerCell $body $size)
- <TH ALIGN="left">$!body</TH>
+ <th align="left">$!body</th>
 #end
 
 #macro (smallHeaderCell $body $size)
@@ -1312,8 +1312,8 @@ div.ic_spacer{
          #if($actionGroup.getGroup()!="")
            <li class="yuimenuitem #if($actionGroup.group=="Upload") lockable #end" style="margin-bottom:2px">
      <a class="yuimenuitemlabel" href="#${actionGroup.group}box"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>$actionGroup.group</a>
-            <DIV ID="${actionGroup.group}box" class="yuimenu">
-             <DIV class="bd">
+            <div id="${actionGroup.group}box" class="yuimenu">
+             <div class="bd">
               <ul class="first-of-type">
          #end
          #foreach ($actionObject in $actionGroup.getActions())
@@ -1366,21 +1366,21 @@ div.ic_spacer{
             #if($canAccess.equalsIgnoreCase("true"))
              #if ($actionObject.getPopup() && $actionObject.getPopup()=="always")
 <li class="yuimenuitem $!li_class">
-                          <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=$!width,height=$!height,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
+                          <a href="#!" onclick="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width='+'700'+/*$!width*/',height='+'550'+/*$!height*/',status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
                           </li>
                 #elseif($actionObject.getPopup() && $actionObject.getPopup()=="sometimes")
                     #if ($popup=="true")
 <li class="yuimenuitem $!li_class">
-<A HREF="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
+<a href="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
 </li>
                     #else
-<li class="yuimenuitem $!li_class">
-                            <A href="" ONCLICK="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width=$!width,height=$!height,status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</A>
+<li class="yuimenuitem n2 $!li_class">
+                            <a href="#!" onclick="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width='+'700'+/*$!width*/',height='+'550'+/*$!height*/',status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
 </li>
                     #end
                 #else
 <li class="yuimenuitem $!li_class">
-<A HREF="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
+<a href="${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",$dataPopup).addPathInfo("project","$!project")}$!additionalParameters" ><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
 </li>
                 #end
              #end
@@ -1414,11 +1414,11 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
 });
 </script>
       <!-- actions menu -->
-    <DIV id="actionsMenu" class="yuimenu" style="display:none">
-     <DIV class="bd">
+    <div id="actionsMenu" class="yuimenu" style="display:none">
+     <div class="bd">
       <ul class="first-of-type">
              <li class="yuimenuitem">
-            <a class="yuimenuitemlabel">Actions</A>
+            <a class="yuimenuitemlabel">Actions</a>
            </li>
       </ul>
       <ul>
@@ -1431,10 +1431,10 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
 ## Used in conjunction with ElemnetActionsBoxNoEnd to correctly close out
 ## the macro without copy pasting code.
 ##
-#macro (endElementActionsBox )
+#macro (endElementActionsBox)
       </ul>
-     </DIV>
-    </DIV>
+     </div>
+    </div>
 #end
 
 #macro (elementActionsBox $element $search_field $search_value $user $item)
@@ -1457,37 +1457,37 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
 });
 </script>
       <!-- actions menu -->
-    <DIV id="actionsMenu" class="yuimenu" style="display:none">
-     <DIV class="bd">
+    <div id="actionsMenu" class="yuimenu" style="display:none">
+     <div class="bd">
       <ul class="first-of-type">
              <li class="yuimenuitem">
-            <a class="yuimenuitemlabel">Actions</A>
+            <a class="yuimenuitemlabel">Actions</a>
            </li>
       </ul>
       <ul>
         #elementActions($element $search_field $search_value $user $item $actions)
               </ul>
-     </DIV>
-    </DIV>
+     </div>
+    </div>
         #end
     #end
 #end
 
 
 #macro(displayFileSystem $directory)
-<TABLE>
+<table>
 #foreach($f in $directory.listFiles())
- <TR>
+ <tr>
  #if($f.isDirectory())
-   <TD><b>$f.getName()</b></TD>
-   <TD>#displayFileSystem($f)</TD>
+   <td><b>$f.getName()</b></td>
+   <td>#displayFileSystem($f)</td>
  #else
-   <TD>$f.getName()</TD>
-   <TD>$f.length()</TD>
+   <td>$f.getName()</td>
+   <td>$f.length()</td>
  #end
- </TR>
+ </tr>
 #end
-</TABLE>
+</table>
 #end
 
 #macro(renderTopListType $type)

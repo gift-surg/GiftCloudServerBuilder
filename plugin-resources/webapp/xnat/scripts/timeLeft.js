@@ -94,7 +94,7 @@ var synchronizingCookies = {
 var locals = {
   warningDisplayedOnce : false,
   timerInterval : 1000, // milliseconds
-  popupTime : 59, // seconds
+  popupTime : 59, // seconds (default is 59)
   expirationTime : { // see the comments on synchronizingCookies.expirationTime for an explanation on what this object represents
     flag : "-1",
     timeLeft : -1 // milliseconds
@@ -113,21 +113,21 @@ var locals = {
 function refreshSynchronizingCookies () {
   synchronizingCookies.dialogDisplay.set("false");
   synchronizingCookies.sessionTimeout.set("false");
-};
+}
 
 function disableButtons (dialog) {
   var buttons = dialog.getButtons();
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].set('disabled',true);
   }
-};
+}
 
 function enableButtons (dialog) {
   var buttons = dialog.getButtons();
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].set('disabled',false);
   }
-};
+}
 
 /**
  * If a user double-clicks a button in YUI's SimpleDialog 
@@ -136,23 +136,49 @@ function enableButtons (dialog) {
  * enable them again when the dialog is shown.
  */
 function hideWarningDialog (dialog) {
-  disableButtons(dialog);
-  synchronizingCookies.dialogDisplay.set("false");
-  dialog.hide();
-};
+    disableButtons(dialog);
+    synchronizingCookies.dialogDisplay.set("false");
+    dialog.hide();
+}
 function showWarningDialog(dialog) {
-  enableButtons(dialog);
-  synchronizingCookies.dialogDisplay.set("true");
-  dialog.show();
-};
+    enableButtons(dialog);
+    synchronizingCookies.dialogDisplay.set("true");
+    dialog.show();
+    // don't make it any more complicated than necessary - just hide the thing
+    $('applet').css('visibility','hidden');
+//    if ($('body').hasClass('applet')){
+//        var $applet = $('applet');
+//        $applet.after('<div id="applet_shim"></div>');
+//        var applet_pos = $applet.offset();
+//        var applet_width = $applet.width();
+//        var applet_height = $applet.height();
+//        var $applet_shim = $('#applet_shim');
+//        $applet_shim.css({
+//            position: 'fixed',
+//            left: applet_pos.left,
+//            top: applet_pos.top,
+//            width: applet_width,
+//            height: applet_height
+//        });
+//        coverApplet($applet_shim);
+//    }
+}
 
 /**
  * If the user wants to extend the session, hide the dialog and "touch" the server
  */
 var handleOk = function () {
-  hideWarningDialog(warningDialog);
-  touchCallback.startTime = new Date().getTime();
-  YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version?XNAT_CSRF=' + window.csrfToken,touchCallback,null);
+    hideWarningDialog(warningDialog);
+    touchCallback.startTime = new Date().getTime();
+    YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version?XNAT_CSRF=' + window.csrfToken,touchCallback,null);
+    // don't make it any more complicated than necessary - just show the thing
+    $('applet').css('visibility','visible');
+//    $('applet').show();
+//    if ($('body').hasClass('applet')){
+//        var $applet_shim = $('#applet_shim');
+//        unCoverApplets($applet_shim);
+//        $applet_shim.detach();
+//    }
 };
 
 /**
@@ -160,8 +186,16 @@ var handleOk = function () {
  * to all tabs and ensure that they all close their dialogs.
  */
 var handleCancel = function () {
-  hideWarningDialog(warningDialog);
-  locals.warningDisplayedOnce = true;
+    hideWarningDialog(warningDialog);
+    locals.warningDisplayedOnce = true;
+    // don't make it any more complicated than necessary - just show the thing
+    $('applet').css('visibility','visible');
+//    $('applet').show();
+//    if ($('body').hasClass('applet')){
+//        var $applet_shim = $('#applet_shim');
+//        unCoverApplets($applet_shim);
+//        $applet_shim.detach();
+//    }
 };
 
 /**
@@ -187,7 +221,7 @@ var touchCallback = {
  */
 var zeroPad = function (x) {
   if (x < 10) {
-    return "0"+x;
+    return "0" + x;
   }
   else {
     return "" + x;
@@ -214,13 +248,13 @@ var warningDialog = new YAHOO.widget.SimpleDialog("session_timeout_dialog", {
 						  });
 
 function initWarningDialog(dialog) {
-  dialog.manager = this;
-  dialog.render(document.body);
-  dialog.setHeader("Session Timeout Warning");
-  dialog.setBody("");
-  dialog.bringToTop();
-  dialog.hide();   
-};
+    dialog.manager = this;
+    dialog.render(document.body);
+    dialog.setHeader("Session Timeout Warning");
+    dialog.setBody("");
+    dialog.bringToTop();
+    dialog.hide();
+}
 
 /**
  * Return the timestamp as hours, minutes and seconds. Used to update the session counter
@@ -245,7 +279,7 @@ function parseTimestamp (time) {
     minutesPart : minutesPart,
     hoursPart : hoursPart
   };
-};
+}
 
 /**
  * See the comments for "locals" to see why this function necessary
@@ -254,7 +288,7 @@ function checkIfFinalCycle () {
   if (locals.waitOneMoreCycle) {
     redirectToLogin();
   }
-};
+}
   
 /**
  * Check if the global cookie's flag is different from what is stored locally.
@@ -306,7 +340,7 @@ function updateMessageOrHide (dialog) {
   else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
     hideWarningDialog(dialog);
   }
-};
+}
 
 /**
  * If the session has expired just refreshing the page should redirect to the login page.
@@ -317,7 +351,7 @@ function redirectToLogin () {
 	var currTime = (new Date()).getTime();
 	YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME',currTime,{path:'/'});
     // window.location.reload(true);
-    window.location.replace(serverRoot+'/app/action/LogoutUser');
+    window.location.replace(serverRoot+'/app/action/LogoutUser')
 }
 
 /**

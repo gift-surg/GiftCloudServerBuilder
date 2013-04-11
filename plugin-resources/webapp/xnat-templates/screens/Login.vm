@@ -2,98 +2,98 @@
 $page.setTitle("XDAT -- Please Login")
 $page.setBgColor($ui.bgcolor)
 $page.addAttribute("onLoad", "document.getElementById('username').focus();")
-<DIV VALIGN="top">
-<br><br>
-#if($turbineUtils.GetPassedParameter("par",$data))
-  <table valign="top" align="center">
-  
-  <tr>
-    <td valign="top" colspan="2">
-#if ( $data.getMessage() && $data.getMessage()!="" )
- <DIV class="error">$data.getMessage()</DIV><br><br>
-#end
-#if($msg)
-  <DIV class="warning">$msg</DIV><br><br>
-#end
-#parse("/screens/site_description.vm")
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
+<div valign="top">
     <br><br>
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-    <div class="withColor withThinBorder" style="">
-    <h3>Existing Users Login</h3>
-#parse("/screens/login_box.vm")
-			      <div style="padding-bottom:5px;">
-        <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?<a>
-      </div>
-		    </div>
-    </td>
-    <td valign="top">
-      <div id="col2" style="top:10px;right:10px;width:90%;text-align:left;">
-         <div id="registerbox" class="withColor withThinBorder" style=";padding:3px;padding-left:5px;">
-            <div>
-              #parse("/screens/register_box.vm")
-			           </div>      
-         </div>
-      </div>
-    </td>
-   </tr>
-  </table>
-#else
-  <table valign="top" align="center">
-  <tr>
-    <td valign="top" colspan="52" align="center">
-#if ( $data.getMessage() && $data.getMessage()!="" )
- <DIV class="error">$data.getMessage()</DIV><br><br>
-#end
-#if($msg)
-  <DIV class="warning">$msg</DIV><br><br>
-#end		
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" colspan="2" align="center">
-    <div class="" style="">
-#parse("/screens/login_box.vm")
-		    </div>
-    </td>
-  </tr>
-    <tr>
-			      <td align="left" colspan="2">&nbsp;</td>
-    </tr>
-    
-  <tr>
-    <td valign="top" colspan="2" align="center">
-      <div class="" style="">
-         <table>
-    <tr>
-      <td >
-        <a href="$link.setPage("Register.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Register<a>
-      </td>
-			      <td align="left">&nbsp;&nbsp;&nbsp;</td>
-			      <td >
-        <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?<a>
-      </td>
-    </tr>
-         </table>
-		      </div>
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" colspan="2" align="center">
-    <br><br>
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" colspan="2">
-#parse("/screens/site_description.vm")
-    </td>
-  </tr>
-  </table>
-#end
-</DIV>
+    #if($turbineUtils.GetPassedParameter("par",$data))
+        <table valign="top" align="center">
+
+            <tr>
+                <td valign="top" colspan="2">
+                    #if ( $data.getMessage() && $data.getMessage()!="" )
+                        <div class="error">$data.getMessage()</div><br><br>
+                    #end
+                    #if($msg)
+                        <div class="warning">$msg</div><br><br>
+                    #end
+                    #parse("/screens/site_description.vm")
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <div class="withColor withThinBorder" style="">
+                        <h3>Existing Users Login</h3>
+                        #parse("/screens/login_box.vm")
+                        <div style="padding-bottom:5px;">
+                            <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?<a>
+                        </div>
+                    </div>
+                </td>
+                <td valign="top">
+                    <div id="col2" style="top:10px;right:10px;width:90%;text-align:left;">
+                        <div id="registerbox" class="withColor withThinBorder" style=";padding:3px;padding-left:5px;">
+                            <div>
+                                #parse("/screens/register_box.vm")
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    #else
+        <table valign="top" align="center">
+            <tr>
+                <td valign="top" colspan="52" align="center">
+                    #if ( $data.getMessage() && $data.getMessage()!="" )
+                        <div class="error">$data.getMessage()</div><br><br>
+                    #end
+                    #if($msg)
+                        <div class="warning">$msg</div><br><br>
+                    #end
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" colspan="2" align="center">
+                    <div class="" style="">
+                        #parse("/screens/login_box.vm")
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="left" colspan="2">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td valign="top" colspan="2" align="center">
+                    <div class="" style="">
+                        <table>
+                            <tr>
+                                <td >
+                                    <a href="$link.setPage("Register.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Register</a>
+                                </td>
+                                <td align="left">&nbsp;&nbsp;&nbsp;</td>
+                                <td >
+                                    <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" colspan="2" align="center">
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" colspan="2">
+                    #parse("/screens/site_description.vm")
+                </td>
+            </tr>
+        </table>
+    #end
+</div>

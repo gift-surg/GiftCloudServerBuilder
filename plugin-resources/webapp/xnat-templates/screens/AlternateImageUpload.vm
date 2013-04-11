@@ -1,3 +1,4 @@
+<!-- AlternateImageUpload.vm -->
 <script type="text/javascript">
     function disableForm(theform) {
         if (document.getElementById) {
@@ -82,24 +83,24 @@ function setExtractSummary(jsonobj) {
             var level = jsonobj.msgs[0][i].status;
             var message = jsonobj.msgs[0][i].msg;
             if (level == "COMPLETED") {
-                message = "<TR bgcolor='#CCFFCC'><TD>" + message;
+                message = "<tr bgcolor='#CCFFCC'><td>" + message;
             } else if (level == "PROCESSING") {
-                message = "<TR bgcolor='#CCFFFF'><TD>" + message;
+                message = "<tr bgcolor='#CCFFFF'><td>" + message;
             } else if (level == "WARNING") {
-                message = "<TR bgcolor='#FFCCC'><TD>" + message;
+                message = "<tr bgcolor='#FFCCC'><td>" + message;
             } else if (level == "FAILED") {
-                message = "<TR bgcolor='#FF99CC'><TD>" + message;
+                message = "<tr bgcolor='#FF99CC'><td>" + message;
             } else {
-                message = "<TR bgcolor='#CCCCCC'><TD>" + message;
+                message = "<tr bgcolor='#CCCCCC'><td>" + message;
             }
-            messages = messages + message + "</TD></TR>";
+            messages = messages + message + "</td></tr>";
         }
     } catch (e) {
     }
     document.getElementById("extractSummary").innerHTML =
-            "<TABLE width='100%' cellpadding='2' cellspacing='0'><TR><TH>Extraction / Review summary:</TH></TR>" +
+            "<table width='100%' cellpadding='2' cellspacing='0'><tr><th>Extraction / Review summary:</th></tr>" +
                     messages +
-                    "</TABLE>";
+                    "</table>";
 }
 
 function toggleExtractSummary() {
@@ -349,7 +350,7 @@ function makeTheFormGo() {
 }
 </script>
 
-<table border="0">
+<table border="0" cellpadding="5" cellspacing="0">
     <tr>
         <td>&nbsp;</td>
     </tr>
@@ -373,7 +374,7 @@ function makeTheFormGo() {
             <div style="width:500px">Raw image files can be zipped (.zip or .tar.gz) and uploaded using the form. This
                 tool currently supports DICOM and ECAT files. Selecting 'Prearchive' will place your images into a
                 temporary holding space. You will then have the ability to review the details and match the data to the
-                proper $displayManager.getSingularDisplayNameForSubject().toLowerCase() & $displayManager.getSingularDisplayNameForImageSession().toLowerCase() id. If you are confident the data will be mapped properly, you can directly
+                proper $displayManager.getSingularDisplayNameForSubject().toLowerCase() & $displayManager.getSingularDisplayNameForImageSession().toLowerCase() ID. If you are confident the data will be mapped properly, you can directly
                 'Archive' the files and specify whether the resulting $displayManager.getSingularDisplayNameForImageSession().toLowerCase() should go into a quarantine state.
             </div>
         </td>
@@ -383,38 +384,38 @@ function makeTheFormGo() {
     </tr>
     <tr id="option1">
         <td>
-                <INPUT TYPE="hidden" name="popup" value="true"/>
-            <form ID="uploadFORM" class="noHide" target="iframe" enctype="multipart/form-data" method="POST"
+                <input type="hidden" name="popup" value="true"/>
+            <form id="uploadFORM" class="noHide" target="iframe" enctype="multipart/form-data" method="POST"
                   action="$content.getURI("/REST/services/import?http-session-listener=$uploadID&format=html&XNAT_CSRF=$!XNAT_CSRF")">
-            <INPUT TYPE="hidden" name="threshhold" value="51516279"/>
+            <input type="hidden" name="threshhold" value="51516279"/>
 
                 #if($session)
-                    <INPUT TYPE="hidden" name="EXPT_LABEL" value="$!session.getLabel()"/>
-                    <INPUT TYPE="hidden" name="SUBJECT_ID" value="$!session.getSubjectData().getLabel()"/>
+                    <input type="hidden" name="EXPT_LABEL" value="$!session.getLabel()"/>
+                    <input type="hidden" name="SUBJECT_ID" value="$!session.getSubjectData().getLabel()"/>
                 #end
 
-                <TABLE border=0>
-                    <TR>
-                        <TH align="left">$displayManager.getSingularDisplayNameForProject()</TH>
-                        <TD>
+                <table border=0 cellpadding="5" cellspacing="0">
+                    <tr>
+                        <th align="left">$displayManager.getSingularDisplayNameForProject()</th>
+                        <td>
                             #if(!$session)
                                 <select id="project" name="project" disabled=true></select>
                             #else
                                 <input type="hidden" name="project" id="project"
                                        value="$session.getProject()"/>$session.getProject()
                             #end
-                        </TD>
-                    </TR>
+                        </td>
+                    </tr>
 
                     #if($session)
-                        <TR>
-                            <TH align="left">$displayManager.getSingularDisplayNameForImageSession()</TH>
-                            <TD>$!session.getLabel()</TD>
-                        </TR>
+                        <tr>
+                            <th align="left">$displayManager.getSingularDisplayNameForImageSession()</th>
+                            <td>$!session.getLabel()</td>
+                        </tr>
                     #end
-                    <TR>
-                        <TH align="left">Destination</TH>
-                        <TD>
+                    <tr>
+                        <th align="left">Destination</th>
+                        <td>
                             <label><input id="pc_0" type='radio' name='prearchive_code' value='0'
                                           #if(!$session)CHECKED#end onchange="evaluateDestination(this)"/>
                                 Prearchive</label>&nbsp;&nbsp;&nbsp;
@@ -422,84 +423,83 @@ function makeTheFormGo() {
                                           #if($session)CHECKED#end onchange="evaluateDestination(this)"/>
                                 Archive</label>
                             #if($session)
-                                <INPUT TYPE="hidden" name="overwrite" value="append"/>
+                                <input type="hidden" name="overwrite" value="append"/>
                                 <input type="hidden" id="auto-archive" name='auto-archive' value='TRUE'/>
                             #else
                                 <input type="hidden" id="auto-archive" name='auto-archive' value='FALSE'/>
                             #end
                             <input type="hidden" id="quarantine" name='quarantine' value='FALSE'/>
-                        </TD>
-                    </TR>
-                    <TR>
-                        <TH align="left">File</TH>
-                        <TD><input type="file" id="image_archive" name="image_archive" size="75"
-                                   accept="application/zip, application/x-gzip, application/x-tgz"/></TD>
-                    </TR>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left">File</th>
+                        <td><input type="file" id="image_archive" name="image_archive" size="60"
+                                   accept="application/zip, application/x-gzip, application/x-tgz"/></td>
+                    </tr>
                     #auditBoxes("3" "" "Standard Upload" "Upload Images")
 					<script>YUIDOM.get('form_justification').style.display='none';</script>
-                    <TR>
+                    <tr>
                         <td>&nbsp;</td>
                         <td><input id="directButton" type="button" name="eventSubmit_doPerform" value="Begin Upload" onclick="makeTheFormGo();"/>
-                        </TD>
-                    </TR>
-                </TABLE>
+                        </td>
+                    </tr>
+                </table>
             </form>
 
-<span ID="progressBar" style="position:relative; display:none;">
+<span id="progressBar" style="position:relative; display:none;">
 <div id="ex" style="position:relative;width:468px;background:#eeeeee;border:3px double #000000;">
-    <TABLE width==
-    "100%">
-    <TR>
-        <TD colspan=2 align="left">
+    <table width="100%">
+    <tr>
+        <td colspan=2 align="left">
             <div id="preparing">Loading File...&nbsp;</div>
-        </TD>
-    </TR>
-    <TR>
-        <TD>
+        </td>
+    </tr>
+    <tr>
+        <td>
             <div id="uploadLabel">Upload:&nbsp;</div>
-        </TD>
-        <TD align="center">
+        </td>
+        <td align="center">
             <div id="emptyUpload"
-                 style="background-color:#cccccc;border:1px solid black;height:22px;width:300px;padding:0px;"
+                 style="background-color:#cccccc;border:1px solid black;height:22px;width:300px;padding:0;"
                  align="left">
                 <div id="uploadBar"
-                     style="position:relative;top:0px;left:0px;background-color:#333333;height:22px;width:0px;padding-top:5px;padding:0px;">
+                     style="position:relative;top:0;left:0;background-color:#333333;height:22px;width:0;padding-top:5px;padding:0;">
                     <div id="uploadPercent"
-                         style="position:relative;top:0px;left:0px;color:#f0ffff;height:22px;text-align:center;font:bold;padding:0px;padding-top:5px;">
+                         style="position:relative;top:0;left:0;color:#f0ffff;height:22px;text-align:center;font:bold;padding:0;padding-top:5px;">
                     </div>
                 </div>
             </div>
-        </TD>
-    </TR>
-    <TR>
-        <TD>&nbsp;</TD>
-    </TR>
-    <TR>
-        <TD>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>
             <div id="extractLabel">Extract/Review:&nbsp;</div>
-        </TD>
-        <TD align="center">
+        </td>
+        <td align="center">
             <div id="emptyExtract"
-                 style="background-color:#cccccc;border:1px solid black;height:22px;width:300px;padding:0px;"
+                 style="background-color:#cccccc;border:1px solid black;height:22px;width:300px;padding:0;"
                  align="left">
                 <div id="extractBar"
-                     style="position:relative;top:0px;left:0px;background-color:#333333;height:22px;width:0px;padding-top:5px;padding:0px;">
+                     style="position:relative;top:0;left:0;background-color:#333333;height:22px;width:0;padding-top:5px;padding:0;">
                     <div id="extractPercent"
-                         style="position:relative;top:0px;left:0px;color:#f0ffff;height:22px;text-align:center;font:bold;padding:0px;padding-top:5px;">
+                         style="position:relative;top:0;left:0;color:#f0ffff;height:22px;text-align:center;font:bold;padding:0;padding-top:5px;">
                     </div>
                 </div>
             </div>
-        </TD>
-    </TR>
-    <TR>
-        <TD colspan=2 align="center">
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2 align="center">
             <div id="current_step"></div>
-        </TD>
-    </TR>
-</TABLE>
+        </td>
+    </tr>
+</table>
 </div>
-<BR>
-<table id="extractSummaryTable" BORDER=0 STYLE="	border-collapse: collapse;">
+<br>
+<table id="extractSummaryTable" border=0 style="border-collapse: collapse;">
     <tr>
         <td>
             <span id="extractSummary"
@@ -507,10 +507,10 @@ function makeTheFormGo() {
         </td>
     </tr>
 </table>
-<BR>
-<IFRAME id="iframe" name="iframe" src="" width="468" height="80" frameborder="0">
-    PROGRESS BAR DISABLED. <BR>Try using a more recent web browser.
-</IFRAME>
+<br>
+<iframe id="iframe" name="iframe" src="" width="468" height="80" frameborder="0">
+    PROGRESS BAR DISABLED. <br>Try using a more recent web browser.
+</iframe>
 </span>
 <script type="text/javascript">
     progressBar = document.getElementById("uploadBar");
@@ -567,8 +567,7 @@ function makeTheFormGo() {
 </table>
 
 #if(!$session)
-<script type="text/javascript" LANGUAGE="javascript"
-        src="$content.getURI('scripts/subjectAssessorData/proj_tools.js')"></SCRIPT>
+<script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_tools.js')"></script>
 
 <script type="text/javascript">
     //load projects
@@ -618,3 +617,4 @@ function makeTheFormGo() {
 
 </script>
 #end
+<!-- /AlternateImageUpload.vm -->

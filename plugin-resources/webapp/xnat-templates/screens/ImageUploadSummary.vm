@@ -3,7 +3,7 @@ $!template.setLayoutTemplate("ScreenOnly.vm")
 <br>
 
 #if ($data.getMessage()!="File Uploaded.")
-<DIV class="error">$data.message</DIV><br>
+<div class="error">$data.message</div><br>
 #else
 <script type="text/javascript">
 

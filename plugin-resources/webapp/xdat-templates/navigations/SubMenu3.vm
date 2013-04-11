@@ -3,7 +3,7 @@
 <table align="left" valign="top">
 	<tr>
        <td>
-		<font size="2"><u><b>Bundles</b></u><br></font>
+           <b style="text-decoration:underline">Bundles</b><br>
 		${data.getSession().getAttribute("user").outputBundleHTMLMenu()}
 		
 	  </td>

@@ -1,6 +1,5 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 
-
 #parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
 <!-- BEGIN xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->
 <script type="text/javascript">
@@ -26,13 +25,11 @@ window.currentLabel="$!om.getLabel()";
 <style>
 /* custom styles for inline instances */
 .yui-skin-sam .yui-ac-input { position:static;width:20em; vertical-align:middle;}
-.yui-skin-sam .yui-ac-container { width:20em;left:0px;}
-
+.yui-skin-sam .yui-ac-container { width:20em;left:0;}
 /* buttons */
 .yui-ac .yui-button {vertical-align:middle;}
 .yui-ac .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-rt.png")) center center no-repeat }
 .yui-ac .open .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat}
-
 </style>
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/autocomplete/autocomplete-min.js")"></script>
 
@@ -44,7 +41,7 @@ $page.setVlinkColor($ui.vlink)
 #set($days = [ 1..31 ])
 #set($years = [ $!turbineUtils.getYear()..1900])
 #if ($data.message)
-<BR><BR><DIV class="error">$data.message</DIV><br>
+<br><br><div class="error">$data.message</div><br>
 #end
 #if ($turbineUtils.GetPassedParameter("popup",$data))
   #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
@@ -52,8 +49,8 @@ $page.setVlinkColor($ui.vlink)
   #set ($popup = "false")
 #end
 #if($vr)
-<DIV class="error">Invalid parameters:<BR>$vr.toHTML()</DIV>
-<HR>
+<div class="error">Invalid parameters:<br>$vr.toHTML()</div>
+<hr>
 #end
 <br>
 #if($target)
@@ -67,7 +64,7 @@ $page.setVlinkColor($ui.vlink)
   #set($allowDataDeletion=true)
 #end
 #set($formName="#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()")
-       <DIV class="edit_title">$formName</DIV><br>
+       <div class="edit_title">$formName</div><br>
 <form method="post" action="$target?XNAT_CSRF=$!{XNAT_CSRF}" name="form1" id="form1" onsubmit="return validateForm();">
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
     #if($om.getId())
@@ -85,7 +82,6 @@ $page.setVlinkColor($ui.vlink)
   <tr>
        <th align="left">Date</th>
       <td align="left">
-        <font face="$ui.sansSerifFonts">
           #set ($expt_date = $!item.getDateProperty("${om.getXSIType()}.date"))
         <select id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month">
           <option value="bad">(SELECT)</option>
@@ -96,16 +92,13 @@ $page.setVlinkColor($ui.vlink)
             </option>
           #end
         </select>
-        </font>
 
-        <font face="$ui.sansSerifFonts">
         <select id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date">
           <option value="bad">(SELECT)</option>
           #foreach ($day in $days)
                   <option value="$day" #if ( $day == $!expt_date.getDate() ) defaultSelected="true" selected="true" #end>$day</option>
           #end
         </select>
-        </font>
 
 #set($years = [ $!turbineUtils.getYear()..1990])
       #set ($currentYear = $date.Year + 1900)
@@ -118,9 +111,7 @@ $page.setVlinkColor($ui.vlink)
   </td></tr>
   <tr><th align="left">Visit ID</th>
     <td align="left">
-        <font face="$ui.sansSerifFonts">
         #xdatTextBox("${datatype}.visit_id" $item "" $vr)
-        </font>
     </td>
   </tr>
           #parse($turbineUtils.getTemplateName("_fields",$om.getXSIType(),$project,"upload"))
@@ -132,13 +123,13 @@ $page.setVlinkColor($ui.vlink)
                 #parse($turbineUtils.getTemplateName("scans.vm",$om.getXSIType(),$project,"edit"))
 <br>
       <hr>
-       <DIV class="edit_header1">Additional Notes</DIV><BR>
-<TABLE>
+       <div class="edit_header1">Additional Notes</div><br>
+<table>
   <tr>
     #formLabel("Notes")
     <td><textarea name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
   </tr>
-</TABLE><BR><BR><HR>
+</table><br><br><hr>
 #xdatEditProps($item $edit_screen)
 
 #if($isUpload)
@@ -152,14 +143,14 @@ $page.setVlinkColor($ui.vlink)
     #end
 #end
 <input type="hidden" name="tag" value="$!tag"/>
-<DIV ID="ADDIN"></DIV>
+<div id="ADDIN"></div>
 	#if($src)
 	<input type="hidden" name="src" value="$!src"/>
 	<input type="hidden" name="redirect" value="true"/>
 	#end
-      <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
+      <input type="button" onclick="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
       <input type="submit" name="eventSubmit_doInsert" value="Submit"/>
-	  #addCustomScreens($om.getXSIType() "edit/preFormClose") 
+	  #addCustomScreens($om.getXSIType() "edit/preFormClose")
   </form>
 
 <!-- END xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->

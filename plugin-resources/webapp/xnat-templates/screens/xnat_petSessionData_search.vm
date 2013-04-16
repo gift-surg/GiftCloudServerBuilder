@@ -78,7 +78,7 @@
 </TABLE>
 		</TD>
 		
-		<TD VALIGN="top" height="100%" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
+		<TD VALIGN="top" height="100%" class="cornflower_border">
 			<b>... or enter exact IDs.</b><br>
 					<TABLE VALIGN="top">
   				<TR>

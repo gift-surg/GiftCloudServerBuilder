@@ -5,16 +5,20 @@
 #* @vtlvariable name="tabs" type="java.util.List<java.util.Properties>" *#
 #* @vtlvariable name="initialize" type="java.lang.Boolean" *#
 <!-- Start Configuration page, source file is plugin-resources/webapp/xnat-templates/screens/Configuration.vm -->
-<style>
-IMG{
- border:0;
-}
+<style type="text/css">
+    #configuration_tabs_module {  }
+    #configurationTabs {  }
 </style>
+<script type="text/javascript">
+    jq(function(){
+        jq('body').addClass('administer configuration no_left_bar');
+    });
+</script>
 <div class="yui-skin-sam">
 <div id="tp_fm" style="display:none"></div>
-<table width="98%" style="">
+<table style="width:98%">
     <tr>
-        <td valign="top" width="680">
+        <td valign="top" style="width:680px;">
             <div class="edit_header1">Configuration</div><br/>
 
 #if($data.getSession().getAttribute("user").checkRole("Administrator"))
@@ -28,12 +32,7 @@ IMG{
             <script type="text/javascript" src="$content.getURI("scripts/project/settingsTabMgmt.js")"></script>
 
             <!-- BEGIN TABS AND CONTENT DISPLAY: Taken from xnat_projectData_summary_tabs.vm -->
-            <style>
-                span.spacer {
-                    height:12px;
-                    width:1px;
-                }
-            </style>
+##            <style>span.spacer {height:12px;width:1px;}</style>
             <div id="configuration_tabs_module" style="display:none">
                 <div id="configurationTabs" class="yui-navset">
 					

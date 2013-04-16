@@ -1,11 +1,11 @@
 <!-- path: /xnat-templates/navigations/HeaderIncludes -->
 
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="cache-control" content="max-age=0" />
-<meta http-equiv="cache-control" content="no-cache" />
-<meta http-equiv="expires" content="-1" />
-<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+<meta http-equiv="cache-control" content="max-age=0">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="-1">
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
 <script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.min.js')"></script>
 <script type="text/javascript">
     // use 'jq' instead of '$' for jQuery functions to avoid _possible_ conflicts with Velocity
@@ -137,8 +137,6 @@
 
 <!-- YUI css -->
 <link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
-## xnat_skin.css file has been integrated with /style/xnat.css file
-##<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/xnat_skin.css")">
 
 <!-- xdat.css and xnat.css loaded last to override YUI styles -->
 <link type="text/css" rel="stylesheet" href="$content.getURI("style/xdat.css")">

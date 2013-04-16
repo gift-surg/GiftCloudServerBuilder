@@ -100,11 +100,17 @@ table.dark th, table.dark td { padding: 4px 8px ; }
 /* new header and body styles */
 body, html body, * body { margin: 0 ; background: #fff url('images/left_margin.gif') -5px top repeat-y ; font-family: Arial, Helvetica, sans-serif !important ; font-size: 12px ; line-height: 15px ; /* letter-spacing: 0.02em ; */ position: relative ; }
 a { color: /* #2a70c6 */ #084FAB ; }
-img { /* vertical-align: bottom ; */ }
+img { /* vertical-align: bottom ; */ border: none ; outline: none ; }
 .clear { height: 0 ; clear: both ; }
-.btn1, .btn2 { display: inline-block ; padding: 3px 8px ; background-position: center center ; background-repeat: repeat-x ; text-decoration: none ; }
+
+/* form elements */
+input { font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; }
+.btn1, .btn2, button, input[type="button"], input[type="submit"], input[type="reset"] { display: inline-block ; padding: 3px 8px ; max-height: 28px ; background-position: center center ; background-repeat: repeat-x ; text-decoration: none ; border-radius: 3px ; }
+button, input[type="button"], input[type="submit"], input[type="reset"] { font-family: Arial, Helvetica, sans-serif ; font-size: 13px ; border-radius: 5px ; } /* give 'regular' buttons a little larger radius */
+.btn1:hover, .btn2:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover, input[type="reset"]:hover { cursor: pointer ; }
 .btn1 { background-image: url('images/btn1_30px.png') ; border: 1px solid #508ad0 ; }
-.btn2 { background-image: url('images/btn2_30px.png') ; border: 1px solid #d3d3d3 ; }
+.btn2, button, input[type="button"], input[type="submit"], input[type="reset"] { background-image: url('images/btn2_30px2.png') ; border: 1px solid #a8a8a8 ; }
+select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; }
 
 #page_wrapper { padding: 28px /* 20px */ ; }
 #layout_content.main { min-width: 728px ; }
@@ -174,7 +180,7 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 .yui-button button { font-weight: bold ; font-size: 12px ; }
 
 div.edit_header1, div.edit_title {
-    /* background: #c2c2c2 url("images/btn2_30px.png") repeat-x center top ; */
+    /* background: #c2c2c2 url("images/btn2_30px2.png") repeat-x center top ; */
     font-size: 15px;
     font-weight: bold;
     line-height: 16px;
@@ -190,9 +196,6 @@ div.edit_title { margin-bottom: 10px ; }
 .yui-skin-sam .yui-navset .yui-content, .yui-skin-sam .yui-navset .yui-navset-top .yui-content { border-color: #ccc; }
 .yui-skin-sam #actionsMenu { height: auto !important ; overflow: visible !important ; }
 .yui-skin-sam .yuimenu .bd { background-color: #fff ; border: 1px solid #ccc ; }
-
-input, button, input[type="submit"] { font-family: Arial, Helvetica, sans-serif ; font-size: inherit ; }
-button, input[type="submit"], input[type="button"] {  }
 
 td.highlighted { background-color: #f0f0f0 ; border: 1px solid #d8d8d8 ; }
 
@@ -431,3 +434,24 @@ div.extension_js { background-color: #FF9 ; }
 #tab_module ul.yui-nav select { font-size: 11px !important ; font-weight: normal !important ; }
 
 .totals { position:relative; padding-top: 10px; }
+
+
+.cornflower_border { border: /* 1px solid #6D99B6 */ none ; }
+.cornflower_border_bottom { border-bottom: 1px solid #6D99B6 ; }
+
+/* moving scans.css here */
+td.quality-usable { color: green ; font-weight: bold ; }
+td.quality-questionable { color: orange ; font-weight: bold ; }
+td.quality-unusable { color: red ; font-weight: bold ; }
+
+#scan_list {  }
+#scan_list tr {  }
+#scan_list th { padding: 1px 10px 1px 5px ; }
+#scan_list td { padding: 0 10px 0 5px ; }
+#scan_list table { width: 100% ; margin-bottom: 10px ; padding-bottom: 10px ; border-bottom: 2px solid #d0d0d0 ; }
+#scan_list table tr {  }
+#scan_list table th {  }
+#scan_list table td {  }
+
+/* not sure what these spacers do but pretty sure they should go away - let's see what breaks */
+span.spacer { display: none !important ; }

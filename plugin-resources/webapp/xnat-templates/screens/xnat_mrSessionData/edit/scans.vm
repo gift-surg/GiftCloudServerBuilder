@@ -1,4 +1,5 @@
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
+## content from scans.css moved to xnat.css
+##<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
 #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-addition","true")))
 <DIV class="edit_header1" style="margin-bottom:16px">Scans &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" value="Add Scan" onclick="addScan(this)"/>
@@ -22,7 +23,11 @@
 </DIV>
 <script type="text/javascript" src="$content.getURI("scripts/imageScanData/scan_tools.js")"></script>
 <script type="text/javascript">
-  function addScan(_button){
+    jq(function(){
+        $('body').addClass('scans');
+    });
+
+    function addScan(_button){
     var tempScan = window.classMapping.newInstance("xnat:mrScanData");
     window.scanSet.new_scans.push(tempScan);
     window.scanSet.onLoad.fire();
@@ -42,7 +47,7 @@
         }		
       }
       return false;
-    }
+    };
  #set($scanTypes = $data.getSession().getAttribute("user").getQueryResultsAsArrayList("select DISTINCT isd.type from xnat_mrsessiondata mr LEFT JOIN xnat_experimentData expt ON mr.id=expt.id LEFT JOIN xnat_imagescandata isd ON mr.id=isd.image_session_id LEFT JOIN xdat_meta_element xme ON isd.extension=xme.xdat_meta_element_id WHERE expt.project='$project' AND xme.element_name='xnat:mrScanData'"))
    #if($scanTypes.size()>0)
     #foreach($scanT in $scanTypes)

@@ -15,12 +15,7 @@ $page.setVlinkColor($ui.vlink)
 	<TR>
 		<TD align="left">
 			#addCustomScreens($om.getXSIType() "report/preDetails") 
-<STYLE>
-span.spacer{
-height:12px;
-width:1px;
-}
-</STYLE>
+##<STYLE>span.spacer{height:12px;width:1px;}</STYLE>
 <div ID="subject_summary_module" style="display:none">
  <DIV id="subjectSummary" class="yui-navset">
   <ul class="yui-nav" style="">

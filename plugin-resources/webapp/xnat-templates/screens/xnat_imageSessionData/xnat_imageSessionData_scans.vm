@@ -1,10 +1,11 @@
 <!--BEGIN /screens/xnat_imageSessionData/xnat_imageSessionData_scans.vm -->
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
+## content from scans.css moved to xnat.css
+##<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
 <div class="edit_header1" style="margin-bottom:16px">Scans</div>
 #set($scanAssessors =$!om.getScanAssessors())
 
-<table cellPadding="0" cellSpacing="0" width="80%" >
-  <tr style="border-style:none;">
+<table id="scan_list" cellpadding="0" cellspacing="4" width="80%">
+  <tr style="border:none;">
     <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Scan</th>
     <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Type</th>
 	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.display-series-description","true")))
@@ -26,7 +27,7 @@
 	<tr valign=top border=0>
       <td border=0 align=left NOWRAP>
         <a name="LINK${scanCounter}" href="#LINK${scanCounter}" onClick=" return blocking($scanCounter);">
-          <img ID="IMG$scanCounter" src="$content.getURI('images/plus.jpg')" border=0/>
+          <img id="IMG$scanCounter" src="$content.getURI('images/plus.jpg')" border=0/>
             $scanID
         </a>
       </td>
@@ -52,7 +53,7 @@
 	
 	<tr>
       <td colspan="5" NOWRAP>
-        <span ID="span$!scanCounter" style="position:relative; display:none;">
+        <span id="span$!scanCounter" style="position:relative; display:none;">
           #parse($turbineUtils.getTemplateName("_details",$scan.getXSIType(),$project))
         </span>
       </td>
@@ -64,7 +65,7 @@
                <td colspan="$fileIndex" align="right">
                </td>
                <td NOWRAP >
-                       <div ID="total_dicom_files" class="totals">
+                       <div id="total_dicom_files" class="totals">
 						<a onclick="window.viewer.init();">Total Counts</a></div>
                </td>
        </tr>

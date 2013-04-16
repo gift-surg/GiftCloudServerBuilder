@@ -3,14 +3,14 @@
 				 <tr>
   					<td valign="top">
   					<!--BEGIN EXPT SUMMARY TABS -->
-<STYLE>
-span.spacer{
-height:12px;
-width:1px;
-}
-</STYLE>
+##<STYLE>
+##span.spacer{
+##height:12px;
+##width:1px;
+##}
+##</STYLE>
 <div ID="expt_summary_module" style="display:none">
- <DIV id="exptSummary" class="yui-navset">
+ <div id="exptSummary" class="yui-navset">
   <ul class="yui-nav" style="">
       <li class="selected"><a href="#tab1"><em>Details<span class="spacer"></span></em></a></li>
       <li><a href="#tab2"><em>$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span></em></a></li>
@@ -48,7 +48,7 @@ width:1px;
             #end
 
   </div> 
- </DIV>
+ </div>
 </div>
 <script type="text/javascript">   
 function summaryIndexChanged(){

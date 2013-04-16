@@ -1,4 +1,5 @@
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
+## content from scans.css moved to xnat.css
+##<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
 <script type="text/javascript">
 XNAT.app.scans={};
 </script>
@@ -64,7 +65,7 @@ XNAT.app.scans={};
         }		
       }
       return false;
-    }
+    };
 
   
 #if($allowDataDeletion)

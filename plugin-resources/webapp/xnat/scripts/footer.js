@@ -439,6 +439,9 @@ jq(window).load(function(){
 
     };
 
+    //jq('input[type="button"],input[type="submit"],input[type="reset"],button').addClass('btn2');
+
+    //jq('body.no_left_bar').find('td.leftBar').remove();
 
 //    // This shouldn't execute if you aren't on the user edit page!!!!!
 //    // (it would only execute on an input with class="email_format")

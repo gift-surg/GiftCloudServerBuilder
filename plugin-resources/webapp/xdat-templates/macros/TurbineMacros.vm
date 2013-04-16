@@ -1008,7 +1008,7 @@
       #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
       #set($days = [ 1..31 ])
       #set($years = [ 1901..$!turbineUtils.getYear()])
-      <table valign="top" style="border-right:1px solid #6D99B6;border-left:1px solid #6D99B6;border-top:1px solid #6D99B6;border-bottom:1px solid #6D99B6;">
+      <table valign="top" class="cornflower_border">
           #foreach ($displayRow in $elementDisplay.getSearchableFields($cols))
           <tr>
             #foreach ($displayField in $displayRow)

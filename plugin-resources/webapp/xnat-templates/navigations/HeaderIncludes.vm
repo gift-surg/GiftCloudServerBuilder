@@ -14,7 +14,7 @@
 	jq.ajaxSetup({ cache: false });
 </script>
 
-<script LANGUAGE="JavaScript">
+<script type="text/javascript">
 
     if (typeof XNAT == "undefined" || !XNAT) {
         /*
@@ -139,7 +139,7 @@
 <link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
 
 <!-- xdat.css and xnat.css loaded last to override YUI styles -->
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/xdat.css")">
-<link type="text/css" rel="stylesheet" href="$content.getURI("style/xnat.css")">
+<link rel="stylesheet" type="text/css" href="$content.getURI("style/xdat.css")">
+<link rel="stylesheet" type="text/css" href="$content.getURI("style/xnat.css")">
 
 #addGlobalCustomScreens("header")

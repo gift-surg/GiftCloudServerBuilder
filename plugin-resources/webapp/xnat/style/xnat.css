@@ -91,7 +91,7 @@ table.ruled tr:nth-child(2n+1) { background: #fff ; }
 
 .underscore { border-bottom: 2px solid #f93 ; padding-bottom: 1px ; padding-right: 20px ; padding-left: 5px ; }
 
-div.alert { background-color:#CCCCCC; border-width:1px; border-style:solid; color:red; font-size:14px; line-height:16px; /* font-weight:700; */ overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
+div.alert { background-color: #ccc; border-width:1px; border-style:solid; color:#900; font-size:14px; line-height:16px; /* font-weight:700; */ overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
 div.justification { /* font-size: 12px ; line-height:15px; */ border:1px solid #ccc ; background-color: #f0f0f0 ; padding:4px; /* font-weight:700; */}
 
 table.dark { background-color: /* #DCDCDC */ #f0f0f0 ; border: 1px solid #ccc !important ; color: #000 ; font-size: 12px ; font-weight: bold ; }
@@ -112,6 +112,8 @@ button, input[type="button"], input[type="submit"], input[type="reset"] { font-f
 .btn2, button, input[type="button"], input[type="submit"], input[type="reset"] { background-image: url('images/btn2_30px2.png') ; border: 1px solid #a8a8a8 ; }
 select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; }
 
+
+/* page layout styles */
 #page_wrapper { padding: 28px /* 20px */ ; }
 #layout_content.main { min-width: 728px ; }
 .ie7 #layout_content.main { width: 728px ; overflow: auto ; }
@@ -119,9 +121,15 @@ select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 1
 .ie7 #wrapper_table,
 .ie8 #wrapper_table { width: 960px ; }
 
+/* login box */
+#login_box { width: 220px ; margin: 0 auto ; padding: 20px ; background: #f0f0f0 ; border-radius: 0 ; }
+#login_box input[name="login"] { margin-top: 10px; }
+#register_forgot a { margin: 0 10px ; }
+
 
 /* user bar stuff */
 #user_bar { position: absolute ; left: 0 ; top: 0 ; width: 960px ; height: 28px ; font-size: 11px ; line-height: 28px ; vertical-align: middle ; background: #dadada url('images/user_bar_bkgd.png') left top repeat-x ; }
+#user_bar.no_menu { width: 100% ; }
 #last_login { display: block ; float: left ; padding-left: 1em ; color: #666 ; white-space: nowrap ; }
 #user_info { display: block ; margin-right: 1em ; float: right ; color: #333 ; text-align: right ; }
 .ie7 #user_info { line-height: 24px ; }
@@ -178,6 +186,8 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 .yui-nav a { font-weight: bold ; }
 .yui-skin-sam .yui-button a,
 .yui-button button { font-weight: bold ; font-size: 12px ; }
+
+.yui-button, .yui-button button { border-radius: 0 !important ; }
 
 div.edit_header1, div.edit_title {
     /* background: #c2c2c2 url("images/btn2_30px2.png") repeat-x center top ; */

@@ -28,19 +28,47 @@ form { font-size: 12px ; }
 
 .withColor { background-color: /* #084FAB */ #2d69b8 ; color: #fff ; }
 
-.withThinBorder { border-width: 1px solid #aaa ; }
+.withThinBorder { border: 1px solid #aaa ; }
 
 input { /* font-size: 11px ; line-height: 13px ; font-weight: 500 ; font-family: Arial, Helvetica, sans-serif ; */ }
 
 select { /* font-size: 12px ; line-height: 13px ; font-weight: 500 ; font-family: Arial, Helvetica, sans-serif ; */ }
 
+/*
 div.error { width: 500px ; background-color: #f9c ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding-top: 5px ; padding-bottom: 5px ; padding-left: 5px ; padding-right: 5px ; text-align: left ; clear: left ; }
+div.error { }
 
-div.warning { width: 500px ; background-color: #fcc ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding: 5px ; text-align: left ; clear: left ; }
+div.warning { width: 500px ; background-color: #fcc ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding: 5px ; text-align: left ; clear: left ; }
 
-div.note div.message { width: 500px ; background-color: #cff ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding-top: 5px ; padding-bottom: 5px ; padding-left: 5px ; padding-right: 5px ; text-align: left ; clear: left ; }
+div.note, div.message { width: 500px ; background-color: #cff ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding-top: 5px ; padding-bottom: 5px ; padding-left: 5px ; padding-right: 5px ; text-align: left ; clear: left ; }
+*/
 
-.text { font-size: 11px ; line-height: 13px ; font-family: Arial, Helvetica, sans-serif ; font-weight: 400 ; }
+div.error,
+div.warning,
+div.note,
+div.message {
+    min-width: 500px ; max-width: 800px; margin: 15px auto ; padding: 10px 15px ; overflow: auto ;
+    font-size: 14px ; line-height: 18px ; text-align: left;
+    border-width: 1px ; border-style: solid ; /* border-radius: 4px ; */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* xnat colors ? */
+/*
+div.error { color: #c03d3d ; background: #fcf8e3 ; border-color: #e5c3b8 ; }
+div.warning { color: #b3716b ; background: #ffdcd9 ; border-color: #b3817d ; }
+div.note { color: #6b9999 ; background: #d9fcff ; border-color: #6b9999 ; }
+div.message { color: #6b9999 ; background: #d9fcff ; border-color: #6b9999 ; }
+*/
+
+/* (slightly tweaked) colors from Twitter bootstrap framework */
+div.error { color: #c03d3d ; background: #fcf8e3 ; border-color: #e5c3b8 ; }
+div.warning { color: #a63c3a ; background: #F2DEDE ; border-color: #EED3D7 ; }
+div.note { color: #23698c ; background: #D9EDF7 ; border-color: #BCE8F1 ; }
+div.message { color: #468847 ; background: #DFF0D8 ; border-color: #D6E9C6 ; }
+
+
+.text { font-size: 11px ; line-height: 13px ; font-family: Arial, Helvetica, sans-serif ; }
 
 div.link { cursor: pointer ; text-decoration: none ; font-size: 11px ; font-family: Arial, Helvetica, sans-serif ; color: #039 ; }
 

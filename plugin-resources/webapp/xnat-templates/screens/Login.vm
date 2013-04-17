@@ -25,7 +25,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
             </tr>
             <tr>
                 <td valign="top" align="center">
-                    <div class="withColor withThinBorder" style="">
+                    <div id="login_box" class="withColor withThinBorder" style="">
                         <h3>Existing Users Login</h3>
                         #parse("/screens/login_box.vm")
                         <div style="padding-bottom:5px;">
@@ -47,7 +47,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
     #else
         <table valign="top" align="center">
             <tr>
-                <td valign="top" colspan="52" align="center">
+                <td valign="top" align="center">
                     #if ( $data.getMessage() && $data.getMessage()!="" )
                         <div class="error">$data.getMessage()</div><br><br>
                     #end
@@ -57,40 +57,22 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
                 </td>
             </tr>
             <tr>
-                <td valign="top" colspan="2" align="center">
-                    <div class="" style="">
+                <td valign="top" align="center">
+                    <div id="login_box" class="withColor withThinBorder" style="">
                         #parse("/screens/login_box.vm")
                     </div>
                 </td>
             </tr>
             <tr>
-                <td align="left" colspan="2">&nbsp;</td>
-            </tr>
-
-            <tr>
-                <td valign="top" colspan="2" align="center">
-                    <div class="" style="">
-                        <table>
-                            <tr>
-                                <td >
-                                    <a href="$link.setPage("Register.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Register</a>
-                                </td>
-                                <td align="left">&nbsp;&nbsp;&nbsp;</td>
-                                <td >
-                                    <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?</a>
-                                </td>
-                            </tr>
-                        </table>
+                <td valign="top" align="center" style="padding-top:50px;">
+                    <div id="register_forgot" style="text-align:center">
+                        <a href="$link.setPage("Register.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Register</a>
+                        <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?</a>
                     </div>
                 </td>
             </tr>
             <tr>
-                <td valign="top" colspan="2" align="center">
-                    <br><br>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top" colspan="2">
+                <td valign="top" style="padding-top:50px;text-align:center;">
                     #parse("/screens/site_description.vm")
                 </td>
             </tr>

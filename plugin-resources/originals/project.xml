@@ -1496,6 +1496,26 @@
 			<type>jar</type>
 		</dependency>
 		<!-- End Spring Framework dependencies -->
+		<!-- Begin JavaMelody additions -->
+		<dependency>
+			<groupId>javamelody</groupId>
+			<artifactId>javamelody</artifactId>
+			<version>1.44.0</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>javamelody</groupId>
+			<artifactId>jrobin</artifactId>
+			<version>1.5.9.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<!-- End JavaMelody additions -->
 		<!-- Begin NRG framework and service additions -->
 		<dependency>
 			<groupId>nrg</groupId>

@@ -9,11 +9,16 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:amq="http://activemq.apache.org/schema/core"
        xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
             http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
 			http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
+
+    <!-- Pull in property values from services definition files. -->
+    <context:property-placeholder location="WEB-INF/conf/services.properties, WEB-INF/conf/services-custom.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
 
     <!-- TODO: Taken from TIP implementation. All comments reference Evan's work there. Make XNAT-y general and remove this TODO. -->
 
@@ -25,6 +30,13 @@
                 cleanup threads. -->
             <amq:jdbcPersistenceAdapter dataSource="#dataSource" useLock="false" />
         </amq:persistenceAdapter>
+        <amq:systemUsage>
+            <amq:systemUsage>
+                <amq:tempUsage><amq:tempUsage limit="${amq.usage.temp}"/></amq:tempUsage>
+                <amq:memoryUsage><amq:memoryUsage limit="${amq.usage.mem}"/></amq:memoryUsage>
+                <amq:storeUsage><amq:storeUsage limit="${amq.usage.store}"/></amq:storeUsage>
+            </amq:systemUsage>
+        </amq:systemUsage>
     </amq:broker>
 
     <!-- ActiveMQ ConnectionFactory for JMS to use. Spring will find and use the broker we've declared above. -->

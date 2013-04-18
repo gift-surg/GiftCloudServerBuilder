@@ -14,15 +14,20 @@ import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.SiteConfigurationService;
 import org.nrg.dcm.DicomSCPManager;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
+import org.nrg.xft.event.EventListener;
+import org.nrg.xft.event.EventManager;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.workflow.WorkflowSaveHandlerAbst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -96,8 +101,26 @@ public class XNATRestletServlet extends ServerServlet {
         } catch (Throwable e) {
             logger.error("Unable to initialize prearchive database", e);
         }
-
+        addWorkflowListeners();
+        
         XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();
+        
+    }
+    
+    private void addWorkflowListeners(){
+    	try {
+			List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.workflow.listeners");
+
+			if(classes!=null && classes.size()>0){
+				 for(Class<?> clazz: classes){
+					 if(WorkflowSaveHandlerAbst.class.isAssignableFrom(clazz)){
+						EventManager.AddListener(WrkWorkflowdata.SCHEMA_ELEMENT_NAME,(EventListener)clazz.newInstance());
+					 }
+				 }
+			 }
+		} catch (Exception e) {
+			logger.error("",e);
+		}
     }
 
     /**

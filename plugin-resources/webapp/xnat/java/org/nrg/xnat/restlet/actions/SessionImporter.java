@@ -86,8 +86,8 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				this.allowDataDeletion=false;
 				this.overwrite=true;
 			}
-			}
 		}
+	}
 		
 	public static List<PrearcSession> importToPrearc(StatusProducer parent,String format,Object listener,XDATUser user,FileWriterWrapperI fw,Map<String,Object> params,boolean overwrite, boolean allowDataDeletion) throws ActionException{
 		//write file

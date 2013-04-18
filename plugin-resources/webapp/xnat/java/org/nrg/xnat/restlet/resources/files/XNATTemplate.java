@@ -220,7 +220,7 @@ public class XNATTemplate extends SecureResource {
 						subsubcc.addClause("xnat:imageScanData/type","");
 						subcc.add(subsubcc);
 					}else{
-						subcc.addClause("xnat:imageScanData/type", scanID);
+						subcc.addClause("xnat:imageScanData/type", scanID.replace("[COMMA]", ","));
 					}
 				}else{
 					CriteriaCollection subsubcc = new CriteriaCollection("OR");
@@ -229,7 +229,7 @@ public class XNATTemplate extends SecureResource {
 							subsubcc.addClause("xnat:imageScanData/type",""," IS NULL ",true);
 							subsubcc.addClause("xnat:imageScanData/type","");
 						}else{
-							subsubcc.addClause("xnat:imageScanData/type", s);
+							subsubcc.addClause("xnat:imageScanData/type", s.replace("[COMMA]", ","));
 				}
 					}
 					subcc.add(subsubcc);
@@ -290,7 +290,7 @@ public class XNATTemplate extends SecureResource {
 							subsubcc.addClause("xnat:reconstructedImageData/type",""," IS NULL ",true);
 							subsubcc.addClause("xnat:reconstructedImageData/type","");
 						}else{
-							subsubcc.addClause("xnat:reconstructedImageData/type", s);
+							subsubcc.addClause("xnat:reconstructedImageData/type", s.replace("[COMMA]", ","));
 						}
 					}
 					subcc.add(subsubcc);

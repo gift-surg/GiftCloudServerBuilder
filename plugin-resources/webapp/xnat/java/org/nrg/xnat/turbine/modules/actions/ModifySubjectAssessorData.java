@@ -5,17 +5,22 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.schema.SchemaElement;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.DisplayItemAction;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
-import org.nrg.xdat.turbine.modules.actions.ModifyItem.CriticalException;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
@@ -144,12 +149,24 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     }
                 	
                     try {
-                        preSave(found,data,context);
+                        super.preSave(found,data,context);
                     } catch (CriticalException e) {
                         throw e;
                     } catch (RuntimeException e) {
                         logger.error("",e);
+                        throw e;
                     }
+                	
+                    try {
+                    	dynamicPreSave(TurbineUtils.getUser(data),sa,TurbineUtils.GetDataParameterHash(data), wrk);
+                    } catch (CriticalException e) {
+                        throw e;
+                    } catch (RuntimeException e) {
+                        logger.error("",e);
+                        throw e;
+                    }
+                    
+                    wrk.setLaunchTime(Calendar.getInstance().getTime());
                     
                     try {
                     SaveItemHelper.authorizedSave(found,TurbineUtils.getUser(data),false,allowDataDeletion(),c);
@@ -169,6 +186,8 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     found = found.getCurrentDBVersion(false);
 
 					postProcessing(found, data, context);
+					
+					dynamicPostSave(TurbineUtils.getUser(data),sa,TurbineUtils.GetDataParameterHash(data), wrk);
 
                     SchemaElement se = SchemaElement.GetElement(found.getXSIType());
                     if (TurbineUtils.HasPassedParameter("destination", data)){
@@ -192,6 +211,39 @@ public class ModifySubjectAssessorData extends ModifyItem{
         }
     }
 
+	public interface PreSaveAction {
+		public void execute(XDATUser user, XnatSubjectassessordata src, Map<String,String> params,PersistentWorkflowI wrk) throws Exception;
+	}
+	
+	private void dynamicPreSave(XDATUser user, XnatSubjectassessordata src, Map<String,String> params,PersistentWorkflowI wrk) throws Exception{
+		 List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.sessionEdit.preSave");
+
+    	 if(classes!=null && classes.size()>0){
+			 for(Class<?> clazz: classes){
+				 if(PreSaveAction.class.isAssignableFrom(clazz)){
+					 PreSaveAction action=(PreSaveAction)clazz.newInstance();
+					 action.execute(user,src,params,wrk);
+				 }
+			 }
+		 }
+	}
+
+	public interface PostSaveAction {
+		public void execute(XDATUser user, XnatSubjectassessordata src, Map<String,String> params,PersistentWorkflowI wrk) throws Exception;
+	}
+	
+	private void dynamicPostSave(XDATUser user, XnatSubjectassessordata src, Map<String,String> params,PersistentWorkflowI wrk) throws Exception{
+		 List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.sessionEdit.postSave");
+
+    	 if(classes!=null && classes.size()>0){
+			 for(Class<?> clazz: classes){
+				 if(PostSaveAction.class.isAssignableFrom(clazz)){
+					 PostSaveAction action=(PostSaveAction)clazz.newInstance();
+					 action.execute(user,src,params,wrk);
+				 }
+			 }
+		 }
+	}
     /* (non-Javadoc)
      * @see org.nrg.xdat.turbine.modules.actions.ModifyItem#preProcess(org.nrg.xft.XFTItem, org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
      */

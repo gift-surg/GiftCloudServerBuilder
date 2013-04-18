@@ -300,6 +300,7 @@ public class XNATApplication extends Application {
         // System services
         router.attach("/services/import",Importer.class);
         router.attach("/services/archive",Archiver.class);
+        router.attach("/services/validate-archive",ArchiveValidator.class);
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
         router.attach("/services/move-files",MoveFiles.class);

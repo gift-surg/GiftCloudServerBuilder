@@ -729,26 +729,45 @@ if(obj!=null){
 
 window.modals=new Object();
 
-function openModalPanel(id,msg,parentPanel){
+function openModalPanel(id,msg,parentPanel,options){
 	  if(id==undefined)id="wait";
 	  if(window.modals[id]==undefined){
-		  window.modals[id]=new YAHOO.widget.Panel(id,
-	          {
-	          	   width:"240px",
-	               fixedcenter:true,
-	               close:true,
-	               draggable:false,
-	               zindex:4,
-	               modal:true,
-	               visible:false
-	          }
-	      );
+		  if(options==undefined){
+			  options=new Object();
+		  }
+		  //set defaults
+		  if(options.width==undefined){
+				  options.width="240px";
+		  }
+		  if(options.fixedcenter==undefined){
+			  options.fixedcenter=true;
+		  }
+		  if(options.close==undefined){
+			  options.close=true;
+		  }
+		  if(options.draggable==undefined){
+			  options.draggable=false;
+		  }
+		  if(options.zindex==undefined){
+			  options.zindex=4;
+		  }
+		  if(options.modal==undefined){
+			  options.modal=true;
+		  }
+		  if(options.visible==undefined){
+			  options.visible=false
+          }
+		  window.modals[id]=new YAHOO.widget.Panel(id,options);
 	      if(parentPanel!=undefined){
 	   	      parentPanel.hide();
 	          window.modals[id].parentPanel=parentPanel;
 	      }
 	      window.modals[id].setHeader(msg);
-	      window.modals[id].setBody('<img src="' + serverRoot + '/images/rel_interstitial_loading.gif" />');
+	      if(options.body==undefined){
+	    	  window.modals[id].setBody('<img src="' + serverRoot + '/images/rel_interstitial_loading.gif" />');
+	      }else{
+	    	  window.modals[id].setBody(options.body);
+	      }
 	      window.modals[id].render(document.body);
 	  }
 
@@ -771,9 +790,21 @@ function displayError(msg){
     showMessage("page_body", "Exception", msg);
 }
 
-function showMessage(divId, title, body) {
-    var dialog = new YAHOO.widget.SimpleDialog("dialog", {
-        width:"20em",
+var msgC=0;
+
+function showMessage(divId, title, body,options) {
+	if(options==undefined){
+		options=new Object();
+	}
+	if(options.width==undefined){
+		options.width="20em";
+	}
+	if(options.height==undefined){
+		options.height="''";
+	}
+    var dialog = new YAHOO.widget.SimpleDialog("dialog"+ msgC++, {
+        width:options.width,
+        height:options.height,
         close:false,
         fixedcenter:true,
         constraintoviewport:true,
@@ -789,6 +820,7 @@ function showMessage(divId, title, body) {
     dialog.setBody(body);
     dialog.bringToTop();
     dialog.show();
+    return dialog;
 }
 
 
@@ -819,6 +851,15 @@ function getValueById(id){
 	}else{
 		return {"value":box.value,obj:box};
 	}
+}
+
+
+//this function can be used to execute a function within the scope of a different object (i.e. the 'this' in the fuction will be the second argument passed in).
+//not sure if there is an easier way to do this...
+XNAT.app.runInScope=function(_function,scope){
+	var runScope=new YAHOO.util.CustomEvent("complete",this);
+	runScope.subscribe(_function, this, scope);
+	runScope.fire();
 }
 function addSearchMenuOption(menuMap) {
     if (!window.menuOptions) {

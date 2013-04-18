@@ -514,7 +514,10 @@ public final class PrearcDatabase {
                     if (!Strings.isNullOrEmpty(source)) {
                     	params.put("SOURCE", source);
                     }
-
+                    if (!Strings.isNullOrEmpty(timezone)) {
+                       	params.put("TIMEZONE", timezone);
+                    }
+                    
                     try {
                         final Boolean r = new XNATSessionBuilder(sessionDir, new File(sessionDir.getPath() + ".xml"), true, params).call();	        
                         if (!r) {
@@ -1797,6 +1800,7 @@ public final class PrearcDatabase {
     
     @SuppressWarnings("serial")
 	public static class SyncFailedException extends IOException{
+    	public Throwable cause=null;
 
 		public SyncFailedException() {
 			super();
@@ -1804,6 +1808,7 @@ public final class PrearcDatabase {
 
 		public SyncFailedException(String message, Throwable cause) {
 			super(message, cause);
+			this.cause=cause;
 		}
 
 		public SyncFailedException(String message) {
@@ -1812,6 +1817,7 @@ public final class PrearcDatabase {
 
 		public SyncFailedException(Throwable cause) {
 			super(cause);
+			this.cause=cause;
 		}
     	
     }

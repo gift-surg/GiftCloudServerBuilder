@@ -40,8 +40,8 @@ import org.nrg.dcm.CopyOp;
 import org.nrg.dcm.LoggerI;
 
 public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends StatusProducer implements Callable<A> {
-	public static final String CAT_ENTRY_MATCH = "Session already exists with the same resources.  Retry with overwrite=delete to force an overwrite of the pre-existing data.";
-	public static final String HAS_FILES = "Session already exists with matching files, retry with overwrite=delete enabled";
+	public static final String CAT_ENTRY_MATCH = "Session already exists with the same resources.";
+	public static final String HAS_FILES = "Session already exists with matching files.";
 	protected final File srcDIR,destDIR;
 	protected final A src,dest;
 	protected final String destRootPath,srcRootPath;        
@@ -83,6 +83,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 	}
 
 	public void checkForConflict() throws ClientException,ServerException{
+		ClientException t=null;
 		if(destDIR.exists() || dest!=null){
 			if(!addFilesToExisting){
 				failed(HAS_FILES);
@@ -92,7 +93,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 			if(!overwrite_files){
 				if((new SessionOverwriteCheck(src, dest,src.getPrearchivepath(),dest.getPrearchivepath(),user,c)).call()){
 					failed(CAT_ENTRY_MATCH);
-					throw new ClientException(Status.CLIENT_ERROR_CONFLICT,CAT_ENTRY_MATCH,new IOException());
+					t= new ClientException(Status.CLIENT_ERROR_CONFLICT,CAT_ENTRY_MATCH,new IOException());
 				}
 			}
 		}
@@ -104,12 +105,16 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 						return !(pathname.getName().endsWith(".xml") ||pathname.getName().endsWith(".log"));
 					}})!= null){
 					failed(HAS_FILES);
-					throw new ClientException(Status.CLIENT_ERROR_CONFLICT,HAS_FILES, new Exception());
+					t= new ClientException(Status.CLIENT_ERROR_CONFLICT,HAS_FILES, new Exception());
 				}
 			} catch (IOException e) {
 				failed("Error accessing file system.");
 				throw new ServerException(Status.SERVER_ERROR_INTERNAL,e.getMessage(), new Exception());
 			}
+		}
+		
+		if(t!=null){
+			throw t;
 		}
 	}
 

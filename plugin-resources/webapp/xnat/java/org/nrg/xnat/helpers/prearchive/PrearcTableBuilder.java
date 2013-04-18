@@ -301,6 +301,11 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			return null;
 			
 		}
+		public String getTimeZone(){
+			//no need to keep timezone in the image session.
+			//return (session!=null)?session.getTimeZone():null;
+			return null;
+		}
 		public String getPatientId() {
 			return (session!=null)?session.getDcmpatientid():null;
 		}

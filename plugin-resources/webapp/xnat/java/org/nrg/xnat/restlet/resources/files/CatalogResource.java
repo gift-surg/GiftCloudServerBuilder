@@ -12,6 +12,7 @@ import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatAbstractresourceTag;
 import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
@@ -248,6 +249,12 @@ public class CatalogResource extends XNATCatalogTemplate {
 							}else if(security.getItem().instanceOf("xnat:subjectData")){
 								securityId=((XnatSubjectdata)security).getId();
 								proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+							}else if(parent.getItem().instanceOf("xnat:projectData")){
+								securityId=((XnatProjectdata)parent).getId();
+								proj = ((XnatProjectdata)security);
+							}else if(security.getItem().instanceOf("xnat:projectData")){
+								securityId=((XnatProjectdata)security).getId();
+								proj = ((XnatProjectdata)security);
 							}
 						}else{
 							if(parent.getItem().instanceOf("xnat:experimentData")){
@@ -258,6 +265,10 @@ public class CatalogResource extends XNATCatalogTemplate {
 								securityId=((XnatSubjectdata)parent).getId();
 							}else if(security.getItem().instanceOf("xnat:subjectData")){
 								securityId=((XnatSubjectdata)security).getId();
+							}else if(parent.getItem().instanceOf("xnat:projectData")){
+								securityId=((XnatProjectdata)parent).getId();
+							}else if(security.getItem().instanceOf("xnat:projectData")){
+								securityId=((XnatProjectdata)security).getId();
 							}
 						}
 						

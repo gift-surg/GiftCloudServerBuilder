@@ -300,7 +300,7 @@ function checkIfFinalCycle () {
  */
 function syncSessionExpirationCookieWithLocal () {
   var cookieExpirationTime = synchronizingCookies.expirationTime.get();
-  if (locals.expirationTime.flag !== cookieExpirationTime.flag) {
+  if (locals.expirationTime.flag !== cookieExpirationTime.flag) { 
     locals.warningDisplayedOnce = false;
     locals.expirationTime.flag = cookieExpirationTime.flag;
     locals.expirationTime.timeLeft = parseTimestamp((new Date().getTime()) + cookieExpirationTime.maxIdleTime);
@@ -395,4 +395,4 @@ function sessionCountdown() {
 refreshSynchronizingCookies();
 initWarningDialog(warningDialog);
 
-    setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
+setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval); 

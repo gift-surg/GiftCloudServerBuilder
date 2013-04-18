@@ -48,6 +48,19 @@ public class MergeUtils {
 		}
 	}
 
+	public static XnatImagescandataI getMatchingScanByUID(final XnatImagescandataI scan, final List<XnatImagescandataI> list){
+		try {
+		return Iterables.find(list,new Predicate<XnatImagescandataI>(){
+			@Override
+			public boolean apply(XnatImagescandataI scan2) {
+					return StringUtils.equals(scan.getUid(), scan2.getUid());
+			}}
+		);
+		} catch (NoSuchElementException e) {
+			return null;
+		}
+	}
+
 	public static XnatAbstractresourceI getMatchingResource(final XnatAbstractresourceI res, List<XnatAbstractresourceI> list){
 		try {
 		return Iterables.find(list,new Predicate<XnatAbstractresourceI>(){

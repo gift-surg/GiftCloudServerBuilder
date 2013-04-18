@@ -90,10 +90,12 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         setDetails(request, authRequest);
 
         try {
-			return super.getAuthenticationManager().authenticate(authRequest);
+			Authentication auth= super.getAuthenticationManager().authenticate(authRequest);
+			 AccessLogger.LogServiceAccess(username, AccessLogger.GetRequestIp(request), "Authentication", "SUCCESS");
+			return auth;
 		} catch (AuthenticationException e) {
 			 logFailedAttempt(username, request);
-			throw e;
+			 throw e;
 		}
     }
     
@@ -111,6 +113,7 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
                     _log.error(exception);
 				}
 			 }
+			 AccessLogger.LogServiceAccess(username, AccessLogger.GetRequestIp(req), "Authentication", "FAILED");
     	}
     }
     

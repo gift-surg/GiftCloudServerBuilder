@@ -29,6 +29,13 @@ import org.restlet.resource.OutputRepresentation;
 import com.noelios.restlet.ext.servlet.ServletCall;
 import com.noelios.restlet.http.HttpRequest;
 
+/**
+ * @author Tim Olsen tim@deck5consulting.com
+ *
+ * Class used to map from Restlet requests to Turbine responses.  It handles Turbine initialization and population of the RunData object.
+ * 
+ * This representation can be used to render Turbine screens through REST calls, and was required to allow rendering of default report screens (i.e. Project report) via REST calls (/projects/ID?format=html)
+ */
 public abstract class TurbineScreenRepresentation extends OutputRepresentation {
 	static org.apache.log4j.Logger logger = Logger.getLogger(TurbineScreenRepresentation.class);
 	final RunData data;

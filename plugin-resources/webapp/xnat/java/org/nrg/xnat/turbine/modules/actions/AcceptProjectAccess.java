@@ -1,7 +1,9 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.turbine.modules.actions;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.turbine.Turbine;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -10,38 +12,45 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 
-public class AcceptProjectAccess extends SecureAction {
-    static org.apache.log4j.Logger logger = Logger.getLogger(AcceptProjectAccess.class);
+import java.util.List;
 
-    XnatProjectdata project=null;
+public class AcceptProjectAccess extends SecureAction {
 
 	@Override
 	public void doPerform(RunData data, Context context) throws Exception {
-		final Integer parID = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("par",data));
 		XDATUser user = TurbineUtils.getUser(data);
-		if (user==null)
+		if (user == null) {
 			user = (XDATUser) context.get("user");
+        }
 		if (user.getUsername().equals("guest")) {
-			String Destination = data.getTemplateInfo().getScreenTemplate();
-			data.getParameters().add("nextPage", Destination);
-			if (!data.getAction().equalsIgnoreCase(""))
+			data.getParameters().add("nextPage", data.getTemplateInfo().getScreenTemplate());
+			if (!StringUtils.isBlank(data.getAction())) {
 				data.getParameters().add("nextAction", data.getAction());
-			else
-				data.getParameters().add("nextAction", org.apache.turbine.Turbine.getConfiguration().getString("action.login"));
-			data.setScreenTemplate(org.apache.turbine.Turbine.getConfiguration().getString("template.login"));
+            } else {
+				data.getParameters().add("nextAction", Turbine.getConfiguration().getString("action.login"));
+            }
 
-			System.out.println("Re-route to login:" + org.apache.turbine.Turbine.getConfiguration().getString("template.login"));
+			data.setScreenTemplate(Turbine.getConfiguration().getString("template.login"));
+			if (logger.isDebugEnabled()) {
+                logger.debug("Re-route to login:" + Turbine.getConfiguration().getString("template.login"));
+            }
+
 			return;
 		}
-		ProjectAccessRequest par =ProjectAccessRequest.RequestPARById(parID, user);
-		if (par.getApproved()!=null || par.getApprovalDate()!=null){
+
+		ProjectAccessRequest par = ProjectAccessRequest.RequestPARById(TurbineUtils.GetPassedInteger("par", data), user);
+		if (par.getApproved() != null || par.getApprovalDate() != null) {
 			data.setMessage("Project Invitation already accepted by a different user.  Please request access to the project directly.");
 			data.setScreenTemplate("Index.vm");
-		}else{
-			par.process(user,true, getEventType(data), getReason(data), getComment(data));
-
-			this.redirectToReportScreen(XnatProjectdata.getProjectByIDorAlias(par.getProjectID(), user, false), data);
+            logger.debug("PAR not approved or already accepted: " + par.getRequestId());
+		} else {
+            List<String> processedProjects = par.process(user, true, getEventType(data), getReason(data), getComment(data));
+            if (processedProjects.size() > 0) {
+                context.put("accepted_pars", processedProjects);
+            }
+			redirectToReportScreen(XnatProjectdata.getProjectByIDorAlias(par.getProjectId(), user, false), data);
 		}
 	}
 
+    private static final Logger logger = Logger.getLogger(AcceptProjectAccess.class);
 }

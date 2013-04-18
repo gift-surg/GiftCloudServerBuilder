@@ -74,11 +74,11 @@ public class PARResource extends SecureResource {
 		Hashtable<String,Object> params=new Hashtable<String,Object>();
 		try {
 			ArrayList<ProjectAccessRequest> pars = ProjectAccessRequest
-					.RequestPARsByUserEmeail(user.getEmail(), user);
+					.RequestPARsByUserEmail(user.getEmail(), user);
 			for (ProjectAccessRequest par : pars) {
 				Object[] row = new Object[4];
-				row[0] = par.getPar_id();
-				row[1] = par.getProjectID();
+				row[0] = par.getRequestId();
+				row[1] = par.getProjectId();
 				row[2] = par.getCreateDate();
 				row[3] = par.getLevel();
 				table.rows().add(row);

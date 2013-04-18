@@ -1,3 +1,9 @@
+#* @vtlvariable name="server" type="java.lang.String" *#
+#* @vtlvariable name="system" type="java.lang.String" *#
+#* @vtlvariable name="admin_email" type="java.lang.String" *#
+#* @vtlvariable name="par" type="org.nrg.xnat.turbine.utils.ProjectAccessRequest" *#
+#* @vtlvariable name="user" type="org.nrg.xdat.security.XDATUser" *#
+#* @vtlvariable name="projectOM" type="org.nrg.xdat.om.XnatProjectdata" *#
 <div id="logo" align="center">#parse("/screens/Logo_Email.vm")</div>
 <hr>
 <TABLE>
@@ -11,13 +17,13 @@ Project Description: $projectOM.getDescription()
 #end
 </TD></TR>
  <TR>
-  <TD><a href="$server/app/action/AcceptProjectAccess/par/$par.getPar_id()">Proceed to the site to get started reviewing/using the data.</A></TD>
+  <TD><a href="$server/app/action/AcceptProjectAccess/par/$par.getRequestId()">Proceed to the site to get started reviewing/using the data.</A></TD>
  </TR>
 <TR><TD>
 <br><br>
 The $system Team<BR>
 
-<a href="$server/app/action/AcceptProjectAccess/par/$par.getPar_id()">$server</a><BR>
+<a href="$server/app/action/AcceptProjectAccess/par/$par.getRequestId()">$server</a><BR>
 
 <a href="mailto:$admin_email">$admin_email</a>
 

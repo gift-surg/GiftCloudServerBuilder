@@ -271,7 +271,8 @@ function concealContent(message){
 	}
     var layout2 = document.getElementById("layout_content2");
     if (layout2) {
-        layout2.className="warning";
+        //layout2.className="warning";
+        layout2.className="message"; // "message" class presents more 'friendly' display of status
         layout2.innerHTML=message;
         layout2.style.display="block";
     }

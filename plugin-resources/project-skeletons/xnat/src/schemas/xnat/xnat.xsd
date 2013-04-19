@@ -2127,7 +2127,7 @@
 								</xs:element>
 								<xs:element name="originalFileName" type="xs:string" minOccurs="0">
 									<xs:annotation>
-										<xs:documentation>Scan file’s creation name</xs:documentation>
+										<xs:documentation>Scan file creation name</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="systemType" type="xs:integer" minOccurs="0">

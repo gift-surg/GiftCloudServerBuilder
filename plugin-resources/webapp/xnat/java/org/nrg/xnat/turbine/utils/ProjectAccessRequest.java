@@ -7,10 +7,7 @@ package org.nrg.xnat.turbine.utils;
 
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import javax.mail.MessagingException;
 
@@ -31,428 +28,332 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
 
+import static org.nrg.xdat.om.XnatProjectdata.*;
+
 public class ProjectAccessRequest {
-    static org.apache.log4j.Logger logger = Logger.getLogger(ProjectAccessRequest.class);
     public static boolean CREATED_PAR_TABLE = false;
-    
-    private Integer par_id=null;
-    private String projectID=null;
-    private String level = null;
-    private String email = null;
-    private Integer UserId=null;
-    private Date createDate = null;
-    
-    private Date approvalDate = null;
-    private Integer approver_UserId=null;
-    private Boolean approved=null;
-    
-    
-    private String userString=null;
-    
-    
+
+    public ProjectAccessRequest(final String query, final XDATUser user) throws SQLException, DBPoolException {
+        if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+            CreatePARTable();
+        }
+
+        final String dbName = user != null ? user.getDBName() : PoolDBUtils.getDefaultDBName();
+        final String login = user != null ? user.getLogin() : null;
+
+        XFTTable table = XFTTable.Execute(query, dbName, login);
+        table.resetRowCursor();
+        while (table.hasMoreRows()) {
+            Object[] row = table.nextRow();
+            if (row[0] != null) {
+                setRequestId((Integer) row[0]);
+            }
+
+            if (row[1] != null) {
+                setProjectId((String) row[1]);
+            }
+
+            if (row[2] != null) {
+                setLevel((String) row[2]);
+            }
+
+            if (row[3] != null) {
+                setCreateDate((Date) row[3]);
+            }
+
+            if (row[4] != null) {
+                setUserId((Integer) row[4]);
+            }
+
+            if (row[5] != null) {
+                setApprovalDate((Date) row[5]);
+            }
+
+            if (row[6] != null) {
+                setApproved((Boolean) row[6]);
+            }
+
+            if (row[7] != null) {
+                setApproverUserId((Integer) row[7]);
+            }
+
+            if (row[8] != null) {
+                setUserString((String) row[8]);
+            }
+
+            if (row[9] != null) {
+                setEmail((String) row[9]);
+            }
+        }
+    }
+
     /**
-     * @return the userString
+     * @return the _userString
      */
     public String getUserString() {
-        return userString;
+        return _userString;
     }
     /**
-     * @param userString the userString to set
+     * @param userString the user string to set
      */
     public void setUserString(String userString) {
-        this.userString = userString;
+        _userString = userString;
     }
     /**
-     * @return the approver_username
+     * @return The user ID for the request approver
      */
-    public Integer getApprover_UserId() {
-        return approver_UserId;
+    public Integer getApproverUserId() {
+        return _approverUserId;
     }
     /**
-     * @param approver_username the approver_username to set
+     * @param approverUserId    The user ID to set for the request approver
      */
-    public void setApprover_UserId(Integer approver_UserId) {
-        this.approver_UserId = approver_UserId;
+    public void setApproverUserId(Integer approverUserId) {
+        _approverUserId = approverUserId;
     }
     /**
      * @return the username
      */
     public Integer getUserId() {
-        return UserId;
+        return _userId;
     }
 
     /**
-     * @param username the username to set
+     * @param userId    The ID of the user
      */
-    public void setUserId(Integer UserId) {
-        this.UserId = UserId;
+    public void setUserId(Integer userId) {
+        _userId = userId;
     }
     
-    
     public String getEmail() {
-		return email;
+		return _email;
 	}
+
 	public void setEmail(String email) {
 		PoolDBUtils.CheckSpecialSQLChars(email);
-		this.email = email;
+		_email = email;
 	}
+
 	/**
      * @return the approvalDate
      */
     public Date getApprovalDate() {
-        return approvalDate;
+        return _approvalDate;
     }
     /**
      * @param approvalDate the approvalDate to set
      */
     public void setApprovalDate(Date approvalDate) {
-        this.approvalDate = approvalDate;
+        _approvalDate = approvalDate;
     }
     /**
      * @return the createDate
      */
     public Date getCreateDate() {
-        return createDate;
+        return _createDate;
     }
     /**
      * @param createDate the createDate to set
      */
     public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+        _createDate = createDate;
     }
     /**
      * @return the level
      */
     public String getLevel() {
-        return level;
+        return _level;
     }
     /**
      * @param level the level to set
      */
     public void setLevel(String level) {
 		PoolDBUtils.CheckSpecialSQLChars(level);
-        this.level = level;
+        _level = level;
     }
     /**
-     * @return the projectID
+     * @return the _projectId
      */
-    public String getProjectID() {
-        return projectID;
+    public String getProjectId() {
+        return _projectId;
     }
     /**
-     * @param projectID the projectID to set
+     * @param projectId the _projectId to set
      */
-    public void setProjectID(String projectID) {
-		PoolDBUtils.CheckSpecialSQLChars(projectID);
-        this.projectID = projectID;
+    public void setProjectId(String projectId) {
+		PoolDBUtils.CheckSpecialSQLChars(projectId);
+        _projectId = projectId;
     }
     /**
      * @return the approved
      */
     public boolean isApproved() {
-        return approved.booleanValue();
+        return _approved.booleanValue();
     }
     
     public Boolean getApproved(){
-        return approved;
-    }
-    
-    public void moveOtherPARs(XDATUser user) {
-    	if(!this.email.equalsIgnoreCase(user.getEmail())){
-    		ArrayList<ProjectAccessRequest> pars=RequestPARsByUserEmeail(this.getEmail(), user);
-    		for(ProjectAccessRequest par : pars){
-    			try {
-					if(par.approved==null){
-						par.setEmail(user.getEmail());
-						par.save(user);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-    		}
-    	}
+        return _approved;
     }
     
     public void save(XDATUser user) throws Exception{
-        if (!ProjectAccessRequest.CREATED_PAR_TABLE){
-            CreatePARTable(user);
+        if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+            CreatePARTable();
         }
-        if (this.par_id==null){
-            //NEW
-            String query="INSERT INTO xs_par_table (";
-            
-            query+="proj_id,level,user_id";
-            if (this.approved!=null)
-                query+=",approval_date,approved,approver_id";
-            query+=")";
-            
-            query+=" VALUES ('" + this.projectID +"','" + level +"',";
-            if (this.UserId!=null)
-            	query+=this.UserId;
-            else
-            	query +=" NULL ";
-            if (this.approved!=null){
-                if (approvalDate==null){
-                    query+=",NOW()";
-                }else{
-                    query+=",'" + approvalDate.toString() +"'";
-                }
-                query+="," + approved + "," + user.getXdatUserId();
-            }
-            query+=");";
-            
-            PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
-        }else{
-            //OLD
-            String query="UPDATE xs_par_table ";
-            
 
-            
-            query+=" SET proj_id='" + this.projectID +"',level='" + level +"'";
-            if(this.UserId!=null)
-            query+=",user_id=" +this.UserId;
-            if(this.email!=null)
-                query+=",email='" +this.email + "'";
-            
-            if (this.approved!=null){
-                if (approvalDate==null){
-                    query+=",approval_date=NOW()";
-                }else{
-                    query+=",approval_date='" + approvalDate.toString() +"'";
-                }
-                query+=" ,approved=" + approved;
+        if (_requestId == null) {
+            // New request
+            StringBuilder query = new StringBuilder("INSERT INTO xs_par_table (proj_id, level, user_id");
+            if (_approved !=null) {
+                query.append(", approval_date, approved, approver_id");
             }
-            query+=" WHERE par_id=" + par_id + ";";
+            query.append(")");
+            query.append(" VALUES ('").append(_projectId).append("', '").append(_level).append("', ");
+            query.append(_userId != null ? _userId : "NULL");
+            if (_approved != null) {
+                if (_approvalDate == null) {
+                    query.append(", NOW()");
+                } else {
+                    query.append(", '").append(_approvalDate.toString()).append("'");
+                }
+                query.append(",").append(_approved).append(",").append(user.getXdatUserId());
+            }
+            query.append(");");
+            PoolDBUtils.ExecuteNonSelectQuery(query.toString(), user.getDBName(), user.getLogin());
+        } else {
+            // Existing request
+            StringBuilder query = new StringBuilder("UPDATE xs_par_table SET proj_id='");
+            query.append(_projectId).append("', level='").append(_level).append("'");
+
+            if(_userId != null) {
+                query.append(", user_id=").append(_userId);
+            }
+            if(_email != null) {
+                query.append(", email='").append(_email).append("'");
+            }
+            if (_approved != null) {
+                if (_approvalDate == null) {
+                    query.append(", approval_date=NOW()");
+                } else {
+                    query.append(", approval_date='").append(_approvalDate.toString()).append("'");
+                }
+                query.append(" ,approved=").append(_approved);
+            }
+
+            query.append(" WHERE par_id=").append(_requestId).append(";");
             
-            PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
+            PoolDBUtils.ExecuteNonSelectQuery(query.toString(), user.getDBName(), user.getLogin());
         }
     }
     
     /**
-     * @return the par_id
+     * @return the _requestId
      */
-    public Integer getPar_id() {
-        return par_id;
+    public Integer getRequestId() {
+        return _requestId;
     }
     /**
-     * @param par_id the par_id to set
+     * @param requestId the _requestId to set
      */
-    public void setPar_id(Integer par_id) {
-        this.par_id = par_id;
+    public void setRequestId(Integer requestId) {
+        _requestId = requestId;
     }
     
     /**
      * @param approved the approved to set
      */
     public void setApproved(boolean approved) {
-        this.approved = approved;
+        _approved = approved;
     }
     
-    public static ProjectAccessRequest RequestPARById(Integer id,XDATUser user){
+    public static ProjectAccessRequest RequestPARById(Integer id, XDATUser user) {
         return RequestPAR(" par_id=" + id, user);
     }
     
-    public static ProjectAccessRequest RequestPARByUserProject(Integer userId, String proj_id,XDATUser user){
-        return RequestPAR(" user_id=" + userId + " AND proj_id='" + proj_id + "'", user);
+    public static ProjectAccessRequest RequestPARByUserProject(Integer userId, String projectId, XDATUser user) {
+        return RequestPAR(" user_id=" + userId + " AND proj_id='" + projectId + "'", user);
     }
     
-    public static ArrayList<ProjectAccessRequest> RequestPARsByUserEmeail(String email,XDATUser user){
+    public static ArrayList<ProjectAccessRequest> RequestPARsByUserEmail(String email, XDATUser user) {
         return RequestPARs(" xs_par_table.email='" + email + "' AND approval_date IS NULL", user);
     }
 
-    public static ArrayList<ProjectAccessRequest> RequestPARsByProject(String p,XDATUser user){
+    public static ArrayList<ProjectAccessRequest> RequestPARsByProject(String p, XDATUser user) {
         return RequestPARs(" proj_id='" + p + "'", user);
     }
     
-    public static ArrayList<ProjectAccessRequest> RequestPARByUserApprovalDate(Integer userId, Date lastLogin,XDATUser user){
+    public static ArrayList<ProjectAccessRequest> RequestPARByUserApprovalDate(Integer userId, Date lastLogin, XDATUser user) {
         return RequestPARs(" user_id=" + userId + " AND (approval_date>'" + lastLogin + "' OR approval_date IS NULL)", user);
     }
     
-    public static ProjectAccessRequest RequestPAR(String wherequery,XDATUser user){
-        if (!ProjectAccessRequest.CREATED_PAR_TABLE){
-            CreatePARTable(user);
-        }
-        
-        String query="SELECT par_id,proj_id,level,create_date,user_id,approval_date,approved,approver_id,firstname || ' ' || lastname || '(' || xdat_user.email || ')' as user_string,xs_par_table.email FROM xs_par_table LEFT JOIN xdat_user ON xs_par_table.user_id=xdat_user.xdat_user_id WHERE "+wherequery +";";
+    public static ProjectAccessRequest RequestPAR(String where, XDATUser user) {
         try {
-            XFTTable t = XFTTable.Execute(query, GenericWrapperElement.GetElement("xdat:user").getDbName(), null);
-            
-            if (t.rows().size()>0){
-                Object[] row=(Object[])t.rows().get(0);
-                ProjectAccessRequest par = new ProjectAccessRequest();
-                if (row[0]!=null){
-                    par.setPar_id((Integer)row[0]);
-                }
-                
-                if (row[1]!=null){
-                    par.setProjectID((String)row[1]);
-                }
-                
-                if (row[2]!=null){
-                    par.setLevel((String)row[2]);
-                }
-                
-                if (row[3]!=null){
-                    par.setCreateDate((Date)row[3]);
-                }
-                
-                if (row[4]!=null){
-                    par.setUserId((Integer)row[4]);
-                }
-                
-                if (row[5]!=null){
-                    par.setApprovalDate((Date)row[5]);
-                }
-                
-                if (row[6]!=null){
-                    par.setApproved((Boolean)row[6]);
-                }
-                
-                if (row[7]!=null){
-                    par.setApprover_UserId((Integer)row[7]);
-                }
-                
-                if (row[8]!=null){
-                    par.setUserString((String)row[8]);
-                }
-                
-                if (row[9]!=null){
-                    par.setEmail((String)row[9]);
-                }
-                
-                return par;
-            }else{
-                return null;
-            }
-        } catch (SQLException e) {
-            logger.error("",e);
-            return null;
-        } catch (DBPoolException e) {
-            logger.error("",e);
-            return null;
-        } catch (Exception e) {
-            logger.error("",e);
+            String query = getPARQuery(where);
+            return new ProjectAccessRequest(query, user);
+        } catch (Exception exception) {
+            _logger.error("Error occurred while requesting project access request for user [" + user.getUsername() + "]: " + where, exception);
             return null;
         }
     }
     
-    public static ArrayList<ProjectAccessRequest> RequestPARs(String whereClause, XDATUser user){
+    public static ArrayList<ProjectAccessRequest> RequestPARs(String where, XDATUser user) {
         ArrayList<ProjectAccessRequest> PARs = new ArrayList<ProjectAccessRequest>();
         try {
-            if (!ProjectAccessRequest.CREATED_PAR_TABLE){
-                CreatePARTable(user);
-            }
-                String query="SELECT par_id,proj_id,level,create_date,user_id,approval_date,approved,approver_id,firstname || ' ' || lastname || '(' || xdat_user.email || ')' as user_string,xs_par_table.email FROM xs_par_table LEFT JOIN xdat_user ON xs_par_table.user_id=xdat_user.xdat_user_id WHERE " +whereClause + ";";
-                XFTTable t = XFTTable.Execute(query, user.getDBName(), user.getLogin());
-                
-                t.resetRowCursor();
-                while(t.hasMoreRows()){
-                    Object[] row=t.nextRow();
-                    ProjectAccessRequest par = new ProjectAccessRequest();
-                    if (row[0]!=null){
-                        par.setPar_id((Integer)row[0]);
-                    }
-                    
-                    if (row[1]!=null){
-                        par.setProjectID((String)row[1]);
-                    }
-                    
-                    if (row[2]!=null){
-                        par.setLevel((String)row[2]);
-                    }
-                    
-                    if (row[3]!=null){
-                        par.setCreateDate((Date)row[3]);
-                    }
-                    
-                    if (row[4]!=null){
-                        par.setUserId((Integer)row[4]);
-                    }
-                    
-                    if (row[5]!=null){
-                        par.setApprovalDate((Date)row[5]);
-                    }
-                    
-                    if (row[6]!=null){
-                        par.setApproved((Boolean)row[6]);
-                    }
-                    
-                    if (row[7]!=null){
-                        par.setApprover_UserId((Integer)row[7]);
-                    }
-                    
-                    if (row[8]!=null){
-                        par.setUserString((String)row[8]);
-                    }
-                    
-                    if (row[9]!=null){
-                        par.setEmail((String)row[9]);
-                    }
-                    
-                    PARs.add(par);
-                }
-        } catch (SQLException e) {
-            logger.error("",e);
-        } catch (Exception e) {
-            logger.error("",e);
+            String query = getPARQuery(where);
+            ProjectAccessRequest par = new ProjectAccessRequest(query, user);    
+            PARs.add(par);
+        } catch (Exception exception) {
+            _logger.error("Error occurred while requesting project access requests for user [" + user.getUsername() + "]: " + where, exception);
         }
-        
         return PARs;
     }
     
-    public static void CreatePAR(String pID,String level,XDATUser user){
+    public static void CreatePAR(String pID, String level, XDATUser user){
         try {
-            if (!ProjectAccessRequest.CREATED_PAR_TABLE){
-                CreatePARTable(user);
+            if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+                CreatePARTable();
             }
             
- 			level=StringUtils.RemoveChar(level, '\'');
-            String query="INSERT INTO xs_par_table (proj_id,user_id,level)" +
-                    " VALUES ('" + pID +"'," + user.getID() +",'" + level +"');";
-            
+            String query = String.format("INSERT INTO xs_par_table (proj_id,user_id,level) VALUES ('%s', %d, '%s');", pID, user.getID(), StringUtils.RemoveChar(level, '\''));
             PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
         } catch (SQLException e) {
-            logger.error("",e);
+            _logger.error("", e);
         } catch (Exception e) {
-            logger.error("",e);
+            _logger.error("", e);
         }
     }
 
 
-    public static void CreatePARTable(XDATUser user){
+    public static synchronized void CreatePARTable() {
         try {
-            if (!CREATED_PAR_TABLE){
+            if (!CREATED_PAR_TABLE) {
                 
-                String query ="SELECT relname FROM pg_catalog.pg_class WHERE  relname=LOWER('xs_par_table');";
-                String exists =(String)PoolDBUtils.ReturnStatisticQuery(query, "relname", user.getDBName(), user.getLogin());
+                String query = "SELECT relname FROM pg_catalog.pg_class WHERE relname = LOWER('xs_par_table');";
+                String exists = (String) PoolDBUtils.ReturnStatisticQuery(query, "relname", PoolDBUtils.getDefaultDBName(), null);
                
-                if (exists!=null){
+                if (exists != null) {
                     CREATED_PAR_TABLE=true;
                     
                     //check for email column (added 6/2/08)
                     boolean containsEmail = false;
                     PoolDBUtils con = new PoolDBUtils();
-                    XFTTable t = con.executeSelectQuery("select LOWER(attname) as col_name,typname, attnotnull from pg_attribute, pg_class,pg_type where attrelid = pg_class.oid AND atttypid=pg_type.oid AND attnum>0 and LOWER(relname) = 'xs_par_table';",user.getDBName(),null);
-        			while (t.hasMoreRows())
-        			{
+                    XFTTable t = con.executeSelectQuery("select LOWER(attname) as col_name,typname, attnotnull from pg_attribute, pg_class,pg_type where attrelid = pg_class.oid AND atttypid=pg_type.oid AND attnum>0 and LOWER(relname) = 'xs_par_table';", PoolDBUtils.getDefaultDBName(), null);
+        			while (t.hasMoreRows()) {
         				t.nextRow();
-        				if (t.getCellValue("col_name").toString().equals("email")){
+        				if (t.getCellValue("col_name").toString().equals("email")) {
         					containsEmail =true;
         					break;
         				}
         			}
         			
-        			if (!containsEmail){
+        			if (!containsEmail) {
         				query = "ALTER TABLE xs_par_table ADD COLUMN email VARCHAR(255);";
-        				PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
+        				PoolDBUtils.ExecuteNonSelectQuery(query, PoolDBUtils.getDefaultDBName(), null);
         			}
-                }else{
+                } else {
                     query = "CREATE TABLE xs_par_table"+
                     "\n("+
                     "\n  par_id SERIAL,"+
@@ -468,110 +369,150 @@ public class ProjectAccessRequest {
                     "\n) "+
                     "\nWITH OIDS;";
                     
-                    PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
-                    
-                    CREATED_PAR_TABLE=true;
+                    PoolDBUtils.ExecuteNonSelectQuery(query, PoolDBUtils.getDefaultDBName(), null);
+                    CREATED_PAR_TABLE = true;
                 }
             }
-        } catch (SQLException e) {
-            logger.error("",e);
-        } catch (Exception e) {
-            logger.error("",e);
+        } catch (Exception exception) {
+            _logger.error("Error occurred while creating PAR table", exception);
         }
     }
     
-    public static void InviteUser(Context context,String otherUemail,XDATUser user,String subject) throws Exception{
-    	XnatProjectdata project = (XnatProjectdata)context.get("projectOM");
+    public static void InviteUser(Context context, String invitee, XDATUser user, String subject) throws Exception {
+    	XnatProjectdata project = (XnatProjectdata) context.get("projectOM");
     	ProjectAccessRequest request = null;
 		try {
-	         if (!ProjectAccessRequest.CREATED_PAR_TABLE){
-	             CreatePARTable(user);
+	         if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+	             CreatePARTable();
 	         }
 	         
-	         otherUemail=StringUtils.RemoveChar(otherUemail, '\'');
+	         invitee = StringUtils.RemoveChar(invitee, '\'');
 	         
-	         String query="INSERT INTO xs_par_table (email,proj_id,approver_id,level)" +
-	                 " VALUES ('" + otherUemail + "','" + project.getId() +"'," + user.getID() +",'" + context.get("access_level") +"');";
+	         StringBuilder query = new StringBuilder("INSERT INTO xs_par_table (email,proj_id,approver_id,level) VALUES ('");
+             query.append(invitee).append("', '").append(project.getId()).append("', ").append(user.getID()).append(", '").append(context.get("access_level")).append("');");
 	         
-	         PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
+	         PoolDBUtils.ExecuteNonSelectQuery(query.toString(), user.getDBName(), user.getLogin());
 	         
-	         request = RequestPAR(" xs_par_table.email='" + otherUemail + "' AND proj_id='" + project.getId() + "' AND approved IS NULL", user);
-	    } catch (SQLException e) {
-	         logger.error("",e);
-	    } catch (Exception e) {
-	         logger.error("",e);
+	         request = RequestPAR("xs_par_table.email = '" + invitee + "' AND proj_id = '" + project.getId() + "' AND approved IS NULL", user);
+	    } catch (SQLException exception) {
+	         _logger.error("Error occurred while running SQL query", exception);
+	    } catch (Exception exception) {
+	         _logger.error("General error occurred when inviting user " + invitee, exception);
 	    }	
 	    
 	    context.put("par", request);
 	
-        StringWriter sw = new StringWriter();
-        Template template =Velocity.getTemplate("/screens/InviteProjectAccessEmail.vm");
-        template.merge(context,sw);
-        String message= sw.toString();
+        StringWriter writer = new StringWriter();
+        Template template = Velocity.getTemplate("/screens/InviteProjectAccessEmail.vm");
+        template.merge(context, writer);
 
         String bcc = null;
-        if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
+        if (ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()) {
 	        bcc = AdminUtils.getAdminEmailId();
         }
         
         String from = AdminUtils.getAdminEmailId();
 
         try {
-            XDAT.getMailService().sendHtmlMessage(from, otherUemail, user.getEmail(), bcc, subject, message);
+            XDAT.getMailService().sendHtmlMessage(from, invitee, user.getEmail(), bcc, subject, writer.toString());
         } catch (MessagingException exception) {
-            logger.error("Unable to send mail", exception);
+            _logger.error("Unable to send mail", exception);
             throw exception;
         }
     }
     
-    public void process(XDATUser user,boolean accept, EventUtils.TYPE t, String reason, String comment) throws Exception{
-    	this.setUserId(user.getXdatUserId());
-		this.setApproved(accept);
-		this.setApprovalDate(Calendar.getInstance().getTime());
-		this.save(user);
-		
-		this.moveOtherPARs(user);
+    public List<String> process(XDATUser user, boolean accept, EventUtils.TYPE eventType, String reason, String comment) throws Exception {
+        return process(user, accept, eventType, reason, comment, true);
+    }
 
-		if(accept){			
-		final String projectID = this.getProjectID();
+    private List<String> process(final XDATUser user, final boolean accept, final EventUtils.TYPE eventType, final String reason, final String comment, final boolean processRelated) throws Exception {
 
+        final String parEmail = getEmail();
 
-			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, null, false);
+    	setUserId(user.getXdatUserId());
+		setApproved(accept);
+		setApprovalDate(Calendar.getInstance().getTime());
+        if (!org.apache.commons.lang.StringUtils.equalsIgnoreCase(parEmail, user.getEmail())) {
+            setEmail(user.getEmail());
+        }
+        save(user);
+
+		if (accept) {
+
+			XnatProjectdata project = getXnatProjectdatasById(_projectId, null, false);
 			
-			PersistentWorkflowI wrk=WorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,projectID,projectID,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, t, EventUtils.ADD_USER_TO_PROJECT, reason, comment));
-			EventMetaI c=wrk.buildEvent();
+			PersistentWorkflowI workflow = WorkflowUtils.getOrCreateWorkflowData(null, user, SCHEMA_ELEMENT_NAME, _projectId, _projectId, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, eventType, EventUtils.ADD_USER_TO_PROJECT, reason, comment));
+			EventMetaI eventInfo = workflow.buildEvent();
 
 			try {
 				for (Map.Entry<String, UserGroup> entry : user.getGroups().entrySet()) {
-					if (entry.getValue().getTag().equals(projectID)) {
+					if (entry.getValue().getTag().equals(_projectId)) {
 						for (XdatUserGroupid map : user.getGroups_groupid()) {
 							if (map.getGroupid().equals(entry.getValue().getId())) {
-								if(!map.getGroupid().endsWith("_owner"))
-								SaveItemHelper.authorizedDelete(map.getItem(), user,c);
-									
+								if(!map.getGroupid().endsWith("_owner")) {
+								    SaveItemHelper.authorizedDelete(map.getItem(), user,eventInfo);
+                                }
 							}
 						}
 					}
 				}
 
-				String level = this.getLevel();
-
-				if (!level.startsWith(project.getId())) {
-					level = project.getId() + "_" + level;
+				if (!_level.startsWith(project.getId())) {
+					_level = project.getId() + "_" + _level;
 				}
-				user.addGroup(project.addGroupMember(level, user, user,c,true));
 
-				WorkflowUtils.complete(wrk, c);
+				user.addGroup(project.addGroupMember(_level, user, user, eventInfo, true));
+
+				WorkflowUtils.complete(workflow, eventInfo);
 				
 				try {
 					ItemAccessHistory.LogAccess(user, project.getItem(), "report");
 				} catch (Throwable e) {
-					logger.error("",e);
+					_logger.error("", e);
 				}
 			} catch (Exception e) {
-				WorkflowUtils.fail(wrk, c);
+				WorkflowUtils.fail(workflow, eventInfo);
 				throw e;
 			}
-		}
+        }
+
+        List<String> processedProjects = new ArrayList<String>() {{
+            add(getProjectByIDorAlias(getProjectId(), user, false).getDisplayName());
+        }};
+        if (processRelated) {
+            processedProjects.addAll(processRelatedPARs(parEmail, user, accept, eventType, reason, comment));
+        }
+        return processedProjects;
     }
+
+    private List<String> processRelatedPARs(String parEmail, XDATUser user, boolean accept, EventUtils.TYPE eventType, String reason, String comment) {
+        List<String> processedProjects = new ArrayList<String>();
+        List<ProjectAccessRequest> parsForEmail = RequestPARsByUserEmail(parEmail, user);
+        for(ProjectAccessRequest par : parsForEmail) {
+            try {
+                processedProjects.addAll(par.process(user, accept, eventType, reason, comment, false));
+            } catch (Exception exception) {
+                _logger.error("Error occurred trying to process project access request " + par.getRequestId());
+            }
+        }
+        return processedProjects;
+    }
+
+    private static String getPARQuery(String where) {
+        return String.format(QUERY_GET_PAR, where);
+    }
+
+    private static final Logger _logger = Logger.getLogger(ProjectAccessRequest.class);
+    private static final String QUERY_GET_PAR = "SELECT par_id, proj_id, level, create_date, user_id, approval_date, approved, approver_id, firstname || ' ' || lastname || '(' || xdat_user.email || ')' as user_string, xs_par_table.email FROM xs_par_table LEFT JOIN xdat_user ON xs_par_table.user_id = xdat_user.xdat_user_id WHERE %s;";
+
+    private Integer _requestId = null;
+    private String _projectId = null;
+    private String _level = null;
+    private String _email = null;
+    private Integer _userId = null;
+    private Date _createDate = null;
+    private Date _approvalDate = null;
+    private Integer _approverUserId = null;
+    private Boolean _approved = null;
+    private String _userString = null;
 }

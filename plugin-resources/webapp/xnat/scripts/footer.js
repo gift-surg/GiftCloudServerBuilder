@@ -439,8 +439,7 @@ jq(window).load(function(){
 
     };
 
-    //jq('input[type="button"],input[type="submit"],input[type="reset"],button').addClass('btn2');
-
+    // if we ever want to kill the left bar, just add "no_left_bar" class to <body>
     //jq('body.no_left_bar').find('td.leftBar').remove();
 
 //    // This shouldn't execute if you aren't on the user edit page!!!!!
@@ -455,9 +454,6 @@ jq(window).load(function(){
 //    jq('.validate_email').click(function(){
 //        emailValidate('input.email_format',false,false);
 //    });
-
-
-
 
 
 // end footer.js

@@ -4,12 +4,13 @@
 #* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
 #* @vtlvariable name="arc" type="org.nrg.xdat.om.ArcArchivespecification" *#
 #* @vtlvariable name="link" type="org.apache.turbine.util.template.TemplateLink" *#
-<script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
+<script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
 <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
 <style type="text/css">
     #launchUploadAppletForm .select_label { display: inline-block ; width: 100px ; text-align: left ; }
     #launchUploadAppletForm th { padding: 0 ; }
     #launchUploadAppletForm tr { height: 25px ; line-height: 25px ; vertical-align: middle ; }
+    #cal_session_date { margin-left: 4px ; padding: 2px 4px ; }
 </style>
 <form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")' method="post" target='_self' >
             <h3>Upload Image $displayManager.getPluralDisplayNameForImageSession()</h3>

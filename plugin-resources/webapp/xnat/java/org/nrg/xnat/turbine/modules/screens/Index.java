@@ -29,7 +29,7 @@ public class Index extends SecureScreen {
         	context.put("node", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("node",data)));
         }
         
-        ProjectAccessRequest.CreatePARTable(user);
+        ProjectAccessRequest.CreatePARTable();
         
         if (user.getEmail()==null)
         {

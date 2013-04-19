@@ -144,24 +144,8 @@ function showWarningDialog(dialog) {
     enableButtons(dialog);
     synchronizingCookies.dialogDisplay.set("true");
     dialog.show();
-    // don't make it any more complicated than necessary - just hide the thing
+    // just hide the thing (with visibility:hidden) so it holds a space on the page
     $('applet').css('visibility','hidden');
-//    if ($('body').hasClass('applet')){
-//        var $applet = $('applet');
-//        $applet.after('<div id="applet_shim"></div>');
-//        var applet_pos = $applet.offset();
-//        var applet_width = $applet.width();
-//        var applet_height = $applet.height();
-//        var $applet_shim = $('#applet_shim');
-//        $applet_shim.css({
-//            position: 'fixed',
-//            left: applet_pos.left,
-//            top: applet_pos.top,
-//            width: applet_width,
-//            height: applet_height
-//        });
-//        coverApplet($applet_shim);
-//    }
 }
 
 /**
@@ -171,14 +155,7 @@ var handleOk = function () {
     hideWarningDialog(warningDialog);
     touchCallback.startTime = new Date().getTime();
     YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/data/version?XNAT_CSRF=' + window.csrfToken,touchCallback,null);
-    // don't make it any more complicated than necessary - just show the thing
     $('applet').css('visibility','visible');
-//    $('applet').show();
-//    if ($('body').hasClass('applet')){
-//        var $applet_shim = $('#applet_shim');
-//        unCoverApplets($applet_shim);
-//        $applet_shim.detach();
-//    }
 };
 
 /**
@@ -190,12 +167,6 @@ var handleCancel = function () {
     locals.warningDisplayedOnce = true;
     // don't make it any more complicated than necessary - just show the thing
     $('applet').css('visibility','visible');
-//    $('applet').show();
-//    if ($('body').hasClass('applet')){
-//        var $applet_shim = $('#applet_shim');
-//        unCoverApplets($applet_shim);
-//        $applet_shim.detach();
-//    }
 };
 
 /**

@@ -322,19 +322,6 @@ public final class SessionData implements Serializable {
 			this.setTimeZone((String)o);
 		}
 		return this;
-	}	
-	public String getTimeZone() {
-		return timeZone;
-	}
-	public SessionData setTimeZone(String timeZone) {
-		this.timeZone = timeZone;
-		return this;
-	}
-	public SessionData setTimeZone(Object o) {
-		if (null != o) {
-			this.setTimeZone((String)o);
-		}
-		return this;
 	}
 	public SessionDataTriple getSessionDataTriple(){
 		return sessionTriple;

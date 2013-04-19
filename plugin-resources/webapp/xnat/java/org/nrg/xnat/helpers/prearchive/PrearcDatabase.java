@@ -514,9 +514,6 @@ public final class PrearcDatabase {
                     if (!Strings.isNullOrEmpty(source)) {
                     	params.put("SOURCE", source);
                     }
-                    if (!Strings.isNullOrEmpty(timezone)) {
-                       	params.put("TIMEZONE", timezone);
-                    }
                     
                     try {
                         final Boolean r = new XNATSessionBuilder(sessionDir, new File(sessionDir.getPath() + ".xml"), true, params).call();	        

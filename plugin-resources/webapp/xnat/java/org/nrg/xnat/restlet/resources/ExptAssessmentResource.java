@@ -115,7 +115,7 @@ public class ExptAssessmentResource extends ItemResource {
 
 		try {
 			XFTItem template=null;
-			if (existing!=null){
+			if (existing!=null && !this.isQueryVariableTrue("allowDataDeletion")){
 				template=existing.getItem();
 			}
 

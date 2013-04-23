@@ -800,21 +800,15 @@ function showMessage(divId, title, body,options) {
 	if(options.width==undefined){
 		options.width="20em";
 	}
-	if(options.height==undefined){
-		options.height="''";
-	}
-    var dialog = new YAHOO.widget.SimpleDialog("dialog"+ msgC++, {
-        width:options.width,
-        height:options.height,
-        close:false,
-        fixedcenter:true,
-        constraintoviewport:true,
-        modal:true,
-        icon:YAHOO.widget.SimpleDialog.ICON_WARN,
-        visible:true,
-        draggable:false,
-        buttons: [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }]
-    });
+	options.close=false;
+	options.fixedcenter=true;
+	options.constraintoviewport=true;
+	options.modal=true;
+	options.icon=YAHOO.widget.SimpleDialog.ICON_WARN;
+	options.visible=true;
+	options.draggable=false;
+	options.buttons= [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }];
+    var dialog = new YAHOO.widget.SimpleDialog("dialog"+ msgC++, options);
 
     dialog.render(document.getElementById(divId));
     dialog.setHeader(title);
@@ -823,7 +817,6 @@ function showMessage(divId, title, body,options) {
     dialog.show();
     return dialog;
 }
-
 
 
 function toggle_ul(n){

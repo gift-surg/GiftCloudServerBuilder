@@ -330,7 +330,7 @@ function verifyExptId(obj) {
 
 					if (match != null) {
 
-						document.getElementById(elementName + "/ID").value = match.id;
+						document.getElementById(elementName + "/ID").value = match.ID;
 						document.getElementById(elementName + "/label").verified = true;
 
 						XNAT.app.handleMatch();

@@ -356,7 +356,8 @@ function verifyExptId(obj) {
 }
 
 XNAT.app.handleMatch=function(){
-	document.getElementById("label_msg").innerHTML = "* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". <ul><li>Select append to only add new content to existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".</li><li>Select overwrite to overwrite existing content.</li></ul>";
-	if (document.getElementById("label_opts").innerHTML == "")
-		document.getElementById("label_opts").innerHTML = "<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
+	document.getElementById("label_msg").innerHTML = "* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".";
+//	if (document.getElementById("label_opts").innerHTML == "")
+//      removed when new archive validator was added
+//		document.getElementById("label_opts").innerHTML = "<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";
 }

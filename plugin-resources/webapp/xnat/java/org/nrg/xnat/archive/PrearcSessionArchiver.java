@@ -52,10 +52,13 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author Kevin A. Archie <karchie@wustl.edu>
@@ -85,6 +88,7 @@ import org.xml.sax.SAXException;
  *
  */
 public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
+
 	public static final String MERGED = "Merged";
 
 	private static final String TRIGGER_PIPELINES = "triggerPipelines";
@@ -98,6 +102,8 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	public static final String LABEL_MOD = "Invalid modification of session label via archive process.";
 
 	public static final String UID_MOD = "Invalid modification of session UID via archive process.";
+
+	public static final String MODALITY_MOD = "Invalid modification of session modality via archive process.  Data may require a manual merge.";
 
 	public static final String LABEL2 = "label";
 
@@ -185,20 +191,24 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		String label = (String)params.get(PARAM_SESSION);
 		
 		if(StringUtils.isEmpty(label)){
+			label = (String)params.get(src.getXSIType()+"/label");
+		}
+		
+		if(StringUtils.isEmpty(label)){
 			label = (String)params.get(URIManager.EXPT_LABEL);
-			}
+		}
 
 		if(StringUtils.isEmpty(label)){
 			label = (String)params.get(LABEL2);
-			}
-
-		if (StringUtils.isEmpty(label)) {
-		    label = src.getId();
 		}
 
         if (StringUtils.isEmpty(label)) {
             label = prearcSession.getFolderName();
         }
+
+		if (StringUtils.isEmpty(label)) {
+		    label = src.getId();
+		}
 
 		if (StringUtils.isNotEmpty(label)) {
 			src.setLabel(XnatImagesessiondata.cleanValue(label));
@@ -261,7 +271,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 		if (null == subject) {
 			if(!allowNewSubject){
-				throw new ServerException("Unable to create new subject ID"); 
+				return;
 			}
 			processing("creating new subject");
 			subject = new XnatSubjectdata((UserI)user);
@@ -328,9 +338,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	protected void preventConcurrentArchiving(final String id, final XDATUser user) throws ClientException {
 		if(!allowDataDeletion){//allow overriding of this behavior via the overwrite parameter
 			Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user, id);
-			if (!wrks.isEmpty()){
+			if(!wrks.isEmpty()){
 				this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getOnlyPipelineName());
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getOnlyPipelineName(),new Exception());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing may already be in progress: " + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getOnlyPipelineName() + ".  Concurrent modification is discouraged.",new Exception());
 			}
 		}
 	}
@@ -407,6 +417,12 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				failed(PROJ_MOD);
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
 			}
+
+			//check if the XSI types match
+			if(!StringUtils.equals(existing.getXSIType(), src.getXSIType())){
+				failed(MODALITY_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,MODALITY_MOD, new Exception());
+			}
 	
 			if(!StringUtils.equals(existing.getSubjectId(),src.getSubjectId())){
 				String subjectId = existing.getLabel();
@@ -431,180 +447,193 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public String call()  throws ClientException,ServerException {
-		if(StringUtils.isEmpty(project)){
-			failed("unable to identify destination project");
-			throw new ClientException("unable to identify destination project", new Exception());
+		try {
+			this.lock(this.prearcSession.getUrl());
+		} catch (LockedItemException e3) {
+			throw new ClientException(Status.CLIENT_ERROR_LOCKED, "Duplicate archive attempt.  Preachive session already archiving.",e3);
 		}
-		populateAdditionalFields();
-
-		fixSessionLabel();
-		
-		final XnatImagesessiondata existing=retrieveExistingExpt();
-		
-		if(existing==null){
-			try {
-				if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
-			} catch (Exception e) {
-				failed("unable to create new session ID");
-				throw new ServerException("unable to create new session ID", e);
-			}
-		}else{
-			src.setId(existing.getId());
-			preventConcurrentArchiving(existing.getId(),user);
-		}
-		
-
-		
-		final PersistentWorkflowI workflow;
-		final EventMetaI c;
 		
 		try {
-			String justification=(String)params.get(EventUtils.EVENT_REASON);
-			if(justification==null){
-				justification="standard upload";
+			if(StringUtils.isEmpty(project)){
+				failed("unable to identify destination project");
+				throw new ClientException("unable to identify destination project", new Exception());
 			}
-			workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), (existing==null)?EventUtils.TRANSFER:MERGED, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
-			workflow.setStepDescription("Validating");
-			c=workflow.buildEvent();
-			try {
-				PersistentWorkflowUtils.save(workflow,c);
-			} catch (Exception e) {
-				throw new ServerException(e);
-			}
-		} catch (JustificationAbsent e2) {
-			throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e2);
-		} catch (EventRequirementAbsent e2) {
-			throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e2);
-		}
+			populateAdditionalFields();
 
-		fixSubject(c,true);
-
-		
-		try {
-			processing("validating loaded data");
-			validateSesssion();
-
-			final File arcSessionDir = getArcSessionDir();
-
-			if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
-
-			if(arcSessionDir.exists()){
-				this.setStep("Merging", workflow,c);
-				processing("merging files data with existing session");
-			}else{
-				this.setStep("Archiving", workflow,c);
-				processing("archiving session");
-			}
-
-			final boolean shouldForceQuarantine;
-			if(params.containsKey(ViewManager.QUARANTINE) && params.get(ViewManager.QUARANTINE).toString().equalsIgnoreCase("true")){
-				shouldForceQuarantine=true;
-			}else{
-				shouldForceQuarantine=false;
-			}
-
-			final EventMetaI savetime=workflow.buildEvent();
-			SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
-				public void save(XnatImagesessiondata merged) throws Exception {					
-					if(SaveItemHelper.authorizedSave(merged,user,false,false,c)){
-						user.clearLocalCache();
-						try {
-							MaterializedView.DeleteByUser(user);
-						} catch (Exception e) {
-							logger.error("",e);
-						}
-						
-						try {
-							if (shouldForceQuarantine) {
-								src.quarantine(user);
-							} else {
-								final XnatProjectdata proj = src.getPrimaryProject(false);
-								if (null != proj.getArcSpecification().getQuarantineCode() &&
-										proj.getArcSpecification().getQuarantineCode().equals(1)) {
-									src.quarantine(user);
-								}
-							}
-						} catch (Exception e) {
-							logger.error("",e);
-						}
-					}
+			fixSessionLabel();
+			
+			final XnatImagesessiondata existing=retrieveExistingExpt();
+			
+			if(existing==null){
+				try {
+					if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
+				} catch (Exception e) {
+					failed("unable to create new session ID");
+					throw new ServerException("unable to create new session ID", e);
 				}
-			};
-
-			ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),
-																			 this.prearcSession.getSessionDir(),
-																			 src,
-																			 src.getPrearchivepath(),
-																			 arcSessionDir,
-																			 existing,
-																			 arcSessionDir.getAbsolutePath(),
-																			 overwrite, 
-																			 (allowDataDeletion)?allowDataDeletion:overwrite_files,
-																			 saveImpl,user,workflow.buildEvent())).call();
-
-			org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));
-			org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession.getSessionDir());
-			File timestampedDir = new File(this.prearcSession.getSessionDir().getParent());
-			File projectDir = timestampedDir.getParentFile();
-			if (timestampedDir.listFiles().length == 0)  {
-				org.nrg.xft.utils.FileUtils.DeleteFile(timestampedDir);
-			}
-			if (projectDir.listFiles().length == 0)  {
-				// to keep things tidy, also direct the project-level dir if it's empty
-				org.nrg.xft.utils.FileUtils.DeleteFile(projectDir);
-			}
-
-			try {
-				workflow.setStepDescription(PersistentWorkflowUtils.COMPLETE);
-				workflow.setStatus(PersistentWorkflowUtils.COMPLETE);
-				PersistentWorkflowUtils.save(workflow,c);
-				if(workflow instanceof WrkWorkflowdata){
-					((WrkWorkflowdata)workflow).postSave();
+			}else{
+				try{
+					lock(existing.getId());
+				} catch (LockedItemException e3) {
+					throw new ClientException(Status.CLIENT_ERROR_LOCKED, "Duplicate archive attempt.  Destination session in use.",e3);
 				}
-			} catch (Exception e1) {
-				logger.error("", e1);
+				src.setId(existing.getId());
+				preventConcurrentArchiving(existing.getId(),user);
 			}
 			
-			postArchive(user,src,params);
 
-			if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
-				TriggerPipelines tp=new TriggerPipelines(src,false,user,waitFor);
-				tp.call();
-			}
-		} catch (ServerException e) {
+			
+			final PersistentWorkflowI workflow;
+			final EventMetaI c;
+			
 			try {
-				workflow.setStatus(PersistentWorkflowUtils.FAILED);
-				PersistentWorkflowUtils.save(workflow,c);
-				if(workflow instanceof WrkWorkflowdata){
-					((WrkWorkflowdata)workflow).postSave();
+				String justification=(String)params.get(EventUtils.EVENT_REASON);
+				if(justification==null){
+					justification="standard upload";
 				}
-			} catch (Exception e1) {
-				logger.error("", e1);
+				workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), (existing==null)?EventUtils.TRANSFER:MERGED, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
+				workflow.setStepDescription("Validating");
+				c=workflow.buildEvent();
+				
+			} catch (JustificationAbsent e2) {
+				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e2);
+			} catch (EventRequirementAbsent e2) {
+				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e2);
 			}
-			throw e;
+
+			fixSubject(c,true);
+
+			
+			try {
+				processing("validating loaded data");
+				validateSesssion();
+
+				final File arcSessionDir = getArcSessionDir();
+
+				if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
+
+				if(arcSessionDir.exists()){
+					processing("merging files data with existing session");
+				}else{
+					processing("archiving session");
+				}
+
+				final boolean shouldForceQuarantine;
+				if(params.containsKey(ViewManager.QUARANTINE) && params.get(ViewManager.QUARANTINE).toString().equalsIgnoreCase("true")){
+					shouldForceQuarantine=true;
+				}else{
+					shouldForceQuarantine=false;
+				}
+
+				final EventMetaI savetime=workflow.buildEvent();
+				SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
+					public void save(XnatImagesessiondata merged) throws Exception {					
+						if(SaveItemHelper.authorizedSave(merged,user,false,false,c)){
+							user.clearLocalCache();
+							try {
+								MaterializedView.DeleteByUser(user);
+							} catch (Exception e) {
+								logger.error("",e);
+							}
+							
+							try {
+								if (shouldForceQuarantine) {
+									src.quarantine(user);
+								} else {
+									final XnatProjectdata proj = src.getPrimaryProject(false);
+									if (null != proj.getArcSpecification().getQuarantineCode() &&
+											proj.getArcSpecification().getQuarantineCode().equals(1)) {
+										src.quarantine(user);
+									}
+								}
+							} catch (Exception e) {
+								logger.error("",e);
+							}
+						}
+					}
+				};
+
+				ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),
+																				 this.prearcSession.getSessionDir(),
+																				 src,
+																				 src.getPrearchivepath(),
+																				 arcSessionDir,
+																				 existing,
+																				 arcSessionDir.getAbsolutePath(),
+																				 overwrite, 
+																				 (allowDataDeletion)?allowDataDeletion:overwrite_files,
+																				 saveImpl,user,workflow.buildEvent())).call();
+
+				org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));
+				org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession.getSessionDir());
+				File timestampedDir = new File(this.prearcSession.getSessionDir().getParent());
+				File projectDir = timestampedDir.getParentFile();
+				if (timestampedDir.listFiles().length == 0)  {
+					org.nrg.xft.utils.FileUtils.DeleteFile(timestampedDir);
+				}
+				if (projectDir.listFiles().length == 0)  {
+					// to keep things tidy, also direct the project-level dir if it's empty
+					org.nrg.xft.utils.FileUtils.DeleteFile(projectDir);
+				}
+
+				try {
+					workflow.setStepDescription(PersistentWorkflowUtils.COMPLETE);
+					WorkflowUtils.complete(workflow, workflow.buildEvent());
+					
+				} catch (Exception e1) {
+					logger.error("", e1);
+				}
+				
+				postArchive(user,src,params);
+
+				if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
+					TriggerPipelines tp=new TriggerPipelines(src,false,user,waitFor);
+					tp.call();
+				}
+			} catch (ServerException e) {
+				//PER Dan, Don't log failed archive operations
+//			try {
+//				workflow.setStatus(PersistentWorkflowUtils.FAILED);
+//				PersistentWorkflowUtils.save(workflow,c);
+//				if(workflow instanceof WrkWorkflowdata){
+//					((WrkWorkflowdata)workflow).postSave();
+//				}
+//			} catch (Exception e1) {
+//				logger.error("", e1);
+//			}
+				throw e;
+			} catch (ClientException e) {
+				//PER Dan, Don't log failed archive operations
+//			try {
+//				workflow.setStatus(PersistentWorkflowUtils.FAILED);
+//				PersistentWorkflowUtils.save(workflow,c);
+//				if(workflow instanceof WrkWorkflowdata){
+//					((WrkWorkflowdata)workflow).postSave();
+//				}
+//			} catch (Exception e1) {
+//				logger.error("", e1);
+//			}
+				throw e;
+			} catch (Throwable e) {
+				//PER Dan, Don't log failed archive operations
+//			try {
+//				workflow.setStatus(PersistentWorkflowUtils.FAILED);
+//				PersistentWorkflowUtils.save(workflow,c);
+//				if(workflow instanceof WrkWorkflowdata){
+//					((WrkWorkflowdata)workflow).postSave();
+//				}
+//			} catch (Exception e1) {
+//				logger.error("", e1);
+//			}
+				logger.error("",e);
+				throw new ServerException(e.getMessage(),new Exception());
+			}
 		} catch (ClientException e) {
-			try {
-				workflow.setStatus(PersistentWorkflowUtils.FAILED);
-				PersistentWorkflowUtils.save(workflow,c);
-				if(workflow instanceof WrkWorkflowdata){
-					((WrkWorkflowdata)workflow).postSave();
-				}
-			} catch (Exception e1) {
-				logger.error("", e1);
-			}
 			throw e;
-		} catch (Throwable e) {
-			try {
-				workflow.setStatus(PersistentWorkflowUtils.FAILED);
-				PersistentWorkflowUtils.save(workflow,c);
-				if(workflow instanceof WrkWorkflowdata){
-					((WrkWorkflowdata)workflow).postSave();
-				}
-			} catch (Exception e1) {
-				logger.error("", e1);
-			}
-			logger.error("",e);
-			throw new ServerException(e.getMessage(),new Exception());
+		} catch (ServerException e) {
+			throw e;
+		}finally{
+			unlock();
 		}
 
 		final String url = buildURI(project,src);
@@ -632,15 +661,6 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	     } catch (Exception exception) {
 	         throw new RuntimeException(exception);
 	     }
-	}
-	
-	public void setStep(String step,PersistentWorkflowI workflow,EventMetaI c){
-		try {
-			workflow.setStepDescription(step);
-			PersistentWorkflowUtils.save(workflow,c);
-		} catch (Exception e1) {
-			logger.error("", e1);
-		}
 	}
 
 	public void validateSesssion() throws ServerException{
@@ -675,4 +695,50 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		return urlb.toString();
 	}
 
+	
+	/************************************
+	 * We used to use the workflow table to implement locking of the destination session when merging.
+	 * We did so by saving the workflow entry towards the begenning of the archive process (the call method), and checking to see
+	 * if there were any others open.
+	 * However, Dan (and Jenny) requested that we only save the workflow entry if the job completes. So, that approach won't work anymore.
+	 * 
+	 * We should prevent multiple processes from archiving the same prearchived session at the same time.
+	 * And, we should prevent multiple sessions from being merged into a single archived session at the same time.
+	 * 
+	 * So, for now, I'll add a static List to track locked prearchived sessions and archived sessions.
+	 */
+	//tracks all of the strings locked by any archiver
+	private static List<String> GLOBAL_LOCKS=Lists.newArrayList();
+	private static synchronized void requestLock(String id) throws LockedItemException{
+		if(GLOBAL_LOCKS.contains(id)){
+			throw new LockedItemException();
+		}
+		
+		//free to go
+		GLOBAL_LOCKS.add(id);
 	}
+	
+	private static synchronized void releaseLock(String id){
+		if(GLOBAL_LOCKS.contains(id)){
+			GLOBAL_LOCKS.remove(id);
+		}
+	}
+	
+	//used to track the strings that have been locked for this particular archiver instance
+	private List<String> local_locks=Lists.newArrayList();
+	private void lock(String s) throws LockedItemException{
+		PrearcSessionArchiver.requestLock(s);
+		local_locks.add(s);
+	}
+	
+	private void unlock(){
+		for(String lock: local_locks){
+			PrearcSessionArchiver.releaseLock(lock);
+		}
+	}
+	
+	private static class LockedItemException extends Exception {
+		private static final long serialVersionUID = 1L;
+
+	}
+}

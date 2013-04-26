@@ -273,7 +273,7 @@ YAHOO.util.Event.onDOMReady( function()
         //an array of validator functions is stored in XNAT.validators.  They are tied to the form by the form's ID.
         //this function iterates over those validators and tracks the overall validation outcome in a variable called _ok which is attached the the array of validators.
         //the _ok may be checked by other functions
-        YAHOO.util.Event.on(myForm, "submit", function (env, var2) {
+        myForm.managedSubmit=function (env, var2) {
             var validators = XNAT.validators[this.ID];
             if(validators!=undefined){
             	try{
@@ -371,7 +371,8 @@ YAHOO.util.Event.onDOMReady( function()
                 showContent();
                 return false;
         	}
-        },null,myForm);
+        };
+        YAHOO.util.Event.on(myForm, "submit", myForm.managedSubmit,null,myForm);
     }
 });
 

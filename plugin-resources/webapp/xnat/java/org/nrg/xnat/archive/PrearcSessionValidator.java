@@ -5,8 +5,11 @@ package org.nrg.xnat.archive;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
@@ -24,6 +27,8 @@ import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.collect.TreeMultiset;
 
 /**
  * @author Timothy R. Olsen <tim@deck5consulting.com>
@@ -48,6 +53,7 @@ import com.google.common.collect.Lists;
  * 16- Session already contains a scan with the same series UID and ID
  * 17- Session already contains a scan with the same ID, but a different series UID
  * 18- Session already contains a scan with the same series UID, but a different ID
+ * 19- Illegal session modality modification
  * 
  */
 
@@ -94,6 +100,11 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 				if(!StringUtils.equals(existing.getUid(), src.getUid())){
 					conflict(5,UID_MOD);
 				}
+			}
+			
+			//check if the XSI types match
+			if(!StringUtils.equals(existing.getXSIType(), src.getXSIType())){
+				fail(19,MODALITY_MOD);
 			}
 			
 			for(final XnatImagescandataI newScan : src.getScans_scan()){

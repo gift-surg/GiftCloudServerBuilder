@@ -2,3 +2,84 @@
 #set($allowDataDeletion="false")
 #set($isUpload="true")
 			#parse($turbineUtils.getTemplateName("edit",$om.getXSIType(),$project,"edit"))
+
+<!-- begin validation warnings dialog -->
+<style type="text/css">
+#val_warning_div{
+	margin-top:12px;
+    overflow:auto;
+}
+#val_warning_div .valWARN,#val_warning_div .valCONFLICT,#val_warning_div .valFAIL, #val_warning_div .header {
+  border-bottom:1px solid #888;
+  font:11px Arial, Helvetica, sans-serif;
+  margin-top:0;
+  margin-bottom:0;
+  padding: 4px;
+  overflow:auto;
+}
+#val_warning_div .header {
+	background-color: #ccc;
+	font-weight: bold;
+}
+dl.valWARN, item.valWARN {
+	display:block;
+}
+dl.valFAIL, item.valFAIL {
+	display:block;
+}
+dl.valCONFLICT, item.valCONFLICT {
+	display:block;
+}
+#val_warning_div dl dl 	{ margin:1px 0;	}
+#val_warning_div dl dt, #val_warning_div dl dd {
+	display:block;
+	float:left;
+	padding:4px 0;
+}
+#val_warning_div dd 	{ 	margin-left:20px; }
+dd.valCode 	{	width:80px; font-weight:bold; position:relative;	}
+dd.valMessage 	{	width:630px;	}
+</style>
+<div id="uploads_warnings">
+	<div id='val_warning_dialog' style='visibility:hidden'>
+		<div class='hd'>Upload warnings</div>
+		<div class='bd' style=''>
+			<div id='val_warning_desc'>Merging the uploaded data into the pre-existing session will override the following warnings:</div>
+			<div id='val_warning_div'>
+			</div>
+			<div style="text-align:right; width:100%; margin-top:3px;" id='val_warning_quest'>Are you sure you want to proceed?</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="$content.getURI("scripts/imageSessionData/archive.js")"></script>
+<script>	
+	//validation CODES that are not allowed to be overidden
+	XNAT.app.archiveValidator.fail_merge_on=$siteConfig.getProperty("security.fail_merge_on","[]");
+	XNAT.app.archiveValidator.xsiType="$om.getXSIType()";
+	#if($src)
+		XNAT.app.archiveValidator.url="$!src";
+	#end
+	
+    var myForm=YUIDOM.get("form1");
+	
+	//this form validation will run upon form submit.  It will temporarily stop the submit to validate the archive.  If it validates, the form submit will be restarted and it will skip this step
+    var archiveValidator={form:myForm,validate:function(){
+		if(XNAT.app.archiveValidator.validated==undefined || XNAT.app.archiveValidator.validated==false){
+    		XNAT.app.archiveValidator.validate();
+    		return false;
+    	}else{
+			concealContent();
+    		return true;
+    	}
+    }};
+    
+	//add it to the form onsubmit validation
+	YAHOO.util.Event.onDOMReady(function(){
+        _addFormValidation(archiveValidator);
+    });
+	
+	//reset validation on form edits (in case the validation fails, and the user changes a value and retrys)
+	YAHOO.util.Event.addListener("$om.getXSIType()/project","change", function(){XNAT.app.archiveValidator.validated=false;});
+	YAHOO.util.Event.addListener("$om.getXSIType()/subject_id","change", function(){XNAT.app.archiveValidator.validated=false;});
+	YAHOO.util.Event.addListener("$om.getXSIType()/label","change", function(){XNAT.app.archiveValidator.validated=false;});
+</script>

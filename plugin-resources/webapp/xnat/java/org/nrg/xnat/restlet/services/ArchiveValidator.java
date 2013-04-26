@@ -2,6 +2,9 @@ package org.nrg.xnat.restlet.services;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +14,7 @@ import org.nrg.action.ClientException;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.PrearcSessionValidator;
+import org.nrg.xnat.archive.PrearcSessionValidator.Notice;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
@@ -20,13 +24,10 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.services.prearchive.BatchPrearchiveActionsA;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,7 @@ public class ArchiveValidator extends SecureResource {
 		//build fileWriters
 		try {					
 			loadQueryVariables();
-			
+			loadBodyVariables();
 						
 			final List<PrearcSession> sessions=new ArrayList<PrearcSession>();
 						
@@ -167,9 +168,15 @@ public class ArchiveValidator extends SecureResource {
 					return;
 				}
 				
-				PrearcSessionValidator validator=new PrearcSessionValidator(session, user, session.getAdditionalValues());
+				PrearcSessionValidator validator=new PrearcSessionValidator(session, user, additionalValues);
 				List<PrearcSessionValidator.Notice> validation=validator.validate();
 				
+				Collections.sort(validation,new Comparator<Notice>() {
+					@Override
+					public int compare(Notice o1, Notice o2) {
+						return o1.getCode()-o2.getCode();
+					}
+				});
 				
 				for(PrearcSessionValidator.Notice notice:validation){
 					t.rows().add(new Object[]{notice.getCode(),notice.getType(),notice.getMessage()});

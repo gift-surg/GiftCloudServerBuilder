@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.action.ClientException;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusListenerI;
@@ -29,6 +30,7 @@ import org.nrg.xnat.restlet.XNATApplication;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.restlet.data.Status;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Strings;
@@ -1056,7 +1058,12 @@ public final class PrearcDatabase {
             catch (SyncFailedException e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
-                PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.ERROR);
+                if((e.cause!=null && (e.cause instanceof ClientException) && Status.CLIENT_ERROR_CONFLICT.equals(((ClientException)e.cause).getStatus()))){
+                	//if this failed due to a conflict
+                	PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.CONFLICT);
+                }else{
+                	PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.ERROR);
+                }
                 throw e;
             }
             catch (Exception e) {

@@ -48,10 +48,12 @@ public class PrearcUtils {
         QUEUED,
 		READY, 
 		ARCHIVING,
+		CONFLICT,
 		ERROR, 
 		DELETING,
 		MOVING,
-		_RECEIVING,_BUILDING,_QUEUED,_ARCHIVING,_DELETING,_MOVING;
+		_RECEIVING,_BUILDING,_QUEUED,_ARCHIVING,_DELETING,_MOVING
+		,_CONFLICT;
 
 		public static boolean potentiallyReady(PrearcStatus status) {
 			return (status==null || status.equals(READY));			    

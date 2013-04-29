@@ -1,50 +1,33 @@
 <!-- Title: DICOM Receiver -->
-<table id="mgmt_container">
-    <tr>
-        <td>
-            <div id="dicom_receiver_mgmt_div">
-                <table>
-                    <tr>
-                        <td colspan="2">This configuration comes from <i>WEB-INF/conf/dicom-import-context.xml</i> and is not currently editable here.  See the XNAT documentation for detailed information about configuration of the DICOM SCP.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:8px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><b>Port Number:</b>&nbsp;&nbsp;&nbsp;<span id="dcmPortLabel"></span><input type="hidden" id="dcmPort"/></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">This is the port number to which C-STORE SCUs (scanners and other clients sending data) should connect.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><b>DICOM AE Title(s):</b>&nbsp;&nbsp;&nbsp;<span id="dcmAeLabel"></span><input type="hidden" id="dcmAe"/></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">These are the SCP Application Entity (AE) title(s).</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><b>Enabled?</b>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="enableDicomReceiver" onchange="window.dicomReceiverManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Should the DICOM receiver listen for connections?<br/>
-						<span style="color:red;font-weight:bold;">Caution:</span>&nbsp;Changes to this setting will take effect immediately.  Before disabling the receiver, verify that there are no transmissions currently in progress.</td>
-                    </tr>
-                </table>
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="mgmt_container">
+    <div id="dicom_receiver_mgmt_div">
+        <p>This configuration comes from <i>WEB-INF/conf/dicom-import-context.xml</i> and is not currently editable here.  See the XNAT documentation for detailed information about configuration of the DICOM SCP.</p>
 
-<input type="button" value="Save" name="eventSubmit_doPerform" id="dicomReceiver_save_button" onclick="window.dicomReceiverManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="dicomReceiver_reset_button" onclick="window.dicomReceiverManager.resetForm();" disabled/>
+        <p>
+            <b>Port Number:</b>&nbsp;&nbsp;&nbsp;<span id="dcmPortLabel"></span><input type="hidden" id="dcmPort"/>
+            <small>This is the port number to which C-STORE SCUs (scanners and other clients sending data) should connect.</small>
+        </p>
 
-<script language="javascript">
+        <p>
+            <b>DICOM AE Title(s):</b>&nbsp;&nbsp;&nbsp;<span id="dcmAeLabel"></span><input type="hidden" id="dcmAe"/>
+            <small>These are the SCP Application Entity (AE) title(s).</small>
+        </p>
+
+        <p>
+            <b>DICOM receiver Enabled?</b>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="enableDicomReceiver" onchange="window.dicomReceiverManager.dirtyForm();" disabled />
+            <small>Should the DICOM receiver listen for connections?</small>
+            <small><span style="color:red;font-weight:bold;">Caution:</span>&nbsp;Changes to this setting will take effect immediately. Before disabling the receiver, verify that there are no transmissions currently in progress.</small>
+        </p>
+
+    </div>
+    <div class="buttons">
+        <input type="button" value="Save" name="eventSubmit_doPerform" id="dicomReceiver_save_button" onclick="window.dicomReceiverManager.saveTabSettings();"/>&nbsp;
+        <input type="button" value="Reset" name="eventSubmit_doReset" id="dicomReceiver_reset_button" onclick="window.dicomReceiverManager.resetForm();" disabled/>
+    </div>
+</div>
+
+
+<script type="text/javascript">
 function configurationDicomReceiverTabChange(obj) {
     if(obj.newValue.get("href")=="#dicomReceiver") {
         if(window.dicomReceiverManager==undefined) {

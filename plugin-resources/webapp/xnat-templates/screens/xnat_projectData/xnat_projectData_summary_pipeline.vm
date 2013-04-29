@@ -12,7 +12,7 @@
 
 
 
-<table id="mgmt_container">
+<table class="mgmt_container">
  <tr>
   <td valign="top" >
    <div id="pipeline_mgmt_div"></div>

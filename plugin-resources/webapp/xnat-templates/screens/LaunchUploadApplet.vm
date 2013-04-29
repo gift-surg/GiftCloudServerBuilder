@@ -24,11 +24,11 @@
         <table>
         <tr>
             <th align="left"><label for="project" class="select_label">$displayManager.getSingularDisplayNameForProject()</label></th>
-            <td><select id="project" name="project" style="width:100%;min-width:200px;" disabled=true></select></td>
+            <td><select id="project" name="project" style="min-width:200px;" disabled=true></select></td>
         </tr>
         <tr>
             <th align="left"><label for="part_id" class="select_label">$displayManager.getSingularDisplayNameForSubject()</label></th>
-            <td><select id="part_id" name="part_id" style="width:100%;min-width:200px;" disabled=true>
+            <td><select id="part_id" name="part_id" style="min-width:200px;" disabled=true>
                 <option>(Select a $displayManager.getSingularDisplayNameForProject().toLowerCase())</option>
             </select></td>
         </tr>

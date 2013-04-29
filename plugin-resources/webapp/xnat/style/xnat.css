@@ -63,7 +63,15 @@ th.first-td { border-left-style: solid ; }
 td.ext-content { width: 300px ; white-space: normal ; }
 
 /* universal button style with CSS gradient */
-.button { display: inline-block ; margin: 1px ; padding: 2px 2px 4px ; border: 1px solid #000 ; border-radius: 5px ; -moz-border-radius: 5px ; -webkit-border-radius: 5px ; -khtml-border-radius: 5px ; font-weight: bold ; text-align: center ; background: #888 ; background: -moz-linear-gradient(top, #ccc 0%, #999 25%) ; /* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccc), color-stop(25%,#999)) ; /* Chrome,Safari4+ */ background: linear-gradient(top, #ccc 0%, #999 25%) ; /* W3C */ color: #fff ; }
+.button {
+    display: inline-block ; margin: 1px ; padding: 2px 2px 4px ;
+    border: 1px solid #808080 ; border-radius: 3px ; -moz-border-radius: 3px ; -webkit-border-radius: 3px ; -khtml-border-radius: 3px ;
+    font-weight: bold ; text-align: center ;
+    background: #888 ;
+        background: -moz-linear-gradient(top, #ccc 0%, #999 25%) ; /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccc), color-stop(25%,#999)) ; /* Chrome,Safari4+ */
+        background: linear-gradient(top, #ccc 0%, #999 25%) ; /* W3C */ color: #fff ;
+}
 
 /* width set for QC buttons */
 .QC { width: 4em ; }
@@ -100,19 +108,74 @@ table.dark { background-color: /* #DCDCDC */ #f0f0f0 ; border: 1px solid #ccc !i
 table.dark th, table.dark td { padding: 4px 8px ; }
 
 /* new header and body styles */
-body, html body, * body { margin: 0 ; background: #fff url('images/left_margin.gif') -5px top repeat-y ; font-family: Arial, Helvetica, sans-serif !important ; font-size: 12px ; line-height: 15px ; /* letter-spacing: 0.02em ; */ position: relative ; }
+body, html body, * body { margin: 0 ; background: #fff url('images/left_margin.gif') -5px top repeat-y ; font-family: Arial, Helvetica, sans-serif !important ; font-size: 12px ; line-height: 15px ; /* letter-spacing: 0.02em ; */ position: relative ; overflow-y: scroll ; overflow-x: auto ; }
 a { color: /* #2a70c6 */ #084FAB ; }
 img { /* vertical-align: bottom ; */ border: none ; outline: none ; }
 .clear { height: 0 ; clear: both ; }
 
-/* form elements */
+
+/* //////////  FORM ELEMENTS  ////////// */
 input { font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; }
-.btn1, .btn2, button, input[type="button"], input[type="submit"], input[type="reset"] { display: inline-block ; padding: 3px 8px ; max-height: 28px ; background-position: center center ; background-repeat: repeat-x ; text-decoration: none ; border-radius: 3px ; }
-button, input[type="button"], input[type="submit"], input[type="reset"] { font-family: Arial, Helvetica, sans-serif ; font-size: 13px ; border-radius: 5px ; } /* give 'regular' buttons a little larger radius */
-.btn1:hover, .btn2:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover, input[type="reset"]:hover { cursor: pointer ; }
-.btn1 { background-image: url('images/btn1_30px.png') ; border: 1px solid #508ad0 ; }
-.btn2, button, input[type="button"], input[type="submit"], input[type="reset"] { background-image: url('images/btn2_30px2.png') ; border: 1px solid #a8a8a8 ; }
+/* base button style */
+.btn1,
+.btn2,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    display: inline-block ; padding: 3px 8px ; max-height: 28px ;
+    background-position: center top ; background-repeat: repeat-x ; text-decoration: none ; border-radius: 3px ;
+}
+/* style for <button> elements - give 'regular' buttons a little larger radius */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    font-family: Arial, Helvetica, sans-serif ;
+    font-size: 13px ; border-radius: 5px ;
+}
+/* style for button hover */
+.btn1:hover,
+.btn2:hover,
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+    cursor: pointer ;
+}
+/* btn1 gets blue background - gradient image and base color to match the bottom of the background image */
+.btn1 {
+    color: #fff ;
+    background-color: #07428d ;
+    background-image: url('images/btn1_30px.png') ;
+    border: 1px solid /* #508ad0 */ /* #243356 */ #293d66 ;
+}
+/* btn2 gets gray background */
+.btn2,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    background-image: url('images/btn2_30px.png') ;
+    border: 1px solid /* #a8a8a8 */ #a0a0a0 ;
+}
+/* <button> or button-like elements that are disabled or have class="disabled" will LOOK like they're disabled */
+.bt1.disabled,
+.btn2.disabled,
+button.disabled,
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled,
+input[type="reset"]:disabled{ color: #a0a0a0 ; border-color: #c0c0c0 ; background: #e0e0e0 ; cursor: default !important ; }
+/* remove outline from <button> or <input type="button/submit/reset"> elements */
+button:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus{ outline: none !important ; }
+
+
 select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; }
+
 
 
 /* page layout styles */
@@ -144,7 +207,7 @@ select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 1
 #quickSearchForm { position: absolute ; right: 0 ; bottom: 35px ; }
 #searchValue { border: 1px solid #ccc ; height: 17px ; }
 /* .ie #searchValue { position: relative ; top: 1px ; } */
-#quickSearchForm a { font-size: 11px ; font-weight: bold ; }
+#quickSearchForm a { padding: 2px 8px ; font-size: 11px ; font-weight: bold ; }
 #search_btn { color: #fff ; }
 #advanced_btn { color: #333 ; }
 #DefaultTopTR td { padding: 0 ; }
@@ -178,7 +241,7 @@ select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 1
 .yui-skin-sam .yui-button button, .yui-skin-sam .yui-button a, .yui-skin-sam .yui-button a:visited { color: #000000 ; font-size: 12px ; height: 26px ; line-height: 26px ; padding: 0 12px ; vertical-align: middle ; }
 .yui-content { font-size: 12px ; }
 .yui-skin-sam .yui-dialog .ft span.default button,
-.yui-skin-sam .yui-calcontainer .yui-cal-nav .yui-cal-nav-btn.yui-default button { background: transparent url('images/btn1_30px.png') repeat-x center center ; color: #fff ; outline: none ; }
+.yui-skin-sam .yui-calcontainer .yui-cal-nav .yui-cal-nav-btn.yui-default button { background: #07428d url('images/btn1_30px.png') repeat-x center center ; color: #fff ; outline: none !important ; }
 /*
 .yui-skin-sam .yui-dialog .ft span.default button { color: #FFFFFF ; border: none ; outline: none ; }
 .yui-skin-sam .yui-dialog .ft span.default button:active { border: none ; outline: none ; }
@@ -192,7 +255,7 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 .yui-button, .yui-button button { border-radius: 0 !important ; }
 
 div.edit_header1, div.edit_title {
-    /* background: #c2c2c2 url("images/btn2_30px2.png") repeat-x center top ; */
+    /* background: #c2c2c2 url("images/btn2_30px.png") repeat-x center top ; */
     font-size: 15px;
     font-weight: bold;
     line-height: 16px;
@@ -467,3 +530,19 @@ td.quality-unusable { color: red ; font-weight: bold ; }
 
 /* not sure what these spacers do but pretty sure they should go away - let's see what breaks */
 span.spacer { display: none !important ; }
+
+/* configuration tabs */
+.mgmt_container { padding: 10px ; }
+.mgmt_container p,
+.mgmt_container .row { margin-bottom: 15px ; padding-bottom: 15px ; border-bottom: 1px solid #ccc ; }
+.mgmt_container label { display: inline-block ; width: 200px ; font-weight: bold ; }
+.mgmt_container small { display: block ; margin-top: 5px ; font-size: 12px !important ; }
+.mgmt_container input[type="text"] { vertical-align: bottom ; }
+.mgmt_container textarea { width: 100% ; }
+.mgmt_container .buttons { margin-top: -5px ; text-align: right ; }
+/* per-tab customizations */
+.mgmt_container #anonymization_mgmt_div p,
+.mgmt_container #applet_mgmt_div p { padding-bottom: 0 ; border: none ; }
+.mgmt_container #notifications_mgmt_div th,
+.mgmt_container #notifications_mgmt_div td { padding: 5px 0 ; }
+.mgmt_container #notifications_mgmt_div th { padding-right: 10px ; }

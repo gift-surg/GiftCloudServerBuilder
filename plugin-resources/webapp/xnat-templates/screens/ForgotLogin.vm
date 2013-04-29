@@ -3,7 +3,7 @@
 $!template.setLayoutTemplate("Noninteractive.vm")
 $page.setTitle("XDAT -- Register")
 $page.setBgColor($ui.bgcolor)
-<DIV VALIGN="top">
+<div valign="top">
     <form name="form2" method="post" action="$link.setAction("XDATForgotLogin")">
         <table valign="top" align="center">
             #if ( $data.getMessage() )
@@ -12,35 +12,35 @@ $page.setBgColor($ui.bgcolor)
                 </tr>
             #end
             <tr>
-                <TH colspan="3" align="left">Did you forget your username?</TH>
+                <th colspan="3" align="left">Did you forget your username?</th>
             </tr>
             <tr>
-                <Td colspan="3" align="left">Enter your email address and the matching username will be emailed to
+                <td colspan="3" align="left">Enter your email address and the matching username will be emailed to
                     you.
-                </Td>
+                </td>
             </tr>
             <tr>
                 #formLabel("Email")
-                <TD><input type="text" name="email" value="$!email"></TD>
+                <td><input type="text" name="email" value="$!email"></td>
                 <td>
                     <input class="ui_sansSerifFonts" type="submit" value="Request">
                 </td>
             </tr>
             <tr>
-                <Td colspan="3"><br><br></Td>
+                <td colspan="3"><br><br></td>
             </tr>
             <tr>
-                <TH colspan="3"><br/></TH>
+                <th colspan="3"><br/></th>
             </tr>
             <tr>
-                <TH colspan="3" align="left">Did you forget your password?</TH>
+                <th colspan="3" align="left">Did you forget your password?</th>
             </tr>
             <tr>
-                <Td colspan="3" align="left">Enter your username and a new password will be emailed to you.</Td>
+                <td colspan="3" align="left">Enter your username and a new password will be emailed to you.</td>
             </tr>
             <tr>
                 #formLabel("Username")
-                <TD><input type="text" name="username" value="$!username"></TD>
+                <td><input type="text" name="username" value="$!username"></td>
                 <td>
                     <input class="ui_sansSerifFonts" type="submit" value="Request">
                 </td>
@@ -52,4 +52,4 @@ $page.setBgColor($ui.bgcolor)
             #end
         #end
     </form>
-</DIV>
+</div>

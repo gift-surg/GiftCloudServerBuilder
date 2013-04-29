@@ -194,6 +194,10 @@ jQuery.loadScript = function (url, arg1, arg2) {
 })(jQuery);
 //
 // make ".draggable" elements draggable
+// seems to only work on elements that
+// are on the page on DOM ready
+// must use the .drags() method on
+// dynamically generated elements
 $(function(){
     $('.draggable').drags();
 });

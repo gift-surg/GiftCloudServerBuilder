@@ -1,6 +1,6 @@
 <script type="text/javascript" src="$content.getURI("scripts/project/userMgmt.js")"></script>						         
 
-						<table id="mgmt_container">
+						<table class="mgmt_container">
  <tr>
   <td valign="top">
    <div id="user_mgmt_div"></div>

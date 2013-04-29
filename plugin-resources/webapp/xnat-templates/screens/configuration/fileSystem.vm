@@ -1,86 +1,59 @@
 <!-- Title: File System -->
-<table id="mgmt_container">
-    <tr>
-        <td>
-            <div id="file_system_mgmt_div">
-                <table>
-                    <tr>
-                        <th align="left">Archive Location</th>
-                        <td><input size="50" type="text" id="archivePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Location where files are permanently archived.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Checksums</th>
-                        <td><input type="checkbox" id="checksums" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Indicates whether checksums should be calculated for each image file as it's archived. Activating this provides greater assurance of data integrity, but may add significant overhead to the archive process.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Pre-archive Location</th>
-                        <td><input size="50" type="text" id="prearchivePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Location where files are temporarily stored before they are archived.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Cache Location</th>
-                        <td><input size="50" type="text" id="cachePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Location where deleted files are copied to (to prevent accidental deletion of files).</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Build Location</th>
-                        <td><input size="50" type="text" id="buildPath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Directory where temporarily processing information should be stored. This folder should exist, but not have any files or sub-directories in it.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">FTP Location</th>
-                        <td><input size="50" type="text" id="ftpPath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Directory where FTP Server will store files. This folder should exist, but not have any files or sub-directories in it. (Use and installation of the XNAT FTP Server is optional, but this field must be set).</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Pipeline Installation Location</th>
-                        <td><input size="50" type="text" id="pipelinePath" onchange="window.fileSystemManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Location of XNAT Pipeline engine. By default, the pipeline engine is already installed in XNAT_HOME/pipeline. This location should be matched here. Change this to a different setting only if you have re-installed the Pipeline engine in another location.</td>
-                    </tr>
-                </table>
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="mgmt_container">
 
-<input type="button" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="fileSystem_reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
+    <div id="file_system_mgmt_div">
 
-<script language="javascript">
+        <p>
+            <label for="archivePath">Archive Location</label>
+            <input size="50" type="text" id="archivePath" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Location where files are permanently archived.</small>
+        </p>
+
+        <p>
+            <label for="checksums" style="width:auto;">Checksums</label> &nbsp;
+            <input type="checkbox" id="checksums" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Indicates whether checksums should be calculated for each image file as it's archived. Activating this provides greater assurance of data integrity, but may add significant overhead to the archive process.</small>
+        </p>
+
+        <p>
+            <label for="prearchivePath">Pre-archive Location</label>
+            <input size="50" type="text" id="prearchivePath" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Location where files are temporarily stored before they are archived.</small>
+        </p>
+
+        <p>
+            <label for="cachePath">Cache Location</label>
+            <input size="50" type="text" id="cachePath" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Location where deleted files are copied to (to prevent accidental deletion of files).</small>
+        </p>
+
+        <p>
+            <label for="buildPath">Build Location</label>
+            <input size="50" type="text" id="buildPath" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Directory where temporarily processing information should be stored. This folder should exist, but not have any files or sub-directories in it.</small>
+        </p>
+
+        <p>
+            <label for="ftpPath">FTP Location</label>
+            <input size="50" type="text" id="ftpPath" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Directory where FTP Server will store files. This folder should exist, but not have any files or sub-directories in it. (Use and installation of the XNAT FTP Server is optional, but this field must be set).</small>
+        </p>
+
+        <p>
+            <label for="pipelinePath">Pipeline Installation Location</label>
+            <input size="50" type="text" id="pipelinePath" onchange="window.fileSystemManager.dirtyForm();" disabled/>
+            <small>Location of XNAT Pipeline engine. By default, the pipeline engine is already installed in XNAT_HOME/pipeline. This location should be matched here. Change this to a different setting only if you have re-installed the Pipeline engine in another location.</small>
+        </p>
+
+    </div>
+    <div class="buttons">
+        <input type="button" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>
+        <input type="button" value="Reset" name="eventSubmit_doReset" id="fileSystem_reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
+    </div>
+</div>
+
+
+<script type="text/javascript">
 function configurationFileSystemTabChange(obj) {
     if(obj.newValue.get("href")=="#fileSystem") {
         if(window.fileSystemManager==undefined) {

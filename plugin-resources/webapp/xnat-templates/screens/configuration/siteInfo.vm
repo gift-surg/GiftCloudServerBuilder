@@ -1,69 +1,56 @@
 #* @vtlvariable name="link" type="org.apache.turbine.util.template.TemplateLink" *#
 <!-- title: Site Information -->
 <!-- divName: siteInfo -->
-<table id="mgmt_container">
-    <tr>
-        <td>
-            <div id="site_info_mgmt_div">
-                <table>
-                    <tr>
-                        <th align="left"><label for="siteId">Site ID</label></th>
-                        <td><input size="30" type="text" id="siteId" onchange="this.value=stringCamelCaps(this.value); window.siteInfoManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">The id used to refer to this site (also used to generate database ids). No spaces or non-alphanumeric characters.  It should be a short, one-word name or acronym which describes your site.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left"><label for="siteUrl">Site URL</label></th>
-                        <td><input size="30" type="text" id="siteUrl" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">The address you want visible to users in emails, and other external links.  This should be a functional address (i.e. if the user pasted this address in their web browser, they should come to the site).  localhost only works if the web browser is located on the same machine.  You are required to guarantee that this address is functional for reaching the site.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left"><label for="siteAdminEmail">Site Admin Email Address</label></th>
-                        <td><input size="30" type="text" id="siteAdminEmail" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">The administrative email account to receive system emails. This address will receive frequent emails on system events, such as errors, processing completion, new user registration and so on.  The number of emails can be configured on the <a href="$link.setPage("XDATScreen_emailSpecifications.vm")">Administer &gt; More Options... &gt; Set email settings</a> dialog.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Applet Link</th>
-                        <td><input type="checkbox" id="showapplet" onchange="window.siteInfoManager.dirtyForm();" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Should a prominent link to the applet show up on the left bar of the index page?</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="line-height:4px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th align="left">Enable CSRF Token?</th>
-                        <td><input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" enabled /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Should a the site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</td>
-                    </tr>
-                    
-                </table>
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="mgmt_container">
 
-<input type="button" value="Save" name="eventSubmit_doPerform" id="siteInfo_save_button" onclick="window.siteInfoManager.saveTabSettings();"/>&nbsp;
-<input type="button" value="Reset" name="eventSubmit_doReset" id="siteInfo_reset_button" onclick="window.siteInfoManager.resetForm();" disabled/>
+    <div id="site_info_mgmt_div">
 
-<script language="javascript">
+        <p>
+            <label for="siteId">Site ID</label>
+            <input size="30" type="text" id="siteId" onchange="this.value=stringCamelCaps(this.value); window.siteInfoManager.dirtyForm();" disabled />
+            <small>The id used to refer to this site (also used to generate database ids). No spaces or non-alphanumeric characters. It should be a short,
+                one-word name or acronym which describes your site.</small>
+        </p>
+
+        <p>
+            <label for="siteUrl">Site URL</label>
+            <input size="30" type="text" id="siteUrl" onchange="window.siteInfoManager.dirtyForm();" disabled />
+            <small>The address you want visible to users in emails, and other external links.  This should be a functional address (i.e. if the user pasted
+                this address in their web browser, they should come to the site).  localhost only works if the web browser is located on the same machine.
+                You are required to guarantee that this address is functional for reaching the site.</small>
+        </p>
+
+        <p>
+            <label for="siteAdminEmail">Site Admin Email Address</label>
+            <input size="30" type="text" id="siteAdminEmail" onchange="window.siteInfoManager.dirtyForm();" disabled />
+            <small>The administrative email account to receive system emails. This address will receive frequent emails on system events, such as errors,
+                processing completion, new user registration and so on.  The number of emails can be configured on the
+                <a href="$link.setPage("XDATScreen_emailSpecifications.vm")">Administer &gt; More Options... &gt; Set email settings</a> dialog.</small>
+        </p>
+
+        <p>
+            <label for="showapplet">Applet Link</label>
+            <input type="checkbox" id="showapplet" onchange="window.siteInfoManager.dirtyForm();" disabled />
+            <small>Should a prominent link to the applet show up on the left bar of the index page?</small>
+        </p>
+
+        <p>
+            <label for="enableCsrfToken">Enable CSRF Token?</label>
+            <input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" enabled />
+            <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
+        </p>
+
+    </div>
+
+    <div class="buttons">
+        <input type="button" value="Save" name="eventSubmit_doPerform" id="siteInfo_save_button" onclick="window.siteInfoManager.saveTabSettings();"/>&nbsp;
+        <input type="button" value="Reset" name="eventSubmit_doReset" id="siteInfo_reset_button" onclick="window.siteInfoManager.resetForm();" disabled/>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
 function configurationSiteInfoTabChange(obj) {
     if(obj.newValue.get("href")=="#siteInfo") {
         if(window.siteInfoManager==undefined) {

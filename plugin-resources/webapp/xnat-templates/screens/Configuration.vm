@@ -55,36 +55,36 @@
                     </ul>
                     <div class="yui-content">   
                         <div id="siteInfo">
-                            <p>#parse('screens/configuration/siteInfo.vm')</p>
+                            #parse('screens/configuration/siteInfo.vm')
                         </div>
                         <div id="fileSystem">
-                            <p>#parse('screens/configuration/fileSystem.vm')</p>
+                            #parse('screens/configuration/fileSystem.vm')
                         </div>
                         <div id="registration">
-                            <p>#parse('screens/configuration/registration.vm')</p>
+                            #parse('screens/configuration/registration.vm')
                         </div>
                         <div id="notifications">
-                            <p>#parse('screens/configuration/notifications.vm')</p>
+                            <p>#parse('screens/configuration/notifications.vm')
                         </div>
                         <div id="anonymization">
-                            <p>#parse('screens/configuration/anonymization.vm')</p>
+                            #parse('screens/configuration/anonymization.vm')
                         </div>
                         <div id="applets">
-                            <p>#parse('screens/configuration/applets.vm')</p>
+                            #parse('screens/configuration/applets.vm')
                         </div>
                         <div id="dicomReceiver">
-                            <p>#parse('screens/configuration/dicomReceiver.vm')</p>
+                            #parse('screens/configuration/dicomReceiver.vm')
                         </div>
                         #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-mock-rest-config", "false")))
                             <div id="mockRestConfig">
-                                <p>#parse('screens/configuration/mockRestConfig.vm')</p>
+                                #parse('screens/configuration/mockRestConfig.vm')
                             </div>
                         #end
                         #if(!$initialize)
                             #foreach($tab in $tabs)
                                 <div id="$tab.getProperty("divName")">
                                     #set($path = "screens/configuration/${tab.getProperty('fileName')}")
-                                    <p>#parse($path)</p>
+                                    #parse($path)
                                 </div>
                             #end
                         #end

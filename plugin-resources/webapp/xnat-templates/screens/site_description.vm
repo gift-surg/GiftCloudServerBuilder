@@ -1,1 +1,12 @@
-PLACE SITE DESCRIPTION HERE. (site_description.vm)
+##PLACE SITE DESCRIPTION HERE. (site_description.vm)
+
+<table width="400" cellpadding="5" align="center" style="border-collapse:collapse;" valign="top">
+    <tbody><tr>
+        <th align="left">What is the CNDA?</th>
+    </tr>
+    <tr>
+        <td align="left">The Central Neuroimaging Data Archive (CNDA) is a resource for managing study data collected by the Washington University neuroimaging community.  It includes a secure database, automated pipelines for processing managed data, and tools for exploring and accessing the data.  Access to data in the CNDA is restricted to users authorized by the specific study’s investigators. The CNDA is hosted by the <a href="http://nrg.wustl.edu" target="_blank">Neuroinformatics Research Group</a>.  <br><br>Visit <a href="http://cnda-help.wustl.edu" target="_blank">cnda-help.wustl.edu</a> for CNDA help documentation and videos, training schedules and upgrade information or email the CNDA help desk at <a href="mailto:cnda-help@wustl.edu?subject=CNDA inquiry">cnda-help@wustl.edu</a>.
+            <br><br>The CNDA is powered by <a href="http://www.xnat.org" target="_blank">XNAT</a>, an open source software package for managing neuroimaging and related data.
+        </td>
+    </tr>
+    </tbody></table>

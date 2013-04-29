@@ -5,7 +5,7 @@
 
 <script type="text/javascript" src="$content.getURI("scripts/project/pipelineMgmt.js")"></script>
 
-						<table id="mgmt_container">
+						<table class="mgmt_container">
  <tr>
   <td valign="top">
    <div id="pipeline_mgmt_div"></div>

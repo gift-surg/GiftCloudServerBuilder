@@ -26,7 +26,7 @@ import org.restlet.resource.Representation;
  *
  */
 public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
-    static org.apache.log4j.Logger logger = Logger.getLogger(Importer.class);
+    static org.apache.log4j.Logger logger = Logger.getLogger(PrearchiveBatchDelete.class);
     
 	public PrearchiveBatchDelete(Context context, Request request, Response response) {
 		super(context, request, response);

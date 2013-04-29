@@ -68,6 +68,7 @@ import org.nrg.xnat.restlet.services.SettingsRestlet;
 import org.nrg.xnat.restlet.services.mail.MailRestlet;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchDelete;
 import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchMove;
+import org.nrg.xnat.restlet.services.prearchive.PrearchiveBatchRebuild;
 import org.nrg.xnat.restlet.transaction.monitor.SQListenerRepresentation;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -304,6 +305,7 @@ public class XNATApplication extends Application {
         router.attach("/services/validate-archive",ArchiveValidator.class);
         router.attach("/services/prearchive/move",PrearchiveBatchMove.class);
         router.attach("/services/prearchive/delete",PrearchiveBatchDelete.class);
+        router.attach("/services/prearchive/rebuild",PrearchiveBatchRebuild.class);
         router.attach("/services/move-files",MoveFiles.class);
         router.attach("/services/settings", SettingsRestlet.class);
         router.attach("/services/dicomdump", DicomDump.class);

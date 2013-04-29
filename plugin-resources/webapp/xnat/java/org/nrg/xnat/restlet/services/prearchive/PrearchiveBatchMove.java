@@ -27,7 +27,7 @@ import org.restlet.resource.Representation;
  */
 public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
     private static final String NEW_PROJECT = "newProject";
-	static org.apache.log4j.Logger logger = Logger.getLogger(Importer.class);
+	static org.apache.log4j.Logger logger = Logger.getLogger(PrearchiveBatchMove.class);
 
 	/**
 	 * @param context

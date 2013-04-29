@@ -273,15 +273,15 @@ public class PrearcUtils {
 			return PrearcStatus.RECEIVING;
 		}
 		if (!sessionXML.isFile()) {
-			logger().error("{} exists, but is not a file", sessionXML);
+			logger().error("{} exists, but is not a file. ", sessionXML);
 			return PrearcStatus.ERROR;
 		}
 		if (!sessionXML.canRead()) {
-			logger().error("cannot read {}" + sessionXML);
+			logger().error("cannot read {}. " + sessionXML);
 			return PrearcStatus.ERROR;
 		}
 		if (sessionXML.length() == 0) {
-			logger().error("{} is empty" + sessionXML);
+			logger().error("{} is empty. " + sessionXML);
 			return PrearcStatus.ERROR;
 		}
 		return null;

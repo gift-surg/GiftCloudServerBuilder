@@ -159,7 +159,6 @@
   <classpathentry kind="lib" path="plugin-resources/repository/org.jasypt/jars/jasypt-1.7.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.ostermiller/jars/utils-1.07.00.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/oro/jars/oro-2.0.7.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/parser/jars/parser-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_pipeline-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>

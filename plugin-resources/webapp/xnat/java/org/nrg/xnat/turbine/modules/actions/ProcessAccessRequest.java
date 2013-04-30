@@ -6,6 +6,7 @@
 package org.nrg.xnat.turbine.modules.actions;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,7 @@ import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
+import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -38,8 +40,8 @@ public class ProcessAccessRequest extends SecureAction {
     static Logger logger = Logger.getLogger(ProcessAccessRequest.class);
 
     public void doDenial(RunData data, Context context) throws Exception {
-        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
-        XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
+        Integer id = TurbineUtils.GetPassedInteger("id",data);
+        XdatUser other = XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
         String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         
@@ -49,13 +51,13 @@ public class ProcessAccessRequest extends SecureAction {
         
         
         XDATUser user = TurbineUtils.getUser(data);
-        XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
+        XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
         
-        final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.REJECT_PROJECT_REQUEST));
+        final PersistentWorkflowI wrk = PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, AutoXnatProjectdata.SCHEMA_ELEMENT_NAME, project.getId(), project.getId(), newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.REJECT_PROJECT_REQUEST));
     	EventMetaI c=wrk.buildEvent();
     	WorkflowUtils.save(wrk, c);
         
-		if (other!=null && project !=null){
+        if (other != null) {
         	if(!user.canDelete(project)){
         		error(new InvalidPermissionException("Invalid permissions"),data);
         		return;
@@ -112,9 +114,9 @@ public class ProcessAccessRequest extends SecureAction {
     }
     
     public void doApprove(RunData data, Context context) throws Exception {
-        Integer id = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("id",data));
+        Integer id = TurbineUtils.GetPassedInteger("id",data);
         XDATUser user = TurbineUtils.getUser(data);
-        XdatUser other =(XdatUser) XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
+        XdatUser other = XdatUser.getXdatUsersByXdatUserId(id,TurbineUtils.getUser(data), false);
 
         String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
         String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
@@ -134,16 +136,14 @@ public class ProcessAccessRequest extends SecureAction {
         	return;
         }
         
-        XnatProjectdata project = (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(p, null, false);
+        XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
                 
 
-
-        
-        final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.APPROVE_PROJECT_REQUEST));
+        final PersistentWorkflowI wrk = PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, AutoXnatProjectdata.SCHEMA_ELEMENT_NAME, project.getId(), project.getId(), newEventInstance(data, EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.APPROVE_PROJECT_REQUEST));
     	EventMetaI c=wrk.buildEvent();
     	WorkflowUtils.save(wrk, c);
         
-        if (other!=null && project !=null){        
+        if (other != null) {
         	if(!user.canDelete(project)){
         		error(new InvalidPermissionException("Invalid permissions"),data);
         		return;
@@ -181,7 +181,8 @@ public class ProcessAccessRequest extends SecureAction {
             context.put("access_level",access_level);
             context.put("admin_email",AdminUtils.getAdminEmailId());
             context.put("projectOM",project);
-            String[] projectOwnerEmails = project.getOwnerEmails().toArray(new String[] {});
+            final ArrayList<String> ownerEmails = project.getOwnerEmails();
+            String[] projectOwnerEmails = ownerEmails.toArray(new String[ownerEmails.size()]);
             SendAccessApprovalEmail(context,AdminUtils.getAdminEmailId(),new String[]{otherU.getEmail()},projectOwnerEmails,new String[]{AdminUtils.getAdminEmailId()},TurbineUtils.GetSystemName() + " Access Request for " + project.getName() + " Approved");
         }      
         //data.setScreenTemplate("XDATScreen_manage_xnat_projectData.vm");
@@ -191,9 +192,9 @@ public class ProcessAccessRequest extends SecureAction {
         this.redirectToReportScreen("XDATScreen_report_xnat_projectData.vm", project, data);
     }
     
-    public static void SendAccessApprovalEmail(Context context,String otherUemail,XDATUser user,String subject) throws Exception{
+    public static void SendAccessApprovalEmail(Context context, String otherEmail, XDATUser user, String subject) throws Exception {
 	String admin = AdminUtils.getAdminEmailId();
-   	SendAccessApprovalEmail(context, admin, new String[]{otherUemail}, new String[]{user.getEmail()}, new String[]{admin}, subject);
+        SendAccessApprovalEmail(context, admin, new String[]{otherEmail}, new String[]{user.getEmail()}, new String[]{admin}, subject);
     }
 
     public static void SendAccessApprovalEmail(Context context, String from, String[] to, String[] cc, String[] bcc, String subject) throws Exception{

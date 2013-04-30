@@ -185,8 +185,7 @@ public class MailRestlet extends SecureResource {
             for (String id : ids) {
                 try {
                     // Try to parse this as an integer. If it's a user ID, it'll parse and we'll use the get by ID function.
-                    Integer.parseInt(id);
-                    XdatUser requested = XDATUser.getXdatUsersByXdatUserId(id, user, true);
+                    XdatUser requested = XDATUser.getXdatUsersByXdatUserId(Integer.parseInt(id), user, true);
                     if (requested == null) {
                         addIssue(String.format("The user ID %s was not found in the system and was not included on the email.", id));
                     } else {

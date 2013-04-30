@@ -271,15 +271,6 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>parser</groupId>
-			<artifactId>parser</artifactId>
-			<version>1</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.0-801.jdbc4</version>

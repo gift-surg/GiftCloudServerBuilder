@@ -126,7 +126,7 @@ RestSharer = function(_array,_config) {
 						  alert("ERROR " + o.status+ ": Failed to share " + oRecord.getData("label"));
 						}else{
 							this.dt.updateCell(o.argument.oRecord,"processed",3);
-						  	alert("Failed to share " + oRecord.getData("label") + ".  \r\n\r\nThis item has either already been shared into this " + XNAT.app.displayNames.singular.project.toLowerCase() + ", or their is already an item in this " + XNAT.app.displayNames.singular.project.toLowerCase() + " with the requested label.");
+						  	alert("Failed to share " + oRecord.getData("label") + ".  \r\n\r\nThis item has either already been shared into this " + XNAT.app.displayNames.singular.project.toLowerCase() + ", or there is already an item in this " + XNAT.app.displayNames.singular.project.toLowerCase() + " with the requested label.");
 						}
 					},
                     cache:false, // Turn off caching for IE

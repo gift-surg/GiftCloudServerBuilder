@@ -1,7 +1,31 @@
 package org.nrg.xnat.helpers.prearchive;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
@@ -17,18 +41,10 @@ import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Pattern;
+import com.google.common.collect.Lists;
 
 public class PrearcUtils {
+	private final static Logger logger = LoggerFactory.getLogger(PrearcUtils.class);
 	public static final String COMMON = "Unassigned";
 
 	public static final String ROLE_SITE_ADMIN = "Administrator";
@@ -124,11 +140,13 @@ public class PrearcUtils {
 		}
 	}
 
-	
 	/**
 	 * Retrieves the File reference to the prearchive root directory for the
 	 * named project.
 	 * 
+	 * 4/30/12- removed requirement that user object be not null.  null users are allowed here for administrative code that happens outside the permissions structure (like logging).
+	 * 4/30/12- refactored to prevent unnecessary database queries
+	 *
 	 * @param user
 	 * @param project
 	 *            project abbreviation or alias
@@ -139,40 +157,36 @@ public class PrearcUtils {
 	 *             does not exist.
 	 */
 	public static File getPrearcDir(final XDATUser user, final String project, final boolean allowUnassigned) throws IOException,InvalidPermissionException,Exception {
-		if (null == user) {
-			throw new InvalidPermissionException("null user object");
-		}
 		String prearcPath;
 		if(project==null || project.equals(COMMON)){
-			if (allowUnassigned || user.checkRole(ROLE_SITE_ADMIN)) {
+			if (allowUnassigned || user==null || user.checkRole(ROLE_SITE_ADMIN)) {
 				prearcPath=ArcSpecManager.GetInstance(false).getGlobalPrearchivePath();
 			}else{
 				throw new InvalidPermissionException("user " + user.getUsername() + " does not have permission to access the Unassigned directory ");
 			}
 		}else{
-			XnatProjectdata projectData = AutoXnatProjectdata.getXnatProjectdatasById(project, user, false);
-			if (null == projectData) {
-				final List<XnatProjectdata> matches = AutoXnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias", project, user, false);
-				if (matches.size()==1) {
-					projectData = matches.get(0);
+			//Refactored to remove unnecessary database hits.  It only needs to hit the xnat_projectdata table if the query is using a project alias rather than a project id.  TO
+			ArcProject p=ArcSpecManager.GetInstance().getProjectArc(project);
+			if(p!=null){
+				if (user!=null && !user.canAction(PROJECT_SECURITY_TASK, project, SecurityManager.CREATE)) {
+					throw new InvalidPermissionException("user " + user.getUsername() + " does not have create permissions for project " + project);
 				}
-			}
-			if (null == projectData) {
-				throw new IOException("No project named " + project);
-			}
-			try {
-				if (user.canAction(PROJECT_SECURITY_TASK, projectData.getId(), SecurityManager.CREATE)) {
-					prearcPath = projectData.getPrearchivePath();
-				} else {
-					throw new InvalidPermissionException("user " + user.getUsername() + " does not have create permissions for project " + projectData.getId());
+				prearcPath=ArcSpecManager.GetInstance().getPrearchivePathForProject(project);
+			}else{
+				//check to see if it used a project alias
+				XnatProjectdata proj=XnatProjectdata.getProjectByIDorAlias(project, user, false);
+				if(proj!=null){
+					if (user!=null && !user.canAction(PROJECT_SECURITY_TASK, project, SecurityManager.CREATE)) {
+						throw new InvalidPermissionException("user " + user.getUsername() + " does not have create permissions for project " + project);
+					}
+					prearcPath=proj.getPrearchivePath();
+				}else{
+					throw new IOException("No project named " + project);
 				}
-			} catch (final Exception e) {
-				logger().info("Unable to check security for " + user.getUsername() + " on " + projectData.getId(), e);
-				throw new Exception(e.getMessage());
 			}
 
 			if (null == prearcPath) {
-				final String message = "Unable to retrieve prearchive path for project " + projectData.getId();
+				final String message = "Unable to retrieve prearchive path for project " + project;
 				logger().error(message);
 				throw new Exception(message);
 			}
@@ -441,4 +455,165 @@ public class PrearcUtils {
 			return false;
 		}
 	}
+	
+	/*******************
+	 * The prearchive logging code begins here.
+	 * 
+	 * In the future, we might want to move this to a database table.  However, the current prearchive table doesn't have a primary key column (really?).  
+	 * So, there would be no way to reliably join from the logs table to the prearchive table.  Also, this would make more sense to do as part of a image session logging framework 
+	 * which would capture a lot more then just preachive logs, but requires more requirements gathering.
+	 * 
+	 * As such, this is more of a stub implementation, that should probably change when the above problems are dealt with.  It will facilitate the current requirement, which 
+	 * is just that we can show the last exception via REST.
+	 */
+	
+	private static File getLogDir(final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception{
+		if(timestamp==null || session==null){
+			throw new IllegalArgumentException(String.format("Invalid prearchive session: timestamp %s; session %s",
+			        timestamp, session));
+		}
+		return new File(new File(new File(getPrearcDir(null, project,true),timestamp),session),"logs");
+	}
+	
+	/**
+	 * Logs a message for a particular prearchive session.  The log entry will be placed in a log file named with the current timestamp in a logs subdirectory.
+	 * 
+	 * @param data
+	 * @param message
+	 */
+	public static void log(final SessionData data,final Throwable message){
+		PrearcUtils.log(data.getProject(),data.getTimestamp(),data.getName(),message);
+	}
+	
+	/**
+	 * Logs a message for a particular prearchive session.  The log entry will be placed in a log file named with the current timestamp in a logs subdirectory.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @param message
+	 */
+	public static void log(final String project, final String timestamp, final String session, final Throwable message) {
+		try {
+			File logs=getLogDir(project,timestamp,session);
+			if(!logs.exists()){
+				logs.mkdirs();
+			}
+			FileUtils.writeStringToFile(new File(logs,Calendar.getInstance().getTimeInMillis()+".log"), message.getMessage());
+		} catch (IOException e) {
+			logger.error("",e);
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+		} catch (Exception e) {
+			logger.error("",e);
+		}
+	}
+	
+	/**
+	 * Get all of the log IDs for this prearchived session.  Returns an empty list when none are present.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @return
+	 */
+	public static Collection<String> getLogs(final String project, final String timestamp, final String session) {
+		final Collection<String> logs=Lists.newArrayList();
+		try {
+			final File logDir=getLogDir(project,timestamp,session);
+			if(logDir.exists()){
+				final String[] files=logDir.list();
+				if(files!=null){
+					for(String f:files){
+						logs.add(f.substring(0,f.indexOf(".log")));//strip off the .log so it would be seamless to not use physical log files here.
+					}
+				}
+			}
+		} catch (IOException e) {
+			logger.error("",e);
+			return null;
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return logs;
+	}
+	
+	/**
+	 * Return the log entry for the specified ID (timestamp).  Returns null when it isn't found.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @param logId
+	 * @return
+	 */
+	public static String getLog(final String project, final String timestamp, final String session, final String logId) {
+		try {
+			final File logDir=getLogDir(project,timestamp,session);
+			if(logDir.exists()){
+				final File log=new File(logDir,logId+".log");//the .log is hidden from log users to conceal implementation details 
+				if(log.exists()){
+					return FileUtils.readFileToString(log);
+				}
+			}
+		} catch (IOException e) {
+			logger.error("",e);
+			return null;
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the last log entry for this prearchived session.  When none are present, null is returned.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @return
+	 */
+	public static String getLastLog(final String project, final String timestamp, final String session) {
+		try {
+			final File logDir=getLogDir(project,timestamp,session);
+			
+			if(logDir.exists()){
+				File lastFile=null;
+				for(File f: logDir.listFiles()){
+					if(lastFile==null){
+						lastFile=f;
+					}else{
+						if(f.lastModified()>lastFile.lastModified()){
+							lastFile=f;
+						}
+					}
+				}
+				if(lastFile!=null){
+					return FileUtils.readFileToString(lastFile);
+				}else{
+					return null;
+				}
+			}
+		} catch (IOException e) {
+			logger.error("",e);
+			return null;
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return null;
+	}
+	
+	
 }

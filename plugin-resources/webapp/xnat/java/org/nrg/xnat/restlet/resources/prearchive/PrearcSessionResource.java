@@ -4,9 +4,11 @@
 package org.nrg.xnat.restlet.resources.prearchive;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -39,6 +41,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,9 +159,11 @@ public final class PrearcSessionResource extends SecureResource {
                 }
             } catch (InvalidPermissionException e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
             } catch (Exception e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
             }
         } else if (POST_ACTION_RESET.equals(action)) {
@@ -168,9 +173,11 @@ public final class PrearcSessionResource extends SecureResource {
                 returnString(wrapPartialDataURI(PrearcUtils.buildURI(project,timestamp,session)), MediaType.TEXT_URI_LIST,Status.SUCCESS_OK);
             } catch (InvalidPermissionException e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
             } catch (Exception e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
             }
         } else if (POST_ACTION_MOVE.equals(action)) {
@@ -192,15 +199,19 @@ public final class PrearcSessionResource extends SecureResource {
                 }				
             } catch (SyncFailedException e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
             } catch (SQLException e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
             } catch (SessionException e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e);
             } catch (Exception e) {
                 logger.error("",e);
+                PrearcUtils.log(project,timestamp,session, e);
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
             }			
         }else if (POST_ACTION_COMMIT.equals(action)) {
@@ -312,8 +323,33 @@ public final class PrearcSessionResource extends SecureResource {
         String screen=this.getQueryVariable("screen");
         String popup=StringUtils.equalsIgnoreCase(this.getQueryVariable("popup"), "true") ? "true":"false";
         
-        
         final MediaType mt = overrideVariant(variant);
+        
+        //add GET support for log files
+        if(StringUtils.isNotEmpty(filepath)){
+        	if(filepath.startsWith("logs/") && filepath.length()>5){
+        		final String logId=filepath.substring(5);
+        		
+        		final String contents;
+        		if(logId.equals("last")){
+        			contents=PrearcUtils.getLastLog(project, timestamp, session);
+        		}else{
+        			contents=PrearcUtils.getLog(project, timestamp, session,logId);
+        		}
+        		
+        		return new StringRepresentation(contents, mt);
+        	}else if(filepath.equals("logs")){
+        		final XFTTable tb=new XFTTable();
+        		tb.initTable(new String[]{"id"});
+        		
+        		for(String id:PrearcUtils.getLogs(project,timestamp,session)){
+        			tb.rows().add(new Object[]{id});
+        		}
+        		
+        		return representTable(tb,mt,new Hashtable<String,Object>());
+        	}
+        }
+        
         if (MediaType.TEXT_HTML.equals(mt) || StringUtils.isNotEmpty(screen)) 
         {
             // Return the session XML, if it exists

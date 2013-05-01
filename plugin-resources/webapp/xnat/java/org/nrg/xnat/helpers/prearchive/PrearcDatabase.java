@@ -421,25 +421,26 @@ public final class PrearcDatabase {
     }
 
     private static String _archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, boolean overwrite_files, XDATUser user, Set<StatusListenerI> listeners, boolean waitFor) throws SyncFailedException {
-        final PrearcSessionArchiver archiver;
+    	final String prearcDIR=session.getFolderName();
+        final String timestamp=session.getTimestamp();
+        final String project=session.getProject();
+        
+    	final PrearcSessionArchiver archiver;
         try {
             archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite,overwrite_files, user, waitFor);
         }catch (Exception e1) {
+            PrearcUtils.log(project,timestamp,prearcDIR, e1);
             throw new IllegalStateException(e1);
         }
 
         ListenerUtils.addListeners(listeners, archiver);
-
-        final String prearcDIR=session.getFolderName();
-        final String timestamp=session.getTimestamp();
-        final String project=session.getProject();
-
 
         final SessionData sd;
         try {
             sd = session.getSessionData();
         }
         catch (Exception e) {
+            PrearcUtils.log(project,timestamp,prearcDIR, e);
             throw new IllegalStateException(e);
         }
 
@@ -472,6 +473,7 @@ public final class PrearcDatabase {
         }
         catch (Exception _e) {
             logger.error("",_e);
+            PrearcUtils.log(sd, _e);
             e =  _e;
             ran = false;
         }
@@ -1048,27 +1050,33 @@ public final class PrearcDatabase {
             catch (SQLException e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
+            	PrearcUtils.log(proj, timestamp, sess, e);
                 throw e;
             } 
             catch (SessionException e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
+            	PrearcUtils.log(proj, timestamp, sess, e);
                 throw e;
             }
             catch (SyncFailedException e) {
                 logger.error("",e);
+                
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
                 if((e.cause!=null && (e.cause instanceof ClientException) && Status.CLIENT_ERROR_CONFLICT.equals(((ClientException)e.cause).getStatus()))){
                 	//if this failed due to a conflict
                 	PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.CONFLICT);
+                	PrearcUtils.log(proj, timestamp, sess, e.cause);
                 }else{
                 	PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.ERROR);
+                	PrearcUtils.log(proj, timestamp, sess, (e.cause!=null)?e.cause:e);
                 }
                 throw e;
             }
             catch (Exception e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
+            	PrearcUtils.log(proj, timestamp, sess, e);
                 throw e;
             }
         }

@@ -158,6 +158,8 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 							data.setProject(project);
 						}
 						data.setStatus(PrearcStatus.ERROR);
+
+		            	PrearcUtils.log(data, e);
 					}
 				}
 			}

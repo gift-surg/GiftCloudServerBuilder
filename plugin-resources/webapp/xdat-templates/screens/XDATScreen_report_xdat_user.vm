@@ -463,10 +463,7 @@ addGroup("$!groupid.getGroupid()");
             if (!hasTag(projectId)) {
                 var project = window.projectTracker.getProjectById(projectId);
                 if (project) {
-                    var displayName = project.getDisplayName();
-                    if (displayName) {
-                        select.options[select.options.length] = new Option(displayName, projectId);
-                    }
+                    select.options[select.options.length] = new Option(projectId, projectId);
                 }
             }
         }

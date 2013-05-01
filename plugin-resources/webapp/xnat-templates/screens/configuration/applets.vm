@@ -5,7 +5,7 @@
         can also be supplemented by applet settings specified at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.</p>
 
         <p><b>Script:</b></p>
-        <textarea id="appletScript" name="appletScript" rows="20" cols="80" onkeypress="if (!window.appletManager.isDirty()) { window.appletManager.dirtyForm(); }" disabled></textarea>
+        <textarea id="appletScript" name="appletScript" rows="20" cols="80" disabled></textarea>
     </div>
     <div class="buttons">
         <input type="button" value="Save" name="eventSubmit_doPerform" id="applet_save_button" onclick="window.appletManager.saveTabSettings();"/>&nbsp;
@@ -15,24 +15,31 @@
 
 <script type="text/javascript">
 
-function configurationAppletTabChange(obj) {
-    if(obj.newValue.get("href")=="#applets") {
-        if(window.appletManager==undefined) {
-            window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+    $('#appletScript').bind('input propertychange', function() {
+        if (!window.appletManager.wasDirty()) {
+            window.appletManager.dirtyForm();
+        }
+    });
+
+    function configurationAppletTabChange(obj) {
+        if(obj.newValue.get("href")=="#applets") {
+            if(window.appletManager==undefined) {
+                window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+            }
         }
     }
-}
 
-function addAppletMgmtMonitor(){
-    if(window.configurationTabView.get("activeTab").get("href")=="#applets") {
-        if(window.appletManager==undefined) {
-            window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+    function addAppletMgmtMonitor(){
+        if(window.configurationTabView.get("activeTab").get("href")=="#applets") {
+            if(window.appletManager==undefined) {
+                window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+            }
+        } else {
+            window.configurationTabView.subscribe("activeTabChange", configurationAppletTabChange);
         }
-    } else {
-        window.configurationTabView.subscribe("activeTabChange", configurationAppletTabChange);
     }
-}
 
-YAHOO.util.Event.onDOMReady(addAppletMgmtMonitor);
-var appletControls = ['appletScript'];
+    YAHOO.util.Event.onDOMReady(addAppletMgmtMonitor);
+    var appletControls = ['appletScript'];
+
 </script>

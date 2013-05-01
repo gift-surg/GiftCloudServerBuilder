@@ -6,7 +6,7 @@
             can also be supplemented by anonymization operations specified at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.
         </p>
         <p><label for="anonScript">Script:</label></p>
-        <textarea id="anonScript" name="anonScript" rows="20" cols="80" onkeypress="if (!window.anonymizationManager.isDirty()) { window.anonymizationManager.dirtyForm(); }" disabled></textarea>
+        <textarea id="anonScript" name="anonScript" rows="20" cols="80" disabled></textarea>
     </div>
     <div class="buttons">
         <input type="button" value="Save" name="eventSubmit_doPerform" id="anonymization_save_button" onclick="window.anonymizationManager.saveTabSettings();"/>&nbsp;
@@ -16,6 +16,12 @@
 
 
 <script type="text/javascript">
+
+    $('#anonScript').bind('input propertychange', function() {
+        if (!window.anonymizationManager.wasDirty()) {
+            window.anonymizationManager.dirtyForm();
+        }
+    });
 
     function configurationAnonymizationTabChange(obj) {
         if(obj.newValue.get("href")=="#anonymization") {

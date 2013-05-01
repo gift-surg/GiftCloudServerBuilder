@@ -338,17 +338,38 @@ function SettingsTabManager(settingsTabDivId, settings) {
         return true;
     };
 
+    /**
+     * Combines the wasDirty() and hasBeenDirtied() calls to tell you if the resource had been dirtied previously or is
+     * in a dirty state currently. Note that this can return true even if the form isn't truly dirty, i.e. it was
+     * changed then reverted manually.
+     * @returns True if previously or currently dirty.
+     */
     this.isDirty = function() {
-        if (this.dirtyFlag) {
-            return true;
-        }
+        return this.wasDirty() || this.hasBeenDirtied();
+    };
+
+    /**
+     * Indicates whether the resource was ever dirtied. Note that this can return true even if the form isn't truly
+     * dirty, i.e. it was changed then reverted manually. The only thing that should clear this flag is the reset
+     * button.
+     * @returns True if the resource was previously dirtied.
+     */
+    this.wasDirty = function() {
+        return this.dirtyFlag;
+    };
+
+    /**
+     * Indicates whether the form is currently dirtied.
+     * @returns {boolean}
+     */
+    this.hasBeenDirtied = function() {
         for (var index = 0; index < this.controls.length; index++) {
             var control = this.controls[index];
-            if (control.type == 'text') {
+            if (control.type === 'text' || control.type === 'textarea') {
                 if (control.value != control.defaultValue) {
                     return true;
                 }
-            } else if (control.type == 'checkbox') {
+            } else if (control.type === 'checkbox') {
                 if (control.checked != control.defaultValue.toLowerCase()) {
                     return true;
                 }

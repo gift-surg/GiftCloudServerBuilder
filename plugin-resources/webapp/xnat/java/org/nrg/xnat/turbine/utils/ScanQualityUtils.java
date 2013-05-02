@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Washington University
+ * Copyright (c) 2012,2013 Washington University School of Medicine
  */
 package org.nrg.xnat.turbine.utils;
 
@@ -34,7 +34,7 @@ public final class ScanQualityUtils {
                 }
             };
         }
-        final String configVal = configService.getConfigContents("quality-labels", "/labels", getProjectId);
+        final String configVal = configService.getConfigContents("scan-quality", "labels", getProjectId);
         if (Strings.isNullOrEmpty(configVal)) {
             if (Strings.isNullOrEmpty(project)) {
                 return Arrays.asList("usable", "questionable", "unusable");

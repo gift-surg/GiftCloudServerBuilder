@@ -306,6 +306,7 @@ public class XNATApplication extends Application {
         router.attach("/services/logging/{" + Analytics.EVENT_KEY + "}", RemoteLoggingRestlet.class);
         router.attach("/services/mail/send", MailRestlet.class);
         router.attach("/services/tokens/{OPERATION}", AliasTokenRestlet.class);
+        router.attach("/services/tokens/{OPERATION}/user/{USERNAME}", AliasTokenRestlet.class);
         router.attach("/services/tokens/{OPERATION}/{TOKEN}", AliasTokenRestlet.class);
         router.attach("/services/tokens/{OPERATION}/{TOKEN}/{SECRET}", AliasTokenRestlet.class);
 

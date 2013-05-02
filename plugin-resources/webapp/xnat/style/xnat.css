@@ -420,6 +420,10 @@ body #fileListing_mask { z-index: 2001 !important ; }
 body #fileListing_c { z-index: 2002 !important ; }
 body #fileListing { z-index: 2003 !important ; }
 
+body #file_remove_confirm_mask { z-index: 2004 !important ; }
+body #file_remove_confirm_c { z-index: 2005 !important ; }
+body #file_remove_confirm { z-index: 2006 !important ; }
+
 body #fileUploadDialog_mask { z-index: 2101 !important ; }
 body #fileUploadDialog_c { z-index: 2102 !important ; }
 body #fileUploadDialog { z-index: 2103 !important ; }

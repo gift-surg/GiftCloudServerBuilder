@@ -1,6 +1,8 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -141,9 +143,13 @@ public abstract class QueryOrganizerResource extends SecureResource {
 	public ArrayList<String> columns=null;
 	
 	public void populateQuery(QueryOrganizer qo){
-		
-		if(hasQueryVariable("columns") && !getQueryVariable("columns").equals("DEFAULT")){
-			columns=StringUtils.CommaDelimitedStringToArrayList(getQueryVariable("columns"));
+		if(hasQueryVariable("columns") && !getQueryVariable("columns").equals("DEFAULT")){ 
+			try {
+				columns=StringUtils.CommaDelimitedStringToArrayList(URLDecoder.decode(getQueryVariable("columns"), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				logger.error("",e);
+				columns=getDefaultFields(qo.getRootElement());
+			}
 		}else{
 			columns=getDefaultFields(qo.getRootElement());
 		}

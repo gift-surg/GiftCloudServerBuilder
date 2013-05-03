@@ -19,18 +19,11 @@ $navigation.setTemplate("/bodyOpen.vm")
       <div id="layout_content">$screen_placeholder</DIV>
     </td>
   </tr>
-  <tr height="*">
-    <td valign="bottom" height="*">
-      <TABLE width="100%" >
-<TR>
-	<TD><hr></TD>
-</TR>
-<TR>
-	<TD valign="bottom" align="right">
-		$navigation.setTemplate("/powered_by.vm")
-	</TD>
-</TR>
-</TABLE>
+  <tr>
+    <td valign="bottom">
+
+        $navigation.setTemplate("/powered_by.vm")
+
     </td>
   </tr>
 </table>

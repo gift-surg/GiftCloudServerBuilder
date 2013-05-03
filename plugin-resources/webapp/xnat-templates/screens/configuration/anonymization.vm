@@ -9,8 +9,8 @@
         <textarea id="anonScript" name="anonScript" rows="20" cols="80" disabled></textarea>
     </div>
     <div class="buttons">
-        <input type="button" value="Save" name="eventSubmit_doPerform" id="anonymization_save_button" onclick="window.anonymizationManager.saveTabSettings();"/>&nbsp;
-        <input type="button" value="Reset" name="eventSubmit_doReset" id="anonymization_reset_button" onclick="window.anonymizationManager.resetForm();" disabled/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="anonymization_save_button" onclick="window.anonymizationManager.saveTabSettings();"/>&nbsp;
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="anonymization_reset_button" onclick="window.anonymizationManager.resetForm();" disabled/>
     </div>
 </div>
 

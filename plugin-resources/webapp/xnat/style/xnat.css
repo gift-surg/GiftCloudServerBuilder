@@ -2,7 +2,7 @@
 #tabbedList li a { height: 20px ; text-decoration: none ; }
 #tabbedList li a:link, #tabbedList li a:visited { color: #000 ; display: block ; padding: 8px 0 0 10px ; }
 #tabbedList li a:hover { background-color: #fff ; padding: 8px 0 0 10px ; }
-td.leftBar { width: 170px ; }
+td.leftBar { width: 170px ; padding-top: 10px ; padding-left: 10px ; }
 ul.menu { list-style-type: none ; text-decoration: none ; margin: 0 ; padding: 0 ; }
 ul.menu li { float: left ; position: relative ; margin: 0 ; padding: 2px 6px ; }
 ul.subMenu { margin: 0 ; padding: 1px ; padding-top: 3px ; display: none ; position: absolute ; text-decoration: none ; }
@@ -173,24 +173,28 @@ input[type="button"]:focus,
 input[type="submit"]:focus,
 input[type="reset"]:focus{ outline: none !important ; }
 
-
 select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; }
-
-
+select[multiple] { max-width: 200px ; }
 
 /* page layout styles */
-#page_wrapper { padding: 28px /* 20px */ ; }
-#layout_content.main { min-width: 728px ; }
-.ie7 #layout_content.main { width: 728px ; overflow: auto ; }
-#wrapper_table { min-width: 960px ; }
-.ie7 #wrapper_table,
-.ie8 #wrapper_table { width: 960px ; }
+#page_wrapper { padding: 28px /* 20px */ ; padding-left: 15px ; }
+#layout_content.main { min-width: 728px ; width: 740px ; }
+.ie7 #layout_content.main { width: 740px ; overflow: auto ; }
+#wrapper_table { min-width: 940px ; }
+.ltie9 #wrapper_table { width: 940px ; }
+
+/* search results page */
+#search_results_container { min-width: 930px ; width: 100% ; margin: 0 10px 0 0 ; padding: 0 ; }
+#search_tab_module { width: 100% ; }
+#search_tabs { width: 100% }
+
+#search_tabs .xT_p,
+#search_tabs .xT_c { width: 100% !important ; max-width: 880px ; }
 
 /* login box */
 #login_box { width: 220px ; margin: 0 auto ; padding: 20px ; background: #f0f0f0 ; border-radius: 0 ; }
 #login_box input[name="login"] { margin-top: 10px; }
 #register_forgot a { margin: 0 10px ; }
-
 
 /* user bar stuff */
 #user_bar { position: absolute ; left: 0 ; top: 0 ; width: 960px ; height: 28px ; font-size: 11px ; line-height: 28px ; vertical-align: middle ; background: #dadada url('images/user_bar_bkgd.png') left top repeat-x ; }
@@ -201,8 +205,8 @@ select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 1
 #user_info a { font-weight: normal ; text-decoration: underline ; }
 #user_info b { padding: 0 5px ; font-weight: normal ; }
 #user_info #timeLeft { padding: 0 0 0 1px ; font-family: "Courier New",Courier,monospace ; font-weight: bold ; color: #000 ; white-space: nowrap ; }
-#header { position: relative ; width: 932px ; min-height: 72px ; margin: -2px ; margin-bottom: 16px ; background: #fff ; z-index: 1000 ; }
-#header_logo { position: absolute ; left: 0 ; bottom: 0 ; max-width: 240px ; max-height: 120px ; }
+#header { position: relative ; width: 932px ; min-height: 72px ; margin: 0 ; margin-bottom: 16px ; padding-left: 10px ; background: #fff ; z-index: 1000 ; }
+#header_logo { position: absolute ; left: 10px ; bottom: 0 ; max-width: 240px ; max-height: 120px ; }
 #header_logo img { display: block ; /* width: 100% ; height: 100% ; */ max-width: 240px ; max-height: 120px ; }
 #quickSearchForm { position: absolute ; right: 0 ; bottom: 35px ; }
 #searchValue { border: 1px solid #ccc ; height: 17px ; }
@@ -216,7 +220,7 @@ select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 1
 #main_nav.hidden { overflow: hidden ; }
 
 /* warning bar */
-#warning_bar { width: 944px ; height: 20px ; position: relative ; left: -15px ; top: -2px ; line-height: 20px ; vertical-align: middle ; font-size: 11px ; background: #ffc ; color: #666 ; border: 1px solid #ee9 ; border-left: none ; }
+#warning_bar { width: 944px ; height: 20px ; position: relative ; left: 0 ; top: 0 ; line-height: 20px ; vertical-align: middle ; font-size: 11px ; background: #ffc ; color: #666 ; border: 1px solid #ee9 ; border-left: none ; }
 /* warning bar with no left 'page border' and 960px user bar */
 /*
 #warning_bar { background: none repeat scroll 0 0 #FFFFCC; border: 1px solid #EEEE99; color: #666666; font-size: 11px; height: 20px; left: -22px; line-height: 20px; position: relative; top: -2px; vertical-align: middle; width: 958px; }
@@ -232,7 +236,7 @@ select { padding: 2px ; font-family: Arial, Helvetica, sans-serif ; font-size: 1
 #warning_bar .tip_text .tip { left: 20px ; top: 25px ; width: 250px ; padding: 10px 20px ; line-height: 15px ; background: #ffc ; border: 1px solid #ee9 ; }
 
 /* footer graphic */
-#xnat_power { /* width: 100% ; */ margin: 75px 20px 20px 30px ; border-top: 1px solid #ccc ; }
+#xnat_power { /* width: 100% ; */ margin: 75px 0 20px 20px ; border-top: 1px solid #ccc ; }
 #xnat_power a { float: right ; display: inline-block ; margin-top: 10px ; }
 
 /* overrides to make this thing look better? */
@@ -277,7 +281,7 @@ td.highlighted { background-color: #f0f0f0 ; border: 1px solid #d8d8d8 ; }
 .yuimenubaritemlabel,
 .yuimenuitemlabel { outline: none; }
 
-#layout_content { z-index: 0 ; font-size: 12px ; }
+#layout_content { padding-top: 10px ; z-index: 0 ; font-size: 12px ; }
 /*
 #layout_content, #layout_content .yui-content { width: 700px ; }
 #layout_content .yui-nav { width: 714px ; }
@@ -327,7 +331,7 @@ div.containerTitle.withColor { background: #084FAB ; }
     /* border: 2px solid rgba(204,204,204,0.5) ;	*/
 }
 
-
+/* leftBar */
 .leftBar {  }
 .leftBarTable {  }
 .leftBarTableTD {  }

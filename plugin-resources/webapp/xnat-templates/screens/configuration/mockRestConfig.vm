@@ -14,8 +14,8 @@
         <textarea id="restMockCallMap" name="restMockCallMap" rows="20" cols="80" onkeypress="if (!hasDirtied) { window.mockRestConfigManager.dirtyForm(); hasDirtied = true; }" disabled></textarea>
     </div>
     <div class="buttons">
-        <input type="button" value="Save" name="eventSubmit_doPerform" id="mockRestConfig_save_button" onclick="window.mockRestConfigManager.saveTabSettings();"/>&nbsp;
-        <input type="button" value="Reset" name="eventSubmit_doReset" id="mockRestConfig_reset_button" onclick="window.mockRestConfigManager.resetForm();" disabled/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="mockRestConfig_save_button" onclick="window.mockRestConfigManager.saveTabSettings();"/>&nbsp;
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="mockRestConfig_reset_button" onclick="window.mockRestConfigManager.resetForm();" disabled/>
     </div>
 </div>
 

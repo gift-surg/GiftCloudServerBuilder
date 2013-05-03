@@ -43,8 +43,8 @@
     </div>
 
     <div class="buttons">
-        <input type="button" value="Save" name="eventSubmit_doPerform" id="siteInfo_save_button" onclick="window.siteInfoManager.saveTabSettings();"/>&nbsp;
-        <input type="button" value="Reset" name="eventSubmit_doReset" id="siteInfo_reset_button" onclick="window.siteInfoManager.resetForm();" disabled/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="siteInfo_save_button" onclick="window.siteInfoManager.saveTabSettings();"/>&nbsp;
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="siteInfo_reset_button" onclick="window.siteInfoManager.resetForm();" disabled/>
     </div>
 
 </div>

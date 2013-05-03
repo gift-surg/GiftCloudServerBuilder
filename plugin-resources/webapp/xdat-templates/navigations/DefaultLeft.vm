@@ -14,7 +14,7 @@ function frmsearchForm_Validate() {
 
 //-->
 </script>
-<table border="0" valign="top" class="withColor">
+<table border="0" valign="top" class="withColor" cellspacing="0" cellpadding="0">
 	<tr align="left" valign="top">
     <td>
 		   $navigation.setTemplate("QuickSearch.vm")

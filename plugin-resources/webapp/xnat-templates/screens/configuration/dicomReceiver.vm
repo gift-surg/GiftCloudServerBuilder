@@ -21,8 +21,8 @@
 
     </div>
     <div class="buttons">
-        <input type="button" value="Save" name="eventSubmit_doPerform" id="dicomReceiver_save_button" onclick="window.dicomReceiverManager.saveTabSettings();"/>&nbsp;
-        <input type="button" value="Reset" name="eventSubmit_doReset" id="dicomReceiver_reset_button" onclick="window.dicomReceiverManager.resetForm();" disabled/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="dicomReceiver_save_button" onclick="window.dicomReceiverManager.saveTabSettings();" disabled/>&nbsp;
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="dicomReceiver_reset_button" onclick="window.dicomReceiverManager.resetForm();" disabled/>
     </div>
 </div>
 

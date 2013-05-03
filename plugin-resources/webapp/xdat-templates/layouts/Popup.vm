@@ -20,7 +20,7 @@ $navigation.setTemplate("/bodyOpen.vm")
     </td>
   </tr>
   <tr>
-    <td valign="bottom" height="*">
+    <td valign="bottom">
       $navigation.setTemplate("/DefaultBottom.vm")
     </td>
   </tr>

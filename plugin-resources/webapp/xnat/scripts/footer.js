@@ -388,7 +388,12 @@ XNAT.app.toggle=function (_name){
     }
 };
 
-
+$(function(){
+    // add title for <option> of multi-select on hover
+    $('body').on('hover','select[multiple] > option',function(){
+        $(this).attr('title',$(this).text());
+    });
+});
 
 jq(window).load(function(){
 

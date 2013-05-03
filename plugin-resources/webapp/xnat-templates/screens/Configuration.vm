@@ -99,6 +99,15 @@
                     var initialize = true;
                 #end
                 configurationTabManagerInit(initialize);
+
+                jq(function(){
+                    var mgmt_container = '.mgmt_container';
+                    jq('body').on('input propertychange',mgmt_container+' input[type="text"], '+mgmt_container+' textarea', function() {
+                        var __this_container = jq(this).closest(mgmt_container);
+                        __this_container.find('input.reset').prop('disabled',false);
+                    });
+                });
+
             </script>
             <!-- END TABS AND CONTENT DISPLAY: Taken from xnat_projectData_summary_tabs.vm -->
         </td>

@@ -21,7 +21,7 @@ $navigation.setTemplate("/bodyOpen.vm")
 <!-- path: xnat-templates/layouts/Login -->
 
 ##<body id="page_body" class="yui-skin-sam" ONLOAD="document.getElementById('username').focus();">
-<table id="login_container" valign="top" border=0>
+<table id="login_container"  cellpadding="0" cellspacing="0">
     <tr>
         <td valign="top">
             $navigation.setTemplate("/NoMenuTop.vm")
@@ -52,10 +52,9 @@ $navigation.setTemplate("/bodyOpen.vm")
     -->
 </table>
 
-<div id="xnat_power" style="">
+<div style="padding-right:20px;">
     $navigation.setTemplate("/powered_by.vm")
 </div>
-
 ## insert any template-specific code here that needs to be directly before closing </body> tag
 
 $navigation.setTemplate("/htmlClose.vm")

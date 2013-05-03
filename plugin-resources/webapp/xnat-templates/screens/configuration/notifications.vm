@@ -30,8 +30,8 @@
 
     </div>
     <div class="buttons">
-        <input type="button" value="Save" name="eventSubmit_doPerform" id="notifications_save_button" onclick="window.notificationsManager.saveTabSettings();"/>&nbsp;
-        <input type="button" value="Reset" name="eventSubmit_doReset" id="notifications_reset_button" onclick="window.notificationsManager.resetForm();" disabled/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="notifications_save_button" onclick="window.notificationsManager.saveTabSettings();"/>&nbsp;
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="notifications_reset_button" onclick="window.notificationsManager.resetForm();" disabled/>
     </div>
 </div>
 

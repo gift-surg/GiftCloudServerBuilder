@@ -1,29 +1,16 @@
 ##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-<style>
-.ygtvlabel{
-  /* font-size:9px;*/
-}
-</style>
-<!--
-<div id="timeLeft">
-Time Left :
-</div>
--->
+<!-- /xnat-templates/navigations/DefaultLeft.vm -->
 <div class="yui-skin-sam">
-<table style="margin:0 10px 0 0;padding:0;">
-$navigation.setTemplate("LeftBarOptions.vm")
- <tr>
-  <td valign="top" style="padding:10px;border:solid 1px #d0d0d0">
-   <div id="l_tv"></div>
-   <div style="width:160px">&nbsp;</div>
-  </td>
- </tr>
-</table>
+    <table id="left_bar_table" style="margin:0 10px 0 0;padding:0;" cellpadding="0" cellspacing="0">
+        $navigation.setTemplate("LeftBarOptions.vm")
+        <tr>
+            <td valign="top" style="padding:10px;border:solid 1px #d0d0d0">
+                <div id="l_tv"></div>
+                <div style="width:160px">&nbsp;</div>
+            </td>
+        </tr>
+    </table>
 </div>
-
-##<script type="text/javascript">
-## // "timeLeft" code in /scripts/timeLeft.js
-##</script>
 
 <script type="text/javascript">
 //build element_array
@@ -68,5 +55,5 @@ $navigation.setTemplate("LeftBarOptions.vm")
 
  lTV.init();
 
-
 </script>
+<!-- end /xnat-templates/navigations/DefaultLeft.vm -->

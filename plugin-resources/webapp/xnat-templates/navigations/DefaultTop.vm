@@ -233,12 +233,6 @@ $navigation.setTemplate("XNATQuickSearch.vm")
         var recent_proj_height = 67 ;
         //jq('#min_projects_list, #min_expt_list').height(recent_proj_height * 5).css({'min-width':349,'overflow-y':'scroll'});
 
-        jq('#min_projects_list').closest('table').addClass('summary').css({
-            'margin':0,
-            'position':'relative',
-            'left':-2
-        })
-
     });
 </script>
 

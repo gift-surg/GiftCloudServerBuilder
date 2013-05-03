@@ -47,31 +47,35 @@
 
     </div>
     <div class="buttons">
-        <input type="button" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>
-        <input type="button" value="Reset" name="eventSubmit_doReset" id="fileSystem_reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="fileSystem_save_button" onclick="window.fileSystemManager.saveTabSettings();"/>
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="fileSystem_reset_button" onclick="window.fileSystemManager.resetForm();" disabled/>
     </div>
 </div>
 
 
 <script type="text/javascript">
-function configurationFileSystemTabChange(obj) {
-    if(obj.newValue.get("href")=="#fileSystem") {
-        if(window.fileSystemManager==undefined) {
-            window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
+
+
+
+    function configurationFileSystemTabChange(obj) {
+        if(obj.newValue.get("href")=="#fileSystem") {
+            if(window.fileSystemManager==undefined) {
+                window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
+            }
         }
     }
-}
 
-function addFileSystemMgmtMonitor(){
-    if(window.configurationTabView.get("activeTab").get("href")=="#fileSystem") {
-        if(window.fileSystemManager==undefined) {
-            window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
+    function addFileSystemMgmtMonitor(){
+        if(window.configurationTabView.get("activeTab").get("href")=="#fileSystem") {
+            if(window.fileSystemManager==undefined) {
+                window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
+            }
+        } else {
+            window.configurationTabView.subscribe("activeTabChange", configurationFileSystemTabChange);
         }
-    } else {
-        window.configurationTabView.subscribe("activeTabChange", configurationFileSystemTabChange);
     }
-}
 
-YAHOO.util.Event.onDOMReady(addFileSystemMgmtMonitor);
-var fileSystemControls = ['archivePath', 'checksums', 'prearchivePath', 'cachePath', 'buildPath', 'ftpPath', 'pipelinePath'];
+    YAHOO.util.Event.onDOMReady(addFileSystemMgmtMonitor);
+    var fileSystemControls = ['archivePath', 'checksums', 'prearchivePath', 'cachePath', 'buildPath', 'ftpPath', 'pipelinePath'];
+
 </script>

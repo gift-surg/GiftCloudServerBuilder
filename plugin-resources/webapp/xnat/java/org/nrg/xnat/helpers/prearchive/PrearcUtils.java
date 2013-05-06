@@ -68,8 +68,8 @@ public class PrearcUtils {
 		ERROR, 
 		DELETING,
 		MOVING,
-		_RECEIVING,_BUILDING,_QUEUED,_ARCHIVING,_DELETING,_MOVING
-		,_CONFLICT;
+		_RECEIVING,_BUILDING,_QUEUED,_ARCHIVING,_DELETING,_MOVING,_CONFLICT;
+        //When you add a status, please make sure to also add it to the list of filters in the prearchive.
 
 		public static boolean potentiallyReady(PrearcStatus status) {
 			return (status==null || status.equals(READY));			    

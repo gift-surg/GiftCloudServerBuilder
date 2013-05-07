@@ -140,12 +140,18 @@
     #end
     #if($data.getSession().getAttribute("user").getUsername()=="guest")
         <span id="user_info">Logged in as: <span style="color:red;">Guest</span> <b>|</b> <a href="$link.setPage("Login.vm")">Login</a> <b>|</b> <a href="$link.setPage("Register.vm")">Register</a></span>
+        <script type="text/javascript">
+            jq.cookie('guest','true',{path:'/'});
+        </script>
     #elseif($data.getSession().getAttribute("user").getUsername())
     ## use default timeout value from web.xml as the starting text in the "#timeLeft" element
         <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b><span class="tip_icon" style="margin-right:3px;left:2px;top:3px;">
             <span class="tip shadowed" style="top:20px;z-index:10000;white-space:normal;left:-150px;width:300px;background-color:#ffc;">Your XNAT session will auto-logout after a certain period of inactivity. You can reset that timer without reloading the page by clicking "renew."</span>
         </span>
         Auto-logout in: <b id="timeLeft">0:15:00</b> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a id="logout_user" href="$link.setAction("LogoutUser")">Logout</a></span>
+        <script type="text/javascript">
+            jq.cookie('guest','false',{path:'/'});
+        </script>
     #end
     <div class="clear"></div>
 </div><!-- /user_bar -->

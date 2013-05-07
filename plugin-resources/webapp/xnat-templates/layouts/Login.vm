@@ -33,23 +33,6 @@ $navigation.setTemplate("/bodyOpen.vm")
             <div id="layout_content">$screen_placeholder</div>
         </td>
     </tr>
-    <!--
-    <tr>
-        <td valign="bottom">
-            <table width="100%">
-                <tr>
-                    <td><hr></td>
-                </tr>
-                <tr>
-                    <td valign="bottom" align="right">
-                        <a target="_blank" href="http://www.xnat.org/">
-                            <img src="$content.getURI("images/xnat_power_small.jpg")" border=0></a>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    -->
 </table>
 
 <div style="padding-right:20px;">

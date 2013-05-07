@@ -318,6 +318,7 @@ function updateMessageOrHide (dialog) {
  */
 function redirectToLogin () {
     YAHOO.util.Cookie.set('WARNING_BAR','OPEN',{path:'/'});
+    YAHOO.util.Cookie.set('guest','true',{path:'/'});
     synchronizingCookies.sessionTimeout.set("true");
 	var currTime = (new Date()).getTime();
 	YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME',currTime,{path:'/'});
@@ -369,4 +370,7 @@ function sessionCountdown() {
 refreshSynchronizingCookies();
 initWarningDialog(warningDialog);
 
-setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval); 
+// only run the timer if *not* a guest user (if an authenticated user)
+if ((YAHOO.util.Cookie.exists('guest')) && (YAHOO.util.Cookie.get('guest') === 'false')){
+    setInterval("syncSessionExpirationCookieWithLocal();updateMessageOrHide(warningDialog);sessionCountdown();", locals.timerInterval);
+}

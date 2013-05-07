@@ -4,7 +4,7 @@ $navigation.setTemplate("/htmlOpen.vm")
 <style type="text/css">
     body { background-image: none !important ; }
     #user_bar { width: 100% ; }
-    #login_container { width: 90% ; height: 400px ; }
+    #login_container { width: 100% ; height: 400px ; margin: 0 auto ; }
 </style>
 
 ## moved 'onload' script in <body> tag to a jQuery function

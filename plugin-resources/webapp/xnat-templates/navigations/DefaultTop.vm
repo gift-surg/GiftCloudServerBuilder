@@ -234,6 +234,9 @@ $navigation.setTemplate("XNATQuickSearch.vm")
         //jq('#min_projects_list, #min_expt_list').height(recent_proj_height * 5).css({'min-width':349,'overflow-y':'scroll'});
 
     });
+
+    logged_in = true ;
+
 </script>
 
 

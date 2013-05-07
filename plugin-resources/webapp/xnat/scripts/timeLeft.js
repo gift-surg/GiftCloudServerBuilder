@@ -340,25 +340,28 @@ function redirectToLogin () {
  * 
  */
 function sessionCountdown() {
-  var timeLeft = locals.expirationTime.timeLeft;
-  document.getElementById('timeLeft').innerHTML=timeLeft.hoursPart + ":" 
-    + zeroPad(timeLeft.minutesPart) + ":"
-    + zeroPad(timeLeft.secondsPart);
-  if ((timeLeft.secondsLeft < locals.popupTime) && (!locals.warningDisplayedOnce)) {
-    synchronizingCookies.dialogDisplay.set("true");
-  }
-  
-  if (timeLeft.millisecondsLeft <= locals.timerInterval) {
-    synchronizingCookies.dialogDisplay.set("false");
-    document.getElementById('timeLeft').innerHTML="Time Left: Session Expired.";
-  }
-  if (synchronizingCookies.sessionTimeout.get() === "true" ||
-      timeLeft.millisecondsLeft <= 0 ||
-      timeLeft.millisecondsLeft == undefined) {
-    redirectToLogin();
-  }
+
+    var timeLeft = locals.expirationTime.timeLeft;
+    var $timeLeft = $('#timeLeft');
+
+    $timeLeft.text(timeLeft.hoursPart + ":" + zeroPad(timeLeft.minutesPart) + ":" + zeroPad(timeLeft.secondsPart));
+
+    if ((timeLeft.secondsLeft < locals.popupTime) && (!locals.warningDisplayedOnce)) {
+        synchronizingCookies.dialogDisplay.set("true");
+    }
+
+    if (timeLeft.millisecondsLeft <= locals.timerInterval) {
+        synchronizingCookies.dialogDisplay.set("false");
+        $timeLeft.text("Time Left: Session Expired.");
+    }
+
+    if (synchronizingCookies.sessionTimeout.get() === "true" ||
+        timeLeft.millisecondsLeft <= 0 ||
+        timeLeft.millisecondsLeft == undefined) {
+        redirectToLogin();
+    }
 }
-  
+
 /**
  * Initialize the synchronizing cookies and warning dialog and kick off the 
  * counter.

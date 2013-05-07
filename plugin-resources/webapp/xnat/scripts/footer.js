@@ -388,11 +388,23 @@ XNAT.app.toggle=function (_name){
     }
 };
 
+var XNAT_version ;
+
 $(function(){
+
     // add title for <option> of multi-select on hover
     $('body').on('hover','select[multiple] > option',function(){
         $(this).attr('title',$(this).text());
     });
+
+    // add version to title attribute of XNAT logos
+    if (typeof logged_in != 'undefined' && logged_in == true){
+        $.get(serverRoot+'/data/version',function(data){
+            XNAT_version = data ;
+            $('#xnat_power').find('a').attr('title','XNAT version ' + XNAT_version).after('<small>version ' + XNAT_version + '</small>');
+            $('#header_logo').attr('title','XNAT version ' + XNAT_version);
+        });
+    }
 });
 
 jq(window).load(function(){

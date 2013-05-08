@@ -68,7 +68,7 @@ public class SessionXMLRebuilderJob implements JobInterface {
                     if (diff >= interval) {
                             updated++;
                         try {
-                            if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.QUEUED)) {
+                            if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.QUEUED_BUILDING)) {
                                 logger.debug("Creating JMS queue entry for {} to archive {}", user.getUsername(), sessionData.getExternalUrl());
                                 SessionXmlRebuilderRequest request = new SessionXmlRebuilderRequest(user, sessionData, sessionDir);
                                 XDAT.sendJmsRequest(request);

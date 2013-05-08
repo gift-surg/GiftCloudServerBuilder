@@ -60,16 +60,16 @@ public class PrearcUtils {
 
 	public enum PrearcStatus {
 		RECEIVING,
+        QUEUED_BUILDING,
 		BUILDING,
-        QUEUED,
 		READY, 
+        QUEUED_ARCHIVING,
 		ARCHIVING,
 		CONFLICT,
 		ERROR, 
 		DELETING,
 		MOVING,
-		_RECEIVING,_BUILDING,_QUEUED,_ARCHIVING,_DELETING,_MOVING,_CONFLICT;
-        //When you add a status, please make sure to also add it to the list of filters in the prearchive.
+		_RECEIVING,_QUEUED_BUILDING,_BUILDING,_QUEUED_ARCHIVING,_ARCHIVING,_DELETING,_MOVING,_CONFLICT;
 
 		public static boolean potentiallyReady(PrearcStatus status) {
 			return (status==null || status.equals(READY));			    

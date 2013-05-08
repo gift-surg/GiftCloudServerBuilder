@@ -113,21 +113,21 @@ var locals = {
 function refreshSynchronizingCookies () {
   synchronizingCookies.dialogDisplay.set("false");
   synchronizingCookies.sessionTimeout.set("false");
-}
+};
 
 function disableButtons (dialog) {
   var buttons = dialog.getButtons();
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].set('disabled',true);
   }
-}
+};
 
 function enableButtons (dialog) {
   var buttons = dialog.getButtons();
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].set('disabled',false);
   }
-}
+};
 
 /**
  * If a user double-clicks a button in YUI's SimpleDialog 
@@ -139,14 +139,12 @@ function hideWarningDialog (dialog) {
     disableButtons(dialog);
     synchronizingCookies.dialogDisplay.set("false");
     dialog.hide();
-}
+};
 function showWarningDialog(dialog) {
     enableButtons(dialog);
     synchronizingCookies.dialogDisplay.set("true");
     dialog.show();
-    // just hide the thing (with visibility:hidden) so it holds a space on the page
-    $('applet').css('visibility','hidden');
-}
+};
 
 /**
  * If the user wants to extend the session, hide the dialog and "touch" the server
@@ -225,7 +223,7 @@ function initWarningDialog(dialog) {
     dialog.setBody("");
     dialog.bringToTop();
     dialog.hide();
-}
+};
 
 /**
  * Return the timestamp as hours, minutes and seconds. Used to update the session counter
@@ -250,7 +248,7 @@ function parseTimestamp (time) {
     minutesPart : minutesPart,
     hoursPart : hoursPart
   };
-}
+};
 
 /**
  * See the comments for "locals" to see why this function necessary
@@ -259,7 +257,7 @@ function checkIfFinalCycle () {
   if (locals.waitOneMoreCycle) {
     redirectToLogin();
   }
-}
+};
   
 /**
  * Check if the global cookie's flag is different from what is stored locally.
@@ -311,7 +309,7 @@ function updateMessageOrHide (dialog) {
   else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
     hideWarningDialog(dialog);
   }
-}
+};
 
 /**
  * If the session has expired just refreshing the page should redirect to the login page.
@@ -322,8 +320,7 @@ function redirectToLogin () {
     synchronizingCookies.sessionTimeout.set("true");
 	var currTime = (new Date()).getTime();
 	YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME',currTime,{path:'/'});
-    // window.location.reload(true);
-    window.location.replace(serverRoot+'/app/action/LogoutUser')
+    window.location.replace(serverRoot+'/app/action/LogoutUser');
 }
 
 /**

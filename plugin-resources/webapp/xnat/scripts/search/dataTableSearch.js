@@ -87,6 +87,11 @@ XNAT.app.setTableHeight=function(div_id){
 $(window).resize(function() { XNAT.app.tableSizer(); });  
 
 function DataTableSearch(_div_table_id,obj,_config,_options){
+	this.setDefaultValue=function(key,value){
+		  if(this.options[key]==undefined){
+			  this.options[key]=value;
+		  }
+	  }
   if(obj!=undefined){
     this.obj=obj;
     this.div_table_id=_div_table_id;
@@ -96,12 +101,25 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       _config.csrfToken = null;
     }
     this.config=_config;
-    this.options=_options;
+    
+    if(_options==undefined){
+        this.options=new Object();
+    }else{
+    	this.options=_options;
+    }    
 
     this.onInit=new YAHOO.util.CustomEvent("init",this);
+	this.onTableInit=new YAHOO.util.CustomEvent("table-init",this);
     this.columnSortEvent = new YAHOO.util.CustomEvent("column-change",this);
     this.paging=true;
     this.onReloadRequest=new YAHOO.util.CustomEvent("request-reload",this);
+    this.onXMLChange=new YAHOO.util.CustomEvent("xml-change",this);
+    
+    this.setDefaultValue("showReload",true);
+    this.setDefaultValue("showOptionsDropdown",true);
+    this.setDefaultValue("showFilterDisplay",true);
+    
+    this.setDefaultValue("allowInTableMods",true);
   }
 
   this.init=function(obj){
@@ -116,7 +134,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       try{
 	this.optionMenu.destroy();
       }catch(e){
-	alert(e.description);
+          showMessage("page_body", "Exception", e.message);
       }
     }
 
@@ -145,7 +163,6 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       }catch(e){}
     }
     
-    params += '&XNAT_CSRF='+csrfToken;
     
     
     YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/search?'+params,this.initCallback,this.xml,this);
@@ -154,7 +171,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   this.initFailure=function(o){
       if (!window.leaving) {
           if(o.status==401){
-              alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+              showMessage("page_body", "Exception", "WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
               window.location=serverRoot+"/app/template/Login.vm";
           }else{
               document.getElementById(this.div_table_id).innerHTML="Failed to create search results.";
@@ -165,6 +182,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
   this.completeInit=function(o){
     this.initResults= eval("(" + o.responseText +")");
+    this.onTableInit.fire();
     this.render();
     var that = this;
     this.paginator.subscribe("rowsPerPageChange", function (e) {
@@ -216,7 +234,13 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	this.config.sortedBy=configSort;
       }
     }
-
+    
+    if(this.options.showOptionsDropdown){
+    	this.paginator_html="<table width='100%'><tr><td id='" + this.div_table_id +"_xT_pT1'>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right' id='" + this.div_table_id +"_xT_pT3'><input type='button' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'><div id='" + this.div_table_id +"_options' class='yuimenubar yuimenubarnav'><div class='bd'><ul class='first-of-type'><li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='#" + this.div_table_id + "ot'>Options</a></li></ul></div></div></td></tr><tr><td style='line-height:11px;font-size:11px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>";
+    }else{
+    	this.paginator_html="<table width='100%'><tr><td id='" + this.div_table_id +"_xT_pT1'>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right' id='" + this.div_table_id +"_xT_pT3'><input type='hidden' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'></td></tr><tr><td style='line-height:10px;font-size:9px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>";
+    }
+	 
     // Set up the Paginator instance.
     this.paginator = new YAHOO.widget.Paginator({
 						  containers         : [this.div_table_id + "_p"],
@@ -224,7 +248,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 						  initialPage		   : (this.config.initialPage!=undefined)?this.config.initialPage:1,
 						  rowsPerPage        : this.config.rowsPerPage,
 						  rowsPerPageOptions : [10,20,40,100,500,5000],
- 						  template           : "<table width='100%'><tr><td id='" + this.div_table_id +"_xT_pT1'>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right' id='" + this.div_table_id +"_xT_pT3'><input type='button' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'><div id='" + this.div_table_id +"_options' class='yuimenubar yuimenubarnav'><div class='bd'><ul class='first-of-type'><li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='#" + this.div_table_id + "ot'>Options</a></li></ul></div></div></td></tr><tr><td style='line-height:11px;font-size:11px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>",
+	 						  template           : this.paginator_html,
  						  totalRecords       :  parseInt(this.initResults.ResultSet.totalRecords),
  						  pageReportTemplate : '{currentPage} of {totalPages} Pgs ({totalRecords} Rows)'
 						});
@@ -250,29 +274,35 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.getPage(1);
 
     if(document.getElementById(this.div_table_id +"_reload")==undefined){
-      YAHOO.util.Event.onAvailable(this.div_table_id +"_flt",this.renderFilterDisplay,null,this);
-      YAHOO.util.Event.onAvailable(this.div_table_id +"_reload",this.renderReload,null,this);
-      YAHOO.util.Event.onAvailable(this.div_table_id +"_options",this.renderOptions,true,this);
+      if(this.options.showFilterDisplay){
+    	  YAHOO.util.Event.onAvailable(this.div_table_id +"_flt",this.renderFilterDisplay,null,this);
+      }
+      if(this.options.showReload){
+    	  YAHOO.util.Event.onAvailable(this.div_table_id +"_reload",this.renderReload,null,this);
+      }
+      if(this.options.showOptionsDropdown){
+    	  YAHOO.util.Event.onAvailable(this.div_table_id +"_options",this.renderOptions,true,this);
+      }
     }else{
-      this.renderFilterDisplay();
-      this.renderReload();
-      this.renderOptions();
+      if(this.options.showFilterDisplay){
+    	  this.renderFilterDisplay();
+      }
+      if(this.options.showReload){
+    	  this.renderReload();
+      }
+      if(this.options.showOptionsDropdown){
+    	  this.renderOptions();
+      }
     }
-
-
-
-    //	   	this.drawContextMenu();
-
-    //   	    this.datatable.subscribe("columnReorderEvent",reordered,this,true);
 
   }
 
-    this.getPage = function (page) {
+  this.getPage = function (page) {
         var that = this;
         var initFailure = function (o) {
             if (!window.leaving) {
                 if (o.status == 401) {
-                    alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+                    showMessage("page_body", "Exception", "WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
                     window.location = serverRoot + "/app/template/Login.vm";
                 }
                 /**
@@ -284,7 +314,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
                     url += '&XNAT_CSRF=' + csrfToken;
 
-                    YAHOO.util.Connect.asyncRequest('GET', url, initCallback, null, that);
+                    YAHOO.util.Connect.asyncRequest('GET', url, initCallback, null, that); 
                 }
                 else {
                     document.getElementById(this.div_table_id).innerHTML = "Failed to create search results.";
@@ -379,7 +409,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       th.style.lineHeight="13px";
       th.style.cursor="pointer";
 
-      var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:cMenuItems});
+      var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:this.getMenuItems()});
       th.contextMenu=_th_menu;
       _th_menu.render(this.div_table_id);
       _th_menu.cfg.subscribeToConfigEvent("x", onXChange, this);
@@ -498,7 +528,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   };
 
   this.spreadsheetClick=function(name, eventObj, menuItem){
-    this.sendSearch(serverRoot +"/app/action/CSVAction",this.xml,document.getElementById(this.div_table_id));
+    this.sendSearch(serverRoot +"/app/action/CSVAction",this.getXML(),document.getElementById(this.div_table_id));
     return true;
   };
 
@@ -508,6 +538,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.sm = new SearchXMLManager(this.xml);
     this.sm.onsubmit.subscribe(function(obj1,obj2,obj3){
 				 obj3.xml=this.searchDOM.toXML("");
+				 obj3.onXMLChange.fire();
 				 this.destroy();
 				 obj3.init({reload:true});
 			       },this);
@@ -524,23 +555,23 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   };
 
   this.showXMLClick=function(name, eventObj, menuItem){
-    this.showXML(this.xml);
+    this.showXML(this.getXML());
     return true;
   };
 
   this.downloadClick=function(name, eventObj, menuItem){
-    this.sendSearch(serverRoot +"/app/action/DownloadSessionsAction",this.xml,document.getElementById(this.div_table_id));
+    this.sendSearch(serverRoot +"/app/action/DownloadSessionsAction",this.getXML(),document.getElementById(this.div_table_id));
     return true;
   };
 
   this.menuSend=function(name,eventObj,menuItem){
-    this.sendSearch(serverRoot +"/app/action/"+menuItem.value,this.xml,document.getElementById(this.div_table_id));
+    this.sendSearch(serverRoot +"/app/action/"+menuItem.value,this.getXML(),document.getElementById(this.div_table_id));
     return true;
   };
 
   this.emailClick=function(name, eventObj, menuItem){
     dynamicJSLoad("EmailPopupForm","search/emailSearch.js");
-    var emailPopup=new EmailPopupForm(this.xml);
+    var emailPopup=new EmailPopupForm(this.getXML());
 
     emailPopup.init();
     emailPopup.render();
@@ -572,7 +603,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   this.onSavedSearch=new YAHOO.util.CustomEvent("saved-search",this);
   this.saveClick=function(name, eventObj, menuItem){
     dynamicJSLoad("SavePopupForm","search/saveSearch.js");
-    var savePopup=new SavePopupForm(this.xml,undefined,{"saveAs":false});
+    var savePopup=new SavePopupForm(this.getXML(),undefined,{"saveAs":false});
     savePopup.onSavedSearch.subscribe(function(o){
 					return this.onSavedSearch.fire();
 				      },this,this);
@@ -583,7 +614,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
   this.saveAsClick=function(name, eventObj, menuItem){
     dynamicJSLoad("SavePopupForm","search/saveSearch.js");
-    var savePopup=new SavePopupForm(this.xml,undefined,{"saveAs":true});
+    var savePopup=new SavePopupForm(this.getXML(),undefined,{"saveAs":true});
     savePopup.onSavedSearch.subscribe(function(o){
 					return this.onSavedSearch.fire();
 				      },this,this);
@@ -633,7 +664,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 				    submenuitems.push({text:'Spreadsheet',onclick:{fn:this.search.spreadsheetClick,scope:this.search}});
 
 				    var spec=window.available_elements.getByName(this.en);
-				    if(spec!=null){
+				    if(spec!=null) {
 				      submenuitems.push({text:'Email',onclick:{fn:this.search.emailClick,scope:this.search}});
 
 				      submenuitems.push({text:'Save Search',onclick:{fn:this.search.saveClick,scope:this.search}});
@@ -649,7 +680,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 					submenuitems.push({text:'Delete Saved Search',onclick:{fn:this.search.deleteClick,scope:this.search}});
 				      }
 
-				      submenuitems.push({text:'Add Columns',onclick:{fn:this.search.addColumnsClick,scope:this.search}});
+				      submenuitems.push({text:'Edit Columns',onclick:{fn:this.search.addColumnsClick,scope:this.search}});
 				      submenuitems.push({text:'Join to ...',onclick:{fn:this.search.joinClick,scope:this.search}});
 
 
@@ -662,23 +693,43 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 					  submenuitems.push({value:spec.actions[sC].action,text:spec.actions[sC].display,onclick:{fn:this.search.menuSend,scope:this.search}});
 					}
 				      }
-				    }
+
+                        var menuOptions = getSearchMenuOptions();
+                        if (menuOptions) {
+                            for (var index = 0, total = menuOptions.length; index < total; index++) {
+                                try {
+                                    var menuOption = menuOptions[index];
+                                    var fnName = 'this.search.handle' + menuOption.label.replace(/\s+/g, '');
+                                    eval(fnName + ' = menuOption.handler');
+                                    submenuitems.push({text: menuOption.label, onclick: { fn: eval(fnName), scope: this.search}});
+                                } catch (e) {
+                                showMessage("page_body", "Exception", e.message);
+                                }
+                            }
+                        }
+                    }
+
 
 				    var submenu={
 				      id: this.search.div_table_id + "ot",
 				      itemdata: submenuitems
 				    };
 				    this.getItem(0).cfg.setProperty("submenu",submenu);
-				  }catch(e){}
+				  }catch(e){
+                      showMessage("page_body", "Exception", e.message);
+                  }
 				}
 			      });
     this.optionMenu.render();
   };
 
   this.showXML=function (_searchXML){
-    alert(_searchXML);
+  	  showMessage("page_body", "Search XML", "<textarea cols='25' rows='20'>"+_searchXML+"</textarea>");
   };
 
+  this.getXML=function(){
+	  return this.xml;
+  }
   this.sendSearch=function ( _url, _searchXML, divContent){
     var tempForm = document.createElement("FORM");
     tempForm.method="POST";
@@ -730,9 +781,26 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       }
     }
   }
-}
 
-var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"},{text:"Hide Column"},{text:"Filter"},{text:"Edit Columns"}];
+  this.getColumns=function(k){
+	var columns=new Array();
+    for(var rcC=0;rcC<this.initResults.ResultSet.Columns.length;rcC++){
+      columns.push(this.initResults.ResultSet.Columns[rcC]);
+    }
+    return columns;
+  }
+  
+  this.getMenuItems=function(){
+	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}, {text:"Data Dictionary"}];
+
+	  if(this.options.allowInTableMods){
+	  	cMenuItems.push({text:"Hide Column"});
+	  	cMenuItems.push({text:"Edit Column"});
+	  	cMenuItems.push({text:"Filter"});
+	  }
+	  return cMenuItems;
+  }
+}
 
 var CookieFunctions = {
     //Convert an alist like "name=value&some_other_name=some_other_value" to

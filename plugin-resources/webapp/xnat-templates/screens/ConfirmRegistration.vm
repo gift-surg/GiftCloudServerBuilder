@@ -1,3 +1,6 @@
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("NoMenuTop.vm")
+
 <div>
 <form action="$link.setAction("XDATRegisterUser")" method="post" name="form1" id="form1" ONSUBMIT="return checkConfirm();">
   <table border="0" align="center" cellpadding="8">

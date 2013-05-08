@@ -1,29 +1,31 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.search;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.nrg.xdat.om.XdatCriteria;
+import org.nrg.xdat.om.XdatCriteriaSet;
 import org.nrg.xdat.om.XdatStoredSearch;
 import org.nrg.xdat.om.XdatStoredSearchAllowedUser;
 import org.nrg.xdat.om.XdatStoredSearchGroupid;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
-import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.presentation.RESTHTMLPresenter;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
@@ -34,15 +36,20 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.springframework.util.StringUtils;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.Maps;
 import com.noelios.restlet.ext.servlet.ServletCall;
 
 public class SavedSearchResource extends ItemResource {
 	XdatStoredSearch xss = null;
 	String sID=null;
+	boolean loadedFromFile=false;
 
 	public SavedSearchResource(Context context, Request request,
 			Response response) {
@@ -55,6 +62,21 @@ public class SavedSearchResource extends ItemResource {
 				response.setStatus(Status.CLIENT_ERROR_GONE);
 			}
 		}
+	
+	
+	/**
+	 * Returns a file containing search xmls which was stored on the file system.  This provides a way to standardize search xmls outside of the database, for easy sharing accross installations.
+	 * @return
+	 */
+	private synchronized static File getFileSystemSearch(String name){
+		if(name.indexOf("..")==-1){
+			final File file=new File(new File(XFT.GetConfDir()).getParentFile().getParentFile(),"resources/searches/" + name);
+			if(file.exists()){
+				return file;
+			}
+		}
+		return null;
+	}
 	
 	@Override
 	public Representation getRepresentation(Variant variant) {	
@@ -80,6 +102,48 @@ public class SavedSearchResource extends ItemResource {
 				}
 			}else{
 				xss= XdatStoredSearch.getXdatStoredSearchsById(sID, user, true);
+			}
+		}
+		
+		if(xss==null){
+			//allow loading of saved searches from xml stored on hte file system
+			File search_xml=getFileSystemSearch(sID);
+
+			if(mt.equals(MediaType.TEXT_XML) && (filepath ==null || !filepath.startsWith("results")) && !this.hasQueryVariable("project")){
+				return new FileRepresentation(search_xml, mt);
+			}else{
+				try {					
+					SAXReader reader = new SAXReader(user);
+					XFTItem item = reader.parse(search_xml);
+					xss = new XdatStoredSearch(item);
+					
+					loadedFromFile=true;
+					
+					if(this.getQueryVariable("project")!=null){
+						final XdatCriteriaSet cs= new XdatCriteriaSet((UserI)user);
+						cs.setMethod("OR");
+						
+						for(final String p: StringUtils.commaDelimitedListToSet(this.getQueryVariable("project"))){
+							XdatCriteria c=new XdatCriteria((UserI)user);
+							c.setSchemaField(xss.getRootElementName()+"/project");
+							c.setComparisonType("=");
+							c.setValue(p);
+							cs.setCriteria(c);
+	
+							c=new XdatCriteria((UserI)user);
+							c.setSchemaField(xss.getRootElementName()+"/sharing/share/project");
+							c.setComparisonType("=");
+							c.setValue(p);
+							cs.setCriteria(c);
+						}
+						
+						xss.setSearchWhere(cs);
+					}
+				} catch (Exception e) {
+					logger.error("",e);
+					getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+					return null;
+				}
 			}
 		}
 		
@@ -136,15 +200,14 @@ public class SavedSearchResource extends ItemResource {
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
 			}else{
-				
-	        if (mt.equals(MediaType.TEXT_XML)){
-	        	ItemXMLRepresentation rep= new ItemXMLRepresentation(xss.getItem(),MediaType.TEXT_XML);
-				if(sID.startsWith("@")){
-					rep.setAllowDBAccess(false);
+		        if (mt.equals(MediaType.TEXT_XML)){
+		        	ItemXMLRepresentation rep= new ItemXMLRepresentation(xss.getItem(),MediaType.TEXT_XML);
+					if(sID.startsWith("@") || loadedFromFile){
+						rep.setAllowDBAccess(false);
+					}
+					
+					return rep;
 				}
-				
-				return rep;
-			}
 			}
 //	        else if (mt.equals(MediaType.APPLICATION_JSON)){
 //				return new JSONTableRepresentation(item,params,MediaType.APPLICATION_JSON);

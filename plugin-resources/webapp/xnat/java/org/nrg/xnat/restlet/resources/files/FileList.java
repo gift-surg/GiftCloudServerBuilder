@@ -4,6 +4,7 @@ package org.nrg.xnat.restlet.resources.files;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
@@ -95,12 +97,19 @@ public class FileList extends XNATCatalogTemplate {
         	// the catalog will not be found by the superclass
         	// (unless caller passes all=true, which seems klunky to require given that they are passing in the resource PK).
         	// So here we provide an alternate path finding the resource
-                for(String resourceID:this.resource_ids){
-                    XnatAbstractresource res=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(resourceID, user, false);
-                    if(res != null) {
-                	resources.add(res);
-                    }
-                }
+                try {
+                	//added check to make sure its an number.  You can also reference resource labels here (not just pks).
+					for(String resourceID:this.resource_ids){
+						if(NumberFormat.getInstance().parse(resourceID)!=null){
+					        XnatAbstractresource res=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(resourceID, user, false);
+					        if(res != null) {
+					        	resources.add(res);
+					        }
+						}
+					}
+				} catch (Exception e) {
+					// ignore... this is probably a resource label
+				}
             }
             
             if(resources.size()>0){

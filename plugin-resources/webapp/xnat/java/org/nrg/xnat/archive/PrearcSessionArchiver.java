@@ -201,6 +201,12 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		if(StringUtils.isEmpty(label)){
 			label = (String)params.get(LABEL2);
 		}
+        
+		//the previous code allows the value in the session xml to be overridden by passed parameters.
+		//if they aren't there, then it should default to the xml label
+        if(StringUtils.isEmpty(label) && !StringUtils.isEmpty(src.getLabel())){
+        	label=src.getLabel();
+        }
 
         if (StringUtils.isEmpty(label)) {
             label = prearcSession.getFolderName();

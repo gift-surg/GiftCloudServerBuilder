@@ -36,6 +36,13 @@ public class SearchElementListResource extends SecureResource {
 		try {
 			Hashtable<String,ElementSecurity> allES = (Hashtable<String,ElementSecurity>) ElementSecurity.GetElementSecurities().clone();
 			
+			//remove security elements
+			for(ElementSecurity es: ((Hashtable<String,ElementSecurity>)allES.clone()).values()){
+				if(es.getElementName().startsWith("xdat:")){
+					allES.remove(es.getElementName());
+				}
+			}
+			
 			//remove unwanted elements
 			if(this.getQueryVariable("secured")!=null){
 				for(ElementSecurity es: ((Hashtable<String,ElementSecurity>)allES.clone()).values()){

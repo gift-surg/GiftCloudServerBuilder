@@ -68,7 +68,7 @@ public class RequestUtil {
 		if (returnNullForUnsupported) {
 			return null;
 		} else {
-			return prefix+".unsuppported";
+			return prefix+".unsupported";
 		}
 	}
 	

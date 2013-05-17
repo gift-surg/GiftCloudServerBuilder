@@ -628,7 +628,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	PersistentWorkflowI wrk=null;
     	
     	try {
-        	System.out.print("INIT GROUP "+id + "... ");
         	long start=Calendar.getInstance().getTimeInMillis();
             group = new XdatUsergroup((UserI)this.getUser());
             group.setId(id);
@@ -684,7 +683,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
 
 			
-            System.out.println( (Calendar.getInstance().getTimeInMillis()-start)+ " ms");
+            logger.debug("INIT GROUP "+id + "... "+ (Calendar.getInstance().getTimeInMillis()-start)+ " ms");
             return group;
         } catch (Exception e) {
             logger.error("",e);
@@ -721,7 +720,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getXdatUsergroupId().toString(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modified permissions"));
         }
 
-    	System.out.print("UPDATE GROUP "+id + "... ");
     	long start=Calendar.getInstance().getTimeInMillis();
         try {
         	if(group.getDisplayname().equals("Owners")){
@@ -767,7 +765,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             logger.error("",e1);
 		}
 
-        System.out.println( (Calendar.getInstance().getTimeInMillis()-start)+ " ms");
+        logger.debug( "UPDATE GROUP "+id + "... "+(Calendar.getInstance().getTimeInMillis()-start)+ " ms");
         
 		return group;
     }

@@ -35,6 +35,9 @@ import org.nrg.xdat.model.XnatPublicationresourceI;
 import org.nrg.xdat.model.XnatSubjectassessordataI;
 import org.nrg.xdat.om.ArcPathinfo;
 import org.nrg.xdat.om.ArcProject;
+import org.nrg.xdat.om.XdatElementAccess;
+import org.nrg.xdat.om.XdatFieldMapping;
+import org.nrg.xdat.om.XdatFieldMappingSet;
 import org.nrg.xdat.om.XdatSearchField;
 import org.nrg.xdat.om.XdatUserGroupid;
 import org.nrg.xdat.om.XdatUsergroup;
@@ -46,6 +49,7 @@ import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatInvestigatordata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatProjectdataField;
+import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatResourceseries;
 import org.nrg.xdat.om.XnatSubjectassessordata;
@@ -192,323 +196,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         return exptCountsByType;
     }
-//
-//    public String outputProjectHTMLMenu(String login,boolean expandable){
-//        StringBuffer sb = new StringBuffer();
-//         long startTime = Calendar.getInstance().getTimeInMillis();
-//        int subjects =this.getSubjectCount();
-//
-//        String subjectBundle = getId() + "_SUBJECTS";
-//        boolean canRead = true;
-//        XdatStoredSearch xss = XdatStoredSearch.GetPreLoadedSearch(subjectBundle);
-//        String link = Turbine.getContextPath()+"/app/action/BundleAction/bundle/"+subjectBundle;
-//        if (xss==null)
-//        {
-//            link = Turbine.getContextPath()+"/app/action/DisplaySearchAction/displayversion/full/ELEMENT_0/xnat:subjectData/xnat:subjectData.PROJECTS_equals/" + getId();
-//        }else{
-//            if (!xss.canRead(login)){
-//                canRead= false;
-//            }
-//        }
-//        try {
-//            XFTTable table = XFTTable.Execute("SELECT COUNT(*) AS expt_count,element_name FROM xnat_subjectAssessorData LEFT JOIN xnat_experimentdata_share ON xnat_subjectAssessorData.ID=xnat_experimentdata_share.sharing_share_xnat_experimentda_id LEFT JOIN xnat_experimentData ON xnat_subjectAssessorData.ID=xnat_experimentData.ID LEFT JOIN xdat_meta_element ON xnat_experimentData.extension=xdat_meta_element.xdat_meta_element_id WHERE xnat_experimentdata_share.project='" + getId() + "' GROUP BY element_name;", getDBName(), null);
-//
-//            if (table.rows().size()==0){
-//                sb.append("<tr><td>&#8226;</td>");
-//                sb.append("<td>");
-//                if (canRead)
-//                    sb.append("<a href=\"" + link + "\">");
-//                sb.append("Subjects").append("&nbsp;(" + subjects + ")");
-//                if (canRead)
-//                    sb.append("</a>");
-//                sb.append("</td></tr>");
-//
-//            }else{
-//                sb.append("<tr>");
-//                if (expandable){
-//                    sb.append("<td>");
-//                    sb.append("<A NAME=\"LINK").append(subjectBundle).append("\"");
-//                    sb.append(" HREF=\"#LINK").append(subjectBundle).append("\" ");
-//                    sb.append("onClick=\" return blocking('").append(subjectBundle).append("');\">");
-//                    sb.append("<img ID=\"IMG").append(subjectBundle).append("\" src=\"");
-//                    sb.append(Turbine.getContextPath()).append("/images/plus.jpg\" border=0></A></td>");
-//                }else{
-//                    sb.append("<td>&#8226;</td>");
-//                }
-//
-//                sb.append("<td>");
-//                if (canRead)
-//                    sb.append("<a href=\"" + link + "\">");
-//                sb.append("Subjects");
-//                sb.append("&nbsp;(" + subjects + ")");
-//                if (canRead)
-//                    sb.append("</a>");
-//                sb.append("</td></tr>");
-//
-//
-//                sb.append("<tr><td></td><td>");
-//                if (expandable)
-//                    sb.append("<span ID=\"span").append(subjectBundle).append("\" style=\"position:relative; display:none;\">");
-//                sb.append("<TABLE align=\"left\" valign=\"top\">");
-//                table.resetRowCursor();
-//                while(table.hasMoreRows()){
-//                    Object[] row = table.nextRow();
-//                    Long count = (Long)row[0];
-//                    String displayName = (String)row[1];
-//                    String dataType=(String)row[1];
-//                    SchemaElement se= null;
-//                    try {
-//                        se = SchemaElement.GetElement(displayName);
-//                        displayName = se.getProperName();
-//                    } catch (XFTInitException e) {
-//                        logger.error("",e);
-//                    } catch (ElementNotFoundException e) {
-//                        logger.error("",e);
-//                    }
-//
-//
-//                    if (count > 0)
-//                    {
-//                        String bundleID = getId() + "_" + displayName;
-//
-//                        canRead = true;
-//                        xss = XdatStoredSearch.GetPreLoadedSearch(bundleID);
-//                        if (xss==null)
-//                        {
-//                            link = Turbine.getContextPath()+"/app/action/DisplaySearchAction/displayversion/full/ELEMENT_0/" + dataType + "/" + dataType + ".PROJECTS_equals/" + getId();
-//                        }else{
-//                            link = Turbine.getContextPath()+"/app/action/BundleAction/bundle/"+bundleID;
-//                            if (!xss.canRead(login)){
-//                                canRead= false;
-//                            }
-//                        }
-//
-//                        if (se==null){
-//                            sb.append("<tr><td>&#8226;</td>");
-//                            sb.append("<td>");
-//                            if (canRead)
-//                                sb.append("<a href=\"" + link + "\">");
-//                            sb.append(displayName).append("&nbsp;(" + count + ")*");
-//                            if (canRead)
-//                                sb.append("</a>");
-//                            sb.append("</td></tr>");
-//                            continue;
-//                        }
-//                        if (se.getDisplay()==null){
-//                            canRead=false;
-//                        }
-//
-//                        if (dataType.equalsIgnoreCase("xnat:mrSessionData"))
-//                        {
-//                            XFTTable table2 = XFTTable.Execute("SELECT COUNT(*) AS expt_count,element_name FROM xnat_mrAssessorData LEFT JOIN xnat_experimentdata_share ON xnat_mrAssessorData.ID=xnat_experimentdata_share.sharing_share_xnat_experimentda_id LEFT JOIN xnat_experimentData ON xnat_mrAssessorData.ID=xnat_experimentData.ID LEFT JOIN xdat_meta_element ON xnat_experimentData.extension=xdat_meta_element.xdat_meta_element_id WHERE xnat_experimentdata_share.project='" + getId() + "' GROUP BY element_name;", getDBName(), null);
-//
-//                            if (table2.rows().size()==0){
-//                                sb.append("<tr><td>&#8226;</td>");
-//                                sb.append("<td>");
-//                                if (canRead)
-//                                    sb.append("<a href=\"" + link + "\">");
-//                                sb.append(displayName).append("&nbsp;(" + count + ")");
-//                                if (canRead)
-//                                    sb.append("</a>");
-//                                sb.append("</td></tr>");
-//
-//                            }else{
-//                                sb.append("<tr>");
-//                                if (expandable){
-//                                    sb.append("<td><A NAME=\"LINK").append(bundleID).append("\"");
-//                                    sb.append("<A NAME=\"LINK").append(bundleID).append("\"");
-//                                    sb.append(" HREF=\"#LINK").append(bundleID).append("\" ");
-//                                    sb.append("onClick=\" return blocking('").append(bundleID).append("');\">");
-//                                    sb.append("<img ID=\"IMG").append(bundleID).append("\" src=\"");
-//                                    sb.append(Turbine.getContextPath()).append("/images/plus.jpg\" border=0></A></td>");
-//                                }else{
-//                                    sb.append("<td>&#8226;</td>");
-//                                }
-//
-//                                sb.append("<td>");
-//                                if (canRead)
-//                                    sb.append("<a href=\"" + link + "\">");
-//                                sb.append(displayName).append("&nbsp;(" + count + ")");
-//                                if (canRead)
-//                                    sb.append("</a>");
-//                                sb.append("</td></tr>");
-//
-//
-//                                sb.append("<tr><td></td><td>");
-//                                if (expandable)
-//                                    sb.append("<span ID=\"span").append(bundleID).append("\" style=\"position:relative; display:none;\">");
-//                                sb.append("<TABLE align=\"left\" valign=\"top\">");
-//                                table2.resetRowCursor();
-//                                while(table2.hasMoreRows()){
-//                                    Object[] row2 = table2.nextRow();
-//                                    count = (Long)row2[0];
-//                                    displayName = (String)row2[1];
-//                                    dataType=(String)row2[1];
-//                                    se= null;
-//                                    try {
-//                                        se = SchemaElement.GetElement(displayName);
-//                                        displayName = se.getProperName();
-//                                    } catch (XFTInitException e) {
-//                                        logger.error("",e);
-//                                    } catch (ElementNotFoundException e) {
-//                                        logger.error("",e);
-//                                    }
-//
-//
-//                                    if (count > 0)
-//                                    {
-//                                        bundleID = getId() + "_" + displayName;
-//
-//                                        canRead = true;
-//                                        xss = XdatStoredSearch.GetPreLoadedSearch(bundleID);
-//                                        if (xss==null)
-//                                        {
-//                                            link = Turbine.getContextPath()+"/app/action/DisplaySearchAction/displayversion/full/ELEMENT_0/" + dataType + "/" + dataType + ".PROJECTS_equals/" + getId();
-//                                        }else{
-//                                            link = Turbine.getContextPath()+"/app/action/BundleAction/bundle/"+bundleID;
-//                                            if (!xss.canRead(login)){
-//                                                canRead= false;
-//                                            }
-//                                        }
-//                                        if (se.getDisplay()==null){
-//                                            canRead=false;
-//                                        }
-//
-//                                        sb.append("<tr><td>&#8226;</td>");
-//                                        sb.append("<td>");
-//                                        if (canRead)
-//                                            sb.append("<a href=\"" + link + "\">");
-//                                        sb.append(displayName).append("&nbsp;(" + count + ")");
-//                                        if (canRead)
-//                                            sb.append("</a>");
-//                                        sb.append("</td></tr>");
-//                                    }
-//                                }
-//                                sb.append("\n</TABLE>");
-//                                if (expandable)
-//                                    sb.append("</span>");
-//                                sb.append("</td></tr>");
-//
-//                            }
-//                        }else if (dataType.equalsIgnoreCase("xnat:petSessionData"))
-//                        {
-//                            XFTTable table2 = XFTTable.Execute("SELECT COUNT(*) AS expt_count,element_name FROM xnat_petAssessorData LEFT JOIN xnat_experimentdata_share ON xnat_petAssessorData.ID=xnat_experimentdata_share.sharing_share_xnat_experimentda_id LEFT JOIN xnat_experimentData ON xnat_petAssessorData.ID=xnat_experimentData.ID LEFT JOIN xdat_meta_element ON xnat_experimentData.extension=xdat_meta_element.xdat_meta_element_id WHERE xnat_experimentdata_share.project='" + getId() + "' GROUP BY element_name;", getDBName(), null);
-//
-//                            if (table2.rows().size()==0){
-//                                sb.append("<tr><td>&#8226;</td>");
-//                                sb.append("<td>");
-//                                if (canRead)
-//                                    sb.append("<a href=\"" + link + "\">");
-//                                sb.append(displayName).append("&nbsp;(" + count + ")");
-//                                if (canRead)
-//                                    sb.append("</a>");
-//                                sb.append("</td></tr>");
-//
-//                            }else{
-//                                sb.append("<tr>");
-//                                if (expandable){
-//                                    sb.append("<td><A NAME=\"LINK").append(bundleID).append("\"");
-//                                    sb.append("<A NAME=\"LINK").append(bundleID).append("\"");
-//                                    sb.append(" HREF=\"#LINK").append(bundleID).append("\" ");
-//                                    sb.append("onClick=\" return blocking('").append(bundleID).append("');\">");
-//                                    sb.append("<img ID=\"IMG").append(bundleID).append("\" src=\"");
-//                                    sb.append(Turbine.getContextPath()).append("/images/plus.jpg\" border=0></A></td>");
-//                                }else{
-//                                    sb.append("<td>&#8226;</td>");
-//                                }
-//
-//                                sb.append("<td>");
-//                                if (canRead)
-//                                    sb.append("<a href=\"" + link + "\">");
-//                                sb.append(displayName).append("&nbsp;(" + count + ")");
-//                                if (canRead)
-//                                    sb.append("</a>");
-//                                sb.append("</td></tr>");
-//
-//
-//                                sb.append("<tr><td></td><td>");
-//                                if (expandable)
-//                                    sb.append("<span ID=\"span").append(bundleID).append("\" style=\"position:relative; display:none;\">");
-//                                sb.append("<TABLE align=\"left\" valign=\"top\">");
-//                                table2.resetRowCursor();
-//                                while(table2.hasMoreRows()){
-//                                    Object[] row2 = table2.nextRow();
-//                                    count = (Long)row2[0];
-//                                    displayName = (String)row2[1];
-//                                    dataType=(String)row2[1];
-//                                    se= null;
-//                                    try {
-//                                        se = SchemaElement.GetElement(displayName);
-//                                        displayName = se.getProperName();
-//                                    } catch (XFTInitException e) {
-//                                        logger.error("",e);
-//                                    } catch (ElementNotFoundException e) {
-//                                        logger.error("",e);
-//                                    }
-//
-//
-//                                    if (count > 0)
-//                                    {
-//                                        bundleID = getId() + "_" + displayName;
-//
-//                                        canRead = true;
-//                                        if (se.getDisplay()==null){
-//                                            canRead=false;
-//                                        }
-//                                        xss = XdatStoredSearch.GetPreLoadedSearch(bundleID);
-//                                        if (xss==null)
-//                                        {
-//                                            link = Turbine.getContextPath()+"/app/action/DisplaySearchAction/displayversion/full/ELEMENT_0/" + dataType + "/" + dataType + ".PROJECTS_equals/" + getId();
-//                                        }else{
-//                                            link = Turbine.getContextPath()+"/app/action/BundleAction/bundle/"+bundleID;
-//                                            if (!xss.canRead(login)){
-//                                                canRead= false;
-//                                            }
-//                                        }
-//
-//                                        sb.append("<tr><td>&#8226;</td>");
-//                                        sb.append("<td>");
-//                                        if (canRead)
-//                                            sb.append("<a href=\"" + link + "\">");
-//                                        sb.append(displayName).append("&nbsp;(" + count + ")");
-//                                        if (canRead)
-//                                            sb.append("</a>");
-//                                        sb.append("</td></tr>");
-//                                    }
-//                                }
-//                                sb.append("\n</TABLE>");
-//                                if (expandable)
-//                                    sb.append("</span>");
-//                                sb.append("</td></tr>");
-//
-//                            }
-//                        }else{
-//                            sb.append("<tr><td>&#8226;</td>");
-//                            sb.append("<td>");
-//                            if (canRead)
-//                                sb.append("<a href=\"" + link + "\">");
-//                            sb.append(displayName).append("&nbsp;(" + count + ")");
-//                            if (canRead)
-//                                sb.append("</a>");
-//                            sb.append("</td></tr>");
-//                        }
-//                    }
-//                }
-//                sb.append("\n</TABLE>");
-//                if (expandable)
-//                    sb.append("</span>");
-//                sb.append("</td></tr>");
-//            }
-//        } catch (SQLException e) {
-//            logger.error("",e);
-//        } catch (DBPoolException e) {
-//            logger.error("",e);
-//        }
-//
-//        System.out.println(getId() + " Menu Create Time: " + (System.currentTimeMillis()-startTime) + "ms");
-//
-//        return sb.toString();
-//    }
 
     public ArrayList<org.nrg.xdat.om.XnatPublicationresource> getPublicationsByType(String t)
     {
@@ -934,38 +621,108 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 			}
     	}
     }
-
-    public boolean initGroup(final String id, final String displayName, Boolean create,Boolean read,Boolean delete,Boolean edit,Boolean activate,boolean activateChanges,List<ElementSecurity> ess) throws Exception{
+    
+    
+    public XdatUsergroup createGroup(final String id, final String displayName, Boolean create,Boolean read,Boolean delete,Boolean edit,Boolean activate,boolean activateChanges,List<ElementSecurity> ess){
+    	XdatUsergroup group=null;
     	PersistentWorkflowI wrk=null;
+    	
+    	try {
+        	System.out.print("INIT GROUP "+id + "... ");
+        	long start=Calendar.getInstance().getTimeInMillis();
+            group = new XdatUsergroup((UserI)this.getUser());
+            group.setId(id);
+            group.setDisplayname(displayName);
+            group.setTag(getId());
+            
+            //initialize element access groups
+            //this is where some refactoring to the existing API would be helpful
+            //the data structure was designed for a much older model
+            //it could be really streamlined, but we haven't because I suspect it will be rewritten.
+            
+            //redundant container to group similar xsi types -- this isn't used any more, but would be non-trivial to remove
+            XdatElementAccess ea=new XdatElementAccess((UserI)this.getUser());
+            ea.setElementName("xnat:projectData");
+            group.setElementAccess(ea);
+            
+            //container for field mapping settings
+            XdatFieldMappingSet fms = new XdatFieldMappingSet((UserI)this.getUser());
+            fms.setMethod("OR");
+            ea.setPermissions_allowSet(fms);
+            
+            //specific permissions settings
+            
+            //project access permissions
+            XdatFieldMapping fm= new XdatFieldMapping((UserI)this.getUser());
+            if(group.getDisplayname().equals("Owners")){
+        		fm.init( "xnat:projectData/ID", getId(), create,read,delete,edit,activate);
+        	}else{
+        		fm.init( "xnat:projectData/ID", getId(), Boolean.FALSE,read,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE);
+        	}
+            fms.setAllow(fm);
+            
+            //subject and experiment permissions
+            Iterator iter = ess.iterator();
+            while (iter.hasNext())
+            {
+                ElementSecurity es = (ElementSecurity)iter.next();
+                group.init(es.getElementName(), getId(), create, read, delete, edit, activate);
+            }
+            
+            //save the group
+            Integer _id=group.getXdatUsergroupId();
+            wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), (_id==null)?"ADMIN":_id.toString(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialized permissions"));
+            
+            SaveItemHelper.authorizedSave(group,this.getUser(), true,false,true, true,wrk.buildEvent());
+            
+        	if(wrk.getId().equals("ADMIN")){
+        		_id=group.getXdatUsergroupId();
+        		wrk.setId(_id.toString());
+        	}
+			PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
+            
+			EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME,group.getId(),Event.UPDATE);
+
+			
+            System.out.println( (Calendar.getInstance().getTimeInMillis()-start)+ " ms");
+            return group;
+        } catch (Exception e) {
+            logger.error("",e);
+            try {
+				if(wrk!=null) WorkflowUtils.fail(wrk, wrk.buildEvent());
+			} catch (Exception e1) {
+			}
+            return null;
+        }
+    }
+
+    public XdatUsergroup initGroup(final String id, final String displayName, Boolean create,Boolean read,Boolean delete,Boolean edit,Boolean activate,boolean activateChanges,List<ElementSecurity> ess) throws Exception{
+    	
+    	//hijacking the code her to manually create a group if it is brand new.  Should make project creation much quicker.
+    	Long matches=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xdat_usergroup WHERE ID='" + id + "'", "COUNT", this.getDBName(), null);
+    	if(matches==0){
+        	//this means the group is new.  It doesn't need to be as thorough as an edit of an existing one would be.
+    		return createGroup(id,displayName,create,read,delete,edit,activate,activateChanges,ess);
+    	}
+    	
+    	PersistentWorkflowI wrk=null;
+    	XdatUsergroup group=null;
+    	
+    	//this means the group previously existed, and this is an update rather than an init.
+    	//the logic here will be way more intrusive (and expensive)
+    	//it will end up checking every individual permission setting (using very inefficient code)
     	final ArrayList<XdatUsergroup> groups = XdatUsergroup.getXdatUsergroupsByField(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID", id, this.getUser(), true);
     	boolean modified=false;
 
-        //init owners
-        XdatUsergroup group = null;
         if (groups.size()==0){
-            try {
-                group = new XdatUsergroup((UserI)this.getUser());
-                group.setId(id);
-                group.setDisplayname(displayName);
-                group.setTag(getId());
-                Integer _id=group.getXdatUsergroupId();
-                wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), (_id==null)?"ADMIN":_id.toString(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Initialized permissions"));
-                if(SaveItemHelper.authorizedSave(group,this.getUser(), true, true,wrk.buildEvent())){
-                	if(wrk.getId().equals("ADMIN")){
-                		_id=group.getXdatUsergroupId();
-                		wrk.setId(_id.toString());
-                	}
-                	modified=true;
-                }
-            } catch (Exception e) {
-                logger.error("",e);
-                if(wrk!=null) WorkflowUtils.fail(wrk, wrk.buildEvent());
-            }
+        	throw new Exception("Count didn't match query results");
         }else{
             group = (XdatUsergroup)groups.get(0);
             wrk=PersistentWorkflowUtils.buildOpenWorkflow((XDATUser)getUser(), group.getXSIType(), group.getXdatUsergroupId().toString(), this.getId(), EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.TYPE.PROCESS, "Modified permissions"));
         }
 
+    	System.out.print("UPDATE GROUP "+id + "... ");
+    	long start=Calendar.getInstance().getTimeInMillis();
         try {
         	if(group.getDisplayname().equals("Owners")){
         		group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), create,read,delete,edit,activate,activateChanges, (XDATUser)this.getUser(),false,wrk.buildEvent());
@@ -992,11 +749,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             logger.error("",e);
         }
 
-        try {
-			group.activate(this.getUser());
-		} catch (Exception e2) {
-            logger.error("",e2);
-		}
+//        try {
+//			group.activate(this.getUser());
+//		} catch (Exception e2) {
+//            logger.error("",e2);
+//		}
 
         try {
 			if(modified){
@@ -1010,12 +767,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             logger.error("",e1);
 		}
 
-		return modified;
+        System.out.println( (Calendar.getInstance().getTimeInMillis()-start)+ " ms");
+        
+		return group;
     }
-
-    public boolean initGroups() throws Exception{
-    	boolean modified=false;
-    	final long startTime = Calendar.getInstance().getTimeInMillis();
+    
+    private List<ElementSecurity> getSecuredElements(){
 
     	final ArrayList<ElementSecurity> ess = new ArrayList<ElementSecurity>();
         try {
@@ -1023,8 +780,7 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         } catch (Exception e2) {
             logger.error("",e2);
         }
-        if (XFT.VERBOSE)System.out.println("Group init() BEGIN: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
-
+        
         for (final ElementSecurity es:(ArrayList<ElementSecurity>)ess.clone())
         {
             try {
@@ -1039,7 +795,15 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 	            logger.error("",e);
 			}
         }
+        return ess;
+    }
 
+    public boolean initGroups() throws Exception{
+    	boolean modified=false;
+    	final long startTime = Calendar.getInstance().getTimeInMillis();
+
+    	if (XFT.VERBOSE)System.out.println("Group init() BEGIN: " + (Calendar.getInstance().getTimeInMillis()-startTime) + "ms");
+    	List<ElementSecurity> ess=getSecuredElements();
 
        initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, ess);
 
@@ -1462,17 +1226,12 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
      */
     @Override
     public boolean save(UserI user, boolean overrideSecurity, boolean allowItemRemoval,EventMetaI c) throws Exception {
-        XdatUsergroup group = new XdatUsergroup((UserI)this.getUser());
-        group.setId(getId() + "_" + OWNER_GROUP);
-        group.setDisplayname("Owners");
-        group.setTag(getId());
 
-        UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
+        UserGroup ownerG=UserGroupManager.GetGroup(getId() + "_" + OWNER_GROUP);
         if(ownerG==null){
-        	SaveItemHelper.authorizedSave(group,this.getUser(), true, true,c);
-
-            group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)user,false,c);
-
+        	
+        	XdatUsergroup group=initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, getSecuredElements());
+			  
             if(!((XDATUser)user).getGroups().containsKey(group.getId())){
                 UserGroup ug= new UserGroup(group.getId());
                 ug.init(group);
@@ -1924,8 +1683,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
             	if(!subject.getProject().equals(getId())){
             		for(XnatProjectparticipantI pp : subject.getSharing_share()){
                 		if(pp.getProject().equals(getId())){
-                			SaveItemHelper.authorizedDelete(((XnatExperimentdataShare)pp).getItem(),user,ci);
-                		}
+                			SaveItemHelper.authorizedDelete(((XnatProjectparticipant)pp).getItem(),user,ci);
+                		} 
                 	}
             	}else{
                 	if(preventSubjectDelete){
@@ -2061,15 +1820,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
-
-
-        XdatUsergroup group = new XdatUsergroup((UserI)this.getUser());
-        group.setId(getId() + "_" + OWNER_GROUP);
-        group.setDisplayname("Owners");
-        group.setTag(getId());
-
-
-        XFTItem existing=this.getCurrentDBVersion();
+		
+		XFTItem existing=this.getCurrentDBVersion();
         if(existing==null){
         	Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+this.getId()+"';", "COUNT", null, null);
         	if(count>0){
@@ -2077,17 +1829,16 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         	}
         }
 
-        UserGroup ownerG=UserGroupManager.GetGroup(group.getId());
+        UserGroup ownerG=UserGroupManager.GetGroup(getId() + "_" + OWNER_GROUP);
         if(ownerG==null){
         	PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, (XDATUser)this.getUser(), this.getXSIType(),this.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_SERVICE, "Initialized permissions"));
 
         	EventMetaI ci = wrk.buildEvent();
         	try {
         		XDATUser u=(XDATUser)this.getUser();
-				SaveItemHelper.authorizedSave(group,u, true, true,ci);
 
-				group.setPermissions("xnat:projectData", "xnat:projectData/ID", getId(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, (XDATUser)this.getUser(),false,ci);
-
+			    XdatUsergroup group=initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, getSecuredElements());
+				
 				wrk.setDataType(group.getXSIType());
 				wrk.setId(group.getXdatUsergroupId().toString());
 				wrk.setExternalid(this.getId());

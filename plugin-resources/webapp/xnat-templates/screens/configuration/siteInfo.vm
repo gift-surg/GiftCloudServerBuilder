@@ -71,4 +71,9 @@ function addSiteInfoMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
 var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'];
+
+    #if($initialize)
+    window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', siteInfoControls);
+    #end
+
 </script>

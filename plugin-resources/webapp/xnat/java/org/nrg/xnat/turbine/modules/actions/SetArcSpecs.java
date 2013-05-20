@@ -22,7 +22,6 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 import java.util.ArrayList;
@@ -42,12 +41,12 @@ public class SetArcSpecs extends AdminAction {
         XFTItem item = populater.getItem();
         item.setUser(TurbineUtils.getUser(data));
         
-        ArcArchivespecification arc = new ArcArchivespecification(item);
-        SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,this.newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN,"Modified archive specifications."));
+        ArcArchivespecification arcSpec = new ArcArchivespecification(item);
+        ArcSpecManager.save(arcSpec, newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specifications."));
         
         Channel channel = XDAT.getHtmlMailChannel();
 
-        List<ArcArchivespecificationNotificationTypeI> types = arc.getNotificationTypes_notificationType();
+        List<ArcArchivespecificationNotificationTypeI> types = arcSpec.getNotificationTypes_notificationType();
         for (ArcArchivespecificationNotificationTypeI type : types) {
             List<Subscriber> subscribers = getSubscribersFromAddresses(type.getEmailAddresses());
             Definition definition = getDefinitionForEvent(type.getNotificationType());

@@ -90,11 +90,11 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
 
     private boolean isRequiredLogin() {
         // First check for null arcSpace, initialize if null.
-        if (_arcSpec == null) {
+        if (_arcSpec == null || !ArcSpecManager.HasPersisted()) {
             initializeArcSpecInstance();
         }
         // If it's STILL null, then arcSpec hasn't been initialized in the database, so just say false.
-        if (_arcSpec == null) {
+        if (_arcSpec == null || !ArcSpecManager.HasPersisted()) {
             return false;
         }
         // If it's not null, see what it's got to say.

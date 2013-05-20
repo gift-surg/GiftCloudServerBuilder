@@ -42,4 +42,7 @@
     YAHOO.util.Event.onDOMReady(addAppletMgmtMonitor);
     var appletControls = ['appletScript'];
 
+    #if($initialize)
+    window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+    #end
 </script>

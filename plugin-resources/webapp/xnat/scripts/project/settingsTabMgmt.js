@@ -76,39 +76,18 @@ function fullConfigHandler() {
         return;
     }
 
-    var missing = [];
-
-    if(window.registrationManager==undefined) {
-        missing.push('Registration');
-    }
-    if(window.fileSystemManager==undefined) {
-        missing.push('File System');
-    }
-    if(window.siteInfoManager==undefined) {
-        missing.push('Site Information');
-    }
-    if(window.notificationsManager==undefined) {
-        missing.push('Notifications');
-    }
-    if(window.anonymizationManager==undefined) {
-        missing.push('Anonymization');
-    }
-    if(window.appletManager==undefined) {
-        missing.push('Applet');
-    }
-    if(window.dicomReceiverManager==undefined) {
-        missing.push('DICOM Receiver');
-    }
-    if (missing.length > 0) {
-        var message = 'You need to review the contents of the following panels before saving: <ul>';
-        for (var index = 0; index < missing.length; index++) {
-            message += "<li>" + missing[index] + "</li>";
-        }
-        message += "</ul>";
-        showMessage('page_body', 'Required', message);
-    } else {
         this.fullConfigCallback = {
             success : function() {
+            //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
+            //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
+            document.getElementById('siteInfo_save_button').onclick = saveSettings;
+            document.getElementById('fileSystem_save_button').onclick = saveSettings;
+            document.getElementById('registration_save_button').onclick = saveSettings;
+            document.getElementById('notifications_save_button').onclick = saveSettings;
+            document.getElementById('anonymization_save_button').onclick = saveSettings;
+            document.getElementById('applet_save_button').onclick = saveSettings;
+            document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
+
                 showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
                 var destination;
                 if (serverRoot) {
@@ -125,7 +104,7 @@ function fullConfigHandler() {
             scope : this
         };
 
-        var allControls = [
+    var data = buildSettingsUpdateRequestBody([
             'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
@@ -133,22 +112,10 @@ function fullConfigHandler() {
             , 'anonScript'
             , 'applet'
             , 'dcmPort', 'dcmAe', 'enableDicomReceiver'
-        ];
-        var data = buildSettingsUpdateRequestBody(allControls);
+    ]);
 
         var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
         YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.fullConfigCallback, data, this);
-
-        //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
-        //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
-        document.getElementById('siteInfo_save_button').onclick = saveSettings;
-        document.getElementById('fileSystem_save_button').onclick = saveSettings;
-        document.getElementById('registration_save_button').onclick = saveSettings;
-        document.getElementById('notifications_save_button').onclick = saveSettings;
-        document.getElementById('anonymization_save_button').onclick = saveSettings;
-        document.getElementById('applet_save_button').onclick = saveSettings;
-        document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
-    }
 }
 
 function saveSettings(){
@@ -169,7 +136,7 @@ function configurationTabManagerInit(initialize) {
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
-        showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
+        showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review your system settings before saving the system settings.');
     }
 }
 

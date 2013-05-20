@@ -13,7 +13,6 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class SetEmailSpecs extends AdminAction {
@@ -23,16 +22,9 @@ public class SetEmailSpecs extends AdminAction {
      */
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        PopulateItem populater = null;
-        populater = PopulateItem.Populate(data,"arc:ArchiveSpecification",true);
-        XFTItem item = populater.getItem();
+        XFTItem item = PopulateItem.Populate(data,"arc:ArchiveSpecification",true).getItem();
         item.setUser(TurbineUtils.getUser(data));
-        
-        ArcArchivespecification arc = new ArcArchivespecification(item);
-        
-        SaveItemHelper.authorizedSave(arc,TurbineUtils.getUser(data), false, false,this.newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN,"Modified email specifications."));
-        
-        ArcSpecManager.Reset();
+        ArcSpecManager.save(new ArcArchivespecification(item), newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN, "Modified email specifications."));
     }
 
 }

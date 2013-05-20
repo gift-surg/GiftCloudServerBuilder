@@ -44,4 +44,8 @@
     YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
     var anonymizationControls = ['anonScript'];
 
+    #if($initialize)
+    window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', anonymizationControls);
+    #end
+
 </script>

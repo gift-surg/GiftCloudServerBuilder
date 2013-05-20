@@ -1,19 +1,5 @@
 package org.nrg.xnat.restlet.services;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,11 +14,7 @@ import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.mail.api.NotificationType;
 import org.nrg.notify.api.CategoryScope;
 import org.nrg.notify.api.SubscriberType;
-import org.nrg.notify.entities.Category;
-import org.nrg.notify.entities.Channel;
-import org.nrg.notify.entities.Definition;
-import org.nrg.notify.entities.Subscriber;
-import org.nrg.notify.entities.Subscription;
+import org.nrg.notify.entities.*;
 import org.nrg.notify.exceptions.DuplicateSubscriberException;
 import org.nrg.notify.services.NotificationService;
 import org.nrg.xdat.XDAT;
@@ -45,7 +27,6 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -61,6 +42,15 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SettingsRestlet extends SecureResource {
 
@@ -421,8 +411,7 @@ public class SettingsRestlet extends SecureResource {
             }
         }
         if (dirtied || dirtiedNotifications) {            
-        SaveItemHelper.unauthorizedSave(_arcSpec, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specification"));
-
+            ArcSpecManager.save(_arcSpec, user, newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specification"));
         }
     }
 
@@ -600,12 +589,10 @@ public class SettingsRestlet extends SecureResource {
     }
 
     private void initializeArcSpec() throws Exception {
-        PopulateItem populator = new PopulateItem(copyDataToXmlPath(), user, "arc:ArchiveSpecification", true);
-        XFTItem item = populator.getItem();
+        PopulateItem populater = new PopulateItem(copyDataToXmlPath(), user, "arc:ArchiveSpecification", true);
+        XFTItem item = populater.getItem();
         item.setUser(user);
-        ArcArchivespecification arc = new ArcArchivespecification(item);
-        SaveItemHelper.unauthorizedSave(arc, user, false, false,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Initialized archive specification"));
-        ArcSpecManager.Reset();
+        ArcSpecManager.save(new ArcArchivespecification(item), user, newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Initialized archive specification"));
     }
 
     private void setDiscreteProperty() throws Exception, ConfigServiceException {
@@ -758,7 +745,7 @@ public class SettingsRestlet extends SecureResource {
     }
     
     private Object checkForExistenceOfProperty(String propertyName) throws PropertyNotFoundException, ConfigServiceException, IOException {
-        Object property = getArcSpecAsMap().get(_property);
+        Object property = getArcSpecAsMap().get(propertyName);
         if(null == property) {
             throw new PropertyNotFoundException(String.format("Setting '%s' was not found in the system.", _property));
         }

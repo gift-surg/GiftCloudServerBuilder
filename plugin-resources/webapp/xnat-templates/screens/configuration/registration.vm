@@ -58,4 +58,9 @@ function addRegistrationMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addRegistrationMgmtMonitor);
 var registrationControls = ['requireLogin', 'enableNewRegistrations', 'emailVerification'];
+
+    #if($initialize)
+    window.registrationManager = new SettingsTabManager('registration_mgmt_div', registrationControls);
+    #end
+
 </script>

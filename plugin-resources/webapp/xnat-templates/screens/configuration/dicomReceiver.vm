@@ -48,4 +48,9 @@ function addDicomReceiverMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addDicomReceiverMgmtMonitor);
 var dicomReceiverControls = ['dcmPort', 'dcmAe', 'enableDicomReceiver'];
+
+    #if($initialize)
+    window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', dicomReceiverControls);
+    #end
+
 </script>

@@ -5,6 +5,25 @@
  */
 package org.nrg.xnat.turbine.utils;
 
+import com.google.common.base.Joiner;
+import org.nrg.dcm.DicomSCPManager;
+import org.nrg.xdat.XDAT;
+import org.nrg.xdat.om.ArcArchivespecification;
+import org.nrg.xdat.turbine.utils.AdminUtils;
+import org.nrg.xft.XFT;
+import org.nrg.xft.event.EventDetails;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
+import org.nrg.xnat.helpers.prearchive.PrearcConfig;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,38 +31,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-import org.nrg.dcm.DicomSCPManager;
-import org.nrg.xdat.XDAT;
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.turbine.utils.AdminUtils;
-import org.nrg.xft.XFT;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xft.security.UserI;
-import org.nrg.xnat.helpers.prearchive.PrearcConfig;
-import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.xml.sax.SAXException;
-
-import com.google.common.base.Joiner;
-
 /**
  * @author timo
  *
  */
 public class ArcSpecManager {
-    static org.apache.log4j.Logger logger = Logger.getLogger(ArcSpecManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArcSpecManager.class);
     private static ArcArchivespecification arcSpec = null;
-
-    public static String GetSiteID(){
-        String site_id=GetInstance().getSiteId();
-        if(site_id==null || site_id.equals("")) {
-            site_id="XNAT";
-        }
-        return site_id;
-    }
+    private static boolean _hasPersisted = false;
 
 	public synchronized static ArcArchivespecification GetFreshInstance() {
 		ArcArchivespecification arcSpec = null;
@@ -51,6 +46,7 @@ public class ArcSpecManager {
 		ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
 	    if (allSpecs.size()>0) {
 	        arcSpec = allSpecs.get(0);
+            _hasPersisted = true;
 	    }
 	    return arcSpec;
 	}
@@ -62,10 +58,7 @@ public class ArcSpecManager {
     public synchronized static  ArcArchivespecification GetInstance(boolean dbInit){
         if (arcSpec==null){
             logger.info("Initializing ArcSpec...");
-            ArrayList<ArcArchivespecification> allSpecs = ArcArchivespecification.getAllArcArchivespecifications(null,false);
-            if (allSpecs.size()>0) {
-                arcSpec = allSpecs.get(0);
-            }
+            arcSpec = GetFreshInstance();
 
             if (arcSpec!=null){
 
@@ -200,7 +193,9 @@ public class ArcSpecManager {
                     String cachePath = arcSpec.getGlobalCachePath();
                     if (cachePath!=null){
                         File f = new File(cachePath,"archive_specification.xml");
-                        f.getParentFile().mkdirs();
+                        if (!f.getParentFile().mkdirs()) {
+                            throw new IOException("Failed to create nested folders for file: " + f.getAbsolutePath());
+                        }
                         FileWriter fw = new FileWriter(f);
 
                         arcSpec.toXML(fw, true);
@@ -215,7 +210,7 @@ public class ArcSpecManager {
             } catch (SAXException e) {
                 logger.error("",e);
             }
-            System.out.println("done");
+            logger.debug("Done writing out arc spec.");
    
             if(dbInit){
                 PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
@@ -228,6 +223,10 @@ public class ArcSpecManager {
         }
         
         return arcSpec;
+    }
+
+    public synchronized static Boolean HasPersisted() {
+        return _hasPersisted;
     }
 
     public synchronized static  void Reset(){
@@ -295,5 +294,15 @@ public class ArcSpecManager {
 		}
         arcSpec.setDcm_dcmPort(String.valueOf(dicomSCPManager.getDicomSCPPort()));
         arcSpec.setDcm_dcmAe(Joiner.on(", ").join(dicomSCPManager.getDicomSCPAEs()));
+    }
+
+    public static synchronized void save(ArcArchivespecification arcSpec, EventDetails event) throws Exception {
+        save(arcSpec, arcSpec.getUser(), event);
+}
+
+    public static synchronized void save(ArcArchivespecification arcSpec, UserI user, EventDetails event) throws Exception {
+        SaveItemHelper.unauthorizedSave(arcSpec, user, false, false, event);
+        ArcSpecManager.Reset();
+        _hasPersisted = true;
     }
 }

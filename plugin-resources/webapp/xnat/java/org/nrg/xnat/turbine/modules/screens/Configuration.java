@@ -14,6 +14,8 @@ public class Configuration extends AdminScreen {
         ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
         if (arcSpec == null) {
             arcSpec = ArcSpecManager.initialize(TurbineUtils.getUser(data));
+        }
+        if (!ArcSpecManager.HasPersisted()) {
             context.put("initialize", true);
         } else {
             context.put("initialize", false);

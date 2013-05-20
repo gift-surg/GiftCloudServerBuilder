@@ -57,4 +57,9 @@ function addNotificationsMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addNotificationsMgmtMonitor);
 var notificationsControls = ['error', 'issue', 'newUser', 'update'];
+
+    #if($initialize)
+    window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', notificationsControls);
+    #end
+
 </script>

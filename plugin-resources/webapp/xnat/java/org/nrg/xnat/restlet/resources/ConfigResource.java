@@ -70,7 +70,7 @@ public class ConfigResource extends SecureResource {
 	private final String projectName;
 	private final String toolName;
 	private final String reason;
-	private final String path;
+	private  String path;
 
 	//TODO: if we start using projectdata_info instead of id in configservice:
 	//private final long projectid;
@@ -147,6 +147,8 @@ public class ConfigResource extends SecureResource {
 					confs.addAll(l);  //addAll is not null safe.
 				}
 			} else {
+				fixAnonPath();
+				
 				if(getHistory){ 
 					//   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}&action=getHistory  or  /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}&action=getHistory
 					List<Configuration> l = configService.getHistory(toolName, path, getProjectId);
@@ -253,8 +255,7 @@ public class ConfigResource extends SecureResource {
 		 * it can just send it a second (or 100th) time, and it is guaranteed by the HTTP spec that this has exactly the 
 		 * same effect as sending once.
 		 */
-		try{
-			
+		try{			
 			Callable<Long> getProjectId = null;
 			//check access, almost copy-paste code in the GET method.
 			if(projectName != null){
@@ -267,6 +268,8 @@ public class ConfigResource extends SecureResource {
 			} else {
 				getProjectId = new Callable<Long>() { public Long call() { return null; }};
 			}
+			
+			fixAnonPath();
 			
 			//if this is a status update, do it and return
 			if(this.getQueryVariable("status") != null ) {
@@ -327,6 +330,17 @@ public class ConfigResource extends SecureResource {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 		}
 		return;
+	}
+	
+	private void fixAnonPath(){
+		//This is a bit of a hack, but doing the proper fix would introduce risk in the anonymization feature.  Which would be better done in a feature release, then a bug fix release.
+		//The anon feature pre-dated the config service, but was migrated to use the config service for storage of the anonymization script.
+		//However, it *appears* that the 'path' being set when the anonymization file is added (DicomEdit.buildScriptPath) is incorrect.  It is has a / at the beginning of the path, whereas other scripts in the config service don't.
+		//So the ConfigResource correctly creates the path without the / at the beginning, but that fails to match the entry stored in the service by DicomEdit.  DicomEdit should be fixed, but that would introduce alot of headaches. 
+		//So, for now, we'll just hack ConfigResource to support the erronous path in this one use case.
+		if(toolName!=null && StringUtils.equals("anon", toolName) && projectName!=null && StringUtils.equals("projects/"+projectName, path)){
+			path="/projects/"+projectName;
+		}
 	}
 	
 	//This method parses the URI and returns the "path" used for Configurations.

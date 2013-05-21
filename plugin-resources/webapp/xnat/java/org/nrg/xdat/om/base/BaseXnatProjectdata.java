@@ -2234,4 +2234,10 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 		}
 	}
 
+
+
+	public Integer getMetaId()
+	{
+	    return ((XFTItem)this.getItem()).getMetaDataId();
+	}
 }

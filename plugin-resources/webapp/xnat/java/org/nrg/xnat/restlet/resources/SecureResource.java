@@ -278,7 +278,7 @@ public abstract class SecureResource extends Resource {
 		if(_body==null){
 		Representation entity = this.getRequest().getEntity();
 
-		if (RequestUtil.isMultiPartFormData(entity)) {
+		if (entity !=null && RequestUtil.isMultiPartFormData(entity) && entity.getSize()>0) {
 				_body=new Form(entity);
 			}
 		}

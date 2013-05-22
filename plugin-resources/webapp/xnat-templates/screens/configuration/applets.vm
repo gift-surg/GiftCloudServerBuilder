@@ -1,10 +1,11 @@
+#* @vtlvariable name="displayManager" type="org.nrg.xdat.display.DisplayManager" *#
 <!-- Title: Applet -->
 <div class="mgmt_container">
     <div id="applet_mgmt_div" class="row">
         <p>This is the site-wide applet settings script applied to the Upload Applet. This script
         can also be supplemented by applet settings specified at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.</p>
 
-        <p><b>Script:</b></p>
+        <p><label for="appletScript"><b>Script:</b></label></p>
         <textarea id="appletScript" name="appletScript" rows="20" cols="80" disabled></textarea>
     </div>
     <div class="buttons">
@@ -41,8 +42,4 @@
 
     YAHOO.util.Event.onDOMReady(addAppletMgmtMonitor);
     var appletControls = ['appletScript'];
-
-    #if($initialize)
-    window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
-    #end
 </script>

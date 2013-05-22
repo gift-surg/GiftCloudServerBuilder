@@ -122,12 +122,12 @@ function saveSettings(){
     window.siteInfoManager.saveTabSettings();
 }
 
-function configurationTabManagerInit(initialize) {
+function configurationTabManagerInit() {
     window.configurationTabView = new YAHOO.widget.TabView('configurationTabs');
     window.configuration_tabs_module = new YAHOO.widget.Module("configuration_tabs_module", {visible:false, zIndex:5});
     window.configuration_tabs_module.show();
     window.configurationTabView.subscribe("activeTabChange", configurationIndexChanged);
-    if (initialize) {
+    if (window.initializing) {
         // If we're initializing, divert all of the save handlers to centralized handling.
         document.getElementById('siteInfo_save_button').onclick = fullConfigHandler;
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
@@ -155,11 +155,10 @@ function prependLoader(div_id, msg) {
 
 function SettingsTabManager(settingsTabDivId, settings) {
 
-    this.settings = settings;
     this.controls = [];
+    this.settings = settings;
     this.settings_tab_mgmt_div = document.getElementById(settingsTabDivId);
     this.settings_tab_table_div = document.createElement("div");
-    //this.settings_tab_table_div.id = "settings_tab_table";
     this.settings_tab_table_div.className = this.settings_tab_table_div.className + " settings_tab_table";
     this.settings_tab_mgmt_div.appendChild(this.settings_tab_table_div);
     this.settings_svc_url = serverRoot + '/data/services/settings/';
@@ -186,6 +185,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
 
     this.disableResetButtons();
     this.init = function() {
+        if (window.initializationData) {
+            this.processData(window.initializationData);
+        } else {
         this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
         this.initLoader.render();
         // load from search xml from server
@@ -198,12 +200,21 @@ function SettingsTabManager(settingsTabDivId, settings) {
 
         var getUrl = this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp=' + (new Date()).getTime();
         YAHOO.util.Connect.asyncRequest('GET', getUrl, this.initCallback, null, this);
+        }
     };
 
     this.completeInit = function(o) {
         try {
+            this.processData(window.initializationData = o.responseText);
+        } catch (e) {
+            this.displayError("[ERROR " + o.status + "] Failed to parse site information: [" + e.name + "] " + e.message);
+        }
+        this.initLoader.close();
+    };
+
+    this.processData = function(data) {
             this.controls.length = 0;
-            var resultSet = eval("(" + o.responseText + ")");
+        var resultSet = eval("(" + data + ")");
             for (var index = 0; index < this.settings.length; index++) {
                 var setting = this.settings[index];
                 var control = document.getElementById(setting);
@@ -214,10 +225,6 @@ function SettingsTabManager(settingsTabDivId, settings) {
                 }
             }
             this.render();
-        } catch (e) {
-            this.displayError("ERROR " + o.status + ": Failed to parse site information.");
-        }
-        this.initLoader.close();
     };
 
     this.initFailure = function(o) {

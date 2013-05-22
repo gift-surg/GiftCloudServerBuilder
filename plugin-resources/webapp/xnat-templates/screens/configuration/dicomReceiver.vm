@@ -14,7 +14,7 @@
         </p>
 
         <p>
-            <b>DICOM receiver Enabled?</b>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="enableDicomReceiver" onchange="window.dicomReceiverManager.dirtyForm();" disabled />
+            <label for="enableDicomReceiver"><b>DICOM receiver Enabled?</b></label>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="enableDicomReceiver" onchange="window.dicomReceiverManager.dirtyForm();" disabled />
             <small>Should the DICOM receiver listen for connections?</small>
             <small><span style="color:red;font-weight:bold;">Caution:</span>&nbsp;Changes to this setting will take effect immediately. Before disabling the receiver, verify that there are no transmissions currently in progress.</small>
         </p>
@@ -48,9 +48,4 @@ function addDicomReceiverMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addDicomReceiverMgmtMonitor);
 var dicomReceiverControls = ['dcmPort', 'dcmAe', 'enableDicomReceiver'];
-
-    #if($initialize)
-    window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', dicomReceiverControls);
-    #end
-
 </script>

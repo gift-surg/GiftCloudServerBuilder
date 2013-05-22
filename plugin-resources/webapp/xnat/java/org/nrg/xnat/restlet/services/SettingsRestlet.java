@@ -1,8 +1,6 @@
 package org.nrg.xnat.restlet.services;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -41,6 +39,8 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 import java.io.BufferedReader;
@@ -190,22 +190,13 @@ public class SettingsRestlet extends SecureResource {
      * already exist, the event will be created with the default user set to the site administrator's email address.
      * @param event    The event to be created or retrieved.
      */
-    private String getSubscribersForEvent(NotificationType event) {
-        Category category = getNotificationService().getCategoryService().getCategoryByScopeAndEvent(CategoryScope.Site, event.toString());
-        if (category == null) {
-            category = getNotificationService().getCategoryService().newEntity();
-            category.setScope(CategoryScope.Site);
-            category.setEvent(event.toString());
-            getNotificationService().getCategoryService().create(category);
-        }
+    private synchronized String getSubscribersForEvent(NotificationType event) {
+        Category category;
         Definition definition;
-        List<Definition> definitions = getNotificationService().getDefinitionService().getDefinitionsForCategory(category);
-        if (definitions == null || definitions.size() == 0) {
-            definition = getNotificationService().getDefinitionService().newEntity();
-            definition.setCategory(category);
-            getNotificationService().getDefinitionService().create(definition);
-        } else {
-            definition = definitions.get(0);
+
+        synchronized (_log) {
+            category = getSiteEventCategory(event);
+            definition = getSiteEventDefinition(category);
         }
 
         Map<Subscriber, Subscription> subscriptions = getNotificationService().getSubscriptionService().getSubscriberMapOfSubscriptionsForDefinition(definition);
@@ -225,6 +216,25 @@ public class SettingsRestlet extends SecureResource {
             assert adminUser != null;
             return adminUser.getEmails();
         }
+    }
+
+    private synchronized Category getSiteEventCategory(NotificationType event) {
+        Category category = getNotificationService().getCategoryService().getCategoryByScopeAndEvent(CategoryScope.Site, event.toString());
+        if (category == null) {
+            category = initializeSiteEventCategory(event);
+        }
+        return category;
+    }
+
+    private synchronized Definition getSiteEventDefinition(Category category) {
+        Definition definition;
+        List<Definition> definitions = getNotificationService().getDefinitionService().getDefinitionsForCategory(category);
+        if (definitions == null || definitions.size() == 0) {
+            definition = initializeSiteEventDefinition(category);
+        } else {
+            definition = definitions.get(0);
+        }
+        return definition;
     }
 
     private String createCommaSeparatedList(final Set<Subscriber> subscribers) {
@@ -462,7 +472,7 @@ public class SettingsRestlet extends SecureResource {
      * @param type The type for which the definition and its associated category should be created or retrieved.
      * @return The existing or newly created definition.
      */
-    private Definition retrieveSiteEventDefinition(NotificationType type) {
+    private synchronized Definition retrieveSiteEventDefinition(NotificationType type) {
         Category category = getNotificationService().getCategoryService().getCategoryByScopeAndEvent(CategoryScope.Site, type.toString());
         if (category == null) {
             category = initializeSiteEventCategory(type.toString());
@@ -481,7 +491,15 @@ public class SettingsRestlet extends SecureResource {
      * @param event The event for which a category should be created.
      * @return The newly created category object.
      */
-    private Category initializeSiteEventCategory(String event) {
+    private synchronized Category initializeSiteEventCategory(NotificationType event) {
+        return initializeSiteEventCategory(event.toString());
+    }
+
+    /**
+     * @param event The event for which a category should be created.
+     * @return The newly created category object.
+     */
+    private synchronized Category initializeSiteEventCategory(String event) {
         Category category = getNotificationService().getCategoryService().newEntity();
         category.setScope(CategoryScope.Site);
         category.setEvent(event);
@@ -493,7 +511,7 @@ public class SettingsRestlet extends SecureResource {
      * @param category The category for which a definition should be created.
      * @return The newly created definition object.
      */
-    private Definition initializeSiteEventDefinition(Category category) {
+    private synchronized Definition initializeSiteEventDefinition(Category category) {
         Definition definition = getNotificationService().getDefinitionService().newEntity();
         definition.setCategory(category);
         getNotificationService().getDefinitionService().create(definition);
@@ -761,7 +779,7 @@ public class SettingsRestlet extends SecureResource {
     private final static ObjectMapper MAPPER = new ObjectMapper(new JsonFactory());
 
     private NotificationService _notificationService;
-    private static final Log _log = LogFactory.getLog(SettingsRestlet.class);
+    private static final Logger _log = LoggerFactory.getLogger(SettingsRestlet.class);
     private ArcArchivespecification _arcSpec;
     private String _property;
     private String _value;

@@ -10,19 +10,19 @@
         <div class="row">
             <table style="margin-left:50px;">
                 <tr>
-                    <th align="left">Errors:</th>
+                    <th align="left"><label for="error">Errors:</label></th>
                     <td><input size="40" type="text" id="error" name="error" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
                 </tr>
                 <tr>
-                    <th align="left">Issues:</th>
+                    <th align="left"><label for="issue">Issues:</label></th>
                     <td><input size="40" type="text" id="issue" name="issue" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
                 </tr>
                 <tr>
-                    <th align="left">New Users:</th>
+                    <th align="left"><label for="newUser">New Users:</label></th>
                     <td><input size="40" type="text" id="newUser" name="newUser" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
                 </tr>
                 <tr>
-                    <th align="left">Updates:</th>
+                    <th align="left"><label for="update">Updates:</label></th>
                     <td><input size="40" type="text" id="update" name="update" onchange="window.notificationsManager.dirtyForm();" disabled /></td>
                 </tr>
             </table>
@@ -57,9 +57,4 @@ function addNotificationsMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addNotificationsMgmtMonitor);
 var notificationsControls = ['error', 'issue', 'newUser', 'update'];
-
-    #if($initialize)
-    window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', notificationsControls);
-    #end
-
 </script>

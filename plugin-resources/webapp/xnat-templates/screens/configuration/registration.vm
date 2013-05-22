@@ -1,3 +1,4 @@
+#* @vtlvariable name="displayManager" type="org.nrg.xdat.display.DisplayManager" *#
 <!-- Title: Registration -->
 <div class="mgmt_container">
 
@@ -14,7 +15,7 @@
             <label for="enableNewRegistrations">Auto-enable User Accounts?</label>
             <input type="checkbox" id="enableNewRegistrations" onchange="window.registrationManager.dirtyForm();" disabled />
             <small>If true, user accounts will be enabled automatically when the user registers. Users will be able to access the site and any 'public'
-                $displayManager.getPluralDisplayNameForProject().toLowerCase() immediately. If false, the site adminstrator will be required to manually
+                $displayManager.getPluralDisplayNameForProject().toLowerCase() immediately. If false, the site administrator will be required to manually
                 enable user accounts. Either way the administrator receives an email notification when a user registers.</small>
         </p>
 
@@ -58,9 +59,4 @@ function addRegistrationMgmtMonitor(){
 
 YAHOO.util.Event.onDOMReady(addRegistrationMgmtMonitor);
 var registrationControls = ['requireLogin', 'enableNewRegistrations', 'emailVerification'];
-
-    #if($initialize)
-    window.registrationManager = new SettingsTabManager('registration_mgmt_div', registrationControls);
-    #end
-
 </script>

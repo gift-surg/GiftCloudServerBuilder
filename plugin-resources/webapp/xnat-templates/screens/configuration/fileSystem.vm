@@ -77,8 +77,4 @@
 
     YAHOO.util.Event.onDOMReady(addFileSystemMgmtMonitor);
     var fileSystemControls = ['archivePath', 'checksums', 'prearchivePath', 'cachePath', 'buildPath', 'ftpPath', 'pipelinePath'];
-
-    #if($initialize)
-    window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', fileSystemControls);
-    #end
 </script>

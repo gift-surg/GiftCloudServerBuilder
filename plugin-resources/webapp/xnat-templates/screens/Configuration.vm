@@ -94,11 +94,11 @@
 
             <script type="text/javascript">
                 #if(!$initialize)
-                    var initialize = false;
+                    window.initializing = false;
                 #else
-                    var initialize = true;
+                    window.initializing = true;
                 #end
-                configurationTabManagerInit(initialize);
+                configurationTabManagerInit();
 
                 jq(function(){
                     var mgmt_container = '.mgmt_container';

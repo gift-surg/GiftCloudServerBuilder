@@ -42,7 +42,7 @@
 function configurationRegistrationTabChange(obj) {
     if(obj.newValue.get("href")=="#registration") {
         if(window.registrationManager==undefined) {
-            window.registrationManager = new SettingsTabManager('registration_mgmt_div', registrationControls);
+                window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
         }
     }
 }
@@ -50,7 +50,7 @@ function configurationRegistrationTabChange(obj) {
 function addRegistrationMgmtMonitor(){
     if(window.configurationTabView.get("activeTab").get("href")=="#registration") {
         if(window.registrationManager==undefined) {
-            window.registrationManager = new SettingsTabManager('registration_mgmt_div', registrationControls);
+                window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
         }
     } else {
         window.configurationTabView.subscribe("activeTabChange", configurationRegistrationTabChange);
@@ -58,5 +58,5 @@ function addRegistrationMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addRegistrationMgmtMonitor);
-var registrationControls = ['requireLogin', 'enableNewRegistrations', 'emailVerification'];
+    putConfigurationControls('registration', ['requireLogin', 'enableNewRegistrations', 'emailVerification']);
 </script>

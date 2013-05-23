@@ -136,7 +136,9 @@ function configurationTabManagerInit() {
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
-        showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review your system settings before saving the system settings.');
+
+        // showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review your system settings before saving the system settings.');
+        alert('Your XNAT installation has not yet been initialized. Please review your system settings before saving the system settings.');
     }
 }
 
@@ -153,10 +155,20 @@ function prependLoader(div_id, msg) {
     return new XNATLoadingGIF(loader_div);
 }
 
-function SettingsTabManager(settingsTabDivId, settings) {
+var configurationControls = {};
+
+function putConfigurationControls(key, controls) {
+    configurationControls[key] = controls;
+}
+
+function getConfigurationControls(key) {
+    return configurationControls[key];
+}
+
+function SettingsTabManager(settingsTabDivId, settings, postLoad) {
 
     this.controls = [];
-    this.settings = settings;
+    this.settings = getConfigurationControls(settings);
     this.settings_tab_mgmt_div = document.getElementById(settingsTabDivId);
     this.settings_tab_table_div = document.createElement("div");
     this.settings_tab_table_div.className = this.settings_tab_table_div.className + " settings_tab_table";
@@ -165,9 +177,13 @@ function SettingsTabManager(settingsTabDivId, settings) {
 
     this.dirtyFlag = false;
 
-    var
-        resetButtons =
-            '#siteInfo_reset_button, ' +
+    if (postLoad) {
+        this.postLoad = postLoad;
+    } else {
+        this.postLoad = null;
+    }
+
+    var resetButtons = '#siteInfo_reset_button, ' +
             '#fileSystem_reset_button, ' +
             '#registration_reset_button, ' +
             '#notifications_reset_button, ' +
@@ -182,11 +198,11 @@ function SettingsTabManager(settingsTabDivId, settings) {
     this.disableResetButtons = function() {
         $(resetButtons).prop('disabled',true);
     };
-
     this.disableResetButtons();
+
     this.init = function() {
-        if (window.initializationData) {
-            this.processData(window.initializationData);
+        if (window.configurationData) {
+            this.processData(window.configurationData);
         } else {
         this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
         this.initLoader.render();
@@ -205,7 +221,8 @@ function SettingsTabManager(settingsTabDivId, settings) {
 
     this.completeInit = function(o) {
         try {
-            this.processData(window.initializationData = o.responseText);
+            window.configurationData = o.responseText;
+            this.processData(window.configurationData);
         } catch (e) {
             this.displayError("[ERROR " + o.status + "] Failed to parse site information: [" + e.name + "] " + e.message);
         }
@@ -225,6 +242,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
                 }
             }
             this.render();
+        if (this.postLoad != null) {
+            this.postLoad();
+        }
     };
 
     this.initFailure = function(o) {
@@ -290,6 +310,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
                     cache : false, // Turn off caching for IE
                     scope : this
                 };
+                openModalPanel("configuration_", "Please wait while your settings are saved...");
                 var data = buildSettingsUpdateRequestBody(this.controls);
                 YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
             } else {
@@ -354,8 +375,9 @@ function SettingsTabManager(settingsTabDivId, settings) {
 
     this.completeSave = function(o) {
         this.completeInit(o);
-        this.setFormDisabled(false);
+        closeModalPanel("configuration_");
         showMessage('page_body', 'Success', 'Your settings have been successfully updated.');
+        this.setFormDisabled(false);
     };
 
     this.saveFailure = function(o) {
@@ -363,6 +385,7 @@ function SettingsTabManager(settingsTabDivId, settings) {
             alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
             window.location = serverRoot + "/app/template/Login.vm";
         }
+        closeModalPanel("configuration_");
         showMessage('page_body', 'Error', '<p>There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText + '</p>');
         this.setFormDisabled(false);
     };

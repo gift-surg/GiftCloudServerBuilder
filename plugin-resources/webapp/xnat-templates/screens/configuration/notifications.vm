@@ -40,7 +40,7 @@
 function configurationNotificationsTabChange(obj) {
     if(obj.newValue.get("href")=="#notifications") {
         if(window.notificationsManager==undefined) {
-            window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', notificationsControls);
+                window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', 'notifications');
         }
     }
 }
@@ -48,7 +48,7 @@ function configurationNotificationsTabChange(obj) {
 function addNotificationsMgmtMonitor(){
     if(window.configurationTabView.get("activeTab").get("href")=="#notifications") {
         if(window.notificationsManager==undefined) {
-            window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', notificationsControls);
+                window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', 'notifications');
         }
     } else {
         window.configurationTabView.subscribe("activeTabChange", configurationNotificationsTabChange);
@@ -56,5 +56,5 @@ function addNotificationsMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addNotificationsMgmtMonitor);
-var notificationsControls = ['error', 'issue', 'newUser', 'update'];
+    putConfigurationControls('notifications', ['error', 'issue', 'newUser', 'update']);
 </script>

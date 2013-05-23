@@ -54,22 +54,49 @@
 <script type="text/javascript">
 function configurationSiteInfoTabChange(obj) {
     if(obj.newValue.get("href")=="#siteInfo") {
-        if(window.siteInfoManager==undefined) {
-            window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', siteInfoControls);
-        }
+        initializeSiteInfoMgmtTab();
     }
 }
 
 function addSiteInfoMgmtMonitor(){
     if(window.configurationTabView.get("activeTab").get("href")=="#siteInfo") {
-        if(window.siteInfoManager==undefined) {
-            window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', siteInfoControls);
-        }
+        initializeSiteInfoMgmtTab();
     } else {
         window.configurationTabView.subscribe("activeTabChange", configurationSiteInfoTabChange);
     }
 }
 
+function initializeSiteInfoMgmtTab() {
+    if(window.siteInfoManager==undefined) {
+        if (window.initializing) {
+            var postLoad = function() {
+                if(window.anonymizationManager==undefined) {
+                    window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
+                }
+                if(window.appletManager==undefined) {
+                    window.appletManager = new SettingsTabManager('applet_mgmt_div', 'applet');
+                }
+                if(window.dicomReceiverManager==undefined) {
+                    window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', 'dicomReceiver');
+                }
+                if(window.fileSystemManager==undefined) {
+                    window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', 'fileSystem');
+                }
+                if(window.notificationsManager==undefined) {
+                    window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', 'notifications');
+                }
+                if(window.registrationManager==undefined) {
+                    window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
+                }
+            };
+        }
+        window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo', postLoad);
+    } else {
+        window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo');
+    }
+}
+
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-var siteInfoControls = ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'];
+putConfigurationControls('siteInfo', ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken']);
+
 </script>

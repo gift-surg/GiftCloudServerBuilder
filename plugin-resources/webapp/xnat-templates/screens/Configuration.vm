@@ -93,11 +93,7 @@
             </div>
 
             <script type="text/javascript">
-                #if(!$initialize)
-                    window.initializing = false;
-                #else
-                    window.initializing = true;
-                #end
+                window.initializing = #if(!$initialize) false #else true #end;
                 configurationTabManagerInit();
 
                 jq(function(){

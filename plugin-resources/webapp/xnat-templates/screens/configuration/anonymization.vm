@@ -27,7 +27,7 @@
     function configurationAnonymizationTabChange(obj) {
         if(obj.newValue.get("href")=="#anonymization") {
             if(window.anonymizationManager==undefined) {
-                window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', anonymizationControls);
+                window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
             }
         }
     }
@@ -35,7 +35,7 @@
     function addAnonymizationMgmtMonitor(){
         if(window.configurationTabView.get("activeTab").get("href")=="#anonymization") {
             if(window.anonymizationManager==undefined) {
-                window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', anonymizationControls);
+                window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
             }
         } else {
             window.configurationTabView.subscribe("activeTabChange", configurationAnonymizationTabChange);
@@ -43,5 +43,5 @@
     }
 
     YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
-    var anonymizationControls = ['anonScript'];
+    putConfigurationControls('anonymization', ['anonScript']);
 </script>

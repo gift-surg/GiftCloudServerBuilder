@@ -25,7 +25,7 @@
     function configurationAppletTabChange(obj) {
         if(obj.newValue.get("href")=="#applets") {
             if(window.appletManager==undefined) {
-                window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+                window.appletManager = new SettingsTabManager('applet_mgmt_div', 'applet');
             }
         }
     }
@@ -33,7 +33,7 @@
     function addAppletMgmtMonitor(){
         if(window.configurationTabView.get("activeTab").get("href")=="#applets") {
             if(window.appletManager==undefined) {
-                window.appletManager = new SettingsTabManager('applet_mgmt_div', appletControls);
+                window.appletManager = new SettingsTabManager('applet_mgmt_div', 'applet');
             }
         } else {
             window.configurationTabView.subscribe("activeTabChange", configurationAppletTabChange);
@@ -41,5 +41,5 @@
     }
 
     YAHOO.util.Event.onDOMReady(addAppletMgmtMonitor);
-    var appletControls = ['appletScript'];
+    putConfigurationControls('applet', ['appletScript']);
 </script>

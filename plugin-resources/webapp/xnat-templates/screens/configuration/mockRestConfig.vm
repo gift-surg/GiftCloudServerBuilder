@@ -24,7 +24,7 @@
 function configurationRestMockCallConfigTabChange(obj) {
     if(obj.newValue.get("href")=="#mockRestConfig") {
         if(window.mockRestConfigManager==undefined) {
-            window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', mockRestConfigControls);
+                window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', 'mockRestConfig');
         }
     }
 }
@@ -32,7 +32,7 @@ function configurationRestMockCallConfigTabChange(obj) {
 function addRestMockCallConfigMgmtMonitor(){
     if(window.configurationTabView.get("activeTab").get("href")=="#mockRestConfig") {
         if(window.mockRestConfigManager==undefined) {
-            window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', mockRestConfigControls);
+                window.mockRestConfigManager = new SettingsTabManager('mockRestConfig_mgmt_div', 'mockRestConfig');
         }
     } else {
         window.configurationTabView.subscribe("activeTabChange", configurationRestMockCallConfigTabChange);
@@ -40,5 +40,5 @@ function addRestMockCallConfigMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addRestMockCallConfigMgmtMonitor);
-var mockRestConfigControls = ['restMockCallMap'];
+    putConfigurationControls('mockRestConfig', ['restMockCallMap']);
 </script>

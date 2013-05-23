@@ -31,7 +31,7 @@
 function configurationDicomReceiverTabChange(obj) {
     if(obj.newValue.get("href")=="#dicomReceiver") {
         if(window.dicomReceiverManager==undefined) {
-            window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', dicomReceiverControls);
+                window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', 'dicomReceiver');
         }
     }
 }
@@ -39,7 +39,7 @@ function configurationDicomReceiverTabChange(obj) {
 function addDicomReceiverMgmtMonitor(){
     if(window.configurationTabView.get("activeTab").get("href")=="#dicomReceiver") {
         if(window.dicomReceiverManager==undefined) {
-            window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', dicomReceiverControls);
+                window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', 'dicomReceiver');
         }
     } else {
         window.configurationTabView.subscribe("activeTabChange", configurationDicomReceiverTabChange);
@@ -47,5 +47,5 @@ function addDicomReceiverMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addDicomReceiverMgmtMonitor);
-var dicomReceiverControls = ['dcmPort', 'dcmAe', 'enableDicomReceiver'];
+    putConfigurationControls('dicomReceiver', ['dcmPort', 'dcmAe', 'enableDicomReceiver']);
 </script>

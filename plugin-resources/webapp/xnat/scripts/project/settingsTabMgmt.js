@@ -6,63 +6,61 @@
 // xModal is in a state of flux, so don't know
 // if this will work right now
 
-$.getScript(serverRoot+'/scripts/xModal/xModal.js');
-
-function showMessage(divId, title, body) {
-
-    //alert('showMessage!');
-
-    xModalOpen({
-        kind: 'dialog',
-        // width and height not necessary with kind:'dialog'
-        //width: 500,
-        //height: 300,
-        scroll: true,
-        //draggable: true, // the xModal will not be draggable by default, add draggable:true for draggability
-        box: divId,
-        title: title,
-        content: body,
-//        footer:    {
-//            show: 'yes', // self-explanatory, right? anything but 'yes' will hide the footer
-//            height: '' , // height in px - blank for default - 52px
-//            background: '', // css for footer background - white if blank
-//            border: '', // color for footer top border - white if blank
-//            content: '' // empty string renders default footer with two buttons (ok/cancel) using values specified below
-//        },
-        // by default the buttons will go in the footer, this can be overridden by adding elements with 'class="ok default button"' and 'class="cancel button"' to the body content
-        ok:       'OK', // text for submit button - if blank button doesn't render
-        cancel:   '' // text for cancel button - if empty string button doesn't render
-    });
-    xModalSubmit = function(){
-        // requires xModalClose() function to close the xModal!
-        xModalClose();
-    };
-    xModalCancel = function(){
-        // if you want to do something else if someone cancels, put it here
-        // requires xModalClose() function to close the xModal!
-        xModalClose();
-    };
-
-    /*
-     var dialog = new YAHOO.widget.SimpleDialog("dialog", {
-     width:"20em",
-     close:false,
-     fixedcenter:true,
-     constraintoviewport:true,
-     modal:true,
-     icon:YAHOO.widget.SimpleDialog.ICON_WARN,
-     visible:true,
-     draggable:false,
-     buttons: [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }]
-     });
-
-     dialog.render(document.getElementById(divId));
-     dialog.setHeader(title);
-     dialog.setBody(body);
-     dialog.bringToTop();
-     dialog.show();
-     */
-}
+//function showMessage(divId, title, body) {
+//
+//    //alert('showMessage!');
+//
+//    xModalOpen({
+//        kind: 'dialog',
+//        // width and height not necessary with kind:'dialog'
+//        //width: 500,
+//        //height: 300,
+//        scroll: true,
+//        //draggable: true, // the xModal will not be draggable by default, add draggable:true for draggability
+//        box: divId,
+//        title: title,
+//        content: body,
+////        footer:    {
+////            show: 'yes', // self-explanatory, right? anything but 'yes' will hide the footer
+////            height: '' , // height in px - blank for default - 52px
+////            background: '', // css for footer background - white if blank
+////            border: '', // color for footer top border - white if blank
+////            content: '' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+////        },
+//        // by default the buttons will go in the footer, this can be overridden by adding elements with 'class="ok default button"' and 'class="cancel button"' to the body content
+//        ok:       'OK', // text for submit button - if blank button doesn't render
+//        cancel:   '' // text for cancel button - if empty string button doesn't render
+//    });
+//    xModalSubmit = function(){
+//        // requires xModalClose() function to close the xModal!
+//        xModalClose();
+//    };
+//    xModalCancel = function(){
+//        // if you want to do something else if someone cancels, put it here
+//        // requires xModalClose() function to close the xModal!
+//        xModalClose();
+//    };
+//
+//    /*
+//     var dialog = new YAHOO.widget.SimpleDialog("dialog", {
+//     width:"20em",
+//     close:false,
+//     fixedcenter:true,
+//     constraintoviewport:true,
+//     modal:true,
+//     icon:YAHOO.widget.SimpleDialog.ICON_WARN,
+//     visible:true,
+//     draggable:false,
+//     buttons: [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }]
+//     });
+//
+//     dialog.render(document.getElementById(divId));
+//     dialog.setHeader(title);
+//     dialog.setBody(body);
+//     dialog.bringToTop();
+//     dialog.show();
+//     */
+//}
 
 
 function configurationIndexChanged() {
@@ -72,23 +70,47 @@ function configurationIndexChanged() {
 
 function fullConfigHandler() {
     if (!document.getElementById('siteId').value) {
-        showMessage('page_body', 'Site ID Required', 'You must specify a value for the site ID!');
+        //showMessage('', 'Site ID Required', 'You must specify a value for the site ID!');
+        xModal.message.title = 'Site ID Required';
+        xModal.message.content = 'You must specify a value for the site ID!';
+        xModalOpen(xModal.message);
         return;
     }
 
+    var missing = [];
+
+    if(!window.registrationManager) {
+        missing.push('Registration');
+    }
+    if(!window.fileSystemManager) {
+        missing.push('File System');
+    }
+    if(!window.siteInfoManager) {
+        missing.push('Site Information');
+    }
+    if(!window.notificationsManager) {
+        missing.push('Notifications');
+    }
+    if(!window.anonymizationManager) {
+        missing.push('Anonymization');
+    }
+    if(!window.appletManager) {
+        missing.push('Applet');
+    }
+    if(!window.dicomReceiverManager) {
+        missing.push('DICOM Receiver');
+    }
+    if (missing.length > 0) {
+        var message = 'You need to review the contents of the following panels before saving: <ul>';
+        for (var index = 0; index < missing.length; index++) {
+            message += "<li>" + missing[index] + "</li>";
+        }
+        message += "</ul>";
+        showMessage('', 'Required', message);
+    } else {
         this.fullConfigCallback = {
             success : function() {
-            //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
-            //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
-            document.getElementById('siteInfo_save_button').onclick = saveSettings;
-            document.getElementById('fileSystem_save_button').onclick = saveSettings;
-            document.getElementById('registration_save_button').onclick = saveSettings;
-            document.getElementById('notifications_save_button').onclick = saveSettings;
-            document.getElementById('anonymization_save_button').onclick = saveSettings;
-            document.getElementById('applet_save_button').onclick = saveSettings;
-            document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
-
-                showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
+                showMessage('', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
                 var destination;
                 if (serverRoot) {
                     destination = serverRoot;
@@ -98,13 +120,13 @@ function fullConfigHandler() {
                 window.location.replace(destination);
             },
             failure : function(o) {
-                showMessage('page_body', 'Error', 'Your settings were not successfully saved: ' + o.responseText);
+                showMessage('', 'Error', 'Your settings were not successfully saved: ' + o.responseText);
             },
             cache : false, // Turn off caching for IE
             scope : this
         };
 
-    var data = buildSettingsUpdateRequestBody([
+        var allControls = [
             'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
@@ -112,22 +134,34 @@ function fullConfigHandler() {
             , 'anonScript'
             , 'applet'
             , 'dcmPort', 'dcmAe', 'enableDicomReceiver'
-    ]);
+        ];
+        var data = buildSettingsUpdateRequestBody(allControls);
 
         var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
         YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.fullConfigCallback, data, this);
+
+        //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
+        //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
+        document.getElementById('siteInfo_save_button').onclick = saveSettings;
+        document.getElementById('fileSystem_save_button').onclick = saveSettings;
+        document.getElementById('registration_save_button').onclick = saveSettings;
+        document.getElementById('notifications_save_button').onclick = saveSettings;
+        document.getElementById('anonymization_save_button').onclick = saveSettings;
+        document.getElementById('applet_save_button').onclick = saveSettings;
+        document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
+    }
 }
 
 function saveSettings(){
     window.siteInfoManager.saveTabSettings();
 }
 
-function configurationTabManagerInit() {
+function configurationTabManagerInit(initialize) {
     window.configurationTabView = new YAHOO.widget.TabView('configurationTabs');
     window.configuration_tabs_module = new YAHOO.widget.Module("configuration_tabs_module", {visible:false, zIndex:5});
     window.configuration_tabs_module.show();
     window.configurationTabView.subscribe("activeTabChange", configurationIndexChanged);
-    if (window.initializing) {
+    if (initialize) {
         // If we're initializing, divert all of the save handlers to centralized handling.
         document.getElementById('siteInfo_save_button').onclick = fullConfigHandler;
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
@@ -136,11 +170,26 @@ function configurationTabManagerInit() {
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
+        //showMessage('', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.');
+        xModal.message.title = 'Welcome!';
+        xModal.message.content = 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.';
+        xModalOpen(xModal.message);
 
-        // showMessage('page_body', 'Welcome!', 'Your XNAT installation has not yet been initialized. Please review your system settings before saving the system settings.');
-        alert('Your XNAT installation has not yet been initialized. Please review your system settings before saving the system settings.');
     }
 }
+
+//xModalOpen({
+//    kind: 'fixed',
+//    width: 500,
+//    height: 300,
+//    scroll: true,
+//    box: 'welcome',
+//    title: 'Welcome!',
+//    content: 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.',
+//    ok: 'OK',
+//    cancel: false
+//});
+
 
 function prependLoader(div_id, msg) {
     var div ;
@@ -155,35 +204,22 @@ function prependLoader(div_id, msg) {
     return new XNATLoadingGIF(loader_div);
 }
 
-var configurationControls = {};
+function SettingsTabManager(settingsTabDivId, settings) {
 
-function putConfigurationControls(key, controls) {
-    configurationControls[key] = controls;
-}
-
-function getConfigurationControls(key) {
-    return configurationControls[key];
-}
-
-function SettingsTabManager(settingsTabDivId, settings, postLoad) {
-
+    this.settings = settings;
     this.controls = [];
-    this.settings = getConfigurationControls(settings);
     this.settings_tab_mgmt_div = document.getElementById(settingsTabDivId);
     this.settings_tab_table_div = document.createElement("div");
+    //this.settings_tab_table_div.id = "settings_tab_table";
     this.settings_tab_table_div.className = this.settings_tab_table_div.className + " settings_tab_table";
     this.settings_tab_mgmt_div.appendChild(this.settings_tab_table_div);
     this.settings_svc_url = serverRoot + '/data/services/settings/';
 
     this.dirtyFlag = false;
 
-    if (postLoad) {
-        this.postLoad = postLoad;
-    } else {
-        this.postLoad = null;
-    }
-
-    var resetButtons = '#siteInfo_reset_button, ' +
+    var
+        resetButtons =
+            '#siteInfo_reset_button, ' +
             '#fileSystem_reset_button, ' +
             '#registration_reset_button, ' +
             '#notifications_reset_button, ' +
@@ -198,12 +234,9 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     this.disableResetButtons = function() {
         $(resetButtons).prop('disabled',true);
     };
-    this.disableResetButtons();
 
+    this.disableResetButtons();
     this.init = function() {
-        if (window.configurationData) {
-            this.processData(window.configurationData);
-        } else {
         this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
         this.initLoader.render();
         // load from search xml from server
@@ -216,22 +249,12 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
 
         var getUrl = this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp=' + (new Date()).getTime();
         YAHOO.util.Connect.asyncRequest('GET', getUrl, this.initCallback, null, this);
-        }
     };
 
     this.completeInit = function(o) {
         try {
-            window.configurationData = o.responseText;
-            this.processData(window.configurationData);
-        } catch (e) {
-            this.displayError("[ERROR " + o.status + "] Failed to parse site information: [" + e.name + "] " + e.message);
-        }
-        this.initLoader.close();
-    };
-
-    this.processData = function(data) {
             this.controls.length = 0;
-        var resultSet = eval("(" + data + ")");
+            var resultSet = eval("(" + o.responseText + ")");
             for (var index = 0; index < this.settings.length; index++) {
                 var setting = this.settings[index];
                 var control = document.getElementById(setting);
@@ -242,9 +265,10 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                 }
             }
             this.render();
-        if (this.postLoad != null) {
-            this.postLoad();
+        } catch (e) {
+            this.displayError("ERROR " + o.status + ": Failed to parse site information.");
         }
+        this.initLoader.close();
     };
 
     this.initFailure = function(o) {
@@ -310,14 +334,13 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                     cache : false, // Turn off caching for IE
                     scope : this
                 };
-                openModalPanel("configuration_", "Please wait while your settings are saved...");
                 var data = buildSettingsUpdateRequestBody(this.controls);
                 YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
             } else {
-                showMessage('page_body', 'Message', 'None of the site information appears to have changed.');
+                showMessage('', 'Message', 'None of the site information appears to have changed.');
             }
         } else {
-            showMessage('page_body', 'Note', 'You need to enter a value into all of the site information settings boxes to save the site settings.');
+            showMessage('', 'Note', 'You need to enter a value into all of the site information settings boxes to save the site settings.');
         }
     };
 
@@ -375,9 +398,8 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
 
     this.completeSave = function(o) {
         this.completeInit(o);
-        closeModalPanel("configuration_");
-        showMessage('page_body', 'Success', 'Your settings have been successfully updated.');
         this.setFormDisabled(false);
+        showMessage('', 'Success', 'Your settings have been successfully updated.');
     };
 
     this.saveFailure = function(o) {
@@ -385,8 +407,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
             window.location = serverRoot + "/app/template/Login.vm";
         }
-        closeModalPanel("configuration_");
-        showMessage('page_body', 'Error', '<p>There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText + '</p>');
+        showMessage('', 'Error', '<p>There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText + '</p>');
         this.setFormDisabled(false);
     };
 

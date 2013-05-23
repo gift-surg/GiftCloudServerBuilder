@@ -3,33 +3,40 @@
 */
 
 html.noscroll { position: fixed ; overflow-y: scroll ; width: 100% ; }
+
 body.xmodal { display: block !important ; } /* the body will not disappear! */
 body.xmodal.open { /* position: fixed !important ; */ overflow: hidden ; } /* hold the page still while the xModal is open */
-div.xmodal { display: none ; position: fixed ; left: 0 ; top: 0 ; width: 100% ; height: 100% ; background: transparent url('images/black_30pct.png') ; /* rgba(0,0,0,0.3) ; */ z-index: 999999990 ; }
-div.xmodal .box { position: absolute ; padding: 0 ; left: 50% ; top: 50% ; overflow: hidden ; background: #fff ; border: 3px solid /* #888 */ rgba(0,0,0,0.3) ; background-clip: padding-box ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ; /* border-radius: 9px ; */ }
-.ltie9 div.xmodal .box { border: 2px solid #666 ; }
-div.xmodal .box .close:hover { cursor: pointer ; }
-div.xmodal .box .title { position: relative ; height: 25px ; padding-left: 10px ; overflow: hidden ; font-size: 12px ; font-weight: normal ; line-height: 28px ; vertical-align: middle ; color: #666 ; background: /* #084FAB */ /* #206bc4 */ #f0f0f0 url('images/nav_bkdg.png') center center repeat-x ; border-bottom: 1px solid #c0c0c0 ; /* border-radius: 5px 5px 0 0 ; */ }
-div.xmodal .box .title .close { width: 36px ; height: 24px ; margin: 0 !important ; padding: 0 !important ; position: absolute ; top: 1px ; right: 1px ; background: url('images/close-yui.gif') center center no-repeat ; border: none ; }
-div.xmodal .box.loading .title .close { display: none ; }
-div.xmodal .box .body { position: relative ; overflow: hidden ; }
-div.xmodal .box.scroll .body { overflow-y: auto ; }
-div.xmodal .box .body .inner { padding: 20px ; font-size: 13px ; }
-div.xmodal .box .body h1,
-div.xmodal .box .body h2,
-div.xmodal .box .body h3,
-div.xmodal .box .body h4 { margin-bottom: 1em !important; }
-div.xmodal .box .body p { margin: 0 0 1em ; }
-div.xmodal .box .footer { display: block ; position: relative ; height: 52px ; padding: 0 16px ; vertical-align: middle ; background: #f0f0f0; border-top: 1px solid #e0e0e0 ; overflow: visible ; }
-div.xmodal .box .footer.white { background: #fff ; border-top-color: #fff ; }
-div.xmodal .box .footer .inner { /* height: 100% ; */ position: relative ; bottom: 2px ; }
-div.xmodal .box .footer .inner .message { display: block ; position: absolute ; left: 2px ; top: 18px ; font-weight: normal ; font-size: 14px ; color: #666 ; }
-div.xmodal .box .footer .buttons { position: absolute ; right: 0 ; }
-div.xmodal .box .footer .button,
-div.xmodal .box .footer .button.ok.close { display: inline-block ; height: 24px ; margin: 12px 0 0 6px ; padding: 1px 15px !important ; line-height: 24px ; vertical-align: middle ; font-size: 13px ; font-weight: normal ; text-decoration: none !important ; color: #333 ; background: #e0e0e0 url('images/btn2_30px.png') center center repeat-x ; border: 1px solid #808080 ; border-radius: 3px ; }
-div.xmodal .box .footer .button:hover { color: inherit ; background: #d0d0d0 }
-div.xmodal .box .footer .button.ok { font-weight: bold ; color: #fff ; background: /* #084FAB */ /* #206bc4 */ #07428d url('images/btn1_30px.png') center top repeat-x ; border-color: /* #206bc4 */ /* #243356 */ #293d66 ; }
-div.xmodal .box .footer .button.ok:active { background: /* #206bc4 */ /* #4482cd */ #084FAB ; border-color: /* #084FAB */ #243356 ; }
-.ie8 div.xmodal .box .footer .button { /* margin: 10px ; */ padding: 3px 6px ; }
-.ie9 div.xmodal .box .footer .button { /* margin: 12px ; */ padding: 4px 6px 3px ; }
+
+div.xmask { display: none ; position: fixed ; left: 0 ; top: 0 ; width: 100% ; height: 100% ; background: transparent url('images/black_30pct.png') ; /* rgba(0,0,0,0.3) ; */ z-index: 999999990 ; }
+div.xmask.open { display: block ; }
+
+div.xmodal { position: absolute ; padding: 0 ; left: 50% ; top: 50% ; overflow: hidden ; background: #fff ; border: 3px solid rgba(0,0,0,0.5) ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ; /* border-radius: 9px ; */ }
+.ltie9 div.xmodal { border: 2px solid #666 ; }
+div.xmodal .close:hover { cursor: pointer ; }
+div.xmodal .title { position: relative ; height: 25px ; padding-left: 10px ; overflow: hidden ; font-size: 12px ; font-weight: normal ; line-height: 28px ; vertical-align: middle ; color: #666 ; background: /* #084FAB */ /* #206bc4 */ #f0f0f0 url('images/nav_bkdg.png') center center repeat-x ; border-bottom: 1px solid #c0c0c0 ; /* border-radius: 5px 5px 0 0 ; */ }
+div.xmodal .title .close { width: 36px ; height: 24px ; margin: 0 !important ; padding: 0 !important ; position: absolute ; top: 1px ; right: 1px ; background: url('images/close-yui.gif') center center no-repeat ; border: none ; }
+div.xmodal.loading .title .close { display: none ; }
+div.xmodal .body { position: relative ; overflow: hidden ; }
+div.xmodal .body.scroll { overflow-y: auto ; }
+div.xmodal .body .inner { padding: 20px ; font-size: 13px ; }
+div.xmodal .body h1,
+div.xmodal .body h2,
+div.xmodal .body h3,
+div.xmodal .body h4 { margin-bottom: 1em !important; }
+div.xmodal .body p { margin: 0 0 1em ; }
+div.xmodal .footer { display: block ; position: relative ; height: 52px ; padding: 0 16px ; vertical-align: middle ; background: #f0f0f0; border-top: 1px solid #e0e0e0 ; overflow: visible ; }
+div.xmodal .footer.white { background: #fff ; border-top-color: #fff ; }
+div.xmodal .footer .inner { position: relative ; bottom: 1px ; }
+div.xmodal .footer .inner .content { position: absolute ; left: 0 ; padding: 10px 0 ; }
+div.xmodal .footer .buttons { position: absolute ; right: 0 ; }
+div.xmodal .footer .button,
+div.xmodal .footer .button.ok.close { display: inline-block ; height: 24px ; margin: 12px 0 0 6px ; padding: 1px 15px !important ; line-height: 24px ; vertical-align: middle ; font-size: 13px ; font-weight: normal ; text-decoration: none !important ; color: #333 ; background: #e0e0e0 url('images/btn2_30px.png') center center repeat-x ; border: 1px solid #808080 ; border-radius: 3px ; }
+div.xmodal .footer .button:active,
+div.xmodal .footer .button.ok.close:active { color: inherit ; background: #d0d0d0 }
+div.xmodal .footer .button.ok,
+div.xmodal .footer .button.ok.default,
+div.xmodal .footer .button.ok.default.close { font-weight: bold ; color: #fff ; background: /* #084FAB */ /* #206bc4 */ #07428d url('images/btn1_30px.png') center top repeat-x ; border-color: /* #206bc4 */ /* #243356 */ #293d66 ; }
+div.xmodal .footer .button.ok:active { background: /* #206bc4 */ /* #4482cd */ #084FAB ; border-color: /* #084FAB */ #243356 ; }
+.ie8 div.xmodal .footer .button { /* margin: 10px ; */ padding: 3px 6px ; }
+.ie9 div.xmodal .footer .button { /* margin: 12px ; */ padding: 4px 6px 3px ; }
 .modal_content { display: none ; }

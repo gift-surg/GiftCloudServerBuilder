@@ -12,34 +12,71 @@
     <style type="text/css">
         body { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; position: relative ; }
         .demo.buttons { width: 400px ; height: 150px ; position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
-        /* #modalXML { overflow-y: scroll ; } */
+            /* #modalXML { overflow-y: scroll ; } */
     </style>
     <script type="text/javascript" src="/xnat/scripts/jquery/jquery.min.js"></script>
     <script type="text/javascript">
-
         // where is the 'scripts' directory?
-        //var scripts_dir = '..' ;
-
-
-
+        var scripts_dir = '/xnat/scripts' ;
+        //        function alert(message,title){
+        //            var alert_title = (title && title > '') ? title : ' ' ;
+        //            xModalOpen2({
+        //                kind: 'dialog',
+        //                scroll: true,
+        //                title: alert_title,
+        //                content: message,
+        //                footer: true,
+        //                ok: {
+        //                    label:'OK',
+        //                    class:'close default'//,
+        ////                    action:function(){
+        ////                        alert('Yup.');
+        ////                        xModalClose();
+        ////                    }
+        //                }
+        //            })
+        //        }
     </script>
     <link type="text/css" rel="stylesheet" href="XMLDisplay/XMLDisplay.css">
     <script type="text/javascript" src="XMLDisplay/XMLDisplayMod.js"></script>
     <link type="text/css" rel="stylesheet" href="xModal.css">
     <script type="text/javascript" src="xModal.js"></script>
+    <!--<script type="text/javascript" src="xModal_sample.js"></script>-->
 </head>
 <body>
 
 <div class="demo buttons">
-    <button class="display_xml">Display XML</button>
-    <button class="hello">Hello</button>
-    <button class="loading">Loading</button>
-    <button class="iframe">iframe</button>
+
+    <button
+        id="xmodal_new_too"
+        class="xmodal_new"
+        data-xmodal-id="new_content"
+        data-xmodal-kind="small"
+        data-xmodal-width="500"
+        data-xmodal-height="400"
+        data-xmodal-scroll="true"
+        data-xmodal-title="The New Guy"
+        data-xmodal-content="#xmodal_new_content"
+        data-xmodal-ok="OK"
+        data-xmodal-cancel="false">
+            Show A New xModal
+    </button>
+    <button id="static1">Show Static Content</button>
+
+    <br>
+    <br>
+
+    <button id="display_xml" class="display_xml xmodal_open">Display XML</button>
+    <button id="hello" class="hello xmodal_open">Hello</button>
+    <button class="loading xmodal_open">Loading</button>
+    <button class="iframe xmodal_open">iframe</button>
+    <button id="xModalNew" class="dialog xmodal_open">xModalNew</button>
+
+    <br>
 </div>
 
-
 <!-- this content is displayed in the modal when clicking the "hello" button -->
-<div id="hello_content" class="modal_content" style="display:none;">
+<div id="static_content" class="modal_content" style="display:none;">
     <p>Hello.</p>
     <ul>
         <li>Hello.</li>
@@ -49,153 +86,537 @@
 </div>
 
 
+<div id="new_content" style="display: none;">
+    <h3>Content</h3>
+    <p>Here's where we'll put the content for this xModal.
+        If this was added to the page dynamically, call xModalOpen()
+        on the callback after data is returned.</p>
+</div>
 
 
 <script type="text/javascript">
+    $(function(){
 
-    /* *********************************
-     xModal globals
-     ********************************** */
-    // put the css link code on the page and get the xModal.js script
-    //$('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
-    //$.getScript(scripts_dir + '/xModal/xModal.js');
-    // xModal.js requires jQuery
-    /* ********************************* */
+        function do_xModal(_this){
 
-    var scripts_dir = '/xnat/scripts' ;
+            var $this = $(_this);
 
-    $(document).ready(function(){
+            var this_id = $this.data('xmodal-id') || null ;
+            var this_kind = $this.data('xmodal-kind') || null ;
+            var this_width = $this.data('xmodal-width') || null ;
+            var this_height = $this.data('xmodal-height') || null ;
+            var this_scroll = $this.data('xmodal-scroll') || null ;
+            var this_title = $this.data('xmodal-title') || null ;
+            var this_content ;
+            if ($this.is('[data-xmodal-content^="#"]')){
+                var content_id = $this.data('xmodal-content');
+                this_content = $(content_id).html() ;
+            }
+            else {
+                this_content = $this.data('xmodal-content') || null ;
+            }
+            var ok_label = $this.data('xmodal-ok') || 'OK' ;
+            var cancel_label ;
+            if ($this.data('xmodal-cancel') !== "false"){
+                cancel_label = $this.data('xmodal-cancel') ;
+            }
+            else {
+                cancel_label = false ;
+            }
 
-        $body = $('body');
-
-        // selector for what you're clicking to open the modal
-        $body.on('click','.buttons .display_xml',function(){
-
-            var this_box = 'display_xml' ;
-
-            xModalOpen({
-                kind:     'large',  // size - 'fixed','custom','large','med','small',
-                width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-                height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                scroll:   'yes', // does the content need to scroll? (yes/no)
-                box:      this_box,  // class or id selector for this modal box
-                title:    'Display XML', // text for modal title bar - if empty will be "Alert" - use space for blank title
-                content:   '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // body content of modal window
-                footer:    {
-                    show: 'yes',
-                    height: '' , // height in px - blank for default - 52px
-                    background: '#f0f0f0', // css for footer background
-                    border: '#e0e0e0', // css for footer border
-                    content: '' //<a href="#!" class="close default button">Close</a>' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+            var xModal_obj = {
+                id: this_id,
+                kind: this_kind,
+                width: this_width,
+                height: this_height,
+                scroll: this_scroll,
+                title: this_title,
+                content: this_content,
+                ok: {
+                    label: ok_label
                 },
-                // by default the buttons will go in the footer, this can be overridden by adding 'class="ok button"' and 'class="cancel button"' to the body content
-                ok:       'Thanks, Dude!', // text for submit button - if blank uses "OK"
-                cancel:   'Close' // text for cancel button - if blank uses "Cancel"
-            });
-
-            //LoadXML(id_of_container,xml_source);
-            LoadXML('modalXML','sample.xml');
-
-            xModalSubmit.this_box = function(){
-                // what to do when the thing is submitted
-                alert("You're welcome!");
-                xModalClose();
-            };
-
-            xModalCancel.this_box = function(){
-                //alert('Closing now!');
-                xModalClose();
-            };
-
-        });
-
-        // selector for what you're clicking to open another modal
-        $body.on('click','.buttons .hello',function(){
-
-            var this_box = 'hello' ;
-
-            xModalOpen({
-                kind: 'fixed',  // size - 'fixed','custom','large','med','small',
-                width: 400,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-                height: 200,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                box: this_box,  // class of this modal box
-                title: 'Hello!', // text for modal title bar
-                content: $('#hello_content').html(), // main body of modal window
-                footer: {
-                    show: 'yes'//,
-                    //content: '<a href="#!" class="close default button">Close</a>' // content for footer
-                    // not sure which one
-                    //show: 'no'// 'static' xModal has footer in HTML
+                cancel: {
+                    label: cancel_label
                 }
-            });
-
-            xModalSubmit = function(){
-                // what to do when the thing is submitted
-                alert('It was nice seeing you.');
-                // if you want the page to close, do so here:
-                xModalClose();
             };
 
-            xModalCancel = function(){
-                // if you want a special action on cancel
-                alert('See if I care!');
-                // if you want the page to close, do so here:
-                xModalClose();
-            };
+            //xModalOpen(xModal_obj);
 
+            xModal.default.width = 400;
+            xModal.default.title = 'Hello';
+            xModal.default.content = $('#new_content').html();
+            xModal.default.footer.buttons = false ;
+
+            xModalOpen(xModal.default);
+
+        }
+
+        var xmodal_id = "hello_there" ;
+
+        $('.xmodal_new').click(function(){
+            xModal.default.id = xmodal_id ;
+            //xModal.default.ok.action = null ;
+            do_xModal(this);
         });
 
-
-
-        $body.on('click','.buttons .loading',function(){
-            xModalOpen({kind:'loading'});
-            setTimeout(function(){
-                //alert("Closing now.");
-                xModalClose();
-            },5000);
+        $body.on('click','div.xmodal .button',function(){
+            var actions = {} ;
+            actions.button = this ;
+            actions.id = $(this).attr('id');
+            actions.ok = function(){alert('Doing this.')};
+            actions.cancel = function(){alert('NOT doing this.')};
+            xModalActions(actions);
         });
 
+        var xobj = {};
 
+        function xModalx2(_id){
 
+            if (xobj.ok && xobj.ok.action){
+                xobj.ok.action = null ;
+            }
+            if (xobj.cancel && xobj.cancel.action){
+                xobj.cancel.action = null ;
+            }
 
-        var modal_iframe = '<iframe src="xModal_iframe.html"></iframe>';
-
-        $('.buttons .iframe').click(function(){
-
-            xModalOpen({
-                kind: 'large',  // size - 'fixed','custom','large','med','small',
-                width: '',  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-                height: '',  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-                scroll: 'no',
-                box: 'iframe',  // class of this modal box
-                title: 'iframe test', // text for modal title bar
-                content: modal_iframe, // main body of modal window
-                footer: {
-                    show: 'yes',
-                    //content: '<a href="#!" class="close default button">Close</a>', // content for footer
-                    height: '',
-                    background: '#f0f0f0',
-                    border: '#e0e0e0'
+            xobj = {
+                id: _id,  // REQUIRED - id to give to new xModal 'window'
+                kind: 'large',  // REQUIRED - options: 'dialog','fixed','large','med','small','custom'
+                width: 500, // width in px - used for 'fixed','custom','static'
+                height: 300, // width in px - used for 'fixed','custom','static'
+                scroll: true, // true/false - does content need to scroll?
+                title: 'Information', // text for title bar
+                content: 'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' to put existing content in a modal (use for forms)
+//    footer: { // if omitted, defaults to true w/buttons below
+//        buttons: true,  // true (or omitted) renders buttons as defined below, false renders no buttons - must be in content
+//        content: 'Put content for custom footer here. (and buttons too)',
+//        height: 58, // desired height in px (probably only necessary for footer with custom content (optional - default if omitted)
+//        border: '#808080', // css color for top border of footer (optional - default if omitted)
+//        background: '#d0d0d0' // css color for footer background (optional - default if omitted)
+//    },
+                ok: { // REQUIRED if 'footer' param is omitted - if 'footer.buttons: true' - must have at least one button
+                    label: 'Fine', // text to appear on 'ok' button
+                    action: function(){
+                        alert('You clicked the "OK" button.');
+                        //doSomethingCool(); // if custom function is needed on 'ok'
+                        //xModalClose('#'+_id+'_xmodal');  // if you want the modal to close on 'ok'
+                        xModalClose();  // if you want the modal to close on 'ok'
+                    }
+                },
+                cancel: {  // pass this if you want a 'cancel' button - if omitted, no 'cancel' button will render
+                    label: 'Nevermind', // text to appear on 'cancel' button
+                    action: function(){
+                        alert('You clicked the "Cancel" button.');
+                        //doSomethingOnCancel();
+                        xModalClose('#'+_id+'_xmodal');
+                    }
                 }
-            });
-
-            xModalSubmit = function(){
-                // what to do when the thing is submitted - leave blank if no 'submit' action
-                xModalClose();
             };
 
-            xModalCancel = function(){
-                // what to do when the thing is cancelled - leave blank if no custom 'cancel' action
-                xModalClose();
-            };
+            //xobj.ok.action = null ;
+            //xobj.cancel.action = null ;
 
+        }
 
+        xModal2 = xModalOpen ;
+
+        $('#xModal2').click(function(){
+            var xModal_id = $(this).attr('data-xmodal-id');
+//            if (xModal2.id === xModal_id){
+//                eval("'new'+xModal_id = false") ;
+//            }
+            // set values for this message windo
+            xModal2.id = xModal_id ;
+            xModal2.title = 'Information' ;
+            xModal2.content = 'This is where the content goes. So put it here and get on with things' ;
+            // do the xModal shuffle
+            if (xModal2.ok.set !== true ){
+                xModal2.ok.action = function(){alert('Sheesh.');xModalClose();xModal2.ok.set = true};
+            }
+            xModal(xModal2);
         });
+//        $body.on('click','#'+xModal2.id+' .ok.button',function(){
+//            xModal2.ok.action = function(){alert('Sheesh.');xModalClose()};
+//            xModal2.ok.action();
+//        });
+
+
+
+
+
+
+
+        var static_obj = {
+                id: '',  // REQUIRED - id to give to new xModal 'window'
+                //kind: 'large',  // REQUIRED - options: 'dialog','fixed','large','med','small','xsmall','custom'
+                //width: 400, // width in px - used for 'fixed','custom','static'
+                //height: 600, // width in px - used for 'fixed','custom','static'
+                //scroll: true, // true/false - does content need to scroll?
+                //title: 'Static Content', // text for title bar
+                content: 'static'//, // use 'static' to put existing content in a modal (use for forms)
+//                footer: { // if omitted, defaults to true w/buttons below
+//                    buttons: true,  // true (or omitted) renders buttons as defined below, false renders no buttons - must be in content
+//                    content: ' ', //'Put content for custom footer here. (and buttons too)',
+//                    height: 'default', // 52px // desired height in px (probably only necessary for footer with custom content (optional - default if omitted)
+//                    border: 'default', // #808080 // css color for top border of footer (optional - default if omitted)
+//                    background: 'default' // #d0d0d0 // css color for footer background (optional - default if omitted)
+//                },
+//                ok: { // REQUIRED if 'footer' param is omitted - if 'footer.buttons: true' - must have at least one button
+//                    label: 'OK', // text to appear on 'ok' button
+//                    action: function(){
+//                        alert('You clicked the static "OK" button.');
+//                        //doSomethingCool(); // if custom function is needed on 'ok'
+//                        //xModalClose('#'+static_obj.id);  // if you want the modal to close on 'ok'
+//                    }
+//                }//,
+//                cancel: {  // pass this if you want a 'cancel' button - if omitted, no 'cancel' button will render
+//                    label: 'Cancel', // text to appear on 'cancel' button
+//                    action: function(){
+//                        alert('You clicked the "Cancel" button.');
+//                        //doSomethingOnCancel();
+//                        xModalClose();
+//                    }
+//                }
+            };
+
+        //var xModalx2b = xModal(x2b_obj);
+
+        var static_obj2 = {} ;
+        static_obj2.prev = "#hello_content" ;
+        static_obj2.id = "something_new";
+        static_obj2.kind = 'small';
+        static_obj2.content = 'Blah blah blah blah blah.';
+        //static_obj2.ok.close = false ;
+
+
+        $('#xModal2b').click(function(){
+            static_obj.id = 'hello_content' ;
+            static_obj.width = 600 ;
+            //xModal(static_obj);
+            static_obj.ok = {} ;
+            static_obj.ok.label = 'Do it.';
+            static_obj.ok.action = function(){
+                alert('Action!');
+                xModal(static_obj2);
+                //XModal2b2();
+                //static_obj = {} ;
+            };
+            static_obj.ok.close = false ;
+            xModal(static_obj);
+            //XModal2b1();
+        });
+//        $body.on('click','#hello_content'+'_xmodal .ok.button',function(){
+////            static_obj.ok.action = function(){alert('Blah.')};
+////            static_obj.ok.action();
+////            //xModalOk(static_obj.id,function(){
+////                alert("FUCK ME!");
+////                xModalClose('#'+static_obj.id);
+////            //});
+//            var static_obj2 = {} ;
+//            static_obj2.prev = "#hello_content" ;
+//            static_obj2.id = "something_new";
+//            static_obj2.kind = 'small';
+//            static_obj2.content = 'Blah blah blah blah blah.';
+//            xModal(static_obj2);
+//        });
+//        $body.on('click',"#something_new"+'_xmodal .ok.button',function(){
+//            static_obj.ok.action = function(){alert('Junk');xModalClose("#something_new_xmodal")};
+//            static_obj.ok.action();
+//            static_obj.id = "hello_content" ;
+//        });
+//        $body.on('click','#something_new_xmodal .cancel.button', function(){
+//            static_obj.cancel.action = function(){xModalClose('#something_new_xmodal')};
+//            static_obj.cancel.action();
+//        });
 
 
 
 
     });
+
+
+
+
+</script>
+
+
+
+
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        $('#alert_test').click(function(){
+//            alert('Alert test!');
+//        });
+
+    /*
+    function doFunctionByName(functionName, context , args) {
+        args = Array.prototype.slice.call(arguments).splice(2);
+        var namespaces = functionName.split(".");
+        var func = namespaces.pop();
+        for(var i = 0; i < namespaces.length; i++) {
+            context = context[namespaces[i]];
+        }
+        return context[func].apply(this, args);
+    }
+    */
+
+    $body = $('body');
+
+//    var xmodal_count = 0 ;
+//    $('.xmodal_open').each(function(){
+//        if (!$(this).attr('id')){
+//            xmodal_count++ ;
+//            $(this).attr('id','open_xmodal'+xmodal_count);
+//            //alert('xmodal');
+//        }
+//    });
+//
+//    var xModalSucks = {};
+
+
+    // create an object with the params we want to use - name must match "id" attribute of the thing that opens it.
+//    function display_xml() {
+//        xModalOpen2({
+//            id: 'display_xml',
+//            kind: 'large',
+//            scroll: true,
+//            title: 'Display XML',
+//            content: '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // body content of modal window
+//            onOpen: function(){ LoadXML('modalXML','sample.xml'); alert("I'm open."); }, // function (if any) to run after opening modal - possibly useful for dynamic content
+//            ok: {
+//                label: 'Thanks', // text for submit button - if blank uses "OK"
+//                class: 'ok default', // class for ok button (determines behavior and appearance)
+//                action: function() {
+//                    alert('Thank You. Have a nice day.');
+//                    xModalClose('top'); // jQuery selector for xModal box to close or 'top' for the one on top
+//                }
+//            },
+//            cancel: {
+//                label: 'Close', // text for cancel button - if blank uses "Cancel"
+//                class: 'cancel',
+//                action: function(){ xModalCloseTop(); }
+//            }
+//        });
+//        //LoadXML('modalXML','sample.xml');
+//    }
+
+    //$body.on('click','.xmodal_open',function(){
+    //    var this_id = $(this).attr('id').toString();
+    //    alert(this_id);
+    //    var thisModal = function(){window[this_id](this)};
+    //    thisModal();
+    //});
+
+
+
+    //function xModalActions(){
+//            $body.on('click','.xmodal_open',function(){
+//                alert ($(this).attr('id'));
+//            });
+    //}
+
+
+    // selector for what you're clicking to open the modal
+//        $body.on('click','.buttons .display_xml',function(){
+//
+//            var this_box = 'display_xml' ;
+//
+//            xModalOpen2({
+//                kind:     'large',  // size - 'fixed','custom','large','med','small',
+//                //width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+//                //height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+//                scroll:   'yes', // does the content need to scroll? (yes/no)
+//                box:      this_box,  // class or id selector for this modal box
+//                title:    'Display XML', // text for modal title bar - if empty will be "Alert" - use space for blank title
+//                content:   '<div id="modalXML" style="font-family:Courier,monospace;font-size:13px;"></div>', // body content of modal window
+//                theme: 'gray',
+////                footer:    {
+////                    show: true,
+////
+////                    //height: '' , // height in px - blank for default - 52px
+////                    background: '#f0f0f0', // footer background color
+////                    border: '#e0e0e0'//, // for footer border color
+////                    //content: '' //<a href="#!" class="close default button">Close</a>' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+////                },
+//                // by default the buttons will go in the footer, this can be overridden by adding 'class="ok button"' and 'class="cancel button"' to the body content
+//                ok:       'Thanks', // text for submit button - if blank uses "OK"
+//                cancel:   'Close' // text for cancel button - if blank uses "Cancel"
+//            });
+//
+//            // use LoadXML function to put the styled XML into the "#modalXML" div just created in the xModalOpen() function above
+//            //LoadXML(id_of_container,xml_source);
+//            LoadXML('modalXML','sample.xml');
+//
+//            // redefining xModalSubmit() globally only works if there's one modal at a time
+//            xModalSubmit = function(){
+//                // what to do when the thing is submitted
+//                alert("You're welcome!");
+//                xModalClose();
+//            };
+//
+//            xModalCancel = function(){
+//                //alert('Closing now!');
+//                xModalClose();
+//            };
+//
+//        });
+
+//    function xModalStacker(box){
+//        xModalOpen2({
+//            id: 'stacker',
+//            kind: 'dialog',
+//            mode: 'stack', // mode options: 'stack', 'replace'
+//            box: 'stacker',
+//            content: 'Stacked xModal test.',
+//            footer: {
+//                buttons: {
+//                }
+//            },
+//            ok: {
+//                class:'ok default',
+//                label:'Alright',
+//                action:
+//                    xModalOk('stacker',function(){
+//                        //alert('WTF?');
+//                        //xModalClose($('#hello-xmodal').closest('div.xmodal'));
+//                        alert('Doing it.');
+//                        xModalClose($('#stacker'));
+//                    })
+//            }
+//        })
+//    }
+
+    // selector for what you're clicking to open another modal
+//    $body.on('click','.buttons .hello',function(){
+//
+//        var this_box = 'hello' ;
+//
+//        xModalOpen2 ({
+//            id: 'hello',
+//            kind: 'fixed',  // size - 'fixed','custom','large','med','small',
+//            width: 400,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+//            height: 200,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+//            box: this_box,  // id we're giving this modal box
+//            title: 'Hello!', // text for modal title bar
+//            content: $('#hello_content').html(), // main body of modal window
+//            footer: {
+//                //class: 'white', // no 'class' param leaves footer light gray - define your own style in css with this class: div.xmodal .box .footer.class { background: #fff ; border-top-color: #fff ; }
+//                //content: 'Blah', // make your own footer - or leave empty string '' for no footer at all
+//                buttons: {
+//
+//                }
+//                //show: 'yes'//,
+//                //content: '<a href="#!" class="close default button">Close</a>' // content for footer
+//                // not sure which one
+//                //show: 'no'// 'static' xModal has footer in HTML
+//            },
+//            ok: {
+//                class: 'ok default', // 'ok' makes this do the action, 'close' makes the modal close, 'default' allows use of enter key to do action
+//                label: 'Do it!',
+//                action: //function() {
+//                    xModalOk(this_box,function(){
+//                        xModalStacker(this_box);
+//                    })
+//                //alert('Alright already!');
+//                //}
+//            },
+//            cancel: {
+//                class: 'cancel', // 'ok' makes this do the action, 'close' makes the modal close, 'default' allows use of enter key to do action
+//                label: "Don't Do it!",
+//                action: function() {
+//                    alert('Bite me!');
+//                    xModalClose($('#hello-xmodal').closest('div.xmodal'));
+//                }
+//            }
+//        });
+//
+////            xModalSubmit = function(){
+////                // what to do when the thing is submitted
+////                alert('It was nice seeing you.');
+////                // if you want the page to close, do so here:
+////                xModalClose();
+////            };
+////
+////            xModalCancel = function(){
+////                // if you want a special action on cancel
+////                alert('See if I care!');
+////                // if you want the page to close, do so here:
+////                xModalClose();
+////            };
+//
+//    });
+
+
+
+//    $body.on('click','.buttons .loading',function(){
+//        xModalOpen({kind:'loading'});
+//        setTimeout(function(){
+//            //alert("Closing now.");
+//            xModalClose();
+//        },5000);
+//    });
+
+
+
+
+//    var modal_iframe = '<iframe src="xModal_iframe.html"></iframe>';
+//
+//    $('.buttons .iframe').click(function(){
+//
+//        xModalOpen({
+//            kind: 'large',  // size - 'fixed','custom','large','med','small',
+//            width: '',  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+//            height: '',  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+//            scroll: 'no',
+//            box: 'iframe',  // class of this modal box
+//            title: 'iframe test', // text for modal title bar
+//            content: modal_iframe, // main body of modal window
+//            footer: {
+//                show: 'yes',
+//                //content: '<a href="#!" class="close default button">Close</a>', // content for footer
+//                height: '',
+//                background: '#f0f0f0',
+//                border: '#e0e0e0'
+//            }
+//        });
+//
+//        xModalSubmit = function(){
+//            // what to do when the thing is submitted - leave blank if no 'submit' action
+//            xModalClose();
+//        };
+//
+//        xModalCancel = function(){
+//            // what to do when the thing is cancelled - leave blank if no custom 'cancel' action
+//            xModalClose();
+//        };
+//
+//
+//    });
+
+});
 
 
 </script>

@@ -1,25 +1,43 @@
 
-$.fn.extend({
-    hasClasses: function(selectors) {
-        var self = this;
-        for (var i in selectors) {
-            if ($(self).hasClass(selectors[i])) {
-                return true;
-            }
-        }
-        return false;
+// debug/log function - so IE doesn't freakout on console.debug
+function debugMe(info){
+    if (console.debug){
+        console.debug('debug: '+info);
     }
-});
+    console.log('log: '+info);
+}
+
+// Not part of xModal, but needed to find stuff.
+// This would normally already be defined before xModal.js is called.
+// Modify as needed to reflect path of "scripts" directory, from site root (no trailing slash).
+var serverRoot, scripts_dir ;
+if (!scripts_dir){
+    scripts_dir = serverRoot+'/scripts' ;
+    debugMe('"scripts_dir" is now defined');
+}
+else {
+    debugMe('"scripts_dir" was already defined');
+}
+
 
 /*
-    Javascript for xModal
-*/
+ Javascript for xModal
+ */
 
-//alert('xModal!');
+// Global vars we're going to use
+var
+    $html,
+    $body,
+    xmodal_count = 0
+    ;
+
+// init xModal object
+var xModal = {} ;
+
 
 /* *********************************
-    xModal Usage
-********************************** */
+ xModal Usage
+ ********************************** */
 
 // reference the xModal.html file in this folder for examples
 
@@ -27,437 +45,459 @@ $.fn.extend({
 
 // call the "xModalOpen" function passing in the parameters below
 // use the 'on' method to work with dynamic elements
-//
-//$('body').on('event','#selector',function(){
-//    xModalOpen({
-//        kind:     'fixed',  // kind - 'dialog','loading','fixed','large','med','small','custom'
-//        width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
-//        height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
-//        scroll:   'yes', // does the content need to scroll? (yes/no)
-//        box:      'confirm',  // class name of this modal box
-//        title:    'Confirm Download', // text for modal title bar - if empty will be "Alert" - use space for blank title
-//        content:   '(put the content here)', // body content of modal window - pull from existing or dynamic element $('#source').html();
-//        footer:    {
-//            show: 'yes', // self-explanatory, right? anything but 'yes' will hide the footer
-//            height: '' , // height in px - blank for default - 52px
-//            background: '', // css for footer background - white if blank
-//            border: '', // color for footer top border - white if blank
-//            content: '' // empty string renders default footer with two buttons (ok/cancel) using values specified below
-//        },
-//        // by default the buttons will go in the footer, this can be overridden by adding elements with 'class="ok default button"' and 'class="cancel button"' to the body content
-//        ok:       'OK', // text for submit button - if blank uses "OK"
-//        cancel:   'Cancel' // text for cancel button - if blank uses "Cancel"
-//    });
-//    xModalSubmit = function(){
-//        // doSomething();
-//    };
-//    xModalCancel = function(){
-//        // if you want to do something else if someone cancels, put it here
-//        // it's ok if this is blank -
-//        xModalClose();
-//    };
-//});
-//
 
-var
-    $html,
-    $body,
-    $modal,
-    //$this_box,
-    box,
-    window_width,
-    window_height,
-    x_kind,
-    x_title,
-    x_content,
-    box_width,
-    box_height,
-    h_margin,
-    v_margin,
-    top_margin,
-    x_ok,
-    x_cancel,
-    x_close
-    ;
+// define your modal here
+xModal.default = {
+    //id: 'xmodal'+xmodal_count,  // REQUIRED - id to give to new xModal 'window'
+    kind: 'fixed',  // REQUIRED - options: 'dialog','fixed','large','med','small','custom'
+    width: 500, // width in px - used for 'fixed','custom','static'
+    height: 300, // width in px - used for 'fixed','custom','static'
+    scroll: true, // true/false - does content need to scroll?
+    title: 'Message', // text for title bar
+    content: ' ', //'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' to put existing content in a modal (use for forms)
+    footer: { // if omitted, defaults to true w/buttons below
+        buttons: true,  // true (or omitted) renders buttons as defined below, false renders no buttons - must be in content
+        content: '', //'Put content for custom footer here. (and buttons too)',
+        height: 52, // desired height in px (probably only necessary for footer with custom content (optional - default if omitted)
+        border: '#e0e0e0', // css color for top border of footer (optional - default if omitted)
+        background: '#f0f0f0' // css color for footer background (optional - default if omitted)
+    },
+    ok: { // REQUIRED if 'footer' param is omitted - if 'footer.buttons: true' - must have at least one button
+        label: 'OK', // text to appear on 'ok' button
+        action: function(){
+            //alert('You clicked the "OK" button.');
+            //doSomethingCool(); // if custom function is needed on 'ok'
+            xModalClose(xModal.default.id);  // if you want the modal to close on 'ok'
+        }
+    },
+    cancel: {  // pass this if you want a 'cancel' button - if omitted, no 'cancel' button will render
+        label: 'Cancel', // text to appear on 'cancel' button
+        action: function(){
+            //doSomethingOnCancel();
+            xModalClose(xModal.default.id);  // if you want the modal to close on 'cancel'
+        }
+    }
+};
+
+// 'Preset' for generic 'Message' modal
+xModal.message = {
+    //id: 'xmodal'+(xmodal_count++),  // REQUIRED - id to give to new xModal 'window'
+    kind: 'fixed',  // REQUIRED - options: 'dialog','fixed','large','med','small','xsmall','custom'
+    width: 420, // width in px - used for 'fixed','custom','static'
+    height: 240, // width in px - used for 'fixed','custom','static'
+    scroll: true, // true/false - does content need to scroll?
+    title: 'Message', // text for title bar
+    content: ' ', // content for xModal body - use 'static' to put existing content in a modal (use for forms)
+    // uses default footer
+    footer : {
+        render: true
+    },
+    ok: { // REQUIRED if 'footer' param is omitted - if 'footer.buttons: true' - must have at least one button
+        label: 'OK', // text to appear on 'ok' button
+        action: function(){
+            var this_modal = xModal.message.id ;
+            debugMe(this_modal);
+            // define 'OK' function when calling xModal
+            // don't forget xModalClose() if you want to close your modal
+        },
+        close: true // does pressing 'OK' cause this modal to close? defalts to 'true'
+    }
+    // no 'Cancel' button by default
+    // if you want a 'Cancel' button,
+    // define it in the function call
+};
+
+// 'Preset' for generic fixed-size modal
+xModal.fixed = {
+    //id: 'message'+xmodal_count++,  // REQUIRED - id to give to new xModal 'window'
+    kind: 'fixed',  // REQUIRED - options: 'dialog','fixed','large','med','small','xsmall','custom'
+    width: 500, // width in px - used for 'fixed','custom','static'
+    height: 300, // width in px - used for 'fixed','custom','static'
+    scroll: true, // true/false - does content need to scroll?
+    title: 'Information', // text for title bar
+    content: ' ', // content for xModal body - use 'static' to put existing content in a modal (use for forms)
+    // uses default footer
+    ok: { // REQUIRED if 'footer' param is omitted - if 'footer.buttons: true' - must have at least one button
+        label: 'OK', // text to appear on 'ok' button
+        action: function(){
+            // define 'ok' function when calling xModal
+        },
+        close: true // (optional) does pressing 'OK' cause this modal to close? defalts to 'true' if omitted,
+    },
+    cancel: {  // pass this if you want a 'cancel' button - if omitted, no 'cancel' button will render
+        label: 'Cancel', // text to appear on 'cancel' button
+        action: function(){
+            // define 'cancel' function when calling xModal
+        },
+        close: true // (optional) we usually want the 'Cancel' button to close - defalts to 'true' if omitted,
+    }
+};
 
 
-function xModalSizes(kind,width,height,$this_box){
+// make sure jQuery and the DOM have loaded
+$(function(){
 
-    window_width = $(window).width();
-    window_height = $(window).height();
+    $html = $('html');
+    $body = $('body');
+    $body.addClass('xmodal');
+
+    // make sure the xModal.css is loaded
+    if (!($('link[href*="xModal.css"]').length)){
+        $('head').append('<link type="text/css" rel="stylesheet" href="'+ scripts_dir + '/xModal/xModal.css">');
+        debugMe('xModal.css has been added.');
+    }
+    else {
+        debugMe('xModal.css was already there.');
+    }
+
+});
+
+
+
+function xModalSizes($this_modal,width,height){
 
     var
-        //$this_box = box,
-        box_width,
-        box_height,
+        window_width  = $(window).width(),
+        window_height = $(window).height()//,
+        ;
+
+    var
+        this_width,
+        this_height,
         h_margin,
         v_margin,
         top_margin
         ;
 
-// fixed size for kind = 'dialog'
-    if (kind === 'dialog'){
-        box_width = 400 ;
-        box_height = 200 ;
+    if ($this_modal.hasClass('dialog')){
+        this_width = 420 ;
+        this_height = 240 ;
     }
     // fixed size for kind = 'loading'
-    else if (kind === 'loading'){
-        box_width = 260 ;
-        box_height = 100 ;
+    else if ($this_modal.hasClass('loading')){
+        this_width = 260 ;
+        this_height = 100 ;
     }
     // if kind = 'fixed' use the numbers for width and height
-    else if (kind === 'fixed'){
-        box_width = width ;
-        box_height = height ;
+    else if ($this_modal.hasClass('fixed')){
+        this_width = width ;
+        this_height = height ;
     }
     // otherwise ignore those numbers and set window size dynamically
     else {
 
-        if (kind === 'custom'){
+        if ($this_modal.hasClass('custom')){
             h_margin = width ;
-            v_margin = height;
+            v_margin = height ;
         }
-        if (kind === 'large'){
+        if ($this_modal.hasClass('large')){
             h_margin = 100 ;
             v_margin = 100 ;
         }
-        if (kind === 'med'){
+        if ($this_modal.hasClass('med')){
             h_margin = 200 ;
             v_margin = 200 ;
         }
-        if (kind === 'small'){
-            h_margin = 300 ;
+        if ($this_modal.hasClass('small')){
+            h_margin = 500 ;
             v_margin = 300 ;
+        }
+        if ($this_modal.hasClass('xsmall')){
+            h_margin = 600 ;
+            v_margin = 400 ;
         }
 
         if (v_margin <= 0){
             v_margin = 0 ;
         }
 
-        box_width = parseInt(window_width - (h_margin * 2));
-        box_height = parseInt(window_height - (v_margin * 2));
+        this_width = parseInt(window_width - (h_margin * 2));
+        this_height = parseInt(window_height - (v_margin * 2));
 
         // keep width at least 800px
-        if (box_width <= 800) {
-            box_width = 800 ;
+        // (only for large, med, small, xsmall)
+        if (this_width <= 800) {
+            this_width = 800 ;
         }
         // width no larger than 1200px
-        if (box_width >= 1200){
-            box_width = 1200 ;
+        if (this_width >= 1200){
+            this_width = 1200 ;
         }
 
         // keep height at least 500px
-        if (box_height <= 500){
-            box_height = 500 ;
+        if (this_height <= 500){
+            this_height = 500 ;
         }
 
     }
 
     var
-        //body_height = $this_box.find('.body').height() ,
-        title_height = $this_box.find('.title').height() ,
-        footer_height = $this_box.find('.footer').height()
+        title_height  = $this_modal.find('.title').height() ,
+        footer_height = $this_modal.find('.footer').height()
         ;
 
-    top_margin = parseFloat((-box_height/1.25));
-
-//    if (top_margin < 100){
-//        top_margin = 100 ;
-//    }
-//
-    // doing my best to put the dialog in a good spot in the window
-    // a bit too tricky? just center the thing
-    /*
-    if ((box_height < 700)){
-        top_margin = parseFloat((-box_height/2)-(box_height*0.1));
+    if (this.kind === 'fixed'){
+        top_margin = parseFloat((-this_height/1.25));
     }
-    if ((box_height < 500) && (window_height > 900)){
-        top_margin = parseFloat((-box_height/2)-(box_height*0.2));
-    }
-    if ((box_height < 300) && (window_height > 900)){
-        top_margin = parseFloat((-box_height/2)-(box_height*0.6));
-    }
-    */
-
-    // another attempt
-    /*
-    //if (size === 'fixed'){
-        if (box_height < 800){
-            if (box_height < 600) {
-                top_margin = parseFloat((-box_height/2)-(box_height*0.5));
-            }
-            //top_margin = 200 ;
-            else {
-                top_margin = parseFloat((-box_height/2)-(box_height*0.3));
-            }
+    else if (this.kind === 'dialog'){
+        if (window_height < 1000){
+            top_margin = parseFloat((-this_height/1.15));
         }
         else {
-            top_margin = parseFloat((-box_height/2)-(box_height*0.2));
+            top_margin = parseFloat((-this_height/0.85));
         }
-    //}
-    */
+    }
+    else {
+        top_margin = parseFloat((-this_height/2));
+    }
 
-    $this_box.css({
-        width: box_width,
-        height: box_height,
-        //minHeight: '400px',
-        //minWidth: '600px',
-        marginLeft: parseFloat((-box_width/2)-2), // another 2 pixels to account for the border width
-        marginTop: top_margin
-        //marginLeft: -h_margin ,
-        //marginTop: -v_margin
+    if (this.kind === 'small'){
+        top_margin = top_margin-60;
+    }
+    if (this.kind === 'xsmall'){
+        top_margin = top_margin-80;
+    }
+
+
+    $this_modal.css({
+        width: this_width,
+        height: this_height,
+        marginLeft: parseFloat((-this_width/2)-3) ,
+        marginTop: parseInt(top_margin-3)
     });
 
-    $this_box.find('.body').css({
-        //width: box_width,
-        height: parseInt(box_height - title_height - footer_height)
+    $this_modal.find('.body').css({
+        height: parseInt(this_height - title_height - footer_height)
     });
 
     // if it's an iframe
-    if ($this_box.find('iframe').length){
-        $this_box.find('.body, .body .inner').css('padding',0);
-        $this_box.find('iframe').css({
+    if ($this_modal.find('iframe').length){
+        $this_modal.find('.body, .body .inner').css('padding',0);
+        $this_modal.find('iframe').css({
             width: '100%' ,
-            height: parseInt(box_height - title_height - footer_height),
+            height: parseInt(this_height - title_height - footer_height),
             border: 'none'
         });
     }
 }
 
-// set modal_count to 0 when script loads
-// will be incremented each time xModalOpen() is called
-var modal_count = 0 ;
-
-// this is the main function that draws the x_modal guy
-function xModalOpen(xModal){
-
-    modal_count++ ;
-    var this_modal = 'xmodal'+modal_count ;
-
-    //alert(this_modal);
-
-    $body.append(
-        '<div class="xmodal xmodal_mask">' +
-            //'<div class="box round"></div>' +
-        '</div>'
-    );
-
-    $body.addClass('open');
-
-    // setup modal title, contents, and buttons
-    // use values passed in or use defaults if empty string
-    x_title   = (xModal.title && xModal.title > '') ? xModal.title : 'Alert' ;
-    x_content = (xModal.content && xModal.content > '') ? xModal.content : '(no content)' ;
-    x_ok      = (xModal.ok && xModal.ok > '') ? xModal.ok : 'OK' ;
-    x_cancel  = (xModal.cancel && xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
-    x_close   = (xModal.close && xModal.close > '') ? xModal.close : 'Close' ;
 
 
-//    $body.css({
-//        top: -(document.documentElement.scrollTop)+'px'//,
-//        //position: 'fixed'
-//    });
 
-//    if ($(document).height() > $(window).height()) {
-        var scrollTop = ($html.scrollTop()) ? $html.scrollTop() : $body.scrollTop(); // Works for Chrome, Firefox, IE...
-        $html.css('top',-scrollTop).addClass('noscroll'); // css needs to go first to make Safari happy
-//    }
 
-    if (xModal.kind === 'loading'){
-        box = 'loading';
-    }
-    else {
-        box = xModal.box ;
-    }
 
-    if (xModal.content === 'static'){
-//        $modal = $('div#'+box+'_modal.xmodal.static');
-        $modal = $('div#'+box+'.xmodal.static');
-    }
-    else {
-        $modal = $('div.xmodal').last() ;
-        $modal.html('');
-        // make a new box
-        $modal.append('<div class="box round"></div>');
-        // tell me what it is
-    }
-
-    $this_box = $modal.find('.box');
-    $this_box.addClass(box);
-
-    // if there's no xModal with 'static' class,
-    // clear the contents and make a new box
-    if (!($modal.hasClass('static'))){
-
-        // set up the modal contents
-        //var x_title, x_content ;
-        if (xModal.kind === 'loading'){
-            x_title = 'Loading...' ;
-            x_content =
-            '<div style="margin-top:4px;text-align:center;">' +
-                //'loading...' +
-            '<img src="' + scripts_dir + '/xModal/images/loading_anim.gif" alt="loading...">' +
-            '</div>' ;
-        }
-//        else {
-//            x_title = (xModal.title > '') ? xModal.title : 'Alert' ;
-//            x_content = (xModal.content > '') ? xModal.content : '(no content)' ;
-//        }
-
-        // fill up the modal box
-        $this_box.append(
-            '<div class="title round"><span class="inner">' + x_title + '</span><a href="javascript:;" class="close cancel button"></a></div>' +
-            '<div class="body"><div class="inner"></div></div>'
-        );
-
-        $this_box.find('.body .inner').append(x_content);
-
-        // if there's a footer, put it in
-        if (xModal.footer && xModal.footer.show === 'yes'){
-            // if there's footer content, show it
-            if (xModal.footer.content && xModal.footer.content > ''){
-                $this_box.append('<div class="footer"><div class="inner">' + xModal.footer.content + '</div></div>');
-            }
-            // if no content is specified, show default buttons
-            else {
-                $this_box.append(
-                '<div class="footer"><div class="inner">' +
-                '<span class="buttons">'+
-                //'<a class="cancel button" href="javascript:;">' + x_cancel + '</a> ' +
-                //'<a class="ok default button" href="javascript:;">' + x_ok + '</a>' +
-                    //'<button type="submit" class="ok default button" value="ok"' +
-                    //' style="position:absolute;left:-9999;top:-9999;"' +
-                    //'>ok</button>' +
-                '</span>' +
-                '</div></div>'
-                );
-                if (xModal.cancel && xModal.cancel > ''){
-                    $this_box.find('span.buttons').append('<a class="cancel button" href="javascript:;">' + x_cancel + '</a>');
-                }
-                if (xModal.ok && xModal.ok > ''){
-                    $this_box.find('span.buttons').append('<a class="ok default button" href="javascript:;">' + x_ok + '</a>');
-                }
-            }
-            // set up the footer style
-            if (xModal.footer.height && xModal.footer.height > ''){
-                $modal.find('.footer').css({height: xModal.footer.height});
-            }
-            if (xModal.footer.background && xModal.footer.background > ''){
-                $modal.find('.footer').css({background: xModal.footer.background});
-            }
-            if (xModal.footer.border && xModal.footer.border > ''){
-                $modal.find('.footer').css({borderColor: xModal.footer.border});
-            }
-        }
-        // if 'footer' is not defined, just show buttons in the default footer
-        else {
-            //x_ok = (typeof xModal.ok !== 'undefined' && xModal.ok > '') ? xModal.ok : 'OK' ;
-            x_cancel = (xModal.cancel && xModal.cancel > '') ? xModal.cancel : 'Cancel' ;
-            $this_box.append(
-                '<div class="footer"><div class="inner">' +
-                    '<span class="buttons">'+
-                    '</span>' +
-                '</div></div>'
-            );
-            if (xModal.ok && xModal.ok > ''){
-                $this_box.find('.footer .buttons').append('<a class="ok default button" href="javascript:;">' + xModal.ok + '</a>')
-            }
-            else {
-                x_ok = 'OK'
-            }
-        }
-
-    }
-    // otherwise use the one with a 'static' class
-    else {
-        $this_box.find('.title .inner').text(x_title);
-        $this_box.find('.footer .buttons .cancel.button').text(x_cancel);
-        $this_box.find('.footer .buttons .ok.button').text(x_ok);
-    }
-
-    // scroll the body?
-    if (xModal.scroll === 'yes'){
-        $this_box.addClass('scroll');
-    }
-
-    x_kind = xModal.kind ;
-
-    // size the stuff
-    xModalSizes(xModal.kind, xModal.width, xModal.height, $this_box);
-
-    // if draggable:true then make it draggable by the title bar
-    if (xModal.draggable && xModal.draggable === true){
-        $this_box.drags({handle:$this_box.find('div.title')});
-    }
-
-    $this_box.show();
-    $modal.addClass('open').fadeIn(100);
-
-}
-
-function xModalClose() {
-    // closest the topmost modal
-    var $modal = $('div.xmodal').last();
-    $modal.fadeOut(100).removeClass('open');
-    if (!($modal.hasClass('static'))){
-        //$modal.html('');
-        $modal.detach();
-    }
-    var scrollTop = parseInt($html.css('top'));
-    $html.removeClass('noscroll');
-    $('html,body').scrollTop(-scrollTop);
-    $body.removeClass('open');
-}
-
-$(document).ready(function(){
+function xModalOpen(xx){
 
     $html = $('html');
     $body = $('body');
 
-    $body.addClass('xmodal');
+    xmodal_count++ ;
 
-    // make sure the xModal.css is loaded
-    if (!($('link[href*="xModal.css"]').length)){
-        $('head').append('<link type="text/css" rel="stylesheet" href="'+ serverRoot + '/scripts/xModal/xModal.css">');
+    this.id      = xx.id || 'xmodal'+xmodal_count ;
+    this.kind    = xx.kind || 'fixed' ;
+    this.width   = xx.width || false ;
+    this.height  = xx.height || false ;
+    this.scroll  = xx.scroll || true ;
+    this.title   = xx.title || 'Message' ;
+    this.content = xx.content || 'This message has no content.' ;
+
+    if (xx.footer){
+        this.footer = xx.footer || {} ;
+        if (this.footer.render && this.footer.render !== false) {
+            this.footer.render = true ;
+        }
+        else {
+            this.footer.render = true ;
+        }
+        this.footer.buttons = this.footer.buttons || true ;
+        this.footer.content = this.footer.content || false ;
+        this.footer.height = this.footer.height || 'default';
+        this.footer.border = this.footer.border || 'default';
+        this.footer.background = this.footer.background || 'default';
     }
 
-    // if no div.xmodal or if there's already a div.xmodal.static
-    // put a new empty xmodal div on the page
-//    var $xmodal_static = $('div.xmodal.static') ;
-//    if (!($('div.xmodal').length) || !($xmodal_static.length)){
-//        $body.append(
-//        '<div class="xmodal xmodal_mask">' +
-//            //'<div class="box round"></div>' +
-//        '</div>'
-//        );
-//    }
+    debugMe('blah');
 
-    // what happens when clicking a button (close, cancel, default)
-    $body.on('click','div.xmodal.open .button',function(){
+    this.ok = (xx.ok) ? xx.ok : {} ;
+    this.ok.label = (xx.ok.label) ? xx.ok.label : 'OK' ;
+    //this.ok.action = null ;
+    if (xx.ok.action){
+        this.ok.action = xx.ok.action ;
+    }
+    this.ok.close = (xx.ok.close) ? xx.ok.close : true ;
 
-        // there's no escape from loading!
-        if (!($('div.xmodal').last().find('.box').hasClass('loading'))){
+    if (xx.cancel){
+        this.cancel = xx.cancel || {} ;
+        this.cancel.label = (this.cancel.label && this.cancel.label !== false) ? this.cancel.label || 'Cancel' : this.cancel = false ;
+        this.cancel.action = this.cancel.action || function(){xModalClose()} ;
+        this.cancel.close = this.cancel.close || true ;
+    }
+    else {
+        this.cancel = false ;
+    }
 
-            if ($(this).hasClass('cancel')){
-                xModalCancel();
-            }
-            else if ($(this).hasClass('close')){
-                xModalClose();
-                // use xModalClose(); in xModalCancel() where xModalOpen() is called
-            }
-            else {
-                xModalSubmit();
-                // use xModalClose(); in xModalSubmit() where xModalOpen() is called
-            }
+    $body.addClass('open');
+
+
+    //$body.append('<div id="mask'+ xmodal_count +'" class="xmask"></div>');
+
+    if (this.kind === 'loading'){
+        this.id = 'loading'+xmodal_count ;
+    }
+
+    debugMe(this.id+', '+xmodal_count);
+
+    var
+        this_modal_id,
+        $this_modal,
+        $this_mask,
+        $this_content
+        ;
+
+    debugMe('this.content: '+this.content);
+
+    if (this.content === 'static'){
+        debugMe('static id: '+this.id);
+        $this_content = $('#' + this.id);
+        $this_content.wrap('<div id="mask'+xmodal_count+'" class="xmask" />');
+        $this_content.wrap('<div id="'+this.id+'_xmodal" class="xmodal static" />');
+        $this_content.wrap('<div class="body content" />');
+        $this_content.wrap('<div class="inner" />');
+        $this_content.show();
+
+        debugMe('this_content id: '+$this_content.find('.xmodal').attr('id'));
+
+        $this_mask  = $('#mask'+xmodal_count);
+        this_modal_id = '#'+this.id+'_xmodal';
+        $this_modal = $(this_modal_id);
+
+    }
+    else {
+        $body.append('' +
+            '<div id="mask'+xmodal_count+'" class="xmask">' +
+            '   <div id="'+this.id+'_xmodal" class="xmodal"></div>' +
+            '</div>' +
+            '');
+
+        $this_mask  = $('#mask'+xmodal_count);
+        this_modal_id = '#'+this.id+'_xmodal';
+        $this_modal = $(this_modal_id);
+
+        // set up the modal contents
+        //var x_title, x_content ;
+        if (this.kind === 'loading'){
+            this.title = 'Loading...' ;
+            this.content = '' +
+                '<div style="margin-top:4px;text-align:center;">' +
+                //'loading...' +
+                '   <img src="' + scripts_dir + '/xModal/images/loading_anim.gif" alt="loading...">' +
+                '</div>' ;
         }
-    });
+
+        // fill up the modal box
+        $this_modal.append(''+
+            //'<div class="title"><span class="inner">' + this.title + '</span><div class="close button"></div></div>' +
+            '<div class="body content"><div class="inner">' +
+            this.content +
+            '</div></div>' +
+            '');
+    }
+
+    // the title
+    $this_modal.prepend('' +
+        '<div class="title">' +
+        '   <span class="inner">' + this.title + '</span>' +
+        '   <div class="close button"></div>' +
+        '</div>' +
+        '');
+
+
+
+    // footer stuff
+    // set up classes for 'ok' and 'cancel' buttons
+    var ok_class = (this.ok.close === true) ? 'ok default close button' : 'ok default button' ;
+    var cancel_class = (this.cancel.close === true) ? 'cancel close button' : 'cancel button' ;
+
+    // if the footer isn't defined or if it's defined with buttons: true
+    if (this.footer.render === true){
+
+        // default buttons
+        $this_modal.append('' +
+            '<div class="footer"><div class="inner">' +
+            '   <span class="buttons">'+
+            '       <a class="'+ok_class+'" href="javascript:;">' + this.ok.label + '</a>' +
+            '   </span>' +
+            '</div></div>' +
+            '');
+    }
+
+    debugMe('cancel: '+this.cancel);
+
+    if (this.cancel !== false){
+        $this_modal.find('.footer .buttons').prepend('' +
+            '<a class="'+cancel_class+'" href="javascript:;">' + this.cancel.label + '</a> ' +
+            '');
+    }
+
+    if (this.footer && this.footer.content && this.footer.content !== false){
+        $this_modal.find('.footer > .inner').prepend('<span class="content">' + this.footer.content + '</span>');
+    }
+
+    // if there's a 'height' defined
+    if (this.footer && this.footer.height && this.footer.height !== 'default'){
+        $this_modal.find('.footer').css('height',this.footer.height);
+    }
+    // if there's a custom border color defined
+    if (this.footer && this.footer.border && this.footer.border !== 'default'){
+        $this_modal.find('.footer').css('border-color',this.footer.border);
+    }
+    // if there's a custom background color defined
+    if (this.footer && this.footer.background && this.footer.background !== 'default'){
+        $this_modal.find('.footer').css('background-color',this.footer.background);
+    }
+
+    // scroll the body?
+    if (this.scroll === true){
+        $this_modal.find('.body').addClass('scroll');
+    }
+
+    $('div.xmask').not($this_mask).removeClass('top');
+    $this_mask.css('z-index',parseInt(1000000000+xmodal_count)).addClass('open top').fadeIn(100);
+
+    $this_modal.addClass('open').fadeIn(100);
+    $this_modal.addClass(this.kind);
+
+    xModalSizes($this_modal, this.width, this.height);
+
+    // set up vars for 'ok' and 'cancel' buttons
+    this.ok_button = '#'+this_modal_id+' .ok.button' ;
+    this.cancel_button = '#'+this_modal_id+' .cancel.button' ;
+
+//    var the_xmodal = this ;
+//
+//    $body.on('click',this_modal_id+' .ok',function(){
+//        the_xmodal.ok.action();
+//        xx.ok.action = null ;
+//    });
+//
+//    $body.on('click',this_modal_id+' .cancel',function(){
+//        the_xmodal.cancel.action();
+//        xx.cancel.action = null ;
+//    });
+
+
+    var that = this ;
+
+
 
     // press 'esc' key to close
     $body.keydown(function(esc) {
         if (esc.keyCode === 27) {  // key 27 = 'esc'
-            if ($body.hasClasses(['xmodal open','nothing'])){
-                $('div.xmodal').last().find('.cancel.button').trigger('click');
-                //xModalCancel();
+            if ($body.hasClass('open')){
+                //$('div.xmodal').last().find('.cancel.button').trigger('click');
+                $this_modal.find('.close.button').trigger('click');
+                //$('div.xmask.top').find('.cancel.button').trigger('click');
+                //that.cancel.action();
                 //xModalClose();
             }
         }
@@ -467,36 +507,244 @@ $(document).ready(function(){
     $body.keydown(function(e) {
         var keyCode = (window.event) ? e.which : e.keyCode;
         if (keyCode === 13) {  // key 13 = 'enter'
-            if ($body.hasClasses(['xmodal open','nothing'])){
+            if ($body.hasClass('open')){
                 e.preventDefault();
-                $('div.xmodal').last().find('.default.button').trigger('click');
-                //xModalSubmit();
+                $('div.xmask.top').find('.default.button').trigger('click');
+                //that.ok.action();
                 //xModalClose();
             }
         }
     });
 
+}
+
+
+
+
+function xModalActions(action){
+
+    this.button = action.button ;
+    this.id = action.id ;
+    this.ok = action.ok ;
+    this.cancel = action.cancel ;
+
+    //$body.on('click','div.xmodal .button',function(){
+    var $clicked_button = $(this.button) ;
+    var $top_modal = $clicked_button.closest('div.xmodal');
+
+    // there's no escape from loading!
+    if (!($top_modal.hasClass('loading'))){
+
+        if ($clicked_button.hasClass('ok')){
+            // do something on OK?
+            if (action.ok){
+                this.ok();
+            }
+            //that.ok.action = null ;
+            //xx.ok.action();
+            if ($clicked_button.hasClass('close')){
+                xModalClose($top_modal);
+            }
+        }
+        else if ($clicked_button.hasClass('cancel')){
+            // do something when cancelling?
+            if (action.cancel){
+                this.cancel();
+            }
+            if ($clicked_button.hasClass('close')){
+                xModalClose($top_modal);
+            }
+        }
+        else if ($clicked_button.hasClass('close')){
+            xModalClose($top_modal);
+        }
+    }
+}
+
+
+
+
+
+function xModalOk(id,action){
+    $body.on('click','#'+id+' .ok.button',function(){
+        action();
+    });
+}
+
+
+
+
+
+
+$(function(){
+// default actions
+// just closes the thing
+// define custom 'ok' or 'cancel' actions
+// on page where invoking the xModalOpen();
+    $body.on('click','div.xmodal .button',function(){
+        var actions = {} ;
+        actions.button = this ;
+        actions.id = $(this).attr('id');
+        //actions.ok = function(){alert('Doing this.')};
+        //actions.cancel = function(){alert('NOT doing this.')};
+        xModalActions(actions);
+    });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+function xModalClose(_this) {
+    // closest the topmost modal
+    var $modal = _this ?  $(_this) : $(this).closest('div.xmodal');
+    var $mask = $modal.closest('div.xmask');
+    //var $modal = ((_$modal && _$modal > '') || (_$modal === 'top')) ? _$modal : $('div.xmask').last() ;
+    $modal.fadeOut(100).removeClass('open');
+    $mask.fadeOut(100).removeClass('open top');
+    if (!($modal.hasClass('static'))){
+        $mask.remove();
+    }
+    else {
+        debugMe("it's static");
+    }
+    if (!$('div.xmask.open').length){
+        $body.removeClass('open');
+    }
+//    if (!($('div.xmodal').length)){
+//        $modal.closest('div.xmask').fadeOut(100).removeClass('open');
+//    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function xModalCloseTop() {
+    // closest the topmost modal
+    var $modal = $('div.xmodal').last();
+    $modal.fadeOut(100).removeClass('open');
+    if (!($modal.hasClass('static'))){
+        $modal.html('');
+    }
+    $body.removeClass('open');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $(window).resize(function(){
-    if ($('body').hasClasses(['xmodal open','nothing'])){
-        var width, height ;
-        if (x_kind === 'dialog'){
-            width = 400 ;
-            height = 200 ;
-        }
-        else if (x_kind === 'loading'){
-            width = 260 ;
-            height = 100 ;
-        }
-        else if (x_kind === 'fixed'){
-            width = box_width ;
-            height = box_height ;
-        }
-        else {
-            width = h_margin ;
-            height = v_margin ;
-        }
-        xModalSizes(x_kind,width,height,$this_box);
+
+    if ($body.hasClass('open')){
+
+        var window_width = $(window).width();
+        var window_height = $(window).height();
+
+        $('div.xmodal').each(function(){
+
+            var width, height ;
+            var $this_modal = $(this);
+
+            if ($this_modal.hasClass('dialog') || $this_modal.hasClass('loading') || $this_modal.hasClass('fixed')) {
+                width = $this_modal.width();
+                height = $this_modal.height();
+            }
+            else {
+                width = parseInt((window_width - $this_modal.width())/2) ;
+                height = parseInt((window_height - $this_modal.height())/2) ;
+            }
+
+            xModalSizes($this_modal,width,height);
+
+        });
     }
 });
+

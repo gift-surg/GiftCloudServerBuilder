@@ -189,7 +189,8 @@ select[multiple] { max-width: 200px ; }
 #search_tabs { width: 100% }
 
 #search_tabs .xT_p,
-#search_tabs .xT_c { width: 100% !important ; max-width: 880px ; }
+#search_tabs .xT_c { /* width: 100% !important ; */ width: 1010px ; max-width: 1010px ; }
+#search_tabs .xT_c { min-height: 150px ; }
 
 /* login box */
 #login_box { width: 220px ; margin: 0 auto ; padding: 20px ; background: #f0f0f0 ; border-radius: 0 ; }
@@ -513,6 +514,8 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 div.extension { background-color: #FF9 ; }
 div.extension_js { background-color: #FF9 ; }
 
+.yui-navset .yui-nav { height: 28px ; overflow: hidden !important ; /* white-space: nowrap !important ; */ }
+.yui-navset .yui-nav li select { position: relative ; top: -2px ; left: -3px ; }
 #tab_module ul.yui-nav li { height: 28px ; overflow: hidden ; }
 #tab_module ul.yui-nav li.selected { height: 29px ; }
 #tab_module ul.yui-nav select { font-size: 11px !important ; font-weight: normal !important ; }

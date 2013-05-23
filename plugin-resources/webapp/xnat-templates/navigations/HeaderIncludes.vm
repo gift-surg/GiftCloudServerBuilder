@@ -120,6 +120,7 @@
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/event/event-min.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/justification/justification.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/utils.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/xModal/xModal.js")"></script>
 <script type="text/javascript">
     var YUIDOM=YAHOO.util.Dom;
     YAHOO.util.Event.onDOMReady(function(){
@@ -141,5 +142,8 @@
 <!-- xdat.css and xnat.css loaded last to override YUI styles -->
 <link rel="stylesheet" type="text/css" href="$content.getURI("style/xdat.css")">
 <link rel="stylesheet" type="text/css" href="$content.getURI("style/xnat.css")">
+
+<!-- just load the xModal css now -->
+<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/xModal/xModal.css")">
 
 #addGlobalCustomScreens("header")

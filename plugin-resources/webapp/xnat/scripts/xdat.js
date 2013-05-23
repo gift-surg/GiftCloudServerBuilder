@@ -793,22 +793,47 @@ function displayError(msg){
 
 var msgC=0;
 
-function showMessage(divId, title, body,options) {
-	if(options==undefined){
-		options=new Object();
-	}
-	if(options.width==undefined){
-		options.width="20em";
-	}
-	options.close=false;
-	options.fixedcenter=true;
-	options.constraintoviewport=true;
-	options.modal=true;
-	options.icon=YAHOO.widget.SimpleDialog.ICON_WARN;
-	options.visible=true;
-	options.draggable=false;
-	options.buttons= [{ text:'OK', isDefault:true, handler: function() { this.hide(); } }];
-    var dialog = new YAHOO.widget.SimpleDialog("dialog"+ msgC++, options);
+function showMessage(divId, title, body, options) {
+
+    // hijacking the showMessage function with xModal
+
+    if (divId && (divId > '' && divId !== 'page_body')){
+        xModal.message.id = divId ;
+    }
+//    else {
+//        xmodal_count++ ;
+//        xModal.message.id = 'xmodal'+xmodal_count ;
+//    }
+    xModal.message.title = title ;
+    xModal.message.content = body ;
+    if (options){
+        if (options.width){
+            xModal.message.width = options.width ;
+        }
+    }
+
+    xModalOpen(xModal.message);
+
+    /*
+    if (options == undefined) {
+        options = {};
+    }
+    if (options.width == undefined) {
+        options.width = "20em";
+    }
+    options.close = false;
+    options.fixedcenter = true;
+    options.constraintoviewport = true;
+    options.modal = true;
+    options.icon = YAHOO.widget.SimpleDialog.ICON_WARN;
+    options.visible = true;
+    options.draggable = false;
+    options.buttons = [
+        { text: 'OK', isDefault: true, handler: function () {
+            this.hide();
+        } }
+    ];
+    var dialog = new YAHOO.widget.SimpleDialog("dialog" + msgC++, options);
 
     dialog.render(document.getElementById(divId));
     dialog.setHeader(title);
@@ -816,7 +841,9 @@ function showMessage(divId, title, body,options) {
     dialog.bringToTop();
     dialog.show();
     return dialog;
+    */
 }
+
 
 
 function toggle_ul(n){

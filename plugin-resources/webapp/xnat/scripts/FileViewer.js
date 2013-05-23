@@ -241,6 +241,7 @@ function FileViewer(_obj){
    		var scan_counts=new Object();
    		var scan_resources=new Array();
    		
+   		//iterate over known categories
    		for(var catC=0;catC<this.obj.categories.ids.length;catC++)
    		{
    			var catName=this.obj.categories.ids[catC];
@@ -285,6 +286,18 @@ function FileViewer(_obj){
 					dest.innerHTML+=") ";
 				}
 				
+			}
+			
+			//iterate over misc catalogs
+			for(var scSC=0;scSC<this.obj.categories.misc.cats.length;scSC++){
+				var tempCat=this.obj.categories.misc.cats[scSC];
+				var dest=document.getElementById(tempCat.category + "_" + tempCat.label + "_stats");
+   				if(dest!=null && dest !=undefined){
+	   				dest.innerHTML="";
+					dest.innerHTML+=tempCat.file_count;
+					dest.innerHTML+=" files, ";
+					dest.innerHTML+=size_format(tempCat.file_size);
+   				}
 			}
    			
    			scans=null;

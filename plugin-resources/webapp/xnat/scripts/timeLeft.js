@@ -2,9 +2,9 @@
  * The SESSION_EXPIRATION_TIME cookie returned from the server is double quoted for some reason
  * so unquote it before parsing it out.
  */
-var patt = new RegExp("\"", "g");
+var pattern = new RegExp("\"", "g");
 function parseExpirationTimeTuple (tuple) {
-  var values = tuple.replace(patt,"").split(",");
+  var values = tuple.replace(pattern,"").split(",");
   var ret = {};
   if (values.length == 2) {
     ret.flag = values[0];
@@ -32,7 +32,7 @@ function parseExpirationTimeTuple (tuple) {
    * (2) If A times out the page which then redirects to the login page, when that login page is loaded the server 
    * updates the SESSION_EXPIRATION_TIME cookie to a new value even though the session has expired. This happens 
    * because the redirect to the login page counts as a request. At this point the SESSION_EXPIRATION_TIME is wrong 
-   * and if a user were to refresh tab B they would be redirected to the login page. 'sessionTimout' is used to 
+* and if a user were to refresh tab B they would be redirected to the login page. 'sessionTimeout' is used to
    * broadcast to all tabs and windows that the session has indeed expired and they should take some action.
    */  
 var synchronizingCookies = {
@@ -73,6 +73,21 @@ var synchronizingCookies = {
     get : function () {
       return synchronizingCookies.get(synchronizingCookies.sessionTimeout.name);
     } 
+  },
+  hasRedirected: {
+      name: "SESSION_LOGOUT_HAS_REDIRECTED",
+      set: function (context, status) {
+          YAHOO.util.Cookie.setSub(synchronizingCookies.hasRedirected.name, context, status, {path: '/'});
+      },
+      get: function (context) {
+          if (YAHOO.util.Cookie.exists(synchronizingCookies.hasRedirected.name)) {
+              return YAHOO.util.Cookie.getSub(synchronizingCookies.hasRedirected.name, context);
+          }
+          return null;
+      },
+      clear: function() {
+          YAHOO.util.Cookie.setSubs(synchronizingCookies.hasRedirected.name, {});
+      }
   }
 };
 
@@ -103,7 +118,7 @@ var locals = {
 };
 
 /**
- * Set the synchronizating cookies to their base state.
+ * Set the synchronizing cookies to their base state.
  * The starting state is:
  * 1. A fresh expiration time is set
  * 2. No pop-ups are being displayed on any tabs or windows
@@ -113,22 +128,20 @@ var locals = {
 function refreshSynchronizingCookies () {
   synchronizingCookies.dialogDisplay.set("false");
   synchronizingCookies.sessionTimeout.set("false");
-};
-
+  synchronizingCookies.hasRedirected.clear();
+}
 function disableButtons (dialog) {
   var buttons = dialog.getButtons();
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].set('disabled',true);
   }
-};
-
+}
 function enableButtons (dialog) {
   var buttons = dialog.getButtons();
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].set('disabled',false);
   }
-};
-
+}
 /**
  * If a user double-clicks a button in YUI's SimpleDialog 
  * the callback associated with that button is run twice.
@@ -139,13 +152,12 @@ function hideWarningDialog (dialog) {
     disableButtons(dialog);
     synchronizingCookies.dialogDisplay.set("false");
     dialog.hide();
-};
+}
 function showWarningDialog(dialog) {
     enableButtons(dialog);
     synchronizingCookies.dialogDisplay.set("true");
     dialog.show();
-};
-
+}
 /**
  * If the user wants to extend the session, hide the dialog and "touch" the server
  */
@@ -223,8 +235,7 @@ function initWarningDialog(dialog) {
     dialog.setBody("");
     dialog.bringToTop();
     dialog.hide();
-};
-
+}
 /**
  * Return the timestamp as hours, minutes and seconds. Used to update the session counter
  * and the warning dialog.
@@ -248,8 +259,7 @@ function parseTimestamp (time) {
     minutesPart : minutesPart,
     hoursPart : hoursPart
   };
-};
-
+}
 /**
  * See the comments for "locals" to see why this function necessary
  */
@@ -257,8 +267,7 @@ function checkIfFinalCycle () {
   if (locals.waitOneMoreCycle) {
     redirectToLogin();
   }
-};
-  
+}
 /**
  * Check if the global cookie's flag is different from what is stored locally.
  * If it is the user has extended the session from this or some other tab and 
@@ -294,9 +303,9 @@ function syncSessionExpirationCookieWithLocal () {
 function updateMessageOrHide (dialog) {
   if (synchronizingCookies.dialogDisplay.get() === "true" && locals.warningDisplayedOnce) {
     var timeLeft = locals.expirationTime.timeLeft;
-    dialog.setBody("Your XNAT session will expire in " + timeLeft.hoursPart + "h " 
-	           + zeroPad(timeLeft.minutesPart) + "mins " +
-		   + zeroPad(timeLeft.secondsPart) + 'secs .</br> Click "Renew" to reset session timer.');  
+    dialog.setBody("Your XNAT session will expire in " + timeLeft.hoursPart + "hours "
+	           + zeroPad(timeLeft.minutesPart) + " minutes " +
+		   + zeroPad(timeLeft.secondsPart) + ' seconds .</br> Click "Renew" to reset session timer.');
   }
   else if (synchronizingCookies.dialogDisplay.get() === "true" && !locals.warningDisplayedOnce) {
     locals.warningDisplayedOnce = true;
@@ -309,18 +318,25 @@ function updateMessageOrHide (dialog) {
   else if (synchronizingCookies.dialogDisplay.get() === "false" && !locals.warningDisplayedOnce) {
     hideWarningDialog(dialog);
   }
-};
-
+}
 /**
  * If the session has expired just refreshing the page should redirect to the login page.
  */
 function redirectToLogin () {
+    var windowName = window.name;
+    if (!windowName) {
+        windowName = "default";
+    }
+    var hasRedirected = synchronizingCookies.hasRedirected.get(windowName);
+    if (!hasRedirected) {
+        synchronizingCookies.hasRedirected.set(windowName, "true");
     YAHOO.util.Cookie.set('WARNING_BAR','OPEN',{path:'/'});
     YAHOO.util.Cookie.set('guest','true',{path:'/'});
     synchronizingCookies.sessionTimeout.set("true");
 	var currTime = (new Date()).getTime();
 	YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME',currTime,{path:'/'});
-    window.location.replace(serverRoot+'/app/action/LogoutUser');
+        window.location.reload();
+    }
 }
 
 /**

@@ -1,8 +1,5 @@
-##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-
-<!-- start -->
-<!-- xnat-templates/navigations/DefaultTop -->
-
+#* @vtlvariable name="timeLeft" type="java.lang.String" *#
+<!-- START: xnat-templates/navigations/DefaultTop.vm -->
 #if($popup)
 
 #else
@@ -148,7 +145,7 @@
         <span id="user_info">Logged in as: &nbsp;<a href="$link.setPage("XDATScreen_MyXNAT.vm")">$!data.getSession().getAttribute("user").getUsername()</a> <b>|</b><span class="tip_icon" style="margin-right:3px;left:2px;top:3px;">
             <span class="tip shadowed" style="top:20px;z-index:10000;white-space:normal;left:-150px;width:300px;background-color:#ffc;">Your XNAT session will auto-logout after a certain period of inactivity. You can reset that timer without reloading the page by clicking "renew."</span>
         </span>
-        Auto-logout in: <b id="timeLeft">0:15:00</b> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a id="logout_user" href="$link.setAction("LogoutUser")">Logout</a></span>
+        Auto-logout in: <b id="timeLeft"></b> - <a id="timeLeftRenew" href="javascript:;" onClick="handleOk();">renew</a> <b>|</b> <a id="logout_user" href="$link.setAction("LogoutUser")">Logout</a></span>
         <script type="text/javascript">
             jq.cookie('guest','false',{path:'/'});
         </script>
@@ -245,5 +242,6 @@ $navigation.setTemplate("XNATQuickSearch.vm")
 
 </script>
 
-
+<script src="$content.getURI("scripts/log4javascript.js")"></script>
 <script src="$content.getURI("scripts/timeLeft.js")"></script>
+<!-- END: xnat-templates/navigations/DefaultTop.vm -->

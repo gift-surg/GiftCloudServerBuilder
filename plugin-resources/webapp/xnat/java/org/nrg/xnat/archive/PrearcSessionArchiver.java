@@ -21,6 +21,7 @@ import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -45,6 +46,7 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
+import org.nrg.xnat.helpers.merge.MergeUtils;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
@@ -442,6 +444,28 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 					if(!StringUtils.equals(existing.getUid(), src.getUid())){
 						failed(UID_MOD);
 						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,UID_MOD, new Exception());
+					}
+				}
+			}
+			
+			for(final XnatImagescandataI newScan : src.getScans_scan()){
+				XnatImagescandataI match=MergeUtils.getMatchingScanById(newScan.getId(), existing.getScans_scan());//match by ID
+				if(match!=null){
+					if(StringUtils.equals(match.getUid(),newScan.getUid())){
+						if(!overwrite){
+							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same UID and number.", new Exception());
+						}
+					}else{
+						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID. - Operation not supported", new Exception());
+					}
+				}
+				
+				XnatImagescandataI match2=MergeUtils.getMatchingScanByUID(newScan, existing.getScans_scan());//match by UID
+				if(match2!=null){
+					if(match==null || !StringUtils.equals(match.getId(),newScan.getId())){
+						if(!allowDataDeletion){
+							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan with the same UID, but a different number (" + match2.getId() +").", new Exception());
+						}
 					}
 				}
 			}

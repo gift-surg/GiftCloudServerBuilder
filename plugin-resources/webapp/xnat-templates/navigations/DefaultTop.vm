@@ -242,6 +242,5 @@ $navigation.setTemplate("XNATQuickSearch.vm")
 
 </script>
 
-<script src="$content.getURI("scripts/log4javascript.js")"></script>
 <script src="$content.getURI("scripts/timeLeft.js")"></script>
 <!-- END: xnat-templates/navigations/DefaultTop.vm -->

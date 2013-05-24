@@ -91,8 +91,9 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
                                 append = true;
                                 break;
                             case AutoArchiveOverwrite:
-                                delete = true;
+                                delete = false;
                                 append = true;
+                                //theoretically we could also set overwrite_files to true here.  But, that is handled by the isOverwriteFiles method which allows for other methods of specifying the value
                                 break;
                             }
                         }

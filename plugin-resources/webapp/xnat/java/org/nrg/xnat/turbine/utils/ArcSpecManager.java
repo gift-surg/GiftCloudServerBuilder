@@ -193,9 +193,7 @@ public class ArcSpecManager {
                     String cachePath = arcSpec.getGlobalCachePath();
                     if (cachePath!=null){
                         File f = new File(cachePath,"archive_specification.xml");
-                        if (!f.getParentFile().mkdirs()) {
-                            throw new IOException("Failed to create nested folders for file: " + f.getAbsolutePath());
-                        }
+                        f.getParentFile().mkdirs();
                         FileWriter fw = new FileWriter(f);
 
                         arcSpec.toXML(fw, true);

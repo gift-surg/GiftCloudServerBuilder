@@ -13,7 +13,7 @@
         <property name="jobDataAsMap">
             <map>
                 <entry key="job.bean.name" value="sessionXmlRebuilderJob" />
-                <entry key="interval" value="5" />
+                <entry key="interval" value="${services.rebuilder.interval}" />
                 <entry key="user" value-ref="receivedFileUserProvider" />
             </map>
         </property>
@@ -23,7 +23,7 @@
         <property name="jobName" value="session-rebuilder-trigger" />
         <property name="jobGroup" value="prearchive-triggers"/>
         <property name="jobDetail" ref="sessionXmlRebuilderJobBean" />
-        <property name="repeatInterval" value="60000" />
+        <property name="repeatInterval" value="${services.rebuilder.repeat}" />
     </bean>
     
    	<bean name="disableInactiveUsersJob" class="org.nrg.xnat.security.DisableInactiveUsersJob" />

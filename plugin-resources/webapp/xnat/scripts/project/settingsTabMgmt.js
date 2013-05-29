@@ -217,7 +217,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             textareas[textareasCounter].disabled = value;
         }
     };
-d
+
     this.resetForm = function() {
         this.setFormDisabled(false);
         this.dirtyFlag = false;

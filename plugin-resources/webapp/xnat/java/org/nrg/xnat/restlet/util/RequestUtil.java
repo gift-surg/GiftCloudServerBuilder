@@ -24,39 +24,38 @@ public class RequestUtil {
 		return ServletCall.getRequest(request);
 	}
 
-	private static Map<MediaType,String> supported_upload_types=new Hashtable<MediaType,String>();
-	
-	static{
-		supported_upload_types.put(MediaType.TEXT_ALL, ".txt");
-		supported_upload_types.put(MediaType.APPLICATION_ALL,"");
-		supported_upload_types.put(SecureResource.TEXT_CSV, ".csv");
-		supported_upload_types.put(SecureResource.APPLICATION_DICOM, ".dcm");
-		supported_upload_types.put(MediaType.APPLICATION_ZIP,".zip");
-		supported_upload_types.put(SecureResource.APPLICATION_XAR,".xar");
-		supported_upload_types.put(MediaType.APPLICATION_GNU_TAR,".tar.gz");
-		supported_upload_types.put(MediaType.APPLICATION_GNU_ZIP,".gzip");
-		supported_upload_types.put(MediaType.APPLICATION_OCTET_STREAM,"");
-		supported_upload_types.put(MediaType.APPLICATION_PDF,".pdf");
-		supported_upload_types.put(MediaType.APPLICATION_EXCEL,".xls");
-		supported_upload_types.put(MediaType.APPLICATION_POWERPOINT,".ppt");
-		supported_upload_types.put(MediaType.APPLICATION_TAR,".tar");
-		supported_upload_types.put(MediaType.APPLICATION_WORD,".doc");
-		supported_upload_types.put(MediaType.IMAGE_ALL,".img");
-		supported_upload_types.put(MediaType.IMAGE_BMP,".bmp");
-		supported_upload_types.put(MediaType.IMAGE_GIF,".gif");
-		supported_upload_types.put(MediaType.IMAGE_ICON,".icon");
-		supported_upload_types.put(MediaType.IMAGE_JPEG,".jpeg");
-		supported_upload_types.put(MediaType.IMAGE_PNG,".png");
-		supported_upload_types.put(MediaType.IMAGE_SVG,".svg");
-		supported_upload_types.put(MediaType.IMAGE_TIFF,".tiff");
-		supported_upload_types.put(MediaType.TEXT_XML,".xml");
-		supported_upload_types.put(MediaType.VIDEO_ALL,".video");
-		supported_upload_types.put(MediaType.VIDEO_AVI,".avi");
-		supported_upload_types.put(MediaType.VIDEO_MP4,".mp4");
-		supported_upload_types.put(MediaType.VIDEO_MPEG,".mpg");
-		supported_upload_types.put(MediaType.VIDEO_QUICKTIME,".mov");
-		supported_upload_types.put(MediaType.VIDEO_WMV,".wmv");
-}
+	private static Map<MediaType, String> supported_upload_types = new Hashtable<MediaType, String>() {{
+		put(MediaType.TEXT_ALL, ".txt");
+		put(MediaType.APPLICATION_ALL,"");
+        put(MediaType.TEXT_PLAIN, ".txt");
+        put(MediaType.TEXT_XML,".xml");
+        put(SecureResource.TEXT_CSV, ".csv");
+        put(SecureResource.APPLICATION_DICOM, ".dcm");
+        put(MediaType.APPLICATION_ZIP,".zip");
+        put(SecureResource.APPLICATION_XAR,".xar");
+        put(MediaType.APPLICATION_GNU_TAR,".tar.gz");
+        put(MediaType.APPLICATION_GNU_ZIP,".gzip");
+        put(MediaType.APPLICATION_OCTET_STREAM,"");
+        put(MediaType.APPLICATION_PDF,".pdf");
+        put(MediaType.APPLICATION_EXCEL,".xls");
+        put(MediaType.APPLICATION_POWERPOINT,".ppt");
+        put(MediaType.APPLICATION_TAR,".tar");
+        put(MediaType.APPLICATION_WORD,".doc");
+        put(MediaType.IMAGE_ALL,".img");
+        put(MediaType.IMAGE_BMP,".bmp");
+        put(MediaType.IMAGE_GIF,".gif");
+        put(MediaType.IMAGE_ICON,".icon");
+        put(MediaType.IMAGE_JPEG,".jpeg");
+        put(MediaType.IMAGE_PNG,".png");
+        put(MediaType.IMAGE_SVG,".svg");
+        put(MediaType.IMAGE_TIFF,".tiff");
+		put(MediaType.VIDEO_ALL,".video");
+		put(MediaType.VIDEO_AVI,".avi");
+		put(MediaType.VIDEO_MP4,".mp4");
+		put(MediaType.VIDEO_MPEG,".mpg");
+		put(MediaType.VIDEO_QUICKTIME,".mov");
+		put(MediaType.VIDEO_WMV,".wmv");
+    }};
 	
 	// method with boolean flag to allow curl processing where media types are not specified
 	public static String deriveFileName(final String prefix,final Representation entity, boolean returnNullForUnsupported){

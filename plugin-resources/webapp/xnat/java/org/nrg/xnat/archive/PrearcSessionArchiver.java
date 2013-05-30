@@ -455,7 +455,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 						if(!overwrite){
 							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same UID and number.", new Exception());
 						}
-					}else{
+					}else if(StringUtils.isNotEmpty(match.getUid())){
 						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID. - Operation not supported", new Exception());
 					}
 				}

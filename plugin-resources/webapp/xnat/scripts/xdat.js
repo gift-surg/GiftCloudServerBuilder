@@ -793,26 +793,31 @@ function displayError(msg){
 
 var msgC=0;
 
+var messageNumber = 0 ;
+
 function showMessage(divId, title, body, options) {
 
-    // hijacking the showMessage function with xModal
+    var thisMessage = xModal.message ;
 
+    messageNumber++ ;
+
+    thisMessage.id = 'message'+messageNumber ;
+
+    // may not need the 'divId' anymore
     if (divId && (divId > '' && divId !== 'page_body')){
-        xModal.message.id = divId ;
+        thisMessage.id = divId ;
     }
-//    else {
-//        xmodal_count++ ;
-//        xModal.message.id = 'xmodal'+xmodal_count ;
-//    }
-    xModal.message.title = title ;
-    xModal.message.content = body ;
+
+    thisMessage.title = title ;
+    thisMessage.content = body ;
+
     if (options){
         if (options.width){
-            xModal.message.width = options.width ;
+            thisMessage.width = options.width ;
         }
     }
 
-    xModalOpen(xModal.message);
+    xModalOpen(thisMessage);
 
     /*
     if (options == undefined) {

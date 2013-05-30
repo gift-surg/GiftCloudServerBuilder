@@ -8,10 +8,10 @@ body.xmodal { display: block !important ; } /* the body will not disappear! */
 body.xmodal.open { /* position: fixed !important ; */ overflow: hidden ; } /* hold the page still while the xModal is open */
 
 div.xmask { display: none ; position: fixed ; left: 0 ; top: 0 ; width: 100% ; height: 100% ; background: transparent url('images/black_30pct.png') ; /* rgba(0,0,0,0.3) ; */ z-index: 999999990 ; }
-div.xmask.open { display: block ; }
+div.xmask.open { /* display: block ; */ }
 
-div.xmodal { position: absolute ; padding: 0 ; left: 50% ; top: 50% ; overflow: hidden ; background: #fff ; border: 3px solid rgba(0,0,0,0.5) ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ; /* border-radius: 9px ; */ }
-.ltie9 div.xmodal { border: 2px solid #666 ; }
+div.xmodal { display: none ; position: absolute ; padding: 0 ; left: 50% ; top: 50% ; overflow: hidden ; background: #fff ; border: 3px solid rgba(0,0,0,0.5) ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ; /* border-radius: 9px ; */ }
+.ltie9 div.xmodal { border: 3px solid #909090 !important ; }
 div.xmodal .close:hover { cursor: pointer ; }
 div.xmodal .title { position: relative ; height: 25px ; padding-left: 10px ; overflow: hidden ; font-size: 12px ; font-weight: normal ; line-height: 28px ; vertical-align: middle ; color: #666 ; background: /* #084FAB */ /* #206bc4 */ #f0f0f0 url('images/nav_bkdg.png') center center repeat-x ; border-bottom: 1px solid #c0c0c0 ; /* border-radius: 5px 5px 0 0 ; */ }
 div.xmodal .title .close { width: 36px ; height: 24px ; margin: 0 !important ; padding: 0 !important ; position: absolute ; top: 1px ; right: 1px ; background: url('images/close-yui.gif') center center no-repeat ; border: none ; }

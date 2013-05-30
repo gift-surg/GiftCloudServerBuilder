@@ -6,10 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
@@ -18,26 +15,19 @@ import org.nrg.action.ServerException;
 import org.nrg.dcm.edit.AttributeException;
 import org.nrg.dcm.edit.ScriptEvaluationException;
 import org.nrg.status.StatusProducer;
-import org.nrg.transaction.OperationI;
-import org.nrg.transaction.RollbackException;
-import org.nrg.transaction.Run;
-import org.nrg.transaction.Transaction;
-import org.nrg.transaction.TransactionException;
-import org.nrg.xdat.XDAT;
+import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.model.XnatResourcecatalogI;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.FileUtils.OldFileHandlerI;
 import org.nrg.xnat.helpers.merge.MergeCatCatalog.DCMEntryConflict;
-import org.nrg.xnat.helpers.merge.MergeSessionsA.Results;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.restlet.data.Status;
-import org.nrg.dcm.CopyOp;
-import org.nrg.dcm.LoggerI;
 
 public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends StatusProducer implements Callable<A> {
 	public static final String CAT_ENTRY_MATCH = "Session already exists with the same resources.";
@@ -128,7 +118,20 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 			backupDIR=backupDestDIR(destDIR,rootBackup);
 		}
 		if(dest!=null){
-			backupXML(dest,rootBackup);
+			if(dest instanceof XnatImagesessiondata){
+				//ugly hack
+				//this is a work around for a bug in XFT's SAX XML writer
+				//it looks like the XML write is invalidating the cached list of scans stored within the Imagesessiondata object.
+				//so the next thing that tries to access them (the merge) doesn't find any, 
+				//this was exposed because we started accessing the scans before this point (checkForConflict) which populated the cached list of scans in the session object, which was then invalidated by the sax write.
+				//when we didn't access the scans prior to this line, then none of this was necessary
+				//as a temporary workaround, we'll generate the xml off of a copy of the session.
+				//a more permanent solution will probably be Hibernate related.
+				A full_copy= (A)BaseElement.GetGeneratedItem((((XnatImagesessiondata)dest).getCurrentDBVersion()));
+				backupXML(full_copy,rootBackup);
+			}else{
+				backupXML(dest,rootBackup);
+			}
 		}
 		
 		//merge session xmls... nothing is modified until after file system is merged.

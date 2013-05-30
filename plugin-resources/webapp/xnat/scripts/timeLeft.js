@@ -35,6 +35,7 @@ function parseExpirationTimeTuple (tuple) {
 * and if a user were to refresh tab B they would be redirected to the login page. 'sessionTimeout' is used to
    * broadcast to all tabs and windows that the session has indeed expired and they should take some action.
    */  
+var cookieOptions = {path : '/'};
 var synchronizingCookies = {
   get : function (cookieName) {
     if (YAHOO.util.Cookie.exists(cookieName)) {
@@ -59,7 +60,7 @@ var synchronizingCookies = {
   dialogDisplay : {
     name : "SESSION_EXPIRATION_TIME_DIALOG_DISPLAYING",
     set : function (status) {
-      YAHOO.util.Cookie.set(synchronizingCookies.dialogDisplay.name, status, {path : '/'});
+      YAHOO.util.Cookie.set(synchronizingCookies.dialogDisplay.name, status, cookieOptions);
     },
     get : function () {
       return synchronizingCookies.get(synchronizingCookies.dialogDisplay.name);
@@ -68,7 +69,7 @@ var synchronizingCookies = {
   sessionTimeout : {
     name : "SESSION_EXPIRATION_TIMEOUT",
     set : function (status) {
-      YAHOO.util.Cookie.set(synchronizingCookies.sessionTimeout.name, status, {path : '/'});
+      YAHOO.util.Cookie.set(synchronizingCookies.sessionTimeout.name, status, cookieOptions);
     },
     get : function () {
       return synchronizingCookies.get(synchronizingCookies.sessionTimeout.name);
@@ -77,16 +78,16 @@ var synchronizingCookies = {
   hasRedirected: {
       name: "SESSION_LOGOUT_HAS_REDIRECTED",
       set: function (context, status) {
-          YAHOO.util.Cookie.setSub(synchronizingCookies.hasRedirected.name, context, status, {path: '/'});
+          YAHOO.util.Cookie.setSub(synchronizingCookies.hasRedirected.name, context, status, cookieOptions);
       },
       get: function (context) {
           if (YAHOO.util.Cookie.exists(synchronizingCookies.hasRedirected.name)) {
-              return YAHOO.util.Cookie.getSub(synchronizingCookies.hasRedirected.name, context);
+              return YAHOO.util.Cookie.getSub(synchronizingCookies.hasRedirected.name, context, cookieOptions);
           }
           return null;
       },
       clear: function() {
-          YAHOO.util.Cookie.setSubs(synchronizingCookies.hasRedirected.name, {});
+          YAHOO.util.Cookie.setSubs(synchronizingCookies.hasRedirected.name, {cleared: "true"}, cookieOptions);
       }
   }
 };
@@ -330,11 +331,11 @@ function redirectToLogin () {
     var hasRedirected = synchronizingCookies.hasRedirected.get(windowName);
     if (!hasRedirected) {
         synchronizingCookies.hasRedirected.set(windowName, "true");
-    YAHOO.util.Cookie.set('WARNING_BAR','OPEN',{path:'/'});
-    YAHOO.util.Cookie.set('guest','true',{path:'/'});
+        YAHOO.util.Cookie.set('WARNING_BAR', 'OPEN', cookieOptions);
+        YAHOO.util.Cookie.set('guest', 'true', cookieOptions);
     synchronizingCookies.sessionTimeout.set("true");
 	var currTime = (new Date()).getTime();
-	YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME',currTime,{path:'/'});
+        YAHOO.util.Cookie.set('SESSION_TIMEOUT_TIME', currTime, cookieOptions);
         window.location.reload();
     }
 }

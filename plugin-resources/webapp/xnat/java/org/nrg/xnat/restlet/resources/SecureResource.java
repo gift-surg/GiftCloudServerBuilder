@@ -11,6 +11,9 @@ import com.google.common.collect.Maps;
 import com.noelios.restlet.http.HttpConstants;
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
@@ -992,7 +995,7 @@ public abstract class SecureResource extends Resource {
                         String fieldName = item.getFieldName();
                         String value = item.getString();
                         if (fieldName.equals("reference")) {
-                            wrappers.add(getReferenceWrapper(value));
+                            wrappers.addAll(getReferenceWrapper(value));
                         } else {
                             handleParam(fieldName, TurbineUtils.escapeParam(value));
                         }
@@ -1014,7 +1017,7 @@ public abstract class SecureResource extends Resource {
             }
         } else if (hasQueryVariable("reference")) {
             final String reference = getQueryVariable("reference");
-            wrappers.add(getReferenceWrapper(reference));
+            wrappers.addAll(getReferenceWrapper(reference));
         } else {
             String name = entity.getDownloadName();
             logger.debug(name);
@@ -1023,12 +1026,28 @@ public abstract class SecureResource extends Resource {
         return wrappers;
     }
 
-    private FileWriterWrapperI getReferenceWrapper(String value) throws FileUploadException {
+    private List<FileWriterWrapperI> getReferenceWrapper(String value) throws FileUploadException {
         File file = new File(value);
         if (!file.exists()) {
             throw new FileUploadException("The resource referenced does not exist: " + value, new Exception());
         }
-        return new StoredFile(file, true);
+        List<FileWriterWrapperI> files = new ArrayList<FileWriterWrapperI>();
+        if (file.isFile()) {
+            files.add(new StoredFile(file, true));
+        } else {
+            // TODO: This is a simple recursive find of all files underneath the specified root. It'd be nice to support manifest files containing ant path specifiers or something similar to that.
+            Collection found = FileUtils.listFiles(file, FileFileFilter.FILE, DirectoryFileFilter.DIRECTORY);
+            for (Object foundObject : found) {
+                if (!(foundObject instanceof File)) {
+                    throw new RuntimeException("Something went really wrong");
+                }
+                File foundFile = (File) foundObject;
+                if (foundFile.isFile()) {
+                    files.add(new StoredFile(foundFile, true, file.toURI().relativize(foundFile.getParentFile().toURI()).getPath(), true));
+                }
+            }
+        }
+        return files;
     }
 
     public HttpSession getHttpSession() {

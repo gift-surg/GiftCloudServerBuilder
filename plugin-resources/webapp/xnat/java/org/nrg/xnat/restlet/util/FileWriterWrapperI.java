@@ -19,6 +19,8 @@ public interface FileWriterWrapperI {
 
 	String getName();
 
+    String getNestedPath();
+
 	InputStream getInputStream() throws IOException;
 
 	void delete();

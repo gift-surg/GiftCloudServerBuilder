@@ -265,6 +265,11 @@ public class CStoreService extends DicomService implements CStoreSCP {
         public String getName() { return null; }
 
         @Override
+        public String getNestedPath() {
+            return null;
+        }
+
+        @Override
         public InputStream getInputStream() { return in; }
 
         @Override

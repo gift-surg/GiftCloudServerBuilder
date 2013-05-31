@@ -63,6 +63,11 @@ public class ZipEntryFileWriterWrapper implements FileWriterWrapperI {
     @Override
     public String getName() { return name; }
 
+    @Override
+    public String getNestedPath() {
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see org.nrg.xnat.restlet.util.FileWriterWrapperI#getInputStream()
      */

@@ -545,7 +545,12 @@ public class CatalogUtils {
                 }
             }
         } else {
-            final File saveTo = new File(parentPath, (dest != null) ? dest : filename);
+            File parentFolder = new File(parentPath);
+            if (!org.apache.commons.lang.StringUtils.isBlank(fi.getNestedPath())) {
+                dest = makePath(fi.getNestedPath(), fi.getName());
+            }
+
+            final File saveTo = new File(parentFolder, (dest != null) ? dest : filename);
 
             if (saveTo.exists() && !overwrite) {
                 throw new IOException("File already exists" + saveTo.getCanonicalPath());
@@ -582,6 +587,15 @@ public class CatalogUtils {
         writeCatalogToFile(cat, catFile);
 
         return true;
+    }
+
+    private static String makePath(String nestedPath, String name) {
+        String separator = nestedPath.contains("\\") ? "\\" : "/";
+        StringBuilder path = new StringBuilder(nestedPath);
+        if (!nestedPath.endsWith(separator)) {
+            path.append(separator);
+        }
+        return path.append(name).toString();
     }
 
     public static void refreshAuditSummary(CatCatalogI cat) {

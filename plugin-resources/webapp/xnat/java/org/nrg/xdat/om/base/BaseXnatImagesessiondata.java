@@ -18,13 +18,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 import org.nrg.dcm.CopyOp;
-import org.nrg.transaction.*;
+import org.nrg.transaction.OperationI;
+import org.nrg.transaction.RollbackException;
+import org.nrg.transaction.Run;
+import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
@@ -32,6 +31,7 @@ import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
 import org.nrg.xdat.model.ScrScreeningassessmentI;
 import org.nrg.xdat.model.ValProtocoldataI;
+import org.nrg.xdat.model.WrkWorkflowdataI;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatAbstractresourceTagI;
 import org.nrg.xdat.model.XnatExperimentdataFieldI;
@@ -42,6 +42,7 @@ import org.nrg.xdat.model.XnatQcassessmentdataI;
 import org.nrg.xdat.model.XnatQcmanualassessordataI;
 import org.nrg.xdat.model.XnatReconstructedimagedataI;
 import org.nrg.xdat.om.ScrScreeningassessment;
+import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.XnatDicomseries;
 import org.nrg.xdat.om.XnatExperimentdata;
@@ -64,12 +65,11 @@ import org.nrg.xdat.om.base.auto.AutoXnatQcassessmentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
@@ -78,6 +78,7 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileTracker;
@@ -85,7 +86,7 @@ import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
-
+import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 import org.nrg.xnat.scanAssessors.AssessorComparator;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
@@ -94,6 +95,10 @@ import org.nrg.xnat.srb.XNATMetaData;
 import org.nrg.xnat.srb.XNATSrbSearch;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.CatalogSet;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import edu.sdsc.grid.io.GeneralFile;
 
@@ -2985,5 +2990,26 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 			((XnatImageassessordata)assess).setImageSessionData((XnatImagesessiondata)this);
 			((XnatImageassessordata)assess).preSave();
 		}
+	}
+	
+	List<WrkWorkflowdataI> workflows=null;
+	public List<WrkWorkflowdataI> getWorkflows() throws Exception{
+		if(workflows==null){
+	        workflows = Lists.newArrayList();
+	        
+	        //search for workflow entries with a matching ID
+			org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
+	        cc.addClause("wrk:workflowData.ID",this.getId());
+	        org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc,null,false);
+	        
+	        //Sort by Launch Time
+	        List<XFTItem> workitems = items.getItems("wrk:workflowData.launch_time","DESC");
+	        for (XFTItem wrk:workitems)
+	        {
+	            workflows.add(new WrkWorkflowdata(wrk));
+	        }
+		}
+		
+		return workflows;
 	}
 }

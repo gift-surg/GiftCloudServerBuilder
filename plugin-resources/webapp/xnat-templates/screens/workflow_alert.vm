@@ -4,7 +4,7 @@
 <table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
 <tr><th>Active Processes</th></tr>
 <tr><td align="center"><table>
-#foreach( $workflow in $workflows )
+#foreach( $workflow in $om.getWorkflows() )
 #if($workflow.isActive())
 #set($hasActiveProcess = true)
 <tr>
@@ -33,7 +33,7 @@ document.getElementById("workflow_active").style.display = 'block';
 <tr><td align="center"><table>
 #set ($completed = [])
 
-#foreach( $workflow in $workflows ) 
+#foreach( $workflow in $om.getWorkflows() ) 
 #if($workflow.getStatus()=="Complete")
 #set($added = $completed.add($workflow.getOnlyPipelineName()))
 #end

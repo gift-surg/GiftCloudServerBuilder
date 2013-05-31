@@ -60,33 +60,35 @@ xModal.x = {
     defaultButton: 'ok' // 'ok' or 'cancel' - which button is the default?
 };
 
-// 'Preset' for generic 'Message' modal
-function xModalMessage(_title,_message,_ok_label,_close,_ok_action){
+var xModalMessageCount = 0 ;
 
-    // '_close' arg accepts 'close' or 'yes' to close the modal
-    // after clicking the 'ok' button
-    if(_close === 'close'){
-        _close = 'yes'
-    }
+// 'Preset' for generic 'Message' modal
+function xModalMessage(_title,_message,_label,_options){
+
+    xModalMessageCount++ ;
+
+    var msgWidth, msgHeight, msgAction ;
+
+    msgWidth  = (_options && _options.width)  ? _options.width  : 420 ;
+    msgHeight = (_options && _options.height) ? _options.height : 220 ;
+    msgAction = (_options && _options.action) ? _options.action : function(){} ;
+
     var message = {
         //id: 'xmodal'+(xmodal_count++),  // REQUIRED - id to give to new xModal 'window'
+        id: 'message'+xModalMessageCount,
         kind: 'fixed',  // REQUIRED - options: 'dialog','fixed','large','med','small','xsmall','custom'
-        width: 420, // width in px - used for 'fixed','custom','static'
-        height: 240, // height in px - used for 'fixed','custom','static'
+        width: msgWidth, // width in px - used for 'fixed','custom','static'
+        height: msgHeight, // height in px - used for 'fixed','custom','static'
         scroll: 'yes', // true/false - does content need to scroll?
-        title: _title, // text for title bar
-        content: _message,
+        title: _title || 'Message', // text for title bar
+        content: _message || ' ',
         // footer not specified, will use default footer
-        ok: 'show' ,  // show the 'ok' button
-        okLabel: _ok_label || 'OK',
-        // okAction: (pass in function call)
-        okClose: _close || 'yes' ,
-        okAction: _ok_action || function(){} ,
-        // no 'Cancel' button by default
-        // if you want a 'Cancel' button,
-        // define it in the function call
+        ok: 'show',  // show the 'ok' button
+        okLabel: _label || 'OK',
+        okAction: msgAction ,
         cancel: 'hide' // do NOT show the 'Cancel' button
     };
+
     xModalOpen(message);
 }
 
@@ -379,6 +381,7 @@ function xModalOpen(xx){
     }
 
     var
+        this_mask_id,
         this_modal_id,
         $this_modal,
         $this_mask,
@@ -386,26 +389,33 @@ function xModalOpen(xx){
         ;
 
     if (this.content === 'static'){
+
+        this_mask_id = this.id+'_xmask' ;
+        this_modal_id = this.id+'_xmodal';
+
         $this_content = $('#' + this.id);
-        $this_content.wrap('<div id="mask'+xmodal_count+'" data-xmodal-x="'+xmodal_count+'" class="xmask" />');
-        $this_content.wrap('<div id="'+this.id+'_xmodal" class="xmodal static" />');
+        $this_content.wrap('<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask" />');
+        $this_content.wrap('<div id="'+this_modal_id+'" class="xmodal static" />');
         $this_content.wrap('<div class="body content" />');
         $this_content.wrap('<div class="inner" />');
         $this_content.show();
 
-        $this_mask  = $('#mask'+xmodal_count);
-        this_modal_id = this.id+'_xmodal';
+        $this_mask  = $('#'+this_mask_id);
         $this_modal = $('#'+this_modal_id);
+
     }
     else {
+
+        this_mask_id = this.id+'_xmask' ;
+        this_modal_id = this.id ;
+
         $body.append('' +
-            '<div id="mask'+xmodal_count+'" data-xmodal-x="'+xmodal_count+'" class="xmask">' +
-            '   <div id="'+this.id+'" class="xmodal"></div>' +
+            '<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask">' +
+            '   <div id="'+this_modal_id+'" class="xmodal"></div>' +
             '</div>' +
             '');
 
-        $this_mask  = $('#mask'+xmodal_count);
-        this_modal_id = this.id; // +'_xmodal';
+        $this_mask  = $('#'+this_mask_id);
         $this_modal = $('#'+this_modal_id);
 
         // set up the modal contents
@@ -579,6 +589,7 @@ function xModalActions(_this){
 
 
 $(function(){
+
     $body.on('click','div.xmodal .button',function(){
         xModalActions(this);
     });
@@ -604,7 +615,6 @@ $(function(){
             }
         }
     });
-
 });
 
 

@@ -788,36 +788,38 @@ function closeModalPanel(id){
 }
 
 function displayError(msg){
-    showMessage("page_body", "Exception", msg);
+    xModalMessage("Exception",msg,'OK');
 }
 
 var msgC=0;
 
-var messageNumber = 0 ;
-
 function showMessage(divId, title, body, options) {
 
-    var thisMessage = xModal.message ;
+    var msgOpts = {} ;
 
-    messageNumber++ ;
-
-    thisMessage.id = 'message'+messageNumber ;
+    msgOpts.label = 'OK' ;
 
     // may not need the 'divId' anymore
     if (divId && (divId > '' && divId !== 'page_body')){
-        thisMessage.id = divId ;
+        msgOpts.id = divId ;
     }
-
-    thisMessage.title = title ;
-    thisMessage.content = body ;
 
     if (options){
         if (options.width){
-            thisMessage.width = options.width ;
+            msgOpts.width = options.width ;
+        }
+        if (options.id){
+            msgOpts.id = options.id ;
+        }
+        if (options.label){
+            msgOpts.label = options.label ;
+        }
+        if (options.action){
+            msgOpts.action = options.action ;
         }
     }
 
-    xModalOpen(thisMessage);
+    xModalMessage(title,body,msgOpts.label,msgOpts);
 
     /*
     if (options == undefined) {

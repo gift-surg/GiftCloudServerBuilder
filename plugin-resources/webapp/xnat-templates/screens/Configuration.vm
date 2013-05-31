@@ -14,6 +14,7 @@
         jq('body').addClass('administer configuration no_left_bar');
     });
 </script>
+<script type="text/javascript" src="$content.getURI("scripts/tabWrangler.js")"></script>
 <div class="yui-skin-sam">
 <div id="tp_fm" style="display:none"></div>
 <table style="width:98%">
@@ -91,7 +92,6 @@
                     </div>
                 </div>
             </div>
-
             <script type="text/javascript">
                 window.initializing = #if(!$initialize) false #else true #end;
                 configurationTabManagerInit();
@@ -117,13 +117,37 @@
         <td colspan="3">
             <div id="congratsContainer" class="container" style="width:98%;margin:5px;background-color:#ff99cc;">
                 <div id="congratsBody" class="containerBody">
-                    <div class="containerItem edit_header2" style="white-space:normal;line-height:18px;font-size: larger;">Security Warning</DIV>
-                    <div class="containerItem" style="white-space:normal;">You do not have administrator access and can't access this page.</DIV>
+                    <div class="containerItem edit_header2" style="white-space:normal;line-height:18px;">Security Warning</div>
+                    <div class="containerItem" style="white-space:normal;">You do not have administrator access and can't access this page.</div>
                 </div>
             </div>
 #end
         </td>
     </tr>
 </table>
+    <script type="text/javascript">
+        //$(window).load(function(){
+        //    var tabs = 'ul.yui-nav' ;
+        //    $(tabs).each(function(){
+        //        wrangleTabs(tabs,'div.yui-content');
+        //    });
+        //});
+        //
 
+//        jq(window).load(function(){
+////            var tabs = '#configurationTabs ul.yui-nav' ;
+////            $(tabs).each(function(){
+////                wrangleTabs(tabs,'div.yui-content');
+////            });
+//            wrangleTabs('#configurationTabs ul.yui-nav','div.yui-content');
+//        });
+
+        jq(window).load(function(){
+            wrangleTabs({
+                wrapper: '#configurationTabs'//, // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
+                //force: true // do we show it even if the tabs aren't too wide?
+            });
+        });
+
+    </script>
 <!-- End Configuration page, source file is plugin-resources/webapp/xnat-templates/screens/Configuration.vm -->

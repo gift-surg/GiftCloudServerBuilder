@@ -15,33 +15,33 @@ function fullConfigHandler() {
         return;
     }
 
-        this.fullConfigCallback = {
-            success : function() {
-            //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
-            //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
-            document.getElementById('siteInfo_save_button').onclick = saveSettings;
-            document.getElementById('fileSystem_save_button').onclick = saveSettings;
-            document.getElementById('registration_save_button').onclick = saveSettings;
-            document.getElementById('notifications_save_button').onclick = saveSettings;
-            document.getElementById('anonymization_save_button').onclick = saveSettings;
-            document.getElementById('applet_save_button').onclick = saveSettings;
-            document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
+    this.fullConfigCallback = {
+        success : function() {
+        //reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
+        //this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
+        document.getElementById('siteInfo_save_button').onclick = saveSettings;
+        document.getElementById('fileSystem_save_button').onclick = saveSettings;
+        document.getElementById('registration_save_button').onclick = saveSettings;
+        document.getElementById('notifications_save_button').onclick = saveSettings;
+        document.getElementById('anonymization_save_button').onclick = saveSettings;
+        document.getElementById('applet_save_button').onclick = saveSettings;
+        document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
 
-            showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
-                var destination;
-                if (serverRoot) {
-                    destination = serverRoot;
-                } else {
-                    destination = "/";
-                }
-                window.location.replace(destination);
-            },
-            failure : function(o) {
-                showMessage('', 'Error', 'Your settings were not successfully saved: ' + o.responseText);
-            },
-            cache : false, // Turn off caching for IE
-            scope : this
-        };
+        showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
+            var destination;
+            if (serverRoot) {
+                destination = serverRoot;
+            } else {
+                destination = "/";
+            }
+            window.location.replace(destination);
+        },
+        failure : function(o) {
+            showMessage('', 'Error', 'Your settings were not successfully saved: ' + o.responseText);
+        },
+        cache : false, // Turn off caching for IE
+        scope : this
+    };
 
     var data = buildSettingsUpdateRequestBody([
             'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken'
@@ -53,8 +53,8 @@ function fullConfigHandler() {
             , 'dcmPort', 'dcmAe', 'enableDicomReceiver'
     ]);
 
-        var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
-        YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.fullConfigCallback, data, this);
+    var putUrl = serverRoot + '/data/services/settings/initialize?XNAT_CSRF=' + window.csrfToken + '&stamp=' + (new Date()).getTime();
+    YAHOO.util.Connect.asyncRequest('PUT', putUrl, this.fullConfigCallback, data, this);
 }
 
 function saveSettings(){
@@ -79,12 +79,11 @@ function configurationTabManagerInit() {
         xModal.message.title = 'Welcome!';
         xModal.message.content = 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.';
         xModalOpen(xModal.message);
-
     }
 }
 
 function prependLoader(div_id, msg) {
-    var div ;
+    var div;
     if (div_id.id == undefined) {
         div = document.getElementById(div_id);
     } else {
@@ -143,27 +142,26 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
 
     this.init = function() {
         if (window.configurationData) {
-            this.processData(window.configurationData);
+            this.processData();
         } else {
-        this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
-        this.initLoader.render();
-        // load from search xml from server
-        this.initCallback = {
-            success : this.completeInit,
-            failure : this.initFailure,
-            cache : false, // Turn off caching for IE
-            scope : this
-        };
+            this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
+            this.initLoader.render();
+            // load from search xml from server
+            this.initCallback = {
+                success : this.completeInit,
+                failure : this.initFailure,
+                cache : false, // Turn off caching for IE
+                scope : this
+            };
 
-        var getUrl = this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp=' + (new Date()).getTime();
-        YAHOO.util.Connect.asyncRequest('GET', getUrl, this.initCallback, null, this);
+            var getUrl = this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp=' + (new Date()).getTime();
+            YAHOO.util.Connect.asyncRequest('GET', getUrl, this.initCallback, null, this);
         }
     };
 
     this.completeInit = function(o) {
         try {
-            window.configurationData = o.responseText;
-            this.processData(window.configurationData);
+            this.processData(o.responseText);
         } catch (e) {
             this.displayError("[ERROR " + o.status + "] Failed to parse site information: [" + e.name + "] " + e.message);
         }
@@ -171,18 +169,26 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     };
 
     this.processData = function(data) {
-            this.controls.length = 0;
+        // If we got new data, cache that.
+        if (data) {
+            window.configurationData = data;
+        } else {
+            // But if not, use the cached data.
+            data = window.configurationData;
+        }
+
+        this.controls.length = 0;
         var resultSet = eval("(" + data + ")");
-            for (var index = 0; index < this.settings.length; index++) {
-                var setting = this.settings[index];
-                var control = document.getElementById(setting);
-                control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
-                this.controls.push(control);
-                if (!this.firstControl) {
-                    this.firstControl = control;
-                }
+        for (var index = 0; index < this.settings.length; index++) {
+            var setting = this.settings[index];
+            var control = document.getElementById(setting);
+            control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
+            this.controls.push(control);
+            if (!this.firstControl) {
+                this.firstControl = control;
             }
-            this.render();
+        }
+        this.render();
         if (this.postLoad != null) {
             this.postLoad();
         }
@@ -251,6 +257,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                     cache : false, // Turn off caching for IE
                     scope : this
                 };
+                openModalPanel("configuration_", "Please wait...");
                 var data = buildSettingsUpdateRequestBody(this.controls);
                 YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
             } else {
@@ -314,7 +321,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     };
 
     this.completeSave = function(o) {
-        this.completeInit(o);
+        this.processData(o.responseText);
         closeModalPanel("configuration_");
         showMessage('', 'Success', 'Your settings have been successfully updated.');
         this.setFormDisabled(false);
@@ -323,16 +330,15 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     this.saveFailure = function(o) {
         if (o.status == 401) {
             alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
-            window.location = serverRoot + "/app/template/Login.vm";
+            window.location.reload();
         }
         closeModalPanel("configuration_");
-        showMessage('', 'Error', '<p>There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText + '</p>');
+        this.displayError('There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText);
         this.setFormDisabled(false);
     };
 
     this.displayError = function(errorMsg) {
-        this.settings_tab_table_div.className = "error";
-        this.settings_tab_table_div.innerHTML = errorMsg;
+        showMessage('', 'Error', '<p>' + errorMsg + '</p>');
     };
 
     this.init();

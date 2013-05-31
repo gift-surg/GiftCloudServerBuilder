@@ -16,6 +16,7 @@ div.xmodal .close:hover { cursor: pointer ; }
 div.xmodal .title { position: relative ; height: 25px ; padding-left: 10px ; overflow: hidden ; font-size: 12px ; font-weight: normal ; line-height: 28px ; vertical-align: middle ; color: #666 ; background: /* #084FAB */ /* #206bc4 */ #f0f0f0 url('images/nav_bkdg.png') center center repeat-x ; border-bottom: 1px solid #c0c0c0 ; /* border-radius: 5px 5px 0 0 ; */ }
 div.xmodal .title .close { width: 36px ; height: 24px ; margin: 0 !important ; padding: 0 !important ; position: absolute ; top: 1px ; right: 1px ; background: url('images/close-yui.gif') center center no-repeat ; border: none ; }
 div.xmodal.loading .title .close { display: none ; }
+div.xmodal.loading .body .inner { text-align: center ; }
 div.xmodal .body { position: relative ; overflow: hidden ; }
 div.xmodal .body.scroll { overflow-y: auto ; }
 div.xmodal .body .inner { padding: 20px ; font-size: 13px ; }

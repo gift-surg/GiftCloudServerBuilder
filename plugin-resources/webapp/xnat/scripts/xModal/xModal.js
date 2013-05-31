@@ -88,8 +88,32 @@ function xModalMessage(_title,_message,_label,_options){
         okAction: msgAction ,
         cancel: 'hide' // do NOT show the 'Cancel' button
     };
-
     xModalOpen(message);
+}
+
+var xModalLoaderCount = 0 ;
+
+function xModalLoadingOpen(_options){
+    xModalLoaderCount++;
+    var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
+    var thisClass = (_options && _options.class) ? _options.class+' loading' : 'loading';
+    var thisTitle = (_options && _options.title) ? _options.title : 'Loading...';
+    var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
+    var loader = {
+        id: thisLoader,
+        class: thisClass,
+        kind: 'fixed',
+        width: 260,
+        height: 92,
+        scroll: 'no',
+        title: thisTitle,
+        content: thisContent,
+        footer: 'hide'
+    };
+    xModalOpen(loader);
+}
+function xModalLoadingClose(){
+    xModalClose($('div.xmodal.loading.open').closest('div.xmask.open.top'));
 }
 
 // 'Preset' for generic fixed-size modal
@@ -383,6 +407,7 @@ function xModalOpen(xx){
     var
         this_mask_id,
         this_modal_id,
+        this_modal_class,
         $this_modal,
         $this_mask,
         $this_content
@@ -392,10 +417,11 @@ function xModalOpen(xx){
 
         this_mask_id = this.id+'_xmask' ;
         this_modal_id = this.id+'_xmodal';
+        this_modal_class = (xx.class && xx.class > '') ? xx.class+' xmodal static' : 'xmodal static' ;
 
         $this_content = $('#' + this.id);
         $this_content.wrap('<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask" />');
-        $this_content.wrap('<div id="'+this_modal_id+'" class="xmodal static" />');
+        $this_content.wrap('<div id="'+this_modal_id+'" class="'+this_modal_class+'" />');
         $this_content.wrap('<div class="body content" />');
         $this_content.wrap('<div class="inner" />');
         $this_content.show();
@@ -408,10 +434,11 @@ function xModalOpen(xx){
 
         this_mask_id = this.id+'_xmask' ;
         this_modal_id = this.id ;
+        this_modal_class = (xx.class && xx.class > '') ? xx.class+' xmodal' : 'xmodal' ;
 
         $body.append('' +
             '<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask">' +
-            '   <div id="'+this_modal_id+'" class="xmodal"></div>' +
+            '   <div id="'+this_modal_id+'" class="'+this_modal_class+'"></div>' +
             '</div>' +
             '');
 

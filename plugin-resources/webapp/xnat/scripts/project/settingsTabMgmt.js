@@ -9,9 +9,7 @@ function configurationIndexChanged() {
 
 function fullConfigHandler() {
     if (!document.getElementById('siteId').value) {
-        xModal.message.title = 'Site ID Required';
-        xModal.message.content = 'You must specify a value for the site ID!';
-        xModalOpen(xModal.message);
+        xModalMessage('Site ID Required','You must specify a value for the site ID!','OK');
         return;
     }
 
@@ -27,7 +25,7 @@ function fullConfigHandler() {
         document.getElementById('applet_save_button').onclick = saveSettings;
         document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
 
-        showMessage('page_body', 'Welcome!', 'Your settings were saved. You will now be redirected to the main XNAT page.');
+            xModalMessage('Welcome!','Your settings were saved. You will now be redirected to the main XNAT page.','OK');
             var destination;
             if (serverRoot) {
                 destination = serverRoot;
@@ -37,7 +35,11 @@ function fullConfigHandler() {
             window.location.replace(destination);
         },
         failure : function(o) {
-            showMessage('', 'Error', 'Your settings were not successfully saved: ' + o.responseText);
+                xModalMessage(
+                    'Error',
+                    'Your settings were not successfully saved: ' + o.responseText,
+                    'OK'
+                );
         },
         cache : false, // Turn off caching for IE
         scope : this
@@ -76,9 +78,11 @@ function configurationTabManagerInit() {
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
 
-        xModal.message.title = 'Welcome!';
-        xModal.message.content = 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.';
-        xModalOpen(xModal.message);
+        xModalMessage(
+            'Welcome',
+            'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.',
+            'OK'
+        );
     }
 }
 
@@ -144,8 +148,9 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
         if (window.configurationData) {
             this.processData();
         } else {
-            this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
-            this.initLoader.render();
+            xModalLoadingOpen({title:'Loading site information...'});
+            //this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
+            //this.initLoader.render();
             // load from search xml from server
             this.initCallback = {
                 success : this.completeInit,
@@ -165,7 +170,8 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
         } catch (e) {
             this.displayError("[ERROR " + o.status + "] Failed to parse site information: [" + e.name + "] " + e.message);
         }
-        this.initLoader.close();
+        xModalLoadingClose();
+        //this.initLoader.close();
     };
 
     this.processData = function(data) {
@@ -257,14 +263,15 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                     cache : false, // Turn off caching for IE
                     scope : this
                 };
-                openModalPanel("configuration_", "Please wait...");
+                xModalLoadingOpen({title:'Please wait...'});
+                //openModalPanel("configuration_", "Please wait...");
                 var data = buildSettingsUpdateRequestBody(this.controls);
                 YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
             } else {
-                showMessage('', 'Message', 'None of the site information appears to have changed.');
+                xModalMessage('Message','None of the site information appears to have changed.','OK');
             }
         } else {
-            showMessage('', 'Note', 'You need to enter a value into all of the site information settings boxes to save the site settings.');
+            xModalMessage('Note','You need to enter a value into all of the site information settings boxes to save the site settings.','OK');
         }
     };
 
@@ -322,8 +329,9 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
 
     this.completeSave = function(o) {
         this.processData(o.responseText);
-        closeModalPanel("configuration_");
-        showMessage('', 'Success', 'Your settings have been successfully updated.');
+        xModalLoadingClose();
+        //closeModalPanel("configuration_");
+        xModalMessage('Success','Your settings have been successfully updated.','OK');
         this.setFormDisabled(false);
     };
 
@@ -332,13 +340,20 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
             window.location.reload();
         }
-        closeModalPanel("configuration_");
+        xModalLoadingClose();
+        //closeModalPanel("configuration_");
         this.displayError('There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText);
         this.setFormDisabled(false);
     };
 
     this.displayError = function(errorMsg) {
-        showMessage('', 'Error', '<p>' + errorMsg + '</p>');
+        xModalMessage(
+            'Error',
+            /* '<p>' + */
+                errorMsg
+            /* + '</p>' */,
+            'OK'
+        );
     };
 
     this.init();

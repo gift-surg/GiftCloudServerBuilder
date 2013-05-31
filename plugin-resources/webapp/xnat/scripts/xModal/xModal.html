@@ -11,12 +11,13 @@
     <title>xModal</title>
     <style type="text/css">
         body { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; position: relative ; }
-        .demo.buttons { width: 400px ; height: 150px ; position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
+        .demo.buttons { width: 400px ; /* height: 150px ; */ position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
             /* #modalXML { overflow-y: scroll ; } */
     </style>
     <script type="text/javascript" src="/xnat/scripts/jquery/jquery.min.js"></script>
     <script type="text/javascript">
         // where is the 'scripts' directory?
+        var serverRoot = '/xnat';
         var scripts_dir = '/xnat/scripts' ;
     </script>
     <link type="text/css" rel="stylesheet" href="XMLDisplay/XMLDisplay.css">
@@ -79,6 +80,10 @@
 
     <br>
 
+    <button id="loader">Loading...</button>
+
+    <br>
+
     <!--
 
     <button id="display_xml" class="display_xml xmodal_open">Display XML</button>
@@ -119,6 +124,8 @@
 
 <script type="text/javascript">
 
+    var $body ;
+
     $(function(){
 
         /**
@@ -126,6 +133,18 @@
          * these use the 'click' event
          * but can be triggered any way
          */
+
+        $body = $('body');
+
+        $body.on('click','#loader',function(){
+            var loader = {class:'loading'};
+            xModalLoadingOpen(loader);
+        });
+
+        $body.on('click','div.xmodal.loading img',function(){
+            xModalLoadingClose();
+            newTestActions();
+        });
 
         function newTestActions(){
             var new_test1 = {} ;

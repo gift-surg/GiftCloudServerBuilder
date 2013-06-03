@@ -31,33 +31,33 @@ var xModal = {} ;
 
 // this requires jQuery
 
-// call the "xModalOpen" function passing in the parameters below
+// call the "xModalOpenNew" function passing in the parameters below
 // use the 'on' method to work with dynamic elements
 
 // example of xModal object with all settings
 xModal.x = {
     //id: 'unique_id_for_this_modal', // id to give to new xModal 'window' - if omitted, will be generated dynamically
     kind: 'fixed',  // options: 'dialog','fixed','large','med','small','custom' - defaults to 'fixed'
-    width: 600, // width in px - used for 'fixed','custom','static'
-    height: 400, // height in px - used for 'fixed','custom','static'
-    scroll: 'yes', // true/false - does content need to scroll?
-    title: 'Message', // text for title bar
-    content: ' ', //'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' to put existing content in a modal (use for forms)
-    footer: 'show', // defaults to 'yes' if omitted - use 'no' to supress footer
-    footerButtons: 'show' , // defaults to 'yes' if omitted - use 'no' to supress buttons
-    footerContent: ' ',
-    footerHeight: 52,
-    footerBackground: '#f0f0f0',
-    footerBorder: '#e0e0e0',
-    ok: 'show',
-    okLabel: 'OK',
-    okAction: function(){},
-    okClose: 'yes',
-    cancel: 'show',
-    cancelLabel: 'Cancel',
-    cancelAction: function(){},
-    cancelClose: 'yes',
-    defaultButton: 'ok' // 'ok' or 'cancel' - which button is the default?
+    width: 600, // width in px - used for 'fixed','custom','static' - defaults to 600
+    height: 400, // height in px - used for 'fixed','custom','static' - defaults to 400
+    scroll: 'yes', // true/false - does content need to scroll? - defaults to yes
+    title: 'Message', // text for title bar - you should really customize this, but will show "Message" if omitted
+    content: ' ', // REQUIRED - 'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' to put existing content in a modal (use for forms)
+    footer: 'show', // optional - defaults to 'yes' if omitted - use 'no' to supress footer
+    footerButtons: 'show' , // optional - defaults to 'yes' if omitted - use 'no' to supress buttons
+    footerContent: ' ', // optional - defaults to '' (empty string) if omitted
+    footerHeight: 52, // optional - defaults to 52 if omitted
+    footerBackground: '#f0f0f0', // optional - defaults to #f0f0f0
+    footerBorder: '#e0e0e0', // optional - defaults to #e0e0e0
+    ok: 'show', // optional - defaults to 'show' - use 'hide' to suppress ok button
+    okLabel: 'OK', // optional - defaults to 'OK'
+    okAction: function(){}, // optional - if omitted, will do nothing (empty function)
+    okClose: 'yes', // optional - modal closes by default when clicking 'ok' - use 'no' if not closing on 'ok' (useful to open an xModal from an xModal)
+    cancel: 'show', // optional - defaults to 'show' - use 'hide' to suppress cancel button
+    cancelLabel: 'Cancel', // optional - defaults to 'Cancel'
+    cancelAction: function(){}, // optional - if omitted, will do nothing (empty function)
+    cancelClose: 'yes', // optional - modal closes by default when clicking 'cancel' button - use 'no' to not close
+    defaultButton: 'ok' // optional - defaults to 'ok - 'ok' or 'cancel' - which button is the default?
 };
 
 var xModalMessageCount = 0 ;
@@ -88,7 +88,7 @@ function xModalMessage(_title,_message,_label,_options){
         okAction: msgAction ,
         cancel: 'hide' // do NOT show the 'Cancel' button
     };
-    xModalOpen(message);
+    xModalOpenNew(message);
 }
 
 var xModalLoaderCount = 0 ;
@@ -110,7 +110,7 @@ function xModalLoadingOpen(_options){
         content: thisContent,
         footer: 'hide'
     };
-    xModalOpen(loader);
+    xModalOpenNew(loader);
 }
 function xModalLoadingClose(){
     xModalClose($('div.xmodal.loading.open').closest('div.xmask.open.top'));
@@ -362,7 +362,7 @@ function xModalSizes($this_modal,width,height){
 }
 
 
-function xModalOpen(xx){
+function xModalOpenNew(xx){
 
     $html = $('html');
     $body = $('body');

@@ -117,7 +117,7 @@
 <div id="new_content" style="display: none;">
     <h3>Content</h3>
     <p>Here's where we'll put the content for this xModal.
-        If this was added to the page dynamically, call xModalOpen()
+        If this was added to the page dynamically, call xModalOpenNew()
         on the callback after data is returned.</p>
 </div>
 
@@ -161,7 +161,7 @@
 //  new_test1.cancel.action = function(){
 //                newTestActions2();
 //            };
-            xModalOpen(new_test1);
+            xModalOpenNew(new_test1);
         }
 
 
@@ -175,13 +175,13 @@
                 alert('OK You Did Success');
                 xModal.test.title = 'Testing...' ;
                 xModal.test.content = 'New test content';
-                xModalOpen(xModal.test);
+                xModalOpenNew(xModal.test);
             };
             new_test2.cancel = {} ;
             new_test2.cancel.action = function(){
                 alert('Cancel Success');
             };
-            xModalOpen(new_test2);
+            xModalOpenNew(new_test2);
         }
 
         var msgBody = 'This is the message body from a var.' ;
@@ -221,13 +221,13 @@
             static_1.okLabel = 'Static OK';
             static_1.okAction = function(){
                     //xModalClose();
-                    //xModalOpen(xModal.test);
+                    //xModalOpenNew(xModal.test);
                     //alert("It's static, yo.");
                     newTestActions2();
                 };
             static_1.okClose = 'no' ;
             //static_1.cancel = false;
-            xModalOpen(static_1);
+            xModalOpenNew(static_1);
         });
 
 
@@ -257,12 +257,12 @@
                 nextModal.okClose = 'yes';
                 nextModal.okAction = function(){alert('Done.')};
                 nextModal.cancel = 'no'; // prevents 'Cancel' button from rendering
-                xModalOpen(nextModal);
+                xModalOpenNew(nextModal);
             };
             this_xModal.okClose = 'no' ;
             //this_xModal.cancel = 'no' ;
             this_xModal.cancelClose = 'no' ;
-            xModalOpen(this_xModal);
+            xModalOpenNew(this_xModal);
         });
 
 
@@ -292,7 +292,7 @@
 //                //newTestActions();
 //                return true ;
 //            };
-            xModalOpen(new_xmodal);
+            xModalOpenNew(new_xmodal);
         });
 
 

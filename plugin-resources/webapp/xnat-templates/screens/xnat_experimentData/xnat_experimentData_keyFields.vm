@@ -1,9 +1,9 @@
 																			<tr>
-			  #formLabel("Accession #")
+			  #formLabel("Accession #:")
 						  <TD>$!om.getId()</TD>
 							</tr>
 													<tr>
-			  #formLabel("Date Added")
+			  #formLabel("Date Added:")
 									  <TD>
 										#if($om.getInsertDate())
 										$turbineUtils.formatDateTime($!om.InsertDate) ($!om.InsertUser.Login)

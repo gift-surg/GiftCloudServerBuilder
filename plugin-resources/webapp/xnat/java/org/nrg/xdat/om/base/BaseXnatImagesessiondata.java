@@ -75,6 +75,7 @@ import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.exception.XFTInitException;
@@ -812,7 +813,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
             }else{
 
                 try {
-                    XFTTable table = TableSearch.Execute("SELECT ex.id,ex.date,ex.project,me.element_name AS type,me.element_name,ex.note AS note,i.lastname, investigator_xnat_investigatorData_id AS invest_id,projects FROM xnat_imageAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xnat_investigatorData i ON i.xnat_investigatorData_id=ex.investigator_xnat_investigatorData_id LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.imagesession_id='" + this.getId() +"' ORDER BY ex.date ASC",getDBName(),null);
+                    XFTTable table = TableSearch.Execute("SELECT ex.id,ex.date,ex.project,me.element_name AS type,me.element_name,ex.note AS note,i.lastname, investigator_xnat_investigatorData_id AS invest_id,projects FROM xnat_imageAssessorData assessor LEFT JOIN xnat_experimentData ex ON assessor.ID=ex.ID LEFT JOIN xnat_experimentdata_meta_data meta ON ex.experimentdata_info=meta.meta_data_id LEFT JOIN xnat_investigatorData i ON i.xnat_investigatorData_id=ex.investigator_xnat_investigatorData_id LEFT JOIN xdat_meta_element me ON ex.extension=me.xdat_meta_element_id LEFT JOIN (SELECT xs_a_concat(project || ',') AS PROJECTS, sharing_share_xnat_experimentda_id FROM xnat_experimentData_share GROUP BY sharing_share_xnat_experimentda_id) PROJECT_SEARCH ON ex.id=PROJECT_SEARCH.sharing_share_xnat_experimentda_id WHERE assessor.imagesession_id='" + this.getId() +"' AND meta.status!='obsolete' ORDER BY ex.date ASC",getDBName(),null);
                     table.resetRowCursor();
                     
                     while (table.hasMoreRows())
@@ -927,37 +928,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                                 }
                             }
 
-                            XnatImageassessordata assessor= (XnatImageassessordata)BaseElement.GetGeneratedItem(child);
-                            
-                            if (element.equalsIgnoreCase(XnatQcmanualassessordata.SCHEMA_ELEMENT_NAME))
-                            {
-                                if (this.getUser().canRead(child))
-                                {
-                                    this.manQC = new XnatQcmanualassessordata(child.getCurrentDBVersion(false));
-                                    minLoadAssessors.add(this.manQC);
-                                }else{
-                                    minLoadAssessors.add(new XnatQcmanualassessordata(child));
-                                }
-                            }else if (element.equalsIgnoreCase(XnatQcassessmentdata.SCHEMA_ELEMENT_NAME))
-                            {
-                                if (this.qc == null)
-                                {
-                                    if (this.getUser().canRead(child))
-                                    {
-                                        this.qc = new XnatQcassessmentdata(child.getCurrentDBVersion(false));
-                                        minLoadAssessors.add(this.qc);
-                                    }else{
-                                        minLoadAssessors.add(new XnatQcassessmentdata(child));
-                                    }
-                                }else{
-                                	 this.qc = new XnatQcassessmentdata(child.getCurrentDBVersion(false));
-                                     minLoadAssessors.add(this.qc);
-                                }
-                            }else if(assessor instanceof ScanAssessorI){
-                            	minLoadAssessors.add( (XnatImageassessordata)BaseElement.GetGeneratedItem(child.getCurrentDBVersion(false)));
-                            }else{
-                                minLoadAssessors.add(assessor);
-                            }
+                            addMinLoadAssessor(element,child,minLoadAssessors);
 
                         } catch (XFTInitException e) {
                             logger.error("",e);
@@ -972,6 +943,51 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         }
 
         return minLoadAssessors;
+    }
+    
+    /**
+     * Method to place minimally loaded assessors into their list.
+     * 
+     * Some servers will want to fully load the data, others won't.  Separating this into its own method allows sites to just override this method, instead of the old thing (like they used to have to).
+     * 
+     * @param xsiType
+     * @param child
+     * @param minLoadAssessors
+     * @throws InvalidItemException
+     * @throws Exception
+     */
+    public void addMinLoadAssessor(String xsiType,XFTItem child, List<XnatImageassessordataI> minLoadAssessors) throws InvalidItemException, Exception{
+    	XnatImageassessordata assessor= (XnatImageassessordata)BaseElement.GetGeneratedItem(child);
+        
+        if (xsiType.equalsIgnoreCase(XnatQcmanualassessordata.SCHEMA_ELEMENT_NAME))
+        {
+            if (this.getUser().canRead(child))
+            {
+                this.manQC = new XnatQcmanualassessordata(child.getCurrentDBVersion(false));
+                minLoadAssessors.add(this.manQC);
+            }else{
+                minLoadAssessors.add(new XnatQcmanualassessordata(child));
+            }
+        }else if (xsiType.equalsIgnoreCase(XnatQcassessmentdata.SCHEMA_ELEMENT_NAME))
+        {
+            if (this.qc == null)
+            {
+                if (this.getUser().canRead(child))
+                {
+                    this.qc = new XnatQcassessmentdata(child.getCurrentDBVersion(false));
+                    minLoadAssessors.add(this.qc);
+                }else{
+                    minLoadAssessors.add(new XnatQcassessmentdata(child));
+                }
+            }else{
+            	 this.qc = new XnatQcassessmentdata(child.getCurrentDBVersion(false));
+                 minLoadAssessors.add(this.qc);
+            }
+        }else if(assessor instanceof ScanAssessorI){
+        	minLoadAssessors.add( (XnatImageassessordata)BaseElement.GetGeneratedItem(child.getCurrentDBVersion(false)));
+        }else{
+            minLoadAssessors.add(assessor);
+        }
     }
 
     public void loadSRBFiles()

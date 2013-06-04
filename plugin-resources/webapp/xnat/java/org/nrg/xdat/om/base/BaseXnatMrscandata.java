@@ -160,12 +160,18 @@ public class BaseXnatMrscandata extends AutoXnatMrscandata {
 				}
 				
 				if(imgtype==null){
-					for(ScanType st: types){
-						if(st.getImgtype()==null){
-							return st.getType();
+                    ScanType candidate = null;
+                    for (ScanType scanType : types) {
+                        if (scanType.getImgtype() == null) {
+                            if (candidate == null || (candidate.getType() == null && scanType.getType() != null)) {
+                                candidate = scanType;
 						}
 					}
 				}
+                    if (candidate != null) {
+                        return candidate.getType();
+                    }
+                }
 				
 				if(frames==null){
 					for(ScanType st: types){

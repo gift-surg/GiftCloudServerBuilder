@@ -11,7 +11,20 @@
     <title>xModal</title>
     <style type="text/css">
         body { margin: 0 ; padding: 0 ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; position: relative ; }
-        .demo.buttons { width: 400px ; /* height: 150px ; */ position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
+        .demo.buttons { width: 400px ; /* height: 150px ; */ position: absolute ; left: 50% ; margin-left: -200px ; margin-top: 100px ; padding-top: 50px ; padding-bottom: 50px ; vertical-align: middle ; text-align: center ; background: #e0e0e0 ; border: 1px solid #aaa ; }
+        .demo.buttons button {
+            background: none repeat scroll 0 0 #F0F0F0;
+            border: 1px solid #A0A0A0;
+            border-radius: 5px 5px 5px 5px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+            font-family: Arial,Helvetica,sans-serif;
+            font-size: 12px;
+            line-height: 25px;
+            margin: 20px;
+            vertical-align: middle;
+            width: 200px;
+        }
+
             /* #modalXML { overflow-y: scroll ; } */
     </style>
     <script type="text/javascript" src="/xnat/scripts/jquery/jquery.min.js"></script>
@@ -72,11 +85,11 @@
 
         <br>
 
-    <button id="message">Show Message</button>
+    <button id="message_button">Show Message</button>
 
     <br>
 
-    <button id="message2">Show Another Message</button>
+    <button id="message2_button">Show Another Message</button>
 
     <br>
 
@@ -186,7 +199,7 @@
 
         var msgBody = 'This is the message body from a var.' ;
 
-        $body.on('click','#message',function(){
+        $body.on('click','#message_button',function(){
             xModalMessage('Message',msgBody,'Sure Thing','close',function(){
                 alert('You did it!');
                 xModalMessage(
@@ -200,7 +213,7 @@
 
         var $new_content = $('#new_content');
 
-        $body.on('click','#message2',function(){
+        $body.on('click','#message2_button',function(){
             xModalMessage(
                 $new_content.find('h3').html(),
                 $new_content.html()//,

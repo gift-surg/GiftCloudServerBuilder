@@ -254,7 +254,8 @@ function xModalSizes($this_modal,width,height){
 //        this_height = 100 ;
 //    }
     // if kind = 'fixed' use the numbers for width and height
-    /*else*/ if ($this_modal.hasClass('fixed')){
+    /*else*/
+    if ($this_modal.hasClass('fixed')){
         this_width = width ;
         this_height = height ;
     }
@@ -428,7 +429,17 @@ function xModalOpenNew(xx){
 
         $this_mask  = $('#'+this_mask_id);
         $this_modal = $('#'+this_modal_id);
+    }
+    else if (this.content === 'existing'){
+        this.footer = 'hide';
+        this_mask_id = this.id+'_xmask' ;
+        this_modal_id = this.id;
+        this_modal_class = (xx.class && xx.class > '') ? xx.class+' xmodal existing' : 'xmodal existing' ;
 
+        $this_modal = $('#' + this.id);
+        $this_modal.wrap('<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask" />');
+        $this_modal.addClass(this_modal_class).show();
+        $this_mask  = $('#'+this_mask_id);
     }
     else {
 
@@ -487,30 +498,31 @@ function xModalOpenNew(xx){
             '<div class="footer"><div class="inner">' +
             '</div></div>' +
             '');
-    }
 
-    if (this.footerButtons === 'show'){
-        $this_modal.find('.footer .inner').append('' +
-            '   <span class="buttons">'+
-            '   </span>' +
-            '')
-    }
+        if (this.footerButtons === 'show'){
+            $this_modal.find('.footer .inner').append('' +
+                '   <span class="buttons">'+
+                '   </span>' +
+                '');
 
-    if (this.ok === 'show'){
-        $this_modal.find('.footer .buttons').append('' +
-            '       <a class="'+ok_class+'" href="javascript:;">' + this.okLabel + '</a>' +
-            '');
-    }
+            if (this.ok === 'show'){
+                $this_modal.find('.footer .buttons').append('' +
+                    '       <a class="'+ok_class+'" href="javascript:;">' + this.okLabel + '</a>' +
+                    '');
+            }
 
-    if (this.cancel === 'show'){
-        $this_modal.find('.footer .buttons').prepend('' +
-            '<a class="'+cancel_class+'" href="javascript:;">' + this.cancelLabel + '</a> ' +
-            '');
-    }
-
-    //if (this.footer.content > ''){
+            if (this.cancel === 'show'){
+                $this_modal.find('.footer .buttons').prepend('' +
+                    '<a class="'+cancel_class+'" href="javascript:;">' + this.cancelLabel + '</a> ' +
+                    '');
+            }
+        }
+        //if (this.footer.content > ''){
         $this_modal.find('.footer > .inner').prepend('<span class="content">' + this.footerContent + '</span>');
-    //}
+        //}
+    }
+
+
 
     // we've already checked and set defaults for the footer stuff
     // let's use those values here
@@ -563,10 +575,7 @@ function xModalClose(_$this) {
     $modal.hide().removeClass('open');
     $mask.fadeOut(100).removeClass('open top');
     $('div.xmask[data-xmodal-x="'+prev_xmodal+'"]').addClass('top');
-    if (!($modal.hasClass('static'))){
-        $mask.remove();
-    }
-    else {
+    if ($modal.hasClass('static')){
         $modal.find('.title').remove();
         $modal.find('.footer').remove();
         var $static_content = $modal.find('.inner > div');
@@ -575,6 +584,14 @@ function xModalClose(_$this) {
         $static_content.unwrap('<div />');
         $static_content.unwrap('<div />');
         $static_content.unwrap('<div />');
+    }
+    else if ($modal.hasClass('existing')){
+        $modal.hide();
+        $modal.find('.title').remove();
+        $modal.unwrap('<div />');
+    }
+    else {
+        $mask.remove();
     }
     if (!$('div.xmask.open').length){
         $body.removeClass('open');
@@ -592,24 +609,32 @@ function xModalActions(_this){
     // there's no escape from loading!
     if (!($my_modal.hasClass('loading'))){
 
-        if ($clicked_button.hasClass('ok')){
-            if (window[xmodal_id+'_ok'] != undefined){
-                window[xmodal_id+'_ok']();
+        // don't allow clicks if 'disabled'
+        if (!$clicked_button.hasClass('disabled')){
+
+            // don't allow clicks if 'hidden'
+            if (!$clicked_button.hasClass('hidden')){
+
+                if ($clicked_button.hasClass('ok')){
+                    if (window[xmodal_id+'_ok'] != undefined){
+                        window[xmodal_id+'_ok']();
+                    }
+                    if ($clicked_button.hasClass('close')){
+                        xModalCloseNew($my_mask);
+                    }
+                }
+                else if ($clicked_button.hasClass('cancel')){
+                    if (window[xmodal_id+'_cancel'] != undefined){
+                        window[xmodal_id+'_cancel']();
+                    }
+                    if ($clicked_button.hasClass('close')){
+                        xModalCloseNew($my_mask);
+                    }
+                }
+                else if ($clicked_button.hasClass('close')){
+                    xModalCloseNew($my_mask);
+                }
             }
-            if ($clicked_button.hasClass('close')){
-                xModalClose($my_mask);
-            }
-        }
-        else if ($clicked_button.hasClass('cancel')){
-            if (window[xmodal_id+'_cancel'] != undefined){
-                window[xmodal_id+'_cancel']();
-            }
-            if ($clicked_button.hasClass('close')){
-                xModalClose($my_mask);
-            }
-        }
-        else if ($clicked_button.hasClass('close')){
-            xModalClose($my_mask);
         }
     }
 }

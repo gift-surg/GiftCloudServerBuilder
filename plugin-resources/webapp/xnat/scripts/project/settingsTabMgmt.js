@@ -77,26 +77,7 @@ function configurationTabManagerInit() {
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
-
-        xModalMessage(
-            'Welcome',
-            'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.',
-            'OK'
-        );
     }
-}
-
-function prependLoader(div_id, msg) {
-    var div;
-    if (div_id.id == undefined) {
-        div = document.getElementById(div_id);
-    } else {
-        div = div_id;
-    }
-    var loader_div = document.createElement("div");
-    loader_div.innerHTML = msg;
-    div.parentNode.insertBefore(loader_div, div);
-    return new XNATLoadingGIF(loader_div);
 }
 
 var configurationControls = {};
@@ -114,9 +95,6 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     this.controls = [];
     this.settings = getConfigurationControls(settings);
     this.settings_tab_mgmt_div = document.getElementById(settingsTabDivId);
-    this.settings_tab_table_div = document.createElement("div");
-    this.settings_tab_table_div.className = this.settings_tab_table_div.className + " settings_tab_table";
-    this.settings_tab_mgmt_div.appendChild(this.settings_tab_table_div);
     this.settings_svc_url = serverRoot + '/data/services/settings/';
 
     this.dirtyFlag = false;
@@ -149,9 +127,8 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             this.processData();
         } else {
             xModalLoadingOpen({title:'Loading site information...'});
-            //this.initLoader = prependLoader(this.settings_tab_table_div, "Loading site information...");
-            //this.initLoader.render();
-            // load from search xml from server
+
+            // load from settings data from server
             this.initCallback = {
                 success : this.completeInit,
                 failure : this.initFailure,
@@ -171,7 +148,9 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             this.displayError("[ERROR " + o.status + "] Failed to parse site information: [" + e.name + "] " + e.message);
         }
         xModalLoadingClose();
-        //this.initLoader.close();
+        if (window.initializing) {
+            xModalMessage('Welcome', 'Your XNAT installation has not yet been initialized. Please review each panel on this configuration screen before saving the system settings.', 'OK');
+        }
     };
 
     this.processData = function(data) {
@@ -201,7 +180,6 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     };
 
     this.initFailure = function(o) {
-        this.initLoader.close();
         this.displayError("ERROR " + o.status + ": Failed to load site information.");
         if (o.status == 401) {
             alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
@@ -264,7 +242,6 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                     scope : this
                 };
                 xModalLoadingOpen({title:'Please wait...'});
-                //openModalPanel("configuration_", "Please wait...");
                 var data = buildSettingsUpdateRequestBody(this.controls);
                 YAHOO.util.Connect.asyncRequest('POST', this.settings_svc_url + '?XNAT_CSRF=' + window.csrfToken, this.updateCallback, data, this);
             } else {
@@ -330,7 +307,6 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     this.completeSave = function(o) {
         this.processData(o.responseText);
         xModalLoadingClose();
-        //closeModalPanel("configuration_");
         xModalMessage('Success','Your settings have been successfully updated.','OK');
         this.setFormDisabled(false);
     };
@@ -341,7 +317,6 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             window.location.reload();
         }
         xModalLoadingClose();
-        //closeModalPanel("configuration_");
         this.displayError('There was an error saving your notification settings. Please check that all of the configured usernames and addresses map to valid enabled users on your XNAT system.</p><p><b>Error code:</b> ' + o.status + ' ' + o.statusText);
         this.setFormDisabled(false);
     };
@@ -349,9 +324,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     this.displayError = function(errorMsg) {
         xModalMessage(
             'Error',
-            /* '<p>' + */
-                errorMsg
-            /* + '</p>' */,
+            errorMsg,
             'OK'
         );
     };

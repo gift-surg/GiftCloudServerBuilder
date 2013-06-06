@@ -620,7 +620,7 @@ function xModalActions(_this){
                         window[xmodal_id+'_ok']();
                     }
                     if ($clicked_button.hasClass('close')){
-                        xModalCloseNew($my_mask);
+                        xModalClose($my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('cancel')){
@@ -628,11 +628,11 @@ function xModalActions(_this){
                         window[xmodal_id+'_cancel']();
                     }
                     if ($clicked_button.hasClass('close')){
-                        xModalCloseNew($my_mask);
+                        xModalClose($my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('close')){
-                    xModalCloseNew($my_mask);
+                    xModalClose($my_mask);
                 }
             }
         }

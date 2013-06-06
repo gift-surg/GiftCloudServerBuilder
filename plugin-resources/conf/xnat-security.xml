@@ -182,6 +182,8 @@
         <property name="changePasswordPath" value="/app/template/ChangePassword.vm"/>
         <property name="changePasswordDestination" value="/app/action/XDATChangePassword"/>
         <property name="logoutDestination" value="/app/action/LogoutUser"/>
+        <property name="loginPath" value="/app/template/Login.vm"/>
+        <property name="loginDestination" value="/app/action/XDATLoginUser"/>
     </bean>
 	
 	<bean id="arcSpecFilter" class="org.nrg.xnat.security.XnatArcSpecFilter">

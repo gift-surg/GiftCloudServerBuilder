@@ -1367,6 +1367,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
+			<xs:element name="validated_by" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="status" type="xs:string"/>
 	</xs:complexType>

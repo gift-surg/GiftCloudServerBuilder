@@ -144,7 +144,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 			retExp = (XnatSubjectassessordata)XnatExperimentdata.getXnatExperimentdatasById(currExp.getId(), null, completeDocument);
 		}
 
-		if(existing==null && currExp.getProject()!=null && currExp.getLabel()!=null){
+		if(retExp==null && currExp.getProject()!=null && currExp.getLabel()!=null){
 			retExp = (XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(currExp.getProject(), currExp.getLabel(),user, completeDocument);
 		}
 

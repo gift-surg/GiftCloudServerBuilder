@@ -13,7 +13,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
                         <div class="error">$data.getMessage()</div><br><br>
                     #end
                     #if($msg)
-                        <div class="warning">$msg</div><br><br>
+                        <div class="message">$msg</div><br><br>
                     #end
                     #parse("/screens/site_description.vm")
                 </td>
@@ -52,7 +52,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
                         <div class="error">$data.getMessage()</div><br><br>
                     #end
                     #if($msg)
-                        <div class="warning">$msg</div><br><br>
+                        <div class="message">$msg</div><br><br>
                     #end
                 </td>
             </tr>

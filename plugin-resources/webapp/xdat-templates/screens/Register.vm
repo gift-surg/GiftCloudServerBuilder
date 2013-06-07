@@ -16,7 +16,7 @@ $page.setBgColor($ui.bgcolor)
 	#if ( $data.getMessage() )
 		<tr>
 	  		<td colspan="2">
-                  <DIV class="warning">$data.getMessage()</DIV></BR>
+                  <DIV class="message">$data.getMessage()</DIV></BR>
 			</td>
 		</tr>
 	#end

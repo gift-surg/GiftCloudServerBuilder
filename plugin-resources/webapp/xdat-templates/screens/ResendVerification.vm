@@ -15,7 +15,7 @@ $page.setBgColor($ui.bgcolor)
  <br><br><DIV class="error">$data.message</DIV>
 #end
 #if($msg)
- <br><br> <DIV class="warning">$msg</DIV>
+ <br><br> <DIV class="message">$msg</DIV>
 #end
 
 <script type="text/javascript">

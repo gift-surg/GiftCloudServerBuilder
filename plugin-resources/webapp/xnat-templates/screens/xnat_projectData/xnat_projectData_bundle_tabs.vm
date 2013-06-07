@@ -1,14 +1,16 @@
 #set($bundles = $project.getBundles())
 	     #if($bundles.size()>0)
-		 <DIV ID="paginator"></DIV>
+         <script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
+##		 <button id="flip_it">Enable Flippers</button>
+         <div id="paginator"></div>
     <BR>
-    <div ID="tab_module">
+    <div id="tab_module">
     <div class="bd">
-    <DIV id="search_tabs"></DIV>
+    <div id="search_tabs"></div>
     </div>
     </div>
 
-    <script language="javascript">
+    <script type="text/javascript">
     var stored_searches=new Array();
 #set($default_search="")
 #foreach($bundle in $bundles)
@@ -32,10 +34,17 @@ function openTabsChange(obj){
     var bundles=this.loaded.toString();
     YAHOO.util.Cookie.set("${project.getId()}.open_bundle.tabs",bundles, { expires: new Date("January 12, 2025") });
     //alert(bundles + ":" +YAHOO.util.Cookie.get("${project.getId()}.open_bundle.tabs"));
+    //wrangleTabs({
+    //    wrapper: '#search_tabs', // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
+    //    force: true // do we show it even if the tabs aren't too wide?
+    //});
+    //wrangleTabs('#search_tabs');
+    //console.debug('openTabsChange('+obj+')');
 }
 
 function TabManagerInit(){
-    var tab_module=new YAHOO.widget.Module("tab_module",{visible:true}); 
+
+    var tab_module=new YAHOO.widget.Module("tab_module",{visible:true});
 
     window.tab_manager=new TabManager();
     
@@ -54,8 +63,6 @@ function TabManagerInit(){
         }
     }
     
-    
-    
     var bundleTabIndex=YAHOO.util.Cookie.get("${project.getId()}.open_bundle.index");
     if(bundleTabIndex!=null){
 	window.tab_manager.setActiveTab(parseInt(bundleTabIndex));
@@ -64,6 +71,9 @@ function TabManagerInit(){
     
     window.tab_manager.onOpenTabsChange.subscribe(bundleTabChange,this);
     window.tab_manager.onOpenTabsChange.subscribe(openTabsChange,window.tab_manager);
+
+    //console.debug('TabManagerInit()');
+
 }
 
 function debug_out(msg){
@@ -78,7 +88,12 @@ YAHOO.util.Event.onDOMReady(TabManagerInit);
 function bundleTabChange(obj){
     var activeIndex=this.get("activeIndex");
     YAHOO.util.Cookie.set("${project.getId()}.open_bundle.index",activeIndex);
-
+//    var _force = !!(jq('#search_tabs').find('li').length > 1) ;
+//    wrangleTabs({
+//        wrapper: '#search_tabs', // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
+//        force: false // (optional) do we show it even if the tabs aren't too wide? default = false
+//    });
+    //console.debug('bundleTabChange('+obj+'), force: '+_force);
 }
 
 function addBundleMonitor(){
@@ -86,7 +101,39 @@ function addBundleMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addBundleMonitor);
-</script>
+
+    jq(window).load(function(){
+        var tab_wrapper = '#search_tabs';
+//        var _force ;
+//        if (jq(tab_wrapper).find('li:not(.selector)').length > 0){
+//            _force = true ;
+//        }
+//        else {
+//            _force = false ;
+//        }
+        //var _force = !!(jq(tab_wrapper).find('li').length > 2) ;
+        var _force = true ;
+        wrangleTabs({
+            wrapper: tab_wrapper, // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
+            force: _force // do we show it even if the tabs aren't too wide?
+        });
+        //wrangleTabs('#search_tabs');
+
+        //console.debug('force: '+_force);
+    });
+
+//    jq('body').on('change','#search_selector',function(){
+//        wrangleTabs({
+//            wrapper: '#search_tabs', // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
+//            force: true // do we show it even if the tabs aren't too wide?
+//        });
+//    });
+
+//        jq('#flip_it').click(function(){
+//            wrangleTabs('#search_tabs ul.yui-nav','div.yui-content','show');
+//        })
+
+    </script>
 #else
     <!-- no stored data -->
 #end

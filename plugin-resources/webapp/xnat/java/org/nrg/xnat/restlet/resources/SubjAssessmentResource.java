@@ -123,8 +123,6 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA,false));
 	}
 
-
-
 	@Override
 	public boolean allowPut() {
 		return true;
@@ -138,6 +136,27 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 			s = XnatSubjectdata.getXnatSubjectdatasById(subID, user,false);
 		}
 		return s;
+	}
+	
+	private XnatSubjectassessordata getExistingExperiment(XnatSubjectassessordata currExp){
+		XnatSubjectassessordata retExp = null;
+		if(currExp.getId()!=null){
+			retExp = (XnatSubjectassessordata)XnatExperimentdata.getXnatExperimentdatasById(currExp.getId(), null, completeDocument);
+		}
+
+		if(existing==null && currExp.getProject()!=null && currExp.getLabel()!=null){
+			retExp = (XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(currExp.getProject(), currExp.getLabel(),user, completeDocument);
+		}
+
+		if(retExp==null){
+			for(XnatExperimentdataShareI pp : currExp.getSharing_share()){
+				retExp = (XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
+				if(retExp != null){
+					break;
+				}
+			}
+		}
+		return retExp;
 	}
 
 	@Override
@@ -304,25 +323,8 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						return;
 					}
 					
-					//FIND PRE-EXISTING
-					if(existing==null){
-						if(expt.getId()!=null){
-							existing=(XnatSubjectassessordata)XnatExperimentdata.getXnatExperimentdatasById(expt.getId(), null, completeDocument);
-						}
-
-						if(existing==null && expt.getProject()!=null && expt.getLabel()!=null){
-							existing=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(expt.getProject(), expt.getLabel(),user, completeDocument);
-						}
-
-						if(existing==null){
-							for(XnatExperimentdataShareI pp : expt.getSharing_share()){
-								existing=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
-								if(existing!=null){
-									break;
-								}
-							}
-						}
-					}
+					// Find the pre-existing experiment
+					if(existing==null){ existing = getExistingExperiment(expt); }
 
 					//MATCH SUBJECT
 					if(this.subject!=null){
@@ -370,10 +372,6 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					}
 
 					
-					
-					
-					boolean modifiedSubject=false;
-					
 					if(existing==null){
 						if(!user.canCreate(expt)){
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in this project.");
@@ -410,7 +408,6 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 									if (!expt.getSubjectId().equals(s.getId())) {
 										// only accept subjects that are associated with this project
 										if (s.hasProject(proj.getId())){
-											modifiedSubject = true;
 											expt.setSubjectId(s.getId());
 										}
 									}
@@ -427,7 +424,6 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 										}
 										BaseXnatSubjectdata.save(this.subject, false, true,user,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.AUTO_CREATE_SUBJECT));
 										expt.setSubjectId(this.subject.getId());
-										modifiedSubject = true;
 									} 
 									catch (ResourceException e) {
 										this.getResponse().setStatus(e.getStatus(), "Specified user account has insufficient create privileges for subjects in this project.");
@@ -520,6 +516,9 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		            }
 					
 					try {
+						// Preserve the previous version of the experiment before we save it. 
+						XnatSubjectassessordata previous  = getExistingExperiment(expt);
+						
 						if(SaveItemHelper.authorizedSave(expt,user,false,allowDataDeletion,c)){
 							WorkflowUtils.complete(wrk, c);
 							user.clearLocalCache();
@@ -527,27 +526,23 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 
 							if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){
 								expt.quarantine(user);
-						}
-						if (modifiedSubject) {
-							// re-apply this project's edit script
-							try {
-								File tmpDir = new File(System.getProperty("java.io.tmpdir"), "anon_backup");
-								new CopyOp(new OperationI<Map<String,File>>() {
-												@Override
-												public void run(Map<String, File> a) throws Throwable {
-													ProjectAnonymizer p = new ProjectAnonymizer((XnatImagesessiondata) expt, 
-																								expt.getProject(),
-																								expt.getArchiveRootPath());
-													p.call();
-												}
-											}, 
-											tmpDir,
-											expt.getSessionDir() 
-											).run();
 							}
-							catch (TransactionException e) {
-								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
-							}
+						
+							if (previous != null && expt != null && expt.getSubjectId() != null && !expt.getSubjectId().equals(previous.getSubjectId())) {
+								// re-apply this project's edit script
+								try {
+									File tmpDir = new File(System.getProperty("java.io.tmpdir"), "anon_backup");
+									new CopyOp(new OperationI<Map<String,File>>() {
+										@Override
+										public void run(Map<String, File> a) throws Throwable {
+											ProjectAnonymizer p = new ProjectAnonymizer((XnatImagesessiondata) expt, expt.getProject(), expt.getArchiveRootPath());
+											p.call();
+										}
+									}, tmpDir,expt.getSessionDir()).run();
+								}
+								catch (TransactionException e) {
+									this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+								}
 							}
 						}
 					} catch (Exception e1) {

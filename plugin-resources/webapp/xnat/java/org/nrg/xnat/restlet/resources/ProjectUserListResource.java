@@ -72,8 +72,12 @@ public class ProjectUserListResource extends SecureResource {
     }
 
     public boolean isWhitelisted() {
+        final Object projectdata_info = proj.getItem().getProps().get("projectdata_info");
+        if (!(projectdata_info instanceof Integer)) {
+            throw new RuntimeException("Can't parse the project data info identifier property for project " + proj.getDisplayName() + ". Object is " + (projectdata_info == null ? "null" : projectdata_info.getClass().getName()) + ". Must be an Integer object.");
+        }
         ConfigService configService = XDAT.getConfigService();
-        String config = configService.getConfigContents("user-resource-whitelist", "whitelist.json", (Long) proj.getItem().getProps().get("projectdata_info"));
+        String config = configService.getConfigContents("user-resource-whitelist", "whitelist.json", Long.valueOf((Integer) projectdata_info));
         if (!StringUtils.isBlank(config)) {
             ObjectMapper mapper = new ObjectMapper();
 

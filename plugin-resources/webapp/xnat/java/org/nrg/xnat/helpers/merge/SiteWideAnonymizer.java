@@ -8,6 +8,8 @@ import java.util.List;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.xnat.ScriptTable;
 import org.nrg.xdat.model.XnatImagesessiondataI;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.editscript.DicomEdit.ResourceScope;
 
@@ -28,9 +30,24 @@ public class SiteWideAnonymizer extends AnonymizerA {
 	String getProjectName() {
 		return null;
 	}
+	
+	/**
+	 * Returns the subject string that will be passed into the 
+	 * Anonymize.anonymize function
+	 * @return The subject label or subject id (if label is null)
+	 */
 	@Override
-	String getSubjectId() {
-		return this.s.getSubjectId();
+	String getSubject() {
+		String label = null;
+		if(s instanceof XnatImagesessiondata){
+			XnatSubjectdata d = ((XnatImagesessiondata)this.s).getSubjectData();
+			if ( d != null){
+				label = d.getLabel();
+			}
+		}
+		
+		// If the label is null, return the SubjectId
+		return (label != null) ? label : this.s.getSubjectId();
 	}
 	
 	@Override

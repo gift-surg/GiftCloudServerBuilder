@@ -22,7 +22,7 @@ import org.nrg.xft.XFT;
  */
 public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	AnonymizerA next = null;
-	abstract String getSubjectId();
+	abstract String getSubject();
 	abstract String getLabel();
 	
 	public void setNext(AnonymizerA a) {
@@ -38,7 +38,7 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 			if (this.isEnabled()) {
 				Anonymize.anonymize(f,
 									this.getProjectName(),
-									this.getSubjectId(),
+									this.getSubject(),
 									this.getLabel(),
 									true,
 									script.getId(),

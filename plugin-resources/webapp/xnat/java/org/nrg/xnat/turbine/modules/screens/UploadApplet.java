@@ -34,7 +34,7 @@ public class UploadApplet extends SecureScreen {
         storeParameterIfPresent(data, context, "expectedModality");
         storeParameterIfPresent(data, context, "scan_type");
         if (TurbineUtils.HasPassedParameter("session_date", data)) {
-        	//build up the full date/time expected by the upload applet. If the upload applet recieves a date/time in the format
+        	//build up the full date/time expected by the upload applet. If the upload applet receives a date/time in the format
         	// mm/dd/yyyy HH:MM it will verify the scan time is within 61 minutes of HH:MM (24 hour time). If it does not receive
         	// HH:MM or if HH:MM == 00:00 the applet will only verify the scan is on the same day as mm/dd/yyyy. If it receives no
         	// session_date, it will prompt the user for one.  With that said, we want to build up the mm/dd/yyyy string if we can.
@@ -63,65 +63,45 @@ public class UploadApplet extends SecureScreen {
 		
 		//grab the applet config. Project level if it exists, otherwise, do the site-wide
 		ConfigService configService = XDAT.getConfigService();
-		Callable<Long> getProjectId = null;
+		Long projectId = null;
 		
-		Callable<Long> nullCallable = new Callable<Long>() { public Long call() { return null; }};
-		
-		if(projectName != null){
+		if(projectName != null) {
 			final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
 			try {
-				if(!user.canRead(("xnat:subjectData/project").intern(), p.getId())){
-					getProjectId = nullCallable;
+				if(user.canRead(("xnat:subjectData/project").intern(), p.getId())){
+                    projectId = (long) (Integer) p.getItem().getProps().get("projectdata_info");
 				}
 			} catch (Exception e){
-				getProjectId = nullCallable;
+				projectId = null;
 			}
-			getProjectId = new Callable<Long>() { public Long call() { return new Long((Integer)p.getItem().getProps().get("projectdata_info"));}};
-		} else {
-			getProjectId = nullCallable;
 		}
 		
-		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, getProjectId);
+		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, projectId);
 		
-		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())){
+		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())) {
 			//try to pull a site-wide config
-			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, nullCallable);
+			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, null);
 		}
-		if(config != null){
+		if(config != null) {
 			String json = config.getContents();
 	    	
 	        if (json != null) {
-	        	
-	        	
-	        	
-	            try {            	
+	            try {
 	            	//we have JSON, so, create applet parameters from it.
 	            	ObjectMapper mapper = new ObjectMapper();
 	            	AppletConfig jsonParams = mapper.readValue(json, AppletConfig.class);
 	            	StringBuilder sb = new StringBuilder();
-	            	if(jsonParams.getParameters() != null){
-	            		for(String key:jsonParams.getParameters().keySet()){
+	            	if(jsonParams.getParameters() != null) {
+	            		for(String key:jsonParams.getParameters().keySet()) {
 	            			sb.append("parameters['").append(key).append("'] = '").append(jsonParams.getParameters().get(key)).append("';\n");
 	            		}
 	            	}
 	
 	            	context.put("appletParams", sb.toString());
-	            	
-	                
 	            } catch (Exception exception) {
-	                logger.equals(exception);
+	                logger.error("Error processing applet parameters", exception);
 	            }
 	        }
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 }

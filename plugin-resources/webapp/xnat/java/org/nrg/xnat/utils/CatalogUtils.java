@@ -75,13 +75,7 @@ public class CatalogUtils {
     public final static String[] FILE_HEADERS_W_FILE = {"Name", "Size", "URI", "collection", "file_tags", "file_format", "file_content", "cat_ID", "file"};
 
     public static boolean getChecksumConfiguration(final XnatProjectdata project) throws ConfigServiceException {
-        Callable<Long> getProjectId = new Callable<Long>() {
-            public Long call() {
-                return (long) (Integer) project.getItem().getProps().get("projectdata_info");
-            }
-        };
-
-        Configuration configuration = XDAT.getConfigService().getConfig("checksums", "checksums", getProjectId);
+        Configuration configuration = XDAT.getConfigService().getConfig("checksums", "checksums", (long) (Integer) project.getItem().getProps().get("projectdata_info"));
 
         if (configuration != null) {
             String checksumProperty = XDAT.getSiteConfigurationProperty("checksums");

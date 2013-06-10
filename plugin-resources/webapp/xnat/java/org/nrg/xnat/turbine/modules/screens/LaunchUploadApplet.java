@@ -5,8 +5,6 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,55 +43,44 @@ public class LaunchUploadApplet extends SecureScreen {
 		
 		//grab the applet config. Project level if it exists, otherwise, do the site-wide
 		ConfigService configService = XDAT.getConfigService();
-		Callable<Long> getProjectId = null;
-		
-		Callable<Long> nullCallable = new Callable<Long>() { public Long call() { return null; }};
+		Long projectId = null;
 		
 		if(projectName != null){
 			final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
 			try {
-				if(!user.canRead(("xnat:subjectData/project").intern(), p.getId())){
-					getProjectId = nullCallable;
+				if(user.canRead(("xnat:subjectData/project").intern(), p.getId())){
+                    projectId = (long) (Integer) p.getItem().getProps().get("projectdata_info");
 				}
-			} catch (Exception e){
-				getProjectId = nullCallable;
+			} catch (Exception e) {
+				projectId = null;
 			}
-			getProjectId = new Callable<Long>() { public Long call() { return new Long((Integer)p.getItem().getProps().get("projectdata_info"));}};
-		} else {
-			getProjectId = nullCallable;
 		}
 		
-		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, getProjectId);
+		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, projectId);
 		
-		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())){
+		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())) {
 			//try to pull a site-wide config
-			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, nullCallable);
+			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, null);
 		}
-		if(config != null){
+
+		if(config != null) {
 			String json = config.getContents();
 	    	
 	        if (json != null) {
-	        	
-	        	
-	        	
-	            try {            	
+	            try {
 	            	//we have JSON, so, create applet parameters from it.
 	            	ObjectMapper mapper = new ObjectMapper();
 	            	AppletConfig jsonParams = mapper.readValue(json, AppletConfig.class);
-	            	StringBuilder sb = new StringBuilder();
-	            
-	            	
+
 	            	if(jsonParams.getLaunch() != null){
 	            		for(String key:jsonParams.getLaunch().keySet()){
 	            			//put EVERYTHING in the context so your VM can use it.
 	            			//remember it is all string (no booleans) so your VM has to test for string equality.
 	            			context.put(key, jsonParams.getLaunch().get(key));
-
 	            		}
 	            	}
-	                
 	            } catch (Exception exception) {
-	                _log.equals(exception);
+	                _log.error(exception);
 	            }
 	        }
 		}

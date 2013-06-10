@@ -47,23 +47,26 @@ public final class FileSystemSessionTrawler implements SessionDataProducerI {
 	public Collection<SessionData> get() throws IllegalStateException {
 		SortedMap<java.util.Date, Collection<PrearcTableBuilder.Session>> sessions = new TreeMap<Date, Collection<PrearcTableBuilder.Session>>();
 		ArrayList<SessionData> sds = new ArrayList<SessionData>();
-		for (final File tsdir : new File(this.prearcPath).listFiles(hiddenAndDatabaseFileFilter)) {
-			try {
-				sessions = new PrearcTableBuilder().getPrearcSessions(tsdir);
-			} catch (IOException e) {
-				logger.error("Error getting prearchive sessions from the filesystem" , e);
-				throw new IllegalStateException();
-			} catch (SAXException e) {
-				logger.error("Error getting prearchive sessions from the filesystem" , e);
-				throw new IllegalStateException();
-			}
-			for (final Collection<PrearcTableBuilder.Session> ss : sessions.values()) {
-				for (PrearcTableBuilder.Session s : ss) {
-					SessionData _s = s.getSessionData(StringUtils.join(new String[]{PrearcDatabase.projectPath(s.getProject())}));
-					sds.add(_s);
-				}
-			}
-		}
+		File[] files = new File(this.prearcPath).listFiles(hiddenAndDatabaseFileFilter);
+        if(files!=null){
+            for (final File tsdir : files) {
+                try {
+                    sessions = new PrearcTableBuilder().getPrearcSessions(tsdir);
+                } catch (IOException e) {
+                    logger.error("Error getting prearchive sessions from the filesystem" , e);
+                    throw new IllegalStateException();
+                } catch (SAXException e) {
+                    logger.error("Error getting prearchive sessions from the filesystem" , e);
+                    throw new IllegalStateException();
+                }
+                for (final Collection<PrearcTableBuilder.Session> ss : sessions.values()) {
+                    for (PrearcTableBuilder.Session s : ss) {
+                        SessionData _s = s.getSessionData(StringUtils.join(new String[]{PrearcDatabase.projectPath(s.getProject())}));
+                        sds.add(_s);
+                    }
+                }
+            }
+        }
 		return sds;
 	}
 

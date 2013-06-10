@@ -20,6 +20,7 @@ import org.nrg.action.ClientException;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusListenerI;
+import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.exception.DBPoolException;
@@ -108,11 +109,14 @@ public final class PrearcDatabase {
     public static void initDatabase(String prearcPath, SessionDataDelegate delegate, boolean recreateDBMSTablesFromScratch) throws Exception {
         if (!PrearcDatabase.ready){
             PrearcDatabase.prearcPath = StringUtils.isBlank(prearcPath) ? PrearcDatabase.getPrearcPath() : prearcPath;
-            PrearcDatabase.sessionDelegate = delegate != null ? delegate : new FileSystemSessionData(PrearcDatabase.prearcPath);
-            if(recreateDBMSTablesFromScratch) {
-                PrearcDatabase.createDatabase();
-            }
-            PrearcDatabase.ready = true;}
+			if(PrearcDatabase.prearcPath!=null){
+				PrearcDatabase.sessionDelegate = delegate != null ? delegate : new FileSystemSessionData(PrearcDatabase.prearcPath);
+				if(recreateDBMSTablesFromScratch) {
+					PrearcDatabase.createDatabase();
+				}
+				PrearcDatabase.ready = true;
+			}
+		}
     }
 
     protected static void setSessionDataModifier (SessionDataModifierI sm) {
@@ -130,7 +134,13 @@ public final class PrearcDatabase {
      */
 
     protected static String getPrearcPath () {
-        return ArcSpecManager.GetInstance(false).getGlobalPrearchivePath();
+        ArcArchivespecification arcSpec = ArcSpecManager.GetInstance(false);
+		if( arcSpec!=null){
+			return arcSpec.getGlobalPrearchivePath();
+		}
+		else{
+			return null;
+		}
     }
 
     /**

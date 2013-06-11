@@ -1,39 +1,25 @@
 package org.nrg.xnat.helpers.merge;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.ConfigService;
-import org.nrg.config.services.impl.DefaultConfigService;
-import org.nrg.dcm.xnat.EditTable;
-import org.nrg.dcm.xnat.EditTableDAO;
-import org.nrg.dcm.xnat.ScriptTable;
-import org.nrg.dcm.xnat.ScriptTableDAO;
-import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.List;
 
 @Service
 public class AnonUtils {
-	private static AnonUtils _instance;
-	private static final Logger logger = LoggerFactory.getLogger(AnonUtils.class);
-	
-	private static final String DEFAULT_ANON_SCRIPT = "id.das";
-	
-	@Autowired
-	private ConfigService c;
-	
 	public AnonUtils() throws Exception {
         if (_instance != null) {
-            throw new Exception("The ContextService is already initialized, try calling getInstance() instead.");
+            throw new Exception("The AnonUtils service is already initialized, try calling getInstance() instead.");
         }
         _instance = this;
     }
@@ -46,26 +32,47 @@ public class AnonUtils {
 	}
 	
 	public Configuration getScript(String path, Long project) {
-		Configuration config = AnonUtils.getService().c.getConfig(DicomEdit.ToolName, 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Retrieving script for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, path, project });
+        }
+
+        return AnonUtils.getService()._configService.getConfig(DicomEdit.ToolName,
 													 path,
 												     project);
-		return config == null? null : config;
 	}
 	
 	public boolean isEnabled(String path, Long project) {
-		Configuration config = AnonUtils.getService().c.getConfig(DicomEdit.ToolName, 
+        Configuration config = AnonUtils.getService()._configService.getConfig(DicomEdit.ToolName,
 													 path,
 													 project);
-		return config.getStatus().equals(Configuration.ENABLED_STRING);
+        final boolean enabled = config.getStatus().equals(Configuration.ENABLED_STRING);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Retrieved status {} for {}, {} for project: {}", new Object[] { enabled, DicomEdit.ToolName, path, project });
+        }
+
+        return enabled;
 	}
 	
 	public List<Configuration> getAllScripts (Long project) {
-		List<Configuration> scripts = AnonUtils.getService().c.getConfigsByTool(DicomEdit.ToolName, project);
+        List<Configuration> scripts = AnonUtils.getService()._configService.getConfigsByTool(DicomEdit.ToolName, project);
+        if (logger.isDebugEnabled()) {
+            if (scripts == null) {
+                logger.debug("Retrieved no scripts for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, project });
+            } else if (scripts.size() == 0) {
+                logger.debug("Retrieved no scripts for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, project });
+            } else {
+                logger.debug("Retrieved {} scripts for {}, {} for project: {}", new Object[] { scripts.size(), DicomEdit.ToolName, project });
+            }
+        }
+
 		return scripts;
 	}
 	
 	public void setProjectScript (String login, String path, String script, Long project) throws ConfigServiceException {
-		AnonUtils.getService().c.replaceConfig(login, 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting script for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, path, project });
+        }
+        AnonUtils.getService()._configService.replaceConfig(login,
 							 	  "", 	
 							 	  DicomEdit.ToolName, 
 							 	  path, 
@@ -74,7 +81,7 @@ public class AnonUtils {
 	}
 	
 	public void setSiteWideScript(String login, String path, String script) throws ConfigServiceException {
-		AnonUtils.getService().c.replaceConfig(login, 
+        AnonUtils.getService()._configService.replaceConfig(login,
 			 	  				  "", 	
 			 	  				  DicomEdit.ToolName, 
 			 	  				  path, 
@@ -82,19 +89,19 @@ public class AnonUtils {
 	}
 	
 	public void enableSiteWide (String login, String path ) {
-		AnonUtils.getService().c.enable(login, "", DicomEdit.ToolName, path);
+        AnonUtils.getService()._configService.enable(login, "", DicomEdit.ToolName, path);
 	}
 	
 	public void enableProjectSpecific(String login, String path, Long project) {
-		AnonUtils.getService().c.enable(login, "", DicomEdit.ToolName, path, project);
+        AnonUtils.getService()._configService.enable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public void disableSiteWide(String login, String path) {
-		AnonUtils.getService().c.disable(login, "", DicomEdit.ToolName, path);
+        AnonUtils.getService()._configService.disable(login, "", DicomEdit.ToolName, path);
 	}
 	
 	public void disableProjectSpecific(String login, String path, Long project){
-		AnonUtils.getService().c.disable(login, "", DicomEdit.ToolName, path, project);
+        AnonUtils.getService()._configService.disable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public static File getDefaultScript () throws FileNotFoundException {
@@ -106,4 +113,13 @@ public class AnonUtils {
 			throw new FileNotFoundException("Default anon script: " + DEFAULT_ANON_SCRIPT + " not found in " + XFT.GetConfDir());
 		}
 	}
+
+    private static final Logger logger = LoggerFactory.getLogger(AnonUtils.class);
+
+    private static final String DEFAULT_ANON_SCRIPT = "id.das";
+
+    private static AnonUtils _instance;
+
+    @Inject
+    private ConfigService _configService;
 }

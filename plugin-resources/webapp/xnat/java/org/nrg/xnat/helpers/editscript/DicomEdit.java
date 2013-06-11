@@ -1,13 +1,5 @@
 package org.nrg.xnat.helpers.editscript;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -18,62 +10,27 @@ import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 public final class DicomEdit extends SecureResource {
-	private final Logger logger = LoggerFactory.getLogger(DicomEdit.class);
 	
 	/**
-	 * URI template variables
+     * This declares the tool name to be used when storing anonymization data in the configuration service.
 	 */
-	private static final String PROJECT_ID = "PROJECT_ID";
-	private static final String RESOURCE = "RESOURCE";
-	
 	public static final String ToolName = "anon";
-	
-	/**
-	 * Query string parameters
-	 */
-	private static final String ACTIVATE = "activate";
-	
-	/**
-	 * Columns for creating a representation of the config scripts
-	 */
-	private final String[] scriptColumns = {"project","user","create_date","script", "id"};
-	private final String[] editColumns = {"project","edit","create_date","user", "id"};
-	
-	private final String projectPassedIn;
-	private final XnatProjectdata project;
-	
-	/**
-	 * Datatypes
-	 */
-	private final ResourceScope scope;     
-	private final ResourceType rType;
-	private final Access access;
-	// private final boolean expectingUpload
-	
-	/**
-	 * SCRIPT - A script is being uploaded or requested
-	 * STATUS - The status of a script is being set or requested
-	 * UNKNOWN - Don't know what is being requested
-	 * @author aditya
-	 *
-	 */
-	private enum ResourceType {
-		SCRIPT, 
-		STATUS, 
-		UNKNOWN;
-	};
 	
 	/**
 	 * SITE_WIDE - The scope of script or script status is site-wide
@@ -84,79 +41,6 @@ public final class DicomEdit extends SecureResource {
 	public enum ResourceScope {
 		SITE_WIDE,
 		PROJECT
-	}
-	
-	/**
-	 * ALL - Everyone has access to this resource
-	 * PROJECT - Only project owners have access to this resource
-	 * @author aditya
-	 *
-	 */
-	private enum Access {
-		ALL,
-		PROJECT
-	}
-	
-	/**
-	 * Determine if something is being uploaded. The only
-	 * time something is being uploaded is when a script is PUT.
-	 * @param r
-	 * @param m
-	 * @return
-	 */
-	boolean determineUpload (ResourceType r, Method m) {
-		if (m == Method.GET){ return false; } 
-		else if (m == Method.PUT && r == ResourceType.SCRIPT) { return true;}
-		else { return false;}
-	}
-	
-	/**
-	 * Determine what level of access this resource has.
-	 * Everyone has access to GET the site-wide script and site-wide status,
-	 * all other access requires the user to have the appropriate privileges.
-	 * @param r
-	 * @param s
-	 * @param m
-	 * @return
-	 */
-	Access determineAccess (ResourceType r, ResourceScope s, Method m) {
-		if      (m == Method.GET && r == ResourceType.SCRIPT && s == ResourceScope.SITE_WIDE) { return Access.ALL;}
-		else if (m == Method.GET && r == ResourceType.STATUS && s == ResourceScope.SITE_WIDE) { return Access.ALL;}
-		else {return Access.PROJECT;}
-	}
-	
-	/**
-	 * Determine the scope of this resource. 
-	 * URI's containing the segment "projects" signify that scope is project-specific, 
-	 * site-wide otherwise.
-	 * @param r
-	 * @return
-	 */
-	ResourceScope determineResourceScope (Request r) {
-		if (r.getOriginalRef().getSegments().contains("projects")) {
-			return ResourceScope.PROJECT;
-		}
-		else {
-			return ResourceScope.SITE_WIDE;
-		}
-	}
-	
-	/**
-	 * Parse the URI to determine whether a script or status is being requested. 
-	 * @param r
-	 * @return
-	 */
-	ResourceType determineResourceType (Request r) {
-		String resourceType = (String) r.getAttributes().get(DicomEdit.RESOURCE);
-		if (resourceType.equals("script")) {
-			return ResourceType.SCRIPT;
-		}
-		else if (resourceType.equals("status")) {
-			return ResourceType.STATUS;
-		}
-		else {
-			return ResourceType.UNKNOWN;
-		}
 	}
 	
 	/**
@@ -172,12 +56,11 @@ public final class DicomEdit extends SecureResource {
 	 * So I do the weird looking thing below which uses reflection to determine if the project is 
 	 * XnatProjectdata or String. This breaks all readability but allows me to pass in a null project. 
 	 * 
-	 * @param scope
+     * @param scope   The request scope.
 	 * @param project Must be String, XnatProjectdata or null
-	 * @return
+     * @return The path for the script storage.
 	 */
 	public static String buildScriptPath(ResourceScope scope, Object project) {
-		String ret = null;
 		String project_id = null;
 		if (project != null) {
 			if (project.getClass() == XnatProjectdata.class) {
@@ -188,17 +71,20 @@ public final class DicomEdit extends SecureResource {
 			}
 		}
 		switch (scope) {
-		case PROJECT :   ret = "/projects/" + project_id; break; 
-		case SITE_WIDE : ret = "script"; break;
-		default :        ret = ""; break;
+            case PROJECT:
+                return "/projects/" + project_id;
+            case SITE_WIDE:
+                return "script";
+            default:
+                return "";
 		}
-		return ret;
 	}
 	
 	public DicomEdit(Context context, Request request, Response response) {
 		super(context, request, response);
-		this.projectPassedIn = (String) request.getAttributes().get(DicomEdit.PROJECT_ID);
-		this.project = XnatProjectdata.getXnatProjectdatasById(this.projectPassedIn, null, false);
+
+        String projectId = (String) request.getAttributes().get(DicomEdit.PROJECT_ID);
+        this.project = XnatProjectdata.getXnatProjectdatasById(projectId, null, false);
 
 		this.scope =  this.determineResourceScope(request);
 		this.rType =  this.determineResourceType(request);
@@ -213,17 +99,17 @@ public final class DicomEdit extends SecureResource {
 	 * Get this project's unique identifier in the database.
 	 * "projectdata_info" is used by XNAT to keep track of every project
 	 * ever created and so is robust to deleted projects. 
-	 * @param p
-	 * @return
+     * @param p    The project to get the DB ID
+     * @return The DB ID for the submitted project.
 	 */
 	public static Long getDBId(XnatProjectdata p) {
-		return new Long((Integer)p.getItem().getProps().get("projectdata_info"));
+        return (long) (Integer) p.getItem().getProps().get("projectdata_info");
 	}
 	
 	@Override
 	public Representation represent(final Variant variant) throws ResourceException {
 		final MediaType mt = overrideVariant(variant);
-		final boolean all = this.getQueryVariable("all") == null ? false : true;
+        final boolean all = this.getQueryVariable("all") != null;
 		XFTTable table = null;
 		try {
 			table = 
@@ -289,8 +175,9 @@ public final class DicomEdit extends SecureResource {
 					}
 				}).run();
 		}
-		catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+        catch (Exception exception) {
+            logger.error("Internal server error for user " + user.getUsername(), exception);
+            this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, exception.getMessage());
 		}
 		return this.representTable(table, mt, new Hashtable<String,Object>());
 	}
@@ -310,38 +197,7 @@ public final class DicomEdit extends SecureResource {
 		return true;
 	}
 	
-	/**
-	 * Build a closure that extracts the script from an uploaded file.
-	 * @return
-	 */
-	Callable<String> getFile() {
-		return new Callable<String>() {
-			Request rq = DicomEdit.this.getRequest();
-			Response rp = DicomEdit.this.getResponse();
-			
-			public String call () throws Exception {
-				Representation entity = rq.getEntity();
-				FileWriterWrapperI fw = null;
-				List<FileWriterWrapperI> fws = DicomEdit.this.getFileWritersAndLoadParams(entity);
-				
-				if (fws.isEmpty()) {
-				    logger.warn("Unable to unpack script from request {}", rq);
-				    rp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
-				    return null;
-				}
-				
-				if(fws.size()>1){
-					rp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Importer is limited to one uploaded resource at a time.");
-					return null;
-				}
-				fw = fws.get(0);
-				final InputStream is = fw.getInputStream();
-				String script = DicomEdit.convertStreamToString(is);
-				return script;
-			}
-		};
-	}
-	
+    @Override
 	public void handlePut(){
 		try {
 			new ScriptOp<java.lang.Void>(this.project,
@@ -355,7 +211,7 @@ public final class DicomEdit extends SecureResource {
 				public java.lang.Void call() throws Exception {
 					try {
 						if (rType == ResourceType.SCRIPT) {
-							String script = getFile().call();
+                                    String script = getFile();
 							if (script != null) {
 								if (scope == ResourceScope.SITE_WIDE) {
 									AnonUtils.getService().setSiteWideScript(user.getLogin(), 
@@ -372,6 +228,9 @@ public final class DicomEdit extends SecureResource {
 							else {
 								// something went wrong, but the error response status should have 
 								// been set in the closure so do nothing.
+                                        if (logger.isWarnEnabled()) {
+                                            logger.warn("An error occurred, check error response status or logging from anon service.");
+                                        }
 							}
 						}
 						else if (rType == ResourceType.STATUS){
@@ -403,10 +262,12 @@ public final class DicomEdit extends SecureResource {
 									}
 								}
 								else {
+                                            logger.warn("The activate parameter should be either true or false for user " + user.getUsername());
 									getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "The activate parameter should be either true or false.");
 								}
 							}
 							else {
+                                        logger.warn("The activate query string parameter should be either true or false for user " + user.getUsername());
 								getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Please set the activate query string parameter to true or false.");
 							}
 						}
@@ -420,18 +281,95 @@ public final class DicomEdit extends SecureResource {
 					return null;
 				}
 			}).run();	
+        } catch (Exception exception) {
+            logger.error("Internal server error for user " + user.getUsername(), exception);
+            this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, exception.getMessage());
 		}
-		catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 		}
+
+    /**
+     * Determine what level of access this resource has.
+     * Everyone has access to GET the site-wide script and site-wide status,
+     * all other access requires the user to have the appropriate privileges.
+     * @param type      The resource type (script or status)
+     * @param scope     The resource scope (site-wide or project-specific)
+     * @param method    The HTTP method
+     * @return Indicates the script access level.
+     */
+    private Access determineAccess(ResourceType type, ResourceScope scope, Method method) {
+        if (method == Method.GET && type == ResourceType.SCRIPT && scope == ResourceScope.SITE_WIDE) {
+            return Access.ALL;
+        } else if (method == Method.GET && type == ResourceType.STATUS && scope == ResourceScope.SITE_WIDE) {
+            return Access.ALL;
+        } else {
+            return Access.PROJECT;
+        }
+    }
+
+    /**
+     * Determine the scope of this resource.
+     * URI's containing the segment "projects" signify that scope is project-specific,
+     * site-wide otherwise.
+     * @param request    The request object.
+     * @return Indicates the resource scope for the request.
+     */
+    private ResourceScope determineResourceScope (Request request) {
+        if (request.getOriginalRef().getSegments().contains("projects")) {
+            return ResourceScope.PROJECT;
+        }
+        else {
+            return ResourceScope.SITE_WIDE;
+        }
+    }
+
+    /**
+     * Parse the URI to determine whether a script or status is being requested.
+     * @param request    The request object.
+     * @return Checks whether a script or status is being requested.
+     */
+    private ResourceType determineResourceType (Request request) {
+        String resourceType = (String) request.getAttributes().get(DicomEdit.RESOURCE);
+        if (resourceType.equals("script")) {
+            return ResourceType.SCRIPT;
+        }
+        else if (resourceType.equals("status")) {
+            return ResourceType.STATUS;
+        }
+        else {
+            return ResourceType.UNKNOWN;
+        }
+    }
+
+    /**
+     * Build a closure that extracts the script from an uploaded file.
+     * @return The script for the indicated file.
+     */
+    private String getFile() throws Exception {
+        Request rq = DicomEdit.this.getRequest();
+        Response rp = DicomEdit.this.getResponse();
+
+        List<FileWriterWrapperI> fws = DicomEdit.this.getFileWritersAndLoadParams(rq.getEntity());
+
+        if (fws.isEmpty()) {
+            logger.warn("Unable to unpack script from request {}", rq);
+            rp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
+            return null;
+        }
+
+        if (fws.size() > 1) {
+            rp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Importer is limited to one uploaded resource at a time.");
+            return null;
+        }
+
+        return DicomEdit.convertStreamToString(fws.get(0).getInputStream());
 	}
 	
 	private static String convertStreamToString(InputStream is) throws Exception {
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 	    StringBuilder sb = new StringBuilder();
-	    String line = null;
+        String line;
 	    while ((line = reader.readLine()) != null) {
-	      sb.append(line + "\n");
+          sb.append(line).append("\n");
 	    }
 	    is.close();
 	    return sb.toString();
@@ -476,7 +414,7 @@ public final class DicomEdit extends SecureResource {
 		
 		/**
 		 * Perform some sanity checks and then run the operation 
-		 * @return
+         * @return An object of the type for the script operation.
 		 * @throws Exception
 		 */
 		A run() throws Exception {
@@ -491,12 +429,14 @@ public final class DicomEdit extends SecureResource {
 						return c.call();
 					}
 					else {
+                        logger.warn("User {} does not have privileges to access this project", user.getUsername());
 						resp.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
 						return null;
 					}
 				}
 			}
 			else {
+                logger.warn("Resource type must be either script or status.");
 				resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Resource type must be either script or status.");
 				return null;
 			}
@@ -506,4 +446,61 @@ public final class DicomEdit extends SecureResource {
 			return a == Access.ALL || PrearcUtils.getProjects(user,null).contains(project);
 		}
 	}
+
+    /**
+     * Declare the class logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(DicomEdit.class);
+
+    /**
+     * URI template variables
+     */
+    private static final String PROJECT_ID = "PROJECT_ID";
+    private static final String RESOURCE = "RESOURCE";
+
+    /**
+     * Query string parameters
+     */
+    private static final String ACTIVATE = "activate";
+
+    /**
+     * Columns for creating a representation of the config scripts
+     */
+    private static final String[] scriptColumns = {"project","user","create_date","script", "id"};
+    private static final String[] editColumns = {"project","edit","create_date","user", "id"};
+
+    /**
+     * Project for this operation.
+     */
+    private final XnatProjectdata project;
+
+    /**
+     * Data types
+     */
+    private final ResourceScope scope;
+    private final ResourceType rType;
+    private final Access access;
+
+    /**
+     * SCRIPT - A script is being uploaded or requested
+     * STATUS - The status of a script is being set or requested
+     * UNKNOWN - Don't know what is being requested
+     * @author aditya
+     *
+     */
+    private enum ResourceType {
+        SCRIPT,
+        STATUS,
+        UNKNOWN
+}
+
+    /**
+     * ALL - Everyone has access to this resource
+     * PROJECT - Only project owners have access to this resource
+     * @author aditya
+     */
+    private enum Access {
+        ALL,
+        PROJECT
+    }
 }

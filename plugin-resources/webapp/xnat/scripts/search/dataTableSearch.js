@@ -791,7 +791,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   }
   
   this.getMenuItems=function(){
-	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}, {text:"Data Dictionary"}];
+	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}];
 
 	  if(this.options.allowInTableMods){
 	  	cMenuItems.push({text:"Hide Column"});
@@ -883,7 +883,7 @@ var onContextMenuClick=function(p_sType, p_aArgs, o){
 	  YAHOO.util.Cookie.set(cookie_name);
         }
         break;
-      case 3:
+      case 4:
         //Filter Column
    	var oColumn= o.dt.getColumnByKey(colRow.getAttribute("name"));
         o.dt.loadSearchManager();
@@ -909,8 +909,8 @@ var onContextMenuClick=function(p_sType, p_aArgs, o){
 	CookieFunctions.set_cookie(cookie_name, "sortBy", colRow.getAttribute("name"));
 	CookieFunctions.set_cookie(cookie_name, "sortOrder", "DESC");
         break;
-      case 4:
-        //Filter Column
+      case 3:
+        //Edit Columns
     	var oColumn= o.dt.getColumnByKey(colRow.getAttribute("name"));
         o.dt.loadSearchManager();
         o.dt.sm.renderAddFields(false);

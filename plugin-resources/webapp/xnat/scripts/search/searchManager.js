@@ -181,7 +181,7 @@ function SearchXMLManager(_xml){
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
 
-		this.filterPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:"700px",height:"500px",visible:false,draggable:true,modal:true});
+		this.filterPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:"700px",height:"500px",visible:false,fixedcenter:true,modal:true});
 		this.filterPopup.sm=this;
 
 	    var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
@@ -373,7 +373,7 @@ function SearchXMLManager(_xml){
 		tp_fm.appendChild(popupDIV);
 
 
-		this.joinPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:_joinW+"px",height:_joinH+"px",visible:false,draggable:true,modal:true});
+		this.joinPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:_joinW+"px",height:_joinH+"px",visible:false,fixedcenter:true,modal:true});
 		this.joinPopup.sm=this;
 		//this.renderFields();
 
@@ -671,7 +671,7 @@ function SearchXMLManager(_xml){
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
 
-		this.dialogPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:_addColW+"px",height:_addColH+"px",visible:false,draggable:true,modal:true});
+		this.dialogPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:_addColW+"px",height:_addColH+"px",visible:false,fixedcenter:true,modal:true});
 		this.dialogPopup.sm=this;
 		//this.renderFields();
 

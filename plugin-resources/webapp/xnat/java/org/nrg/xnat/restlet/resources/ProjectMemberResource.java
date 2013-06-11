@@ -40,7 +40,8 @@ public class ProjectMemberResource extends SecureResource {
 	XdatUsergroup group=null;
 	ArrayList<XDATUser> newUsers= new ArrayList<XDATUser>();
 	ArrayList<String> unknown= new ArrayList<String>();
-	String gID=null; 
+	String gID=null;
+    boolean displayHiddenUsers = false;
 	
 	public ProjectMemberResource(Context context, Request request, Response response) {
 		super(context, request, response);
@@ -140,6 +141,7 @@ public class ProjectMemberResource extends SecureResource {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
+        displayHiddenUsers = Boolean.parseBoolean((String)getParameter(request, "DISPLAY_HIDDEN_USERS"));
 
 		}
 
@@ -275,8 +277,12 @@ public class ProjectMemberResource extends SecureResource {
 		XFTTable table=null;
 		if(proj!=null){
 			try {
-				String query = "SELECT g.id AS \"GROUP_ID\", displayname,login,firstname,lastname,email FROM xdat_userGroup g RIGHT JOIN xdat_user_Groupid map ON g.id=map.groupid RIGHT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE tag='" + proj.getId() + "' ORDER BY g.id DESC;";
-				table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
+                StringBuffer query = new StringBuffer("SELECT g.id AS \"GROUP_ID\", displayname,login,firstname,lastname,email FROM xdat_userGroup g RIGHT JOIN xdat_user_Groupid map ON g.id=map.groupid RIGHT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id WHERE tag='").append(proj.getId()).append("' ");
+                if(!displayHiddenUsers){
+                    query.append(" and enabled = 1 ");
+                }
+                query.append(" ORDER BY g.id DESC;");
+                table = XFTTable.Execute(query.toString(), user.getDBName(), user.getLogin());
 			} catch (SQLException e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

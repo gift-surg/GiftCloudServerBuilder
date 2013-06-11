@@ -3,6 +3,7 @@
 						<table class="mgmt_container">
  <tr>
   <td valign="top">
+   <label><input id="showDeactivatedUsersCheck" type="checkbox" onclick="window.userManager.reloadUsersForProject();">Show Deactivated Users</label>
    <div id="user_mgmt_div"></div>
   </td>
   <td valign="top">

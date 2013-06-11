@@ -26,6 +26,7 @@ import org.restlet.resource.Variant;
 public class ProjectUserListResource extends SecureResource {
     XFTTable table = null;
     XnatProjectdata proj = null;
+    boolean displayHiddenUsers = false;
 
     public ProjectUserListResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -42,6 +43,7 @@ public class ProjectUserListResource extends SecureResource {
             logger.error("Unauthorized Access to project-level user resources. User: " + userName);
             this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Access Denied: Only project owners and site managers can access user resources.");
         }
+        displayHiddenUsers = Boolean.parseBoolean((String)getParameter(request, "DISPLAY_HIDDEN_USERS"));
     }
 
     @Override
@@ -54,8 +56,12 @@ public class ProjectUserListResource extends SecureResource {
 
         if (proj != null) {
             try {
-                String query = "SELECT g.id AS \"GROUP_ID\", displayname,login,firstname,lastname,email FROM xdat_userGroup g RIGHT JOIN xdat_user_Groupid map ON g.id=map.groupid RIGHT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE tag='" + proj.getId() + "' ORDER BY g.id DESC;";
-                table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
+                StringBuffer query = new StringBuffer("SELECT g.id AS \"GROUP_ID\", displayname,login,firstname,lastname,email FROM xdat_userGroup g RIGHT JOIN xdat_user_Groupid map ON g.id=map.groupid RIGHT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id WHERE tag='").append(proj.getId()).append("' ");
+                if(!displayHiddenUsers){
+                    query.append(" and enabled = 1 ");
+                }
+                query.append(" ORDER BY g.id DESC;");
+                table = XFTTable.Execute(query.toString(), user.getDBName(), user.getLogin());
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (DBPoolException e) {
@@ -68,6 +74,7 @@ public class ProjectUserListResource extends SecureResource {
 
         MediaType mt = overrideVariant(variant);
 
+        if(table!=null)params.put("totalRecords", table.size());
         return this.representTable(table, mt, params);
     }
 

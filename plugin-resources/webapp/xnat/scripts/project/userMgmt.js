@@ -58,12 +58,12 @@ function UserManager(user_mgmt_div_id, pID){
 
 
 	this.userColumnDefs=[
-	                     {key:"button",label:"Remove",formatter:removeButtonFormatter},
 	                     {key:"login",label:"Username",sortable:true},
 	                     {key:"firstname",label:"Firstname",sortable:true},
 	                     {key:"lastname",label:"Lastname",sortable:true},
 	                     {key:"email",label:"Email",sortable:true},
-	                     {key:"displayname",label:"Group",sortable:true}];
+	                     {key:"displayname",label:"Group",sortable:true},
+                         {key:"button",label:"Remove",formatter:removeButtonFormatter}];
 
 	this.allUserColumnDefs=[
 	                        {key:"button",label:"Add",formatter:"checkbox"},
@@ -82,8 +82,8 @@ function UserManager(user_mgmt_div_id, pID){
             cache:false, // Turn off caching for IE
 				scope:this
 		};
-
-		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/'+ pID + '/users?format=json&stamp='+ (new Date()).getTime(),this.initCallback,null,this);
+        var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
+		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/'+ pID + '/users'+showDeactivatedUsers+'?format=json&stamp='+ (new Date()).getTime(),this.initCallback,null,this);
 	};
 
 	this.initFailure=function(o){
@@ -109,6 +109,16 @@ function UserManager(user_mgmt_div_id, pID){
 			this.loadAllUsers();
 	};
 
+    this.reloadUsersForProject=function(){
+        this.reloadCallback={
+            success:this.completeInit,
+            failure:this.inviteFailure,
+            cache:false, // Turn off caching for IE
+            scope:this
+        };
+        var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
+        YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/'+ this.pID + '/users'+showDeactivatedUsers+'?format=json&stamp='+ (new Date()).getTime(),this.reloadCallback,null,this);
+    }
 
 	this.loadAllUsers=function(){
 		this.allLoader=prependLoader("add_invite_user_header","Loading users");
@@ -236,7 +246,8 @@ function UserManager(user_mgmt_div_id, pID){
 					if(send){
 						params+="&sendemail=true";
 					}
-					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails+ "?" + params,that.insertCallback,params,that);
+                    var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
+					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails + showDeactivatedUsers + "?" + params,that.insertCallback,params,that);
 				};
 			};
 
@@ -280,7 +291,8 @@ function UserManager(user_mgmt_div_id, pID){
 				scope:this
 		};
 		var post_url = serverRoot + "/REST/projects/" + this.pID + "/users/" + group;
-		YAHOO.util.Connect.asyncRequest('DELETE',post_url + "/" + login + "?format=json&XNAT_CSRF="+csrfToken,this.deleteCallback,null,this);
+        var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
+		YAHOO.util.Connect.asyncRequest('DELETE',post_url + "/" + login + showDeactivatedUsers + "?format=json&XNAT_CSRF="+csrfToken,this.deleteCallback,null,this);
 	};
 
 	this.userExists=function (email){

@@ -1,6 +1,7 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources.files;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -166,7 +167,6 @@ public class CatalogResourceList extends XNATTemplate {
     @Override
     public Representation getRepresentation(Variant variant) {
         XFTTable table = null;
-        int recordCount = 0;
 
         if(recons.size()>0 || scans.size()>0 || expts.size()>0 || sub!=null || proj!=null){
             try {
@@ -236,7 +236,6 @@ public class CatalogResourceList extends XNATTemplate {
                     _new[9]=res.getContent();
                     _new[10]=res.getFormat();
 
-                    recordCount++;
                     t.rows().add(_new);
                 }
 
@@ -249,10 +248,13 @@ public class CatalogResourceList extends XNATTemplate {
 
         Hashtable<String,Object> params=new Hashtable<String,Object>();
         params.put("title", "Resources");
-
         MediaType mt = overrideVariant(variant);
 
         if(table!=null) {
+            // If table.rows() is null, set recordCount to 0
+            ArrayList<Object[]> r = table.rows();
+            int recordCount = (r != null) ? r.size() : 0;
+            
             if (logger.isDebugEnabled()) {
                 logger.debug("Found a total of " + recordCount + " records");
             }

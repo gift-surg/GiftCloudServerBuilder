@@ -56,9 +56,13 @@ public class PrearcSessionAnonymizer extends AnonymizerA {
 		return this.p.getLabel();
 	}
 	
+	/**
+	 * Returns the subject string that will be passed into the 
+	 * Anonymize.anonymize function
+	 */
 	@Override
-	String getSubjectId() {
-		return this.p.getSubjectId();
+	String getSubject() {
+		return this.p.getSubject();
 	}
 	
 	Long getDBId (String project) {

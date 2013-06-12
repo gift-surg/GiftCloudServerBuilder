@@ -33,7 +33,7 @@ public class SingleFileAnonymizer extends AnonymizerA {
 	}
 	
 	@Override
-	String getSubjectId() {
+	String getSubject() {
 		return this.subject;
 	}
 

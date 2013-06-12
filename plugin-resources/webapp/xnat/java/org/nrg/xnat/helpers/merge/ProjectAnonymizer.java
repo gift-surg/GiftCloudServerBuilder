@@ -9,8 +9,10 @@ import org.nrg.config.entities.Configuration;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatImagesessiondataI;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 
 /**
@@ -50,9 +52,23 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 		this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, projectId);
 	} 
 	
+	/**
+	 * Returns the subject string that will be passed into the 
+	 * Anonymize.anonymize function
+	 * @return The subject label or subject id (if label is null)
+	 */
 	@Override
-	String getSubjectId() {
-		return s.getSubjectId();
+	String getSubject() {
+		String label = null;
+		if(s instanceof XnatImagesessiondata){
+			XnatSubjectdata d = ((XnatImagesessiondata)this.s).getSubjectData();
+			if ( d != null){
+				label = d.getLabel();
+			}
+		}
+		
+		// If the label is null, return the SubjectId
+		return (label != null) ? label : this.s.getSubjectId();
 	}
 	
 	@Override

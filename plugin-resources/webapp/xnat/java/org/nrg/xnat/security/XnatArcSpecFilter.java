@@ -31,9 +31,11 @@ public class XnatArcSpecFilter extends GenericFilterBean {
             chain.doFilter(req, res);
         } else {
             final XDATUser user = (XDATUser) request.getSession().getAttribute("user");
+            final String uri = request.getRequestURI();
+
             if (user == null) {
                 String header = request.getHeader("Authorization");
-                if (header != null && header.startsWith("Basic ")) {
+                if (header != null && header.startsWith("Basic ") && !uri.contains(_initializationPath)) {
                     //Users that authenticated using basic authentication receive an error message informing them that the arc spec is not set.
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Site has not yet been configured.");
                     return;
@@ -41,9 +43,8 @@ public class XnatArcSpecFilter extends GenericFilterBean {
             }
 
             final String referer = request.getHeader("Referer");
-            final String uri = request.getRequestURI();
 
-            if (uri.endsWith(_configurationPath) || uri.endsWith(_nonAdminErrorPath) || isExemptedPath(uri)) {
+            if (uri.contains(_initializationPath) || uri.endsWith(_configurationPath) || uri.endsWith(_nonAdminErrorPath) || isExemptedPath(uri)) {
                 //If you're already on the configuration page, error page, or expired password page, continue on without redirect.
                 chain.doFilter(req, res);
             } else if (referer != null && (referer.endsWith(_configurationPath) || referer.endsWith(_nonAdminErrorPath) || isExemptedPath(referer)) && !uri.contains("/app/template") && !uri.contains("/app/screen") && !uri.endsWith(".vm") && !uri.equals("/")) {
@@ -72,6 +73,10 @@ public class XnatArcSpecFilter extends GenericFilterBean {
         }
     }
 
+    public void setInitializationPath(final String initializationPath) {
+        _initializationPath = initializationPath;
+    }
+
     public void setConfigurationPath(String configurationPath) {
         _configurationPath = configurationPath;
     }
@@ -94,6 +99,7 @@ public class XnatArcSpecFilter extends GenericFilterBean {
         return false;
     }
 
+    private String _initializationPath = "";
     private String _configurationPath = "";
     private String _nonAdminErrorPath = "";
     private final List<String> _exemptedPaths = new ArrayList<String>();

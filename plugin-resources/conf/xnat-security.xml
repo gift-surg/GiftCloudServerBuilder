@@ -187,6 +187,7 @@
     </bean>
 	
 	<bean id="arcSpecFilter" class="org.nrg.xnat.security.XnatArcSpecFilter">
+        <property name="initializationPath" value="/services/settings/initialize"/>
         <property name="configurationPath" value="/app/template/Configuration.vm"/>
         <property name="nonAdminErrorPath" value="/app/template/Unconfigured.vm"/>
         <property name="exemptedPaths">

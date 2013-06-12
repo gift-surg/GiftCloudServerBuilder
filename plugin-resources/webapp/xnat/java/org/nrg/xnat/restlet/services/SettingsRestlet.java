@@ -611,6 +611,7 @@ public class SettingsRestlet extends SecureResource {
         XFTItem item = populater.getItem();
         item.setUser(user);
         ArcSpecManager.save(new ArcArchivespecification(item), user, newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Initialized archive specification"));
+        _arcSpec = ArcSpecManager.GetInstance();
     }
 
     private void setDiscreteProperty() throws Exception, ConfigServiceException {

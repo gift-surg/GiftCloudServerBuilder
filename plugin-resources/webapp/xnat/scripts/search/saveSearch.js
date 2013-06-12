@@ -33,6 +33,7 @@ function SavePopupForm(_search,_div,_config){
 			saveOptions.width="320";
 			saveOptions.x=240;
 			saveOptions.visible=true;
+            saveOptions.fixedCenter=true;
 			
 			if(this._div!=undefined){
 				//add to page

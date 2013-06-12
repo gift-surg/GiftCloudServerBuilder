@@ -38,7 +38,7 @@ function BasePopup(_id,_config){
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
 		
-		this.popup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:this.config.defaultWidth+"px",height:this.config.defaultHeight+"px",visible:false,draggable:true,modal:true});
+		this.popup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:this.config.defaultWidth+"px",height:this.config.defaultHeight+"px",visible:false,draggable:true,modal:true,fixedcenter:true});
 		this.popup.manager=this;		
 		
 		this.popup.hideEvent.subscribe(function(obj1,obj2,obj3){

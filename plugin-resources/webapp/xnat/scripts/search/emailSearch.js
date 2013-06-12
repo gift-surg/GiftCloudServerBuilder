@@ -21,6 +21,7 @@ function EmailPopupForm(_search,_div){
 		saveOptions.width="320";
 		saveOptions.x=240;
 		saveOptions.visible=true;
+        saveOptions.fixedcenter=true;
 		
 		//add to page
 		if(this._div!=undefined){

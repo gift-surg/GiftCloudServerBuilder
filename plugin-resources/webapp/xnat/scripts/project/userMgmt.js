@@ -348,7 +348,7 @@ function UserManager(user_mgmt_div_id, pID){
 		var tp_fm=document.getElementById("tp_fm");
 		tp_fm.appendChild(popupDIV);
 
-		this.allUsersPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,visible:false,width:"520px"});
+		this.allUsersPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,visible:false,width:"520px",fixedcenter:true});
 		this.allUsersPopup.access_level_select=access_level_select;
 
 		var handleCancel = function() {

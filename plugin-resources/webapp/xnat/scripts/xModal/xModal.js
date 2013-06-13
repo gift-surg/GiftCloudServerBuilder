@@ -97,7 +97,7 @@ function xModalLoadingOpen(_options){
     xModalLoaderCount++;
     var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
     var thisClass = (_options && _options.class) ? _options.class+' loading' : 'loading';
-    var thisTitle = (_options && _options.title) ? _options.title : 'Loading...';
+    var thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
     var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
     var loader = {
         id: thisLoader,
@@ -112,8 +112,9 @@ function xModalLoadingOpen(_options){
     };
     xModalOpenNew(loader);
 }
-function xModalLoadingClose(){
-    xModalClose($('div.xmodal.loading.open').closest('div.xmask.open.top'));
+function xModalLoadingClose(_id){
+    var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;
+    xModalClose($(thisLoader).closest('div.xmask.open.top'));
 }
 
 // 'Preset' for generic fixed-size modal

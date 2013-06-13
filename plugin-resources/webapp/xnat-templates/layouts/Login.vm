@@ -2,8 +2,10 @@ $navigation.setTemplate("/htmlOpen.vm")
 ## insert any template-specific <head> code here
 
 <style type="text/css">
-    body { background-image: none !important ; }
-    #user_bar { width: 100% ; }
+    body { background: #fff !important ; }
+    #user_bar,
+    #user_bar.no_menu { width: 100% ; max-width: 100% ; min-width: 0 ; }
+    #page_wrapper { max-width: 100% ; }
     #login_container { width: 100% ; height: 400px ; margin: 0 auto ; }
 </style>
 

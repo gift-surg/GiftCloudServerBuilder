@@ -202,12 +202,16 @@ public class XnatPipelineLauncher {
     private boolean launchInProcessPipelineExecution() {
         boolean success = true;
         try {
+        	Integer workflowPrimaryKey = null;
             if (recordWorkflowEntries) {
-                initiateWorkflowEntry();
+            	workflowPrimaryKey = initiateWorkflowEntry();
             }
 
             List<String> parameters = getPipelineConfigurationArguments();
             parameters.addAll(getCommandLineArguments());
+            if (recordWorkflowEntries && workflowPrimaryKey !=null) {
+            	parameters.add("-workFlowPrimaryKey "+workflowPrimaryKey);
+            }
             XNATPipelineLauncher launcher = new XNATPipelineLauncher(parameters);
             success = launcher.run();
         } catch (Exception exception) {
@@ -225,9 +229,14 @@ public class XnatPipelineLauncher {
 
         try {
             logger.debug("Launching command: " + command + " -pwd ****** -parameter pwd=******");
+        	Integer workflowPrimaryKey = null;
             if (recordWorkflowEntries) {
-                initiateWorkflowEntry();
+            	workflowPrimaryKey=initiateWorkflowEntry();
             }
+            if (recordWorkflowEntries && workflowPrimaryKey !=null) {
+            	command += " -workFlowPrimaryKey "+workflowPrimaryKey+" ";
+            }
+
             ProcessLauncher processLauncher = new ProcessLauncher();
             processLauncher.setCommand(command);
             processLauncher.start();
@@ -382,17 +391,18 @@ public class XnatPipelineLauncher {
         return arguments;
     }
 
-    private void initiateWorkflowEntry() throws Exception {
-//        WrkWorkflowdata wrk = new WrkWorkflowdata((UserI)user);
-//        wrk.setDataType(this.getDataType());
-//        wrk.setId(this.getId());
-//        wrk.setExternalid(this.getExternalId());
-//        wrk.setCategory(EventUtils.CATEGORY.DATA);
-//        wrk.setType(EventUtils.TYPE.PROCESS);
-//        wrk.setPipelineName(this.getPipelineName());
-//        wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
-//        wrk.setStatus("Queued");
-//        WorkflowUtils.save(wrk, wrk.buildEvent());
+    private Integer initiateWorkflowEntry() throws Exception {
+        WrkWorkflowdata wrk = new WrkWorkflowdata((UserI)user);
+        wrk.setDataType(this.getDataType());
+        wrk.setId(this.getId());
+        wrk.setExternalid(this.getExternalId());
+        wrk.setCategory(EventUtils.CATEGORY.DATA);
+        wrk.setType(EventUtils.TYPE.PROCESS);
+        wrk.setPipelineName(this.getPipelineName());
+        wrk.setLaunchTime(java.util.Calendar.getInstance().getTime());
+        wrk.setStatus("Queued");
+        WorkflowUtils.save(wrk, wrk.buildEvent());
+        return wrk.getWorkflowId();
     }
 
     /**

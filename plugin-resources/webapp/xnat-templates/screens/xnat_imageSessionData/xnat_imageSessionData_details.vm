@@ -90,10 +90,12 @@ function summaryTabManagerInit(){
 	  </td>
  </tr>
 			</table>
+			#if($item.getStringProperty("note"))
 	  					 <table>
 							    <tr>
 								     <th align="left" valign="top">Notes: </th>
 								     <td valign="top">$!item.getStringProperty("note")</td>
 							    </tr>
 						   </table>
+			#end
 						<!--END xnat_imageSessionData_details.vm -->

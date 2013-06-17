@@ -6,13 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -114,6 +108,9 @@ public final class PrearcDatabase {
 				if(recreateDBMSTablesFromScratch) {
 					PrearcDatabase.createDatabase();
 				}
+                else {
+                    PrearcDatabase.pruneDatabase();
+                }
 				PrearcDatabase.ready = true;
 			}
 		}
@@ -366,6 +363,40 @@ public final class PrearcDatabase {
             wrapException(e);
         }		
         return true;
+    }
+
+    private static void pruneDatabase() throws Exception {
+        // construct list of timestamps with extant folders
+        List<String> timestamps = PrearcDatabase.getPrearchiveFolderTimestamps();
+        // delete all prearchive entries that are not in that timestamp set
+        PrearcDatabase.deleteUnusedPrearchiveEntries(timestamps);
+    }
+
+    private static List<String> getPrearchiveFolderTimestamps() {
+        List<String> timestamps = new ArrayList<String>();
+        timestamps.add("0"); // there must be at least one element in the list
+        File baseDir = new File(prearcPath);
+        File[] projects = baseDir.listFiles(FileSystemSessionTrawler.hiddenAndDatabaseFileFilter);
+        for(File project : projects) {
+            String[] prearchives = project.list();
+            timestamps.addAll(Arrays.asList(prearchives));
+        }
+        return timestamps;
+    }
+
+    private static void deleteUnusedPrearchiveEntries(List<String> timestamps) throws Exception, SQLException {
+        StringBuilder sb = new StringBuilder();
+        for (String timestamp : timestamps) {
+            if (sb.length() > 0) sb.append(',');
+            sb.append("'").append(timestamp).append("'");
+        }
+        final String usedSessionTimestamps = sb.toString();
+        new SessionOp<Void>(){
+            public Void op() throws SQLException, Exception {
+                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.deleteUnusedSessionsSql(usedSessionTimestamps),null,null);
+                return null;
+            }
+        }.run();
     }
 
     public static boolean moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception {
@@ -1232,6 +1263,33 @@ public final class PrearcDatabase {
                 return null;
             }
         }); 
+    }
+
+    public static void setPreventAnon(final String sess, final String timestamp, final String proj, final boolean preventAnon) throws Exception, SQLException, SessionException {
+        PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
+            public Void op () throws SQLException, SessionException, Exception {
+                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.PREVENT_ANON.updateSessionSql(sess, timestamp, proj, preventAnon), null, null);
+                return null;
+            }
+        });
+    }
+
+    public static void setSource(final String sess, final String timestamp, final String proj, final String source) throws Exception, SQLException, SessionException {
+        PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
+            public Void op () throws SQLException, SessionException, Exception {
+                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.SOURCE.updateSessionSql(sess, timestamp, proj, source), null, null);
+                return null;
+            }
+        });
+    }
+
+    public static void setPreventAutoCommit(final String sess, final String timestamp, final String proj, final boolean preventAutoCommit) throws Exception, SQLException, SessionException {
+        PrearcDatabase.modifySession(sess, timestamp, proj, new SessionOp<Void>() {
+            public Void op () throws SQLException, SessionException, Exception {
+                PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.PREVENT_AUTO_COMMIT.updateSessionSql(sess, timestamp, proj, preventAutoCommit), null, null);
+                return null;
+            }
+        });
     }
 
     /**

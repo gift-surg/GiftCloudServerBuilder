@@ -199,7 +199,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 
 				builder.setAssess((XnatImagesessiondata)assessed, (XnatImageassessordata)expt, type);
 			}else{
-				builder.setExpt(proj, expt);
+				builder.setExpt((proj!=null)?proj:expt.getProjectData(), expt);
 			}
 		}else if(sub!=null){
 			builder.setSubject(proj, sub);

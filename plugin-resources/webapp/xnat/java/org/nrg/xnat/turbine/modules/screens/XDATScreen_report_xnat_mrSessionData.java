@@ -34,21 +34,9 @@ public class XDATScreen_report_xnat_mrSessionData extends SecureReport {
         try {
             XnatMrsessiondata mr = new XnatMrsessiondata(item);
             context.put("mr",mr);
-            org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
-            cc.addClause("wrk:workflowData.ID",mr.getId());
-            org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc,TurbineUtils.getUser(data),false);
-            //Sort by Launch Time
-            ArrayList workitems = items.getItems("wrk:workflowData.launch_time","DESC");
-            Iterator iter = workitems.iterator();
-            ArrayList workflows = new ArrayList();
-            while (iter.hasNext())
-            {
-                WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem)iter.next());
-                workflows.add(vrc);
-            }
             
             
-            context.put("workflows",workflows);
+            context.put("workflows",mr.getWorkflows());
             
             if(context.get("project")==null){
             	context.put("project", mr.getProject());

@@ -852,7 +852,6 @@ function showMessage(divId, title, body, options) {
 }
 
 
-
 function toggle_ul(n){
 	var element = document.getElementById("ul_"+n);
 	if (element) { var a = document.getElementById("a_"+n); }

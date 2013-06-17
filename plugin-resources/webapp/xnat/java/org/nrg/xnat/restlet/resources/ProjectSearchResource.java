@@ -74,7 +74,7 @@ public class ProjectSearchResource extends ItemResource {
 		
 		if(xss!=null){
 	        if (mt.equals(MediaType.TEXT_XML)){
-	        	ItemXMLRepresentation rep= new ItemXMLRepresentation(xss.getItem(),MediaType.TEXT_XML);
+	        	ItemXMLRepresentation rep= new ItemXMLRepresentation(xss.getItem(),MediaType.TEXT_XML,true,!this.isQueryVariableTrue("concealHiddenFields"));
 				if(sID.startsWith("@")){
 					rep.setAllowDBAccess(false);
 				}

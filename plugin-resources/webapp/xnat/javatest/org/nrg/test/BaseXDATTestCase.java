@@ -28,6 +28,18 @@ public abstract class BaseXDATTestCase{
 
 	@BeforeClass
 	public static void setUpBeforeClassInit() throws Exception {
+		init();
+		
+		XDATUser temp=new XDATUser(USER);
+		temp.login(PASS);
+		
+		user=temp;
+		
+		admin_user=new XDATUser(ADMIN_USER);
+		admin_user.login(ADMIN_PASS);
+	}
+	
+	public static void init() throws Exception {
 		XFT.VERBOSE=true;
 		
 		if(tool==null){
@@ -37,14 +49,6 @@ public abstract class BaseXDATTestCase{
 			else
 				throw new FileNotFoundException(XNAT_INSTANCE_FOLDER + "InstanceSettings.xml");
 		}
-		
-		XDATUser temp=new XDATUser(USER);
-		temp.login(PASS);
-		
-		user=temp;
-		
-		admin_user=new XDATUser(ADMIN_USER);
-		admin_user.login(ADMIN_PASS);
 	}
 	
 	public static File createFile(File dir, String name, String content) throws IOException{

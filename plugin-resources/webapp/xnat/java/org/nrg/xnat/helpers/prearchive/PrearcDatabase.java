@@ -376,9 +376,10 @@ public final class PrearcDatabase {
         List<String> timestamps = new ArrayList<String>();
         timestamps.add("0"); // there must be at least one element in the list
         File baseDir = new File(prearcPath);
-        File[] projects = baseDir.listFiles(FileSystemSessionTrawler.hiddenAndDatabaseFileFilter);
-        for(File project : projects) {
-            String[] prearchives = project.list();
+        File[] dirs = baseDir.listFiles(FileSystemSessionTrawler.hiddenAndDatabaseFileFilter);
+        for(File dir : dirs) {
+            timestamps.add(dir.getName());
+            String[] prearchives = dir.list();
             timestamps.addAll(Arrays.asList(prearchives));
         }
         return timestamps;

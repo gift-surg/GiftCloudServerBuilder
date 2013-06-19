@@ -105,8 +105,13 @@ public final class PrearcDatabase {
             PrearcDatabase.prearcPath = StringUtils.isBlank(prearcPath) ? PrearcDatabase.getPrearcPath() : prearcPath;
 			if(PrearcDatabase.prearcPath!=null){
 				PrearcDatabase.sessionDelegate = delegate != null ? delegate : new FileSystemSessionData(PrearcDatabase.prearcPath);
+
+                if(!tableExists()) {
+                    PrearcDatabase.createTable();
+                }
+
 				if(recreateDBMSTablesFromScratch) {
-					PrearcDatabase.createDatabase();
+					PrearcDatabase.refresh();
 				}
                 else {
                     PrearcDatabase.pruneDatabase();
@@ -118,11 +123,6 @@ public final class PrearcDatabase {
 
     protected static void setSessionDataModifier (SessionDataModifierI sm) {
         PrearcDatabase.sessionDelegate.setSm(sm);
-    }
-
-    private static void createDatabase() throws Exception {
-        PrearcDatabase.createTable();
-        PrearcDatabase.refresh();
     }
 
     /**
@@ -139,6 +139,27 @@ public final class PrearcDatabase {
 			return null;
 		}
     }
+
+    private static boolean tableExists() throws Exception {
+        try {
+            return new SessionOp<Boolean>() {
+                public Boolean op() throws Exception {
+                    String query ="SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'xdat_search' AND tablename = 'prearchive';";
+
+                    ResultSet r = this.pdb.executeQuery(null, query, null);
+                    int rs = this.pdb.GetResultSetSize(r);
+
+                    return(rs == 1);
+                }
+            }.run();
+        }
+        // can't happen
+        catch (SessionException e){
+            logger.error("",e);
+        }
+        return true;
+    }
+
 
     /**
      * Create the table if it doesn't exist. Should only be called once. Delete table argument
@@ -1513,8 +1534,7 @@ public final class PrearcDatabase {
         try {
             new SessionOp<Void>(){
                 public Void op() throws SQLException, Exception {
-                    PoolDBUtils.ExecuteNonSelectQuery("DROP TABLE IF EXISTS " + PrearcDatabase.tableWithSchema, null, null);
-                    PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.createTableSql(), null, null);
+                    PoolDBUtils.ExecuteNonSelectQuery("DELETE FROM " + PrearcDatabase.tableWithSchema, null, null);
                     return null;
                 }
             }.run();

@@ -38,4 +38,11 @@ $navigation.setTemplate("/bodyOpen.vm")
 
 ## insert any template-specific code here that needs to be directly before closing </body> tag
 
+<script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
+<script type="text/javascript">
+    jq(window).load(function(){
+        wrangleTabs({wrapper:'#search_tabs',force:true});
+    })
+</script>
+
 $navigation.setTemplate("/htmlClose.vm")

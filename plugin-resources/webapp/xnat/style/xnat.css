@@ -262,7 +262,7 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 
 .yui-button, .yui-button button { border-radius: 0 !important ; }
 
-.yui-module.yui-overlay.yui-panel { margin-top: -180px ; box-shadow: 0 10px 20px rgba(0,0,0,0.5) ; }
+.yui-panel-container.yui-dialog { margin-top: -180px ; box-shadow: 0 10px 20px rgba(0,0,0,0.5) ; }
 
 .yui-skin-sam .yui-panel-container .underlay { display: none ; }
 

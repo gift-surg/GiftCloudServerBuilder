@@ -84,7 +84,7 @@ XNAT.app.setTableHeight=function(div_id){
 	}
 }
  
-$(window).resize(function() { XNAT.app.tableSizer(); });  
+$(window).resize(function() { XNAT.app.tableSizer(); });
 
 function DataTableSearch(_div_table_id,obj,_config,_options){
 	this.setDefaultValue=function(key,value){
@@ -295,9 +295,11 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       }
     }
 
+      wrangleTabs();
+
   }
 
-  this.getPage = function (page) {
+    this.getPage = function (page) {
         var that = this;
         var initFailure = function (o) {
             if (!window.leaving) {
@@ -314,7 +316,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
                     url += '&XNAT_CSRF=' + csrfToken;
 
-                    YAHOO.util.Connect.asyncRequest('GET', url, initCallback, null, that); 
+                    YAHOO.util.Connect.asyncRequest('GET', url, initCallback, null, that);
                 }
                 else {
                     document.getElementById(this.div_table_id).innerHTML = "Failed to create search results.";
@@ -329,7 +331,9 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
             scope: this
         };
 
-        openModalPanel("load_data", "Loading data...");
+        //openModalPanel("load_data", "Loading data...");
+        xModalLoadingOpen({id:'load_data',title:'Loading data...'});
+
         this.purge();
 
         document.getElementById(this.div_table_id).innerHTML = "";
@@ -390,8 +394,9 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   };
 
   this.showPage=function(obj){
-    closeModalPanel("load_data");
-    this.startTime = (new Date()).getTime();
+      //closeModalPanel("load_data");
+      xModalLoadingClose('load_data');
+      this.startTime = (new Date()).getTime();
     var dt=document.getElementById(this.div_table_id);
     dt.innerHTML=obj.responseText;
     //alert(dt.innerHTML);

@@ -35,29 +35,30 @@ var xModal = {} ;
 // use the 'on' method to work with dynamic elements
 
 // example of xModal object with all settings
-xModal.x = {
+xModal_sampleObject = {
     //id: 'unique_id_for_this_modal', // id to give to new xModal 'window' - if omitted, will be generated dynamically
     kind: 'fixed',  // options: 'dialog','fixed','large','med','small','custom' - defaults to 'fixed'
     width: 600, // width in px - used for 'fixed','custom','static' - defaults to 600
     height: 400, // height in px - used for 'fixed','custom','static' - defaults to 400
-    scroll: 'yes', // true/false - does content need to scroll? - defaults to yes
+    scroll: 'yes', // does content need to scroll? - defaults to yes, any other value prevents scrolling
     title: 'Message', // text for title bar - you should really customize this, but will show "Message" if omitted
-    content: ' ', // REQUIRED - 'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' to put existing content in a modal (use for forms)
-    footer: 'show', // optional - defaults to 'yes' if omitted - use 'no' to supress footer
-    footerButtons: 'show' , // optional - defaults to 'yes' if omitted - use 'no' to supress buttons
+    content: ' ', // REQUIRED - 'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' (or 'existing') to put existing content in a modal (use for forms)
+    footer: 'show', // optional - defaults to 'show' if omitted - use 'hide' to supress footer
+    footerButtons: 'show' , // optional - defaults to 'show' if omitted - use 'hide' to supress buttons
     footerContent: ' ', // optional - defaults to '' (empty string) if omitted
-    footerHeight: 52, // optional - defaults to 52 if omitted
-    footerBackground: '#f0f0f0', // optional - defaults to #f0f0f0
-    footerBorder: '#e0e0e0', // optional - defaults to #e0e0e0
-    ok: 'show', // optional - defaults to 'show' - use 'hide' to suppress ok button
-    okLabel: 'OK', // optional - defaults to 'OK'
+    footerHeight: 52, // optional - footer height in px - defaults to 52 if omitted
+    footerBackground: '#f0f0f0', // optional - footer background color - defaults to #f0f0f0
+    footerBorder: '#e0e0e0', // optional - footer top border color - defaults to #e0e0e0
+    ok: 'show', // optional - show the 'ok' button? defaults to 'show' - use 'hide' to suppress ok button
+    okLabel: 'OK', // optional - label for the 'ok' button - defaults to 'OK'
     okAction: function(){}, // optional - if omitted, will do nothing (empty function)
-    okClose: 'yes', // optional - modal closes by default when clicking 'ok' - use 'no' if not closing on 'ok' (useful to open an xModal from an xModal)
+    okClose: 'yes', // optional - modal closes by default when clicking 'ok' - use 'no' if not closing on 'ok' click (useful to open an xModal from an xModal)
     cancel: 'show', // optional - defaults to 'show' - use 'hide' to suppress cancel button
-    cancelLabel: 'Cancel', // optional - defaults to 'Cancel'
+    cancelLabel: 'Cancel', // optional - label for 'cancel' button - defaults to 'Cancel'
     cancelAction: function(){}, // optional - if omitted, will do nothing (empty function)
     cancelClose: 'yes', // optional - modal closes by default when clicking 'cancel' button - use 'no' to not close
     defaultButton: 'ok' // optional - defaults to 'ok - 'ok' or 'cancel' - which button is the default?
+    // if you want more than 2 buttons, you'll need to use the 'existing' value for the 'content' property and include the proper markup
 };
 
 var xModalMessageCount = 0 ;
@@ -114,7 +115,7 @@ function xModalLoadingOpen(_options){
 }
 function xModalLoadingClose(_id){
     var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;
-    xModalClose($(thisLoader).closest('div.xmask.open.top'));
+    xModalCloseNew($(thisLoader).closest('div.xmask.open.top'));
 }
 
 // 'Preset' for generic fixed-size modal
@@ -147,7 +148,7 @@ xModal.noFooter = {
     title: ' ',
     content: ' ',
     footer: 'hide'
-    // since footer='no', ok and cancel properties are not needed
+    // since footer='hide', ok and cancel properties are not needed because those buttons aren't rendered
 };
 
 xModal.message = {
@@ -186,11 +187,11 @@ xModal.confirm = {
     // uses default footer
     ok: 'show',
     okLabel: 'OK',
-    okAction: function(){alert('Please add a function for the "OK" button')},
+    okAction: function(){alert('Please add a function for the "OK" button')}, // REQUIRED - that's the point of using the xModal.confirm object
     okClose: 'yes',
     cancel: 'show',
     cancelLabel: 'Cancel',
-    cancelAction: function(){alert('Please add a function for the "Cancel" button')},
+    cancelAction: function(){alert('Please add a function for the "Cancel" button if custom "cancel" action is desired.')},
     cancelClose: 'yes'
 };
 
@@ -211,7 +212,6 @@ xModal.test = {
     cancelAction: function(){alert('Test Cancel success.')},
     cancelClose: 'yes'
 };
-
 
 // make sure jQuery and the DOM have loaded
 $(function(){
@@ -291,10 +291,10 @@ function xModalSizes($this_modal,width,height){
         this_width = parseInt(window_width - (h_margin * 2));
         this_height = parseInt(window_height - (v_margin * 2));
 
-        // keep width at least 800px
+        // keep width at least 600px
         // (only for large, med, small, xsmall)
-        if (this_width <= 800) {
-            this_width = 800 ;
+        if (this_width <= 600) {
+            this_width = 600 ;
         }
         // width no larger than 1200px
         if (this_width >= 1200){
@@ -314,7 +314,7 @@ function xModalSizes($this_modal,width,height){
         ;
 
     if (this.kind === 'fixed' || this.kind === 'dialog' || this.kind === 'message'){
-        top_margin = parseFloat((-this_height/1.15));
+        top_margin = parseFloat((-this_height/2)-20);
     }
     // not sure if this is needed anymore
     /*
@@ -332,10 +332,10 @@ function xModalSizes($this_modal,width,height){
     }
 
     if (this.kind === 'small'){
-        top_margin = top_margin-60;
+        top_margin = top_margin-20;
     }
     if (this.kind === 'xsmall'){
-        top_margin = top_margin-80;
+        top_margin = top_margin-30;
     }
 
     $this_modal.css({
@@ -372,6 +372,7 @@ function xModalOpenNew(xx){
     xmodal_count++ ;
 
     this.id =  xx.id || 'xmodal'+xmodal_count ;
+    //this.kind = xx.size || 'fixed' ; // should change 'kind' to 'size' but will need to check if 'kind' is used first
     this.kind = xx.kind || 'fixed' ;
     this.width = xx.width || 600 ;
     this.height = xx.height || 400 ;
@@ -567,7 +568,7 @@ function xModalOpenNew(xx){
 }
 
 
-function xModalClose(_$this) {
+function xModalCloseNew(_$this) {
     // closes the topmost modal
     var $mask = _$this ?  _$this : $('div.xmask.top');
     var $modal = $mask.find('div.xmodal');
@@ -621,7 +622,7 @@ function xModalActions(_this){
                         window[xmodal_id+'_ok']();
                     }
                     if ($clicked_button.hasClass('close')){
-                        xModalClose($my_mask);
+                        xModalCloseNew($my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('cancel')){
@@ -629,11 +630,11 @@ function xModalActions(_this){
                         window[xmodal_id+'_cancel']();
                     }
                     if ($clicked_button.hasClass('close')){
-                        xModalClose($my_mask);
+                        xModalCloseNew($my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('close')){
-                    xModalClose($my_mask);
+                    xModalCloseNew($my_mask);
                 }
             }
         }

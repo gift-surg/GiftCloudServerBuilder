@@ -27,10 +27,14 @@ function wrangleTabs(tabs){
     // changes to true if tabs are too wide
     var show_filppers = false ;
 
-    if (typeof tabs.wrapper == "undefined"){
+    if (typeof tabs == 'undefined'){
+        tabs = {};
+    }
+
+    if (typeof tabs.wrapper == 'undefined'){
         tabs.wrapper = '.yui-navset';
     }
-    if (typeof tabs.force == "undefined"){
+    if (typeof tabs.force == 'undefined'){
         tabs.force = false;
     }
 

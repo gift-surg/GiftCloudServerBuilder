@@ -184,7 +184,7 @@
             new_test2.content = 'This is a test for the SECOND one.';
             new_test2.ok = {} ;
             new_test2.ok.action = function(){
-                //xModalClose();
+                //xModalCloseNew();
                 alert('OK You Did Success');
                 xModal.test.title = 'Testing...' ;
                 xModal.test.content = 'New test content';
@@ -233,7 +233,7 @@
             //static_1.footer = {render:false};
             static_1.okLabel = 'Static OK';
             static_1.okAction = function(){
-                    //xModalClose();
+                    //xModalCloseNew();
                     //xModalOpenNew(xModal.test);
                     //alert("It's static, yo.");
                     newTestActions2();
@@ -287,7 +287,7 @@
              * xModal.message -- 'fixed', 420x240, scrolls, title: 'Message', has footer w/'OK' button
              * xModal.fixed   -- 'fixed', 500x300, scrolls, title: 'Information', has footer w/'OK' and 'Cancel' buttons
              * xModal.large/med/small/xsmall -- large, med, small, or xsmall modal (relative to browser viewport)
-             * xModal.noFooter -- (not working) renders without footer - xModalClose() must be called some other way (like on submit of form in content)
+             * xModal.noFooter -- (not working) renders without footer - xModalCloseNew() must be called some other way (like on submit of form in content)
              */
 
             // simple message for this one
@@ -296,7 +296,7 @@
             new_xmodal.title = 'New xModal';
             new_xmodal.content = 'The new xModal content, yo.';
             new_xmodal.okAction = function(){
-                //xModalClose();
+                //xModalCloseNew();
                 newTestActions();
                 alert("blah");
             };

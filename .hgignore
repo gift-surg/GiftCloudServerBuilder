@@ -30,6 +30,40 @@ classes/BuildCatalog.class
 StoreXML.launch
 modules/audit.zip
 xnat_subjectData_assessors_new.vm
+
+*\ copy
+*\ copy*
+
+plugin-resources/webapp/xnat-templates/navigations/htmlOpen.vm copy
+plugin-resources/webapp/xnat-templates/screens/UploadAppletIframe.vm
+plugin-resources/webapp/xnat-templates/screens/XDATScreen_add_experiment_xMenu.vm
+plugin-resources/webapp/xnat-templates/screens/XDATScreen_download_sessions2.vm
+plugin-resources/webapp/xnat-templates/screens/xnat_mrSessionData/edit/scams.vm
+plugin-resources/webapp/xnat/java/org/nrg/xnat/restlet/extensions/ExptList.java
+plugin-resources/webapp/xnat/scripts/bootstrap/*
+plugin-resources/webapp/xnat/scripts/chosen/*
+plugin-resources/webapp/xnat/scripts/downloadManager/*
+plugin-resources/webapp/xnat/scripts/downloadManagerx/*
+plugin-resources/webapp/xnat/scripts/filter.js
+plugin-resources/webapp/xnat/scripts/jquery/jQuery.loadScript.js
+plugin-resources/webapp/xnat/scripts/jquery/jquery.utils.js
+plugin-resources/webapp/xnat/scripts/project/settingsTabMgmtX.js
+plugin-resources/webapp/xnat/scripts/search/tabManager.X.js
+plugin-resources/webapp/xnat/scripts/subjectAssessorData/proj_subj_selector_xmenu.js
+plugin-resources/webapp/xnat/scripts/tabWrangler/tabWrangler.X.js
+plugin-resources/webapp/xnat/scripts/tabWrangler/tabWranglers.js
+plugin-resources/webapp/xnat/scripts/timeLeft copy.js
+plugin-resources/webapp/xnat/scripts/timeLeftX.js
+
+plugin-resources/webapp/xnat/scripts/xMenu/*
+
+plugin-resources/webapp/xnat/scripts/xModal copy 2/PIE/PIE.php
+
+plugin-resources/webapp/xnat/scripts/xdat-cnda.js
+plugin-resources/webapp/xnat/style/xdat-cnda.css
+plugin-resources/webapp/xnat/style/xnat-alt.css
+plugin-resources/webapp/xnat/style/xnat-cnda.css
+
 syntax: regexp
 ^classes/org
 ^deployments

@@ -692,7 +692,16 @@ public enum DatabaseSession {
 	public static String deleteSessionSql (String sess, String timestamp, String proj) {
 		return "DELETE FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess,timestamp,proj);
 	}
-	
+
+    /**
+     * Generates SQL that deletes all rows that do not match any of the given timestamps
+     * @param usedSessionTimestamps
+     * @return
+     */
+    public static String deleteUnusedSessionsSql (String usedSessionTimestamps) {
+        return "DELETE FROM " + PrearcDatabase.tableWithSchema + " WHERE timestamp NOT IN (" + usedSessionTimestamps + ")";
+    }
+
 	/**
 	 * Generate SQL that queries any rows matching the given names.
 	 * This query will fail if this column is not a string.

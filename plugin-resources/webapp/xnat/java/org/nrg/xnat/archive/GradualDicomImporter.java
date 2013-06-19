@@ -330,6 +330,8 @@ public class GradualDicomImporter extends ImporterHandlerA {
         sess.setSubject(subject);
         sess.setUrl((new File(tsdir,session)).getAbsolutePath());
         sess.setSource(params.get(URIManager.SOURCE));
+        sess.setPreventAnon(Boolean.valueOf((String)params.get(URIManager.PREVENT_ANON)));
+        sess.setPreventAutoCommit(Boolean.valueOf((String)params.get(URIManager.PREVENT_AUTO_COMMIT)));
 
 	// Query the cache for an existing session that has this Study Instance UID and project name.
         // If found the SessionData object we just created is over-ridden with the values from the cache.

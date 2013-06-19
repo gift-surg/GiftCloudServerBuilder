@@ -10,11 +10,13 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.model.ArcProjectDescendantI;
 import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.model.ArcProjectPipelineI;
+import org.nrg.xdat.om.ArcPipelinedata;
 import org.nrg.xdat.om.ArcProjectDescendant;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
@@ -175,6 +177,51 @@ public abstract class BaseArcProject extends AutoArcProject {
 		}
 		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for  project " + getId());
 		return rtn;
+	}
+	
+	/**
+	 * Return root level pipeline with matching location and stepId (or null)
+	 * @param location
+	 * @param stepId
+	 * @return
+	 */
+	public ArcProjectPipelineI getPipeline(String location, String stepId){
+		for (ArcProjectPipelineI pipe:getPipelines_pipeline()) {
+			if (StringUtils.equals(pipe.getLocation(),location) && StringUtils.equals(pipe.getStepid(),stepId)) {
+				return pipe;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Return descendant pipeline with matching xsiType, location and stepId (or null)
+	 * @param xsiType
+	 * @param location
+	 * @param stepId
+	 * @return
+	 */
+	public ArcProjectDescendantPipelineI getDescendantPipeline(String xsiType, String location, String stepId){
+		for (final ArcProjectDescendantPipelineI pipe: getPipelinesForDescendant(xsiType)) {
+			if (StringUtils.equals(pipe.getLocation(),location) && StringUtils.equals(pipe.getStepid(),stepId)) {
+				return pipe;
+			}
+		}
+		
+		return null;
+	}
+
+
+	public ArcProjectPipeline getProjectPipeline(String pipelineStep) throws PipelineNotFoundException {
+		ArcProjectPipeline rtn = null;
+		List<ArcProjectPipelineI> pipelines =getPipelines_pipeline();
+		for (int i = 0; i < pipelines.size(); i++) {
+			if (pipelines.get(i).getStepid().equals(pipelineStep)) {
+				return ((ArcProjectPipeline)pipelines.get(i));
+			}
+		}
+		return null;
 	}
 
 

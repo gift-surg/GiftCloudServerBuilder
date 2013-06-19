@@ -1,5 +1,5 @@
 #set($scanCounter=7899)
-#if ($workflows.size()>0)
+#if ($om.getWorkflows().size()>0)
 <A name="LINK${scanCounter}" HREF="#LINK${scanCounter}" onClick=" return blocking($scanCounter);"><img ID="IMG$scanCounter" src="$content.getURI("images/plus.jpg")" border=0> <font face="$ui.sansSerifFonts" size="4" style="line-height:18px;"><b>History</b></font></a>
 
 	<span ID="span$!scanCounter" style="position:relative; display:none;">
@@ -12,7 +12,7 @@
 <th>Status </th>
 <th>Note</th>
 </tr>
-#foreach( $workflow in $workflows ) 
+#foreach( $workflow in $om.getWorkflows() ) 
 <tr>
 #set($scanCounter=$scanCounter + 1)
 <td>									<A ONCLICK="return rpt('$workflow.getWrkWorkflowdataId()','wrk:workflowData','wrk:workflowData.wrk_workflowData_id');">$workflow.getOnlyPipelineName()</A></td>

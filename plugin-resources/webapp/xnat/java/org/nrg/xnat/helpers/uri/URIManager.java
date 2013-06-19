@@ -53,6 +53,8 @@ public class URIManager {
 	public static final String PROJECT_ID = "PROJECT_ID";
 	public static final String TYPE = "TYPE";
 	public static final String SOURCE = "SOURCE";
+    public static final String PREVENT_ANON = "prevent_anon";
+    public static final String PREVENT_AUTO_COMMIT = "prevent_auto_commit";
 
 	
 	private static URIManager manager=null;

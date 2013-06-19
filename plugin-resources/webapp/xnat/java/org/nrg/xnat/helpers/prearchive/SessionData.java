@@ -32,7 +32,7 @@ public final class SessionData implements Serializable {
 	private Date scan_date;
 	private String scan_time, subject, url, session, tag, source, visit, protocol, timeZone;
 	private PrearchiveCode autoArchive;
-    private Boolean preventAnon;
+    private Boolean preventAnon = Boolean.valueOf(false);
     private Boolean preventAutoCommit = Boolean.valueOf(false);
 
 	public SessionData() {

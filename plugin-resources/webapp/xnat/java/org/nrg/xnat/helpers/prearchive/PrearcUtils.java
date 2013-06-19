@@ -377,15 +377,18 @@ public class PrearcUtils {
 	
 	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
 		SessionData deleted = null;
-               try {
-            	   deleted = PrearcDatabase.getSession(session,timestamp,project);
-               PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
-               PrearcDatabase.deleteCacheRow(session,timestamp,project);
-               } catch (SessionException e) {
-               }
+        try {
+           deleted = PrearcDatabase.getSession(session,timestamp,project);
+        PrearcDatabase.unsafeSetStatus(session, timestamp, project, PrearcStatus._DELETING);
+        PrearcDatabase.deleteCacheRow(session,timestamp,project);
+        } catch (SessionException e) {
+        }
 
-               addSession(user,project,timestamp,session,allowUnassigned);
-               PrearcDatabase.setAutoArchive(session,timestamp,project,deleted.getAutoArchive());
+        addSession(user,project,timestamp,session,allowUnassigned);
+        PrearcDatabase.setAutoArchive(session,timestamp,project,deleted.getAutoArchive());
+        PrearcDatabase.setPreventAnon(session,timestamp,project,deleted.getPreventAnon());
+        PrearcDatabase.setSource(session,timestamp,project,deleted.getSource());
+        PrearcDatabase.setPreventAutoCommit(session,timestamp,project,deleted.getPreventAutoCommit());
     }
 	
 	public static void resetStatus(final XDATUser user,final String project, final String timestamp, final String session,final String uID, final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
@@ -396,10 +399,13 @@ public class PrearcUtils {
 			PrearcDatabase.deleteCacheRow(session,timestamp,project);
 		} catch (SessionException e) {
 		}
-		
+
 		addSession(user,project,timestamp,session,uID, allowUnassigned);
 		PrearcDatabase.setAutoArchive(session,timestamp,project,deleted.getAutoArchive());
-	}
+        PrearcDatabase.setPreventAnon(session,timestamp,project,deleted.getPreventAnon());
+        PrearcDatabase.setSource(session,timestamp,project,deleted.getSource());
+        PrearcDatabase.setPreventAutoCommit(session,timestamp,project,deleted.getPreventAutoCommit());
+    }
 	
 	public static void addSession(final XDATUser user,final String project, final String timestamp, final String session,final boolean allowUnassigned) throws IOException, InvalidPermissionException, Exception {
 		addSession(user,project,timestamp,session,null,allowUnassigned);

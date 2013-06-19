@@ -14,6 +14,9 @@ width:1px;
   <ul class="yui-nav" style="">
       <li class="selected"><a href="#tab1"><em>Details<span class="spacer"></span></em></a></li>
       <li><a href="#tab2"><em>$displayManager.getPluralDisplayNameForProject()<span class="spacer"></span></em></a></li>
+	  #foreach($tab in $turbineUtils.getTemplates($om.getXSIType(),"report/tabs"))
+            <li><a href="#$tab.getProperty("divName")"><em>$tab.getProperty("title")<span class="spacer"></span></em></a></li>
+        #end
   </ul>
  <div class="yui-content">   
   <div id="tab1"><p>
@@ -36,6 +39,14 @@ width:1px;
   <div id="tab2"><p>
 #parse($turbineUtils.getTemplateName("sharing",$om.getXSIType(),$!project))
 </p></div> 
+
+            #foreach($tab in $turbineUtils.getTemplates($om.getXSIType(),"report/tabs"))
+                <div id="$tab.getProperty("divName")">
+                    #set($path = "screens/${tab.getProperty('path')}")
+                    <p>#parse($path)</p>
+                </div>
+            #end
+
   </div> 
  </DIV>
 </div>

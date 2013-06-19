@@ -402,6 +402,14 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the REST service mock call map", exception);
                 }
                 dirtied = true;
+            } else if (property.equals("enableProjectAppletScript")) {
+                final String enableProjectAppletScript = map.get("enableProjectAppletScript");
+                try {
+                    XDAT.setSiteConfigurationProperty("enableProjectAppletScript", enableProjectAppletScript);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the enableProjectAppletScript site info property", exception);
+                }
+                dirtied = true;
             } else if (property.equals("emailVerification")) {
                 final String emailVerification = map.get("emailVerification");
                 try {

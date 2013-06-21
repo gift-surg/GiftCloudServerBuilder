@@ -110,7 +110,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 					if (c != null) {
 						final String anonScript = c.getContents();
 						final XnatAttrDef[] params = {new XnatAttrDef.Constant("project", newProj)};
-						final DICOMSessionBuilder db = new DICOMSessionBuilder(tsdir, params,
+						final DICOMSessionBuilder db = new DICOMSessionBuilder(f, params,
 						        new Function<DicomObject,DicomObject>() {
 						    public DicomObject apply(final DicomObject o) {
 						        try {
@@ -259,6 +259,7 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 			}
 			// timestamp directory might contain another session, so no warning if deletion fails.
 			if(tsdir.list().length==0){
+
 				tsdir.delete();	
 			}
 		}

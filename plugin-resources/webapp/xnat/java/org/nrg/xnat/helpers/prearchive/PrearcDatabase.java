@@ -643,7 +643,7 @@ public final class PrearcDatabase {
                     		PrearcDatabase._moveToProject(_s.getFolderName(),_s.getTimestamp(),_s.getProject(),newProj);
                     	}
                     	else {
-                    		// cannot move a session back on itself.
+                    		PrearcDatabase.markSession(_s, PrearcUtils.PrearcStatus.READY);
                     	}
                     } catch (SyncFailedException e) {
                         logger.error(e);

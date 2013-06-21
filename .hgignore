@@ -65,6 +65,8 @@ plugin-resources/webapp/xnat/style/xnat-alt.css
 plugin-resources/webapp/xnat/style/xnat-cnda.css
 
 syntax: regexp
+^.idea
+^.hgignore
 ^classes/org
 ^deployments
 ^ide-bin

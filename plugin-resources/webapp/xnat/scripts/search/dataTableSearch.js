@@ -729,7 +729,8 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   };
 
   this.showXML=function (_searchXML){
-  	  showMessage("page_body", "Search XML", "<textarea cols='25' rows='20'>"+_searchXML+"</textarea>");
+  	  showMessage("page_body", "Search XML", "<code id='showXmlContent'></code>", {width:750, height:500});
+      $('#showXmlContent').text(_searchXML);
   };
 
   this.getXML=function(){

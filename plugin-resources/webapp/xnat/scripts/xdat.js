@@ -808,6 +808,9 @@ function showMessage(divId, title, body, options) {
         if (options.width){
             msgOpts.width = options.width ;
         }
+        if (options.height){
+            msgOpts.height = options.height ;    hg
+        }
         if (options.id){
             msgOpts.id = options.id ;
         }

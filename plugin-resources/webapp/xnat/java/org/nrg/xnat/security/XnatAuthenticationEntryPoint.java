@@ -12,10 +12,12 @@ package org.nrg.xnat.security;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nrg.xnat.security.services.OpenUrlLookupService;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.AntUrlPathMatcher;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,7 +79,7 @@ public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoi
         	}
         }
         
-        if (isDataPath(strippedUri) && !isInteractiveAgent(userAgent)) {
+        if (isDataPath(strippedUri) && !_urlLookupService.isOpenUrl(strippedUri) && !isInteractiveAgent(userAgent)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -101,7 +103,7 @@ public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoi
             if (_log.isDebugEnabled()) {
                 _log.debug("Adding data path: " + dataPath);
             }
-            _dataPaths.add(_pathMatcher.compile(dataPath));
+            _dataPaths.add(_matcher.compile(dataPath));
         }
     }
 
@@ -125,7 +127,7 @@ public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoi
             _log.debug("Testing URI as data path: " + strippedUri);
         }
         for (final Object dataPath : _dataPaths) {
-            if (_pathMatcher.pathMatchesUrl(dataPath, strippedUri)) {
+            if (_matcher.pathMatchesUrl(dataPath, strippedUri)) {
                 if (_log.isDebugEnabled()) {
                     _log.debug("URI " + strippedUri + "is a data path.");
                 }
@@ -160,7 +162,10 @@ public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoi
 
     private static final Log _log = LogFactory.getLog(XnatAuthenticationEntryPoint.class);
 
-    private final AntUrlPathMatcher _pathMatcher = new AntUrlPathMatcher();
+    private static final AntUrlPathMatcher _matcher = new AntUrlPathMatcher();
     private final List<Object> _dataPaths = new ArrayList<Object>();
     private final List<Pattern> _agentPatterns = new ArrayList<Pattern>();
+
+    @Inject
+    private OpenUrlLookupService _urlLookupService;
 }

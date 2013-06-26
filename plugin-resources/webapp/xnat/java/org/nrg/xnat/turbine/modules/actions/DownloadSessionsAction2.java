@@ -8,16 +8,16 @@ package org.nrg.xnat.turbine.modules.actions;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFTTable;
 
 public class DownloadSessionsAction2 extends SecureAction {
 
@@ -27,14 +27,13 @@ public class DownloadSessionsAction2 extends SecureAction {
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
         String [] session_ids=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("sessions",data));
-        
+
+        String [] requestScanTypes=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_type",data));
         String [] scanFormats=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_format",data));
-        
-        String [] scanTypes=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_type",data));
         String [] recons=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("recon",data));
         String [] assessors=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("assessors",data));
-
         String [] resources=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("resources",data));
+
 		//BEGIN:IOWA customization: to allow project and subject included in path
         boolean projectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("projectIncludedInPath",data));
         boolean subjectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("subjectIncludedInPath",data));
@@ -58,16 +57,23 @@ public class DownloadSessionsAction2 extends SecureAction {
         }
         
         List<String> l=new ArrayList<String>();
-       CatCatalogBean cat = new CatCatalogBean();
+        CatCatalogBean cat = new CatCatalogBean();
         
         for(String session : session_ids){
             CatCatalogBean sessionCatalog = new CatCatalogBean();
             sessionCatalog.setId(session);
-            
-            if (scanTypes!=null && scanTypes.length>0){
+
+            // narrow down the range of scan types to only the ones relevant to this session
+            String [] sessionScanTypes;
+            String query= "SELECT DISTINCT type FROM xnat_imagescandata WHERE image_session_id = '" + session + "' AND type IN (" + sqlList(requestScanTypes) + ")";
+            XFTTable table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
+            List<String> list = table.convertColumnToArrayList("type");
+            sessionScanTypes = list.toArray(new String[0]);
+
+            if (sessionScanTypes!=null && sessionScanTypes.length>0){
                 CatCatalogBean scansCatalog = new CatCatalogBean();
                 scansCatalog.setId("RAW");
-                for(String scanType : scanTypes){
+                for(String scanType : sessionScanTypes){
                 	if(scanType.indexOf("/")>-1){
                     	scanType=scanType.replace("/","[SLASH]");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
                     }
@@ -160,6 +166,15 @@ public class DownloadSessionsAction2 extends SecureAction {
         }else{
             data.setRedirectURI(catalogXML);
         }     
+    }
+
+    private String sqlList(String[] list) {
+        StringBuilder sb = new StringBuilder();
+        for (String item : list) {
+            if (sb.length() > 0) sb.append(',');
+            sb.append("'").append(item).append("'");
+        }
+        return sb.toString();
     }
 
 }

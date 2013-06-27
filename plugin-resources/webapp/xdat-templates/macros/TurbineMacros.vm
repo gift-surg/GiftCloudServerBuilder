@@ -1671,3 +1671,15 @@ $!turbineUtils.escapeJS($s)
         insertCalendar(document.getElementById("$property"), "Date of birth");
     </script>
 #end
+
+#macro(xdatMonthRange)
+        #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
+#end
+
+#macro(xdatDayRange)
+        #set($days = [ 1..31 ])
+#end
+
+#macro(xdatYearRange)
+        #set($years = [ $!turbineUtils.getYear()..1900 ])
+#end

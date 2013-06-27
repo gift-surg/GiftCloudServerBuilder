@@ -24,11 +24,15 @@ public abstract class PipelineLauncher {
 	
 	protected ArrayList<String> getCheckBoxSelections(RunData data, XnatImagesessiondata imageSession, String type) {
 		ArrayList<String> rtn = new ArrayList<String>();
-		int totalCount = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger(type+"_rowcount",data));
-		for (int i = 0; i < totalCount; i++) {
-			if (TurbineUtils.HasPassedParameter(type+"_"+i, data)) {
-				rtn.add(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(type+"_"+i,data)));
-			}			
+		String typeStr = type+"_rowcount";
+		Integer totalCount = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger(typeStr,data)); 
+		//Integer totalCount = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger(type+"_rowcount",data)); 
+		if(totalCount != null) {	
+			for (int i = 0; i < totalCount.intValue(); i++) {
+				if (TurbineUtils.HasPassedParameter(type+"_"+i, data)) {
+					rtn.add(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter(type+"_"+i,data)));
+				}			
+			}
 		}
 		return rtn;
 	}

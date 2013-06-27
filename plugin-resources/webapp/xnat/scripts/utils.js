@@ -67,9 +67,11 @@ if (!Array.prototype.map) {
 // add commas to numbers
 function addCommas(nStr) {
     nStr += '';
-    x = nStr.split('.');
-    x1 = x[0];
-    x2 = x.length > 1 ? '.' + x[1] : '';
+    var
+        x = nStr.split('.'),
+        x1 = x[0],
+        x2 = x.length > 1 ? '.' + x[1] : ''
+    ;
     var rgx = /(\d+)(\d{3})/;
     while (rgx.test(x1)) {
         x1 = x1.replace(rgx, '$1' + ',' + '$2');
@@ -144,8 +146,10 @@ jQuery.loadScript = function (url, arg1, arg2) {
     }
 };
 
-// make elements draggable
-// just add 'draggable' class to element
+// non-YUI way to make elements draggable
+// usage:
+// $('#element_id').drags();  // <- drag the element that's clicked on
+// $('#element_id').drags({handle:'.drag_handle'});
 (function($) {
 
     $.fn.drags = function(opt) {
@@ -187,7 +191,6 @@ jQuery.loadScript = function (url, arg1, arg2) {
             } else {
                 $(this).removeClass('active-handle').parent().removeClass('draggable');
             }
-                //console.debug('left: '+$(this).offset().left+', top: '+$(this).offset().top);
         });
 
     }
@@ -198,8 +201,10 @@ jQuery.loadScript = function (url, arg1, arg2) {
 // are on the page on DOM ready
 // must use the .drags() method on
 // dynamically generated elements
-$(function(){
-    $('.draggable').drags();
-});
+//
+// sample usage:
+//$(function(){
+//    $('.draggable').drags();
+//});
 //
 // end draggable

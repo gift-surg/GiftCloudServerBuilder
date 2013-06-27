@@ -7,8 +7,8 @@ var Dom = YAHOO.util.Dom,
     _addColH=550,
     _addColBuffH=140,
     _addColBuff2H=160,
-    _addColBuff2W=320,
-    _joinW=600,
+    _addColBuff2W=230,
+    _joinW=750,
     _joinH=450;
 
 function SearchXMLManager(_xml){
@@ -479,7 +479,9 @@ function SearchXMLManager(_xml){
 		existingDIV.appendChild(all_fields_table);
 
 		var si_t=document.createElement("table");
+        si_t.id="editColumnsTable";
 		si_t.border=0;
+        si_t.style.width="100%";
 		var si_tb=document.createElement("tbody");
 
 		var si_tr=document.createElement("tr");
@@ -507,11 +509,11 @@ function SearchXMLManager(_xml){
 
 		var cfDiv=document.createElement("div");
 		cfDiv.id="current_fields_select";
+        cfDiv.style.width="100%";
 		si_td2.appendChild(cfDiv);
 
 		this.cfS=document.createElement("select");
 		this.cfS.multiple=true;
-		this.cfS.style.width="200";
 		this.cfS.style.height=(_addColH-_addColBuff2H)+"px";
 		this.cfS.deselect=function(){
 			for(var dsC=0;dsC<this.options.length;dsC++){
@@ -532,12 +534,18 @@ function SearchXMLManager(_xml){
 		all_fields_table.appendChild(si_t);
 	//END current fields section
 
+        var pfH=si_td4.appendChild(document.createElement("div"));
+        pfH.innerHTML="Available Fields";
+        pfH.align="center";
+        pfH.style.fontStyle="italic";
+
 		var pfDiv=document.createElement("div");
 		pfDiv.id="potential_fields_select";
 		si_td4.appendChild(pfDiv);
 
 		this.afS=document.createElement("select");
 		this.afS.multiple=true;
+        this.afS.style.maxWidth="none";
 		this.afS.style.width=(_addColW-_addColBuff2W)+"px";
 		this.afS.style.height=(_addColH-_addColBuff2H)+"px";
 		this.afS.opposite=this.cfS;
@@ -632,6 +640,14 @@ function SearchXMLManager(_xml){
 	  					"FieldId":this.afS.options[cfSc].field_id,
 	  					"Header":this.afS.options[cfSc].header,
 	  					"Type":this.afS.options[cfSc].type});
+                    for(var pfSc=0;pfSc<this.manager.pFs.length;pfSc++){
+                        var pF = this.manager.pFs[pfSc];
+                        if(pF.ELEMENT_NAME==this.afS.options[cfSc].element_name
+                            && pF.FIELD_ID==this.afS.options[cfSc].field_id){
+                            // ...then remove it from the potential fields column
+                            this.manager.pFs.splice(pfSc,1);
+                        }
+                    }
 				}
 			}
 			this.manager.renderCurrentFieldsDT();
@@ -654,8 +670,21 @@ function SearchXMLManager(_xml){
 			for(var afSc=0;afSc<this.cfS.options.length;afSc++){
 				if(this.cfS.options[afSc].selected){
 					for(var cfSC=0;cfSC<this.manager.currentFields.length;cfSC++){
-						if(this.manager.currentFields[cfSC].ElementName==this.cfS.options[afSc].element_name &&
-						    this.manager.currentFields[cfSC].FieldId==this.cfS.options[afSc].field_id){
+                        var cF = this.manager.currentFields[cfSC];
+						if(cF.ElementName==this.cfS.options[afSc].element_name
+                            && cF.FieldId==this.cfS.options[afSc].field_id){
+                            // Add this field back to the potential fields column...
+                            var pF = { // I seem to have no other choice but to recreate this object from the selected current field element.
+                                       // I don't see it represented anywhere else in memory when debugging this. (Justin)
+                                'DESC':cF.Header,
+                                'ELEMENT_NAME':cF.ElementName,
+                                'FIELD_ID':cF.FieldId,
+                                'HEADER':cF.Header,
+                                'SRC':'0',    // Not sure about what this value does exactly
+                                'TYPE':cF.Type
+                            };
+                            this.manager.pFs.push(pF);
+                            //...then remove it from the current fields column.
 							this.manager.currentFields.splice(cfSC,1);
 						}
 					}

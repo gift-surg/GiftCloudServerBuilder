@@ -68,6 +68,7 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
                     <div id="register_forgot" style="text-align:center">
                         <a href="$link.setPage("Register.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Register</a>
                         <a href="$link.setPage("ForgotLogin.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Forgot login or password?</a>
+                        <a href="$link.setPage("ResendEmail.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Resend email verification</a>
                     </div>
                 </td>
             </tr>

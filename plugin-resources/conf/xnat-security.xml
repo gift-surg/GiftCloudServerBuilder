@@ -123,6 +123,8 @@
                 <value>/scripts/**</value>
                 <value>/style/**</value>
                 <value>/applet/**</value>
+                <value>/app/template/ResendEmail.vm*</value>
+                <value>/data/services/sendEmailVerification*</value>
             </list>
         </property>
     </bean>

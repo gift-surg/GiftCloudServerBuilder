@@ -66,6 +66,26 @@
         <property name="jobDetail" ref="resetFailedLoginsJobBean" />
         <property name="repeatInterval" value="${security.max_failed_logins_lockout_duration}" />
     </bean>
+    
+    <bean name="resetEmailRequestsJob" class="org.nrg.xnat.security.ResetEmailRequestsJob" />
+
+    <bean name="resetEmailRequestsJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="org.nrg.schedule.DelegatingJobBean" />
+        <property name="name" value="reset-email-requests"/>
+        <property name="group" value="users-jobs"/>
+        <property name="jobDataAsMap">
+            <map>
+          		<entry key="job.bean.name" value="resetEmailRequestsJob" />
+            </map>
+        </property>
+    </bean>
+    
+   	<bean id="resetEmailRequestsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobName" value="reset-email-requests-trigger" />
+        <property name="jobGroup" value="users-triggers"/>
+        <property name="jobDetail" ref="resetEmailRequestsJobBean" />
+        <property name="repeatInterval" value="900000" /> <!--  Every 15 minutes  -->
+    </bean>
 
    	<bean name="clearExpiredAliasTokensJob" class="org.nrg.xnat.security.alias.ClearExpiredAliasTokensJob" />
 
@@ -101,6 +121,7 @@
                 <ref bean="disableInactiveUsersTrigger" />
                 <ref bean="resetFailedLoginsTrigger" />
                 <ref bean="clearExpiredAliasTokensTrigger" />
+                <ref bean="resetEmailRequestsTrigger" />
             </list>
         </property>
         <property name="applicationContextSchedulerContextKey">

@@ -191,7 +191,8 @@ select[multiple] { max-width: 200px ; }
 #search_tabs { width: 100% }
 
 #search_tabs .xT_p,
-#search_tabs .xT_c { /* width: 100% !important ; */ width: 1010px ; max-width: 1010px ; }
+#search_tabs .xT_c {width: 850px !important;
+    /* width: 1010px ; max-width: 1010px ; */ }
 #search_tabs .xT_c { min-height: 150px ; }
 
 /* login box */

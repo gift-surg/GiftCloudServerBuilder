@@ -111,7 +111,7 @@ function wrangleTabs(tabs){
                 position: 'relative'
             });
             $tabs.css({
-                width: content_width,
+//                width: content_width,
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 position: 'relative'

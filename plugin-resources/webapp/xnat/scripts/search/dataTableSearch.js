@@ -58,16 +58,25 @@ XNAT.app.setTableWidth=function(div_id){
 		if((tableWidth+18)<tabsWidth){//if table + scrollbar doesn't take up the whole tab
 			XNAT.app.setItemWidth(div_id+"_c",(tableWidth+18));//set table overflow container to barely contain table, so the scrollbar isn't way off to the right.
 		}
-		
+//        var leftBar=0;
+//		if($('#leftBar')){
+//            leftBar=182;
+//        }
+//        var tableContainer = $('.xT_c');
+//        if(tableContainer){
+//            tableContainer.width=tableWidth-leftBar+"px";
+//        }
 		XNAT.app.setItemWidth(div_id+"_p",tableWidth);//try to set the paging div to be the same length as the table. if its to short it will fix itself
 	}
 }
 
 XNAT.app.setTableHeight=function(div_id){
-	if($(div_id)!=null){
+    // This is a hack: jQuery does not like the @xnat:... selector. So we'll do it old school and wrap it.
+    var container = document.getElementById(div_id);
+    container = $(container);
+    if($(container)!=null){
 		var windowHeight = $(window).innerHeight();
 		var tableHeight = $('table.x_rs_t').height();
-		var container = document.getElementById(div_id); 
 		var tablePosition = $(container).offset(); 
 		
 		/* max height is total screen height minus space for table header & chrome */ 

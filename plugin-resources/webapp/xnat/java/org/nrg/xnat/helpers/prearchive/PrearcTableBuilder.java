@@ -318,6 +318,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}
 		
 		public PrearchiveCode getPrearchiveCode() {
+            if (this.getProject() == null || this.getProject().equals("Unassigned")) return null;  // Unassigned projects will not have a known prearchive code
             return PrearchiveCode.code(ArcSpecManager.GetInstance().getPrearchiveCodeForProject(this.getProject()));
         }
 		

@@ -25,6 +25,7 @@ import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
 import org.nrg.xnat.helpers.merge.SiteWideAnonymizer;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.URIManager;
@@ -260,6 +261,12 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				}
 			} catch (Exception e) {
 				resetStatus(sessions);
+                if(e instanceof ClientException && Status.CLIENT_ERROR_CONFLICT.equals(((ClientException)e).getStatus())){
+                    //if this failed due to a conflict
+                    PrearcDatabase.setStatus(session.getSessionDir().getName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.CONFLICT);
+                }else{
+                    PrearcDatabase.setStatus(session.getSessionDir().getName(), session.getTimestamp(), session.getProject() , PrearcUtils.PrearcStatus.ERROR);
+                }
 				throw e;
 			}
 			

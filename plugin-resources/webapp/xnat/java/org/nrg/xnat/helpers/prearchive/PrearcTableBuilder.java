@@ -3,23 +3,21 @@
  */
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * @author timo
@@ -174,7 +172,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			data.setName(PrearcTableBuilder.Session.pickSessionName(this));
 			data.setFolderName(this.getFolderName());
 			data.setTag(this.getTag());
-			data.setAutoArchive(null);
+			data.setAutoArchive(this.getPrearchiveCode());
 			data.setUrl(PrearcUtils.makeUri(urlBase, data.getTimestamp(), data.getFolderName()));
 			data.setVisit(this.getVisit());
 			data.setProtocol(this.getProtocol());
@@ -319,7 +317,9 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 			return this.sessionXML;
 		}
 		
-		
+		public PrearchiveCode getPrearchiveCode() {
+            return PrearchiveCode.code(ArcSpecManager.GetInstance().getPrearchiveCodeForProject(this.getProject()));
+        }
 		
 		/*
 		 * (non-Javadoc)

@@ -15,7 +15,6 @@
     <context:annotation-config />
 
     <context:component-scan base-package="org.nrg.xnat.security.controllers"/>
-    <context:component-scan base-package="org.nrg.xnat.security.services"/>
 
     <util:list id="decisionVoters">
         <ref bean="roleVoter"/>
@@ -98,7 +97,9 @@
         <security:session-management session-authentication-strategy-ref="sas"/>
     </security:http>
 
-    <util:set id="openUrls" value-type="java.lang.String">
+    <bean class="org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor">
+        <property name="openUrls">
+            <list>
                 <value>/app/template/Login.vm*</value>
                 <value>/app/template/Register.vm*</value>
                 <value>/app/template/ForgotLogin.vm*</value>
@@ -122,7 +123,9 @@
                 <value>/scripts/**</value>
                 <value>/style/**</value>
                 <value>/applet/**</value>
-    </util:set>
+            </list>
+        </property>
+    </bean>
 
     <bean id="channelProcessingFilter" class="org.nrg.xnat.security.TranslatingChannelProcessingFilter">
         <property name="channelDecisionManager">

@@ -1,6 +1,10 @@
 // Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.guard;
 
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.xdat.XDAT;
@@ -14,14 +18,16 @@ import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.BrowserDetector;
 import org.nrg.xnat.restlet.util.BrowserDetectorI;
 import org.nrg.xnat.restlet.util.RequestUtil;
-import org.nrg.xnat.security.services.OpenUrlLookupService;
 import org.restlet.Filter;
-import org.restlet.data.*;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 public class XnatSecureGuard extends Filter {
 	static org.apache.log4j.Logger logger = Logger.getLogger(XnatSecureGuard.class);
@@ -34,7 +40,7 @@ public class XnatSecureGuard extends Filter {
 	 */
 	@Override
 	protected int beforeHandle(Request request, Response response) {
-		if (getOpenUrlLookupService().isOpenUrl(request) || authenticate(request)) {
+		if (authenticate(request, response)) {
 			return CONTINUE;
 		} else {
 			unauthorized(request, response);
@@ -78,14 +84,7 @@ public class XnatSecureGuard extends Filter {
         return _aliasTokenService;
     }
 
-    private OpenUrlLookupService getOpenUrlLookupService() {
-        if (_openUrlLookupService == null) {
-            _openUrlLookupService = XDAT.getContextService().getBean(OpenUrlLookupService.class);
-        }
-        return _openUrlLookupService;
-    }
-
-	private boolean authenticate(Request request) {
+	private boolean authenticate(Request request, Response response) {
 		// THIS BREAKS THE TRADITIONAL REST MODEL
 		// But, if the user is already logged into the website and navigates
 		// to a REST GET, they shouldn't have to re-login , TO
@@ -103,7 +102,9 @@ public class XnatSecureGuard extends Filter {
 			attachUser(request, sessionUser);
 			return true;
 		} else {
-            final ChallengeResponse challengeResponse = request.getChallengeResponse();
+			try {
+				final ChallengeResponse challengeResponse = request
+						.getChallengeResponse();
 				if (challengeResponse != null) {
 					final XDATUser user = authenticateBasic(challengeResponse);
 					if (user != null) {
@@ -112,6 +113,11 @@ public class XnatSecureGuard extends Filter {
 						return true;
 					}
 				}
+			} catch (RuntimeException e) {
+				// We let this return an error to cause a 500 to return to the user.  The only other
+				// option is to throw a 401.  But this wouldn't inform the user that there was an error.
+				throw e;
+			}
 		}
 		return false;
 	}
@@ -177,5 +183,4 @@ public class XnatSecureGuard extends Filter {
 	}
 
     private AliasTokenService _aliasTokenService;
-    private OpenUrlLookupService _openUrlLookupService;
 }

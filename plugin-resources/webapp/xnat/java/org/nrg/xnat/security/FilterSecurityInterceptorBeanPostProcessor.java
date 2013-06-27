@@ -7,7 +7,11 @@
  *
  * Created on 9/4/12 by rherri01
  */
-package org.nrg.xnat.security.services;
+package org.nrg.xnat.security;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,14 +29,11 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.access.intercept.RequestKey;
 import org.springframework.security.web.util.AntUrlPathMatcher;
 import org.springframework.security.web.util.UrlMatcher;
-import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-
-@Service
 public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProcessor {
+    public void setOpenUrls(List<String> openUrls) {
+        _openUrls = openUrls;
+    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String name) throws BeansException {
@@ -60,7 +61,7 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
         WebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
         LinkedHashMap<RequestKey, Collection<ConfigAttribute>> map = new LinkedHashMap<RequestKey, Collection<ConfigAttribute>>();
 
-        for (String openUrl : _urlLookupService.getOpenUrls()) {
+        for (String openUrl : _openUrls) {
             if (_log.isDebugEnabled()) {
                 _log.debug("Setting permitAll on the open URL: " + openUrl);
             }
@@ -116,6 +117,5 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
 
     private static ArcArchivespecification _arcSpec;
 
-    @Inject
-    private OpenUrlLookupService _urlLookupService;
+    private List<String> _openUrls;
 }

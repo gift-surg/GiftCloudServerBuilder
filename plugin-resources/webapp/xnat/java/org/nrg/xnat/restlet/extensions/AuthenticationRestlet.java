@@ -22,7 +22,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-@XnatRestlet(value = "/services/auth")
+@XnatRestlet(value = "/services/auth", secure = false)
 public class AuthenticationRestlet extends Resource {
     private static final Log _log = LogFactory.getLog(AuthenticationRestlet.class);
 

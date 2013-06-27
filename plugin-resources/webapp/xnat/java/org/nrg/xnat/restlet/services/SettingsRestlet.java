@@ -28,7 +28,7 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
-import org.nrg.xnat.security.services.FilterSecurityInterceptorBeanPostProcessor;
+import org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
 import org.restlet.data.MediaType;

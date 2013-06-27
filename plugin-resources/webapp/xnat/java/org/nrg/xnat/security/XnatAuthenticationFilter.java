@@ -17,7 +17,6 @@ import org.nrg.xnat.security.alias.AliasTokenAuthenticationProvider;
 import org.nrg.xnat.security.alias.AliasTokenAuthenticationToken;
 import org.nrg.xnat.security.provider.XnatAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
-import org.nrg.xnat.security.services.OpenUrlLookupService;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -29,7 +28,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.codec.Base64;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -38,11 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
-
-    @Override
-    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        return !_service.isOpenUrl(request) && super.requiresAuthentication(request, response);
-    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -218,10 +211,8 @@ public class XnatAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         }
     }
 
-    private static final Log _log = LogFactory.getLog(XnatAuthenticationFilter.class);
     private static Map<String,String> cached_methods=Maps.newConcurrentMap();//this will prevent 20,000 curl scripts from hitting the db everytime
-    private static final Map<String, Integer> checked = Maps.newHashMap();
 
-    @Inject
-    private OpenUrlLookupService _service;
+    private static final Log _log = LogFactory.getLog(XnatAuthenticationFilter.class);
+    private static final Map<String, Integer> checked = Maps.newHashMap();
            			}

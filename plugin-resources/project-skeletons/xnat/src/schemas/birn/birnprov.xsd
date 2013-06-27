@@ -56,7 +56,14 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="cvs" type="xs:string" minOccurs="0"/>
+			<xs:element name="cvs" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"></xs:minLength>
+						<xs:maxLength value="5000"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 			<xs:element name="user" type="xs:string">
 				<xs:annotation>
 					<xs:appinfo>

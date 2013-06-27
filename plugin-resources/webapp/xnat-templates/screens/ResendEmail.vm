@@ -1,0 +1,53 @@
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("Noninteractive.vm")
+$page.setTitle("XDAT -- Register")
+$page.setBgColor($ui.bgcolor)
+<script>
+function requestVerificationEmail(){ 
+   
+   var requestURL =  "$!content.getURI('/data/services/sendEmailVerification')";
+   var email = document.getElementById("requestEmail").value;
+   
+   var msgOptions = {} ;
+   msgOptions.action = function(){ window.location = serverRoot + "/app/template/Login.vm"; };
+   
+   this.success = function(){
+      xModalLoadingClose();
+      xModalMessage('Email Sent','A verification email has been sent to ' + email,'OK', msgOptions);
+   }
+   
+   this.failed = function(o){
+      xModalLoadingClose();
+      if(o.status === 503){
+         xModalMessage('Error','You have exceeded the allowed number of email requests. Please try again later.','OK', msgOptions);
+      }else{
+         xModalMessage('Error','An unexpected error has occured. Please contact your administrator.','OK', msgOptions);
+      }
+   }
+   
+   this.insertCallback = {
+      failure : this.failed,
+      success : this.success,
+      scope   : this
+   };
+   
+   if(email && requestURL){
+      xModalLoadingOpen({title:'Please wait...'});
+      YAHOO.util.Connect.asyncRequest('POST', requestURL + '?email=' + encodeURIComponent(email), this.insertCallback, null, this);
+   }
+}
+</script>
+<div valign="top">
+   <table valign="top" align="center">
+      <tr>
+         <td colspan="3" align="left">Enter your email address to resend the verification email.</td>
+      </tr>
+      <tr>
+         #formLabel("Email")
+         <td><input id="requestEmail" type="text" name="email" value="$!email"></td>
+         <td><input class="ui_sansSerifFonts" type="button" value="Request" onclick="requestVerificationEmail()"></td>
+      </tr>
+         <tr><td colspan="3"><br><br></td></tr>
+   </table>
+</div>

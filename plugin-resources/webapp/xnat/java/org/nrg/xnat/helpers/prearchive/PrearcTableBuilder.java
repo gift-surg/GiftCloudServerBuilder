@@ -4,7 +4,6 @@
 package org.nrg.xnat.helpers.prearchive;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
@@ -12,6 +11,8 @@ import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -24,7 +25,7 @@ import java.util.*;
  *
  */
 public class PrearcTableBuilder implements PrearcTableBuilderI {
-	static Logger logger = Logger.getLogger(PrearcTableBuilder.class);
+	static Logger logger = LoggerFactory.getLogger(PrearcTableBuilder.class);
 
 	public final static String[] PREARC_HEADERS = {"project".intern(),"last_mod".intern(),"uploaded".intern(),"scan_date".intern(),"scan_time".intern(),"subject".intern(),"session".intern(),"status".intern(),"url".intern(),"visit".intern(),"protocol".intern(),"TIMEZONE".intern(),"SOURCE".intern()};
 	
@@ -93,7 +94,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		as.add("Name : " + s.getFolderName());
 		as.add("Status : " + s.getStatus());
 		as.add("SubjectId: " + s.getSubjectId());
-		as.add("Scan Time : " + s.getTimestamp().toString());
+		as.add("Scan Time : " + s.getTimestamp());
 		as.add("Uploaded : " + s.getUploadDate().toString());
 		return StringUtils.join(as.toArray(new String[as.size()]), "\n");
 	}
@@ -318,8 +319,19 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 		}
 		
 		public PrearchiveCode getPrearchiveCode() {
-            if (this.getProject() == null || this.getProject().equals("Unassigned")) return null;  // Unassigned projects will not have a known prearchive code
-            return PrearchiveCode.code(ArcSpecManager.GetInstance().getPrearchiveCodeForProject(this.getProject()));
+            final String project = this.getProject();
+            if (project == null || project.equals("Unassigned")) {
+                logger.info("Found null or unassigned project, returning prearchive code of Manual");
+                return PrearchiveCode.Manual;  // Unassigned projects will not have a known prearchive code
+            }
+            final Integer prearchiveCode = ArcSpecManager.GetInstance().getPrearchiveCodeForProject(project);
+            if (prearchiveCode == null) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Found a prearchive entry " + this.getFolderName() + " with a project that didn't return an archive code: " + project);
+                }
+                return PrearchiveCode.Manual;
+            }
+            return PrearchiveCode.code(prearchiveCode);
         }
 		
 		/*

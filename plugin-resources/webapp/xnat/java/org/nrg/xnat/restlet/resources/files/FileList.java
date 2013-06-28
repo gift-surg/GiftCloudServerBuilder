@@ -48,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -68,38 +69,38 @@ public class FileList extends XNATCatalogTemplate {
     public FileList(Context context, Request request, Response response) {
         super(context, request, response, isQueryVariableTrue("all", request));
         try {
-            if (catalogs != null && catalogs.size() > 0 && resource_ids != null) {
+            if (resource_ids != null) {
+                List<Integer> alreadyAdded = new ArrayList<Integer>();
+                if (catalogs != null && catalogs.size() > 0) {
+                    for (Object[] row : catalogs.rows()) {
+                        Integer id = (Integer) row[0];
+                        String label = (String) row[1];
 
-                for (Object[] row : catalogs.rows()) {
-                    Integer id = (Integer) row[0];
-                    String label = (String) row[1];
-
-                    for (String resourceID : resource_ids) {
-                        if (id.toString().equals(resourceID) || (label != null && label.equals(resourceID))) {
-                            XnatAbstractresource res = XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(row[0], user, false);
-                            if (row.length == 7) res.setBaseURI((String) row[6]);
-                            resources.add(res);
+                        for (String resourceID : resource_ids) {
+                            if (id.toString().equals(resourceID) || (label != null && label.equals(resourceID))) {
+                                XnatAbstractresource res = XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(id, user, false);
+                                if (row.length == 7) res.setBaseURI((String) row[6]);
+                                resources.add(res);
+                                alreadyAdded.add(id);
+                            }
                         }
                     }
-
                 }
-            } else if (resource_ids != null) {
                 // if caller is asking for the files directly by resource ID (e.g. /experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files),
                 // the catalog will not be found by the superclass
                 // (unless caller passes all=true, which seems klunky to require given that they are passing in the resource PK).
                 // So here we provide an alternate path finding the resource
-                try {
-                    //added check to make sure its an number.  You can also reference resource labels here (not just pks).
-                    for (String resourceID : resource_ids) {
-                        if (NumberFormat.getInstance().parse(resourceID) != null) {
-                            XnatAbstractresource res = XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(resourceID, user, false);
-                            if (res != null) {
-                                resources.add(res);
-                            }
+                // added check to make sure its an number.  You can also reference resource labels here (not just pks).
+                for (String resourceID : resource_ids) {
+                    try {
+                        Integer id = Integer.parseInt(resourceID);
+                        XnatAbstractresource res = XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(id, user, false);
+                        if (res != null && !alreadyAdded.contains(id)) {
+                            resources.add(res);
                         }
+                    } catch (NumberFormatException e) {
+                        // ignore... this is probably a resource label
                     }
-                } catch (Exception e) {
-                    // ignore... this is probably a resource label
                 }
             }
 

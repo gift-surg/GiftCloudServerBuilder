@@ -41,7 +41,7 @@ $navigation.setTemplate("/bodyOpen.vm")
 <script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
 <script type="text/javascript">
     jq(window).load(function(){
-        wrangleTabs({wrapper:'#search_tabs',force:true});
+        wrangleTabs('#search_tabs');
     })
 </script>
 

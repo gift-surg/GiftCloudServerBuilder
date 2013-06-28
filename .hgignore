@@ -52,6 +52,8 @@ plugin-resources/webapp/xnat/scripts/search/tabManager.X.js
 plugin-resources/webapp/xnat/scripts/subjectAssessorData/proj_subj_selector_xmenu.js
 plugin-resources/webapp/xnat/scripts/tabWrangler/tabWrangler.X.js
 plugin-resources/webapp/xnat/scripts/tabWrangler/tabWranglers.js
+plugin-resources/webapp/xnat/scripts/tabWrangler1/*
+plugin-resources/webapp/xnat/scripts/tabWrangler2/*
 plugin-resources/webapp/xnat/scripts/timeLeft copy.js
 plugin-resources/webapp/xnat/scripts/timeLeftX.js
 
@@ -64,6 +66,12 @@ plugin-resources/webapp/xnat/style/xdat-cnda.css
 plugin-resources/webapp/xnat/style/xnat-alt.css
 plugin-resources/webapp/xnat/style/xnat-cnda.css
 
+plugin-resources/webapp/xnat/scripts/tabWrangler1/images/fade_right_white_40w.png
+plugin-resources/webapp/xnat/scripts/tabWrangler1/images/tab_flipper_bkgd_dark.png
+plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.X.js
+plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.css
+plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.js
+plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWranglers.js
 syntax: regexp
 ^.idea
 ^.hgignore

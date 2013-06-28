@@ -48,7 +48,8 @@ import org.nrg.xnat.utils.WorkflowUtils;
 import org.xml.sax.SAXException;
 
 public class ExptFileUpload extends SecureAction {
-    static org.apache.log4j.Logger logger = Logger.getLogger(ExptFileUpload.class);
+
+    private static final Logger logger = Logger.getLogger(ExptFileUpload.class);
 
     @Override
     public void doPerform(RunData data, Context context) throws Exception{        
@@ -57,20 +58,17 @@ public class ExptFileUpload extends SecureAction {
         String uploadID= null;
         if (params.get("ID")!=null && !params.get("ID").equals("")){
             uploadID=params.get("ID");
-            session.setAttribute(uploadID + "Upload", new Integer(0));
-            session.setAttribute(uploadID + "Extract", new Integer(0));
-            session.setAttribute(uploadID + "Analyze", new Integer(0));
+            session.setAttribute(uploadID + "Upload", 0);
+            session.setAttribute(uploadID + "Extract", 0);
+            session.setAttribute(uploadID + "Analyze", 0);
         }
-        if (uploadID!=null)session.setAttribute(uploadID + "Upload", new Integer(0));
+        if (uploadID!=null)session.setAttribute(uploadID + "Upload", 0);
             try {
-                //byte[] bytes = params.getUploadData();
-                //grab the FileItems available in ParameterParser
                 FileItem fi = params.getFileItem("image_archive");
-                if (fi != null)
-                { 
-                    
+                if (fi != null) {
                     String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
-                    if (!cache_path.endsWith(File.separator)){
+
+                    if (!cache_path.endsWith(File.separator)) {
                         cache_path += File.separator;
                     }                    
                     
@@ -78,162 +76,174 @@ public class ExptFileUpload extends SecureAction {
                     File dir = new File(cache_path);
                     
                     if (!dir.exists()){
-                        dir.mkdirs();
+                        if (!dir.mkdirs()) {
+                            logger.warn("It appears that I failed to create the directory: " + dir.getAbsolutePath() + ". If there's some error later, this may be why.");
+                        }
                     }
-                    System.out.println("Uploading file.");
-                    //upload file
 
                     String filename = fi.getName();
 
                     int index = filename.lastIndexOf('\\');
-                    if (index< filename.lastIndexOf('/'))index = filename.lastIndexOf('/');
-                    if(index>0)filename = filename.substring(index+1);
-                    
-                    String compression_method = ".zip";
-                    if (filename.indexOf(".")!=-1){
-                        compression_method = filename.substring(filename.lastIndexOf("."));
-                    }                   
-                    
-                    if (uploadID!=null)session.setAttribute(uploadID + "Upload", new Integer(100));
-                    if (compression_method.equalsIgnoreCase(".tar") || 
-                            compression_method.equalsIgnoreCase(".gz") || 
-                            compression_method.equalsIgnoreCase(".zip") || 
-                            compression_method.equalsIgnoreCase(".zar"))
-                    {
-                        InputStream is = fi.getInputStream();
-                        System.out.println("Extracting file.");
+                    if (index < filename.lastIndexOf('/')) {
+                        index = filename.lastIndexOf('/');
+                    }
+                    if (index > 0) {
+                        filename = filename.substring(index+1);
+                    }
 
-                        ZipI zipper = null;
-                        if (compression_method.equalsIgnoreCase(".tar")){
+                    if (logger.isInfoEnabled()) {
+                        logger.info("Uploading file " + filename + " to folder " + dir.getAbsolutePath());
+                    }
+
+                    String compression_method = ".zip";
+                    final String normalized = filename.toLowerCase();
+                    if (normalized.endsWith(".tar")) {
+                        compression_method = ".tar";
+                    } else if (normalized.endsWith(".tgz") || normalized.endsWith(".tar.gz")) {
+                        compression_method = ".tgz";
+                    } else if (filename.contains(".")) {
+                        compression_method = filename.substring(filename.lastIndexOf("."));
+                    }
+
+                    if (uploadID != null) {
+                        session.setAttribute(uploadID + "Upload", 100);
+                    }
+
+                    if (compression_method.equalsIgnoreCase(".tar") ||
+                        compression_method.equalsIgnoreCase(".gz") ||
+                        compression_method.equalsIgnoreCase(".tgz") ||
+                        compression_method.equalsIgnoreCase(".zip") ||
+                        compression_method.equalsIgnoreCase(".zar")) {
+
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Extracting file: " + filename);
+                        }
+
+                        InputStream is = fi.getInputStream();
+
+                        ZipI zipper;
+                        if (compression_method.equalsIgnoreCase(".tar")) {
                             zipper = new TarUtils();
-                        }else if (compression_method.equalsIgnoreCase(".gz")){
+                        } else if (compression_method.equalsIgnoreCase(".tgz")) {
                             zipper = new TarUtils();
                             zipper.setCompressionMethod(ZipOutputStream.DEFLATED);
-                        }else{
+                        } else {
                             zipper = new ZipUtils();
                         }
                         
                         try {
-                            zipper.extract(is,cache_path);
+                            zipper.extract(is, cache_path);
                         } catch (Throwable e1) {
                             error(e1,data);
-                            session.setAttribute(uploadID + "Extract", new Integer(-1));
-                            session.setAttribute(uploadID + "Analyze", new Integer(-1));
+                            session.setAttribute(uploadID + "Extract", -1);
+                            session.setAttribute(uploadID + "Analyze", -1);
                             return;
                         }
-                    }else{
+                    } else {
                         //PLACE UPLOADED IMAGE INTO FOLDER
                         File uploaded = new File(cache_path + filename) ;
                         fi.write(uploaded);
                     }
-                    if (uploadID!=null)session.setAttribute(uploadID + "Extract", new Integer(100));
-                    
-                    
+
+                    if (uploadID != null) {
+                        session.setAttribute(uploadID + "Extract", 100);
+                    }
+
                     fi.delete();
-                    
 
                     String tag = (String)TurbineUtils.GetPassedParameter("tags", data);
                     this.addTag(dir, tag);
                     
-                    System.out.println("File Upload Complete.");
+                    logger.debug("File Upload Complete.");
+
                     data.setMessage("File Uploaded.");
-                    context.put("search_element",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data)));
-                    context.put("search_field",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)));
-                    context.put("search_value",((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
+                    context.put("search_element", TurbineUtils.GetPassedParameter("search_element",data));
+                    context.put("search_field", TurbineUtils.GetPassedParameter("search_field",data));
+                    context.put("search_value", TurbineUtils.GetPassedParameter("search_value",data));
                     context.put("uploadID",uploadID);
                     context.put("destination","ExptUploadConfirm.vm");
                     data.setScreenTemplate("FileUploadSummary.vm");
                 }
             } catch (FileNotFoundException e) {
                 error(e,data);
-                session.setAttribute(uploadID + "Upload", new Integer(-1));
-                session.setAttribute(uploadID + "Extract", new Integer(-1));
-                session.setAttribute(uploadID + "Analyze", new Integer(-1));
+                session.setAttribute(uploadID + "Upload", -1);
+                session.setAttribute(uploadID + "Extract", -1);
+                session.setAttribute(uploadID + "Analyze", -1);
             } catch (IOException e) {
                 error(e,data);
-                session.setAttribute(uploadID + "Upload", new Integer(-1));
-                session.setAttribute(uploadID + "Extract", new Integer(-1));
-                session.setAttribute(uploadID + "Analyze", new Integer(-1));
+                session.setAttribute(uploadID + "Upload", -1);
+                session.setAttribute(uploadID + "Extract", -1);
+                session.setAttribute(uploadID + "Analyze", -1);
             } catch (RuntimeException e) {
                 error(e,data);
-                session.setAttribute(uploadID + "Upload", new Integer(-1));
-                session.setAttribute(uploadID + "Extract", new Integer(-1));
-                session.setAttribute(uploadID + "Analyze", new Integer(-1));
+                session.setAttribute(uploadID + "Upload", -1);
+                session.setAttribute(uploadID + "Extract", -1);
+                session.setAttribute(uploadID + "Analyze", -1);
             }
     }
     
-    public void addTag(File dir,String tag){
+    public void addTag(File dir,String tag) {
         
-        CatCatalogBean cat = null;
-        
+        CatCatalogBean cat;
+
         if (dir.exists())
         {
             int counter=0;
             
             File[] listFiles = dir.listFiles();
-            for (int i=0;i<listFiles.length;i++)
-            {
-                if(!listFiles[i].isDirectory())
-                {
-                    if (listFiles[i].getName().endsWith(".xml"))
-                    {
-                        File xml = listFiles[i];
-                        if (xml.exists())
-                        {
+            for (final File listFile : listFiles) {
+                if (!listFile.isDirectory()) {
+                    if (listFile.getName().endsWith(".xml")) {
+                        if (listFile.exists()) {
                             try {
-                                FileInputStream fis = new FileInputStream(xml);
+                                FileInputStream fis = new FileInputStream(listFile);
                                 XDATXMLReader reader = new XDATXMLReader();
                                 BaseElement base = reader.parse(fis);
 
-                                
-                                if (base instanceof CatCatalogBean){
-                                	cat = (CatCatalogBean)base;
+
+                                if (base instanceof CatCatalogBean) {
+                                    cat = (CatCatalogBean) base;
 
                                     CatCatalogTagBean tagBean = new CatCatalogTagBean();
                                     tagBean.setTag(tag);
                                     cat.addTags_tag(tagBean);
 
-            						FileWriter fw = new FileWriter(xml);
-            						cat.toXML(fw, true);
-            						fw.close();
-            						
+                                    FileWriter fw = new FileWriter(listFile);
+                                    cat.toXML(fw, true);
+                                    fw.close();
+
                                     counter++;
                                 }
                             } catch (FileNotFoundException e) {
-                                logger.error("",e);
+                                logger.error("", e);
                             } catch (IOException e) {
-                                logger.error("",e);
+                                logger.error("", e);
                             } catch (SAXException e) {
-                                logger.error("",e);
+                                logger.error("", e);
                             }
                         }
                     }
-                }else{
-                    for (int j=0;j<listFiles[i].listFiles().length;j++)
-                    {
-                        if(!listFiles[i].listFiles()[j].isDirectory())
-                        {
-                            if (listFiles[i].listFiles()[j].getName().endsWith(".xml"))
-                            {
-                                File xml = listFiles[i].listFiles()[j];
-                                if (xml.exists())
-                                {
+                } else {
+                    for (int j = 0; j < listFile.listFiles().length; j++) {
+                        if (!listFile.listFiles()[j].isDirectory()) {
+                            if (listFile.listFiles()[j].getName().endsWith(".xml")) {
+                                File xml = listFile.listFiles()[j];
+                                if (xml.exists()) {
                                     try {
                                         FileInputStream fis = new FileInputStream(xml);
                                         XDATXMLReader reader = new XDATXMLReader();
                                         BaseElement base = reader.parse(fis);
 
-                                        
-                                        if (base instanceof CatCatalogBean){
-                                        	cat = (CatCatalogBean)base;
+
+                                        if (base instanceof CatCatalogBean) {
                                             counter++;
                                         }
                                     } catch (FileNotFoundException e) {
-                                        logger.error("",e);
+                                        logger.error("", e);
                                     } catch (IOException e) {
-                                        logger.error("",e);
+                                        logger.error("", e);
                                     } catch (SAXException e) {
-                                        logger.error("",e);
+                                        logger.error("", e);
                                     }
                                 }
                             }
@@ -292,86 +302,78 @@ public class ExptFileUpload extends SecureAction {
             String destinationPath=arcPath + "/UPLOADS/" + uploadID + "/" ;
             
             File[] listFiles = dir.listFiles();
-            for (int i=0;i<listFiles.length;i++)
-            {
-                if(!listFiles[i].isDirectory())
-                {
-                    if (listFiles[i].getName().endsWith(".xml") || listFiles[i].getName().endsWith(".xcat"))
-                    {
-                        File xml = listFiles[i];
-                        if (xml.exists())
-                        {
+            for (final File listFile : listFiles) {
+                if (!listFile.isDirectory()) {
+                    if (listFile.getName().endsWith(".xml") || listFile.getName().endsWith(".xcat")) {
+                        File xml = listFile;
+                        if (xml.exists()) {
                             FileInputStream fis = new FileInputStream(xml);
                             XDATXMLReader reader = new XDATXMLReader();
                             try {
                                 BaseElement base = reader.parse(fis);
-                                
-                                if (base instanceof CatCatalogBean){
-                                    CatCatalogBean cBean=(CatCatalogBean)base;
-                                    XnatResourcecatalog cat = new XnatResourcecatalog((UserI)TurbineUtils.getUser(data));
-                                    
-                                    if (cBean.getId()!=null){
+
+                                if (base instanceof CatCatalogBean) {
+                                    CatCatalogBean cBean = (CatCatalogBean) base;
+                                    XnatResourcecatalog cat = new XnatResourcecatalog((UserI) TurbineUtils.getUser(data));
+
+                                    if (cBean.getId() != null) {
                                         cat.setLabel(cBean.getId());
-                                    }else{
+                                    } else {
                                         cat.setLabel(Calendar.getInstance().getTime().toString());
                                     }
-                                    
-                                    for(CatCatalogTagI tag: cBean.getTags_tag()){
-                                    	XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)TurbineUtils.getUser(data));
-                                        
+
+                                    for (CatCatalogTagI tag : cBean.getTags_tag()) {
+                                        XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI) TurbineUtils.getUser(data));
+
                                         t.setTag(tag.getTag());
-                                        
+
                                         cat.setTags_tag(t);
                                     }
-                                    
+
                                     cat.setUri(destinationPath + xml.getName());
                                     tempMR.setResources_resource(cat);
                                     counter++;
                                 }
                             } catch (Throwable e) {
-                                logger.error("",e);
+                                logger.error("", e);
                             }
                         }
                     }
-                }else{
-                    for (int j=0;j<listFiles[i].listFiles().length;j++)
-                    {
-                        if(!listFiles[i].listFiles()[j].isDirectory())
-                        {
-                            if (listFiles[i].listFiles()[j].getName().endsWith(".xml") || listFiles[i].getName().endsWith(".xcat"))
-                            {
-                                File xml = listFiles[i].listFiles()[j];
-                                if (xml.exists())
-                                {
+                } else {
+                    for (int j = 0; j < listFile.listFiles().length; j++) {
+                        if (!listFile.listFiles()[j].isDirectory()) {
+                            if (listFile.listFiles()[j].getName().endsWith(".xml") || listFile.getName().endsWith(".xcat")) {
+                                File xml = listFile.listFiles()[j];
+                                if (xml.exists()) {
                                     FileInputStream fis = new FileInputStream(xml);
                                     XDATXMLReader reader = new XDATXMLReader();
                                     try {
                                         BaseElement base = reader.parse(fis);
-                                        
-                                        if (base instanceof CatCatalogBean){
-                                            CatCatalogBean cBean=(CatCatalogBean)base;
-                                            XnatResourcecatalog cat = new XnatResourcecatalog((UserI)TurbineUtils.getUser(data));
-                                            
-                                            if (cBean.getId()!=null){
+
+                                        if (base instanceof CatCatalogBean) {
+                                            CatCatalogBean cBean = (CatCatalogBean) base;
+                                            XnatResourcecatalog cat = new XnatResourcecatalog((UserI) TurbineUtils.getUser(data));
+
+                                            if (cBean.getId() != null) {
                                                 cat.setLabel(cBean.getId());
-                                            }else{
+                                            } else {
                                                 cat.setLabel(Calendar.getInstance().getTime().toString());
                                             }
-                                            
-                                            for(CatCatalogTagI tag: cBean.getTags_tag()){
-                                            	XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)TurbineUtils.getUser(data));
-                                                
+
+                                            for (CatCatalogTagI tag : cBean.getTags_tag()) {
+                                                XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI) TurbineUtils.getUser(data));
+
                                                 t.setTag(tag.getTag());
-                                                
+
                                                 cat.setTags_tag(t);
                                             }
-                                            
-                                            cat.setUri(destinationPath + listFiles[i].getName() + "/" + xml.getName());
+
+                                            cat.setUri(destinationPath + listFile.getName() + "/" + xml.getName());
                                             tempMR.setResources_resource(cat);
                                             counter++;
                                         }
                                     } catch (Throwable e) {
-                                        logger.error("",e);
+                                        logger.error("", e);
                                     }
                                 }
                             }

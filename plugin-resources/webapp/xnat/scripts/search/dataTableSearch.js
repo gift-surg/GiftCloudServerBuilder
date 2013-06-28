@@ -1,29 +1,29 @@
 //variable to contain a list of ID's for each table that's been loaded in the page
-XNAT.app.resizableTables=new Array();  
+XNAT.app.resizableTables=new Array();
 
-/* 
- * Per CSS, the containing #layout_content div will resize itself 
- * to fit wide content, constrained to the width of the window.  
+/*
+ * Per CSS, the containing #layout_content div will resize itself
+ * to fit wide content, constrained to the width of the window.
  *
- * This function fires when the user resizes the browser window. 
- * It measures the width of the window and the standard YUI data table. 
+ * This function fires when the user resizes the browser window.
+ * It measures the width of the window and the standard YUI data table.
  * If the table content is wider than the window, it will resize #layout_content
  * However, #layout_content has a minimum width per CSS that matches the page template.
  */
 XNAT.app.tableSizer=function(){
-	var windowWidth = $(window).innerWidth(); 
+	var windowWidth = $(window).innerWidth();
 	var divWidth = $('#layout_content').width(); /* what happens when there are more than one of these on a page? */
 	var tableWidth = $('table.x_rs_t').width(); /* what happens if there are more than one of these on a page? */
-	
+
 	for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
 		XNAT.app.setTableHeight(XNAT.app.resizableTables[tSc]);
 	}
-	
+
 	if (tableWidth > (windowWidth-60)) {
 		var setWidth = windowWidth - 60;
 		if(setWidth<925)setWidth=925;
 		$('#search_tabs').css('width',setWidth);
-		
+
 		//remove any manually configured widths - necessary after joining 2 tables
 		for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
 			XNAT.app.setItemWidth(XNAT.app.resizableTables[tSc]+"_c",'');
@@ -31,13 +31,13 @@ XNAT.app.tableSizer=function(){
 		}
 	}else{
 		$('#search_tabs').css('width','');
-		
+
 		//need to adjust table width for each table to make sure scrollbar is close to table
 		for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){
-			XNAT.app.setTableWidth(XNAT.app.resizableTables[tSc]);			
+			XNAT.app.setTableWidth(XNAT.app.resizableTables[tSc]);
 		}
 	}
-	
+
 }
 
 XNAT.app.setItemWidth=function(div_id,width){
@@ -77,22 +77,22 @@ XNAT.app.setTableHeight=function(div_id){
     if($(container)!=null){
 		var windowHeight = $(window).innerHeight();
 		var tableHeight = $('table.x_rs_t').height();
-		var tablePosition = $(container).offset(); 
-		
-		/* max height is total screen height minus space for table header & chrome */ 
+		var tablePosition = $(container).offset();
+
+		/* max height is total screen height minus space for table header & chrome */
 		var maxTableHeight = (tableHeight < windowHeight) ? tableHeight + 60 : windowHeight-60;
-		var minTableHeight = 300; 
-		
+		var minTableHeight = 300;
+
 		/* available height is visible screen height below the starting Y point of the table, plus room for table header & chrome */
-		var availableTableHeight = windowHeight - (tablePosition.top)- 30; 
+		var availableTableHeight = windowHeight - (tablePosition.top)- 30;
 		availableTableHeight = (availableTableHeight > maxTableHeight) ? maxTableHeight : availableTableHeight;
 		availableTableHeight = (availableTableHeight < minTableHeight) ? minTableHeight : availableTableHeight;
-		
+
 		/* set dimensions of table containers */
 		$(container).css('height',availableTableHeight);
 	}
 }
- 
+
 $(window).resize(function() { XNAT.app.tableSizer(); });
 
 function DataTableSearch(_div_table_id,obj,_config,_options){
@@ -110,12 +110,12 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       _config.csrfToken = null;
     }
     this.config=_config;
-    
+
     if(_options==undefined){
         this.options=new Object();
     }else{
     	this.options=_options;
-    }    
+    }
 
     this.onInit=new YAHOO.util.CustomEvent("init",this);
 	this.onTableInit=new YAHOO.util.CustomEvent("table-init",this);
@@ -123,11 +123,11 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.paging=true;
     this.onReloadRequest=new YAHOO.util.CustomEvent("request-reload",this);
     this.onXMLChange=new YAHOO.util.CustomEvent("xml-change",this);
-    
+
     this.setDefaultValue("showReload",true);
     this.setDefaultValue("showOptionsDropdown",true);
     this.setDefaultValue("showFilterDisplay",true);
-    
+
     this.setDefaultValue("allowInTableMods",true);
   }
 
@@ -171,9 +171,9 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	document.getElementById(this.div_table_id+"_p").innerHTML="";
       }catch(e){}
     }
-    
-    
-    
+
+
+
     YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/search?'+params,this.initCallback,this.xml,this);
   };
 
@@ -243,13 +243,13 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	this.config.sortedBy=configSort;
       }
     }
-    
+
     if(this.options.showOptionsDropdown){
     	this.paginator_html="<table width='100%'><tr><td id='" + this.div_table_id +"_xT_pT1'>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right' id='" + this.div_table_id +"_xT_pT3'><input type='button' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'><div id='" + this.div_table_id +"_options' class='yuimenubar yuimenubarnav'><div class='bd'><ul class='first-of-type'><li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='#" + this.div_table_id + "ot'>Options</a></li></ul></div></div></td></tr><tr><td style='line-height:11px;font-size:11px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>";
     }else{
     	this.paginator_html="<table width='100%'><tr><td id='" + this.div_table_id +"_xT_pT1'>{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} <strong>{CurrentPageReport}</strong></td><td align='right'><div id='" + this.div_table_id +"_sv'></div></td><td align='right' id='" + this.div_table_id +"_xT_pT3'><input type='hidden' id='" + this.div_table_id +"_reload' value='Reload'/></td><td width='82' align='right'></td></tr><tr><td style='line-height:10px;font-size:9px' id='" + this.div_table_id + "_flt' colspan='4'></td></tr></table>";
     }
-	 
+
     // Set up the Paginator instance.
     this.paginator = new YAHOO.widget.Paginator({
 						  containers         : [this.div_table_id + "_p"],
@@ -304,7 +304,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       }
     }
 
-      wrangleTabs();
+      wrangleTabs({wrapper:'#search_tabs'});
 
   }
 
@@ -439,7 +439,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	    if(!XNAT.app.resizableTables.contains(this.div_table_id)){
 	    	XNAT.app.resizableTables.push(this.div_table_id);
 	    }
-	    
+
 	    XNAT.app.tableSizer();
     }catch(e){}
   };
@@ -757,14 +757,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     tempInput.value=_searchXML;
 
     tempForm.appendChild(tempInput);
-    
-    
+
+
     var cs = document.createElement("input");
 	cs.type = "hidden";
 	cs.name = "XNAT_CSRF";
 	cs.value = csrfToken;
 	tempForm.appendChild(cs);
-    
+
 
     if(divContent!=undefined)
       divContent.appendChild(tempForm);
@@ -804,7 +804,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     }
     return columns;
   }
-  
+
   this.getMenuItems=function(){
 	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}];
 

@@ -579,6 +579,8 @@ function FileViewer(_obj){
 				dType.options[1]=new Option("tar","tar");
 				dType.options[2]=new Option("tar.gz","tar.gz");
 				dType.style.marginRight="10px";
+                dType.style.position="relative";
+                dType.style.top="-7px";
 				fTd2.appendChild(dType);
 				
 				var dButton2=document.createElement("input");

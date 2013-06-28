@@ -266,11 +266,15 @@ public class SettingsRestlet extends SecureResource {
 
     @Override
     public void handleDelete() {
-        _log.debug("Got a request to delete property with ID: " + _property);
+        _log.warn("Got a request to delete property with ID: " + _property + " from user: " + user.getLogin());
         returnDefaultRepresentation();
     }
 
     private void setProperties() {
+        if (!user.isSiteAdmin()) {
+            getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You must be an administrator to modify the site settings.");
+            return;
+        }
         try {
             if (!StringUtils.isBlank(_property) && !_property.equals("initialize")) {
                 setDiscreteProperty();

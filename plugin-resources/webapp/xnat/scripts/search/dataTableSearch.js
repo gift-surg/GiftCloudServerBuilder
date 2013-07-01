@@ -22,7 +22,7 @@ XNAT.app.tableSizer=function(){
 	if (tableWidth > (windowWidth-60)) {
 		var setWidth = windowWidth - 60;
 		if(setWidth<925)setWidth=925;
-		$('#search_tabs').css('width',setWidth);
+//		$('#search_tabs').css('width',setWidth);
 
 		//remove any manually configured widths - necessary after joining 2 tables
 		for(var tSc=0;tSc<XNAT.app.resizableTables.length;tSc++){

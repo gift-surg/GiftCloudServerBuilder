@@ -1,7 +1,7 @@
 function EmailPopupForm(_search,_div){
 	this._div=_div;
 	this._search=_search;
-	
+
 	this.init=function(){
 		try{
 		var popupDIV = document.createElement("DIV");
@@ -12,17 +12,17 @@ function EmailPopupForm(_search,_div){
 		var popupBD = document.createElement("DIV");
 		popupBD.className="bd";
 		popupDIV.appendChild(popupBD);
-		
+
 		popupHD.innerHTML="Send Search Results via Email";
-		
-		
+
+
 		var saveOptions = new Object();
 		saveOptions.zIndex=999;
 		saveOptions.width="320";
 		saveOptions.x=240;
 		saveOptions.visible=true;
         saveOptions.fixedcenter=true;
-		
+
 		//add to page
 		if(this._div!=undefined){
 		//add to page
@@ -37,30 +37,31 @@ function EmailPopupForm(_search,_div){
 				tp_fm.appendChild(popupDIV);
 				saveOptions.modal=true;
 			}
-		
+
 		this.emailPopupDialog=new YAHOO.widget.Dialog(popupDIV,saveOptions);
-		
+
 		var handleCancel = function() {
 			this.hide();
+            this.deleteOldInputs();
 		}
-		    
+
 	    this.emailCallback={
 			success:this.completeEmail,
 			failure:this.emailFailure,
             cache:false, // Turn off caching for IE
 			scope:this
         };
-        
+
         this.emailPopupDialog.emailer=this;
-		
+
 		var handleSubmit = function() {
 			var toAddresses = document.getElementById("email_toAddresses").value;
 		    var subject = document.getElementById("email_subject").value;
 		    var from = document.getElementById("email_from_address").value;
 		    var message = document.getElementById("email_message").value;
-	        
-	        this.emailer.emailMsgTab.innerHTML="<DIV style='color:red'>Sending...</DIV>";	
-		    
+
+	        this.emailer.emailMsgTab.innerHTML="<DIV style='color:red'>Sending...</DIV>";
+
 	        var email_url = "remote-class=org.nrg.xdat.ajax.EmailCustomSearch&remote-method=send";
 	        email_url +="&toAddress=" + toAddresses;
 	        email_url +="&subject=" + subject;
@@ -68,33 +69,33 @@ function EmailPopupForm(_search,_div){
 	        email_url +="&from=" + from;
 	        email_url +="&search_xml=" + this.emailer._search;
 	        email_url +="&XNAT_CSRF=" + csrfToken;
-	        
+
 	        YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/servlet/AjaxServlet',this.emailer.emailCallback,email_url,this.emailer);
 		}
-		
+
 	    var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
 						  { text:"Cancel", handler:handleCancel } ];
 		this.emailPopupDialog.cfg.queueProperty("buttons", myButtons);
-				
+
 		this.emailMsgTab=document.createElement("DIV");
 		this.emailMsgTab.style.display='block';
 		this.emailMsgTab.id='emailMsgTab';
 		popupBD.appendChild(this.emailMsgTab);
-		
+
 		var table = document.createElement("TABLE");
 		var tbody = document.createElement("TBODY");
 		table.appendChild(tbody);
-		
+
 		var tr;
 		var td;
 		var th;
 		var hr;
-		
+
 		var div1=document.createElement("DIV");
 		div1.style.display='block';
 		div1.innerHTML='A link to this search will be included in your message.';
 		popupBD.appendChild(div1);
-	
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -105,7 +106,7 @@ function EmailPopupForm(_search,_div){
 		td.appendChild(hr);
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-		
+
 		tr = document.createElement("TR");
 		th= document.createElement("TD");
 		th.align="left";
@@ -114,7 +115,7 @@ function EmailPopupForm(_search,_div){
 		th.innerHTML="Recipient's e-mail address:";
 		tr.appendChild(th);
 		tbody.appendChild(tr);
-		
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -129,12 +130,12 @@ function EmailPopupForm(_search,_div){
 		td.border="0";
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-		
+
 		if (user_email!=undefined && user_email!=""){
 			var input = document.createElement("INPUT");
 			input.type="hidden";
-			input.name="email_from_address"; 
-			input.id="email_from_address"; 
+			input.name="email_from_address";
+			input.id="email_from_address";
 			input.value=user_email;
 			this.applyInputStyle(input);
 			td.colspan="2";
@@ -149,11 +150,11 @@ function EmailPopupForm(_search,_div){
 			th.innerHTML="Sender's e-mail address:";
 			tr.appendChild(th);
 			tbody.appendChild(tr);
-			
+
 			tr = document.createElement("TR");
 			td= document.createElement("TD");
 			td.align="left";
-			td.colspan="2";	
+			td.colspan="2";
 			td.border="0";
 			var input = document.createElement("INPUT");
 			input.type="text";
@@ -165,7 +166,7 @@ function EmailPopupForm(_search,_div){
 			tr.appendChild(td);
 			tbody.appendChild(tr);
 		}
-		
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -174,7 +175,7 @@ function EmailPopupForm(_search,_div){
 		td.innerHTML="(Separate multiple e-mail addresses with commas.)";
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-	
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -185,7 +186,7 @@ function EmailPopupForm(_search,_div){
 		td.appendChild(hr);
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-		
+
 		tr = document.createElement("TR");
 		th= document.createElement("TD");
 		th.align="left";
@@ -194,7 +195,7 @@ function EmailPopupForm(_search,_div){
 		th.innerHTML="Email subject message:";
 		tr.appendChild(th);
 		tbody.appendChild(tr);
-		
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -209,7 +210,7 @@ function EmailPopupForm(_search,_div){
 		td.appendChild(input);
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-	
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -220,7 +221,7 @@ function EmailPopupForm(_search,_div){
 		td.appendChild(hr);
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-		
+
 		tr = document.createElement("TR");
 		th= document.createElement("TD");
 		th.border="0";
@@ -229,7 +230,7 @@ function EmailPopupForm(_search,_div){
 		th.innerHTML="Personal message:";
 		tr.appendChild(th);
 		tbody.appendChild(tr);
-		
+
 		tr = document.createElement("TR");
 		td= document.createElement("TD");
 		td.align="left";
@@ -244,28 +245,36 @@ function EmailPopupForm(_search,_div){
 		td.appendChild(input);
 		tr.appendChild(td);
 		tbody.appendChild(tr);
-					
-		
+
+
 		popupBD.appendChild(table);
 		}catch(e){
 			alert(e.message);
 			throw e;
 		}
 	}
-	
+
 	this.emailFailure=function(o){
-		this.emailPopupDialog.emailMsgTab.innerHTML="<DIV style='color:red'>Error. Failed to send email.</DIV>";	
+		this.emailPopupDialog.emailMsgTab.innerHTML="<DIV style='color:red'>Error. Failed to send email.</DIV>";
 	};
-	
+
 	this.completeEmail=function(o){
 		this.emailPopupDialog.hide();
+        this.deleteOldInputs();
 	};
-	
-	this.render=function(){		
+
+	this.render=function(){
 		this.emailPopupDialog.render();
 	}
-	
+
 	this.applyInputStyle = function(e){
 		e.style.fontSize = "99%";
 	}
+
+    this.deleteOldInputs = function(){
+        document.getElementById("email_toAddresses").parentNode.removeChild( document.getElementById("email_toAddresses"));
+        document.getElementById("email_subject").parentNode.removeChild(document.getElementById("email_subject"));
+        document.getElementById("email_from_address").parentNode.removeChild(document.getElementById("email_from_address"));
+        document.getElementById("email_message").parentNode.removeChild(document.getElementById("email_message"));
+    }
 }

@@ -95,23 +95,29 @@ function xModalMessage(_title,_message,_label,_options){
 var xModalLoaderCount = 0 ;
 
 function xModalLoadingOpen(_options){
-    xModalLoaderCount++;
-    var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
-    var thisClass = (_options && _options.class) ? _options.class+' loading' : 'loading';
-    var thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
-    var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
-    var loader = {
-        id: thisLoader,
-        class: thisClass,
-        kind: 'fixed',
-        width: 260,
-        height: 92,
-        scroll: 'no',
-        title: thisTitle,
-        content: thisContent,
-        footer: 'hide'
-    };
-    xModalOpenNew(loader);
+
+    // let's only have ONE 'generic' loading window open at a time
+    if (!$('#loader1.xmodal.loading.open').length){
+
+        xModalLoaderCount++;
+
+        var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
+        var thisClass = (_options && _options.class) ? _options.class+' loading' : 'loading';
+        var thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
+        var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
+        var loader = {
+            id: thisLoader,
+            class: thisClass,
+            kind: 'fixed',
+            width: 260,
+            height: 92,
+            scroll: 'no',
+            title: thisTitle,
+            content: thisContent,
+            footer: 'hide'
+        };
+        xModalOpenNew(loader);
+    }
 }
 function xModalLoadingClose(_id){
     var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;

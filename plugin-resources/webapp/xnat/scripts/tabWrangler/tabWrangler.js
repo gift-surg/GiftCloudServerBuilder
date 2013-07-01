@@ -10,18 +10,6 @@ $(function(){
 });
 
 
-function debugMe(stuff){
-    if (console.debug) {
-        console.debug('debug: ' + stuff);
-    }
-    else {
-        console.log('log: ' + stuff);
-    }
-}
-
-
-
-
 $(function(){
 
     $body = $('body');
@@ -157,7 +145,6 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
 
     $tabs_wrapper.addClass('wrangled');
 
-    debugMe(tabs_wrapper);
 
     // var the tab <li>s -- probably have to update this var if tabs are added/subtracted
     var tabs = tabs_ul + ' > li';
@@ -312,8 +299,6 @@ $(function(){
             these_tabs_width += $(this).outerWidth();
         });
 
-        debugMe(these_tabs_width);
-
         //$flippers.find('.flipper').removeClass('disabled');
 
         // click 'left' flipper
@@ -380,8 +365,6 @@ $(function(){
             $these_tabs.each(function(){
                 these_tabs_width += $(this).outerWidth();
             });
-
-            debugMe(these_tabs_width);
 
             $flippers.find('.flipper').removeClass('disabled');
 

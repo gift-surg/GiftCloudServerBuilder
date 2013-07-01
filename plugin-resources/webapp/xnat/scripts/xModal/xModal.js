@@ -101,13 +101,13 @@ function xModalLoadingOpen(_options){
 
         xModalLoaderCount++;
 
-        var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
-        var thisClass = (_options && _options.class) ? _options.class+' loading' : 'loading';
-        var thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
-        var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
+        var thisLoader = (typeof _options.id != 'undefined') ? _options.id : 'loader'+xModalLoaderCount;
+        var thisClass = /* (typeof _options.class_ != 'undefined') ? _options.class_+' loading' : */ ' loading ';
+        var thisTitle = (typeof _options.title != 'undefined') ? _options.title : 'Please wait...';
+        var thisContent = (typeof _options.content != 'undefined') ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
         var loader = {
             id: thisLoader,
-            class: thisClass,
+            class_: thisClass,
             kind: 'fixed',
             width: 260,
             height: 92,
@@ -426,7 +426,7 @@ function xModalOpenNew(xx){
 
         this_mask_id = this.id+'_xmask' ;
         this_modal_id = this.id+'_xmodal';
-        this_modal_class = (xx.class && xx.class > '') ? xx.class+' xmodal static' : 'xmodal static' ;
+        this_modal_class = (xx.class_ && xx.class_ > '') ? xx.class_+' xmodal static' : 'xmodal static' ;
 
         $this_content = $('#' + this.id);
         $this_content.wrap('<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask" />');
@@ -442,7 +442,7 @@ function xModalOpenNew(xx){
         this.footer = 'hide';
         this_mask_id = this.id+'_xmask' ;
         this_modal_id = this.id;
-        this_modal_class = (xx.class && xx.class > '') ? xx.class+' xmodal existing' : 'xmodal existing' ;
+        this_modal_class = (xx.class_ && xx.class_ > '') ? xx.class_+' xmodal existing' : 'xmodal existing' ;
 
         $this_modal = $('#' + this.id);
         $this_modal.wrap('<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask" />');
@@ -453,7 +453,7 @@ function xModalOpenNew(xx){
 
         this_mask_id = this.id+'_xmask' ;
         this_modal_id = this.id ;
-        this_modal_class = (xx.class && xx.class > '') ? xx.class+' xmodal' : 'xmodal' ;
+        this_modal_class = (xx.class_ && xx.class_ > '') ? xx.class_+' xmodal' : 'xmodal' ;
 
         $body.append('' +
             '<div id="'+this_mask_id+'" data-xmodal-x="'+xmodal_count+'" class="xmask">' +

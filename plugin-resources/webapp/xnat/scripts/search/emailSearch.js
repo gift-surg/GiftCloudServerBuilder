@@ -64,9 +64,9 @@ function EmailPopupForm(_search,_div){
 	        var email_url = "remote-class=org.nrg.xdat.ajax.EmailCustomSearch&remote-method=send";
 	        email_url +="&toAddress=" + toAddresses;
 	        email_url +="&subject=" + subject;
-	        email_url +="&message=" + message;
+	        email_url +="&message=" + encodeURIComponent(message);
 	        email_url +="&from=" + from;
-	        email_url +="&search_xml=" + this.emailer._search;
+	        email_url +="&search_xml=" + encodeURIComponent(this.emailer._search);
 	        email_url +="&XNAT_CSRF=" + csrfToken;
 
 	        YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/servlet/AjaxServlet',this.emailer.emailCallback,email_url,this.emailer);

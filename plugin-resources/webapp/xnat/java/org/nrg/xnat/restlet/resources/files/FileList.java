@@ -454,7 +454,7 @@ public class FileList extends XNATCatalogTemplate {
             //Refactored on 3/24 to allow the returning of the old file structure.  This was to support Mohana's legacy pipelines.
             String structure = getQueryVariable("structure");
             if (StringUtils.isEmpty(structure)) {
-                structure = "default";
+                structure = "legacy";
             }
 
             final Map<String, String> valuesToReplace;

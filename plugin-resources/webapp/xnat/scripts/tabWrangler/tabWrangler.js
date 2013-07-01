@@ -31,19 +31,6 @@ $(function(){
         e.preventDefault();
     });
 
-    // messing around
-    $body.on('click','a',function(e){
-        debugMe('Nope. Not a link. (text: '+$(this).text()+')');
-        if ($(this).data('url')){
-            var this_url = $(this).data('url');
-            debugMe('But I will take you to this url: '+this_url);
-            window.open(this_url);
-        }
-        else {
-            debugMe('No url.');
-        }
-    });
-
 });
 
 
@@ -164,7 +151,9 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
     var $tabs_wrapper = $(tabs_wrapper);
     var $tabs_ul = $(tabs_ul);
 
-    $tabs_ul.wrap('<div class="wrangler" style="width:100%;overflow:hidden;"></div>');
+    if (!$tabs_ul.parent('div.wrangler').length){
+        $tabs_ul.wrap('<div class="wrangler" style="width:100%;overflow:hidden;border-bottom:5px solid #084FAB"></div>');
+    }
 
     $tabs_wrapper.addClass('wrangled');
 

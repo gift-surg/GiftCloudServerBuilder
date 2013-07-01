@@ -42,7 +42,6 @@ function EmailPopupForm(_search,_div){
 
 		var handleCancel = function() {
 			this.hide();
-            this.deleteOldInputs();
 		}
 
 	    this.emailCallback={
@@ -72,6 +71,8 @@ function EmailPopupForm(_search,_div){
 
 	        YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/servlet/AjaxServlet',this.emailer.emailCallback,email_url,this.emailer);
 		}
+
+        this.deleteOldInputs();
 
 	    var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
 						  { text:"Cancel", handler:handleCancel } ];
@@ -107,7 +108,7 @@ function EmailPopupForm(_search,_div){
 		tr.appendChild(td);
 		tbody.appendChild(tr);
 
-		tr = document.createElement("TR");
+        tr = document.createElement("TR");
 		th= document.createElement("TD");
 		th.align="left";
 		th.border="0";
@@ -260,7 +261,6 @@ function EmailPopupForm(_search,_div){
 
 	this.completeEmail=function(o){
 		this.emailPopupDialog.hide();
-        this.deleteOldInputs();
 	};
 
 	this.render=function(){
@@ -272,9 +272,17 @@ function EmailPopupForm(_search,_div){
 	}
 
     this.deleteOldInputs = function(){
-        document.getElementById("email_toAddresses").parentNode.removeChild( document.getElementById("email_toAddresses"));
-        document.getElementById("email_subject").parentNode.removeChild(document.getElementById("email_subject"));
-        document.getElementById("email_from_address").parentNode.removeChild(document.getElementById("email_from_address"));
-        document.getElementById("email_message").parentNode.removeChild(document.getElementById("email_message"));
+        if(document.getElementById("email_toAddresses")!=null){
+            document.getElementById("email_toAddresses").parentNode.removeChild( document.getElementById("email_toAddresses"));
+        }
+        if(document.getElementById("email_subject")!=null){
+            document.getElementById("email_subject").parentNode.removeChild(document.getElementById("email_subject"));
+        }
+        if(document.getElementById("email_from_address")!=null){
+            document.getElementById("email_from_address").parentNode.removeChild(document.getElementById("email_from_address"));
+        }
+        if(document.getElementById("email_message")!=null){
+            document.getElementById("email_message").parentNode.removeChild(document.getElementById("email_message"));
+        }
     }
 }

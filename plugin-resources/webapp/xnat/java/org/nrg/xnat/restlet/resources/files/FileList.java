@@ -505,11 +505,19 @@ public class FileList extends XNATCatalogTemplate {
     private String getImprovedPath(String fileName, Object catNumber) {
         String root = "";
         List<Object[]> rows = catalogs.rows();
-        for (Object[] row : rows) {
-            if (row[0].equals(catNumber)) {
-                root = row[3].toString() + "/";
-                if (row[4] != null && !row[4].equals("")) root += row[4].toString() + "_" + row[5].toString() + "/";
-                root += row[1].toString() + "/";
+        for (Object[] row : rows) {         // iterate through the rows of the catalog to find
+            if (row[0].equals(catNumber)) { // the catalog entry matching the current object
+                root = row[3].toString() + "/"; // resource type, e.g. scans, resources, assessors
+                if (row[4] != null && !row[4].equals("")) { // folder name, usually scan number_scan type
+                    root += row[4].toString();
+                    if (row[5] != null && !row[5].equals("")) root += "_" + row[5].toString();
+                    root += "/";
+                }
+                if (row[1] != null && !row[1].equals("")) {
+                    root += row[1].toString() + "/"; // data subfolder, most commonly DICOM
+                } else {
+                    root += row[0].toString() + "/"; // if no subfolder name, use resource id
+                }
             }
         }
         return root + fileName;

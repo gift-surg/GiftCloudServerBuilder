@@ -454,7 +454,7 @@ public class FileList extends XNATCatalogTemplate {
             //Refactored on 3/24 to allow the returning of the old file structure.  This was to support Mohana's legacy pipelines.
             String structure = getQueryVariable("structure");
             if (StringUtils.isEmpty(structure)) {
-                structure = "legacy";
+                structure = "default";
             }
 
             final Map<String, String> valuesToReplace;
@@ -470,14 +470,18 @@ public class FileList extends XNATCatalogTemplate {
                 final File child = (File) row[fileIndex];
                 if (child != null && child.exists()) {
                     final String pathForZip;
-                    if (structure.equalsIgnoreCase("legacy")) {
+                    if (structure.equalsIgnoreCase("improved")) {
+                        pathForZip = getImprovedPath(row[0].toString(), row[cat_IDIndex]);
+                    } else if (structure.equalsIgnoreCase("legacy")) {
                         pathForZip = child.getAbsolutePath();
                     } else {
                         pathForZip = uri;
                     }
 
                     final String relative;
-                    if (structure.equals("simplified")) {
+                    if (structure.equals("improved")) {
+                        relative = pathForZip;
+                    } else if (structure.equals("simplified")) {
                         relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String) row[collectionIndex]).replace("/resources", "").replace("/files", "");
                     } else {
                         relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String) row[collectionIndex]);
@@ -496,6 +500,19 @@ public class FileList extends XNATCatalogTemplate {
         } else {
             return super.representTable(table, mt, params, cp);
         }
+    }
+
+    private String getImprovedPath(String fileName, Object catNumber) {
+        String root = "";
+        List<Object[]> rows = catalogs.rows();
+        for (Object[] row : rows) {
+            if (row[0].equals(catNumber)) {
+                root = row[3].toString() + "/";
+                if (row[4] != null && !row[4].equals("")) root += row[4].toString() + "_" + row[5].toString() + "/";
+                root += row[1].toString() + "/";
+            }
+        }
+        return root + fileName;
     }
 
     public CatEntryFilterI buildFilter() {

@@ -43,7 +43,7 @@ $page.setVlinkColor($ui.vlink)
                 #set($row = $queryResults.nextRow())
                 #set($desc = $turbineUtils.escapeHTML($queryResults.getCellValue("series_description")))
                 #set($fr = $queryResults.getCellValue("frames"))
-                #set($imty = "") <!-- not all scan types have image type -->
+                #set($imty = "") ## not all scan types have image type
                 #set($imty = $!queryResults.getCellValue("parameters_imagetype"))
                 #set($ty = $queryResults.getCellValue("type"))
                 <tr valign=top border=0>

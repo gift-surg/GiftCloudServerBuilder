@@ -468,10 +468,11 @@ public class FileList extends XNATCatalogTemplate {
             for (final Object[] row : table.rows()) {
                 final String uri = (String) row[uriIndex];
                 final File child = (File) row[fileIndex];
+
                 if (child != null && child.exists()) {
                     final String pathForZip;
                     if (structure.equalsIgnoreCase("improved")) {
-                        pathForZip = getImprovedPath(row[0].toString(), row[cat_IDIndex]);
+                        pathForZip = getImprovedPath(uri, row[cat_IDIndex]);
                     } else if (structure.equalsIgnoreCase("legacy")) {
                         pathForZip = child.getAbsolutePath();
                     } else {
@@ -502,7 +503,7 @@ public class FileList extends XNATCatalogTemplate {
         }
     }
 
-    private String getImprovedPath(String fileName, Object catNumber) {
+    private String getImprovedPath(String fileUri, Object catNumber) {
         String root = "";
         List<Object[]> rows = catalogs.rows();
         for (Object[] row : rows) {         // iterate through the rows of the catalog to find
@@ -520,6 +521,10 @@ public class FileList extends XNATCatalogTemplate {
                 }
             }
         }
+        String fileName = "";
+        int filesStart = fileUri.lastIndexOf("/files/");
+        fileName = fileUri.substring(filesStart + 7);
+
         return root + fileName;
     }
 

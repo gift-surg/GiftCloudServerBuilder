@@ -48,14 +48,14 @@ confirm : function (msg, yesAction, noAction) {
 }
 };
 
-function UserManager(user_mgmt_div_id, pID){
+function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	this.pID=pID;
 	this.user_mgmt_div = document.getElementById(user_mgmt_div_id);
 
 	this.project_table_div=document.createElement("DIV");
 	this.project_table_div.id="user_table";
 	this.user_mgmt_div.appendChild(this.project_table_div);
-
+    this.retrieveAllUsers = retrieveAllUsers;
 
 	this.userColumnDefs=[
 	                     {key:"login",label:"Username",sortable:true},
@@ -105,7 +105,7 @@ function UserManager(user_mgmt_div_id, pID){
 			this.displayError("ERROR " + o.status+ ": Failed to parse " + XNAT.app.displayNames.singular.project.toLowerCase() + " user list.");
 		}
 		this.initLoader.close();
-		if(this.allUserResultSet==undefined)
+		if(this.retrieveAllUsers && this.allUserResultSet == undefined)
 			this.loadAllUsers();
 	};
 
@@ -296,13 +296,19 @@ function UserManager(user_mgmt_div_id, pID){
 	};
 
 	this.userExists=function (email){
+        // If the site is not configured to allow retrieving all users, just assume that the user is valid,
+        // since we can't check against that list anyway.
+		if (!window.userManager.retrieveAllUsers || window.userManager.allUserResultSet == undefined) {
+            return true;
+        }
 		var all_users= window.userManager.allUserResultSet.ResultSet.Result;
 		for(var user_count=0;user_count<all_users.length;user_count++){
 			if(all_users[user_count].email==email || all_users[user_count].login==email){
 				return true;
 			}
 		}
-	}
+        return false;
+    };
 
 	this.displayError=function(errorMsg){
 		var data_table = document.getElementById("user_table");
@@ -429,6 +435,9 @@ function UserManager(user_mgmt_div_id, pID){
 	 * Popup dialog box which allows existing users to be selected and added to project.
 	 */
 	this.popupAllUsersBox=function(){
+        if (!this.retrieveAllUsers) {
+            return;
+        }
 		if(this.allUsersPopup==undefined){
 			this.createPopup();
 		}

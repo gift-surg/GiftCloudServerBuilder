@@ -149,7 +149,7 @@
                                 </TR>
                             #else
                                 <TR>
-                                    <TD><input type="checkbox" name="scan_format" value="NULL"/></TD>
+                                    <TD><input type="checkbox" name="scan_format" value="NULL" checked="checked"/></TD>
                                     <TD>Unspecified</TD>
                                 </TR>
                             #end

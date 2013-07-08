@@ -472,7 +472,7 @@ public class FileList extends XNATCatalogTemplate {
                 if (child != null && child.exists()) {
                     final String pathForZip;
                     if (structure.equalsIgnoreCase("improved")) {
-                        pathForZip = getImprovedPath(uri, row[cat_IDIndex]);
+                        pathForZip = getImprovedPath(uri, row[cat_IDIndex], mt);
                     } else if (structure.equalsIgnoreCase("legacy")) {
                         pathForZip = child.getAbsolutePath();
                     } else {
@@ -503,7 +503,7 @@ public class FileList extends XNATCatalogTemplate {
         }
     }
 
-    private String getImprovedPath(String fileUri, Object catNumber) {
+    private String getImprovedPath(String fileUri, Object catNumber, MediaType mt) {
         String root = "";
         List<Object[]> rows = catalogs.rows();
         for (Object[] row : rows) {         // iterate through the rows of the catalog to find
@@ -511,7 +511,9 @@ public class FileList extends XNATCatalogTemplate {
                 root = row[3].toString() + "/"; // resource type, e.g. scans, resources, assessors
                 if (row[4] != null && !row[4].equals("")) { // folder name, usually scan number_scan type
                     root += row[4].toString();
-                    if (row[5] != null && !row[5].equals("")) root += "_" + row[5].toString();
+                    // extend the folder name with scan type as long as it's not a tar (tar's have a 100 character limit)
+                    if (!mt.equals(MediaType.APPLICATION_GNU_TAR) && !mt.equals(MediaType.APPLICATION_TAR) &&
+                            row[5] != null && !row[5].equals("")) root += "_" + row[5].toString();
                     root += "/";
                 }
                 if (row[1] != null && !row[1].equals("")) {

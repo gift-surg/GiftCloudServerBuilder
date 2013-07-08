@@ -12,21 +12,21 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipOutputStream;
 
-import com.twmacinta.util.MD5;
 import org.apache.log4j.Logger;
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
@@ -63,6 +63,9 @@ import org.nrg.xnat.helpers.resource.XnatResourceInfo;
 import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.Lists;
+import com.twmacinta.util.MD5;
 
 /**
  * @author timo
@@ -834,7 +837,7 @@ public class CatalogUtils {
      * @return true if catalog was modified, otherwise false
      */
     public static boolean formalizeCatalog(final CatCatalogI cat, final String catPath, UserI user, EventMetaI now) {
-    	return formalizeCatalog(cat, catPath, user, now,false);
+    	return formalizeCatalog(cat, catPath, user, now,false,false);
     	//default to false for checksums for now.  Maybe it should use the default setting for the server.  But, this runs everytime a catalog xml is loaded.  So, it will get re-run over and over.  Not sure we want to add that amount of processing.
     }
 
@@ -846,10 +849,11 @@ public class CatalogUtils {
      * @param user User in operation
      * @param now Corresponding event
      * @param createChecksums Boolean whether or not to generate checksums (if missing)
+     * @param removeMissingFiles Boolean whether or not to delete references to missing files
      * @return true if catalog was modified, otherwise false
      */
-    public static boolean formalizeCatalog(final CatCatalogI cat, final String catPath, UserI user, EventMetaI now,boolean createChecksums) {
-        return formalizeCatalog(cat, catPath, cat.getId(), user, now,createChecksums);
+    public static boolean formalizeCatalog(final CatCatalogI cat, final String catPath, UserI user, EventMetaI now,boolean createChecksums,boolean removeMissingFiles) {
+        return formalizeCatalog(cat, catPath, cat.getId(), user, now,createChecksums,removeMissingFiles);
     }
 
     public static String getFullPath(String rootPath, XnatResourcecatalogI resource) {
@@ -1085,15 +1089,69 @@ public class CatalogUtils {
         }
         return catF;
     }
+        
+    /**
+     * Reviews the catalog directory and adds any files that aren't already referenced in the catalog.
+     * @param catFile path to catalog xml file
+     * @param cat content of catalog xml file
+     * @param user user for transaction
+     * @param event_id event id for transaction
+     * @return true if the cat was modified (and needs to be saved).
+     */
+    public static boolean addUnreferencedFiles(final File catFile, final CatCatalogI cat, XDATUser user,Number event_id){
+    	//list of all files in the catalog folder
+    	final Collection<File> files=org.apache.commons.io.FileUtils.listFiles(catFile.getParentFile(), null, true);
+    	
+    	//URI object for the catalog folder (used to generate relative file paths)
+    	final URI catFolderURI=catFile.getParentFile().toURI();
+    	
+    	final Date now= Calendar.getInstance().getTime();
+    	
+    	boolean modified=false;
+    	
+    	for(final File f: files){
+    		if(!f.equals(catFile)){//don't add the catalog xml to its own list
+	    		//relative path is used to compare to existing catalog entries, and add it if its missing.  entry paths are relative to the location of the catalog file.
+	    		final String relative = catFolderURI.relativize(f.toURI()).getPath();
+	
+	    		//
+	            final CatEntryI e = getEntryByURI(cat, relative);
+	
+	            if (e == null) {
+	                final CatEntryBean newEntry = new CatEntryBean();
+	                newEntry.setUri(relative);
+	                newEntry.setName(f.getName());
+	
+	                //create basic resource info to specify file properties at creation.
+	                final XnatResourceInfo info = XnatResourceInfo.buildResourceInfo(null, null, null, null, user, now, now, event_id);
+	                configureEntry(newEntry, info, false);
+	
+	                try {
+						cat.addEntries_entry(newEntry);
+						modified=true;
+					} catch (Exception e1) {
+						//this shouldn't happen
+						logger.error("",e1);
+					}
+	            }
+    			
+    		}
+    	}
+    	
+    	return modified;
+    }
 
-    private static boolean formalizeCatalog(final CatCatalogI cat, final String catPath, String header, UserI user, EventMetaI now,final boolean createChecksum) {
+    private static boolean formalizeCatalog(final CatCatalogI cat, final String catPath, String header, UserI user, EventMetaI now,final boolean createChecksum, final boolean removeMissingFiles) {
         boolean modified = false;
 
         for (CatCatalogI subSet : cat.getSets_entryset()) {
-            if (formalizeCatalog(subSet, catPath, header + "/" + subSet.getId(), user, now,createChecksum)) {
+            if (formalizeCatalog(subSet, catPath, header + "/" + subSet.getId(), user, now,createChecksum, removeMissingFiles)) {
                 modified = true;
             }
         }
+        
+        List<CatEntryI> toRemove=Lists.newArrayList();
+        
         for (CatEntryI entry : cat.getEntries_entry()) {
             if (entry.getCreatedby() == null && user != null) {
                 entry.setCreatedby(user.getUsername());
@@ -1121,9 +1179,20 @@ public class CatalogUtils {
                     entry.setId(header + "/" + f.getName());
                     modified = true;
                 } else {
-                    logger.error("Missing Resource:" + entryPath);
+                	if(removeMissingFiles){
+                		toRemove.add(entry);
+                		modified=true;
+                	}else{
+                		logger.error("Missing Resource:" + entryPath);
+                	}
                 }
             }
+        }
+        
+        if(toRemove.size()>0){
+        	for(CatEntryI entry:toRemove){
+        		CatalogUtils.removeEntry(cat, entry);
+        	}
         }
 
         return modified;

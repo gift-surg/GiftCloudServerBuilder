@@ -789,7 +789,7 @@ public abstract class SecureResource extends Resource {
         return isQueryVariableTrueHelper(getQueryVariable(key, request));
     }
 
-    private static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
+    protected static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
         if (queryVariableObj != null && queryVariableObj instanceof String) {
             String queryVariable = (String) queryVariableObj;
             return !(queryVariable.equalsIgnoreCase("false") || queryVariable.equalsIgnoreCase("0"));

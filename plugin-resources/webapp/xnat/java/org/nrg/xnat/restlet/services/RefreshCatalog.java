@@ -3,6 +3,7 @@
  */
 package org.nrg.xnat.restlet.services;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.nrg.action.ActionException;
@@ -32,7 +33,7 @@ import com.google.common.collect.Lists;
  *
  *  It will review the query string parameters and a multi-part form body.  For each parameter named 'resource' it will refresh the associated catalogs
  *
- *  Options:
+ *  URLs:
  *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN/resources/LABEL
  *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN
  *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/reconstructions/RECON/resources/LABEL
@@ -56,6 +57,11 @@ import com.google.common.collect.Lists;
  *  /services/refresh/catalog?resource=/archive/subjects/SUBJECT/resources/LABEL
  *  /services/refresh/catalog?resource=/archive/subjects/SUBJECT -- will not cascade to children (experiments)
  *
+ * Options:
+ * 	checksum: Generate checksums for any files which are missing them.
+ *  delete: Delete any references to missing files
+ *  append: Add references to any unreferenced files
+ *  
  *  Multiple resource paths can be specified in a single submit using multiple resource parameters on the query string or in a multipart form body
  */
 public class RefreshCatalog extends SecureResource {
@@ -77,10 +83,29 @@ public class RefreshCatalog extends SecureResource {
 	List<String> resources=Lists.newArrayList();
 	ListMultimap<String,Object> otherParams=ArrayListMultimap.create();
 
+	boolean checksum, delete, append=false;
+	
 	public void handleParam(final String key,final Object value) throws ClientException{
 		if(value!=null){
 			if(key.equals("resource")){
 				resources.add((String)value);
+			}else if(key.equals("checksum")){
+				checksum=isQueryVariableTrueHelper((String)value);
+			}else if(key.equals("delete")){
+				delete=isQueryVariableTrueHelper((String)value);
+			}else if(key.equals("append")){
+				append=isQueryVariableTrueHelper((String)value);
+			}else if(key.equals("options")){
+				List<String> options=Arrays.asList(((String)value).split(","));
+				if(options.contains("checksum")){
+					checksum=true;
+				}
+				if(options.contains("delete")){
+					delete=true;
+				}
+				if(options.contains("append")){
+					append=true;
+				}
 			}else{
 				otherParams.put(key, value);
 			}
@@ -111,7 +136,7 @@ public class RefreshCatalog extends SecureResource {
 				}
 
 				//call refresh operation
-				ResourceUtils.refreshResourceCatalog(resourceURI, user,this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"));
+				ResourceUtils.refreshResourceCatalog(resourceURI, user,this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"),checksum,delete,append);
 			}
 
 			this.getResponse().setStatus(Status.SUCCESS_OK);

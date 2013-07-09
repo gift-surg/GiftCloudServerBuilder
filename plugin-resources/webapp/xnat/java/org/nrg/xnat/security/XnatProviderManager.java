@@ -12,18 +12,24 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.utils.AuthUtils;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
+import org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider;
 import org.nrg.xnat.security.provider.XnatLdapAuthenticationProvider;
 import org.nrg.xnat.security.tokens.XnatLdapUsernamePasswordAuthenticationToken;
 import org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.*;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class XnatProviderManager extends ProviderManager {
@@ -125,6 +131,18 @@ public class XnatProviderManager extends ProviderManager {
                         continue;
                     }
                 }
+                try {
+                    if (((XnatDatabaseAuthenticationProvider)candidate).isPlainText()) {
+                        String username = authentication.getPrincipal().toString();
+                        Boolean encrypted = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT primary_password_encrypt<>0 OR (primary_password_encrypt IS NULL AND CHAR_LENGTH(primary_password)=64) FROM xdat_user WHERE login=? LIMIT 1", new String[] {username}, new RowMapper<Boolean>() {
+                            public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                return rs.getBoolean(1);
+                            }
+                        }).get(0);
+
+                        if (encrypted) continue;
+                    }
+                } catch (Exception e) {/*casting exceptions can be safely ignored*/}
                 providers.add(candidate);
             }
         }

@@ -149,7 +149,7 @@
                                 </TR>
                             #else
                                 <TR>
-                                    <TD><input type="checkbox" name="scan_format" value="NULL"/></TD>
+                                    <TD><input type="checkbox" name="scan_format" value="NULL" checked="checked"/></TD>
                                     <TD>Unspecified</TD>
                                 </TR>
                             #end
@@ -364,8 +364,8 @@
     </TD>
 </TR>
 <TR>
-    <TD class="withColor">
-        <TABLE>
+    <TD style="vertical-align: top">
+        <TABLE class="withColor">
             <TR>
                 <TD><input type="submit" value="Submit" name="eventSubmit_doPerform"/></TD>
             </TR>

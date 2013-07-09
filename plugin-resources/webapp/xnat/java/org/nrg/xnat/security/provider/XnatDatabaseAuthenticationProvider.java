@@ -6,6 +6,7 @@ import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationTo
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -65,6 +66,11 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
         super.additionalAuthenticationChecks(userDetails, authentication);
     }
 
+    public boolean isPlainText() {
+        return (this.getPasswordEncoder().getClass() == plainText);
+    }
+
     private String displayName = "";
     private String _providerId = "";
+    private Class plainText = new PlaintextPasswordEncoder().getClass();
 }

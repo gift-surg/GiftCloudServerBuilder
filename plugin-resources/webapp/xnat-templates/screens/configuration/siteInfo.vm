@@ -8,14 +8,14 @@
 
         <p>
             <label for="siteId">Site ID</label>
-            <input size="30" type="text" id="siteId" onchange="this.value=stringCamelCaps(this.value); window.siteInfoManager.dirtyForm();" disabled />
+            <input size="30" type="text" id="siteId" onchange="this.value=stringCamelCaps(this.value); window.siteInfoManager.dirtyForm();" />
             <small>The id used to refer to this site (also used to generate database ids). No spaces or non-alphanumeric characters. It should be a short,
                 one-word name or acronym which describes your site.</small>
         </p>
 
         <p>
             <label for="siteUrl">Site URL</label>
-            <input size="30" type="text" id="siteUrl" onchange="window.siteInfoManager.dirtyForm();" disabled />
+            <input size="30" type="text" id="siteUrl" onchange="window.siteInfoManager.dirtyForm();" />
             <small>The address you want visible to users in emails, and other external links.  This should be a functional address (i.e. if the user pasted
                 this address in their web browser, they should come to the site).  localhost only works if the web browser is located on the same machine.
                 You are required to guarantee that this address is functional for reaching the site.</small>
@@ -23,7 +23,7 @@
 
         <p>
             <label for="siteAdminEmail">Site Admin Email Address</label>
-            <input size="30" type="text" id="siteAdminEmail" onchange="window.siteInfoManager.dirtyForm();" disabled />
+            <input size="30" type="text" id="siteAdminEmail" onchange="window.siteInfoManager.dirtyForm();" />
             <small>The administrative email account to receive system emails. This address will receive frequent emails on system events, such as errors,
                 processing completion, new user registration and so on.  The number of emails can be configured on the
                 <a href="$link.setPage("XDATScreen_emailSpecifications.vm")">Administer &gt; More Options... &gt; Set email settings</a> dialog.</small>
@@ -31,14 +31,24 @@
 
         <p>
             <label for="showapplet">Applet Link</label>
-            <input type="checkbox" id="showapplet" onchange="window.siteInfoManager.dirtyForm();" disabled />
+            <input type="checkbox" id="showapplet" onchange="window.siteInfoManager.dirtyForm();" />
             <small>Should a prominent link to the applet show up on the left bar of the index page?</small>
         </p>
 
         <p>
             <label for="enableCsrfToken">Enable CSRF Token?</label>
-            <input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" enabled />
+            <input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" />
             <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
+        </p>
+
+        <p>
+            <label for="restrictUserListAccessToAdmins">Restrict user list access to site administrators?</label>
+            <input type="checkbox" id="restrictUserListAccessToAdmins" onchange="window.siteInfoManager.dirtyForm();" />
+            <small>
+                Should this site restrict access to the list of system users to site administrators only? If turned on,
+                the site is more secure, but this restricts project owners from being able to administer users in their
+                projects directly.
+            </small>
         </p>
 
     </div>
@@ -97,6 +107,6 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken']);
+putConfigurationControls('siteInfo', ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'restrictUserListAccessToAdmins']);
 
 </script>

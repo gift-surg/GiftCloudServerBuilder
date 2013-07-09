@@ -742,7 +742,7 @@ XNAT.app._modifyLabel=function(arg1,arg2,container){
          },
          failure:function (o) {
              if (!window.leaving) {
-                 alert("ERROR (" + o.status + "): Failed to modify " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " ID:\n\n" + o.responseText);
+                 xModalMessage('ERROR (' + o.status + '): Failed to modify ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ' ID', o.responseText);
                  closeModalPanel("modify_new_label");
              }
          }, scope:this

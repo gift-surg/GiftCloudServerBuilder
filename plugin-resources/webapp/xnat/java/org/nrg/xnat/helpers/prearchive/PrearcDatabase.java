@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
@@ -26,6 +25,8 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.services.Archiver;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.data.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Strings;
@@ -40,7 +41,7 @@ import com.google.common.collect.Maps;
  *
  */
 public final class PrearcDatabase {
-    static Logger logger = Logger.getLogger(PrearcTableBuilder.class);
+    static Logger logger = LoggerFactory.getLogger(PrearcTableBuilder.class);
     public static Connection conn;
     final static String table = "prearchive";
     final static String tableWithSchema = PoolDBUtils.search_schema_name + "." + PrearcDatabase.table;
@@ -357,7 +358,7 @@ public final class PrearcDatabase {
 
                             PrearcDatabase.addSession(sd);
                         } catch (SyncFailedException e) {
-                            logger.error(e);
+                            logger.error("Error while moving project", e);
                             throw new IllegalStateException(e.getMessage());
                         }
                         return null;
@@ -492,7 +493,7 @@ public final class PrearcDatabase {
         try {
             archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite,overwrite_files, user, waitFor);
         }catch (Exception e1) {
-            PrearcUtils.log(project,timestamp,prearcDIR, e1);
+            logger.error("", e1);
             throw new IllegalStateException(e1);
         }
 
@@ -503,7 +504,7 @@ public final class PrearcDatabase {
             sd = session.getSessionData();
         }
         catch (Exception e) {
-            PrearcUtils.log(project,timestamp,prearcDIR, e);
+            logger.error("", e);
             throw new IllegalStateException(e);
         }
 
@@ -535,9 +536,7 @@ public final class PrearcDatabase {
 
         }
         catch (Exception _e) {
-            logger.error("",_e);
-            PrearcUtils.log(sd, _e);
-            e =  _e;
+            logger.error("Error during archive process", _e);
             ran = false;
         }
 
@@ -646,9 +645,9 @@ public final class PrearcDatabase {
                     		PrearcDatabase.markSession(_s, PrearcUtils.PrearcStatus.READY);
                     	}
                     } catch (SyncFailedException e) {
-                        logger.error(e);
+                        logger.error("Error while moving project", e);
                     } catch (Exception e) {
-                        logger.error(e);
+                        logger.error("Error while moving project", e);
                     }
                 }		
             }
@@ -676,9 +675,9 @@ public final class PrearcDatabase {
                     try {
                         PrearcDatabase._deleteSession(_s.getFolderName(),_s.getTimestamp(),_s.getProject());
                     } catch (SyncFailedException e) {
-                        logger.error(e);
+                        logger.error("Error while moving project", e);
                     } catch (Exception e) {
-                        logger.error(e);
+                        logger.error("Error while moving project", e);
                     } 
                 }
             }
@@ -1113,13 +1112,11 @@ public final class PrearcDatabase {
             catch (SQLException e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
-            	PrearcUtils.log(proj, timestamp, sess, e);
                 throw e;
             } 
             catch (SessionException e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
-            	PrearcUtils.log(proj, timestamp, sess, e);
                 throw e;
             }
             catch (SyncFailedException e) {
@@ -1129,17 +1126,14 @@ public final class PrearcDatabase {
                 if((e.cause!=null && (e.cause instanceof ClientException) && Status.CLIENT_ERROR_CONFLICT.equals(((ClientException)e.cause).getStatus()))){
                 	//if this failed due to a conflict
                 	PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.CONFLICT);
-                	PrearcUtils.log(proj, timestamp, sess, e.cause);
                 }else{
                 	PrearcDatabase.setStatus(sess, timestamp, proj , PrearcUtils.PrearcStatus.ERROR);
-                	PrearcUtils.log(proj, timestamp, sess, (e.cause!=null)?e.cause:e);
                 }
                 throw e;
             }
             catch (Exception e) {
                 logger.error("",e);
                 PrearcDatabase.unLockSession(this.sess, this.timestamp, this.proj);
-            	PrearcUtils.log(proj, timestamp, sess, e);
                 throw e;
             }
         }

@@ -17,12 +17,16 @@ import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.config.services.ConfigService;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.framework.utilities.Reflection;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.security.XDATUser;
@@ -789,7 +793,7 @@ public abstract class SecureResource extends Resource {
         return isQueryVariableTrueHelper(getQueryVariable(key, request));
     }
 
-    private static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
+    protected static boolean isQueryVariableTrueHelper(Object queryVariableObj) {
         if (queryVariableObj != null && queryVariableObj instanceof String) {
             String queryVariable = (String) queryVariableObj;
             return !(queryVariable.equalsIgnoreCase("false") || queryVariable.equalsIgnoreCase("0"));
@@ -1356,4 +1360,38 @@ public abstract class SecureResource extends Resource {
 
         return map;
     }
+
+    protected boolean isWhitelisted() {
+        return checkWhitelist(null);
+}
+
+    protected boolean isWhitelisted(int projectId) {
+        return checkWhitelist(projectId);
+    }
+
+    private boolean checkWhitelist(Integer projectId) {
+        ConfigService configService = XDAT.getConfigService();
+        String config = projectId != null
+                ? configService.getConfigContents("user-resource-whitelist", "whitelist.json", Long.valueOf(projectId))
+                : configService.getConfigContents("user-resource-whitelist", "users/whitelist.json");
+
+        if (StringUtils.isBlank(config)) {
+            return false;
+        }
+
+        try {
+            List<String> userResourceWhitelist = OBJECT_MAPPER.readValue(config, TYPE_REFERENCE_LIST_STRING);
+            if (userResourceWhitelist != null) {
+                return userResourceWhitelist.contains(user.getUsername());
+            }
+        } catch (IOException e) {
+            String message = "Error retrieving user list" + (projectId == null ? "" : " for project " + projectId);
+            logger.error(message, e);
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, message + ": " + e.getMessage());
+        }
+        return false;
+    }
+
+    protected final static TypeReference<ArrayList<String>> TYPE_REFERENCE_LIST_STRING = new TypeReference<ArrayList<String>>() {};
+    protected final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 }

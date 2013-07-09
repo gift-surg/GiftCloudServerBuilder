@@ -613,7 +613,7 @@ function FileViewer(_obj){
 	  		    		alert("No files found.");
 	  		    		return;
 	  		    	}
-	  		    	var destination=this.obj.uri + "/resources/"+resources + "/files?format="+ dType.options[dType.selectedIndex].value;
+	  		    	var destination=this.obj.uri + "/resources/"+resources + "/files?structure=improved&all=true&format="+ dType.options[dType.selectedIndex].value;
 					
 	  		    	this.panel.hide();
 	  		    	mySimpleDialog = new YAHOO.widget.SimpleDialog("dlg", { 

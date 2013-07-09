@@ -1,4 +1,4 @@
-//Copyright 2011 Washington University School of Medicine All Rights Reserved
+//Copyright 2011,2013 Washington University School of Medicine All Rights Reserved
 /*
  * Created on Aug 22, 2007
  *
@@ -26,7 +26,8 @@ import org.nrg.xnat.utils.WorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
+import static org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping.standardizeFormat;
+
 
 public class ModifyScanTypes extends ModifyItem{
     private final Logger logger = LoggerFactory.getLogger(ModifyScanTypes.class);
@@ -87,19 +88,7 @@ public class ModifyScanTypes extends ModifyItem{
     }
 
 
-    private static String standardizeFormat(final String originalString) {
-        if (null == originalString) {
-            return "";
-        } else {
-            return originalString.replaceAll("[ _\\-\\*]", "").toUpperCase();
-        }
-    }
-    
     private static boolean equalsStandardized(final String standardized, final String s) {
-        if (null == standardized) {
-            return null == s;
-        } else {
-            return standardized.equals(standardizeFormat(s));
-        }
+        return standardizeFormat(s).equals(standardized);
     }
 }

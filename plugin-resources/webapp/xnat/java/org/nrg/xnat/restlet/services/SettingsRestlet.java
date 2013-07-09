@@ -598,6 +598,11 @@ public class SettingsRestlet extends SecureResource {
                     }
                 }
 
+                assert subscriber != null;
+                if (!subscriber.getEmails().equalsIgnoreCase(email)) {
+                    subscriber.setEmails(email);
+                    getNotificationService().getSubscriberService().update(subscriber);
+                }
                 subscribers.add(subscriber);
             }
         }

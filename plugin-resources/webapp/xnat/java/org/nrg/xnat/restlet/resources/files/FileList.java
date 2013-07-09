@@ -454,7 +454,7 @@ public class FileList extends XNATCatalogTemplate {
             //Refactored on 3/24 to allow the returning of the old file structure.  This was to support Mohana's legacy pipelines.
             String structure = getQueryVariable("structure");
             if (StringUtils.isEmpty(structure)) {
-                structure = "legacy";
+                structure = "default";
             }
 
             final Map<String, String> valuesToReplace;
@@ -468,16 +468,21 @@ public class FileList extends XNATCatalogTemplate {
             for (final Object[] row : table.rows()) {
                 final String uri = (String) row[uriIndex];
                 final File child = (File) row[fileIndex];
+
                 if (child != null && child.exists()) {
                     final String pathForZip;
-                    if (structure.equalsIgnoreCase("legacy")) {
+                    if (structure.equalsIgnoreCase("improved")) {
+                        pathForZip = getImprovedPath(uri, row[cat_IDIndex], mt);
+                    } else if (structure.equalsIgnoreCase("legacy")) {
                         pathForZip = child.getAbsolutePath();
                     } else {
                         pathForZip = uri;
                     }
 
                     final String relative;
-                    if (structure.equals("simplified")) {
+                    if (structure.equals("improved")) {
+                        relative = pathForZip;
+                    } else if (structure.equals("simplified")) {
                         relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String) row[collectionIndex]).replace("/resources", "").replace("/files", "");
                     } else {
                         relative = RestFileUtils.buildRelativePath(pathForZip, session_mapping, valuesToReplace, row[cat_IDIndex], (String) row[collectionIndex]);
@@ -496,6 +501,33 @@ public class FileList extends XNATCatalogTemplate {
         } else {
             return super.representTable(table, mt, params, cp);
         }
+    }
+
+    private String getImprovedPath(String fileUri, Object catNumber, MediaType mt) {
+        String root = "";
+        List<Object[]> rows = catalogs.rows();
+        for (Object[] row : rows) {         // iterate through the rows of the catalog to find
+            if (row[0].equals(catNumber)) { // the catalog entry matching the current object
+                root = row[3].toString() + "/"; // resource type, e.g. scans, resources, assessors
+                if (row[4] != null && !row[4].equals("")) { // folder name, usually scan number_scan type
+                    root += row[4].toString();
+                    // extend the folder name with scan type as long as it's not a tar (tar's have a 100 character limit)
+                    if (!mt.equals(MediaType.APPLICATION_GNU_TAR) && !mt.equals(MediaType.APPLICATION_TAR) &&
+                            row[5] != null && !row[5].equals("")) root += "_" + row[5].toString();
+                    root += "/";
+                }
+                if (row[1] != null && !row[1].equals("")) {
+                    root += row[1].toString() + "/"; // data subfolder, most commonly DICOM
+                } else {
+                    root += row[0].toString() + "/"; // if no subfolder name, use resource id
+                }
+            }
+        }
+        String fileName = "";
+        int filesStart = fileUri.lastIndexOf("/files/");
+        fileName = fileUri.substring(filesStart + 7);
+
+        return root + fileName;
     }
 
     public CatEntryFilterI buildFilter() {

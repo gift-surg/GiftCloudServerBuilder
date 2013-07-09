@@ -150,16 +150,12 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 						data.setStatus(PrearcStatus.ARCHIVING);
 					}
 				} catch (Exception e) {
-					if(PrearcStatus.potentiallyReady(data.getStatus())){
-						// The following accounts for the case where a project was passed in but the session XML is unparseable for some reason (eg. it is empty).
-						// In that case use the project name passed in.
-						if (project != null && (data.getProject() == null || !data.getProject().equals(project))) {
-							data.setProject(project);
-						}
-						data.setStatus(PrearcStatus.ERROR);
-
-		            	PrearcUtils.log(data, e);
-					}
+                    logger.error("Session build failed", e);
+                    if(project!=null){
+                        session=new XnatImagesessiondataBean();
+                        session.setProject(project);
+                    }
+                    data.setStatus(PrearcStatus.ERROR);
 				}
 			}
 		}

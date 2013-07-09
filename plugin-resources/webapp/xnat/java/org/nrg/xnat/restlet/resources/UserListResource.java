@@ -1,14 +1,5 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 package org.nrg.xnat.restlet.resources;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Properties;
-
-import org.nrg.config.services.ConfigService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
@@ -19,7 +10,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import java.sql.SQLException;
+import java.util.Hashtable;
 
 public class UserListResource extends SecureResource {
 	XFTTable table = null;
@@ -31,7 +24,7 @@ public class UserListResource extends SecureResource {
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
 
-            if (!(user.isSiteAdmin() || isWhitelisted())) {
+        if (restrictUserListAccessToAdmins() && !(user.isSiteAdmin() || isWhitelisted())) {
                 logger.error("Unauthorized Access to site-level user resources. User: " + userName);
                 this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Access Denied: Only site managers can access site-level user resources.");
             }
@@ -51,7 +44,7 @@ public class UserListResource extends SecureResource {
 	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {
+	public Representation represent(Variant variant) {
 		Hashtable<String,Object> params=new Hashtable<String,Object>();
 		params.put("title", "Projects");
 
@@ -70,22 +63,14 @@ public class UserListResource extends SecureResource {
 		return this.representTable(table, mt, params);
 	}
 
-    public boolean isWhitelisted() {
-        ConfigService configService = XDAT.getConfigService();
-        String config = configService.getConfigContents("user-resource-whitelist", "users/whitelist.json");
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayList<String> userResourceWhitelist = new ArrayList();
-
-        try {
-            userResourceWhitelist = mapper.readValue(config, ArrayList.class);
-        } catch (IOException e) {
-            logger.error("", e);
+    /**
+     * This wraps a call to the site configuration service to determine if access to the user list function should be
+     * restricted to site administrators. This method defaults to true, which provides the highest level of security.
+     * Note that this does <i>not</i> mean that the site settings default to <b>true</b>, just that if the site setting
+     * can not be accessed, this method will default to the most restrictive level of access.
+     * @return <b>true</b> if only site administrators can access the list of users, <b>false</b> otherwise.
+     */
+    private boolean restrictUserListAccessToAdmins() {
+        return XDAT.getBoolSiteConfigurationProperty("restrictUserListAccessToAdmins", true);
         }
-
-        if (userResourceWhitelist.contains(user.getUsername())) {
-            return true;
-        } else {
-            return false;
         }
-    }
-}

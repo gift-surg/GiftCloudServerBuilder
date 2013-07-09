@@ -16,8 +16,7 @@ import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xnat.helpers.scanType.ScanTypeMapping.ScanTypeHistory;
-import org.nrg.xnat.helpers.scanType.ScanTypeMapping;
+import org.nrg.xnat.helpers.scanType.ImageScanTypeMapping;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 
 public class XDATScreen_scanTypeCleanup extends SecureReport {

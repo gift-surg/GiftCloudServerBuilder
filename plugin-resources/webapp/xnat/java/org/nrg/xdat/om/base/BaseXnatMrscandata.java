@@ -1,30 +1,24 @@
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
-/*
- * GENERATED FILE
- * Created on Tue Aug 16 15:08:17 CDT 2005
- *
- */
+//Copyright 2005-2013 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 package org.nrg.xdat.om.base;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatMrqcscandataI;
-import org.nrg.xdat.om.XnatMrscandata;
+import org.nrg.xdat.model.XnatMrscandataI;
 import org.nrg.xdat.om.base.auto.AutoXnatMrscandata;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFTTable;
-import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.StringUtils;
+import org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 
+import com.google.common.collect.Lists;
+
 /**
- * @author XDAT
+ * @author Tim Olsen
+ * @author Kevin A. Archie <karchie@wustl.edu>
  * 
  */
 @SuppressWarnings({"unchecked","rawtypes"})
@@ -53,166 +47,123 @@ public class BaseXnatMrscandata extends AutoXnatMrscandata {
 		return new MRScanTypeMapping(project,dbName);
 	}
 	
-	public class MRScanTypeMapping implements ScanTypeMappingI{
-	    
-	    protected final String project;
-	    protected final String dbName;
-	    protected Map<String,ScanTypeHistory> thisProject =null;
-	    
-	    public MRScanTypeMapping(String project,String dbName){
-	    	this.project=project;
-	    	this.dbName=dbName;
-	    	loadScanTypes();
-	    }
-		
-		public void loadScanTypes() {
-	    	if(thisProject==null){
-		    	thisProject=new Hashtable<String,ScanTypeHistory>();
-		        
-		        if(this.project!=null){
-		        	try {
-		        		String query = "SELECT DISTINCT REPLACE(REPLACE(REPLACE(REPLACE(UPPER(scan.series_description),' ',''),'_',''),'-',''),'*','') AS series_description,scan.type,UPPER(parameters_imagetype) AS parameters_imagetype,frames FROM xnat_imagescandata scan LEFT JOIN xnat_mrscandata mr ON scan.xnat_imagescandata_id=mr.xnat_imagescandata_id LEFT JOIN xnat_experimentData isd ON scan.image_session_id=isd.id WHERE scan.series_description IS NOT NULL AND isd.project='" + project + "';";
-		            	XFTTable t = XFTTable.Execute(query, dbName, "system");
-		                t.resetRowCursor();
-		                while(t.hasMoreRows()){
-		                	Hashtable rowHash=t.nextRowHash();
-		                	String sd=(String)rowHash.get("series_description");
-		                	if(!thisProject.containsKey(sd)){
-		                		thisProject.put(sd,new ScanTypeHistory());
-		                	}
-		                	
-		                	thisProject.get(sd).add((String)rowHash.get("type"),(String)rowHash.get("parameters_imagetype"),(Integer)rowHash.get("frames"));
-		                }
-					} catch (SQLException e) {
-						logger.error("",e);
-					} catch (DBPoolException e) {
-						logger.error("",e);
-					}
-		        }
-	    	}
-	    }
-
-		@Override
-		public void setType(XnatImagescandataI scan) {
-			String series_description=scan.getSeriesDescription();
-            String type=scan.getType();
-            
-            if ((type !=null && !type.equals("")) || (series_description==null || series_description.equals(""))){
-            	return;
+    private static class ScanTypeHistory{
+        private final List<ScanType> types = Lists.newArrayList();
+        
+        public void add(String t, String it, Integer f){
+            types.add(new ScanType(t,it,f));
+        }
+        
+        public String match(String desc,String imgtype,Integer frames){
+            if(types.size()==1){
+                return types.get(0).getType();
             }
-            
-            if (series_description.startsWith("INVALID: "))
-            {
-                series_description = series_description.substring(9);
-            }
-            
-            String formatted_series_description =series_description.toUpperCase();
-            formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, " ", "");
-            formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "_", "");
-            formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "-", "");
-            formatted_series_description=StringUtils.ReplaceStr(formatted_series_description, "*", "");
-            
-            String imgtype=null;
-            if(scan instanceof XnatMrscandata){
-            	imgtype=((XnatMrscandata)scan).getParameters_imagetype();
-            }
-            
-        	if (thisProject.containsKey(formatted_series_description)){
-                scan.setType(thisProject.get(formatted_series_description).match(series_description, imgtype, scan.getFrames()));
-        	}
-        	
-        	if(scan.getType()==null){
-        		scan.setType(series_description);
-        	}  
-		}
-		
-		public class ScanTypeHistory{
-		    private List<ScanType> types=new ArrayList<ScanType>();
-			
-		    public void add(ScanType st){
-		    	types.add(st);
-		    }
-		    
-		    public void add(String t, String it, Integer f){
-		    	types.add(new ScanType(t,it,f));
-		    }
-		    
-			public String match(String desc,String imgtype,Integer frames){
-				if(types.size()==1){
-					return types.get(0).getType();
-				}
-				//match by imgtype
-				if(imgtype!=null && !imgtype.equals("")){
-					for(ScanType st: types){
-						if(imgtype.equalsIgnoreCase(st.getImgtype())){
-							return st.getType();
-						}
-					}
-				}
-				
-				//match by frames
-				if(frames!=null){
-					for(ScanType st: types){
-						if(frames.equals(st.getFrames())){
-							return st.getType();
-						}
-					}
-				}
-				
-				if(imgtype==null){
-                    ScanType candidate = null;
-                    for (ScanType scanType : types) {
-                        if (scanType.getImgtype() == null) {
-                            if (candidate == null || (candidate.getType() == null && scanType.getType() != null)) {
-                                candidate = scanType;
-						}
-					}
-				}
-                    if (candidate != null) {
-                        return candidate.getType();
+            //match by imgtype
+            if(imgtype!=null && !imgtype.equals("")){
+                for(ScanType st: types){
+                    if(imgtype.equalsIgnoreCase(st.getImgtype())){
+                        return st.getType();
                     }
                 }
-				
-				if(frames==null){
-					for(ScanType st: types){
-						if(st.getFrames()==null){
-							return st.getType();
-						}
-					}
-				}
-				
-				return types.get(0).getType();
-			}
-		}
-	    public class ScanType{
-		    private String _type=null;
-		    private String _imgtype=null;
-		    private Integer _frames=null;
-			
-		    public ScanType(String t, String it, Integer f){
-		    	_type=t;
-		    	_imgtype=it;
-		    	_frames=f;
-		    }
-		    
-			public Integer getFrames() {
-				return _frames;
-			}
-			public void setFrames(Integer frames) {
-				this._frames = frames;
-			}
-			public String getImgtype() {
-				return _imgtype;
-			}
-			public void setImgtype(String imgtype) {
-				this._imgtype = imgtype;
-			}
-			public String getType() {
-				return _type;
-			}
-			public void setType(String type) {
-				this._type = type;
-			}
-		}
+            }
+            
+            //match by frames
+            if(frames!=null){
+                for(ScanType st: types){
+                    if(frames.equals(st.getFrames())){
+                        return st.getType();
+                    }
+                }
+            }
+            
+            if(imgtype==null){
+                ScanType candidate = null;
+                for (ScanType scanType : types) {
+                    if (scanType.getImgtype() == null) {
+                        if (candidate == null || (candidate.getType() == null && scanType.getType() != null)) {
+                            candidate = scanType;
+                    }
+                }
+            }
+                if (candidate != null) {
+                    return candidate.getType();
+                }
+            }
+            
+            if(frames==null){
+                for(ScanType st: types){
+                    if(st.getFrames()==null){
+                        return st.getType();
+                    }
+                }
+            }
+            
+            return types.get(0).getType();
+        }
+    }
+    
+    private static class ScanType{
+        private final String _type;
+        private final String _imgtype;
+        private final Integer _frames;
+        
+        public ScanType(final String t, final String it, final Integer f) {
+            _type=t;
+            _imgtype=it;
+            _frames=f;
+        }
+        
+        public Integer getFrames() {
+            return _frames;
+        }
+
+        public String getImgtype() {
+            return _imgtype;
+        }
+
+        public String getType() {
+            return _type;
+        }
+     }
+
+    /**
+     * For MR, we also use the DICOM image type parameters for matching scan types.
+     *
+     */
+	public static class MRScanTypeMapping extends AbstractScanTypeMapping<ScanTypeHistory> implements ScanTypeMappingI {	    
+	    public MRScanTypeMapping(String project,String dbName){
+	        super(dbName, buildSelectSql(project));
+	    }
+		
+	    private static final String buildSelectSql(final String project) {
+	        return "SELECT DISTINCT REPLACE(REPLACE(REPLACE(REPLACE(UPPER(scan.series_description),' ',''),'_',''),'-',''),'*','') AS series_description,scan.type,UPPER(parameters_imagetype) AS parameters_imagetype,frames FROM xnat_imagescandata scan LEFT JOIN xnat_mrscandata mr ON scan.xnat_imagescandata_id=mr.xnat_imagescandata_id LEFT JOIN xnat_experimentData isd ON scan.image_session_id=isd.id WHERE scan.series_description IS NOT NULL AND isd.project='" + project + "';"; 
+	    }
+	    	    
+        /*
+         * (non-Javadoc)
+         * @see org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping#getMappedType(org.nrg.xdat.model.XnatImagescandataI, java.util.Map)
+         */
+        protected String getMappedType(XnatImagescandataI scan, Map<String,ScanTypeHistory> histories) {
+            final String seriesDescription = scan.getSeriesDescription();
+            final String formatted = AbstractScanTypeMapping.standardizeFormat(seriesDescription);
+            final String imgType = ((XnatMrscandataI)scan).getParameters_imagetype();
+
+            final ScanTypeHistory history = histories.get(formatted);
+            return null == history ? null : history.match(seriesDescription, imgType, scan.getFrames());
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping#newScanHistory()
+         */
+        protected ScanTypeHistory newScanHistory() { return new ScanTypeHistory(); }
+ 
+        /*
+         * (non-Javadoc)
+         * @see org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping#update(java.lang.Object, java.util.Hashtable)
+         */
+        protected void update(final ScanTypeHistory h, final Hashtable<?,?> row) {
+            h.add((String)row.get("type"),(String)row.get("parameters_imagetype"),(Integer)row.get("frames"));
+        }
 	}
 }

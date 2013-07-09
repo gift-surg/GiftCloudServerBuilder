@@ -48,7 +48,7 @@ $page.setVlinkColor($ui.vlink)
                 #set($ty = $queryResults.getCellValue("type"))
                 <tr valign=top border=0>
                     <td border=0 align=left NOWRAP>
-                        <input type="checkbox" name="change_${rowIndex}" value="doChange" />
+                        <input type="checkbox" id="change_${rowIndex}" name="change_${rowIndex}" value="doChange" />
                     </td>
                     <td border=0 align=left NOWRAP>
                         $!turbineUtils.escapeHTML($queryResults.getCellValue("series_description"))
@@ -63,7 +63,7 @@ $page.setVlinkColor($ui.vlink)
                         #xdatHiddenBox("parameters_imagetype_$rowIndex" $item "$!imty")
                     </td>
                     <td border=0 align=left NOWRAP>
-                        <input id="type_${rowIndex}" type="text" name="type_${rowIndex}" value="$!ty"/>
+                        <input id="type_${rowIndex}" type="text" name="type_${rowIndex}" value="$!ty" onchange="$('#change_${rowIndex}').attr('checked','checked');"/>
                     </td>
                 </tr>
             #end

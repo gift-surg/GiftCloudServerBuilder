@@ -7,7 +7,7 @@ var Dom = YAHOO.util.Dom,
     _addColH=550,
     _addColBuffH=140,
     _addColBuff2H=160,
-    _addColBuff2W=230,
+    _addColBuff=40,
     _joinW=750,
     _joinH=450;
 
@@ -514,6 +514,8 @@ function SearchXMLManager(_xml){
 
 		this.cfS=document.createElement("select");
 		this.cfS.multiple=true;
+        this.cfS.style.maxWidth="none";
+        this.cfS.style.width=(_addColW/2-_addColBuff)+"px";
 		this.cfS.style.height=(_addColH-_addColBuff2H)+"px";
 		this.cfS.deselect=function(){
 			for(var dsC=0;dsC<this.options.length;dsC++){
@@ -546,7 +548,7 @@ function SearchXMLManager(_xml){
 		this.afS=document.createElement("select");
 		this.afS.multiple=true;
         this.afS.style.maxWidth="none";
-		this.afS.style.width=(_addColW-_addColBuff2W)+"px";
+		this.afS.style.width=(_addColW/2-_addColBuff)+"px";
 		this.afS.style.height=(_addColH-_addColBuff2H)+"px";
 		this.afS.opposite=this.cfS;
 		this.afS.deselect=function(){
@@ -738,7 +740,9 @@ function SearchXMLManager(_xml){
 		this.resizer.on('resize',function(args){
 			var panelHeight=args.height;
 			this.dialogPopup.cfg.setProperty("height",panelHeight +"px");
-			this.afS.style.width=(args.width-_addColBuff2W)+"px";
+            var colWidth = args.width/2;
+            this.cfS.style.width=(colWidth-_addColBuff)+"px";
+			this.afS.style.width=(colWidth-_addColBuff)+"px";
 			this.cfS.style.height=(args.height-_addColBuff2H)+"px";
 			this.afS.style.height=(args.height-_addColBuff2H)+"px";
 		},this,true);

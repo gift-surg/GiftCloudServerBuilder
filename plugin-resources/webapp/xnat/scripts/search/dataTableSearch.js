@@ -340,8 +340,8 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
             scope: this
         };
 
-        //openModalPanel("load_data", "Loading data...");
-        xModalLoadingOpen({title:'Loading data...'});
+        openModalPanel("load_data", "Loading data...");
+        //xModalLoadingOpen({title:'Loading data...'});
 
         this.purge();
 
@@ -403,8 +403,8 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
   };
 
   this.showPage=function(obj){
-      //closeModalPanel("load_data");
-      xModalLoadingClose();
+      closeModalPanel("load_data");
+      //xModalLoadingClose();
       this.startTime = (new Date()).getTime();
     var dt=document.getElementById(this.div_table_id);
     dt.innerHTML=obj.responseText;

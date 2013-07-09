@@ -4,22 +4,26 @@ var DEBUG=false;
 
 
 function TabManager(_id){
-  if(_id==undefined){
-    this.id="search_tabs";
-  }else{
-    this.id=_id;
-  }
-  this.loaded = new Array();
-  this.tabView=new YAHOO.widget.TabView(this.id);
-  this.tabView.addListener('beforeActiveTabChange', function(e){
-      			     var dataSrc=e.newValue.get("dataSrc");
-			     if (e.newValue.search_id!=undefined || dataSrc!=undefined)
-			       return true;
-			     else
-			       return false;
-			   });
 
-  this.suppress_select=false;
+    if (_id == undefined) {
+        this.id = "search_tabs";
+    }
+    else {
+        this.id = _id;
+    }
+    var navset_id = this.id;
+
+    this.loaded = new Array();
+    this.tabView = new YAHOO.widget.TabView(this.id);
+    this.tabView.addListener('beforeActiveTabChange', function (e) {
+        var dataSrc = e.newValue.get("dataSrc");
+        if (e.newValue.search_id != undefined || dataSrc != undefined)
+            return true;
+        else
+            return false;
+    });
+
+    this.suppress_select=false;
 
   this.dataTables=new Array();
   
@@ -38,7 +42,7 @@ function TabManager(_id){
 
   this.setCsrfToken=function(str){
 	  this.csrfToken=str;
-  }
+  };
   this.isLoaded=function(str){
     return this.loaded.contains(str);
   };
@@ -102,121 +106,137 @@ function TabManager(_id){
     }
   };
 
-  this.render=function(){
-    if(this.selector==undefined){
-      this.selector=document.createElement("SELECT");
-      this.selector.ID="search_selector";
-      this.selector.style.fontSize="8px";
-      this.selector.style.lineHeight="9px";
-      this.selector.style.fontWeight="700";
-      this.selector.tab_manager=this;
+    this.render = function () {
 
-      //this.tabView.appendChild(this.selector);
+        if (this.selector == undefined) {
+            this.selector = document.createElement("select");
+            this.selector.id = "search_selector";
+            this.selector.className = "select_add_tab";
+            //this.selector.style.fontSize="8px";
+            //this.selector.style.lineHeight="9px";
+            //this.selector.style.fontWeight="700";
+            this.selector.tab_manager = this;
 
-      this.selectorTab=new YAHOO.widget.Tab({label:"&nbsp",content:""});
-      var em = this.selectorTab.get('labelEl');
-      em.appendChild(this.selector);
+            this.selectorTab = new YAHOO.widget.Tab({label: "+", content: "", disabled: true});
+            //var em = this.selectorTab.get('labelEl');
+            //var em = $(this.selectorTab).closest('.yui-navset');
+            //em.appendChild(this.selector);
 
-      // fix for select bug in firefox (http://yuilibrary.com/projects/yui2/ticket/2528333)
-      em.parentNode.removeAttribute('href');
+            // putting the "Add Tab" <select> floating in the "#search_tabs" element
+            // so if the '.yui-navset' needs this, it needs to have id="search_tabs"
+            if (!this.suppress_select) {
+                var search_tabs = document.getElementById(navset_id);
+                search_tabs.appendChild(this.selector);
+            }
 
-      YAHOO.util.Event.on(this.selector, 'change', function(e){
-			    if(this.selectedIndex>0){
-			      var tempSearch=this.options[this.selectedIndex].value;
-			      this.tab_manager.load({ID:tempSearch});
-			    }
-			  });
-    }
+            // fix for select bug in firefox (http://yuilibrary.com/projects/yui2/ticket/2528333)
+            //em.parentNode.removeAttribute('href');
 
-    while(this.selector.options.length>0){
-      this.selector.remove(0);
-    }
+            YAHOO.util.Event.on(this.selector, 'change', function (e) {
+                if (this.selectedIndex > 0) {
+                    var tempSearch = this.options[this.selectedIndex].value;
+                    this.tab_manager.load({ID: tempSearch});
+                }
+            });
+        }
 
-    this.selector.options[0]=new Option("SELECT","");
+        while (this.selector.options.length > 0) {
+            this.selector.remove(0);
+        }
 
-    var optionCount=1;
-    for(var selectCounter=0;selectCounter<this.stored_searches.length;selectCounter++){
-      if(!this.isLoaded(this.stored_searches[selectCounter].ID)){
-	this.selector.options[optionCount++]=new Option(this.stored_searches[selectCounter].label,this.stored_searches[selectCounter].ID);
-      }
-    }
+        this.selector.options[0] = new Option("Add Tab", "");
 
-    if(this.selector.options.length==1){
-      if( this.tabView.get("tabs").length>0 && this.tabView.getTabIndex(this.selectorTab)!=null)
-	this.tabView.removeTab(this.selectorTab);
-    }else{
-      if(!this.suppress_select){
-	var tab_index=this.tabView.getTabIndex(this.selectorTab);
-	if(tab_index==null)
-	  this.tabView.addTab(this.selectorTab);
-      }
-    }
-  };
+        var optionCount = 1;
+        for (var selectCounter = 0; selectCounter < this.stored_searches.length; selectCounter++) {
+            if (!this.isLoaded(this.stored_searches[selectCounter].ID)) {
+                this.selector.options[optionCount++] = new Option(this.stored_searches[selectCounter].label, this.stored_searches[selectCounter].ID);
+            }
+        }
 
-
-
-  this.addTab=function(obj){
-    var _id=obj.ID;
-    if(obj.content){
-      this.tabView.addTab(new YAHOO.widget.Tab({
-	  	 				 label:obj.label+"<span style='height:12px;width:1px;'></span>",
-	  	 				 dataSrc:obj.content,
-	  	 				 active:true
-	  				       }));
-    }else{
-      var tempTab=new YAHOO.widget.Tab({
-	  				 label:obj.label + '&nbsp;<span class="close"><img src="' + server + 'close.gif"/></span>',
-	  				 content:'<div id="'+_id + '_dt_p" class="xT_p"></div><div id="'+_id + '_dt_c" class="xT_c" style="overflow:auto;"><div id="'+_id + '_dt" class="xT_dt">Preparing Results</div></div>',
-	  				 active:true});
-
-      tempTab.search_id=_id;
-      tempTab.tab_manager=this;
-
-      this.tabView.addTab(tempTab,this.loaded.length-1);
-      //this.tabView.set('activeTab',tempTab,true);
-      //this.tabView.addTab(tempTab);
-
-      YAHOO.util.Event.on(tempTab.getElementsByClassName('close')[0], 'click', function(e, tab) {
-		            YAHOO.util.Event.preventDefault(e);
-		            tab.tab_manager.tabView.removeTab(tab);
-		            tab.tab_manager.close(tab.search_id);
-			  }, tempTab);
-
-      var options=new Array();
-      var config = new Object();
-      config.csrfToken = this.csrfToken;
-      tempTab.dt=new DataTableStoredSearch(_id+"_dt",obj,config);
-      
-
-      tempTab.dt.onComplete.subscribe(function(o){
-	  	 			this.resizeDataTable("resize",this);
-				      },this,this);
-
-      tempTab.dt.onRemoveRequest.subscribe(function(o){
-	  	 			     this.tab_manager.tabView.removeTab(this);
-					     this.tab_manager.close(this.search_id);
-					     this.tab_manager.onTabDelete.fire(this.tab_manager.retrieveSearchSpecification({ID:this.search_id}));
-	  				   },tempTab,tempTab);
-
-      tempTab.dt.onSavedSearch.subscribe(function(o){
-					   this.tab_manager.onTabModification.fire(this.tab_manager.retrieveSearchSpecification({ID:this.search_id}));
-	  				 },tempTab,tempTab);
+        if (this.selector.options.length == 1) {
+            if (this.tabView.get("tabs").length > 0 && this.tabView.getTabIndex(this.selectorTab) != null){
+                this.tabView.removeTab(this.selectorTab);
+            }
+        }
+        else {
+            if (!this.suppress_select) {
+                var tab_index = this.tabView.getTabIndex(this.selectorTab);
+                if (tab_index == null){
+                    this.tabView.addTab(this.selectorTab);
+                }
+            }
+        }
+    };
 
 
-      this.resizeDataTable("resize",this);
+    this.addTab = function (obj) {
+        var _id = obj.ID;
+        if (obj.content) {
+            this.tabView.addTab(new YAHOO.widget.Tab({
+                label: obj.label + "<span style='height:12px;width:1px;'></span>",
+                dataSrc: obj.content,
+                active: true
+            }));
+        }
+        else {
+            var tempTab = new YAHOO.widget.Tab({
+                label: obj.label + '&nbsp;<span class="close"><img src="' + server + 'close.gif"/></span>',
+                content: '<div id="' + _id + '_dt_p" class="xT_p"></div><div id="' + _id + '_dt_c" class="xT_c" style="overflow:auto;"><div id="' + _id + '_dt" class="xT_dt">Preparing Results</div></div>',
+                active: true
+            });
 
-      if(this.height!=undefined){
-	tempTab.dt.setHeight(this.height);
-      }
-      if(this.width!=undefined){
-	tempTab.dt.setWidth(this.width);
-      }
+            tempTab.search_id = _id;
+            tempTab.tab_manager = this;
 
-      tempTab.dt.init();
-    }
-  };
+            this.tabView.addTab(tempTab, this.loaded.length - 1);
+            //this.tabView.set('activeTab',tempTab,true);
+            //this.tabView.addTab(tempTab);
 
-  function debug_out(msg){
+            YAHOO.util.Event.on(tempTab.getElementsByClassName('close')[0], 'click', function (e, tab) {
+                var $this_tab = $(this).closest('li');
+                if ($this_tab.attr('title')==='active'){
+                    $this_tab.prev('li').trigger('click');
+                }
+                YAHOO.util.Event.preventDefault(e);
+                tab.tab_manager.tabView.removeTab(tab);
+                tab.tab_manager.close(tab.search_id);
+            }, tempTab);
+
+            var options = new Array();
+            var config = new Object();
+            config.csrfToken = this.csrfToken;
+
+            tempTab.dt = new DataTableStoredSearch(_id + "_dt", obj, config);
+
+            tempTab.dt.onComplete.subscribe(function (o) {
+                this.resizeDataTable("resize", this);
+            }, this, this);
+
+            tempTab.dt.onRemoveRequest.subscribe(function (o) {
+                this.tab_manager.tabView.removeTab(this);
+                this.tab_manager.close(this.search_id);
+                this.tab_manager.onTabDelete.fire(this.tab_manager.retrieveSearchSpecification({ID: this.search_id}));
+            }, tempTab, tempTab);
+
+            tempTab.dt.onSavedSearch.subscribe(function (o) {
+                this.tab_manager.onTabModification.fire(this.tab_manager.retrieveSearchSpecification({ID: this.search_id}));
+            }, tempTab, tempTab);
+
+
+            this.resizeDataTable("resize", this);
+
+            if (this.height != undefined) {
+                tempTab.dt.setHeight(this.height);
+            }
+            if (this.width != undefined) {
+                tempTab.dt.setWidth(this.width);
+            }
+
+            tempTab.dt.init();
+        }
+    };
+
+    function debug_out(msg){
     var log_div=document.getElementById("mylogger");
     if(log_div==undefined){
       log_div=document.createElement("div");
@@ -256,4 +276,4 @@ function TabManager(_id){
     this.setHeight(h);
     this.setWidth(w);
   };
-};
+}

@@ -101,10 +101,10 @@ function xModalLoadingOpen(_options){
 
         xModalLoaderCount++;
 
-        var thisLoader = (typeof _options.id != 'undefined') ? _options.id : 'loader'+xModalLoaderCount;
-        var thisClass = /* (typeof _options.class_ != 'undefined') ? _options.class_+' loading' : */ ' loading ';
-        var thisTitle = (typeof _options.title != 'undefined') ? _options.title : 'Please wait...';
-        var thisContent = (typeof _options.content != 'undefined') ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
+        var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
+        var thisClass = (_options && _options.class_) ? _options.class_ +' loading' : 'loading';
+        var thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
+        var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
         var loader = {
             id: thisLoader,
             class_: thisClass,

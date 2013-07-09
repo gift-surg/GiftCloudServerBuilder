@@ -40,19 +40,94 @@ function prevTabsWidth(_$tab,_n){
 }
 
 
+//var tab_select_opts = [];
+
+function renderAddTabSelect(_$wrapper,_val){
+
+    // is there a <select> element in the tabs? ('selector' class added in wrangleTabs() function)
+    var $phantom_tab = _$wrapper.find('.yui-nav li em:contains("+")').closest('li');
+
+    var $select_add_tab = _$wrapper.find('.select_add_tab');
+
+    if ($select_add_tab.length){
+
+        $phantom_tab.addClass('phantom selector');
+
+        _$wrapper.find('.flipper_box').css('width','310px');
+
+        if (!_$wrapper.find('.flippers .selector').length){
+            _$wrapper.find('.flippers').prepend('' +
+                '<span class="selector" style="width:122px;border-right:none;">' +
+                //'   <ul class="proxy" style="width:110px;margin:2px;padding:3px 0;font-size:11px;"></ul>' +
+                '</span>' +
+                '');
+        }
+
+        _$wrapper.find('.flippers .selector select').detach();
+
+        _$wrapper.find('.flippers .selector').append($select_add_tab);
+
+        // need to figure out how to disable <select> if there's no more data types to load into tabs
+//        if (_$wrapper.find('.flippers .selector select option').length === 0){
+//            _$wrapper.find('.flippers .selector select').prop('disabled',true).attr('disabled','disabled').addClass('disabled');
+//        }
+
+    }
+}
+
+
+function renderWranglerSelectX(_$wrapper,_val){
+
+    // is there a <select> element in the tabs? ('selector' class added in wrangleTabs() function)
+    var $tab_select = _$wrapper.find('.yui-nav li select');
+    var $select_tab = $tab_select.closest('li');
+
+    var has_selector = !!$tab_select.length;
+
+    if (has_selector === true){
+
+        var select_html = $tab_select.html();
+
+        //$select_tab.hide();
+
+        _$wrapper.find('.flipper_box').css('width','300px');
+
+        if (!_$wrapper.find('.flippers .proxy').length){
+            _$wrapper.find('.flippers').prepend('' +
+                '<span class="selector" style="width:122px;border-right:none;">' +
+                '   <select class="proxy" style="width:110px;margin:2px;padding:3px 0;font-size:11px;"></select>' +
+                '</span>' +
+                '');
+        }
+
+        var $wrangler_select = _$wrapper.find('.flippers select.proxy');
+
+        $tab_select.find('option').each(function(){
+            var opt_val = $(this).val();
+            var opt_text = $(this).text();
+            $wrangler_select.append('' +
+                '<option class="opt" value="'+opt_val+'" title="'+opt_val+'">'+opt_text+'</option>' +
+                '')
+        });
+
+
+//        $wrangler_select.html(select_html);
+//        $wrangler_select.find('option').addClass('opt');
+//        $wrangler_select.find('option:first').text('Add Tab');
+
+    }
+}
 
 
 
-
-
-function renderFlippers(_wrapper){
-    var $wrapper = $(_wrapper) /* || $('.yui-navset') */ ;
-    var $tabs_ul = $wrapper.find('ul.yui-nav');
+function renderFlippers(_$wrapper){
+    //var _$wrapper = $(_wrapper) /* || $('.yui-navset') */ ;
+    var $tabs_ul = _$wrapper.find('ul.yui-nav');
     var $tabs = $tabs_ul.find('li');
     if ($tabs.length > 1){
-        var has_flippers = !!$wrapper.find('.flipper_box').length;
+        var has_flippers = !!_$wrapper.find('.flipper_box').length;
         var $flipper_box ;
-        var $content_wrapper = $wrapper.find('.yui-content');
+        var $content_wrapper = _$wrapper.find('.yui-content');
         if (has_flippers === false){
             $content_wrapper.after('<div class="flipper_box"></div>');
             $flipper_box = $content_wrapper.next('div.flipper_box');
@@ -93,6 +168,10 @@ function renderFlippers(_wrapper){
 
 
 // show the content for the selected tab
+// right now this just triggers a click
+// to fire the current YUI event(s), but
+// can be modified in the future to work
+// without YUI
 function showTabContent(_$wrapper,_n){
     _$wrapper.find('.yui-nav li[data-tab="'+_n+'"]').trigger('click');
 }
@@ -112,7 +191,8 @@ function moveToTab(_$wrapper,_n,_x){
     var content_width = _$wrapper.find('.yui-content').outerWidth();
 
     // if there's a 'selector' tab, get the width, otherwise set to 0
-    var selector_tab_width = ($the_tab.next('li').hasClass('selector')) ? parseInt(_$wrapper.find('li.selector').outerWidth()-20) : 40 ;
+    //var selector_tab_width = ($the_tab.next('li').hasClass('selector')) ? parseInt(_$wrapper.find('li.selector').outerWidth()-20) : 40 ;
+    var selector_tab_width = (_$wrapper.find('.select_add_tab').length) ? 100 : 40 ;
 
     // how much visible space do we have to show the tabs? (need to ensure they are viewable inside this space)
     var width_limit = parseInt(content_width - 220);
@@ -129,6 +209,10 @@ function moveToTab(_$wrapper,_n,_x){
         //left: '-' + parseInt(prev_tabs_width-width_limit-50)
         left: move_x
     },200);
+
+//    renderWranglerSelectX(_$wrapper,'');
+    renderAddTabSelect(_$wrapper,'');
+
 }
 
 
@@ -156,7 +240,11 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
     // jQuery gracefully handles this - won't freak out if there's no <select>
     var $select = $tabs_.find('select');
     var $select_tab = $select.closest('li');
-    var select_tab_width = $select_tab.outerWidth();
+    //var select_tab_width = $select_tab.outerWidth();
+
+    // there is no select tab anymore
+    // set the width manually
+    var select_tab_width = 120 ;
 
     // remove href from <a> (to prevent click event)
     // give 'selector' class to tab with <select>
@@ -164,7 +252,7 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
     $select_tab.addClass('selector').attr('data-width',select_tab_width);
 
     // all tabs EXCEPT the selector tab (remove trailing underscore)
-    var $tabs = $tabs_.not('.selector');
+    var $tabs = $tabs_.not('.disabled');
 
     $tabs.removeClass('last');
     // var first and last tabs and add classes
@@ -213,7 +301,7 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
         $tabs.first().addClass('selected whut').attr('title','active');
     }
 
-    renderFlippers(tabs_wrapper);
+    renderFlippers($tabs_wrapper);
 
     showTabContent($tabs_wrapper,n_selected);
 
@@ -247,7 +335,6 @@ $(function(){
         moveToTab($this_navset,n_selected);
         //moveToTab($this_navset,n_selected,prev_tabs_width);
         //moveToTab($this_navset,$next_tab.data('tab'),parseInt(-prev_tabs_width + width_limit - move_right));
-
     });
 
 
@@ -258,8 +345,6 @@ $(function(){
 //        var $this_tab = $(this).closest('li');
 //        $this_tab.prev('li').trigger('click');
 //    });
-
-
 
 
     $body.on('click','a.flipper:not(.disabled)',function(){
@@ -321,115 +406,4 @@ $(function(){
         }
     });
 
-
-
-
-
-
-
-
-// old flipper clicker code
-    function doNotClick(){
-        $('body').on('click','a.flipper:not(.disabled)',function(){
-
-            var
-                $flipper = $(this),
-                $flippers = $flipper.closest('.flippers'),
-                $this_navset = $flippers.closest('.yui-navset'),
-                $this_tab_ul = $this_navset.find('ul.yui-nav'),
-                $these_tabs = $this_tab_ul.find('li:not(.selector)'),
-                $active_tab = $this_tab_ul.find('li[title="active"]') || $this_tab_ul.find('li.selected'), // check title="active" first
-                $prev_tab = $active_tab.prev('li'),
-                $next_tab = $active_tab.next('li'),
-                $first_tab = $this_tab_ul.find('li.first'),
-                $last_tab = $this_tab_ul.find('li.last'),
-                $this_content = $this_navset.find('.yui-content'),
-                $selector_tab = $this_tab_ul.find('li.selector')
-                ;
-
-            var active_tab_number = $active_tab.data('tab');
-
-            var
-                navset_width = $this_navset.outerWidth(),
-                content_width = $this_content.outerWidth(),
-                prev_tabs_width = 0,
-                tabs_count = 0,
-                tabs_total_width = 0,
-                active_tab_width = $active_tab.outerWidth(),
-            //selector_tab_width = $selector_tab.outerWidth(),
-                selector_tab_width = ($selector_tab.length) ? $selector_tab.outerWidth() : 0,
-                width_limit = parseInt(content_width - 200 - selector_tab_width - 5),
-                these_tabs_width = 0 //$active_tab.outerWidth()
-                ;
-
-            $these_tabs.each(function(){
-                these_tabs_width += $(this).outerWidth();
-            });
-
-            $flippers.find('.flipper').removeClass('disabled');
-
-            // click 'left' flipper
-            if ($flipper.hasClass('left')){
-                $prev_tab.show().trigger('click');
-                //prev_tabs_width = prevTabsWidth($prev_tab);
-                prev_tabs_width = prevTabsWidth($active_tab);
-                if (parseInt(prev_tabs_width+100) > parseInt(width_limit/*-$first_tab.outerWidth()*/)){
-                    moveToTab($this_navset,$prev_tab.data('tab'),parseInt(-prev_tabs_width + width_limit));
-
-//                $this_tab_ul.animate({
-//                    left: '+=' + parseInt($prev_tab.outerWidth())
-//                },200);
-                }
-                else {
-                    $this_tab_ul.animate({
-                        left: 0
-                    },200);
-                }
-            }
-
-            // click 'right' flipper
-            if ($flipper.hasClass('right')){
-                $next_tab.trigger('click');
-                prev_tabs_width = prevTabsWidth($next_tab);
-                var move_right = parseInt($next_tab.outerWidth());
-                if ($('li.selected.last').next('li').hasClass('selector')){
-                    move_right += selector_tab_width ;
-                    move_right -= 50;
-                }
-                moveToTab($this_navset,$next_tab.data('tab'),parseInt(-prev_tabs_width + width_limit - move_right));
-//            if (parseInt(prev_tabs_width+100) > parseInt(width_limit)){
-//                $this_tab_ul.animate({
-//                    //left: '-=' + move_right
-//                    //left: parseInt(-prev_tabs_width+move_right-100)
-//                    left: parseInt( -prev_tabs_width + width_limit - move_right)
-//                },200);
-//            }
-            }
-
-            // click 'first' flipper
-            if ($flipper.hasClass('first')){
-                $this_tab_ul.animate({
-                    left: 0
-                },200);
-                $first_tab.delay(200).trigger('click');
-            }
-
-            // click 'last' flipper
-            if ($flipper.hasClass('last')){
-                prev_tabs_width = prevTabsWidth($last_tab);
-                if (parseInt(prev_tabs_width+100) > parseInt(width_limit)){
-                    $this_tab_ul.animate({
-                        //left: parseInt(-prev_tabs_width+width_limit-selector_tab_width)
-                        //left: parseInt(-prev_tabs_width + width_limit - selector_tab_width - 69)
-                        left: parseInt(-prev_tabs_width + width_limit - selector_tab_width - 50 /* - $last_tab.outerWidth()*/)
-                    },200);
-                }
-                $last_tab.delay(200).trigger('click');
-            }
-
-            //$this_navset.find('li[data-tab="'+n_selected+'"]').trigger('click');
-
-        });
-    }
-// end flipper clicker
 });

@@ -260,6 +260,8 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 .yui-skin-sam .yuimenubarnav .yuimenubaritemlabel { padding-right: 24px; padding-left: 12px ; }
 */
 .yui-nav a { font-weight: bold ; }
+.yui-nav li.disabled { position: fixed ; left: -9999px ; }
+.yui-navset .select_add_tab { display: none ; }
 .yui-skin-sam .yui-button a,
 .yui-button button { font-weight: bold ; font-size: 12px ; }
 
@@ -268,6 +270,8 @@ a, a:active, button, button:active, *:active { outline: none ; border: none ; }
 .yui-panel-container.yui-dialog { margin-top: -180px ; box-shadow: 0 10px 20px rgba(0,0,0,0.5) ; }
 
 .yui-skin-sam .yui-panel-container .underlay { display: none ; }
+
+.yui-skin-sam .yui-pg-container { white-space: normal ; }
 
 /* yui-module yui-overlay yui-panel */
 /* yui-panel-container yui-dialog hide-scrollbars yui-simple-dialog shadow yui-overlay-hidden */
@@ -526,8 +530,9 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 div.extension { background-color: #FF9 ; }
 div.extension_js { background-color: #FF9 ; }
 
-.yui-navset .yui-nav { height: 28px ; overflow: hidden !important ; /* white-space: nowrap !important ; */ }
+.yui-navset .yui-nav { /* height: 28px ; overflow: hidden !important ; */ /* white-space: nowrap !important ; */ }
 .yui-navset .yui-nav li select { position: relative ; top: -2px ; left: -3px ; }
+.yui-navset.wrangled ul.yui-nav li { white-space: nowrap ; }
 #tab_module ul.yui-nav li { height: 28px ; overflow: hidden ; }
 #tab_module ul.yui-nav li.selected { height: 29px ; }
 #tab_module ul.yui-nav select { font-size: 11px !important ; font-weight: normal !important ; }

@@ -104,31 +104,8 @@ YAHOO.util.Event.onDOMReady(addBundleMonitor);
 
     jq(window).load(function(){
         var tab_wrapper = '#search_tabs';
-//        var _force ;
-//        if (jq(tab_wrapper).find('li:not(.selector)').length > 0){
-//            _force = true ;
-//        }
-//        else {
-//            _force = false ;
-//        }
-        //var _force = !!(jq(tab_wrapper).find('li').length > 2) ;
-        var _force = true ;
         wrangleTabs(tab_wrapper);
-        //wrangleTabs('#search_tabs');
-
-        //console.debug('force: '+_force);
     });
-
-//    jq('body').on('change','#search_selector',function(){
-//        wrangleTabs({
-//            wrapper: '#search_tabs', // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
-//            force: true // do we show it even if the tabs aren't too wide?
-//        });
-//    });
-
-//        jq('#flip_it').click(function(){
-//            wrangleTabs('#search_tabs ul.yui-nav','div.yui-content','show');
-//        })
 
     </script>
 #else

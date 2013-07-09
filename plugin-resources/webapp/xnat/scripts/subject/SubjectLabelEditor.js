@@ -216,7 +216,7 @@ XNAT.app.SubjectLabelEditor = function(project) {"use strict";
 			},
 			failure : function(o) {
 				if (!window.leaving) {
-					alert("ERROR (" + o.status + "): Failed to modify " + that.header + " ID:\n\n" + o.responseText);
+                    xModalMessage('ERROR (' + o.status + '): Failed to modify ' + that.header + ' ID', o.responseText);
 					closeModalPanel("modify_new_label");
 				}
 			},

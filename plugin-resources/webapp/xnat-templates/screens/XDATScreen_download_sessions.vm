@@ -364,8 +364,8 @@
     </TD>
 </TR>
 <TR>
-    <TD class="withColor">
-        <TABLE>
+    <TD style="vertical-align: top">
+        <TABLE class="withColor">
             <TR>
                 <TD><input type="submit" value="Submit" name="eventSubmit_doPerform"/></TD>
             </TR>

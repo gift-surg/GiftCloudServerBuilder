@@ -31,10 +31,10 @@ function prevTabsWidth(_$tab,_n){
     var tab_number = _$tab.data('tab');
     var prev_tabs_width = 0 ;
     _$tab.prevAll('li').each(function(){
-        if ($(this).data('tab') <= tab_number){
+        //if ($(this).data('tab') <= tab_number){
             prev_tabs_width += $(this).outerWidth();
             prev_tabs_width += _n || 1 ;
-        }
+        //}
     });
     return prev_tabs_width ;
 }
@@ -49,7 +49,7 @@ function renderAddTabSelect(_$wrapper,_val){
 
     var $select_add_tab = _$wrapper.find('.select_add_tab');
 
-    if ($select_add_tab.length){
+    if ($select_add_tab.length && $select_add_tab.find('option').length > 1){
 
         $phantom_tab.addClass('phantom selector');
 
@@ -73,6 +73,13 @@ function renderAddTabSelect(_$wrapper,_val){
 //        }
 
     }
+
+//    if (!$phantom_tab.length){
+//        $select_add_tab.prop('disabled',true);
+//    }
+//    else {
+//        $select_add_tab.prop('disabled',false);
+//    }
 }
 
 
@@ -123,8 +130,8 @@ function renderWranglerSelectX(_$wrapper,_val){
 function renderFlippers(_$wrapper){
     //var _$wrapper = $(_wrapper) /* || $('.yui-navset') */ ;
     var $tabs_ul = _$wrapper.find('ul.yui-nav');
-    var $tabs = $tabs_ul.find('li');
-    if ($tabs.length > 1){
+    var $tabs = $tabs_ul.find('li').not('.phantom');
+    if ($tabs.length > -1){
         var has_flippers = !!_$wrapper.find('.flipper_box').length;
         var $flipper_box ;
         var $content_wrapper = _$wrapper.find('.yui-content');
@@ -147,17 +154,15 @@ function renderFlippers(_$wrapper){
         // remove 'disabled' class from all flippers
         $('.flippers > .flipper').removeClass('disabled');
         // disable the left flippers if we're on the first tab
-        if ($tabs_ul.find('li.first[title="active"]').length){
+        if ($tabs_ul.find('li').first().attr('title') === 'active'){
             $('.flipper.first,.flipper.left').addClass('disabled');
         }
-        // if the first tab is also the last tab, disable right flippers flippers
-        // actually, this may not be necessary if we're checking for more than one tab
-        if (!$tabs_ul.find('li.first.last').length){
-            if ($tabs_ul.find('li:last').not('.selector').attr('title') === 'active'){
+        // disable the right flippers if we're on the last tab
+        if ($tabs_ul.find('li').not('.phantom').last().attr('title') === 'active'){
                 $('.flipper.last,.flipper.right').addClass('disabled');
-            }
         }
     }
+    renderAddTabSelect(_$wrapper,'');
 }
 
 
@@ -177,10 +182,12 @@ function showTabContent(_$wrapper,_n){
 }
 
 
-function moveToTab(_$wrapper,_n,_x){
+function moveToTab(_$wrapper,_$tab,_n,_x){
 
     // the tab we're moving to
-    var $the_tab = _$wrapper.find('li[data-tab="' + _n + '"]');
+    //var $the_tab = _$wrapper.find('li[data-tab="' + _n + '"]');
+
+    var $the_tab = _$tab ;
 
     // width of said tab
     var the_tab_width = $the_tab.outerWidth();
@@ -210,8 +217,7 @@ function moveToTab(_$wrapper,_n,_x){
         left: move_x
     },200);
 
-//    renderWranglerSelectX(_$wrapper,'');
-    renderAddTabSelect(_$wrapper,'');
+    renderFlippers(_$wrapper);
 
 }
 
@@ -301,11 +307,26 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
         $tabs.first().addClass('selected whut').attr('title','active');
     }
 
-    renderFlippers($tabs_wrapper);
-
     showTabContent($tabs_wrapper,n_selected);
 
-    moveToTab($tabs_wrapper,n_selected);
+    var $selected_tab = $tabs_ul.find('li.selected');
+    moveToTab($tabs_wrapper,$selected_tab);
+
+}
+
+
+function clickWrangledTab(_$tab){
+
+    var $this_tab = _$tab;
+    var $this_navset = _$tab.closest('.yui-navset');
+    var $tabs_ = $this_navset.find('.yui-nav > li');
+    var $tabs = $tabs_.not('.phantom');
+
+    var n_selected = $this_tab.data('tab');
+    $tabs.removeClass('selected').removeAttr('title');
+    $this_tab.addClass('selected').attr('title','active');
+
+    moveToTab($this_navset,$this_tab);
 
 }
 
@@ -314,27 +335,10 @@ $(function(){
 
     $body = $('body');
 
-    $body.on('click','.yui-nav li:not(.selector)',function(){
-        //var $this_tab = $(this).closest('li');
-        var $this_tab = $(this);
-        var $this_navset = $(this).closest('.yui-navset');
-        var $tabs = $this_navset.find('.yui-nav > li');
-        var n_selected = $this_tab.data('tab');
-        $tabs.removeClass('selected').removeAttr('title');
-        $this_tab.addClass('selected').attr('title','active');
-        //showTabContent($this_navset,n_selected);
-        var $these_flippers = $this_navset.find('.flippers');
-        $these_flippers.find('.flipper').removeClass('disabled');
-        if ($this_tab.hasClass('first')){
-            $these_flippers.find('.first,.left').addClass('disabled');
-        }
-        if ($this_tab.hasClass('last')){
-            $these_flippers.find('.last,.right').addClass('disabled');
-        }
-        var prev_tabs_width = prevTabsWidth($(this).next('li'));
-        moveToTab($this_navset,n_selected);
-        //moveToTab($this_navset,n_selected,prev_tabs_width);
-        //moveToTab($this_navset,$next_tab.data('tab'),parseInt(-prev_tabs_width + width_limit - move_right));
+    $body.on('click','.wrangled .yui-nav li:not(.selector)',function(){
+
+        clickWrangledTab($(this));
+
     });
 
 

@@ -197,6 +197,9 @@ function TabManager(_id){
                 if ($this_tab.attr('title')==='active'){
                     $this_tab.prev('li').trigger('click');
                 }
+//                else {
+//                    $this_navset.find('li[title="active"]').trigger('click');
+//                }
                 YAHOO.util.Event.preventDefault(e);
                 tab.tab_manager.tabView.removeTab(tab);
                 tab.tab_manager.close(tab.search_id);

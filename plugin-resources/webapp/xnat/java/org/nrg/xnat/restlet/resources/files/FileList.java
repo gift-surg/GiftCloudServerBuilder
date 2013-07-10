@@ -10,7 +10,6 @@ package org.nrg.xnat.restlet.resources.files;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.dcm.Dcm2Jpg;
@@ -43,12 +42,12 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -58,9 +57,9 @@ import java.util.zip.ZipFile;
  * @author timo
  */
 public class FileList extends XNATCatalogTemplate {
-    final Logger logger = Logger.getLogger(FileList.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileList.class);
 
-    static String[] zipExtensions = {".zip", ".jar", ".rar", ".ear", ".gar"};
+    private static final String[] zipExtensions = {".zip", ".jar", ".rar", ".ear", ".gar"};
 
     private String filepath = null;
 
@@ -88,7 +87,7 @@ public class FileList extends XNATCatalogTemplate {
                 }
                 // if caller is asking for the files directly by resource ID (e.g. /experiments/{EXPT_ID}/resources/{RESOURCE_ID}/files),
                 // the catalog will not be found by the superclass
-                // (unless caller passes all=true, which seems klunky to require given that they are passing in the resource PK).
+                // (unless caller passes all=true, which seems clunky to require given that they are passing in the resource PK).
                 // So here we provide an alternate path finding the resource
                 // added check to make sure its an number.  You can also reference resource labels here (not just pks).
                 for (String resourceID : resource_ids) {
@@ -122,7 +121,7 @@ public class FileList extends XNATCatalogTemplate {
             getVariants().add(new Variant(MediaType.TEXT_XML));
             getVariants().add(new Variant(MediaType.IMAGE_JPEG));
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Error occurred while initializing FileList service", e);
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "Error during service initialization");
         }
     }
@@ -277,10 +276,13 @@ public class FileList extends XNATCatalogTemplate {
                     try {
                         buildResourceModifier(overwrite, um).addFile(getFileWriters(), resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
                     } catch (Exception e) {
-                        logger.error("", e);
+                        if (e.getMessage().startsWith("File already exists")) {
+                            logger.info("The POSTed file {} already exists, overwrite set to {}", filepath, overwrite);
+                        } else {
+                            logger.error("Error occurred while trying to POST file", e);
                         throw e;
                     }
-
+                    }
 
                     if (isNew) {
                         WorkflowUtils.complete(wrk, i);
@@ -464,7 +466,7 @@ public class FileList extends XNATCatalogTemplate {
                 valuesToReplace = getReMaps();
             }
 
-            //TODO: This should all be rewritten.  The implementation of the path relativation should be injectable, particularly to support other possible structures.
+            //TODO: This should all be rewritten.  The implementation of the path relativization should be injectable, particularly to support other possible structures.
             for (final Object[] row : table.rows()) {
                 final String uri = (String) row[uriIndex];
                 final File child = (File) row[fileIndex];
@@ -523,11 +525,8 @@ public class FileList extends XNATCatalogTemplate {
                 }
             }
         }
-        String fileName = "";
         int filesStart = fileUri.lastIndexOf("/files/");
-        fileName = fileUri.substring(filesStart + 7);
-
-        return root + fileName;
+        return root + fileUri.substring(filesStart + 7);
     }
 
     public CatEntryFilterI buildFilter() {

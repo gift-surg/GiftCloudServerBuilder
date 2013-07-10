@@ -423,7 +423,11 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       th.style.lineHeight="13px";
       th.style.cursor="pointer";
 
-      var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:this.getMenuItems()});
+      var diff=false;
+      if(th.id.match('^diff_')){
+          diff=true;
+      }
+      var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:this.getMenuItems(diff)});
       th.contextMenu=_th_menu;
       _th_menu.render(this.div_table_id);
       _th_menu.cfg.subscribeToConfigEvent("x", onXChange, this);
@@ -805,14 +809,16 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     return columns;
   }
 
-  this.getMenuItems=function(){
+  this.getMenuItems=function(diff){
 	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}];
 
 	  if(this.options.allowInTableMods){
           if(this.optionMenu.en!="xnat:projectData"){
-            cMenuItems.push({text:"Hide Column"});
-            cMenuItems.push({text:"Edit Column"});
-            cMenuItems.push({text:"Filter"});
+              if(!diff){
+                  cMenuItems.push({text:"Hide Column"});
+                  cMenuItems.push({text:"Edit Column"});
+                  cMenuItems.push({text:"Filter"});
+              }
           }
 	  }
 	  return cMenuItems;

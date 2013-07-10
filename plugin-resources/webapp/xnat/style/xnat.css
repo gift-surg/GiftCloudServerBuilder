@@ -54,7 +54,7 @@ div.optionsTab { background-color: #fff ; border: 1px solid #aaa ; white-space: 
 div.quickSearch { padding: 2px ; border: 1px solid #e8e8e8 ; white-space: nowrap ; width: 180px ; }
 td.x_rs_td { white-space: nowrap ; border: 1px solid #7F7F7F ; margin: 0 ; border-left-style: none ; border-top-style: none ; font-size: 12px ; padding: 2px 6px 2px 4px ; }
 td.x_rs_td a { font-weight: bold ; }
-th.x_rs_th { white-space: nowrap ; border-collapse: collapse ; border: 1px solid #7F7F7F ; color: #000 ; margin: 0 ; padding-left: 4px ; padding-right: 4px ; text-decoration: none ; vertical-align: bottom ; border-left-style: none ; }
+th.x_rs_th { white-space: nowrap ; border-collapse: collapse ; border: 1px solid #7F7F7F ; color: #000 ; margin: 0 ; padding-left: 4px ; padding-right: 4px ; text-decoration: none ; vertical-align: middle ; border-left-style: none ; }
 tr.even > td.sorted { background-color: #BFBFBF ; }
 tr.odd > td.sorted { background-color: #F2F2F2 ; }
 th.sorted {  }

@@ -140,7 +140,7 @@ public class RESTHTMLPresenter extends PresentationA {
 			// The id must be unique across tabs or document.getElementByID will not work as expected. 
 			// We add a random number to the id to make it *likely* unique. 
 			headerLink.append("<th class=\"" + tHclass + "\" id=\"" + id + random +"\" name=\"" + id +"\" align=\"left\"");
-			diffLink.append("<th align=\"left\" class=\"x_rs_th\"");
+			diffLink.append("<th align=\"left\" class=\"x_rs_th\" id=\"diff_" + id + random +"\"");
 			if (dfr.getHeaderCellWidth() != null)
 			{
 				headerLink.append(" width=\"" + dfr.getHeaderCellWidth() + "\"");

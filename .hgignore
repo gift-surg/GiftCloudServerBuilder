@@ -74,6 +74,7 @@ plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.js
 plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWranglers.js
 syntax: regexp
 ^.idea
+^.*\.[ei]ml
 ^.hgignore
 ^classes/org
 ^deployments

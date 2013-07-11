@@ -882,7 +882,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -891,9 +891,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -925,7 +925,7 @@
             <arg value="false"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -934,9 +934,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -961,7 +961,7 @@
             <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -970,9 +970,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1002,7 +1002,7 @@
             <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1011,9 +1011,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1046,7 +1046,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1054,9 +1054,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1088,7 +1088,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1097,9 +1097,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1136,7 +1136,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1145,9 +1145,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1171,7 +1171,7 @@
             <j:set var="beans.jar.name" value="beans"/>
         </j:if>
         <j:if test="${context.getVariable('beans.jar.version') ==null}">
-            <j:set var="beans.jar.version" value="1.6.2-SNAPSHOT"/>
+            <j:set var="beans.jar.version" value="1.6.2"/>
         </j:if>
         <java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
@@ -1190,7 +1190,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1198,9 +1198,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1474,7 +1474,7 @@
         <attainGoal name="xdat:updateCSS"/>
         <attainGoal name="xdat:updateImages"/>
         <attainGoal name="xdat:updateFilesFromModules"/>
-        <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.2-SNAPSHOT.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.2-SNAPSHOT.jar"/>
+        <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.2.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.2.jar"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
         </copy>
@@ -1576,7 +1576,7 @@
             <arg value="${xdat.project.name}"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1585,9 +1585,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1637,7 +1637,7 @@
                     <j:set var="beans.jar.name" value="beans"/>
                 </j:if>
                 <j:if test="${context.getVariable('beans.jar.version') ==null}">
-                    <j:set var="beans.jar.version" value="1.6.2-SNAPSHOT"/>
+                    <j:set var="beans.jar.version" value="1.6.2"/>
                 </j:if>
                 <j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
                 <j:set var="beans.jar.exists" value="false"/>
@@ -1694,7 +1694,7 @@
             <classpath>
                 <pathelement location="./classes"/>
                 <pathelement location="./deployments/${xdat.project.name}/target/classes"/>
-                <pathelement location="./lib/xdat-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/xdat-1.6.2.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
@@ -1703,9 +1703,9 @@
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.2-SNAPSHOT.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+                <pathelement location="./lib/nrg-framework-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-config-1.6.2.jar"/>
+                <pathelement location="./lib/nrg-notify-1.6.2.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>

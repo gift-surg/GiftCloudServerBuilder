@@ -9,7 +9,7 @@
 		<dependency>
 			<groupId>xdat</groupId>
 			<artifactId>xdat</artifactId>
-			<version>1.6.2-SNAPSHOT</version>
+			<version>1.6.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-framework</artifactId>
-			<version>1.6.2-SNAPSHOT</version>
+			<version>1.6.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-config</artifactId>
-			<version>1.6.2-SNAPSHOT</version>
+			<version>1.6.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-mail</artifactId>
-			<version>1.6.2-SNAPSHOT</version>
+			<version>1.6.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-notify</artifactId>
-			<version>1.6.2-SNAPSHOT</version>
+			<version>1.6.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

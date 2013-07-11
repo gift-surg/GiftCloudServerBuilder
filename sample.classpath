@@ -38,37 +38,37 @@
   <classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar" sourcepath="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar">
     <attributes>
-      <attribute value="file:plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\activemq-core-5.7.0.jar" sourcepath="plugin-resources\repository\activemq\jars\activemq-core-5.7.0-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/activemq-core-5.7.0.jar" sourcepath="plugin-resources/repository/activemq/jars/activemq-core-5.7.0-sources.jar">
     <attributes>
-      <attribute value="http://activemq.apache.org/maven/5.7.0/apidocs" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="http://activemq.apache.org/maven/5.7.0/apidocs"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1.jar" sourcepath="plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/geronimo-jms_1.1_spec-1.1.1.jar" sourcepath="plugin-resources/repository/activemq/jars/geronimo-jms_1.1_spec-1.1.1-sources.jar">
     <attributes>
-      <attribute value="file:plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-javadoc.jar" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-javadoc.jar"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="plugin-resources\repository\spring\jars\spring-jms-3.0.7.RELEASE.jar" sourcepath="plugin-resources\repository\spring\jars\spring-jms-3.0.7.RELEASE-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-jms-3.0.7.RELEASE.jar" sourcepath="plugin-resources/repository/spring/jars/spring-jms-3.0.7.RELEASE-sources.jar">
     <attributes>
-      <attribute value="http://static.springsource.org/spring/docs/3.0.x/javadoc-api" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="http://static.springsource.org/spring/docs/3.0.x/javadoc-api"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="plugin-resources\repository\xbean\jars\xbean-spring-3.13.jar" sourcepath="plugin-resources\repository\xbean\jars\xbean-spring-3.13-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/xbean/jars/xbean-spring-3.13.jar" sourcepath="plugin-resources/repository/xbean/jars/xbean-spring-3.13-sources.jar">
     <attributes>
-      <attribute value="file:plugin-resources\repository\xbean\jars\xbean-spring-3.13-javadoc.jar" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\xbean\jars\xbean-spring-3.13-javadoc.jar"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1.jar" sourcepath="plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/geronimo-j2ee-management_1.1_spec-1.0.1.jar" sourcepath="plugin-resources/repository/activemq/jars/geronimo-j2ee-management_1.1_spec-1.0.1-sources.jar">
     <attributes>
-      <attribute value="file:plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-javadoc.jar" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-javadoc.jar"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="plugin-resources\repository\activemq\jars\kahadb-5.7.0.jar" sourcepath="plugin-resources\repository\activemq\jars\kahadb-5.7.0-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/kahadb-5.7.0.jar" sourcepath="plugin-resources/repository/activemq/jars/kahadb-5.7.0-sources.jar">
     <attributes>
-      <attribute value="file:plugin-resources\repository\activemq\jars\kahadb-5.7.0-javadoc.jar" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\kahadb-5.7.0-javadoc.jar"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="lib" path="plugin-resources/repository/commons-pool/jars/commons-pool-1.2.jar"/>
@@ -79,9 +79,9 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.2-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.2-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-4.0.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-3.0.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
@@ -90,10 +90,10 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai_imageio-1.1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.4.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar"/>
@@ -143,13 +143,13 @@
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.2-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.2-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.2-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.2-SNAPSHOT.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
@@ -229,7 +229,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
-  <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>

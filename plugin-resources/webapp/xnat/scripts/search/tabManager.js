@@ -194,15 +194,16 @@ function TabManager(_id){
 
             YAHOO.util.Event.on(tempTab.getElementsByClassName('close')[0], 'click', function (e, tab) {
                 var $this_tab = $(this).closest('li');
+                var $this_navset = $this_tab.closest('.yui-navset');
+                $this_navset.find('li').removeClass('dont_move');
                 if ($this_tab.attr('title')==='active'){
-                    $this_tab.prev('li').trigger('click');
+                    $this_tab.prev('li').attr('title','active');
                 }
-//                else {
-//                    $this_navset.find('li[title="active"]').trigger('click');
-//                }
                 YAHOO.util.Event.preventDefault(e);
                 tab.tab_manager.tabView.removeTab(tab);
                 tab.tab_manager.close(tab.search_id);
+                //wrangleTabs($this_navset.attr('id'));
+                $this_navset.find('li[title="active"]').addClass('dont_move').trigger('click');
             }, tempTab);
 
             var options = new Array();

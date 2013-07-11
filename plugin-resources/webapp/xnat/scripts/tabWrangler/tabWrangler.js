@@ -7,10 +7,6 @@ $(function(){
     if (!$('link[href*="tabWrangler.css"]').length){
         $('head').append('<link rel="stylesheet" type="text/css" href="'+serverRoot+'/scripts/tabWrangler/tabWrangler.css">');
     }
-});
-
-
-$(function(){
 
     $body = $('body');
     var notLinks = 'a[href^="/##"], a[href^="##"], a[href^="!"], a[href^="*"]';
@@ -18,13 +14,7 @@ $(function(){
     $body.on('click',notLinks,function(e){
         e.preventDefault();
     });
-
 });
-
-
-
-
-
 
 
 function prevTabsWidth(_$tab,_n){
@@ -44,14 +34,9 @@ function prevTabsWidth(_$tab,_n){
 
 function renderAddTabSelect(_$wrapper,_val){
 
-    // is there a <select> element in the tabs? ('selector' class added in wrangleTabs() function)
-    var $phantom_tab = _$wrapper.find('.yui-nav li em:contains("+")').closest('li');
-
     var $select_add_tab = _$wrapper.find('.select_add_tab');
 
-    if ($select_add_tab.length && $select_add_tab.find('option').length > 1){
-
-        $phantom_tab.addClass('phantom selector');
+    if ($select_add_tab.length){
 
         _$wrapper.find('.flipper_box').css('width','310px');
 
@@ -68,70 +53,20 @@ function renderAddTabSelect(_$wrapper,_val){
         _$wrapper.find('.flippers .selector').append($select_add_tab);
 
         // need to figure out how to disable <select> if there's no more data types to load into tabs
-//        if (_$wrapper.find('.flippers .selector select option').length === 0){
-//            _$wrapper.find('.flippers .selector select').prop('disabled',true).attr('disabled','disabled').addClass('disabled');
-//        }
-
-    }
-
-//    if (!$phantom_tab.length){
-//        $select_add_tab.prop('disabled',true);
-//    }
-//    else {
-//        $select_add_tab.prop('disabled',false);
-//    }
-}
-
-
-function renderWranglerSelectX(_$wrapper,_val){
-
-    // is there a <select> element in the tabs? ('selector' class added in wrangleTabs() function)
-    var $tab_select = _$wrapper.find('.yui-nav li select');
-    var $select_tab = $tab_select.closest('li');
-
-    var has_selector = !!$tab_select.length;
-
-    if (has_selector === true){
-
-        var select_html = $tab_select.html();
-
-        //$select_tab.hide();
-
-        _$wrapper.find('.flipper_box').css('width','300px');
-
-        if (!_$wrapper.find('.flippers .proxy').length){
-            _$wrapper.find('.flippers').prepend('' +
-                '<span class="selector" style="width:122px;border-right:none;">' +
-                '   <select class="proxy" style="width:110px;margin:2px;padding:3px 0;font-size:11px;"></select>' +
-                '</span>' +
-                '');
+        if (_$wrapper.find('.flippers .selector select option').length === 0){
+            _$wrapper.find('.flippers .selector select').prop('disabled',true).attr('disabled','disabled').addClass('disabled');
         }
 
-        var $wrangler_select = _$wrapper.find('.flippers select.proxy');
-
-        $tab_select.find('option').each(function(){
-            var opt_val = $(this).val();
-            var opt_text = $(this).text();
-            $wrangler_select.append('' +
-                '<option class="opt" value="'+opt_val+'" title="'+opt_val+'">'+opt_text+'</option>' +
-                '')
-        });
-
-
-//        $wrangler_select.html(select_html);
-//        $wrangler_select.find('option').addClass('opt');
-//        $wrangler_select.find('option:first').text('Add Tab');
-
     }
 }
-
 
 
 function renderFlippers(_$wrapper){
     //var _$wrapper = $(_wrapper) /* || $('.yui-navset') */ ;
     var $tabs_ul = _$wrapper.find('ul.yui-nav');
     var $tabs = $tabs_ul.find('li').not('.phantom');
-    if ($tabs.length > -1){
+    var $select_add_tab = _$wrapper.find('.select_add_tab');
+    if ($tabs.length > 1 || $select_add_tab.length){
         var has_flippers = !!_$wrapper.find('.flipper_box').length;
         var $flipper_box ;
         var $content_wrapper = _$wrapper.find('.yui-content');
@@ -146,30 +81,28 @@ function renderFlippers(_$wrapper){
                 '<a href="##" class="flipper last"><b>&raquo;</b></a>' +
                 '</span>' +
                 '');
-//            $flipper_box.find('a.flipper').css({
-//                height: ($tabs_ul.height()-2),
-//                lineHeight: ($tabs_ul.height()-8) + 'px'
-//            });
         }
-        // remove 'disabled' class from all flippers
-        $('.flippers > .flipper').removeClass('disabled');
         // disable the left flippers if we're on the first tab
         if ($tabs_ul.find('li').first().attr('title') === 'active'){
             $('.flipper.first,.flipper.left').addClass('disabled');
         }
+        else {
+            $('.flipper.first,.flipper.left').removeClass('disabled');
+        }
         // disable the right flippers if we're on the last tab
         if ($tabs_ul.find('li').not('.phantom').last().attr('title') === 'active'){
-                $('.flipper.last,.flipper.right').addClass('disabled');
+            $('.flipper.last,.flipper.right').addClass('disabled');
         }
+        else {
+            $('.flipper.last,.flipper.right').removeClass('disabled');
+        }
+    }
+    // disable all flippers if there are NO tabs
+    if (!$tabs.length){
+        $('.flipper').addClass('disabled');
     }
     renderAddTabSelect(_$wrapper,'');
 }
-
-
-
-
-
-
 
 
 // show the content for the selected tab
@@ -189,6 +122,9 @@ function moveToTab(_$wrapper,_$tab,_n,_x){
 
     var $the_tab = _$tab ;
 
+//    _n = _n || 0 ;
+//    _x = _x || 0 ;
+
     // width of said tab
     var the_tab_width = $the_tab.outerWidth();
 
@@ -199,7 +135,7 @@ function moveToTab(_$wrapper,_$tab,_n,_x){
 
     // if there's a 'selector' tab, get the width, otherwise set to 0
     //var selector_tab_width = ($the_tab.next('li').hasClass('selector')) ? parseInt(_$wrapper.find('li.selector').outerWidth()-20) : 40 ;
-    var selector_tab_width = (_$wrapper.find('.select_add_tab').length) ? 100 : 40 ;
+    var selector_tab_width = (_$wrapper.find('.select_add_tab').length) ? 100 : 10 ;
 
     // how much visible space do we have to show the tabs? (need to ensure they are viewable inside this space)
     var width_limit = parseInt(content_width - 220);
@@ -217,13 +153,12 @@ function moveToTab(_$wrapper,_$tab,_n,_x){
         left: move_x
     },200);
 
-    renderFlippers(_$wrapper);
-
 }
 
 
-function wrangleTabs(_wrapper){  // initialize the wrangler
+function wrangleTabs(_wrapper,_force){  // initialize the wrangler
 
+    var force = _force || false ;
     var tabs_wrapper = _wrapper || '.yui-navset' ;
     var tabs_ul = _wrapper + ' .yui-nav' ;
     var $tabs_wrapper = $(tabs_wrapper);
@@ -235,89 +170,89 @@ function wrangleTabs(_wrapper){  // initialize the wrangler
 
     $tabs_wrapper.addClass('wrangled');
 
+    // is there a <select> element in the tabs? ('selector' class added in wrangleTabs() function)
+    var $phantom_tab = $tabs_wrapper.find('.yui-nav li em:contains("+")').closest('li');
+
+    $phantom_tab.addClass('phantom');
 
     // var the tab <li>s -- probably have to update this var if tabs are added/subtracted
-    var tabs = tabs_ul + ' > li';
+    var tabs_ = tabs_ul + ' > li';
 
     // all tabs INCLUDING the selector tab (underscore at end)
-    var $tabs_ = $(tabs);
-
-    // var the <select>
-    // jQuery gracefully handles this - won't freak out if there's no <select>
-    var $select = $tabs_.find('select');
-    var $select_tab = $select.closest('li');
-    //var select_tab_width = $select_tab.outerWidth();
-
-    // there is no select tab anymore
-    // set the width manually
-    var select_tab_width = 120 ;
-
-    // remove href from <a> (to prevent click event)
-    // give 'selector' class to tab with <select>
-    $select.closest('a').removeAttr('href');
-    $select_tab.addClass('selector').attr('data-width',select_tab_width);
+    var $tabs_ = $(tabs_);
 
     // all tabs EXCEPT the selector tab (remove trailing underscore)
-    var $tabs = $tabs_.not('.disabled');
+    var $tabs = $tabs_.not('.phantom');
 
     $tabs.removeClass('last');
     // var first and last tabs and add classes
-    var $first_tab = $tabs.first().addClass('first');
-    var $last_tab = $tabs.last().addClass('last');
+    $tabs.first().addClass('first');
+    $tabs.last().addClass('last');
 
-    // var to hold 'selected' tab number
-    // tab/content #1 selected by default
-    var n_selected = 1 ;
-    // boolean if there's at least one tab that's 'active'
-    var has_active = !!$(tabs+'[title="active"]').length;
+    // var the <select>
+    // jQuery gracefully handles this - won't freak out if there's no <select>
+    var $select = $tabs_wrapper.find('.select_add_tab');
 
-    // number the tab <li>s and set '.selected' and title="active"
-    // also set 'selected' var to value of i for 'selected'/'active' tab
-    $tabs.each(function(i){
-        i++ ;
-        var tab_width = $(this).outerWidth();
-        $(this).attr('data-tab',i).attr('data-width',tab_width);
-        // if there's already an 'active' tab (overrides '.selected' tab)
-        if (has_active === true){
-            // if THIS tab is the 'active' tab
-            // if there's more than one that's 'active' (this should not happen),
-            // then the last 'active' tab will be 'selected'
-            if ($(this).is('[title="active"]')){
-                n_selected = i ;
-                $tabs.removeClass('selected');
-                $(this).addClass('selected');
+    // we're not gonna do anything if there's only one tab and no <select> element
+    if ((force === true) || (($tabs.length > 1) || ($select.length))){
+
+        // var to hold 'selected' tab number
+        // tab/content #1 selected by default
+        var n_selected = 1 ;
+        // boolean if there's at least one tab that's 'active'
+        var has_active = !!$(tabs_+'[title="active"]').length;
+
+        // number the tab <li>s and set '.selected' and title="active"
+        // also set 'selected' var to value of i for 'selected'/'active' tab
+        $tabs.each(function(i){
+            i++ ;
+            var tab_width = $(this).outerWidth();
+            $(this).attr('data-tab',i).attr('data-width',tab_width);
+            // if there's already an 'active' tab (overrides '.selected' tab)
+            if (has_active === true){
+                // if THIS tab is the 'active' tab
+                // if there's more than one that's 'active' (this should not happen),
+                // then the last 'active' tab will be 'selected'
+                if ($(this).is('[title="active"]')){
+                    n_selected = i ;
+                    $tabs.removeClass('selected');
+                    $(this).addClass('selected');
+                }
             }
-        }
-        // else if there's no tab already flagged as 'active'
-        // maybe it's '.selected'?
-        else {
-            if ($(this).hasClass('selected')){
-                n_selected = i ;
-                // probably don't need to remove the 'title' attr
-                // since we've already checked for that
-                // but it doesn't hurt to remove it anyway
-                $tabs.removeAttr('title');
-                $(this).attr('title','active');
+            // else if there's no tab already flagged as 'active'
+            // maybe it's '.selected'?
+            else {
+                if ($(this).hasClass('selected')){
+                    n_selected = i ;
+                    // probably don't need to remove the 'title' attr
+                    // since we've already checked for that
+                    // but it doesn't hurt to remove it anyway
+                    $tabs.removeAttr('title');
+                    $(this).attr('title','active');
+                }
             }
-        }
-    });
+        });
 
-    // if nothing is selected by now... select the first tab
-    if (!$(tabs+'.selected').length){
-        $tabs.first().addClass('selected whut').attr('title','active');
+        // if nothing is selected by now... select the first tab
+        if (!$(tabs_+'.selected').length){
+            $tabs.first().addClass('selected whut').attr('title','active');
+        }
+
+        var $selected_tab = $tabs_ul.find('li[title="active"]');
+        moveToTab($tabs_wrapper,$selected_tab);
+
+        showTabContent($tabs_wrapper,n_selected);
+
     }
 
-    showTabContent($tabs_wrapper,n_selected);
-
-    var $selected_tab = $tabs_ul.find('li.selected');
-    moveToTab($tabs_wrapper,$selected_tab);
+    renderFlippers($tabs_wrapper);
 
 }
 
 
-function clickWrangledTab(_$tab){
+function clickWrangledTab(_$tab,_move){
 
-    var $this_tab = _$tab;
+    var $this_tab = _$tab || $(this);
     var $this_navset = _$tab.closest('.yui-navset');
     var $tabs_ = $this_navset.find('.yui-nav > li');
     var $tabs = $tabs_.not('.phantom');
@@ -326,7 +261,14 @@ function clickWrangledTab(_$tab){
     $tabs.removeClass('selected').removeAttr('title');
     $this_tab.addClass('selected').attr('title','active');
 
-    moveToTab($this_navset,$this_tab);
+    if (_move === true){
+        moveToTab($this_navset,$this_tab);
+    }
+    else {
+        //alert('move='+_move);
+    }
+
+    renderFlippers($this_navset);
 
 }
 
@@ -335,10 +277,16 @@ $(function(){
 
     $body = $('body');
 
-    $body.on('click','.wrangled .yui-nav li:not(.selector)',function(){
-
-        clickWrangledTab($(this));
-
+    $body.on('click','.wrangled .yui-nav li:not(.phantom)',function(){
+        var move_ ;
+        if ($(this).hasClass('dont_move')){
+            move_ = false ;
+            $(this).removeClass('dont_move');
+        }
+        else {
+            move_ = true ;
+        }
+        clickWrangledTab($(this),move_);
     });
 
 
@@ -358,13 +306,13 @@ $(function(){
             $flippers = $flipper.closest('.flippers'),
             $this_navset = $flippers.closest('.yui-navset'),
             $this_tab_ul = $this_navset.find('ul.yui-nav'),
-            $these_tabs = $this_tab_ul.find('li:not(.selector)'),
+            $these_tabs = $this_tab_ul.find('li:not(.phantom)'),
             $active_tab = $this_tab_ul.find('li[title="active"]') || $this_tab_ul.find('li.selected'), // check title="active" first
             $prev_tab = $active_tab.prev('li'),
             $next_tab = $active_tab.next('li'),
             $first_tab = $this_tab_ul.find('li.first'),
             //$last_tab = $this_tab_ul.find('li.last'),
-            $last_tab = $this_tab_ul.find('li:not(.selector)').last(),
+            $last_tab = $this_tab_ul.find('li:not(.phantom)').last(),
             $this_content = $this_navset.find('.yui-content'),
             $selector_tab = $this_tab_ul.find('li.selector')
             ;
@@ -378,7 +326,7 @@ $(function(){
             tabs_count = 0,
             tabs_total_width = 0,
             active_tab_width = $active_tab.outerWidth(),
-        //selector_tab_width = $selector_tab.outerWidth(),
+            //selector_tab_width = $selector_tab.outerWidth(),
             selector_tab_width = ($selector_tab.length) ? $selector_tab.outerWidth() : 0,
             width_limit = parseInt(content_width - 200 - selector_tab_width - 5),
             these_tabs_width = 0 //$active_tab.outerWidth()
@@ -387,8 +335,6 @@ $(function(){
         $these_tabs.each(function(){
             these_tabs_width += $(this).outerWidth();
         });
-
-        //$flippers.find('.flipper').removeClass('disabled');
 
         // click 'left' flipper
         if ($flipper.hasClass('left')){

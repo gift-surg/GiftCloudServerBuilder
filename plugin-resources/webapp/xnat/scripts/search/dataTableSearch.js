@@ -306,7 +306,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 
       wrangleTabs('#search_tabs');
 
-  }
+  };
 
     this.getPage = function (page) {
         var that = this;

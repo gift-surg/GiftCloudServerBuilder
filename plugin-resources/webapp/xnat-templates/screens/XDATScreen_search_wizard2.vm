@@ -81,10 +81,13 @@ width:1px;
   #end
  </div>
 				</div>
-				<script type="text/javascript">
+##	<script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
+      <script type="text/javascript">
 				  var frontTabs=new YAHOO.widget.TabView('super_search');
-				  
-				</script>
+
+                    wrangleTabs('#super_search');
+
+                </script>
   </td>
  </tr>
  <tr>

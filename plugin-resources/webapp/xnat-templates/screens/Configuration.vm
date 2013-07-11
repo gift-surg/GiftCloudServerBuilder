@@ -16,7 +16,7 @@
         jq('body').addClass('administer configuration no_left_bar');
     });
 </script>
-<script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
+##<script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
 <div class="yui-skin-sam">
 <div id="tp_fm" style="display:none"></div>
 <table style="width:98%">

@@ -22,7 +22,10 @@
 /* //////////////////////////////////////////////////
     tabs
 ////////////////////////////////////////////////// */
+.yui-navset ul.yui-nav { white-space: nowrap ; }
 .yui-navset.wrangled ul.yui-nav { height: 29px ; position: relative !important ; overflow: visible !important ; white-space: nowrap ; border: none !important ; }
+.yui-navset.wrangled ul.yui-nav li { height: 28px !important ; }
+.yui-navset.wrangled ul.yui-nav li.selected { height: 29px !important ; }
 .yui-navset.wrangled ul.yui-nav li.phantom { color: rgb(255,255,255) ; color: rgba(255,255,255,0.01) ; background: transparent ; border: none ; }
 .ltie9 .yui-navset.wrangled ul.yui-nav li.phantom { color: rgb(255,255,255) ; }
 /*.yui-navset.wrangled ul.yui-nav li.selector { position: fixed ; left: -9999px ; }*/

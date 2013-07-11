@@ -142,9 +142,11 @@
 <link rel="stylesheet" type="text/css" href="$content.getURI("style/xdat.css")">
 <link rel="stylesheet" type="text/css" href="$content.getURI("style/xnat.css")">
 
-<!-- just load the xModal css now -->
 <link rel="stylesheet" type="text/css" href="$content.getURI("scripts/xModal/xModal.css")">
 <!-- xModal.css needs to be before xModal.js so the script doesn't insert it again -->
 <script type="text/javascript" src="$content.getURI("scripts/xModal/xModal.js")"></script>
+
+<link rel="stylesheet" type="text/css" href="$content.getURI("scripts/tabWrangler/tabWrangler.css")">
+<script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
 
 #addGlobalCustomScreens("header")

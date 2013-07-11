@@ -1,6 +1,6 @@
 #set($bundles = $project.getBundles())
 	     #if($bundles.size()>0)
-         <script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
+##         <script type="text/javascript" src="$content.getURI("scripts/tabWrangler/tabWrangler.js")"></script>
 ##		 <button id="flip_it">Enable Flippers</button>
          <div id="paginator"></div>
     <BR>
@@ -88,12 +88,6 @@ YAHOO.util.Event.onDOMReady(TabManagerInit);
 function bundleTabChange(obj){
     var activeIndex=this.get("activeIndex");
     YAHOO.util.Cookie.set("${project.getId()}.open_bundle.index",activeIndex);
-//    var _force = !!(jq('#search_tabs').find('li').length > 1) ;
-//    wrangleTabs({
-//        wrapper: '#search_tabs', // selector for element where tabs will be rendered by YUI - use 'body' to hit all tab sets
-//        force: false // (optional) do we show it even if the tabs aren't too wide? default = false
-//    });
-    //console.debug('bundleTabChange('+obj+'), force: '+_force);
 }
 
 function addBundleMonitor(){
@@ -103,8 +97,10 @@ function addBundleMonitor(){
 YAHOO.util.Event.onDOMReady(addBundleMonitor);
 
     jq(window).load(function(){
-        var tab_wrapper = '#search_tabs';
-        wrangleTabs(tab_wrapper);
+        // if the 'phantom'/'disabled' tab is there, wrangle the tabs
+        if (!jq('#search_tabs').find('li').not('.disabled').length){
+            wrangleTabs('#search_tabs',true);
+        }
     });
 
     </script>

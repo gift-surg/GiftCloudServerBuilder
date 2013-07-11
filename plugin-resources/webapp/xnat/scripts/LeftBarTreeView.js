@@ -38,7 +38,7 @@ function LeftBarTreeView(_config){
  	//alert(opened);
  	if(opened!=null && opened!=""){
  		this.open_array=opened.split(',');
- 	}else{
+ 	} else {
  		this.open_array=new Array();
  		this.open_array.push("proj");
  	}
@@ -177,7 +177,8 @@ function LeftBarTreeView(_config){
  	try{
  		this.tree.draw();
  	}catch(e){}
- 	
+
+
  }
  
  this.resetDynamic=function(){
@@ -287,5 +288,9 @@ function LeftBarTreeView(_config){
     YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/saved?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp='+ (new Date()).getTime(),callback,null);
 
  }
+
+    //wrangleTabs('#search_tabs');
+    //clickWrangledTab();
+
 }
 

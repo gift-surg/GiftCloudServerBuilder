@@ -1,11 +1,20 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.utils.ArchivableItem
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.turbine.utils;
-
-import java.io.File;
 
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xft.ItemI;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
+
+import java.io.File;
 
 public interface ArchivableItem extends ItemI{
 	public String getArchiveDirectoryName();

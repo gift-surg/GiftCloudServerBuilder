@@ -1,12 +1,16 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.CompositeDicomObjectIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
 
-import java.util.regex.Pattern;
-
-import javax.inject.Provider;
-
+import com.google.common.collect.ImmutableSortedSet;
 import org.dcm4che2.data.DicomObject;
 import org.nrg.dcm.ChainExtractor;
 import org.nrg.dcm.Extractor;
@@ -15,12 +19,9 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.Labels;
 
-import com.google.common.collect.ImmutableSortedSet;
+import javax.inject.Provider;
+import java.util.regex.Pattern;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class CompositeDicomObjectIdentifier implements
 DicomObjectIdentifier<XnatProjectdata> {
     private final DicomProjectIdentifier projectID;

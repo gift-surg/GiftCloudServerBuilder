@@ -1,13 +1,21 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_upload_scans_xnat_imageSessionData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.Calendar;
-import java.util.Date;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class XDATScreen_upload_scans_xnat_imageSessionData extends SecureReport {
 

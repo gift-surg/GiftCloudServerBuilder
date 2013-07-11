@@ -1,11 +1,17 @@
+/*
+ * org.nrg.xnat.notifications.NotifyProjectListeners
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.notifications;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
@@ -23,23 +29,12 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.utils.CatalogUtils;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-/**
- * @author tim@deck5consulting.com
- * 
- * Project notifier should eventually be replaced by a proper notification system.
- * 
- * This class will build an email message and send it the referenced user, and any other users listed for this action/project combination.
- * 
- * It will look for a project resource file called one of the following:
- * {PROJECT}/resources/notifications/files/{SQL_NAME}_{ACTION}.lst
- * {PROJECT}/resources/notifications/files/{XSI_TYPE}_{ACTION}.lst
- * {PROJECT}/resources/notifications/files/{ACTION}.lst
- * 
- * The lst file should contain a comma separated list of email addresses to notify for that particular action.
- */
 public class NotifyProjectListeners implements Callable<Boolean> {
 	private static final String NOTIFICATIONS = "notifications";
 	static Logger logger = Logger.getLogger(NotifyProjectListeners.class);

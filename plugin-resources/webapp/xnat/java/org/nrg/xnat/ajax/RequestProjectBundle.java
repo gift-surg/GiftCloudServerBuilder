@@ -1,19 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jul 16, 2007
+ * org.nrg.xnat.ajax.RequestProjectBundle
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.ajax;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.services.rundata.RunDataService;
@@ -34,6 +29,15 @@ import org.nrg.xft.XFTTableI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class RequestProjectBundle {
     private final Logger logger = Logger.getLogger(RequestProjectBundle.class);

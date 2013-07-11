@@ -1,11 +1,18 @@
+/*
+ * org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourcesList
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
+
 /**
  * 
  */
 package org.nrg.xnat.restlet.resources.prearchive;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
@@ -22,6 +29,10 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author tolsen01

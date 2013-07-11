@@ -1,14 +1,23 @@
+/*
+ * org.nrg.xnat.helpers.uri.archive.ResourceURIA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.uri.archive;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.URIManager.ArchiveURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ResourceURIA extends ArchiveURI implements ResourceURII {
 

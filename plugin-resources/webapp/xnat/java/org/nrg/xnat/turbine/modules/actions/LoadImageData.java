@@ -1,9 +1,25 @@
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 /*
- * Created on Sep 13, 2006
+ * org.nrg.xnat.turbine.modules.actions.LoadImageData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
+
+import org.apache.log4j.Logger;
+import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.modules.actions.SecureAction;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,28 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.turbine.util.RunData;
-import org.apache.velocity.context.Context;
-import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.actions.SecureAction;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.XFTItem;
-import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
-import org.xml.sax.SAXException;
-/**
- * @author timo
- * @author Kevin A. Archie <karchie@npg.wustl.edu>
- */
 public class LoadImageData extends SecureAction {
     private final static String PREARC_PAGE = "XDATScreen_prearchives.vm";
     

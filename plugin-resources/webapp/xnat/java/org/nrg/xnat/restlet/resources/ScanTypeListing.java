@@ -1,13 +1,18 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.ScanTypeListing
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -15,6 +20,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.util.Hashtable;
 
 public class ScanTypeListing  extends SecureResource {
 	XnatProjectdata proj=null;

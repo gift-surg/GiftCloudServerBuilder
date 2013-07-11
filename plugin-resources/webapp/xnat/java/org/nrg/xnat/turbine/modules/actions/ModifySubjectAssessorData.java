@@ -1,13 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Aug 22, 2007
+ * org.nrg.xnat.turbine.modules.actions.ModifySubjectAssessorData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,6 +38,10 @@ import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.utils.WorkflowUtils;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 public class ModifySubjectAssessorData extends ModifyItem{
     static Logger logger = Logger.getLogger(ModifySubjectAssessorData.class);

@@ -1,11 +1,14 @@
 /*
- * GENERATED FILE
- * Created on Wed Oct 20 22:44:43 IST 2010
+ * org.nrg.xdat.om.base.BaseValProtocoldata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.nrg.xdat.model.ValProtocoldataScanCheckI;
 import org.nrg.xdat.om.ValProtocoldataScanCheck;
@@ -14,6 +17,9 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
+
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author XDAT

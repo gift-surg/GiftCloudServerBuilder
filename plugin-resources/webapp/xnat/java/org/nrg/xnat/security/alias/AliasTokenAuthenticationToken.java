@@ -1,23 +1,17 @@
+/*
+ * org.nrg.xnat.security.alias.AliasTokenAuthenticationToken
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security.alias;
 
-import org.nrg.xdat.XDAT;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.lang.Long;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-
-/**
- * This class supports translating between {@link org.nrg.xdat.entities.AliasToken alias token credentials} and standard username/password
- * credentials. Initialization of this should usually set the principal and credentials to the token's alias and secret
- * respectively. As the alias is translated into a specific user on the server side, the principal and credentials can
- * be converted to that user's, while the alias and secret remain the same. To accomplish this, this class overrides the
- * {@link org.springframework.security.authentication.UsernamePasswordAuthenticationToken#getPrincipal()} and
- * {@link org.springframework.security.authentication.UsernamePasswordAuthenticationToken#getCredentials()} methods to
- * return its own version of these data (the base class doesn't provide setters for the properties and the principal
- * data store is actually declared <b>final</b>).
- */
 public class AliasTokenAuthenticationToken extends UsernamePasswordAuthenticationToken{
 	public AliasTokenAuthenticationToken(Object principal, Object credentials) {
 		super(principal, credentials);

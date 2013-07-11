@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.SessionData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
 import org.nrg.framework.constants.PrearchiveCode;
@@ -7,21 +17,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-/**
- * SessionData is simply a container of values that represent a session. 
- * It is a stripped down version of the existing PrearcTableBuilder.Session
- * class.
- * 
- * It is currently (01/12/2011) used by the database cache implementation to 
- * hold values read from the database. 
- * 
- * It is preferable as a value container because while PrearcTableBuilder.Session 
- * also provides similar functionality but it also parses the session.xml 
- * and has unnecessary information from an XnatImagesessiondataI instance (eg.
- * the DICOM patient id).
- *  
- * @author aditya siram 
- */
 public final class SessionData implements Serializable {
     private static final long serialVersionUID = 7915299491932778685L;
 

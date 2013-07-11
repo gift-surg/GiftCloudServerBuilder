@@ -1,15 +1,15 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.turbine.modules.screens.PipelineScreen
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -28,6 +28,9 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.search.CriteriaCollection;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public abstract class PipelineScreen extends SecureReport {
 

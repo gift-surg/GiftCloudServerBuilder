@@ -1,18 +1,17 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.search.SavedSearchResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources.search;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.nrg.xdat.om.XdatCriteria;
-import org.nrg.xdat.om.XdatCriteriaSet;
-import org.nrg.xdat.om.XdatStoredSearch;
-import org.nrg.xdat.om.XdatStoredSearchAllowedUser;
-import org.nrg.xdat.om.XdatStoredSearchGroupid;
+import com.noelios.restlet.ext.servlet.ServletCall;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -25,7 +24,6 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.presentation.RESTHTMLPresenter;
 import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
@@ -38,13 +36,16 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.springframework.util.StringUtils;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.Maps;
-import com.noelios.restlet.ext.servlet.ServletCall;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SavedSearchResource extends ItemResource {
 	XdatStoredSearch xss = null;

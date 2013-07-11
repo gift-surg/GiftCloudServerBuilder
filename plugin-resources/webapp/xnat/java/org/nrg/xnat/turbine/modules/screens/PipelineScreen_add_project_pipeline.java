@@ -1,14 +1,15 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.turbine.modules.screens.PipelineScreen_add_project_pipeline
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.app.Velocity;
@@ -16,16 +17,11 @@ import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.pipeline.utils.PipelineUtils;
 import org.nrg.xdat.model.PipePipelinedetailsParameterI;
-import org.nrg.xdat.om.ArcPipelineparameterdata;
-import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.ArcProjectDescendantPipeline;
-import org.nrg.xdat.om.ArcProjectPipeline;
-import org.nrg.xdat.om.PipePipelinedetails;
-import org.nrg.xdat.om.PipePipelinedetailsParameter;
-import org.nrg.xdat.om.PipePipelinerepository;
-import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.util.List;
 
 public class PipelineScreen_add_project_pipeline extends SecureReport {
     public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(PipelineScreen_add_project_pipeline.class);

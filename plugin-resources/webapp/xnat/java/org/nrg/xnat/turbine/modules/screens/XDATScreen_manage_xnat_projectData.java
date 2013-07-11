@@ -1,12 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jul 2, 2007
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_manage_xnat_projectData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.sql.SQLException;
-import java.util.TreeMap;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -20,6 +22,9 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
+
+import java.sql.SQLException;
+import java.util.TreeMap;
 
 public class XDATScreen_manage_xnat_projectData  extends SecureReport {
     public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(XDATScreen_report_xnat_projectData.class);

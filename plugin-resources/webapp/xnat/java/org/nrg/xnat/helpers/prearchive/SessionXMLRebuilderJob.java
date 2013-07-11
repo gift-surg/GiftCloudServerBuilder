@@ -1,12 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJob
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.inject.Provider;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.schedule.JobInterface;
@@ -18,6 +20,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Provider;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
 
 public class SessionXMLRebuilderJob implements JobInterface {
 	@Override

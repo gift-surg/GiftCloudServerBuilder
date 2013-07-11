@@ -1,32 +1,34 @@
+/*
+ * org.nrg.xnat.workflow.WorkflowSaveHandlerAbst
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.workflow;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.schema.SchemaElement;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventListener;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.notifications.NotifyProjectListeners;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * @author tim@deck5consulting.com
- *
- *	Abstract class used to facilitate Workflow save handlers.  Implementations of this handler should implement the abstract method and be added to the EventManager as a listener.
- *  EventManager.AddListener(WrkWorkflowdata.SCHEMA_ELEMENT_NAME,new Impl());
- */
 public abstract class WorkflowSaveHandlerAbst implements EventListener{
 	final static Logger logger = Logger.getLogger(WorkflowSaveHandlerAbst.class);
 	/* (non-Javadoc)

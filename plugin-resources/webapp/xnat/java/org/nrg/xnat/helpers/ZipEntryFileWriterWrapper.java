@@ -1,7 +1,17 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.xnat.helpers.ZipEntryFileWriterWrapper
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers;
+
+import org.apache.commons.io.IOUtils;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,13 +20,6 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.IOUtils;
-import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class ZipEntryFileWriterWrapper implements FileWriterWrapperI {
     private final String name;
     private final long size;

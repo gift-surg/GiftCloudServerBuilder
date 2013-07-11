@@ -1,16 +1,19 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.DelegateDicomIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
 
-import java.util.SortedSet;
-
 import org.dcm4che2.data.DicomObject;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
+import java.util.SortedSet;
+
 public class DelegateDicomIdentifier implements DicomDerivedString {
     private final DicomDerivedString identifier;
     

@@ -1,23 +1,24 @@
+/*
+ * org.nrg.xnat.helpers.merge.SessionOverwriteCheck
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
-
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatDcmentryI;
-import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatImagesessiondataI;
-import org.nrg.xdat.model.XnatResourceI;
-import org.nrg.xdat.model.XnatResourcecatalogI;
-import org.nrg.xdat.model.XnatResourceseriesI;
+import org.nrg.xdat.model.*;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.utils.CatalogUtils;
+
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public class SessionOverwriteCheck implements Callable<Boolean> {
 	final XnatImagesessiondataI src,dest;

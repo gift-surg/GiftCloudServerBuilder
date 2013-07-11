@@ -1,7 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.representations.RESTLoginRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.representations;
-
-import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
@@ -9,6 +16,8 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
+
+import java.util.Hashtable;
 
 public class RESTLoginRepresentation extends TurbineScreenRepresentation {
 	static org.apache.log4j.Logger logger = Logger.getLogger(RESTLoginRepresentation.class);

@@ -1,21 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jan 26, 2007
+ * org.nrg.xnat.archive.BatchTransfer
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.nio.channels.FileLock;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
@@ -31,14 +24,19 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
+
+import javax.mail.MessagingException;
+import java.io.*;
+import java.nio.channels.FileLock;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class BatchTransfer extends Thread{
     final private Logger logger = Logger.getLogger(BatchTransfer.class);

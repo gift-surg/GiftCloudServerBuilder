@@ -1,15 +1,15 @@
-/** 
- * $Id: XDATScreen_uploaded_xnat_imageSessionData.java,v 1.7 2010/03/30 20:05:46 timo Exp $
- * Copyright (c) 2008 Washington University
+/*
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_uploaded_xnat_imageSessionData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -23,9 +23,12 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 
-/**
- * @author Kevin A. Archie <karchie@npg.wustl.edu>
- */
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 public final class XDATScreen_uploaded_xnat_imageSessionData extends
 	EditScreenA {
     private final static String PREARC_PAGE = "XDATScreen_prearchives.vm";

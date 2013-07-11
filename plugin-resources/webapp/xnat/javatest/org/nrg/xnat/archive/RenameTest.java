@@ -1,7 +1,14 @@
+/*
+ * org.nrg.xnat.archive.RenameTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.archive;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -12,9 +19,11 @@ import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xft.db.DBItemCache;
-import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.archive.Rename.UnsupportedResourceType;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class RenameTest {
 	final File archive = new File("./archive");

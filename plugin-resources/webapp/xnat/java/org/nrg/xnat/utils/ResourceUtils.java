@@ -1,15 +1,19 @@
-/**
- * Copyright 2013 Washington University
+/*
+ * org.nrg.xnat.utils.ResourceUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:12 PM
  */
 package org.nrg.xnat.utils;
-
-import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
-import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
@@ -27,11 +31,8 @@ import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.restlet.data.Status;
 
-/**
- * @author Tim Olsen <tim@deck5consulting.com>
- * 
- * Helper methods for interacting with XnatResource's
- */
+import java.io.File;
+
 public class ResourceUtils {
 	
 	/**

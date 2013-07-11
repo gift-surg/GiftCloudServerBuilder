@@ -1,20 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.PrearcDatabaseTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
-
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -25,6 +19,13 @@ import org.junit.Test;
 import org.nrg.test.BaseXDATTestCase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.junit.Assert.fail;
 
 public class PrearcDatabaseTest extends BaseXDATTestCase {
 	private static SessionDataDelegate sd;

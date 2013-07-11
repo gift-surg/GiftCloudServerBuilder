@@ -1,8 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.modules.screens.AdminSummary
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.sql.SQLException;
-import java.util.Hashtable;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -11,6 +17,9 @@ import org.nrg.xdat.turbine.modules.screens.AdminScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
+
+import java.sql.SQLException;
+import java.util.Hashtable;
 
 public class AdminSummary extends AdminScreen {
 	XDATUser u;

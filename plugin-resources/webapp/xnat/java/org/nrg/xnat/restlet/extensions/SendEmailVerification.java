@@ -1,17 +1,32 @@
+/*
+ * org.nrg.xnat.restlet.extensions.SendEmailVerification
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.extensions;
-import java.util.Date;
 
-import org.restlet.Context;
-import org.restlet.data.*;
-import org.restlet.resource.*;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.nrg.mail.services.EmailRequestLogService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xnat.restlet.XnatRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
-import org.nrg.mail.services.EmailRequestLogService;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
+
+import java.util.Date;
 
 @XnatRestlet(value = {"/services/sendEmailVerification"}, secure = false)
 public class SendEmailVerification extends Resource {

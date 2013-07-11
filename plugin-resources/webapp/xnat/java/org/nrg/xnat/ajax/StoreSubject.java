@@ -1,18 +1,20 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Dec 15, 2006
+ * org.nrg.xnat.ajax.StoreSubject
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.ajax;
 
-import java.io.IOException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.nrg.xdat.XDAT;
-import org.nrg.xft.utils.SaveItemHelper;
+import java.io.IOException;
 
 public class StoreSubject{
     static org.apache.log4j.Logger logger = Logger.getLogger(StoreSubject.class);

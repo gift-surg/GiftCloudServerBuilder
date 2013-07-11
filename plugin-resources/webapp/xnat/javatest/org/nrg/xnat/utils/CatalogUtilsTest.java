@@ -1,14 +1,24 @@
+/*
+ * org.nrg.xnat.utils.CatalogUtilsTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.utils;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.io.File;
 
 import org.junit.Test;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
+
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 public class CatalogUtilsTest {

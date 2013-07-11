@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.security.config.DatabaseAuthenticationProviderConfigurator
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security.config;
 
 import org.nrg.xdat.XDAT;

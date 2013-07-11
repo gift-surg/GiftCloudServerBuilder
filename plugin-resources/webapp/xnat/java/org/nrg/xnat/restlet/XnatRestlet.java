@@ -1,12 +1,12 @@
 /*
- * (C) 2011 Washington University School of Medicine
+ * org.nrg.xnat.restlet.XnatRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
- * Released under the Simplified BSD License
- */
-
-/**
- * XnatRestlet
- * Created on 11/8/11 by rherri01
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:45 PM
  */
 package org.nrg.xnat.restlet;
 
@@ -17,12 +17,6 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * This indicates that a class is an XNAT restlet. The annotation value
- * must be specified and indicates the URL path (relative to the RESTlet
- * root path) for the RESTful service. Duplicating an already configured
- * URL path will raise an exception.
- */
 @Documented
 @Target(TYPE)
 @Retention(RUNTIME)

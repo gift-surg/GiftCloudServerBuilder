@@ -1,16 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jun 7, 2007
+ * org.nrg.xnat.services.ArcFindService
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.services;
-
-import java.io.File;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.apache.axis.AxisEngine;
 import org.apache.log4j.Logger;
@@ -29,6 +27,13 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.ItemSearch;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 public class ArcFindService {
     static org.apache.log4j.Logger logger = Logger.getLogger(ArcFindService.class);

@@ -1,16 +1,16 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xnat.presentation.ChangeSummaryBuilderA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.presentation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +24,7 @@ import org.nrg.xft.presentation.ItemHistoryBuilder;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.FileEvent;
 
-import com.google.common.collect.Lists;
+import java.util.*;
 
 public abstract class ChangeSummaryBuilderA extends ItemHistoryBuilder{
 	final EventBuilderI builder;

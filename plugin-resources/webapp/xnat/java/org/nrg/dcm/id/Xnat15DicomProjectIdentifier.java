@@ -1,7 +1,20 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.Xnat15DicomProjectIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
+
+import com.google.common.collect.Lists;
+import org.dcm4che2.data.Tag;
+import org.nrg.xft.XFT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,19 +25,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.dcm4che2.data.Tag;
-import org.nrg.xft.XFT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-
-/**
- * Backwards compatibility implementation of DbBackedProjectIdentifier that uses
- * the XNAT 1.5-style dicom-project.rules file.
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 class Xnat15DicomProjectIdentifier extends DbBackedProjectIdentifier {
     private static final String DICOM_PROJECT_RULES = "dicom-project.rules";
 

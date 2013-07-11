@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.security.XnatProviderManager
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +22,6 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.utils.AuthUtils;
 import org.nrg.xnat.security.config.AuthenticationProviderConfigurator;
 import org.nrg.xnat.security.provider.XnatDatabaseAuthenticationProvider;

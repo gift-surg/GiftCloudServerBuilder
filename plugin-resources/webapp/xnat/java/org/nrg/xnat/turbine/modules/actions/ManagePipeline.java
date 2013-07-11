@@ -1,15 +1,15 @@
 /*
- * Copyright Washington University in St Louis 2006 All rights reserved
- * @author Mohana Ramaratnam (Email: mramarat@wustl.edu)
+ * org.nrg.xnat.turbine.modules.actions.ManagePipeline
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
 
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
@@ -25,13 +25,7 @@ import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.model.ArcPipelinedataI;
-import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.ArcProjectDescendant;
-import org.nrg.xdat.om.ArcProjectDescendantPipeline;
-import org.nrg.xdat.om.ArcProjectPipeline;
-import org.nrg.xdat.om.PipePipelinedetails;
-import org.nrg.xdat.om.PipePipelinerepository;
-import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
@@ -52,6 +46,12 @@ import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
 
 public class ManagePipeline extends SecureAction {
     static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ManagePipeline.class);

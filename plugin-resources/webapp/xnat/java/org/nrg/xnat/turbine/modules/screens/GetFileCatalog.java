@@ -1,18 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jun 20, 2007
+ * org.nrg.xnat.turbine.modules.screens.GetFileCatalog
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Hashtable;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.modules.screens.RawScreen;
@@ -30,6 +26,14 @@ import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.turbine.utils.CatalogSet;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Hashtable;
 
 public class GetFileCatalog extends RawScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(GetFileCatalog.class);

@@ -1,12 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Mon Aug 27 09:45:18 CDT 2007
+ * org.nrg.xdat.om.base.BaseArcProjectDescendant
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
@@ -14,6 +16,9 @@ import org.nrg.xdat.om.base.auto.AutoArcProjectDescendant;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
+
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author XDAT

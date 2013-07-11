@@ -1,13 +1,18 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.search.SavedSearchListResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources.search;
 
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
@@ -18,7 +23,9 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
-import com.google.common.collect.Lists;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.List;
 
 public class SavedSearchListResource extends SecureResource {
 	static org.apache.log4j.Logger logger = Logger.getLogger(SavedSearchListResource.class);

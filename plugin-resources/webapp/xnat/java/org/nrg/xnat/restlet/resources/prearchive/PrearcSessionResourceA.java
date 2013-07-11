@@ -1,7 +1,14 @@
+/*
+ * org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourceA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.resources.prearchive;
-
-import java.io.File;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nrg.action.ActionException;
@@ -18,6 +25,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Variant;
+
+import java.io.File;
 
 public abstract class PrearcSessionResourceA extends SecureResource {
 	static Logger logger = Logger.getLogger(PrearcSessionResourceA.class);

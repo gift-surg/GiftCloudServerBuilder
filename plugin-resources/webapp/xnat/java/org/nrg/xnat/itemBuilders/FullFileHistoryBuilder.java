@@ -1,12 +1,14 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xnat.itemBuilders.FullFileHistoryBuilder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.itemBuilders;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.bean.CatCatalogBean;
@@ -17,6 +19,13 @@ import org.nrg.xft.presentation.FlattenedItemA;
 import org.nrg.xft.presentation.FlattenedItemI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.utils.CatalogUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public class FullFileHistoryBuilder extends FileHistoryBuilderAbst implements FlattenedItemModifierI {
 	static Logger logger = Logger.getLogger(FullFileHistoryBuilder.class);

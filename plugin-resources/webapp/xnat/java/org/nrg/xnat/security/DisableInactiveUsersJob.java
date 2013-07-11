@@ -1,27 +1,32 @@
+/*
+ * org.nrg.xnat.security.DisableInactiveUsersJob
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
-
-	import java.sql.SQLException;
-import java.util.GregorianCalendar;
-
-import javax.inject.Provider;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.nrg.schedule.JobInterface;
-	import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.utils.AuthUtils;
 import org.quartz.JobDataMap;
 	import org.quartz.JobExecutionContext;
 	import org.quartz.JobExecutionException;
 	import org.slf4j.Logger;
 	import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.sql.SQLException;
+import java.util.GregorianCalendar;
 
 	public class DisableInactiveUsersJob implements JobInterface {
 		private JobDataMap _map;

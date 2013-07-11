@@ -1,3 +1,13 @@
+/*
+ * org.nrg.schedule.DelegatingJobBean
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.schedule;
 
 import org.apache.commons.logging.Log;
@@ -9,16 +19,6 @@ import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-/**
- * Provides a container to execute under the Spring Quartz framework. This uses the Spring application
- * context to find the bean specified in the {@link #JOB_BEAN_NAME_KEY} job parameter.
- *
- * This class is based on code by Hari Gangadharan at:
- * 
- * http://www.harinair.com/2008/01/spring-quartz-and-auto-wiring-of-quartz-jobs.
- * 
- * @author rherrick
- */
 public class DelegatingJobBean extends QuartzJobBean {
 	@Override
 	protected final void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {

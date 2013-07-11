@@ -1,25 +1,26 @@
-/**
- * Copyright (c) 2012 Washington University
+/*
+ * org.nrg.xnat.helpers.dicom.SiemensShadowHeader
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers.dicom;
 
-import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Set;
-
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.util.TagUtils;
 import org.nrg.xft.XFTTable;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Set;
 
-/**
- * Parses component fields out of a Siemens shadow header (vendor private tag)
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class SiemensShadowHeader {
     private static final String IMAGE_NUM_4 = "IMAGE NUM 4",
     SIEMENS_CSA_HEADER = "SIEMENS CSA HEADER",

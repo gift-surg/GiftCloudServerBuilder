@@ -1,15 +1,22 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.DatabaseSessionTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
+
 /**
  * 
  */
 package org.nrg.xnat.helpers.prearchive;
 
-import static org.junit.Assert.fail;
+import org.junit.*;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.fail;
 
 /**
  * @author aditya

@@ -1,18 +1,15 @@
 /*
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.restlet.resources.ProjtExptPipelineResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.restlet.resources;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.XnatPipelineLauncher;
@@ -23,11 +20,7 @@ import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.model.ArcPipelineparameterdataI;
-import org.nrg.xdat.om.ArcPipelinedata;
-import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTItem;
@@ -50,6 +43,12 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class ProjtExptPipelineResource extends SecureResource {
 	XnatProjectdata proj=null;

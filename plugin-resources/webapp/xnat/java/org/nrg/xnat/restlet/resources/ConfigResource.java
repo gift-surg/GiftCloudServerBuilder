@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.restlet.resources.ConfigResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.resources;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,37 +35,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-/**********************************************************************************************************************************************************************
- *  
- *  
- *  ConfigResource - a restlet for nrg_config to get and put text files 
- * 
- *  Full Specs:  https://xnatdev.wikispaces.com/nrg_config
- * 
- *		GET       /config								format=json/xml/html      Return a list of all tools that have a configuration
- *		GET       /config/{TOOL_NAME} 					format=json/xml/html      Return all configurations for this tool (all paths)
- *		GET/PUT   /config/{TOOL_NAME}/{PATH_TO_FILE}  	GET version= || action=getHistory || format=json/xml/html; || contents=true || meta=true  PUT status=disabled/enabled     
- *		GET       /projects/{PROJECT_ID}/config      	format=json/xml/html      Return a list of all tools that have a configuration associated with this project.
- *		GET       /projects/{PROJECT_ID}/config/{TOOL_NAME}						format=json/xml/html    Return all configurations associated with this project for this tool (all paths)
- *		GET/PUT   /projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}		GET version= || action=getHistory || format=json/xml/html; || contents=true || meta=true  PUT status=disabled/enabled
- *     
- *        
- *	Examples:
- *
- *		/config/{tool-name}/{PATH_TO_FILE}?status=disabled   PUT   disable a configuration
- *		/config/{tool-name}/{PATH_TO_FILE}?status=enabled || status=true    PUT   enable a configuration
- *		/config/{tool-name}/{PATH_TO_FILE}?version=1         GET   get a version of a config
- *		/config/{tool-name}/{PATH_TO_FILE}?action=getHistory GET   get a list of all the configurations
- *				
- *		/conf/anon/this/is/one/file                          PUT   put a configuration for the anon tool at that path
- *		/conf/anon/this/is/a/different/file                  PUT   put a configuration for the anon tool at that path
- *
- * (non-Javadoc)
- * @see org.restlet.resource.Resource#getRepresentation(org.restlet.resource.Variant)
- * 
- **********************************************************************************************************************************************************************
- */
 
 public class ConfigResource extends SecureResource {
 	

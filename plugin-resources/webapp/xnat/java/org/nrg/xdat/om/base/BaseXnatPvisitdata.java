@@ -1,29 +1,29 @@
+/*
+ * org.nrg.xdat.om.base.BaseXnatPvisitdata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xdat.om.base;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.CompareToBuilder;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
-import org.nrg.xdat.model.XnatProjectparticipantI;
-import org.nrg.xdat.model.XnatSubjectassessordataI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatExperimentdataShare;
-import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.XnatPvisitdata;
-import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatPvisitdata;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.DBAction;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.event.EventMetaI;
@@ -33,11 +33,14 @@ import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.identifier.IDGeneratorFactory;
 import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable {
 

@@ -1,35 +1,28 @@
+/*
+ * org.nrg.xnat.restlet.resources.ExptVisitListResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.resources;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import org.apache.log4j.Logger;
-import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.model.XnatExperimentdataShareI;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatExperimentdataShare;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatPvisitdata;
-import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
-import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.StringUtils;
-import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
-import org.nrg.xnat.restlet.actions.TriggerPipelines;
-import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -37,6 +30,10 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class ExptVisitListResource  extends QueryOrganizerResource  {
 	static Logger logger = Logger.getLogger(ExptVisitListResource.class);

@@ -1,18 +1,21 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.SessionDataDelegate
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
-
-import java.io.IOException;
-import java.util.Collection;
 
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 
-/**
- * A delegate object that combines functions for getting session data 
- * from and writing session data to some permanent store.
- * 
- * @author aditya
- *
- */
+import java.io.IOException;
+import java.util.Collection;
+
 public abstract class SessionDataDelegate implements SessionDataProducerI, SessionDataModifierI {
 	private SessionDataProducerI sp;
 	private SessionDataModifierI sm;

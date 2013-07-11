@@ -1,12 +1,18 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.util.GoogleUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.util;
 
-import org.nrg.action.InvalidParamsException;
-
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
+import org.nrg.action.InvalidParamsException;
 
 public class GoogleUtils {
 	public static Object getFirstParam(final Multimap<String,Object> params,final String key){

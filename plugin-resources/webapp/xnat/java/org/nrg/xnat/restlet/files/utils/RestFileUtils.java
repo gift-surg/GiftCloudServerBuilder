@@ -1,15 +1,21 @@
+/*
+ * org.nrg.xnat.restlet.files.utils.RestFileUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.files.utils;
+
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.om.*;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xdat.om.XnatSubjectdata;
 
 public class RestFileUtils {
 

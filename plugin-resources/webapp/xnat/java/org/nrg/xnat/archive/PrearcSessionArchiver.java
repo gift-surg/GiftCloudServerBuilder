@@ -1,17 +1,16 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.archive.PrearcSessionArchiver
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
@@ -22,11 +21,7 @@ import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
@@ -46,8 +41,8 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
-import org.nrg.xnat.helpers.merge.MergeUtils;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
+import org.nrg.xnat.helpers.merge.MergeUtils;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
@@ -60,35 +55,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- * @author Timothy R. Olsen <olsent@wustl.edu>
- *
- * Archiving new sessions should be straight-forward.
- * For existing sessions
- *   If it contains only new scans
- *      If Modality of session matches
- *      	Add new scans
- *          Regenerate session xml
- *      Else
- *          Throw Exception (we may need to add support for this later)
- *   Else
- *      If Contains only new Files (identified by UID and Class UID From catalogs)
- *          Add new files
- *          Regenerate session xml
- *      Else
- *          If Overwrite=true
- *              Copy new files (delete previous ones)
- *              Regenerate session xml
- *          Else
- *              If also contains new files
- *                  Should it add the files or Fail
- *              Else
- *                  Fail
- *
- */
 public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
 
 	public static final String MERGED = "Merged";

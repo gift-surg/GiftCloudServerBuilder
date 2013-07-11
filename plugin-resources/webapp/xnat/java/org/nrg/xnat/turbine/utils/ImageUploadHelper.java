@@ -1,21 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Apr 2, 2007
+ * org.nrg.xnat.turbine.utils.ImageUploadHelper
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.utils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.channels.FileLock;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.nrg.PrearcImporter;
@@ -28,6 +21,17 @@ import org.nrg.status.StatusProducer;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xnat.archive.PrearcImporterFactory;
+
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.channels.FileLock;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class ImageUploadHelper extends StatusProducer implements Callable<List<File>>{
 	public static final String SESSIONS_RESPONSE = "SESSIONS";

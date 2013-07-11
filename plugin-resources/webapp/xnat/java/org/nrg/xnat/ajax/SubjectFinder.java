@@ -1,15 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Dec 14, 2006
+ * org.nrg.xnat.ajax.SubjectFinder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.ajax;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.XDAT;
@@ -23,6 +22,11 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.search.ItemSearch.IdentifierResults;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 public class SubjectFinder {
     static org.apache.log4j.Logger logger = Logger.getLogger(SubjectFinder.class);

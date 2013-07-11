@@ -1,20 +1,24 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Wed Aug 08 13:30:23 CDT 2007
+ * org.nrg.xdat.om.base.BaseXnatQcassessmentdata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
-import java.util.List;
 
-import org.nrg.xdat.model.XnatQcassessmentdataScanI;
 import org.nrg.xdat.om.XnatQcassessmentdataScan;
 import org.nrg.xdat.om.base.auto.AutoXnatQcassessmentdata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
+
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author XDAT

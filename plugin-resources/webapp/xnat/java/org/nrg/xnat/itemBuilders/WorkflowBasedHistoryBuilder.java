@@ -1,18 +1,17 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.itemBuilders;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,17 +35,13 @@ import org.nrg.xft.presentation.ItemPropBuilder;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
 import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ChangeSummary;
+import org.nrg.xnat.presentation.ChangeSummaryBuilderA.*;
 import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ChangeSummary.ChangeSummaryGroup;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.DefaultBuilder;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.EventBuilderI;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.FieldEventI;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ItemEvent;
-import org.nrg.xnat.presentation.ChangeSummaryBuilderA.ItemEventI;
 import org.nrg.xnat.presentation.DateBasedSummaryBuilder;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.Callable;
 
 public class WorkflowBasedHistoryBuilder implements Callable<Map<Number,WorkflowView>> {
     static Logger logger = Logger.getLogger(WorkflowBasedHistoryBuilder.class);

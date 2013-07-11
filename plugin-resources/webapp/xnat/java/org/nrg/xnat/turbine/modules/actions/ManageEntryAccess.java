@@ -1,19 +1,19 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Aug 28, 2007
+ * org.nrg.xnat.turbine.modules.actions.ManageEntryAccess
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.Authorizer;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
@@ -25,14 +25,14 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidItemException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.exception.*;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.utils.WorkflowUtils;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 public class ManageEntryAccess extends ModifyItem {
     static Logger logger = Logger.getLogger(ManageEntryAccess.class);

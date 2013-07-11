@@ -1,5 +1,12 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.DicomProjectIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
 
@@ -7,10 +14,6 @@ import org.dcm4che2.data.DicomObject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public interface DicomProjectIdentifier extends DicomObjectFunction {
     XnatProjectdata apply(XDATUser user, DicomObject o);
 }

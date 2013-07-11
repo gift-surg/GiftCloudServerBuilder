@@ -1,13 +1,22 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xdat.om.base.TestBaseXnatSubjectdataGetAge
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 package org.nrg.xdat.om.base;
-
-import static org.junit.Assert.assertEquals;
-
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.nrg.xnat.restlet.util.SimpleDateFormatUtil;
+
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestBaseXnatSubjectdataGetAge {
 	private static final SimpleDateFormatUtil DATE_FORMAT = new SimpleDateFormatUtil(

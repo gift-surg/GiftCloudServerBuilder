@@ -1,15 +1,23 @@
+/*
+ * org.nrg.test.BaseXDATTestCase
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.test;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.junit.BeforeClass;
 import org.nrg.xdat.XDATTool;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public abstract class BaseXDATTestCase{
 	static XDATTool tool=null;

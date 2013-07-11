@@ -1,20 +1,23 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.restlet.actions.FixScanTypes
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.restlet.actions;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xft.event.EventUtils;
-import org.nrg.xnat.utils.WorkflowUtils;
 
 
 /**

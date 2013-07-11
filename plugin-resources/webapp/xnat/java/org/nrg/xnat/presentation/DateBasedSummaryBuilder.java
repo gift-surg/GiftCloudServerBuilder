@@ -1,11 +1,20 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xnat.presentation.DateBasedSummaryBuilder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.presentation;
+
+import org.nrg.xft.presentation.FlattenedItemI;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.nrg.xft.presentation.FlattenedItemI;
 
 
 public class DateBasedSummaryBuilder extends ChangeSummaryBuilderA {

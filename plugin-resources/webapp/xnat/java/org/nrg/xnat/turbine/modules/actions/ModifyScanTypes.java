@@ -1,11 +1,14 @@
-//Copyright 2011,2013 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Aug 22, 2007
+ * org.nrg.xnat.turbine.modules.actions.ModifyScanTypes
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -25,6 +28,8 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import static org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping.standardizeFormat;
 

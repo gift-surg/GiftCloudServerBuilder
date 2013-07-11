@@ -1,13 +1,17 @@
+/*
+ * org.nrg.xnat.utils.DateRange
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.utils;
 
 import java.util.Date;
 
-/**
- * Adapted from http://martinfowler.com/eaaDev/Range.html.
- * 
- * @author ehaas01
- * 
- */
 public class DateRange {
 
     private final static Date MIN_DATE = new Date(Long.MIN_VALUE);

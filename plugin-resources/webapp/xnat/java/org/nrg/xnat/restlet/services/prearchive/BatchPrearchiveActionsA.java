@@ -1,11 +1,14 @@
+/*
+ * org.nrg.xnat.restlet.services.prearchive.BatchPrearchiveActionsA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.services.prearchive;
-
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.nrg.action.ClientException;
 import org.nrg.xft.XFTTable;
@@ -19,6 +22,13 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
+
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
 
 public abstract class BatchPrearchiveActionsA extends SecureResource {
 	public static final String SRC = "src";

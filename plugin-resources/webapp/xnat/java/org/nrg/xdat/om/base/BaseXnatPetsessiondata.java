@@ -1,10 +1,14 @@
-/**
- * Copyright (c) 2008 Washington University
+/*
+ * org.nrg.xdat.om.base.BaseXnatPetsessiondata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.nrg.xdat.model.XnatPetscandataI;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -12,6 +16,10 @@ import org.nrg.xdat.om.XnatPetsessiondata;
 import org.nrg.xdat.om.base.auto.AutoXnatPetsessiondata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author XDAT

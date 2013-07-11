@@ -1,10 +1,16 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.FileSystemSessionDataModifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.SQLException;
-
+import com.google.common.base.Function;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomObject;
 import org.nrg.config.entities.Configuration;
@@ -21,7 +27,10 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Function;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.SQLException;
 /**
  * Modify the session on the filesystem 
  * @author aditya

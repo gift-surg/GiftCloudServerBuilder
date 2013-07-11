@@ -1,14 +1,14 @@
 /*
- * GENERATED FILE
- * Created on Thu Dec 08 10:23:29 CST 2011
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_edit_scr_screeningAssessment
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.RunData;
@@ -18,21 +18,18 @@ import org.nrg.xdat.om.ScrScreeningassessment;
 import org.nrg.xdat.om.ScrScreeningscandata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatMrqcscandata;
-import org.nrg.xdat.om.XnatMrscandata;
-import org.nrg.xdat.om.XnatPetqcscandata;
-import org.nrg.xdat.om.XnatPetscandata;
-import org.nrg.xdat.om.XnatQcmanualassessordata;
-import org.nrg.xdat.om.XnatQcscandata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
-import org.nrg.xft.identifier.IDGeneratorFactory;
-import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 /**
  * @author XDAT
  *

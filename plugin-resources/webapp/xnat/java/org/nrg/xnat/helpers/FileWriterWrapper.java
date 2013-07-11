@@ -1,24 +1,25 @@
-/**
- * Copyright 2010,2011 Washington University
+/*
+ * org.nrg.xnat.helpers.FileWriterWrapper
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
+import org.restlet.resource.Representation;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.restlet.resource.Representation;
-
-/**
- * @author Tim Olsen <olsent@mir.wustl.edu>
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class FileWriterWrapper implements FileWriterWrapperI {
     private final FileItem fi;
     private final Representation entry;

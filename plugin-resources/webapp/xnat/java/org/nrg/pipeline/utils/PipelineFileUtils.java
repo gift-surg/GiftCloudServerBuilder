@@ -1,17 +1,15 @@
 /*
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.pipeline.utils.PipelineFileUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.pipeline.utils;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
@@ -20,6 +18,11 @@ import org.nrg.pipeline.xmlbeans.PipelineDocument;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xft.XFT;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 public class PipelineFileUtils {
 

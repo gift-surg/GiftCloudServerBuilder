@@ -1,7 +1,12 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jul 16, 2007
+ * org.nrg.xnat.turbine.modules.actions.ModifyProject
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
 
@@ -21,11 +26,11 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
-import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xnat.utils.WorkflowUtils;
 import org.nrg.xft.utils.SaveItemHelper;
+import org.nrg.xnat.utils.WorkflowUtils;
 
 public class ModifyProject extends SecureAction {
     static Logger logger = Logger.getLogger(ModifyItem.class);

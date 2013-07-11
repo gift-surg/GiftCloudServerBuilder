@@ -1,5 +1,16 @@
+/*
+ * org.nrg.xnat.helpers.dicom.DicomHeaderDump
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.dicom;
 
+import com.google.common.collect.ImmutableMap;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.DicomObjectToStringParam;
@@ -11,28 +22,11 @@ import org.nrg.xft.XFTTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import com.google.common.collect.ImmutableMap;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-/**
- * Class that marshals the header of a DICOM file into an XFTTable. 
- * Currently only two levels of nesting are supported, meaning that top level
- * Sequence elements are supported but not nested ones.
- * 
- * @author aditya
- *
- */
 public final class DicomHeaderDump {
     // columns of the XFTTable
     private static final String[] columns = {

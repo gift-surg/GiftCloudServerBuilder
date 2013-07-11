@@ -1,6 +1,15 @@
+/*
+ * org.nrg.status.StatusList
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.status;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

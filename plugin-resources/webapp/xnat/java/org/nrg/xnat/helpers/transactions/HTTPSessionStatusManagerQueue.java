@@ -1,8 +1,18 @@
+/*
+ * org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.transactions;
 
-import javax.servlet.http.HttpSession;
-
 import org.nrg.status.StatusList;
+
+import javax.servlet.http.HttpSession;
 
 public class HTTPSessionStatusManagerQueue implements PersistentStatusQueueManagerI {
 	private final HttpSession session;

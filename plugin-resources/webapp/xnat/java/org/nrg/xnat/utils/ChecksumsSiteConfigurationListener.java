@@ -1,11 +1,12 @@
-/**
- * ChecksumsSiteConfigurationListener
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.utils.ChecksumsSiteConfigurationListener
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 11/1/12 by rherri01
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.utils;
 

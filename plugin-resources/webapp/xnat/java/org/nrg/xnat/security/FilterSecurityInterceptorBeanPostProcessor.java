@@ -1,17 +1,14 @@
-/**
- * FilterSecurityInterceptorBeanPostProcessor
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 9/4/12 by rherri01
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.security;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +26,10 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.access.intercept.RequestKey;
 import org.springframework.security.web.util.AntUrlPathMatcher;
 import org.springframework.security.web.util.UrlMatcher;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProcessor {
     public void setOpenUrls(List<String> openUrls) {

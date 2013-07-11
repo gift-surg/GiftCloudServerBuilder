@@ -1,19 +1,19 @@
+/*
+ * org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.xmlpath;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
-import org.nrg.xdat.om.XnatDeriveddata;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatPvisitdata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
+
+import java.util.*;
 
 
 public class XMLPathShortcuts implements XMLPathShortcutsI{

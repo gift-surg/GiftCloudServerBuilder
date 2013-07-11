@@ -1,25 +1,17 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Fri Jan 04 15:44:10 CST 2008
+ * org.nrg.xdat.om.base.BaseXnatImageassessordata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 
-import org.nrg.action.ClientException;
 import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.auto.AutoXnatImageassessordata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
@@ -30,9 +22,13 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
-import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.restlet.data.Status;
+
+import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * @author XDAT

@@ -1,23 +1,22 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.restlet.resources.ProjectPipelineListResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.restlet.resources;
 
-import java.util.ArrayList;
-
 import org.nrg.pipeline.PipelineRepositoryManager;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.restlet.Context;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;

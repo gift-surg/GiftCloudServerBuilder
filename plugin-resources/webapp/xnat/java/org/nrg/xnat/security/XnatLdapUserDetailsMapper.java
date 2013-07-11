@@ -1,8 +1,14 @@
+/*
+ * org.nrg.xnat.security.XnatLdapUserDetailsMapper
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +21,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 import org.springframework.util.Assert;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XnatLdapUserDetailsMapper extends LdapUserDetailsMapper {
 	

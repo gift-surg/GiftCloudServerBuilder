@@ -1,11 +1,14 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xft.presentation.ItemPropBuilderTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 package org.nrg.xft.presentation;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.AfterClass;
@@ -22,6 +25,12 @@ import org.nrg.xft.presentation.FlattenedItemA.ChildCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ItemPropBuilderTest extends BaseXDATTestCase{
 

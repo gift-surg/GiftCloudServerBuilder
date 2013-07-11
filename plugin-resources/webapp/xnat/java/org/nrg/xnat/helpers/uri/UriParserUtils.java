@@ -1,12 +1,22 @@
+/*
+ * org.nrg.xnat.helpers.uri.UriParserUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.uri;
+
+import org.restlet.util.Template;
+import org.restlet.util.Variable;
 
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.restlet.util.Template;
-import org.restlet.util.Variable;
 
 public final class UriParserUtils {
 	public static final String _REMAINDER = "_REMAINDER";

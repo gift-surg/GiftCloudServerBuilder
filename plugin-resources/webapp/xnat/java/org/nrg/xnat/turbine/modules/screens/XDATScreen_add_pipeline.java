@@ -1,20 +1,23 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_add_pipeline
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.ArrayList;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.PipePipelinedetails;
 import org.nrg.xdat.turbine.modules.screens.AdminEditScreenA;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
+
+import java.util.ArrayList;
 
 public class XDATScreen_add_pipeline extends AdminEditScreenA {
 

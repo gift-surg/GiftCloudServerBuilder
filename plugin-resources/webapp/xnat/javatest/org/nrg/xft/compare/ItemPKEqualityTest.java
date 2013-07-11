@@ -1,15 +1,22 @@
-/**
- * Copyright 2010 Washington University
+/*
+ * org.nrg.xft.compare.ItemPKEqualityTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
 package org.nrg.xft.compare;
-
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nrg.test.BaseXDATTestCase;
 import org.nrg.xft.XFTItem;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author timo

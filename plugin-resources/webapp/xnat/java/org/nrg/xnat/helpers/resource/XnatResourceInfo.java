@@ -1,21 +1,20 @@
-/**
- * Copyright 2010 Washington University
+/*
+ * org.nrg.xnat.helpers.resource.XnatResourceInfo
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers.resource;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 
-/**
- * @author Timothy R Olsen -- WUSTL
- * Used to encapsulate the data typically associated with the resource and file elements in XNAT.
- */
+import java.util.*;
+
 public class XnatResourceInfo {
 	private String description,format,content=null;
 	private Number event_id=null;

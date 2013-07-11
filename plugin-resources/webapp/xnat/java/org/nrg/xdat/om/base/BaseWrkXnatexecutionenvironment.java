@@ -1,12 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Thu May 17 10:21:31 CDT 2007
+ * org.nrg.xdat.om.base.BaseWrkXnatexecutionenvironment
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.xdat.model.WrkXnatexecutionenvironmentParameterI;
@@ -15,6 +17,9 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
+
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author XDAT

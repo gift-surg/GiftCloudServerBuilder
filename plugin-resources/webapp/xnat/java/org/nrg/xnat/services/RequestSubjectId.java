@@ -1,16 +1,21 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Feb 7, 2007
+ * org.nrg.xnat.services.RequestSubjectId
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.services;
+
+import org.nrg.xdat.om.XnatSubjectdata;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Map.Entry;
-
-import org.nrg.xdat.om.XnatSubjectdata;
 
 public class RequestSubjectId {
    private static Hashtable<String,Calendar> ids = new Hashtable<String, Calendar>();

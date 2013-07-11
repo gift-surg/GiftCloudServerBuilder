@@ -1,5 +1,18 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.representations.XMLTableRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.representations;
+
+import org.nrg.xft.XFTTable;
+import org.restlet.data.MediaType;
+import org.restlet.resource.OutputRepresentation;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -7,10 +20,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Hashtable;
 import java.util.Map;
-
-import org.nrg.xft.XFTTable;
-import org.restlet.data.MediaType;
-import org.restlet.resource.OutputRepresentation;
 
 public class XMLTableRepresentation extends OutputRepresentation {
 	XFTTable table = null;

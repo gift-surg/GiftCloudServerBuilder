@@ -1,7 +1,16 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.FileSystemSessionTrawler
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
 import org.apache.commons.lang.StringUtils;
-import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.slf4j.Logger;

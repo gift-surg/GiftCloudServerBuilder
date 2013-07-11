@@ -1,9 +1,19 @@
+/*
+ * org.nrg.xnat.utils.UserUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.utils;
-
-import java.io.File;
 
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
 
 public class UserUtils {
  	public static String getUserCacheUploadsPath(final XDATUser user){

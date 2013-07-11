@@ -1,8 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.UserFavoritesList
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources;
-
-import java.sql.SQLException;
-import java.util.Hashtable;
 
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.FavEntries;
@@ -13,6 +19,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.sql.SQLException;
+import java.util.Hashtable;
 
 public class UserFavoritesList extends SecureResource {
 	String dataType=null;

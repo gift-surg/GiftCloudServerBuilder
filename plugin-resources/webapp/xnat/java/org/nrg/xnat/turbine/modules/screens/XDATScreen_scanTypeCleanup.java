@@ -1,23 +1,24 @@
+/*
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_scanTypeCleanup
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.xdat.om.XnatMrscandata;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.XFTInitException;
-import org.nrg.xnat.helpers.scanType.ImageScanTypeMapping;
-import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
+
+import java.sql.SQLException;
 
 public class XDATScreen_scanTypeCleanup extends SecureReport {
      static org.apache.log4j.Logger logger = Logger.getLogger(XDATScreen_scanTypeCleanup.class);

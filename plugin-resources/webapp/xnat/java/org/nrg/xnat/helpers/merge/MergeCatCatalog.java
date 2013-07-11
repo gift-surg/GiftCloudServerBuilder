@@ -1,10 +1,18 @@
+/*
+ * org.nrg.xnat.helpers.merge.MergeCatCatalog
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
+
 /**
  *
  */
 package org.nrg.xnat.helpers.merge;
-
-import java.io.File;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.bean.CatEntryBean;
@@ -16,15 +24,9 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.utils.CatalogUtils;
 
-/**
- * @author tolsen01
- *         <p/>
- *         Merges src Catalog into dest Catalog.  Returns true if something was modified.
- *         <p/>
- *         if duplicate URI, then (if overwrite=true, then copy, else throw ClientException)
- *         <p/>
- *         if duplicate DICOM UID, then throw exception, until we can compare Class-UID too.
- */
+import java.io.File;
+import java.util.concurrent.Callable;
+
 public class MergeCatCatalog implements Callable<MergeSessionsA.Results<Boolean>> {
     @SuppressWarnings("serial")
     public static class DCMEntryConflict extends Exception {

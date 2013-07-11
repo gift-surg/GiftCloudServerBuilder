@@ -1,16 +1,16 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.search.SearchResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources.search;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.noelios.restlet.ext.servlet.ServletCall;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.collections.DisplayFieldCollection.DisplayFieldNotFoundException;
@@ -45,7 +45,10 @@ import org.restlet.resource.Variant;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.noelios.restlet.ext.servlet.ServletCall;
+import java.io.IOException;
+import java.io.Reader;
+import java.sql.SQLException;
+import java.util.*;
 
 public class SearchResource extends SecureResource {
 	static org.apache.log4j.Logger logger = Logger.getLogger(SearchResource.class);

@@ -1,6 +1,14 @@
+/*
+ * org.nrg.xnat.restlet.actions.UserSessionId
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.actions;
-
-import java.util.List;
 
 import org.json.JSONObject;
 import org.nrg.xdat.XDAT;
@@ -15,6 +23,8 @@ import org.restlet.resource.Representation;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+
+import java.util.List;
 
 public class UserSessionId extends SecureResource {
 

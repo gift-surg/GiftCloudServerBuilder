@@ -1,20 +1,25 @@
+/*
+ * org.nrg.xnat.security.XnatSessionEventPublisher
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
-import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.security.web.session.HttpSessionCreatedEvent;
 import org.springframework.security.web.session.HttpSessionDestroyedEvent;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
@@ -22,29 +27,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-
-
-/**
- * This is very much a copy/paste of Spring Security's HttpSessionEventPublisher.
- * I needed it to accept the contextAttribute. I couldn't simply override that
- * class because the thing I needed to override is getContext(ServletContext) which 
- * is private and anyway it only has 1 method I wasn't going to override.
- */
-
-/**
- * Declared in web.xml as
- * <pre>
- * &lt;listener&gt;
- *     &lt;listener-class&gt;org.springframework.security.web.session.HttpSessionEventPublisher&lt;/listener-class&gt;
- * &lt;/listener&gt;
- * </pre>
- *
- * Publishes <code>HttpSessionApplicationEvent</code>s to the Spring Root WebApplicationContext. Maps
- * javax.servlet.http.HttpSessionListener.sessionCreated() to {@link HttpSessionCreatedEvent}. Maps
- * javax.servlet.http.HttpSessionListener.sessionDestroyed() to {@link HttpSessionDestroyedEvent}.
- *
- * @author Ray Krueger
- */
 
 
 public class XnatSessionEventPublisher implements HttpSessionListener, ServletContextListener{

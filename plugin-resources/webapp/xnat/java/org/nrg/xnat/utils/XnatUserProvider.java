@@ -1,18 +1,21 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.xnat.utils.XnatUserProvider
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.utils;
-
-import javax.inject.Provider;
 
 import org.nrg.xdat.security.XDATUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
+import javax.inject.Provider;
+
 public class XnatUserProvider implements Provider<XDATUser> {
     private final Logger logger = LoggerFactory.getLogger(XnatUserProvider.class);
     private final String login;

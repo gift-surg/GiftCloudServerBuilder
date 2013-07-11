@@ -1,16 +1,17 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.xnat.archive.DicomZipImporter
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.dcm.DicomFileNamer;
@@ -21,14 +22,14 @@ import org.nrg.xnat.helpers.ZipEntryFileWriterWrapper;
 import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-/**
- * GradualDicomImporter wrapper for handling zip files full of DICOM
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public final class DicomZipImporter extends ImporterHandlerA {
     private final InputStream in;
     private final Object listenerControl;

@@ -1,8 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xdat.om.base.BaseXnatQcmanualassessordata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xdat.om.base;
-
-import java.util.Hashtable;
-import java.util.List;
 
 import org.nrg.xdat.om.XnatQcscandata;
 import org.nrg.xdat.om.base.auto.AutoXnatQcmanualassessordata;
@@ -10,6 +16,9 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
+
+import java.util.Hashtable;
+import java.util.List;
 
 @SuppressWarnings({"unchecked","rawtypes"})
 public abstract class BaseXnatQcmanualassessordata extends AutoXnatQcmanualassessordata implements ScanAssessorI{

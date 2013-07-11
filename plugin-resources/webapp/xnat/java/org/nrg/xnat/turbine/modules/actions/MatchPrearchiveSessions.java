@@ -1,11 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Feb 21, 2007
+ * org.nrg.xnat.turbine.modules.actions.MatchPrearchiveSessions
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.io.File;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -21,6 +24,8 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.archive.BatchTransfer;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
 
 public class MatchPrearchiveSessions extends SecureAction {
 

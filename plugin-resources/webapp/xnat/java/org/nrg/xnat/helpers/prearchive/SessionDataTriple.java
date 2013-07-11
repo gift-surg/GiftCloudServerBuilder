@@ -1,14 +1,23 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.SessionDataTriple
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
+
+import org.nrg.xnat.restlet.XNATApplication;
+import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 
 import java.io.File;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-
-import org.nrg.xnat.restlet.XNATApplication;
-import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 
 public class SessionDataTriple implements Serializable {
     private static final long serialVersionUID = 7764386535994779313L;

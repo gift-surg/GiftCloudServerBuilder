@@ -1,18 +1,23 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.URIParserUtils_ProjectsParserTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.nrg.xnat.restlet.XNATApplication;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.nrg.xnat.restlet.XNATApplication;
+import static org.junit.Assert.*;
 
 public class URIParserUtils_ProjectsParserTest {	
 	@Test

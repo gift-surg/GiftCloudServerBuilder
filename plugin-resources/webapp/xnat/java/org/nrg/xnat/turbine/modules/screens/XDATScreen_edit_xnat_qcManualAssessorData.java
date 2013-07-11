@@ -1,24 +1,26 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_edit_xnat_qcManualAssessorData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.Calendar;
 
 import org.apache.turbine.util.RunData;
 import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatMrqcscandata;
-import org.nrg.xdat.om.XnatMrscandata;
-import org.nrg.xdat.om.XnatPetqcscandata;
-import org.nrg.xdat.om.XnatPetscandata;
-import org.nrg.xdat.om.XnatQcmanualassessordata;
-import org.nrg.xdat.om.XnatQcscandata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
+
+import java.util.Calendar;
 
 public class XDATScreen_edit_xnat_qcManualAssessorData
 		extends

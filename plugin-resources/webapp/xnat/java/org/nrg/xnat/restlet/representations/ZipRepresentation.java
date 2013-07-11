@@ -1,5 +1,21 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.representations.ZipRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.representations;
+
+import org.nrg.xft.utils.zip.TarUtils;
+import org.nrg.xft.utils.zip.ZipI;
+import org.nrg.xft.utils.zip.ZipUtils;
+import org.nrg.xnat.restlet.resources.SecureResource;
+import org.restlet.data.MediaType;
+import org.restlet.resource.OutputRepresentation;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,13 +24,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
-
-import org.nrg.xft.utils.zip.TarUtils;
-import org.nrg.xft.utils.zip.ZipI;
-import org.nrg.xft.utils.zip.ZipUtils;
-import org.nrg.xnat.restlet.resources.SecureResource;
-import org.restlet.data.MediaType;
-import org.restlet.resource.OutputRepresentation;
 
 public class ZipRepresentation extends OutputRepresentation {
 	private ArrayList<ZipEntry> _entries=new ArrayList<ZipEntry>();

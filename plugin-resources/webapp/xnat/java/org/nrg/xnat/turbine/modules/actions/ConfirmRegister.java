@@ -1,7 +1,12 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on May 24, 2007
+ * org.nrg.xnat.turbine.modules.actions.ConfirmRegister
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
 
@@ -15,7 +20,6 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.XFT;
 import org.nrg.xft.search.ItemSearch;
 
 public class ConfirmRegister extends SecureAction {

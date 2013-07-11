@@ -1,9 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.XNATApplication
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -17,41 +22,7 @@ import org.nrg.xnat.helpers.dicom.DicomDump;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.restlet.actions.UserSessionId;
 import org.nrg.xnat.restlet.guard.XnatSecureGuard;
-import org.nrg.xnat.restlet.resources.ConfigResource;
-import org.nrg.xnat.restlet.resources.ExperimentListResource;
-import org.nrg.xnat.restlet.resources.ExperimentResource;
-import org.nrg.xnat.restlet.resources.ExptAssessmentResource;
-import org.nrg.xnat.restlet.resources.ExptVisitListResource;
-import org.nrg.xnat.restlet.resources.InvestigatorListResource;
-import org.nrg.xnat.restlet.resources.ProjSubExptAsstList;
-import org.nrg.xnat.restlet.resources.ProjSubExptList;
-import org.nrg.xnat.restlet.resources.ProjSubVisitList;
-import org.nrg.xnat.restlet.resources.ProjectAccessibilityResource;
-import org.nrg.xnat.restlet.resources.ProjectArchive;
-import org.nrg.xnat.restlet.resources.ProjectListResource;
-import org.nrg.xnat.restlet.resources.ProjectMemberResource;
-import org.nrg.xnat.restlet.resources.ProjectPipelineListResource;
-import org.nrg.xnat.restlet.resources.ProjectResource;
-import org.nrg.xnat.restlet.resources.ProjectSearchResource;
-import org.nrg.xnat.restlet.resources.ProjectSubjectList;
-import org.nrg.xnat.restlet.resources.ProjectUserListResource;
-import org.nrg.xnat.restlet.resources.ProjtExptPipelineResource;
-import org.nrg.xnat.restlet.resources.ProtocolResource;
-import org.nrg.xnat.restlet.resources.ReconList;
-import org.nrg.xnat.restlet.resources.ReconResource;
-import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
-import org.nrg.xnat.restlet.resources.ScanDIRResource;
-import org.nrg.xnat.restlet.resources.ScanList;
-import org.nrg.xnat.restlet.resources.ScanResource;
-import org.nrg.xnat.restlet.resources.ScanTypeListing;
-import org.nrg.xnat.restlet.resources.ScannerListing;
-import org.nrg.xnat.restlet.resources.SubjAssessmentResource;
-import org.nrg.xnat.restlet.resources.SubjVisitResource;
-import org.nrg.xnat.restlet.resources.SubjectListResource;
-import org.nrg.xnat.restlet.resources.SubjectResource;
-import org.nrg.xnat.restlet.resources.UserCacheResource;
-import org.nrg.xnat.restlet.resources.VersionRepresentation;
-import org.nrg.xnat.restlet.resources.VisitResource;
+import org.nrg.xnat.restlet.resources.*;
 import org.nrg.xnat.restlet.resources.files.CatalogResource;
 import org.nrg.xnat.restlet.resources.files.CatalogResourceList;
 import org.nrg.xnat.restlet.resources.files.DIRResource;
@@ -69,18 +40,10 @@ import org.restlet.Router;
 import org.restlet.resource.Resource;
 import org.restlet.util.Template;
 
-/**
- * To add additional REST services to your installation, you can create a REST extension:
- *
- * <ol>
- *     <li>Create a new class and set the package to {@link org.nrg.xnat.restlet.extensions}.</li>
- *     <li>Add the {@link XnatRestlet} annotation to the class declaration.</li>
- *     <li>Set the path or paths to the REST service as attributes values to the {@link XnatRestlet} annotation.</li>
- *     <li>Compile your class and add it to the XNAT web application's class path (usually by putting it in a jar and adding it through a module).</li>
- * </ol>
- *
- * See the XNAT documentation on extending XNAT for more information.
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class XNATApplication extends Application {
     public static final String PREARC_PROJECT_URI = "/prearchive/projects/{PROJECT_ID}";
     public static final String PREARC_SESSION_URI = PREARC_PROJECT_URI + "/{SESSION_TIMESTAMP}/{SESSION_LABEL}";

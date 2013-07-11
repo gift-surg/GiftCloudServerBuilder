@@ -1,17 +1,17 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Fri Oct 06 12:11:07 CDT 2006
+ * org.nrg.xdat.om.base.BaseXnatPublicationresource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
+import edu.sdsc.grid.io.GeneralFile;
+import edu.sdsc.grid.io.srb.SRBFile;
 import org.nrg.xdat.om.base.auto.AutoXnatPublicationresource;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
@@ -23,8 +23,12 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.srb.XNATDirectory;
 import org.nrg.xnat.srb.XNATSrbSearch;
 
-import edu.sdsc.grid.io.GeneralFile;
-import edu.sdsc.grid.io.srb.SRBFile;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * @author XDAT

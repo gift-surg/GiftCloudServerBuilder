@@ -1,9 +1,12 @@
-/**
- * FileList
- * (C) 2013 Washington University School of Medicine
+/*
+ * org.nrg.xnat.restlet.resources.files.FileList
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.restlet.resources.files;
 

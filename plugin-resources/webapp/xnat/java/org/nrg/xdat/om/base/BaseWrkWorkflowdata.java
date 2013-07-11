@@ -1,16 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Wed Sep 27 10:30:19 CDT 2006
+ * org.nrg.xdat.om.base.BaseWrkWorkflowdata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.xdat.model.WrkAbstractexecutionenvironmentI;
@@ -31,6 +29,9 @@ import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * @author XDAT

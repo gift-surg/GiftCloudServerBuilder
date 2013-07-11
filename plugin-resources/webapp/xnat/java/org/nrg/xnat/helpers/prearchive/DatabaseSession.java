@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.DatabaseSession
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,19 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * DatabaseSession is an abstraction over how a session is represented in the 
- * prearchive table. Every enum is a column in the database and holds its name 
- * and data type. Each enum also provides convenience methods for inserting 
- * itself into prepared SQL statements and reading its value from the result of 
- * a query.
- * 
- * The order in which the enums appear is the same as the order of columns 
- * in the database table.
- * 
- * Most of these columns also map from/to the slots of a session object. 
- * @author aditya siram
- */
 public enum DatabaseSession {
 	// a project column is allowed to hold a null value to indicate
 	// an unassigned project.

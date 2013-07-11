@@ -1,14 +1,17 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.archive.ArchivingException
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
 
 import org.restlet.data.Status;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class ArchivingException extends Exception {
 	private static final long serialVersionUID = 1L;
 	private static final Status DEFAULT_STATUS = Status.SERVER_ERROR_INTERNAL;

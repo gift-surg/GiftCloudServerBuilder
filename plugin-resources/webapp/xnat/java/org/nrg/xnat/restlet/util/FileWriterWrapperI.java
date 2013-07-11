@@ -1,5 +1,12 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.restlet.util.FileWriterWrapperI
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.restlet.util;
 
@@ -7,11 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @author Tim Olsen <olsent@mir.wustl.edu>
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public interface FileWriterWrapperI {
 	static enum UPLOAD_TYPE{INBODY,MULTIPART,OTHER};
 

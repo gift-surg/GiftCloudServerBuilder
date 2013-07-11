@@ -1,13 +1,17 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.PrearcDatabase
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.framework.constants.PrearchiveCode;
@@ -29,17 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
-/**
- * This class creates a in-memory database that holds all the information in the prearchive 
- * directory. 
- * 
- * All methods in this class are static and a static initializer 
- * @author aditya
- *
- */
 public final class PrearcDatabase {
     static Logger logger = LoggerFactory.getLogger(PrearcTableBuilder.class);
     public static Connection conn;

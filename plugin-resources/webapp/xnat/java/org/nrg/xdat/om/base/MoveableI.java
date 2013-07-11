@@ -1,9 +1,16 @@
+/*
+ * org.nrg.xdat.om.base.MoveableI
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xdat.om.base;
 
-import java.io.File;
-
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 
 

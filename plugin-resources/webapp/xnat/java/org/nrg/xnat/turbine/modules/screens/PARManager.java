@@ -1,7 +1,12 @@
-/**
- * Copyright 2008 Washington University - All rights reserved
+/*
+ * org.nrg.xnat.turbine.modules.screens.PARManager
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
- * Author: Timothy Olsen
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
 package org.nrg.xnat.turbine.modules.screens;
 

@@ -1,15 +1,14 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xnat.itemBuilders.FileSummaryBuilder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.itemBuilders;
-
-import java.io.File;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.apache.turbine.util.StringUtils;
 import org.nrg.xdat.om.XnatResourcecatalog;
@@ -22,6 +21,11 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.XMLWrapperElement;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.utils.CatalogUtils;
+
+import java.io.File;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.Callable;
 
 public class FileSummaryBuilder implements FlattenedItemModifierI{
 	final Map<String,List<FileSummary>> found= new Hashtable<String,List<FileSummary>>();

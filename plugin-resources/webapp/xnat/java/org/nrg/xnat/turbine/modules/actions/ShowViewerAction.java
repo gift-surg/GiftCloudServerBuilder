@@ -1,7 +1,12 @@
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 /*
- * Created on Sep 27, 2005
+ * org.nrg.xnat.turbine.modules.actions.ShowViewerAction
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
 
@@ -16,10 +21,6 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.TableSearch;
 
-/**
- * Action Class to perform the Search (Simple/Quick)
- * Main processing is done by doRunsearch
- */
 public class ShowViewerAction extends SecureAction {
 	static org.apache.log4j.Logger logger = Logger.getLogger(ShowViewerAction.class);
 

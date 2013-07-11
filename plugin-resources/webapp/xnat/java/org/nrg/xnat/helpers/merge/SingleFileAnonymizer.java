@@ -1,11 +1,21 @@
+/*
+ * org.nrg.xnat.helpers.merge.SingleFileAnonymizer
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
+
+import org.nrg.config.entities.Configuration;
+import org.nrg.xnat.helpers.editscript.DicomEdit;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.nrg.config.entities.Configuration;
-import org.nrg.xnat.helpers.editscript.DicomEdit;
 
 public class SingleFileAnonymizer extends AnonymizerA {
 	public final File f;

@@ -1,23 +1,27 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.turbine.utils.PropertiesHelper
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.utils;
+
+import com.google.common.collect.Iterables;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Logger;
+import org.nrg.xft.XFT;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
-import org.nrg.xft.XFT;
-import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
-
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
 
 public class PropertiesHelper<T extends Object>  {
     static org.apache.log4j.Logger logger = Logger.getLogger(ImageUploadHelper.class);

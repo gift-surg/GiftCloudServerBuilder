@@ -1,9 +1,14 @@
+/*
+ * org.nrg.xnat.archive.PrearcSessionArchiverTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.archive;
-
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.util.Hashtable;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -18,6 +23,11 @@ import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
+
+import java.io.File;
+import java.util.Hashtable;
+
+import static org.junit.Assert.fail;
 
 
 

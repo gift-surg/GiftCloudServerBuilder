@@ -1,8 +1,14 @@
+/*
+ * org.nrg.xnat.restlet.extensions.WorkflowsRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.extensions;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,23 +31,9 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
-/*
- * This restlet will get the workflows for a given experiment in a project.
- * One can filter the workflows down to the pipeline_name and get the status
- * of the pipeline completion for the experiment
- */
-/**
- * Uses:
- * /data/services/workflows/pipeline_name?project=PROJECT_ID&experiment=PROJECT_LABEL&tatus=Running&display=Latest
- * /data/services/workflows/pipeline_name?experiment=XNAT_ID
- * /data/services/workflows/pipeline_name?experiment=XNAT_ID&param_NAME=VALUE_STR
- * To get a list of all pipelines which have completed for a project with a given parameter
-* /data/services/workflows/pipeline_name?project=PROJECT_ID&status=Complete&param_functionalseries=BOLD_MOTOR1&format=csv
-
- * TODO: /data/services/workflows?subject=XNAT_ID
- * TODO: /data/services/workflows/pipeline_name upload a list file of XNAT session ids
- */
-
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 @XnatRestlet({"/services/workflows","/services/workflows/{PIPELINE_NAME}","/services/workflows/workflowid/{WORKFLOW_PRIMARY_KEY}"})
 public class WorkflowsRestlet extends SecureResource {

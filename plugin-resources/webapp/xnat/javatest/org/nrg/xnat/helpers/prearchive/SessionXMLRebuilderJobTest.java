@@ -1,10 +1,19 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.SessionXMLRebuilderJobTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
 
-import java.util.Calendar;
-
 import junit.framework.Assert;
-
 import org.junit.Test;
+
+import java.util.Calendar;
 
 public class SessionXMLRebuilderJobTest {
 	@Test

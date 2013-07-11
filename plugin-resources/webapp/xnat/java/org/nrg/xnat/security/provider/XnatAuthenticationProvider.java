@@ -1,18 +1,16 @@
-/**
- * XnatAuthenticationProvider
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.security.provider.XnatAuthenticationProvider
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 4/23/12 by rherri01
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.security.provider;
 
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface XnatAuthenticationProvider extends AuthenticationProvider {
     /**

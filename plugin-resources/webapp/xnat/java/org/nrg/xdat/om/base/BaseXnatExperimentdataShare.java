@@ -1,12 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Thu Apr 03 13:48:02 CDT 2008
+ * org.nrg.xdat.om.base.BaseXnatExperimentdataShare
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.sql.SQLException;
-import java.util.Hashtable;
 
 import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -15,6 +17,9 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.security.UserI;
+
+import java.sql.SQLException;
+import java.util.Hashtable;
 
 /**
  * @author XDAT

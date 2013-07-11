@@ -1,15 +1,23 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.servlet.RESTServlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.servlet;
 
-import java.io.IOException;
+import org.apache.log4j.Logger;
+import org.nrg.xdat.security.XDATUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.nrg.xdat.security.XDATUser;
+import java.io.IOException;
 
 public class RESTServlet extends HttpServlet {
 	static org.apache.log4j.Logger logger = Logger.getLogger(RESTServlet.class);

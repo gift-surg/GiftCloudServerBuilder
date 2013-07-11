@@ -1,38 +1,21 @@
-/**
- * Copyright (c) 2011,2012 Washington University
+/*
+ * org.nrg.dcm.DicomSCP
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm;
 
-import static org.dcm4che2.data.UID.ExplicitVRBigEndian;
-import static org.dcm4che2.data.UID.ExplicitVRLittleEndian;
-import static org.dcm4che2.data.UID.ImplicitVRLittleEndian;
-import static org.dcm4che2.data.UID.JPEG2000;
-import static org.dcm4che2.data.UID.JPEG2000LosslessOnly;
-import static org.dcm4che2.data.UID.JPEG2000Part2Multicomponent;
-import static org.dcm4che2.data.UID.JPEG2000Part2MulticomponentLosslessOnly;
-import static org.dcm4che2.data.UID.JPEGBaseline1;
-import static org.dcm4che2.data.UID.JPEGExtended24;
-import static org.dcm4che2.data.UID.JPEGLSLossless;
-import static org.dcm4che2.data.UID.JPEGLSLossyNearLossless;
-import static org.dcm4che2.data.UID.JPEGLossless;
-import static org.dcm4che2.data.UID.JPEGLosslessNonHierarchical14;
-import static org.dcm4che2.data.UID.JPIPReferenced;
-import static org.dcm4che2.data.UID.JPIPReferencedDeflate;
-import static org.dcm4che2.data.UID.MPEG2;
-import static org.dcm4che2.data.UID.RFC2557MIMEencapsulation;
-import static org.dcm4che2.data.UID.RLELossless;
-import static org.dcm4che2.data.UID.VerificationSOPClass;
-import static org.dcm4che2.data.UID.XMLEncoding;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-
-import javax.inject.Provider;
-
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import org.dcm4che2.net.Device;
 import org.dcm4che2.net.NetworkApplicationEntity;
 import org.dcm4che2.net.NetworkConnection;
@@ -47,17 +30,16 @@ import org.nrg.xnat.utils.NetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import javax.inject.Provider;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- * 
- */
+import static org.dcm4che2.data.UID.*;
+
 public class DicomSCP {
     private static final String DEVICE_NAME = "XNAT_DICOM";
 

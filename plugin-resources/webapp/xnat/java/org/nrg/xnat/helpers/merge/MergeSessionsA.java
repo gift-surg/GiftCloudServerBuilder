@@ -1,13 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.merge.MergeSessionsA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
@@ -28,6 +29,11 @@ import org.nrg.xft.utils.FileUtils.OldFileHandlerI;
 import org.nrg.xnat.helpers.merge.MergeCatCatalog.DCMEntryConflict;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.restlet.data.Status;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends StatusProducer implements Callable<A> {
 	public static final String CAT_ENTRY_MATCH = "Session already exists with the same resources.";

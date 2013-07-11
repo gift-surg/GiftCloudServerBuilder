@@ -1,20 +1,15 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.turbine.modules.actions.PipelineActions
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -28,11 +23,10 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
-import org.nrg.xft.db.DBAction;
-import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.util.*;
 
 public class PipelineActions extends SecureAction{
     static org.apache.log4j.Logger logger = Logger.getLogger(PipelineActions.class);

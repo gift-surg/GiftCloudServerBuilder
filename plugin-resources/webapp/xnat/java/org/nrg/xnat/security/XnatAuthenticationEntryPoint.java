@@ -1,11 +1,12 @@
-/**
- * XnatAuthenticationEntryPoint
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.security.XnatAuthenticationEntryPoint
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 10/4/12 by rherri01
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.security;
 
@@ -24,25 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Handles distinguishing calls to data paths. Data paths are URIs, usually for REST services, that may be called by
- * automated agents to retrieve data, but may also be called by the user interface to populate user controls. These two
- * cases require different responses when unauthenticated requests are received:
- * <p/>
- * <ul>
- * <li>When the request comes from a browser, the response should have a status of HTTP 302 redirecting the browser
- * to the application login page.</li>
- * <li>When the request comes from a data agent, such as the XnatDataClient, curl, or other command-line
- * application, the response should have a status of HTTP 401 indicating the request was not authenticated.</li>
- * </ul>
- * <p/>
- * To determine is a request is a data path, this class performs Ant-style pattern matching of the request URI against
- * the list of data paths configured via the {@link #setDataPaths(java.util.List)} method.
- * <p/>
- * To determine is a user agent is interactive (e.g. a browser), this class performs a regular-expression match against
- * the user-agent specifiers set using the {@link #setInteractiveAgents(java.util.List)} method. These are specified as
- * Java-style regular expressions.
- */
 public class XnatAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
     /**
      * Overrides {@link LoginUrlAuthenticationEntryPoint#commence(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.AuthenticationException)}

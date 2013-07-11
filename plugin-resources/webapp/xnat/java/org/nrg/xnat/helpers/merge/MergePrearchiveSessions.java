@@ -1,23 +1,27 @@
+/*
+ * org.nrg.xnat.helpers.merge.MergePrearchiveSessions
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
+
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
+import org.nrg.xdat.bean.XnatImagesessiondataBean;
+import org.nrg.xdat.model.*;
+import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
+import org.restlet.data.Status;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import org.nrg.action.ClientException;
-import org.nrg.action.ServerException;
-import org.nrg.xdat.bean.XnatImagesessiondataBean;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatResourceI;
-import org.nrg.xdat.model.XnatResourcecatalogI;
-import org.nrg.xdat.model.XnatResourceseriesI;
-import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.FileUtils;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.base.BaseXnatImagesessiondata;
-import org.restlet.data.Status;
 
 
 public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondataBean>  {

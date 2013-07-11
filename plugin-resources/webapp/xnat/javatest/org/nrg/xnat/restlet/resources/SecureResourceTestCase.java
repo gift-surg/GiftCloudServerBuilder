@@ -1,15 +1,17 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.SecureResourceTestCase
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 package org.nrg.xnat.restlet.resources;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.noelios.restlet.ext.servlet.ServletCall;
+import com.noelios.restlet.http.HttpRequest;
 import org.junit.Before;
 import org.nrg.xdat.security.XDATUser;
 import org.restlet.Context;
@@ -18,8 +20,13 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.ext.servlet.ServletCall;
-import com.noelios.restlet.http.HttpRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SecureResourceTestCase {
 	protected Context context;

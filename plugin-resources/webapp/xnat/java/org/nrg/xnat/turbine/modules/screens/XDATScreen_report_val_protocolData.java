@@ -1,7 +1,12 @@
 /*
- * GENERATED FILE
- * Created on Tue Nov 16 22:57:48 IST 2010
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_report_val_protocolData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;

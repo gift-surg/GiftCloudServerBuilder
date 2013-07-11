@@ -1,11 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Wed Nov 28 15:02:06 CST 2007
+ * org.nrg.xdat.om.base.BaseXnatDatatypeprotocol
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
 
 import org.nrg.xdat.display.DisplayField;
 import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
@@ -20,6 +23,8 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.security.UserI;
+
+import java.util.Hashtable;
 
 /**
  * @author XDAT

@@ -1,25 +1,26 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Oct 29, 2007
+ * org.nrg.xnat.turbine.modules.screens.SessionFile
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatMrassessordata;
-import org.nrg.xdat.om.XnatMrscandata;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.turbine.modules.screens.FileScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SessionFile extends FileScreen {
 

@@ -1,13 +1,14 @@
-/**
- * Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
- * Copyright (c) 2008 Washington University
+/*
+ * org.nrg.xdat.om.base.BaseXnatMrsessiondata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.WrkWorkflowdata;
@@ -17,6 +18,11 @@ import org.nrg.xdat.om.base.auto.AutoXnatMrsessiondata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Map;
 
 
 /**

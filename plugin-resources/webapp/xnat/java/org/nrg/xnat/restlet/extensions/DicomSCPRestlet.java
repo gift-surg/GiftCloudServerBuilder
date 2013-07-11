@@ -1,13 +1,14 @@
 /*
- * (C) 2011 Washington University School of Medicine
+ * DicomSCPRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
- * Released under the Simplified BSD License
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 
-/**
- * VerifyExtensionsRestlet
- * Created on 11/9/11 by rherri01
- */
 package org.nrg.xnat.restlet.extensions;
 
 import java.util.ArrayList;

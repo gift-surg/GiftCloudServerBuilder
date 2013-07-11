@@ -1,16 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Feb 21, 2007
+ * org.nrg.xnat.turbine.modules.screens.PrearchiveMatch
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -26,6 +24,13 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ScanQualityUtils;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 
 public class PrearchiveMatch extends SecureScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(PrearchiveMatch.class);

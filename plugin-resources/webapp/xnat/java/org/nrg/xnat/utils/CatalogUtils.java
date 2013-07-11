@@ -1,55 +1,26 @@
-/**
- * Copyright 2010 Washington University
+/*
+ * org.nrg.xnat.utils.CatalogUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.channels.FileLock;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipOutputStream;
-
+import com.google.common.collect.Lists;
+import com.twmacinta.util.MD5;
 import org.apache.log4j.Logger;
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.xdat.XDAT;
-import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.bean.CatCatalogMetafieldBean;
-import org.nrg.xdat.bean.CatEntryBean;
-import org.nrg.xdat.bean.CatEntryMetafieldBean;
-import org.nrg.xdat.bean.CatEntryTagBean;
+import org.nrg.xdat.bean.*;
 import org.nrg.xdat.bean.base.BaseElement;
 import org.nrg.xdat.bean.reader.XDATXMLReader;
-import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatCatalogMetafieldI;
-import org.nrg.xdat.model.CatDcmentryI;
-import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.model.CatEntryMetafieldI;
-import org.nrg.xdat.model.CatEntryTagI;
-import org.nrg.xdat.model.XnatResourcecatalogI;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatAbstractresourceTag;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.model.*;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
@@ -64,8 +35,13 @@ import org.nrg.xnat.presentation.ChangeSummaryBuilderA;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.Lists;
-import com.twmacinta.util.MD5;
+import java.io.*;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.channels.FileLock;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author timo

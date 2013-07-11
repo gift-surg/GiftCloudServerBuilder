@@ -1,14 +1,14 @@
-//Copyright 2006 Harvard University / Washington University School of Medicine All Rights Reserved
 /*
- * Created on Sep 20, 2006
+ * org.nrg.xnat.archive.Transfer
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringWriter;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
@@ -20,10 +20,14 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.exceptions.UndefinedArchive;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringWriter;
 
 public class Transfer {
     static Logger logger = Logger.getLogger(Transfer.class);

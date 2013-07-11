@@ -1,14 +1,16 @@
+/*
+ * org.nrg.xnat.restlet.services.ArchiveValidator
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.services;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xft.XFTTable;
@@ -31,7 +33,8 @@ import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import java.net.MalformedURLException;
+import java.util.*;
 
 public class ArchiveValidator extends SecureResource {
 	private static final String PROJECT = "project";

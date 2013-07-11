@@ -1,11 +1,22 @@
+/*
+ * org.nrg.xnat.restlet.services.RefreshCatalog
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
+
 /**
  *
  */
 package org.nrg.xnat.restlet.services;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.xft.event.EventUtils;
@@ -22,48 +33,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * @author Tim Olsen
- *
- *	The refresh catalog restlet is a generic restlet for refreshing catalog entries.
- *
- *  It will review the query string parameters and a multi-part form body.  For each parameter named 'resource' it will refresh the associated catalogs
- *
- *  URLs:
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/scans/SCAN
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/reconstructions/RECON/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/reconstructions/RECON
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/assessors/ASSESSOR/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/assessors/ASSESSOR
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/experiments/EXPT
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/subjects/SUBJECT -- will not cascade to children (experiments)
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/projects/PROJECT-- will not cascade to children (subjects or experiments)
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/scans/SCAN/resources/DICOM
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/scans/SCAN
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/reconstructions/RECON/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/reconstructions/RECON
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/assessors/ASSESSOR/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/assessors/ASSESSOR
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/experiments/EXPT
- *  /services/refresh/catalog?resource=/archive/subjects/SUBJECT/resources/LABEL
- *  /services/refresh/catalog?resource=/archive/subjects/SUBJECT -- will not cascade to children (experiments)
- *
- * Options:
- * 	checksum: Generate checksums for any files which are missing them.
- *  delete: Delete any references to missing files
- *  append: Add references to any unreferenced files
- *  
- *  Multiple resource paths can be specified in a single submit using multiple resource parameters on the query string or in a multipart form body
- */
 public class RefreshCatalog extends SecureResource {
 
 	public RefreshCatalog(Context context, Request request, Response response) {

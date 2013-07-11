@@ -1,25 +1,27 @@
-/**
- * Copyright (c) 2013 Washington University School of Medicine
+/*
+ * org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers.scanType;
 
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Map;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Map;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public abstract class AbstractScanTypeMapping<HistoryType> implements ScanTypeMappingI {
     private final Logger logger = LoggerFactory.getLogger(AbstractScanTypeMapping.class);
 

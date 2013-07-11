@@ -1,13 +1,22 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.utils.IDGenerator
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.turbine.utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IDGenerator implements IDGeneratorI {
 	String column=null;

@@ -1,12 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Feb 5, 2008
+ * org.nrg.xnat.turbine.modules.actions.AdminProjectAccess
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -18,6 +20,9 @@ import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xnat.utils.WorkflowUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminProjectAccess extends SecureAction {
 

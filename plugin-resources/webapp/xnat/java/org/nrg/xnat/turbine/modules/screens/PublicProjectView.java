@@ -1,11 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Oct 11, 2007
+ * org.nrg.xnat.turbine.modules.screens.PublicProjectView
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.ArrayList;
 
 import org.apache.turbine.modules.screens.VelocityScreen;
 import org.apache.turbine.util.RunData;
@@ -14,6 +17,8 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+
+import java.util.ArrayList;
 
 public class PublicProjectView extends VelocityScreen {
 

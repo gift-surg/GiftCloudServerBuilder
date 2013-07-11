@@ -1,7 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjAssScanURI
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.uri.archive.impl;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.model.XnatAbstractresourceI;
@@ -15,6 +22,9 @@ import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.helpers.uri.archive.ResourcesProjSubjSessionURIA;
 import org.nrg.xnat.helpers.uri.archive.ScanURII;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class ResourcesProjSubjAssScanURI extends ResourcesProjSubjSessionURIA  implements AssessedURII,ResourceURII,ArchiveItemURI,ScanURII{
 	private XnatImagescandata scan=null;

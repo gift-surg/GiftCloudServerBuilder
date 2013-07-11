@@ -1,9 +1,14 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.TextDicomIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
-
-import java.util.SortedSet;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.util.TagUtils;
@@ -11,11 +16,8 @@ import org.nrg.util.SortedSets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
+import java.util.SortedSet;
+
 public final class TextDicomIdentifier implements DicomObjectFunction,DicomDerivedString {
     private final int tag;
 

@@ -1,9 +1,14 @@
+/*
+ * org.nrg.xnat.restlet.XNATRestletFactory
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -12,6 +17,11 @@ import org.nrg.xft.XFT;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 import org.restlet.Application;
 import org.restlet.VirtualHost;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("rawtypes")
 public class XNATRestletFactory {

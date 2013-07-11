@@ -1,8 +1,20 @@
+/*
+ * org.nrg.xnat.security.XnatArcSpecFilter
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.nrg.xdat.om.ArcArchivespecification;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,12 +22,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.nrg.xdat.om.ArcArchivespecification;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xnat.turbine.utils.ArcSpecManager;
-import org.springframework.web.filter.GenericFilterBean;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class XnatArcSpecFilter extends GenericFilterBean {
 

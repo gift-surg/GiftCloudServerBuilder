@@ -1,18 +1,15 @@
 /*
- * Copyright Washington University in St Louis 2006 All rights reserved
- * @author Mohana Ramaratnam (Email: mramarat@wustl.edu)
+ * org.nrg.pipeline.XnatPipelineLauncher
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 
 package org.nrg.pipeline;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,21 +18,23 @@ import org.apache.velocity.context.Context;
 import org.nrg.pipeline.client.XNATPipelineLauncher;
 import org.nrg.viewer.QCImageCreator;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
-import org.nrg.xft.db.DBItemCache;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
-import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xdat.services.AliasTokenService;
-import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class XnatPipelineLauncher {
     static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);

@@ -1,7 +1,12 @@
-//Copyright 2006 Harvard University / Washington University School of Medicine All Rights Reserved
 /*
- * Created on Sep 19, 2006
+ * org.nrg.xnat.exceptions.UndefinedArchive
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.exceptions;
 

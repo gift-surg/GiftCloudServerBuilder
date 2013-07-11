@@ -1,15 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jan 31, 2007
+ * org.nrg.xnat.turbine.modules.actions.CompleteUpload
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -20,6 +19,11 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.archive.UploadManager;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 
 public class CompleteUpload extends SecureAction {
     static Logger logger = Logger.getLogger(CompleteUpload.class);

@@ -1,6 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjURI
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.uri.archive.impl;
-
-import java.util.Map;
 
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -9,6 +17,8 @@ import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.archive.ResourceURII;
 import org.nrg.xnat.helpers.uri.archive.SubjectURII;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+
+import java.util.Map;
 
 public class ResourcesProjSubjURI extends ResourcesProjURI implements ResourceURII,ArchiveItemURI,SubjectURII{
 	private XnatSubjectdata subject=null;

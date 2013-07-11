@@ -1,11 +1,12 @@
-/**
- * XnatLogoutSuccessHandler
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.security.XnatLogoutSuccessHandler
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 10/2/12 by rherri01
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.security;
 
@@ -21,14 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Handles the navigation on logout by delegating to the {@link AbstractAuthenticationTargetUrlRequestHandler} base
- * class logic, but setting the {@link AbstractAuthenticationTargetUrlRequestHandler#setDefaultTargetUrl(String)} to use
- * the appropriate destination based on the requiresLogin setting.
- *
- * @author Rick Herrick
- * @since 1.6.1
- */
 public class XnatLogoutSuccessHandler extends AbstractAuthenticationTargetUrlRequestHandler implements LogoutSuccessHandler {
 
     public void setOpenXnatLogoutSuccessUrl(String openXnatLogoutSuccessUrl) {

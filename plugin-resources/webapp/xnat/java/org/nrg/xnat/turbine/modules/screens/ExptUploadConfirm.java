@@ -1,14 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Sep 26, 2007
+ * org.nrg.xnat.turbine.modules.screens.ExptUploadConfirm
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -19,6 +19,11 @@ import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ExptUploadConfirm extends SecureReport {
     static org.apache.log4j.Logger logger = Logger.getLogger(ExptUploadConfirm.class);

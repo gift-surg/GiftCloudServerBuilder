@@ -1,22 +1,24 @@
 /*
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.pipeline.utils.PipelineUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.pipeline.utils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.model.ArcProjectPipelineI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectDescendant;
-import org.nrg.xdat.om.ArcProjectPipeline;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class PipelineUtils {

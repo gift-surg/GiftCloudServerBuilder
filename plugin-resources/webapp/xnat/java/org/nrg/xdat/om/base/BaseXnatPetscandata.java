@@ -1,17 +1,22 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Wed Dec 06 09:45:34 CST 2006
+ * org.nrg.xdat.om.base.BaseXnatPetscandata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.nrg.xdat.om.XnatAbstractresource;
 import org.nrg.xdat.om.base.auto.AutoXnatPetscandata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
+
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * @author XDAT

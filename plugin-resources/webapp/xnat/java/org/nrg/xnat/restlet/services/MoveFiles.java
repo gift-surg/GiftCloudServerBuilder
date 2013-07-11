@@ -1,10 +1,18 @@
+/*
+ * org.nrg.xnat.restlet.services.MoveFiles
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.services;
 
-import java.net.MalformedURLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
@@ -27,15 +35,11 @@ import org.restlet.resource.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Maps;
+import java.net.MalformedURLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 
-/**
- * @author Timothy R Olsen -- WUSTL
- * 
- * Allows files moved using src,dest pairs or by specifying the actual paths /src=/path.
- */
 public class MoveFiles extends SecureResource {
 
 	

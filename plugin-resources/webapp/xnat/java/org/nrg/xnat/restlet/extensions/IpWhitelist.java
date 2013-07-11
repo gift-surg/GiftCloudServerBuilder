@@ -1,11 +1,12 @@
-/**
- * IpWhitelist
- * (C) 2013 Washington University School of Medicine
+/*
+ * org.nrg.xnat.restlet.extensions.IpWhitelist
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 7/10/13 by rherri01
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.restlet.extensions;
 
@@ -28,10 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Restlet for configuring whitelisted IPs. Whitelisted IPs are not counted against user session counts in the
- * {@link org.nrg.xdat.turbine.modules.screens.SecureScreen} class.
- */
 @XnatRestlet("/services/ipwhitelist")
 public class IpWhitelist extends SecureResource {
 

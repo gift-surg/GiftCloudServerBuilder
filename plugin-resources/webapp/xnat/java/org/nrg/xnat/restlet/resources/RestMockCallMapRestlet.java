@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.restlet.resources.RestMockCallMapRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.resources;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,15 +26,11 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Template;
 
 import java.io.IOException;
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Handles translating from mock REST URLs to the mock results stored in the configuration service.
- */
 public class RestMockCallMapRestlet extends SecureResource {
 
     private final static TypeReference<HashMap<String, String>> TYPE_REFERENCE = new TypeReference<HashMap<String, String>>() {};

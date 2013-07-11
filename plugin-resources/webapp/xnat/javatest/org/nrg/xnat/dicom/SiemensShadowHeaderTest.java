@@ -1,13 +1,17 @@
-/**
- * Copyright (c) 2012 Washington University
+/*
+ * org.nrg.xnat.dicom.SiemensShadowHeaderTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
  */
 package org.nrg.xnat.dicom;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.junit.Test;
@@ -15,13 +19,11 @@ import org.nrg.dcm.DicomUtils;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.dicom.SiemensShadowHeader;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public final class SiemensShadowHeaderTest extends DicomDataUsingTestCase {
     private static final String[] columns = {
         "tag",  // tag name, never empty.

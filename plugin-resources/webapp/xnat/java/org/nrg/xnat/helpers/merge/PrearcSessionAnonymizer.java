@@ -1,9 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.merge.PrearcSessionAnonymizer
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.dcm4che2.iod.module.macro.Code;
 import org.nrg.config.entities.Configuration;
@@ -15,18 +20,10 @@ import org.nrg.xdat.om.XnatResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Anonymize sessions in the prearchive with respect to a given project. 
- * The site-wide script is applied elsewhere.
- * 
- * Since this file may have been uploaded via the Upload Applet which applies
- * the project-specific anon scripts before sending to XNAT, before anonymization
- * each file is checked to make sure that the edit script applied to this file
- * did *not* to this project. 
- * 
- * @author aditya
- *
- */
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrearcSessionAnonymizer extends AnonymizerA {
 	private static final Logger logger = LoggerFactory.getLogger(PrearcSessionAnonymizer.class);

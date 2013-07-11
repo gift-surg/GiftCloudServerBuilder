@@ -1,9 +1,16 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.search.CachedSearchResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources.search;
 
-import java.sql.SQLException;
-import java.util.Hashtable;
-
+import com.noelios.restlet.ext.servlet.ServletCall;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -22,7 +29,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
-import com.noelios.restlet.ext.servlet.ServletCall;
+import java.sql.SQLException;
+import java.util.Hashtable;
 
 public class CachedSearchResource extends SecureResource {
 	static org.apache.log4j.Logger logger = Logger.getLogger(CachedSearchResource.class);

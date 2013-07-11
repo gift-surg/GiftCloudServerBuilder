@@ -1,40 +1,28 @@
+/*
+ * org.nrg.xnat.helpers.uri.URIManager
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.uri;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.uri.archive.impl.ExptAssessorURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ExptReconURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ExptScanURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ExptURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ProjSubjAssExptURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ProjSubjAssReconURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ProjSubjAssScanURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ProjSubjExptURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ProjSubjURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ProjURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesExptAssessorURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesExptReconURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesExptScanURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesExptURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjAssExptURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjAssReconURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjAssScanURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjExptURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjURI;
-import org.nrg.xnat.helpers.uri.archive.impl.ResourcesSubjURI;
-import org.nrg.xnat.helpers.uri.archive.impl.SubjURI;
+import org.nrg.xnat.helpers.uri.archive.impl.*;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.restlet.util.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class URIManager {
 	private final static Logger logger = LoggerFactory.getLogger(URIManager.class);

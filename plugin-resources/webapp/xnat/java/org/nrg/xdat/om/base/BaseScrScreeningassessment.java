@@ -1,21 +1,24 @@
 /*
- * GENERATED FILE
- * Created on Wed Dec 14 16:25:52 CST 2011
+ * org.nrg.xdat.om.base.BaseScrScreeningassessment
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
 import org.nrg.xdat.model.ScrScreeningscandataI;
-import org.nrg.xdat.model.ValProtocoldataScanCheckI;
 import org.nrg.xdat.om.ScrScreeningscandata;
-import org.nrg.xdat.om.ValProtocoldataScanCheck;
-import org.nrg.xdat.om.XnatQcassessmentdataScan;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
+import org.nrg.xdat.om.base.auto.AutoScrScreeningassessment;
+import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.scanAssessors.ScanAssessorI;
 import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author XDAT

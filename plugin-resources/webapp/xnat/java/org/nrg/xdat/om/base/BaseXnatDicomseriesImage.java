@@ -1,13 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Wed Sep 27 12:10:56 CDT 2006
+ * org.nrg.xdat.om.base.BaseXnatDicomseriesImage
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
 
 import org.nrg.xdat.om.base.auto.AutoXnatDicomseriesImage;
 import org.nrg.xdat.security.XDATUser;
@@ -15,6 +16,10 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
 
 /**
  * @author XDAT

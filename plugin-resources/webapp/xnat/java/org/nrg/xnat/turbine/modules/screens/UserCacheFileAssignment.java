@@ -1,7 +1,14 @@
+/*
+ * org.nrg.xnat.turbine.modules.screens.UserCacheFileAssignment
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -18,18 +25,9 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.utils.UserUtils;
 
-/**
- * @author Timothy R Olsen -- WUSTL
- *
- * This class prepares data for use in the corresponding VM.
- * 
- * The src files represent the files which have been placed in this user's cache space.  They
- *  will be passed into the context as a json object.
- *  
- * The dest represent the available locations in his session's hierarchy.
- * 
- * The JSON objects created correspond to the structure that YUI's Treeview wanted.
- */
+import java.io.File;
+import java.util.List;
+
 public class UserCacheFileAssignment extends SecureReport {
 
 	@Override

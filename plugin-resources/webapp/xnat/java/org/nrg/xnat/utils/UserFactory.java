@@ -1,17 +1,20 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.xnat.utils.UserFactory
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.utils;
-
-import java.sql.SQLException;
 
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
+import java.sql.SQLException;
+
 public interface UserFactory {
     XDATUser getUser(String login) throws SQLException,UserNotFoundException;
 }

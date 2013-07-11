@@ -1,13 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Tue Apr 24 14:14:26 CDT 2007
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_edit_xnat_projectData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -21,6 +22,10 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
 
 /**
  * @author XDAT

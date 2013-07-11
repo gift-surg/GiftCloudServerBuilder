@@ -1,8 +1,14 @@
+/*
+ * org.nrg.xdat.om.base.MoverMaker
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xdat.om.base;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.Callable;
 
 import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatAbstractresource;
@@ -13,13 +19,13 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidItemException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.exception.*;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.Callable;
 
 public class MoverMaker {
 	public static boolean check(ItemI i, XDATUser u) throws InvalidItemException, Exception{

@@ -1,13 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Nov 6, 2007
+ * org.nrg.xnat.turbine.modules.actions.DownloadSessionsAction
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -16,6 +17,10 @@ import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.ListingAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
 
 public class DownloadSessionsAction extends ListingAction {
 	static Logger logger = Logger.getLogger(DownloadSessionsAction.class);

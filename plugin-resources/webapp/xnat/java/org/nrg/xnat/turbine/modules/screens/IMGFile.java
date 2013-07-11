@@ -1,17 +1,23 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Dec 22, 2006
+ * org.nrg.xnat.turbine.modules.screens.IMGFile
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
 
-import java.io.File;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.FileScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
 
 public class IMGFile  extends FileScreen {
     static org.apache.log4j.Logger logger = Logger.getLogger(IMGFile.class);

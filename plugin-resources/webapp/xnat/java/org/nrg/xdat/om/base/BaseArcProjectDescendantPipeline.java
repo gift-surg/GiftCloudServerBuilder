@@ -1,15 +1,20 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
 /*
- * GENERATED FILE
- * Created on Thu Aug 23 15:17:36 CDT 2007
+ * org.nrg.xdat.om.base.BaseArcProjectDescendantPipeline
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.util.Hashtable;
 
 import org.nrg.xdat.om.base.auto.AutoArcProjectDescendantPipeline;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
+
+import java.util.Hashtable;
 
 /**
  * @author XDAT

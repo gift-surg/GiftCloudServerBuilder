@@ -1,9 +1,14 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.restlet.actions.TriggerPipelines
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.restlet.actions;
-
-import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 import org.nrg.pipeline.XnatPipelineLauncher;
@@ -11,9 +16,10 @@ import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.util.XNATRestConstants;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.util.concurrent.Callable;
 
 /**
  * @author Timothy R. Olsen <olsent@wustl.edu>

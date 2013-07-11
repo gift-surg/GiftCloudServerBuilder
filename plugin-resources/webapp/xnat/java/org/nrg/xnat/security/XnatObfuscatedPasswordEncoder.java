@@ -1,7 +1,14 @@
+/*
+ * org.nrg.xnat.security.XnatObfuscatedPasswordEncoder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.nrg.xdat.security.XDATUser;
 import org.springframework.security.authentication.encoding.BasePasswordEncoder;

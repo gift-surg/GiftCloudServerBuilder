@@ -1,9 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.merge.ProjectAnonymizer
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.nrg.config.entities.Configuration;
 import org.nrg.xdat.model.XnatAbstractresourceI;
@@ -15,15 +20,11 @@ import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 
-/**
- * Apply a project-specific script to this session. The PrearcSessionAnonymizer class
- * operates somewhat similarly the only difference being here the edit scripts 
- * are *always* applied. 
- * 
- * Indeed the PrearcSessionAnonymizer delegates a lot of it's functionality to this class.
- * @author aditya
- *
- */
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang.Void>{
 	final String projectId;
 	final String sessionPath;

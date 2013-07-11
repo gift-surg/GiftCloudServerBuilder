@@ -1,5 +1,20 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.representations.table.extensions.ExampleTableRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.representations.table.extensions;
+
+import org.nrg.xft.XFTTable;
+import org.nrg.xnat.restlet.XnatTableRepresentation;
+import org.restlet.data.MediaType;
+import org.restlet.resource.OutputRepresentation;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,20 +22,6 @@ import java.io.OutputStreamWriter;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.nrg.xft.XFTTable;
-import org.nrg.xnat.restlet.XnatTableRepresentation;
-import org.restlet.data.MediaType;
-import org.restlet.resource.OutputRepresentation;
-
-/**
- * An alternative representation of the XFTTable which can be downloaded via REST.  You can use the specified mediaType in your ACCEPT_HEADER or using the format tag (format=application/x-csv-custom1).
- * 
- * Use this as a template for your own implementations.  They should be placed in projects/{project}/src/java/org/nrg/xnat/restlet/representations/table/extensions or preferably in a module.
- * 
- * When defining a custom mediaType, we highly encourage that you use a pattern like application/x-{something}.  Both mediaType and mediaTypeDescription are required.
- * 
- * @author Tim Olsen <tim@deck5consulting.com>
- */
 @XnatTableRepresentation(
 		mediaType="application/x-csv-custom1",
 		mediaTypeDescription="Custom CSV"

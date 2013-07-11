@@ -1,14 +1,20 @@
 /*
- * GENERATED FILE
- * Created on Mon Nov 15 15:41:19 IST 2010
+ * org.nrg.xdat.om.base.BaseValProtocoldataCondition
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import org.nrg.xdat.om.base.auto.*;
-import org.nrg.xft.*;
+
+import org.nrg.xdat.om.base.auto.AutoValProtocoldataCondition;
+import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 
-import java.util.*;
+import java.util.Hashtable;
 
 /**
  * @author XDAT

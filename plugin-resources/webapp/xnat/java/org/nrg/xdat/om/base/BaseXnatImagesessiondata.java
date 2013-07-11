@@ -1,24 +1,19 @@
-/**
- * Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
- * Copyright (c) 2008 Washington University
+/*
+ * org.nrg.xdat.om.base.BaseXnatImagesessiondata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xdat.om.base;
-import java.io.File;
-import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import edu.sdsc.grid.io.GeneralFile;
 import org.nrg.dcm.CopyOp;
 import org.nrg.transaction.OperationI;
 import org.nrg.transaction.RollbackException;
@@ -29,35 +24,8 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
-import org.nrg.xdat.model.ScrScreeningassessmentI;
-import org.nrg.xdat.model.ValProtocoldataI;
-import org.nrg.xdat.model.WrkWorkflowdataI;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatAbstractresourceTagI;
-import org.nrg.xdat.model.XnatExperimentdataFieldI;
-import org.nrg.xdat.model.XnatExperimentdataShareI;
-import org.nrg.xdat.model.XnatImageassessordataI;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatQcassessmentdataI;
-import org.nrg.xdat.model.XnatQcmanualassessordataI;
-import org.nrg.xdat.model.XnatReconstructedimagedataI;
-import org.nrg.xdat.om.ScrScreeningassessment;
-import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatDicomseries;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatExperimentdataField;
-import org.nrg.xdat.om.XnatExperimentdataShare;
-import org.nrg.xdat.om.XnatImageassessordata;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatQcassessmentdata;
-import org.nrg.xdat.om.XnatQcmanualassessordata;
-import org.nrg.xdat.om.XnatReconstructedimagedata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.model.*;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.auto.AutoScrScreeningassessment;
 import org.nrg.xdat.om.base.auto.AutoValProtocoldata;
 import org.nrg.xdat.om.base.auto.AutoXnatImagesessiondata;
@@ -65,7 +33,6 @@ import org.nrg.xdat.om.base.auto.AutoXnatQcassessmentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
@@ -73,12 +40,7 @@ import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
-import org.nrg.xft.exception.ElementNotFoundException;
-import org.nrg.xft.exception.FieldNotFoundException;
-import org.nrg.xft.exception.InvalidItemException;
-import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.exception.*;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.TableSearch;
 import org.nrg.xft.security.UserI;
@@ -97,11 +59,10 @@ import org.nrg.xnat.srb.XNATSrbSearch;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.CatalogSet;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import edu.sdsc.grid.io.GeneralFile;
+import java.io.File;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.*;
 
 /**
  * @author XDAT

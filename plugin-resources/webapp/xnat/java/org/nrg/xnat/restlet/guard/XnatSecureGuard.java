@@ -1,9 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.guard.XnatSecureGuard
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.guard;
-
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
@@ -19,15 +24,12 @@ import org.nrg.xnat.restlet.util.BrowserDetector;
 import org.nrg.xnat.restlet.util.BrowserDetectorI;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.Filter;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 public class XnatSecureGuard extends Filter {
 	static org.apache.log4j.Logger logger = Logger.getLogger(XnatSecureGuard.class);

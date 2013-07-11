@@ -1,12 +1,18 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.PrearcTableBuilderI
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
+
 /**
  * 
  */
 package org.nrg.xnat.helpers.prearchive;
-
-import java.io.IOException;
-
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.exception.InvalidPermissionException;
 
 /**
  * @author timo

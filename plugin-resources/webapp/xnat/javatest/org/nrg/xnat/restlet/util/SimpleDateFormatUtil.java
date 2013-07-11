@@ -1,14 +1,19 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.util.SimpleDateFormatUtil
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:12 PM
+ */
 package org.nrg.xnat.restlet.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Provide some helper methods to SimpleDateFormat for testing. Never throw a
- * checked exception.
- */
 public class SimpleDateFormatUtil {
 	private SimpleDateFormat formatter;
 

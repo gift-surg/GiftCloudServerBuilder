@@ -1,17 +1,24 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.util.RequestUtil
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.util;
 
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.noelios.restlet.ext.servlet.ServletCall;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.resource.Representation;
 
-import com.noelios.restlet.ext.servlet.ServletCall;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class RequestUtil {
 	public static final String DEST = "dest";

@@ -1,22 +1,23 @@
 /*
- * Copyright (c) 2013 Washington University School of Medicine
+ * org.nrg.xnat.helpers.scanType.ImageScanTypeMapping
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers.scanType;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import org.nrg.xdat.model.XnatImagescandataI;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.nrg.xdat.model.XnatImagescandataI;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
-/**
- * Scan type mapping for Imagescandata
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class ImageScanTypeMapping extends AbstractScanTypeMapping<ImageScanTypeMapping.ScanTypeHistory> implements ScanTypeMappingI {
     public ImageScanTypeMapping(final String project, final String dbName) {
         super(dbName, buildSql(project));

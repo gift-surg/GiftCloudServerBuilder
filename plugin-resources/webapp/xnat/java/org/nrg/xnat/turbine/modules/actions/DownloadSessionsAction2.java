@@ -1,16 +1,15 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Nov 9, 2007
+ * org.nrg.xnat.turbine.modules.actions.DownloadSessionsAction2
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.net.URLEncoder;
-import java.util.*;
-
-import org.apache.commons.collections.ListUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.bean.CatCatalogBean;
@@ -18,6 +17,13 @@ import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class DownloadSessionsAction2 extends SecureAction {
 

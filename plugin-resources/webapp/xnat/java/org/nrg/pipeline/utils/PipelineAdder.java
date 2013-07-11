@@ -1,15 +1,20 @@
+/*
+ * org.nrg.pipeline.utils.PipelineAdder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.pipeline.utils;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.PipelineRepositoryManager;
-import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.ArcProjectDescendantPipeline;
-import org.nrg.xdat.om.ArcProjectPipeline;
-import org.nrg.xdat.om.PipePipelinedetails;
-import org.nrg.xdat.om.PipePipelinerepository;
-import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineAdder {

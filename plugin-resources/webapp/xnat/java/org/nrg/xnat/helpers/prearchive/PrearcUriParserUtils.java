@@ -1,13 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.PrearcUriParserUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingFormatArgumentException;
 
 import org.apache.commons.lang.StringUtils;
 import org.restlet.data.CharacterSet;
@@ -15,6 +16,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
+
+import java.util.*;
 
 public final class PrearcUriParserUtils {
 		

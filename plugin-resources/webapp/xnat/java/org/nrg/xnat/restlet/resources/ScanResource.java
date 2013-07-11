@@ -1,8 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.ScanResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
@@ -31,6 +37,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ScanResource  extends ItemResource {
 	final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanResource.class);

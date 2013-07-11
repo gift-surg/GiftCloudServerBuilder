@@ -1,11 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.representations.ItemXMLRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.representations;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.log4j.Logger;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -15,6 +18,11 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXWriter;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class ItemXMLRepresentation extends OutputRepresentation {
 	static org.apache.log4j.Logger logger = Logger.getLogger(ItemXMLRepresentation.class);

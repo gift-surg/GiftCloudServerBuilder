@@ -1,27 +1,19 @@
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 /*
- * Copyright (C) 2005 Washington University
- */
-/*
- * Created on Jan 5, 2005
+ * org.nrg.xnat.restlet.presentation.RESTHTMLPresenter
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
+
+
 package org.nrg.xnat.restlet.presentation;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.display.DisplayFieldReferenceI;
-import org.nrg.xdat.display.DisplayManager;
-import org.nrg.xdat.display.ElementDisplay;
-import org.nrg.xdat.display.HTMLLink;
-import org.nrg.xdat.display.HTMLLinkProperty;
-import org.nrg.xdat.display.SQLQueryField;
+import org.nrg.xdat.display.*;
 import org.nrg.xdat.presentation.PresentationA;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.search.DisplaySearch;
@@ -33,6 +25,9 @@ import org.nrg.xft.XFTTableI;
 import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.utils.StringUtils;
+
+import java.sql.Timestamp;
+import java.util.*;
 /**
  * @author Tim
  *

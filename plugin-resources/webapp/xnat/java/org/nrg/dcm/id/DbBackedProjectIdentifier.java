@@ -1,11 +1,18 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.DbBackedProjectIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
 
 
-import java.util.SortedSet;
-
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Lists;
 import org.dcm4che2.data.DicomObject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
@@ -13,13 +20,8 @@ import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Lists;
+import java.util.SortedSet;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class DbBackedProjectIdentifier implements DicomProjectIdentifier {
     private final Logger logger = LoggerFactory.getLogger(DbBackedProjectIdentifier.class);
     private final Iterable<DicomDerivedString> extractors;

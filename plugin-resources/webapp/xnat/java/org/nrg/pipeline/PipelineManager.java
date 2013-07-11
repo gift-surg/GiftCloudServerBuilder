@@ -1,25 +1,15 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.pipeline.PipelineManager
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.pipeline;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Vector;
-
-import javax.xml.transform.sax.SAXSource;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.om.DocumentInfo;
@@ -31,12 +21,7 @@ import net.sf.saxon.sxpath.XPathExpression;
 import net.sf.saxon.trans.IndependentContext;
 
 import org.apache.log4j.Logger;
-import org.nrg.xdat.model.ArcPipelineparameterdataI;
-import org.nrg.xdat.model.ArcProjectDescendantI;
-import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
-import org.nrg.xdat.model.ArcProjectI;
-import org.nrg.xdat.model.ArcProjectPipelineI;
-import org.nrg.xdat.om.ArcProject;
+import org.nrg.xdat.model.*;
 import org.nrg.xdat.om.ArcProjectDescendantPipeline;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.WrkWorkflowdata;
@@ -54,6 +39,11 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.xml.sax.InputSource;
+
+import javax.xml.transform.sax.SAXSource;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.util.*;
 
 public class PipelineManager {
    

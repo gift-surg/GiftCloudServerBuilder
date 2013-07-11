@@ -1,9 +1,17 @@
+/*
+ * org.nrg.xnat.helpers.move.FileMover
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.move;
 
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -20,14 +28,7 @@ import org.nrg.xnat.helpers.resource.direct.ResourceModifierA;
 import org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
-import org.nrg.xnat.helpers.uri.archive.AssessedURII;
-import org.nrg.xnat.helpers.uri.archive.AssessorURII;
-import org.nrg.xnat.helpers.uri.archive.ExperimentURII;
-import org.nrg.xnat.helpers.uri.archive.ProjectURII;
-import org.nrg.xnat.helpers.uri.archive.ReconURII;
-import org.nrg.xnat.helpers.uri.archive.ResourceURII;
-import org.nrg.xnat.helpers.uri.archive.ScanURII;
-import org.nrg.xnat.helpers.uri.archive.SubjectURII;
+import org.nrg.xnat.helpers.uri.archive.*;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.utils.UserUtils;
 import org.restlet.data.Status;
@@ -35,14 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Date;
+import java.util.List;
 
-/**
- * @author Timothy R Olsen - WUSTL
- *
- * File Mover will be used to move already uploaded resources to a destination in the xnat hierarchy.
- */
 public class FileMover {
 	private final static Logger logger = LoggerFactory.getLogger(FileMover.class);
 	

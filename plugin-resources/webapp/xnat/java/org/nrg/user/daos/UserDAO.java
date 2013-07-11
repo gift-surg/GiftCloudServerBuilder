@@ -1,11 +1,12 @@
-/**
- * UserDAO
- * (C) 2011 Washington University School of Medicine
+/*
+ * org.nrg.user.daos.UserDAO
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on Oct 10, 2011 by Rick Herrick <rick.herrick@wustl.edu>
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.user.daos;
 
@@ -15,10 +16,6 @@ import org.nrg.framework.orm.hibernate.AbstractHibernateDAO;
 import org.nrg.user.entities.User;
 import org.springframework.stereotype.Repository;
 
-/**
- * 
- * @author Rick Herrick <rick.herrick@wustl.edu>
- */
 @Repository
 public class UserDAO extends AbstractHibernateDAO<User> {
 

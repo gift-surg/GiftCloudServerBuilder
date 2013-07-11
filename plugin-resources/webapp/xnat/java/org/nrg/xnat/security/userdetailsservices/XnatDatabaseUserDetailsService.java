@@ -1,20 +1,19 @@
+/*
+ * org.nrg.xnat.security.userdetailsservices.XnatDatabaseUserDetailsService
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security.userdetailsservices;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.nrg.xdat.XDAT;
-import org.nrg.xnat.security.PasswordExpiredException;
-import org.nrg.xnat.security.XnatProviderManager;
 import org.nrg.xdat.services.XdatUserAuthService;
+import org.nrg.xnat.security.PasswordExpiredException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

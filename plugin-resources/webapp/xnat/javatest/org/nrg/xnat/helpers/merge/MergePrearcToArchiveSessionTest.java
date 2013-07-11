@@ -1,30 +1,35 @@
+/*
+ * org.nrg.xnat.helpers.merge.MergePrearcToArchiveSessionTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
+
 /**
  * 
  */
 package org.nrg.xnat.helpers.merge;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.util.Hashtable;
-
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nrg.action.ClientException;
 import org.nrg.test.BaseXDATTestCase;
-import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xft.db.DBItemCache;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xnat.archive.PrearcSessionArchiver;
-import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
+
+import java.io.File;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author tolsen01

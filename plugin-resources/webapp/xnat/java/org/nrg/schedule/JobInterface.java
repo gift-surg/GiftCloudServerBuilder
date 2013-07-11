@@ -1,18 +1,18 @@
+/*
+ * org.nrg.schedule.JobInterface
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.schedule;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-/**
- * Defines the component interface for a task to be executed under the Spring Quartz framework using the
- * {@link DelegatingJobBean}.
- *
- * This class is based on code by Hari Gangadharan at:
- * 
- * http://www.harinair.com/2008/01/spring-quartz-and-auto-wiring-of-quartz-jobs.
- * 
- * @author rherrick
- */
 public interface JobInterface {
 	/**
 	 * Initializes the job bean. All parameters must be passed in here on bean creation.

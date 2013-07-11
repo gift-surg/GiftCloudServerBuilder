@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.restlet.services.mail.MailRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.services.mail;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -10,12 +20,14 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
-import org.nrg.xnat.restlet.XNATApplication;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
@@ -25,18 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Mapped to the following URLs in {@link XNATApplication}:
- *
- * <ul>
- *    <li> <tt>/services/mail/send</tt> is basic mail send. Parameters to the REST call should be in the form body.</li>
- *    <li> <tt>/services/mail/send/{USER_IDS}/{SUBJECT}/{HTML}</tt> sends an email to the users in the <tt>USER_IDS</tt>
- *         list with the indicated <tt>SUBJECT</tt> and <tt>HTML</tt> message body. The form body can contain a binary
- *         payload, e.g. an image, that will be sent along with the message as an attachment.</li>
- * </ul>
- *
- * @author Rick Herrick <rick.herrick@wustl.edu>
- */
 public class MailRestlet extends SecureResource {
     public static final String PARAM_BCC = "bcc";
     public static final String PARAM_CC = "cc";

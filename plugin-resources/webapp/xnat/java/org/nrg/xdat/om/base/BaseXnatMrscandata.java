@@ -1,10 +1,16 @@
-//Copyright 2005-2013 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+/*
+ * org.nrg.xdat.om.base.BaseXnatMrscandata
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xdat.om.base;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatMrqcscandataI;
 import org.nrg.xdat.model.XnatMrscandataI;
@@ -14,13 +20,10 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xnat.helpers.scanType.AbstractScanTypeMapping;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
 
-import com.google.common.collect.Lists;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
-/**
- * @author Tim Olsen
- * @author Kevin A. Archie <karchie@wustl.edu>
- * 
- */
 @SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatMrscandata extends AutoXnatMrscandata {
 

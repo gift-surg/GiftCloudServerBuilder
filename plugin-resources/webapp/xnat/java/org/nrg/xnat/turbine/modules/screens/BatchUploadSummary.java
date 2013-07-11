@@ -1,13 +1,14 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jan 31, 2007
+ * org.nrg.xnat.turbine.modules.screens.BatchUploadSummary
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.text.NumberFormat;
-import java.util.ArrayList;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -15,6 +16,10 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 
 public class BatchUploadSummary extends SecureScreen {
 

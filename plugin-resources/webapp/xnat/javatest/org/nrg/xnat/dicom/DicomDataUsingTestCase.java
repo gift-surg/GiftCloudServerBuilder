@@ -1,19 +1,14 @@
-/**
- * Copyright (c) 2012 Washington University
+/*
+ * org.nrg.xnat.dicom.DicomDataUsingTestCase
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
  */
 package org.nrg.xnat.dicom;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import junit.framework.TestCase;
 
@@ -21,12 +16,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.nrg.io.FileWalkIterator;
 
-import com.google.common.collect.Lists;
+import java.io.*;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class DicomDataUsingTestCase extends TestCase implements Iterable<File> {
     private static final String SAMPLE_1_URL = "http://nrg.wustl.edu/projects/DICOM/sample1.zip";
     private static final File sample1;

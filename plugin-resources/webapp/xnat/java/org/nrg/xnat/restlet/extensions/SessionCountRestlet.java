@@ -1,11 +1,12 @@
-/**
- * SessionCountRestlet
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.restlet.extensions.SessionCountRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 10/24/12 by rherri01
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.xnat.restlet.extensions;
 
@@ -29,9 +30,6 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 
 import java.util.List;
 
-/**
- * Restlet for returning the number of sessions for a particular user.
- */
 @XnatRestlet("/services/sessions")
 public class SessionCountRestlet extends SecureResource {
     private static final Log _log = LogFactory.getLog(SessionCountRestlet.class);

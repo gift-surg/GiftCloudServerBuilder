@@ -1,16 +1,24 @@
+/*
+ * org.nrg.xnat.helpers.uri.UriParserUtilsTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.helpers.uri;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
+import org.restlet.util.Template;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.nrg.xnat.helpers.uri.URIManager.DataURIA;
-import org.nrg.xnat.helpers.uri.UriParserUtils.UriParser;
-import org.restlet.util.Template;
+import static org.junit.Assert.*;
 
 
 public class UriParserUtilsTest {

@@ -1,34 +1,22 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.pipeline.StreamGobbler
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.pipeline;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import org.apache.log4j.Logger;
-
-//////////////////////////////////////////////////////////////////////////
-//// ClassName
-/**
- Class documentation.
-
- @author mohanar
- @version $Id: StreamGobbler.java,v 1.3 2007/05/16 19:05:34 timo Exp $
- @since Pipeline 1.0
- */
 
 public class StreamGobbler extends Thread {
 

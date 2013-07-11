@@ -1,12 +1,14 @@
-/**
- * Copyright 2008 Washington University - All rights reserved
+/*
+ * org.nrg.xnat.restlet.resources.PARResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
- * Author: Timothy Olsen
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:49 PM
  */
 package org.nrg.xnat.restlet.resources;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
@@ -17,6 +19,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * @author timo

@@ -1,7 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.search.SearchElementListResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources.search;
-
-import java.util.Hashtable;
 
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xft.XFTTable;
@@ -12,6 +19,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import java.util.Hashtable;
 
 public class SearchElementListResource extends SecureResource {
 	public SearchElementListResource(Context context, Request request, Response response) {

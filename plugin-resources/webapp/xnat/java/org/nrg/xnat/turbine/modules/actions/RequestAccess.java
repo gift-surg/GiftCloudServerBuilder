@@ -1,14 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on May 21, 2007
+ * org.nrg.xnat.turbine.modules.actions.RequestAccess
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -24,6 +24,10 @@ import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
+
+import javax.mail.MessagingException;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class RequestAccess extends SecureAction {
     static Logger logger = Logger.getLogger(RequestAccess.class);

@@ -1,23 +1,24 @@
-/**
- * Copyright (c) 2011 Washington University
+/*
+ * org.nrg.dcm.id.ClassicDicomObjectIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.ImmutableList;
 import org.dcm4che2.data.Tag;
 import org.nrg.dcm.ContainedAssignmentExtractor;
 import org.nrg.dcm.Extractor;
 import org.nrg.dcm.TextExtractor;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.regex.Pattern;
 
-/**
- * DicomObjectIdentifier that implements the standard XNAT 1.4/1.5 object identification
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public class ClassicDicomObjectIdentifier extends CompositeDicomObjectIdentifier {
     private static final ImmutableList<Extractor> aaExtractors, sessionExtractors, subjectExtractors;
     static {

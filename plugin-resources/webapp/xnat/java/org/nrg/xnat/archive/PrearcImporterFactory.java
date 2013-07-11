@@ -1,18 +1,20 @@
-/**
- * Copyright (c) 2008 Washington University
+/*
+ * org.nrg.xnat.archive.PrearcImporterFactory
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
-
-import java.io.File;
 
 import org.nrg.PrearcImporter;
 import org.nrg.xnat.ajax.Prearchive;
 
-/**
- * Provide a single location for the nasty configuration involved in IMA handling.
- * @author Kevin A. Archie <karchie@npg.wustl.edu>
- *
- */
+import java.io.File;
+
 public final class PrearcImporterFactory {
     // TODO: these should be configurable
     private final static String[] command = {"archiveIma"};

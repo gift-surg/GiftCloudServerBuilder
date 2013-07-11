@@ -1,12 +1,22 @@
+/*
+ * org.nrg.xnat.helpers.file.StoredFile
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.file;
+
+import org.apache.commons.io.FileUtils;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 
 public class StoredFile implements FileWriterWrapperI{
     private final File stored;

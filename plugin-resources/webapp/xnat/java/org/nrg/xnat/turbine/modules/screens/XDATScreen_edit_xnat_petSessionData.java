@@ -1,21 +1,26 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Feb 9, 2007
+ * org.nrg.xnat.turbine.modules.screens.XDATScreen_edit_xnat_petSessionData
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class XDATScreen_edit_xnat_petSessionData extends EditSubjectAssessorScreen {
     private static final float BYTES_PER_MB = 1024*1024;

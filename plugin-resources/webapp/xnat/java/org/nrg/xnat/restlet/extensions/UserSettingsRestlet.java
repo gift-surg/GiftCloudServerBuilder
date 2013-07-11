@@ -1,11 +1,12 @@
-/**
- * UserSettingsRestlet
- * (C) 2012 Washington University School of Medicine
+/*
+ * org.nrg.xnat.restlet.extensions.UserSettingsRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on 12/21/12 by rherrick
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.restlet.extensions;
 
@@ -45,49 +46,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
-/**
- * Provides a way to manage system users through the REST API. You can create a new user via JSON or XML. The JSON looks
- * like this:
- *
- * <pre>{ "login":"foo",
- *     "email":"foo@bar.com",
- *     "firstname":"Foo",
- *     "lastname":"Bar",
- *     "password":"hellothere",
- *     "enabled":1,
- *     "verified":1,
- *     "userAuths": [
- *       { "authId":"foo",
- *         "method":"localdb" },
- *       { "enabled":false,
- *         "authId":"foo01",
- *         "method":"ldap",
- *         "methodId":"xnat" }]}</pre>
- *
- * The XML looks like this:
- *
- * <pre>&lt;?xml version="1.0"?&gt;
- * &lt;user&gt;
- *     &lt;login&gt;vsrh&lt;/login&gt;
- *     &lt;email&gt;rick@violetshivers.com&lt;/email&gt;
- *     &lt;firstname&gt;Rick&lt;/firstname&gt;
- *     &lt;lastname&gt;Herrick&lt;/lastname&gt;
- *     &lt;password&gt;hellothere&lt;/password&gt;
- *     &lt;enabled&gt;1&lt;/enabled&gt;
- *     &lt;verified&gt;1&lt;/verified&gt;
- *     &lt;userAuths&gt;
- *         &lt;userAuth&gt;
- *             &lt;authId&gt;vsrh&lt;/authId&gt;
- *             &lt;method&gt;localdb&lt;/method&gt;
- *         &lt;/userAuth&gt;
- *         &lt;userAuth enabled="false"&gt;
- *             &lt;authId&gt;vsrh01&lt;/authId&gt;
- *             &lt;method&gt;ldap&lt;/method&gt;
- *             &lt;methodId&gt;nrg&lt;/methodId&gt;
- *         &lt;/userAuth&gt;
- *     &lt;/userAuths&gt;
- * &lt;/user&gt;</pre>
- */
 @XnatRestlet({"/user", "/user/{USER_ID}", "/user/actions/{ACTION}", "/user/actions/{USER_ID}/{ACTION}"})
 public class UserSettingsRestlet extends SecureResource {
     public static final String PARAM_USER_ID = "USER_ID";

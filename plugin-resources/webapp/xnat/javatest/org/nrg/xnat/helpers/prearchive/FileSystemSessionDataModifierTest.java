@@ -1,13 +1,14 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.FileSystemSessionDataModifierTest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:15 PM
+ */
 package org.nrg.xnat.helpers.prearchive;
-
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.Assert;
 
@@ -22,6 +23,14 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.fail;
 
 public class FileSystemSessionDataModifierTest {
 	static Move copyException, setXmlException, writeXmlException;

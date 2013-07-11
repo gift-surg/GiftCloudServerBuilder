@@ -1,18 +1,20 @@
-/**
- * Copyright 2010 Washington University
+/*
+ * org.nrg.xnat.archive.ValidationException
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
-
-import java.util.Arrays;
 
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.restlet.data.Status;
 
-/**
- * Indicates that a validation has failed.
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
+import java.util.Arrays;
+
 public class ValidationException extends ArchivingException {
 	private static final long serialVersionUID = 1L;
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");

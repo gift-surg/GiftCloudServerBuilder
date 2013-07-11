@@ -1,11 +1,21 @@
+/*
+ * org.nrg.xnat.helpers.uri.archive.ResourcesProjSubjSessionURIA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.uri.archive;
-
-import java.util.Map;
 
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjURI;
+
+import java.util.Map;
 
 public abstract class ResourcesProjSubjSessionURIA extends ResourcesProjSubjURI implements ResourceURII{
 	private XnatImagesessiondata assessed=null;

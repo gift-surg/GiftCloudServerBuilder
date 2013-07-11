@@ -1,20 +1,14 @@
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Sep 26, 2007 
+ * org.nrg.xnat.turbine.modules.actions.ExptFileUpload
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
@@ -46,6 +40,11 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.xml.sax.SAXException;
+
+import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.util.Calendar;
+import java.util.zip.ZipOutputStream;
 
 public class ExptFileUpload extends SecureAction {
 

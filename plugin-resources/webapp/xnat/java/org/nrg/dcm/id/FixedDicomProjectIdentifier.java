@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2012 Washington University
+/*
+ * org.nrg.dcm.id.FixedDicomProjectIdentifier
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm.id;
 
-import java.util.SortedSet;
-
+import com.google.common.collect.ImmutableSortedSet;
 import org.dcm4che2.data.DicomObject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 
-import com.google.common.collect.ImmutableSortedSet;
+import java.util.SortedSet;
 
-/**
- * Always returns a specific project. The obvious use is to use the project
- * name as the AE title.
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public final class FixedDicomProjectIdentifier implements DicomProjectIdentifier {
     private static final ImmutableSortedSet<Integer> tags = ImmutableSortedSet.of();
     private final String name;

@@ -1,12 +1,14 @@
-/**
- * Copyright 2010 Washington University
+/*
+ * org.nrg.xnat.helpers.resource.direct.ResourceModifierA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers.resource.direct;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.bean.CatCatalogBean;
@@ -24,6 +26,11 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.resource.XnatResourceInfo;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.utils.CatalogUtils;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author timo

@@ -1,17 +1,22 @@
-//Copyright Washington University School of Medicine All Rights Reserved
 /*
- * Created on Feb 6, 2007
+ * org.nrg.xnat.archive.UploadManager
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
+
+import org.apache.log4j.Logger;
+import org.nrg.xdat.security.XDATUser;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-import org.apache.log4j.Logger;
-import org.nrg.xdat.security.XDATUser;
 
 public class UploadManager extends Thread{
     static Logger logger = Logger.getLogger(UploadManager.class);

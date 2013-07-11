@@ -1,4 +1,22 @@
+/*
+ * org.nrg.xnat.helpers.merge.AnonymizerA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
+
+import org.apache.commons.lang.BooleanUtils;
+import org.nrg.config.entities.Configuration;
+import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.dcm.Anonymize;
+import org.nrg.dcm.edit.AttributeException;
+import org.nrg.dcm.edit.ScriptEvaluationException;
+import org.nrg.xdat.XDAT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,20 +24,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.nrg.config.exceptions.ConfigServiceException;
-import org.nrg.config.entities.Configuration;
-import org.nrg.dcm.Anonymize;
-import org.nrg.dcm.edit.AttributeException;
-import org.nrg.dcm.edit.ScriptEvaluationException;
-import org.nrg.xdat.XDAT;
-import org.nrg.xft.XFT;
-
-/**
- * Base class that actually does the work of applying the edit scripts to files.
- * @author aditya
- *
- */
 public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	AnonymizerA next = null;
 	abstract String getSubject();

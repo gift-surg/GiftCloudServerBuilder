@@ -1,5 +1,12 @@
-/**
- * Copyright (c) 2012,2013 Washington University School of Medicine
+/*
+ * org.nrg.xnat.turbine.utils.ScanQualityUtils
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.turbine.utils;
 
@@ -12,10 +19,6 @@ import org.nrg.xft.security.UserI;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Kevin A. Archie <karchie@wustl.edu>
- *
- */
 public final class ScanQualityUtils {
     private ScanQualityUtils() {}
 

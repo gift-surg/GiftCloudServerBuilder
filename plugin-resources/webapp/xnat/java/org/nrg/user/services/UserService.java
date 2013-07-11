@@ -1,21 +1,18 @@
-/**
- * UserService
- * (C) 2011 Washington University School of Medicine
+/*
+ * org.nrg.user.services.UserService
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on Oct 10, 2011 by Rick Herrick <rick.herrick@wustl.edu>
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.user.services;
 
 import org.nrg.framework.orm.hibernate.BaseHibernateService;
 import org.nrg.user.entities.User;
 
-/**
- * 
- * @author Rick Herrick <rick.herrick@wustl.edu>
- */
 public interface UserService extends BaseHibernateService<User> {
     abstract public User getUserByName(String name);
 }

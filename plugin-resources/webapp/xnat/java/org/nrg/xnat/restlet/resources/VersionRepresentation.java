@@ -1,8 +1,15 @@
+/*
+ * org.nrg.xnat.restlet.resources.VersionRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.resources;
 
-import java.io.IOException;
-
-import org.nrg.xft.XFT;
 import org.nrg.xnat.utils.FileUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -14,6 +21,8 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class VersionRepresentation extends Resource {
 	private final Logger logger = LoggerFactory.getLogger(VersionRepresentation.class);

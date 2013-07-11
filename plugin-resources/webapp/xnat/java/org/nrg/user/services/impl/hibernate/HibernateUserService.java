@@ -1,11 +1,12 @@
-/**
- * HibernateUserService
- * (C) 2011 Washington University School of Medicine
+/*
+ * org.nrg.user.services.impl.hibernate.HibernateUserService
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
  *
- * Released under the Simplified BSD License
+ * Released under the Simplified BSD.
  *
- * Created on Oct 10, 2011 by Rick Herrick <rick.herrick@wustl.edu>
+ * Last modified 7/10/13 8:16 PM
  */
 package org.nrg.user.services.impl.hibernate;
 
@@ -17,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 
- * @author Rick Herrick <rick.herrick@wustl.edu>
- */
 @Service
 public class HibernateUserService extends AbstractHibernateEntityService<User> implements UserService {
 

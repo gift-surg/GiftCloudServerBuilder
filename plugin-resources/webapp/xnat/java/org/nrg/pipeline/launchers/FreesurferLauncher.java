@@ -1,14 +1,15 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.pipeline.launchers.FreesurferLauncher
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.pipeline.launchers;
-
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -17,6 +18,8 @@ import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+
+import java.util.ArrayList;
 
 public class FreesurferLauncher extends PipelineLauncher{
 	ArrayList<String> mprageScans = null;

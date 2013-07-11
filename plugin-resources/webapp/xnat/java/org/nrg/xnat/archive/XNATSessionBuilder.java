@@ -1,7 +1,29 @@
-/**
- * Copyright (c) 2010 Washington University
+/*
+ * org.nrg.xnat.archive.XNATSessionBuilder
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.archive;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.configuration.ConfigurationException;
+import org.nrg.dcm.xnat.DICOMSessionBuilder;
+import org.nrg.dcm.xnat.XnatAttrDef;
+import org.nrg.ecat.xnat.PETSessionBuilder;
+import org.nrg.xft.XFT;
+import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,31 +41,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.configuration.ConfigurationException;
-import org.nrg.dcm.xnat.DICOMSessionBuilder;
-import org.nrg.dcm.xnat.XnatAttrDef;
-import org.nrg.ecat.xnat.PETSessionBuilder;
-import org.nrg.xft.XFT;
-import org.nrg.xnat.helpers.uri.URIManager;
-import org.nrg.xnat.turbine.utils.PropertiesHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 
-
-/**
- * @author Timothy R. Olsen <olsent@wustl.edu>
- *
- * Helper class to execute all of the available SessionBuilders. 
- * Initially this only supports DICOM and ECAT.  But, it is a step towards allowing other implementations.
- */
 public class XNATSessionBuilder implements Callable<Boolean>{
 	private final Logger logger = LoggerFactory.getLogger(XNATSessionBuilder.class);
 	

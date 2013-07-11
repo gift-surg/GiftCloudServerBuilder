@@ -1,15 +1,15 @@
 /* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.pipeline.launchers.PipelineLauncher
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.pipeline.launchers;
-
-import java.io.File;
-import java.util.ArrayList;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -18,6 +18,9 @@ import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public abstract class PipelineLauncher {
 	public abstract boolean launch(RunData data, Context context);

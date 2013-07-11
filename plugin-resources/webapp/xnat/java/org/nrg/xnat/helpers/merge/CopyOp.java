@@ -1,13 +1,23 @@
+/*
+ * org.nrg.xnat.helpers.merge.CopyOp
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
 import org.nrg.transaction.RollbackException;
 import org.nrg.transaction.Transaction;
 import org.nrg.transaction.TransactionException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.Callable;
 
 
 public final class CopyOp<A> extends Transaction{

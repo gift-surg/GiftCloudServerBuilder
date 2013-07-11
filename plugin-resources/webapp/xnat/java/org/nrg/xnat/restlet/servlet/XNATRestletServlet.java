@@ -1,14 +1,16 @@
-// Copyright 2010-2012 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.servlet.XNATRestletServlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.servlet;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-
+import com.noelios.restlet.ext.servlet.ServerServlet;
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
@@ -34,7 +36,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import com.noelios.restlet.ext.servlet.ServerServlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 
 public class XNATRestletServlet extends ServerServlet {
     private static final long serialVersionUID = -4149339105144231596L;

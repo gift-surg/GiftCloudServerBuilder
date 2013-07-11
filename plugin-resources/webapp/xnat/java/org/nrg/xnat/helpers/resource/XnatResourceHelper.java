@@ -1,13 +1,14 @@
-/**
- * Copyright 2010 Washington University
+/*
+ * org.nrg.xnat.helpers.resource.XnatResourceHelper
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.helpers.resource;
-
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.nrg.xnat.utils.CatalogUtils;
 
 /**
  * @author timo

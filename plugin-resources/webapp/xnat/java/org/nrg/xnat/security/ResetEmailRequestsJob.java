@@ -1,8 +1,18 @@
+/*
+ * org.nrg.xnat.security.ResetEmailRequestsJob
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.security;
 
+import org.nrg.mail.services.EmailRequestLogService;
 import org.nrg.schedule.JobInterface;
 import org.nrg.xdat.XDAT;
-import org.nrg.mail.services.EmailRequestLogService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 

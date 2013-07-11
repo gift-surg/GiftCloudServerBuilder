@@ -1,9 +1,14 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.restlet.resources.SubjectResource
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.restlet.resources;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.model.XnatProjectparticipantI;
@@ -20,16 +25,11 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
 import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.presentation.FlattenedItemA;
-import org.nrg.xft.presentation.ItemJSONBuilder;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
-import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
-import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
-import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
 import org.nrg.xnat.restlet.representations.TurbineScreenRepresentation;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
@@ -40,6 +40,10 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.xml.sax.SAXParseException;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class SubjectResource extends ItemResource {
 	private static final String PRIMARY = "primary";

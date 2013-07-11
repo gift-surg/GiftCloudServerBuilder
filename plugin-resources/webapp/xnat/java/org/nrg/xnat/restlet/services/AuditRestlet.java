@@ -1,8 +1,16 @@
+/*
+ * org.nrg.xnat.restlet.services.AuditRestlet
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.services;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -24,20 +32,9 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 
-/**
- * @author Tim Olsen
- *
- *	The audit restlet is a generic restlet for accessing the audit trail for any items stored in XNAT.
- *
- *	Use a combination of the xsi:type and the primary key value to access the audit trail
- *
- *  /services/audit/xdat:user/1
- *  /services/audit/xnat:projectData/TEST_PROJECT
- *  
- *  
- */
 public class AuditRestlet extends SecureResource {
 	ItemI item;
 	final String key;

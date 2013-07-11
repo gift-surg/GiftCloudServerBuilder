@@ -1,22 +1,21 @@
-// Copyright 2010 Washington University School of Medicine All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.modules.screens.PipelineScreen_default_launcher
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:40 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
-import org.nrg.pipeline.xmlbeans.ParameterData;
-import org.nrg.pipeline.xmlbeans.ParameterData.Values;
-import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.model.ArcPipelinedataI;
-import org.nrg.xdat.model.ArcPipelineparameterdataI;
-import org.nrg.xdat.om.ArcPipelineparameterdata;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.ArcProjectPipeline;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.turbine.modules.screens.SecureReport;
-import org.nrg.xft.XFTItem;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class PipelineScreen_default_launcher extends DefaultPipelineScreen {

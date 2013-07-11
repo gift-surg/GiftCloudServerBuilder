@@ -1,13 +1,14 @@
 /*
- * (C) 2011 Washington University School of Medicine
+ * XnatTableRepresentation
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
- * Released under the Simplified BSD License
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 
-/**
- * XnatTableRepresentation
- * Created on 6/29/12 by Tim Olsen
- */
 package org.nrg.xnat.restlet;
 
 import static java.lang.annotation.ElementType.TYPE;
@@ -17,9 +18,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * This indicates that a class is an XNAT table representation
- */
 @Documented
 @Target(TYPE)
 @Retention(RUNTIME)

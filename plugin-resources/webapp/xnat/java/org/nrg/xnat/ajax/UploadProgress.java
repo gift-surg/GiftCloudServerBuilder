@@ -1,15 +1,19 @@
-//Copyright 2006 Harvard University / Washington University School of Medicine All Rights Reserved
 /*
- * Created on Oct 4, 2006
+ * org.nrg.xnat.ajax.UploadProgress
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.xnat.ajax;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class UploadProgress {
     public void monitor(HttpServletRequest req, HttpServletResponse response) throws IOException{

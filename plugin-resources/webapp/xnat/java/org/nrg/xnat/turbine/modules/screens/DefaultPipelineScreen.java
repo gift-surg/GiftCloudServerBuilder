@@ -1,18 +1,15 @@
 /*
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
+ * org.nrg.xnat.turbine.modules.screens.DefaultPipelineScreen
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
  *
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
 */
 
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -26,18 +23,7 @@ import org.nrg.xdat.model.ArcPipelinedataI;
 import org.nrg.xdat.model.ArcPipelineparameterdataI;
 import org.nrg.xdat.model.ArcProjectDescendantPipelineI;
 import org.nrg.xdat.model.PipePipelinedetailsParameterI;
-import org.nrg.xdat.om.ArcPipelineparameterdata;
-import org.nrg.xdat.om.ArcProject;
-import org.nrg.xdat.om.ArcProjectDescendantPipeline;
-import org.nrg.xdat.om.PipePipelinedetails;
-import org.nrg.xdat.om.PipePipelinedetailsParameter;
-import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatDicomseries;
-import org.nrg.xdat.om.XnatImagescandata;
-import org.nrg.xdat.om.XnatMrsessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseWrkWorkflowdata;
 import org.nrg.xdat.turbine.modules.screens.SecureReport;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -47,6 +33,12 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xnat.exceptions.PipelineNotFoundException;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class DefaultPipelineScreen extends SecureReport{
 

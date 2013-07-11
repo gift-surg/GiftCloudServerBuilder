@@ -1,19 +1,20 @@
+/*
+ * org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.helpers.merge;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.xdat.bean.CatCatalogBean;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatResourceI;
-import org.nrg.xdat.model.XnatResourcecatalogI;
-import org.nrg.xdat.model.XnatResourceseriesI;
+import org.nrg.xdat.model.*;
 import org.nrg.xdat.om.*;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
@@ -21,6 +22,11 @@ import org.nrg.xft.utils.FileUtils;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.restlet.data.Status;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 
 public class MergePrearcToArchiveSession extends MergeSessionsA<XnatImagesessiondata> {

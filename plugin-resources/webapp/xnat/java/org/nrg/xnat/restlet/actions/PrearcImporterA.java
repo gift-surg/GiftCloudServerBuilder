@@ -1,13 +1,14 @@
+/*
+ * org.nrg.xnat.restlet.actions.PrearcImporterA
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.restlet.actions;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -19,26 +20,21 @@ import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xnat.helpers.PrearcImporterHelper;
-import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.prearchive.SessionData;
-import org.nrg.xnat.helpers.prearchive.SessionException;
+import org.nrg.xnat.helpers.prearchive.*;
 import org.nrg.xnat.helpers.uri.URIManager;
-import org.nrg.xnat.helpers.uri.URIManager.PrearchiveURI;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.PropertiesHelper;
 
-/**
- * @author tolsen01
- *
- *	Developers can add their own implementations for the PrearcImporterA.  This can also be done using the PrearcImporterFactory, though I think this might be easier.
- *
- *  Implementations should return a list of URIs that will identify the resources created. (/prearchive/projects/X/timestamp/session)
- *
- *	Developers should add a conf file to their project called prearc-importer.properties with the structure defined below.  The name given in the configuration file, can then be passed to the Importer action, and will be used to get the proper prearc importer.
- */
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 @SuppressWarnings("unchecked")
 public abstract class PrearcImporterA extends StatusProducer implements Callable<Iterable<PrearcSession>>{
 	@SuppressWarnings("serial")

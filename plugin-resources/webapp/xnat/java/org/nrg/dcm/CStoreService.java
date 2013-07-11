@@ -1,14 +1,16 @@
-/**
- * Copyright (c) 2006-2012 Washington University
+/*
+ * org.nrg.dcm.CStoreService
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
  */
 package org.nrg.dcm;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.inject.Provider;
-
+import com.google.common.collect.ImmutableMap;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.UID;
@@ -29,12 +31,11 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
+import javax.inject.Provider;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
-/**
- * DicomService implementing C-STORE SCP for XNAT
- * @author Kevin A. Archie <karchie@wustl.edu>
- */
 public class CStoreService extends DicomService implements CStoreSCP {
     private static final String PhilipsPrivateCXImageStorage = "1.3.46.670589.2.4.1.1";
     private static final String PhilipsPrivateVolumeStorage = "1.3.46.670589.5.0.1";

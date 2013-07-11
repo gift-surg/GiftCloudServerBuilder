@@ -1,8 +1,14 @@
-//Copyright 2012 Radiologics, Inc.  All Rights Reserved
+/*
+ * org.nrg.xnat.turbine.modules.screens.HistoryNavigator
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2013, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/10/13 8:47 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
-
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -13,6 +19,9 @@ import org.nrg.xft.presentation.ItemMerger;
 import org.nrg.xft.presentation.ItemPropBuilder;
 import org.nrg.xnat.itemBuilders.FullFileHistoryBuilder;
 import org.nrg.xnat.presentation.DateBasedSummaryBuilder;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class HistoryNavigator extends SecureReport {
 

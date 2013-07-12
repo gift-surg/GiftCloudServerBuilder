@@ -59,13 +59,40 @@ function prog(theform)
   }
 }
 
-
+XNAT.app.upload={
+	start:function(){
+		if(document.getElementById("image_archive").value==""){
+            showMessage("page_body", "Notification", "This link does not work in your browser.");
+    		return;
+		}
+		
+		var formObject = document.getElementById('uploadFORM');
+		YAHOO.util.Connect.setForm(formObject,true);
+   
+   		openModalPanel("file_upload","Uploading file...");
+   
+		var callback={
+			upload:function(obj1){
+				closeModalPanel("file_upload");
+				if(obj1.responseText.indexOf("upload_success")>-1){
+					proceed();
+				}else{
+					showMessage("page_body", "Error", "Unable to store uploaded file.");
+				}
+			},
+            cache:false, // Turn off caching for IE
+			scope:this
+		}
+		
+		YAHOO.util.Connect.asyncRequest('POST',"$content.getURI("/REST/user/cache/resources/$om.getId()/files?XNAT_CSRF=$!XNAT_CSRF")",callback);
+	}
+}
 
 </script>
-<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="$content.getURI("/REST/user/cache/resources/$om.getId()/files")" onSubmit="return prog(this);">
+<form ID="uploadFORM" target="iframe" enctype="multipart/form-data" method="POST" action="" onSubmit="return prog(this);">
 <INPUT TYPE="hidden" name="extract" value="true"/>
-<INPUT TYPE="hidden" name="_onSuccessReturnJS" value="window.parent.proceed();"/>
-<INPUT TYPE="hidden" name="_onFailureReturnHTML" value="<script>closeModalPanel('file_upload');</script>ERROR: Unable to store uploaded file."/>
+<INPUT TYPE="hidden" name="_onSuccessReturnHTML" value="upload_success"/>
+<INPUT TYPE="hidden" name="_onFailureReturnHTML" value="upload_failed"/>
 #xdatPassItemFormFields($search_element $search_field $search_value $project)
 <TABLE>
 	<TR>
@@ -100,7 +127,7 @@ Image files should be zipped (.zip or .tar.gz) and uploaded using the form below
 		<TD colspan="3" align="right">&nbsp;</TD>
 	</TR>
 	<TR>
-		<TD colspan="3" align="right"><input type="submit" name="eventSubmit_doPerform" value="Upload"/></TD>
+		<TD colspan="3" align="right"><input type="button" name="eventSubmit_doPerform" value="Upload" onclick="XNAT.app.upload.start()"/></TD>
 	</TR>
 </TABLE>
 </form>

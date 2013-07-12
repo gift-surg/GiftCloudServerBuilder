@@ -264,7 +264,7 @@ XNAT.app.uca.moveNext=function(){
 
 			openModalPanel("moving_files","Moving "+entry.fpath);
 			
-			YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/services/move-files',XNAT.app.uca.moveCallback,params,this);
+			YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/services/move-files?XNAT_CSRF=' + csrfToken,XNAT.app.uca.moveCallback,params,this);
 		}
 	}else{
 		XNAT.app.uca.moveFinished();

@@ -12,7 +12,7 @@ $page.setVlinkColor($ui.vlink)
 
 #set($days = [ 1..31 ])
 
-#set($years = [ 2004..1900])
+#set($years = [ $!turbineUtils.getYear()..1900])
 
 #if ($data.message)
 

@@ -34,7 +34,7 @@
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
 
-#set($years = [ 2012..1990])
+#set($years = [ $!turbineUtils.getYear()..1990])
 
 #if ($data.message)
 <font color="red" size="3">$data.message</font>

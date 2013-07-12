@@ -28,7 +28,7 @@
 									       </script>
       </div>
       <div id="DIV_YOB" #if($hasYOB)style="display:block"#else style="display:none"#end>
-       #set($years = [ 1901..2012])
+       #set($years = [ 1900..$!turbineUtils.getYear()])
        #set ($currentYear = $!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"))
 						       <select id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob" >
 							        <option value="NULL">(SELECT)</option>

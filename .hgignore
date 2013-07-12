@@ -72,6 +72,11 @@ plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.X.js
 plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.css
 plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWrangler.js
 plugin-resources/webapp/xnat/scripts/tabWrangler1/tabWranglers.js
+
+plugin-resources/webapp/xdat/xdat.iml
+plugin-resources/webapp/xnat/xnat.iml
+bin\initXnatDb.bat
+
 syntax: regexp
 ^.idea
 ^.*\.[ei]ml
@@ -84,6 +89,10 @@ syntax: regexp
 ^plugin-resources/cache
 ^projects
 ^modules
+^xnat_builder_1_6dev.iml
+^xnat_builder.iml
+^xnat_builder.eml
+
 # ignore emacs backups
 ~$
 # ignore generated bean files, but not ones in the sub directories

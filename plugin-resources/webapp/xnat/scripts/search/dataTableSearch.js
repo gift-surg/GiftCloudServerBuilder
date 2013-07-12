@@ -423,18 +423,16 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
       th.style.lineHeight="13px";
       th.style.cursor="pointer";
 
-      var diff=false;
-      if(th.id.match('^diff_')){
-          diff=true;
-      }
-      var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:this.getMenuItems(diff)});
-      th.contextMenu=_th_menu;
-      _th_menu.render(this.div_table_id);
-      _th_menu.cfg.subscribeToConfigEvent("x", onXChange, this);
-      _th_menu.cfg.subscribeToConfigEvent("y", onYChange, this);
+      if(!th.id.match('^diff_')){ // The Diff column is metadata and sorting/filtering operations do not work with it.
+          var _th_menu=new YAHOO.widget.Menu(th.id +"_cm",{container:th,context:[th,"tl","bl"],lazyload:true,itemdata:this.getMenuItems()});
+          th.contextMenu=_th_menu;
+          _th_menu.render(this.div_table_id);
+          _th_menu.cfg.subscribeToConfigEvent("x", onXChange, this);
+          _th_menu.cfg.subscribeToConfigEvent("y", onYChange, this);
 
-      _th_menu.clickEvent.subscribe(onContextMenuClick,{field:th,dt:this}, this);
-      YAHOO.util.Event.addListener(th, "click", _th_menu.show,null,_th_menu);
+          _th_menu.clickEvent.subscribe(onContextMenuClick,{field:th,dt:this}, this);
+          YAHOO.util.Event.addListener(th, "click", _th_menu.show,null,_th_menu);
+      }
     }
     //alert(out_txt);
 
@@ -809,16 +807,14 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     return columns;
   }
 
-  this.getMenuItems=function(diff){
+  this.getMenuItems=function(){
 	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}];
 
 	  if(this.options.allowInTableMods){
           if(this.optionMenu.en!="xnat:projectData"){
-              if(!diff){
-                  cMenuItems.push({text:"Hide Column"});
-                  cMenuItems.push({text:"Edit Column"});
-                  cMenuItems.push({text:"Filter"});
-              }
+              cMenuItems.push({text:"Hide Column"});
+              cMenuItems.push({text:"Edit Column"});
+              cMenuItems.push({text:"Filter"});
           }
 	  }
 	  return cMenuItems;

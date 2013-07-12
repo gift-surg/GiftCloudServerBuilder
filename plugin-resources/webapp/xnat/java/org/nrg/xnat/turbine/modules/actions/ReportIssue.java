@@ -52,7 +52,8 @@ public class ReportIssue extends SecureAction {
 
         final XDATUser user = TurbineUtils.getUser(data);
         final ParameterParser parameters = data.getParameters();
-        final String body = emailBody(user, parameters, data, context);
+        final String body = emailBody(user, parameters, data, context, false);
+        final String htmlBody = emailBody(user, parameters, data, context, true);
 
         String subject = TurbineUtils.GetSystemName() + " Issue Report from " + user.getLogin();
         // TODO: Need to figure out how to handle attachments in notifications.
@@ -62,7 +63,8 @@ public class ReportIssue extends SecureAction {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(MailMessage.PROP_FROM, adminEmail);
         properties.put(MailMessage.PROP_SUBJECT, subject);
-        properties.put(MailMessage.PROP_HTML, body);
+        properties.put(MailMessage.PROP_HTML, htmlBody);
+        properties.put(MailMessage.PROP_TEXT, body);
         if (attachments != null && attachments.size() > 0) {
             properties.put(MailMessage.PROP_ATTACHMENTS, attachments);
         }
@@ -90,9 +92,14 @@ public class ReportIssue extends SecureAction {
         return attachmentMap;
     }
 
-    private String emailBody(XDATUser user, ParameterParser parameters, RunData data, Context context) throws Exception {
+    private String emailBody(XDATUser user, ParameterParser parameters, RunData data, Context context, boolean html) throws Exception {
+        if(html){
+            context.put("html", "html");
+            context.put("htmlDescription", parameters.get("description").replaceAll("\n", "<br/>"));
+        } else {
+            context.put("description", parameters.get("description"));
+        }
         context.put("summary", parameters.get("summary"));
-        context.put("description", parameters.get("description"));
         context.put("time", (new Date()).toString());
         context.put("user_agent", data.getRequest().getHeader(HTTP_USER_AGENT));
         context.put("xnat_host", data.getRequest().getHeader(HTTP_HOST));
@@ -107,7 +114,12 @@ public class ReportIssue extends SecureAction {
         context.put("user", user);
         context.put("postgres_version", PoolDBUtils.ReturnStatisticQuery("SELECT version();", "version", user.getDBName(), user.getLogin()));
 
-        return AdminUtils.populateVmTemplate(context, "/screens/email/issue_report.vm");
+        if(html){
+            context.put("html", "html");
+            return AdminUtils.populateVmTemplate(context, "/screens/email/html_issue_report.vm");
+        } else {
+            return AdminUtils.populateVmTemplate(context, "/screens/email/issue_report.vm");
+        }
     }
 
     private void checkFolder(String path) {

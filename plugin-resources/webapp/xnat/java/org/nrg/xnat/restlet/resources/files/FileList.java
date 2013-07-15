@@ -518,7 +518,10 @@ public class FileList extends XNATCatalogTemplate {
                     root += row[4].toString();
                     // extend the folder name with scan type as long as it's not a tar (tar's have a 100 character limit)
                     if (!mt.equals(MediaType.APPLICATION_GNU_TAR) && !mt.equals(MediaType.APPLICATION_TAR) &&
-                            row[5] != null && !row[5].equals("")) root += "_" + row[5].toString();
+                            row[5] != null && !row[5].equals("")) {
+                        // session types can have special characters that interfere with filepath creation, so those should be replaced with underscores
+                        root += "_" + row[5].toString().replaceAll("[\\/\\\\:\\*\\?\"<>\\|]","_");
+                    }
                     root += "/";
                 }
                 if (row[1] != null && !row[1].equals("")) {

@@ -12,6 +12,7 @@ package org.nrg.xnat.restlet.resources.search;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
 import org.nrg.xdat.om.*;
+import org.nrg.xdat.presentation.CSVPresenter;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
@@ -150,6 +151,10 @@ public class SavedSearchResource extends ItemResource {
 		
 		if(xss!=null){
 			if(filepath !=null && filepath.startsWith("results")){
+                if ((mt.equals(SecureResource.TEXT_CSV) || mt.equals(MediaType.APPLICATION_EXCEL)) &&
+                        !filepath.endsWith(".csv")){
+                    this.setContentDisposition(filepath + ".csv");
+                }
 				try {
 					DisplaySearch ds=xss.getDisplaySearch(user);
 					String sortBy = this.getQueryVariable("sortBy");
@@ -176,23 +181,25 @@ public class SavedSearchResource extends ItemResource {
 					LinkedHashMap<String,Map<String,String>> cp=SearchResource.setColumnProperties(ds,user,this);
 					
 					XFTTable table=null;
-					if(mv!=null){
-						if (mt.equals(SecureResource.APPLICATION_XLIST)){
-							table=(XFTTable)ds.execute(new RESTHTMLPresenter(TurbineUtils.GetRelativePath(ServletCall.getRequest(this.getRequest())),this.getCurrentURI(),user,sortBy),user.getLogin());
-						}else{
-						    table=mv.getData(null, null, null);
-						}
-					}else{
-					    ds.setPagingOn(false);
-					    if (mt.equals(SecureResource.APPLICATION_XLIST)){
-					    	table=(XFTTable)ds.execute(new RESTHTMLPresenter(TurbineUtils.GetRelativePath(ServletCall.getRequest(this.getRequest())),this.getCurrentURI(),user,sortBy),user.getLogin());
-						}else{
-							table=(XFTTable)ds.execute(null,user.getLogin());
-					    }
-					    
-					}
-					
-					Hashtable<String,Object> tableParams=new Hashtable<String,Object>();
+                    if(mv!=null){
+                        if (mt.equals(SecureResource.APPLICATION_XLIST)){
+                            table=(XFTTable)ds.execute(new RESTHTMLPresenter(TurbineUtils.GetRelativePath(ServletCall.getRequest(this.getRequest())),this.getCurrentURI(),user,sortBy),user.getLogin());
+                        }else if(this.isQueryVariableTrue("guiStyle")){
+                            table=(XFTTable)ds.execute(new CSVPresenter(),user.getLogin());
+                        }else{
+                            table=mv.getData(null, null, null);
+                        }
+                    }else{
+                        ds.setPagingOn(false);
+                        if (mt.equals(SecureResource.APPLICATION_XLIST)){
+                            table=(XFTTable)ds.execute(new RESTHTMLPresenter(TurbineUtils.GetRelativePath(ServletCall.getRequest(this.getRequest())),this.getCurrentURI(),user,sortBy),user.getLogin());
+                        }else{
+                            table=(XFTTable)ds.execute(null,user.getLogin());
+                        }
+
+                    }
+
+                    Hashtable<String,Object> tableParams=new Hashtable<String,Object>();
 					tableParams.put("totalRecords", table.getNumRows());
 					
 					return this.representTable(table, mt, tableParams,cp);

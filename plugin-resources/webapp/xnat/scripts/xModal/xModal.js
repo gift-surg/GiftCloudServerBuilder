@@ -38,9 +38,9 @@ var xModal = {} ;
 xModal_sampleObject = {
     //id: 'unique_id_for_this_modal', // id to give to new xModal 'window' - if omitted, will be generated dynamically
     kind: 'fixed',  // options: 'dialog','fixed','large','med','small','custom' - defaults to 'fixed'
-    width: 600, // width in px - used for 'fixed','custom','static' - defaults to 600
-    height: 400, // height in px - used for 'fixed','custom','static' - defaults to 400
-    scroll: 'yes', // does content need to scroll? - defaults to yes, any other value prevents scrolling
+    width: 600, // optional - width in px - used for 'fixed','custom','static' - defaults to 600
+    height: 400, // optional - height in px - used for 'fixed','custom','static' - defaults to 400
+    scroll: 'yes', // optional - does content need to scroll? - defaults to yes, any other value prevents scrolling
     title: 'Message', // text for title bar - you should really customize this, but will show "Message" if omitted
     content: ' ', // REQUIRED - 'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' (or 'existing') to put existing content in a modal (use for forms)
     footer: 'show', // optional - defaults to 'show' if omitted - use 'hide' to supress footer
@@ -121,7 +121,7 @@ function xModalLoadingOpen(_options){
 }
 function xModalLoadingClose(_id){
     var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;
-    xModalCloseNew($(thisLoader).closest('div.xmask.open.top'));
+    xModalCloseNew(_id,$(thisLoader).closest('div.xmask.open.top'));
 }
 
 // 'Preset' for generic fixed-size modal
@@ -573,10 +573,72 @@ function xModalOpenNew(xx){
     }
 }
 
+// xModalOpen() function included for backwards compatibility (used in HCP)
+function xModalOpen(x){
 
-function xModalCloseNew(_$this) {
+    //$('body').on('event','#selector',function(){
+//    xModalOpen({
+//        kind:     'fixed',  // kind - 'dialog','loading','fixed','large','med','small','custom'
+//        width:     550,  // box width when used with 'fixed' size, horizontal margin when used with 'custom' size
+//        height:    350,  // box height when used with 'fixed' size, vertical margin when used with 'custom' size
+//        scroll:   'yes', // does the content need to scroll? (yes/no)
+//        box:      'confirm',  // class name of this modal box
+//        title:    'Confirm Download', // text for modal title bar - if empty will be "Alert" - use space for blank title
+//        content:   '(put the content here)', // body content of modal window - pull from existing or dynamic element $('#source').html();
+//        footer:    {
+//            show: 'yes', // self-explanatory, right? anything but 'yes' will hide the footer
+//            height: '' , // height in px - blank for default - 52px
+//            background: '', // css for footer background - white if blank
+//            border: '', // color for footer top border - white if blank
+//            content: '' // empty string renders default footer with two buttons (ok/cancel) using values specified below
+//        },
+//        // by default the buttons will go in the footer, this can be overridden by adding elements with 'class="ok default button"' and 'class="cancel button"' to the body content
+//        ok:       'OK', // text for submit button - if blank uses "OK"
+//        cancel:   'Cancel' // text for cancel button - if blank uses "Cancel"
+//    });
+//    xModalSubmit = function(){
+//        // doSomething();
+//    };
+//    xModalCancel = function(){
+//        // if you want to do something else if someone cancels, put it here
+//        // it's ok if this is blank -
+//        xModalClose();
+//    };
+//});
+
+    xmodal_count++ ;
+
+    var xModal_opts = {};
+
+    xModal_opts.id = x.box || 'x_modal'+xmodal_count ;
+    xModal_opts.kind = x.kind || 'fixed' ;
+    xModal_opts.width = x.width || 600 ;
+    xModal_opts.height = x.height || 400 ;
+    xModal_opts.scroll = x.scroll || 'yes' ;
+    xModal_opts.title = x.title || 'Message' ;
+    xModal_opts.content = x.content || '';
+
+    if (x.footer && x.footer.show && x.footer.show === 'yes') { xModal_opts.footer = 'show'; }
+    if (x.footer && x.footer.height) { xModal_opts.footerHeight = x.footer.height ; }
+    if (x.footer && x.footer.background) { xModal_opts.footerBackground = x.footer.background ; }
+    if (x.footer && x.footer.border) { xModal_opts.footerBorder = x.footer.border ; }
+    if (x.footer && x.footer.content && x.footer.content > '') { xModal_opts.footerContent = x.footer.content ; }
+
+    xModal_opts.ok = 'show' ;
+    xModal_opts.okLabel = x.ok || 'OK' ;
+    xModal_opts.okAction = function(){xModalSubmit()} || function(){} ;
+
+    xModal_opts.cancel = 'show' ;
+    xModal_opts.cancelLabel = x.cancel || 'Cancel' ;
+    xModal_opts.cancelAction = function(){xModalCancel()} || function(){} ;
+
+    xModalOpenNew(xModal_opts);
+
+}
+
+function xModalCloseNew(_xmodal_id,_$this_mask) {
     // closes the topmost modal
-    var $mask = _$this ?  _$this : $('div.xmask.top');
+    var $mask = _$this_mask ? _$this_mask : $('div.xmask.top');
     var $modal = $mask.find('div.xmodal');
     xmodal_count-- ;
     var prev_xmodal = xmodal_count ;
@@ -604,6 +666,15 @@ function xModalCloseNew(_$this) {
     if (!$('div.xmask.open').length){
         $body.removeClass('open');
     }
+    // nullify functions for 'ok' and 'cancel' functions
+    if (window[_xmodal_id+'_ok'] != undefined){
+        window[_xmodal_id+'_ok'] = function(){};
+        window[_xmodal_id+'_ok']();
+    }
+    if (window[_xmodal_id+'_cancel'] != undefined){
+        window[_xmodal_id+'_cancel'] = function(){};
+        window[_xmodal_id+'_cancel']();
+    }
 }
 
 
@@ -628,7 +699,7 @@ function xModalActions(_this){
                         window[xmodal_id+'_ok']();
                     }
                     if ($clicked_button.hasClass('close')){
-                        xModalCloseNew($my_mask);
+                        xModalCloseNew(xmodal_id,$my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('cancel')){
@@ -636,11 +707,11 @@ function xModalActions(_this){
                         window[xmodal_id+'_cancel']();
                     }
                     if ($clicked_button.hasClass('close')){
-                        xModalCloseNew($my_mask);
+                        xModalCloseNew(xmodal_id,$my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('close')){
-                    xModalCloseNew($my_mask);
+                    xModalCloseNew(xmodal_id,$my_mask);
                 }
             }
         }

@@ -677,7 +677,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-mx</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3-SNAPSHOT</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

@@ -24,4 +24,6 @@
 	<bean name="dicomSCPManager" class="org.nrg.dcm.DicomSCPManager">
 		<constructor-arg ref="dicomSCP" />
 	</bean>
+
+	<bean name="sessionDataFactoryClasses" class="java.util.ArrayList" />
 </beans>

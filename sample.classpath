@@ -79,7 +79,7 @@
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.2.jar"/>
   <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-4.0.2.jar"/>

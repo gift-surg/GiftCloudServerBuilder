@@ -10,21 +10,6 @@
  */
 package org.nrg.xnat.archive;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.configuration.ConfigurationException;
-import org.nrg.dcm.xnat.DICOMSessionBuilder;
-import org.nrg.dcm.xnat.XnatAttrDef;
-import org.nrg.ecat.xnat.PETSessionBuilder;
-import org.nrg.xft.XFT;
-import org.nrg.xnat.turbine.utils.PropertiesHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,6 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +26,25 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.configuration.ConfigurationException;
+import org.nrg.dcm.xnat.DICOMSessionBuilder;
+import org.nrg.dcm.xnat.XnatAttrDef;
+import org.nrg.dcm.xnat.XnatImagesessiondataBeanFactory;
+import org.nrg.ecat.xnat.PETSessionBuilder;
+import org.nrg.framework.services.ContextService;
+import org.nrg.xdat.XDAT;
+import org.nrg.xft.XFT;
+import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 
 
@@ -69,6 +74,9 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	private static List<BuilderConfig> builderClasses;
 	
 	private static final Class<?>[] PARAMETER_TYPES=new Class[]{File.class,Writer.class};
+	
+	private static final List<Class<? extends XnatImagesessiondataBeanFactory>> sessionDataFactoryClasses = Lists.newArrayList();
+	private static ContextService contextService = null;
 	
 	private final File dir,xml;
 	private final boolean isInPrearchive;
@@ -163,14 +171,31 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 	}
 	
 	/**
+	 * Add session data bean factory classes to the chain used to map DICOM SOP classes to XNAT session types
+	 * @param classes session bean factory classes
+	 * @return this
+	 */
+	public XNATSessionBuilder setSessionDataFactoryClasses(final Iterable<Class<? extends XnatImagesessiondataBeanFactory>> classes) {
+	    sessionDataFactoryClasses.clear();
+	    Iterables.addAll(sessionDataFactoryClasses, classes);
+	    return this;
+	}
+	
+	/**
 	 * Iterate over the available Builders to try to generate an xml for the files in this directory.
 	 * 
 	 * The iteration will stop once it successfully builds an xml (or runs out of builder configs).
 	 * @throws IOException
 	 */
-	public Boolean call() throws IOException {
+	@SuppressWarnings("unchecked")
+    public Boolean call() throws IOException {
 		xml.getParentFile().mkdirs();
 		final FileWriter fw = new FileWriter(xml);
+		
+		if (null == contextService && sessionDataFactoryClasses.isEmpty()) {
+		    contextService = XDAT.getContextService();
+		    sessionDataFactoryClasses.addAll(contextService.getBean("sessionDataFactoryClasses", Collection.class));
+		}
 		
 		for(final BuilderConfig bc: builderClasses){
 			if(bc.getCode().equals(DICOM)){
@@ -184,6 +209,9 @@ public class XNATSessionBuilder implements Callable<Boolean>{
 				        }
 				    })).toArray(new XnatAttrDef[0]);
 				    final DICOMSessionBuilder builder = new DICOMSessionBuilder(dir, fw, attrdefs);
+				    if (!sessionDataFactoryClasses.isEmpty()) {
+				        builder.setSessionBeanFactories(sessionDataFactoryClasses);
+				    }
 
 					if(!isInPrearchive){
 						builder.setIsInPrearchive(isInPrearchive);

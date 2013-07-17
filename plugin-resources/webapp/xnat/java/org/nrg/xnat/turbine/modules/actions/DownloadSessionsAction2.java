@@ -70,20 +70,18 @@ public class DownloadSessionsAction2 extends SecureAction {
             sessionCatalog.setId(session);
 
             // narrow down the range of scan types to only the ones relevant to this session
-            String [] sessionScanTypes;
+            if (requestScanTypes != null && requestScanTypes.length > 0) {
             String query= "SELECT DISTINCT type FROM xnat_imagescandata WHERE image_session_id = '" + session + "' AND type IN (" + sqlList(requestScanTypes) + ")";
             XFTTable table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
-            List<String> list = table.convertColumnToArrayList("type");
-            sessionScanTypes = list.toArray(new String[0]);
-
-            if (sessionScanTypes!=null && sessionScanTypes.length>0){
+                List<String> sessionScanTypes = table.convertColumnToArrayList("type");
+                if (sessionScanTypes!=null && sessionScanTypes.size() > 0) {
                 CatCatalogBean scansCatalog = new CatCatalogBean();
                 scansCatalog.setId("RAW");
                 for(String scanType : sessionScanTypes){
-                	if(scanType.indexOf("/")>-1){
+                        if(scanType.contains("/")){
                     	scanType=scanType.replace("/","[SLASH]");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
                     }
-                	if(scanType.indexOf(",")>-1){
+                        if(scanType.contains(",")){
                     	scanType=scanType.replace(",","[COMMA]");
                     }
                 	
@@ -106,6 +104,7 @@ public class DownloadSessionsAction2 extends SecureAction {
                 	}
                 }
                 sessionCatalog.addSets_entryset(scansCatalog);
+            }
             }
             
             if (resources!=null && resources.length>0){

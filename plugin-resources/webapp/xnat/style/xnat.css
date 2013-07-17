@@ -362,6 +362,16 @@ div.containerTitle.withColor { background: #084FAB ; }
 .formSublabel { text-align: left; /* vertical-align: text-top; */ white-space: nowrap ; }
 
 .formLabelRequired b { color: red ; /* font-size: 1.2em ; */ }
+.formLabelRequiredStatement { color: #555555 ; font-style: italic ; }
+tr.requirementStatement { font-size: 0.875em ; }
+td.requirementStatement { padding-left: 3px ; }
+td.newProjectSpacer { height: 10px ; }
+span.noteRequired { font-weight: bold ; color : #BB0000 ; }
+span.noteOptional { font-weight: bold ; color : #000055 ; }
+input.requiredField { border: 1px solid #BB0000 ; }
+input.title { width: 100% ; }
+input.abbreviation { width: 250px ; }
+div.icon-remove { width: 16px ; height: 16px ; background-image: url(/xnat/scripts/yui/build/assets/skins/xnat/xnat-sprite.png) ; background-position: 0 -1099px ; }
 
 .summary h3 { line-height: 15px ; margin: 0 !important ; padding: 3px 0 !important ; }
 

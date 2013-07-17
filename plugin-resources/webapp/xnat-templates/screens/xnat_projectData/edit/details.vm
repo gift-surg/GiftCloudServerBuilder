@@ -1,33 +1,117 @@
 <TABLE>
-				<TR><TH align="left">Title</TH><TD>		<input id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95" onkeydown="subOnEnter(event,this);"/></TD></TR>
-														<TR><TH align="left">Running Title</TH><TD>		<input id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24" onkeydown="subOnEnter(event,this);" /> (24 characters maximum.)</TD></TR>
-<TR><TH align="left" NOWRAP>$displayManager.getSingularDisplayNameForProject() Abbreviation</TH><TD>
+	<TR>
+        <TH align="left">$displayManager.getSingularDisplayNameForProject() Title</TH>
+        <TD>
+        #if( $parentTemplate != 'add' )
+            <input class="title" id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95" onkeydown="subOnEnter(event,this);"/>
+        #else
+            <input class="requiredField title" id="xnat:projectData/name" type="text" name="xnat:projectData/name"  value="$!item.getStringProperty("xnat:projectData/name")" size="95" onkeydown="subOnEnter(event,this);"/>
+        #end
+        </TD>
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="projectTitle_requirementStatement" class="requirementStatement"><span class="noteRequired">REQUIRED: </span><span class="formLabelRequiredStatement">Enter the full name of your project here. This will show up on project listings.</span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
+
+	<TR>
+        <TH align="left">Running Title</TH>
+        <TD>
+        #if( $parentTemplate != 'add' )
+            <input class="abbreviation" id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24" onkeydown="subOnEnter(event,this);" /></TD>
+        #else
+            <input class="requiredField abbreviation" id="xnat:projectData/secondary_ID" type="text" name="xnat:projectData/secondary_ID"  value="$!item.getStringProperty("xnat:projectData/secondary_ID")" size="24" maxlength="24" onkeydown="subOnEnter(event,this);" /></TD>
+        #end
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="runningTitle_requirementStatement" class="requirementStatement"><span class="noteRequired">REQUIRED: </span><span class="formLabelRequiredStatement">Create a simple abbreviation of your project name, using 24 characters or less. Spaces are allowed.<br/>This will be commonly used in menus and UI elements.</span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
+
+    <TR>
+        <TH align="left" NOWRAP>$displayManager.getSingularDisplayNameForProject() ID</TH>
+        <TD>
 		#if( $parentTemplate != 'add' )
-		<input id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")" />
+		<input class="abbreviation" id="xnat:projectData/ID" type="hidden" name="xnat:projectData/ID" value="$item.getStringProperty("xnat:projectData/ID")" />
 		$item.getProperty("xnat:projectData/ID")
 		#else
-		<input id="xnat:projectData/ID" type="text" name="xnat:projectData/ID" value="$!item.getStringProperty("xnat:projectData/ID")" size="20" maxlength="14" ONCHANGE="this.value=stringCamelCaps(this.value);" onkeydown="subOnEnter(event,this);" />&nbsp;(One word only, no special characters,'_' is ok.)
-		#end</TD></TR>
-							<TR><TH align="left">Description</TH><TD>		<textarea id="xnat:projectData/description"  name="xnat:projectData/description" rows="4" cols="70" onkeydown="subOnEnter(event,this);" >$!item.getStringProperty("xnat:projectData/description")</textarea></TD></TR>
-											<TR><TH align="left">Keywords</TH><TD>		<input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95" onkeydown="subOnEnter(event,this);" /></TD></TR>
+		<input class="requiredField abbreviation" id="xnat:projectData/ID" type="text" name="xnat:projectData/ID" value="$!item.getStringProperty("xnat:projectData/ID")" size="20" maxlength="14" ONCHANGE="this.value=stringCamelCaps(this.value);" onkeydown="subOnEnter(event,this);" />
+		#end
+        </TD>
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="projectId_requirementStatement" class="requirementStatement"><span class="noteRequired">REQUIRED: </span><span class="formLabelRequiredStatement">Create a one word project identifier. This is used in the database and <b>cannot be changed.</b></span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
 
-		#addCustomScreens($om.getXSIType() "edit/details")
-		
-														#set($pathInfo = $arcP.getPaths())
- <INPUT TYPE="hidden" NAME="arc:project/current_arc" VALUE="arc001"/>
+    <TR>
+        <TH align="left" style="vertical-align: top;"><nobr>$displayManager.getSingularDisplayNameForProject() Description</nobr></TH>
+        <TD><textarea id="xnat:projectData/description" name="xnat:projectData/description" rows="4" cols="70" onkeydown="subOnEnter(event,this);" >$!item.getStringProperty("xnat:projectData/description")</textarea></TD>
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="projectDescription_requirementStatement" class="requirementStatement"><span class="noteOptional">Optional: </span><span class="formLabelRequiredStatement">Provide a description of your project. This is for reference only and is not searchable.</span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
+
+    <TR>
+        <TH align="left">Keywords</TH>
+        <TD><input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95" onkeydown="subOnEnter(event,this);" /></TD>
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="keywords_requirementStatement" class="requirementStatement"><span class="noteOptional">Optional: </span><span class="formLabelRequiredStatement">Enter searchable keywords. Each word, separated by a space, can be used independently as a search string.</span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
+
+    #addCustomScreens($om.getXSIType() "edit/details")
+	#set($pathInfo = $arcP.getPaths())
+    <INPUT TYPE="hidden" NAME="arc:project/current_arc" VALUE="arc001"/>
  
- <TR><TH align="left">Alias</TH>
- <TD>
- #foreach($aliasCounter in [0..3])
- <input id="xnat:projectData/aliases/alias[$aliasCounter]/alias" type="text" name="xnat:projectData/aliases/alias[$aliasCounter]/alias" value="$!item.getStringProperty("xnat:projectData/aliases/alias[$aliasCounter]/alias")" onkeydown="subOnEnter(event,this);"/>
- &nbsp;
- #end
- </TD>
- </TR> 
- <TR><TH align="left" valign="top">Investigators</TH>
- <TD><div id="investigatorBox">Loading...</div>
- </TD>
- </TR>
+    <TR>
+        <TH align="left">Alias(es)</TH>
+        <TD>
+        #foreach($aliasCounter in [0..3])
+        <input id="xnat:projectData/aliases/alias[$aliasCounter]/alias" type="text" name="xnat:projectData/aliases/alias[$aliasCounter]/alias" value="$!item.getStringProperty("xnat:projectData/aliases/alias[$aliasCounter]/alias")" onkeydown="subOnEnter(event,this);"/>
+        &nbsp;
+        #end
+        </TD>
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="aliases_requirementStatement" class="requirementStatement"><span class="noteOptional">Optional: </span><span class="formLabelRequiredStatement">Enter alternate aliases (for example: charge codes) that this project can be identified by.</span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
+
+    <TR>
+        <TH align="left" valign="top">Investigators</TH>
+        <TD>
+            <div id="investigatorBox">Loading...</div>
+        </TD>
+    </TR>
+    #if( $parentTemplate == 'add' )
+    <TR class="requirementStatement">
+        <TD></TD>
+        <TD id="investigators_requirementStatement" class="requirementStatement"><span class="noteOptional">Optional: </span><span class="formLabelRequiredStatement">List investigators associated with this project. This is for reference only and <b>does not provide access</b> to this project for the listed investigators.</span></TD>
+    </TR>
+    <TR><TD colspan="2" class="newProjectSpacer"></TD></TR>
+    #end
+
 </TABLE>
 <script type="text/javascript" src="$content.getURI("scripts/generated/xnat_investigatorData.js")"></script> 
 <script type="text/javascript" src="$content.getURI("scripts/xnat_investigatorData/investigatorManager.js")"></script> 
@@ -73,6 +157,7 @@ window.refreshInvestigators=function (){
   button.tbody=tbody;
   button.onclick=function(){
     tr=document.createElement("tr");
+    tr.id="Investigator_"+(tbody.rows.length);
     var th= document.createElement("th");
     th.innerHTML="Investigator "+(tbody.rows.length);
     tr.appendChild(th);
@@ -82,6 +167,17 @@ window.refreshInvestigators=function (){
     piSelect.name="xnat:projectData/investigators/investigator["+ (tbody.rows.length) + "]/xnat_investigatordata_id";
     window.invest_manager.populateSelect(piSelect,window.other_investigators[otherCounter]);
     td.appendChild(piSelect);
+    tr.appendChild(td);
+    td= document.createElement("td");
+    var remInvestButton = document.createElement("div");
+    remInvestButton.className="icon-remove";
+    remInvestButton.id="remInvestBut_"+(tbody.rows.length);
+    remInvestButton.title="Remove Investigator";
+    remInvestButton.onclick=function(){
+        var idx = this.id.substr(this.id.indexOf('_')+1);
+        removeInvestigator(idx);
+    };
+    td.appendChild(remInvestButton);
     tr.appendChild(td);
     tbody.appendChild(tr);
     return false;
@@ -113,6 +209,7 @@ window.refreshInvestigators=function (){
   
   for(var otherCounter=0;otherCounter<window.other_investigators;otherCounter++){
     tr=document.createElement("tr");
+    tr.id="Investigator_" + (otherCounter+1);
     var th= document.createElement("th");
     th.innerHTML="Investigator " + (otherCounter+1);
     th.noWrap="true";
@@ -123,6 +220,17 @@ window.refreshInvestigators=function (){
     piSelect.name="xnat:projectData/investigators/investigator["+ (otherCounter+1) + "]/xnat_investigatordata_id";
     window.invest_manager.populateSelect(piSelect,window.other_investigators[otherCounter]);
     td.appendChild(piSelect);
+    tr.appendChild(td);
+    td= document.createElement("td");
+    var remInvestButton = document.createElement("div");
+    remInvestButton.className="icon-remove";
+    remInvestButton.id="remInvestBut_"+(tbody.rows.length);
+    remInvestButton.title="Remove Investigator";
+    remInvestButton.onclick=function(){
+        var idx = this.id.substr(this.id.indexOf('_')+1);
+        removeInvestigator(idx);
+    };
+    td.appendChild(remInvestButton);
     tr.appendChild(td);
   }
     
@@ -149,7 +257,9 @@ window.failure=function(msg){
 window.invest_manager.investigatorsLoaded.subscribe(window.refreshInvestigators,this);
 window.invest_manager.init();
 
-
+function removeInvestigator(index){
+    $('#Investigator_'+index).remove();
+}
 
 function stringCamelCaps(val)
 {

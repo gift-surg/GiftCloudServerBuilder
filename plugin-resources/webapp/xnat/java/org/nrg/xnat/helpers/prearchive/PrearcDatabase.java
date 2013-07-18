@@ -17,6 +17,7 @@ import org.nrg.action.ClientException;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusListenerI;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.db.PoolDBUtils;
@@ -108,16 +109,21 @@ public final class PrearcDatabase {
 			if(PrearcDatabase.prearcPath!=null){
 				PrearcDatabase.sessionDelegate = delegate != null ? delegate : new FileSystemSessionData(PrearcDatabase.prearcPath);
 
-                if(!tableExists()) {
+                if(!tableCorrect()) { // check to see if the table contains the correct number of columns (older versions may not)
+                    PrearcDatabase.dropTable(); // if not, drop the table entirely
+                }
+
+                if(!tableExists()) { // create the table if it does not currently exist
                     PrearcDatabase.createTable();
                 }
 
 				if(recreateDBMSTablesFromScratch) {
-					PrearcDatabase.refresh();
+					PrearcDatabase.deleteRows();
 				}
-                else {
-                    PrearcDatabase.pruneDatabase();
-                }
+
+                PrearcDatabase.populateTable(); // add rows to the table from the prearchive directory if not already present
+                PrearcDatabase.pruneDatabase(); // remove rows from the table if they are not present in the prearchive directory
+
 				PrearcDatabase.ready = true;
 			}
 		}
@@ -162,6 +168,32 @@ public final class PrearcDatabase {
         return true;
     }
 
+    /**
+     * Checks to see if the existing prearchive table has the number of columns necessary to contain
+     * all of the attributes of a DatabaseSession object.
+     * @return true if the column numbers match, false otherwise
+     * @throws Exception
+     */
+    private static boolean tableCorrect() throws Exception {
+        try {
+            return new SessionOp<Boolean>() {
+                public Boolean op() throws Exception {
+                    String query ="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'xdat_search' AND table_name = 'prearchive';";
+                    ResultSet r = this.pdb.executeQuery(null, query, null);
+                    int rs = 0;
+                    if(r.first()) {
+                        rs = r.getInt(1);
+                    }
+                    return(rs == DatabaseSession.values().length);
+                }
+            }.run();
+        }
+        // can't happen
+        catch (SessionException e){
+            logger.error("",e);
+        }
+        return true;
+    }
 
     /**
      * Create the table if it doesn't exist. Should only be called once. Delete table argument
@@ -177,6 +209,27 @@ public final class PrearcDatabase {
                     if (exists==null){
                         PoolDBUtils.ExecuteNonSelectQuery(tableSql, null , null);
                     }
+                    return null;
+                }
+            }.run();
+        }
+        // can't happen
+        catch (SessionException e){
+            logger.error("",e);
+        }
+    }
+
+    /**
+     * Drops the prearchive table, if it exists. Should only be used in cases where the table is
+     * malformed or otherwise will not function correctly with the codebase.
+     * @throws Exception
+     */
+    private static void dropTable() throws Exception {
+        try {
+            new SessionOp<Void>() {
+                public Void op() throws Exception {
+                    String query ="DROP TABLE IF EXISTS " + PrearcDatabase.tableWithSchema + ";";
+                    PoolDBUtils.ExecuteNonSelectQuery(query, null , null);
                     return null;
                 }
             }.run();
@@ -205,10 +258,13 @@ public final class PrearcDatabase {
             public java.lang.Void op () throws Exception {
                 PreparedStatement statement = this.pdb.getPreparedStatement(null, PrearcDatabase.insertSql());
                 for (final SessionData s : ss) {
-                    for (int i = 0; i < DatabaseSession.values().length; i++) {
-                        DatabaseSession.values()[i].setInsertStatement(statement, s);
+                    SessionDataTriple sdt = s.getSessionDataTriple(); // only insert if the session is not already present
+                    if (!exists(sdt.getFolderName(), sdt.getTimestamp(), sdt.getProject())) {
+                        for (int i = 0; i < DatabaseSession.values().length; i++) {
+                            DatabaseSession.values()[i].setInsertStatement(statement, s);
+                        }
+                        statement.executeUpdate();
                     }
-                    statement.executeUpdate();
                 }
                 return null;
             }
@@ -316,8 +372,14 @@ public final class PrearcDatabase {
      * @throws ClassNotFoundException 
      */
     public static void refresh() throws Exception {
-        PrearcDatabase.deleteRows();
-        PrearcDatabase.populateTable();
+        PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
+
+        if(prearcConfig.isReloadPrearcDatabaseOnApplicationStartup()) {
+            PrearcDatabase.deleteRows();
+        }
+
+        PrearcDatabase.populateTable(); // add rows to the table from the prearchive directory if not already present
+        PrearcDatabase.pruneDatabase(); // remove rows from the table if they are not present in the prearchive directory
     }
 
     /**

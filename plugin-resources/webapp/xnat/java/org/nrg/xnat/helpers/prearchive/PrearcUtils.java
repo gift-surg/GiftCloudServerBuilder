@@ -10,6 +10,8 @@
  */
 package org.nrg.xnat.helpers.prearchive;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.om.ArcProject;
@@ -456,4 +458,165 @@ public class PrearcUtils {
 			return false;
 		}
 	}
+	
+	/*******************
+	 * The prearchive logging code begins here.
+	 * 
+	 * In the future, we might want to move this to a database table.  However, the current prearchive table doesn't have a primary key column (really?).  
+	 * So, there would be no way to reliably join from the logs table to the prearchive table.  Also, this would make more sense to do as part of a image session logging framework 
+	 * which would capture a lot more then just preachive logs, but requires more requirements gathering.
+	 * 
+	 * As such, this is more of a stub implementation, that should probably change when the above problems are dealt with.  It will facilitate the current requirement, which 
+	 * is just that we can show the last exception via REST.
+	 */
+	
+	private static File getLogDir(final String project, final String timestamp, final String session) throws IOException, InvalidPermissionException, Exception{
+		if(timestamp==null || session==null){
+			throw new IllegalArgumentException(String.format("Invalid prearchive session: timestamp %s; session %s",
+			        timestamp, session));
+		}
+		return new File(new File(new File(getPrearcDir(null, project,true),timestamp),session),"logs");
+	}
+	
+	/**
+	 * Logs a message for a particular prearchive session.  The log entry will be placed in a log file named with the current timestamp in a logs subdirectory.
+	 * 
+	 * @param data
+	 * @param message
+	 */
+	public static void log(final SessionData data,final Throwable message){
+		PrearcUtils.log(data.getProject(),data.getTimestamp(),data.getName(),message);
+	}
+	
+	/**
+	 * Logs a message for a particular prearchive session.  The log entry will be placed in a log file named with the current timestamp in a logs subdirectory.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @param message
+	 */
+	public static void log(final String project, final String timestamp, final String session, final Throwable message) {
+		try {
+			File logs=getLogDir(project,timestamp,session);
+			if(!logs.exists()){
+				logs.mkdirs();
+			}
+			FileUtils.writeStringToFile(new File(logs,Calendar.getInstance().getTimeInMillis()+".log"), message.getMessage());
+		} catch (IOException e) {
+			logger.error("",e);
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+		} catch (Exception e) {
+			logger.error("",e);
+		}
+	}
+	
+	/**
+	 * Get all of the log IDs for this prearchived session.  Returns an empty list when none are present.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @return
+	 */
+	public static Collection<String> getLogs(final String project, final String timestamp, final String session) {
+		final Collection<String> logs=Lists.newArrayList();
+		try {
+			final File logDir=getLogDir(project,timestamp,session);
+			if(logDir.exists()){
+				final String[] files=logDir.list();
+				if(files!=null){
+					for(String f:files){
+						logs.add(f.substring(0,f.indexOf(".log")));//strip off the .log so it would be seamless to not use physical log files here.
+					}
+				}
+			}
+		} catch (IOException e) {
+			logger.error("",e);
+			return null;
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return logs;
+	}
+	
+	/**
+	 * Return the log entry for the specified ID (timestamp).  Returns null when it isn't found.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @param logId
+	 * @return
+	 */
+	public static String getLog(final String project, final String timestamp, final String session, final String logId) {
+		try {
+			final File logDir=getLogDir(project,timestamp,session);
+			if(logDir.exists()){
+				final File log=new File(logDir,logId+".log");//the .log is hidden from log users to conceal implementation details 
+				if(log.exists()){
+					return FileUtils.readFileToString(log);
+				}
+			}
+		} catch (IOException e) {
+			logger.error("",e);
+			return null;
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the last log entry for this prearchived session.  When none are present, null is returned.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @return
+	 */
+	public static String getLastLog(final String project, final String timestamp, final String session) {
+		try {
+			final File logDir=getLogDir(project,timestamp,session);
+			
+			if(logDir.exists()){
+				File lastFile=null;
+				for(File f: logDir.listFiles()){
+					if(lastFile==null){
+						lastFile=f;
+					}else{
+						if(f.lastModified()>lastFile.lastModified()){
+							lastFile=f;
+						}
+					}
+				}
+				if(lastFile!=null){
+					return FileUtils.readFileToString(lastFile);
+				}else{
+					return null;
+				}
+			}
+		} catch (IOException e) {
+			logger.error("",e);
+			return null;
+		} catch (InvalidPermissionException e) {
+			logger.error("",e);
+			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return null;
+	}
+	
+	
 }

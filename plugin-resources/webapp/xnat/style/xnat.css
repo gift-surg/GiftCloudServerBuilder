@@ -520,7 +520,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 
 /* the tooltip box common styles */
 .tip_text .tip,
-.tip_icon .tip { display: none ; width: 400px ; padding: 8px ; position: absolute ; left: 20px ; top: -5px ; font-size: 11px ; line-height: 14px ; text-align: left ; color: #666 ; background: #fff ; border: 1px solid #ccc ; }
+.tip_icon .tip { display: none ; width: 400px ; padding: 9px 12px ; position: absolute ; left: 20px ; top: -5px ; font-size: 11px ; line-height: 14px ; text-align: left ; color: #666 ; background: #ffffd0 ; border: 1px solid #ccc ; }
 .tip_text:hover .tip,
 .tip_icon:hover .tip { display: block ; z-index: /* 11 */ 3000 ; }
 

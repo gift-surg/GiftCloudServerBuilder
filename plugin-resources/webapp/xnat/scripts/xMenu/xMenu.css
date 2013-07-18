@@ -6,7 +6,7 @@
 /*select.xmenu { display: none ; }*/
 div.xmenu {
     display: inline-block ; margin: 0 4px ; padding: 0 ; top: -4px ; vertical-align: top ;
-    background-color: transparent ; z-index: inherit ; }
+    position: relative ; background-color: transparent ; z-index: inherit ; }
 div.xmenu > div { background: #e0e0e0 url('images/select_bkgd_w_arrow.png') right center no-repeat ; border: 1px solid #c0c0c0 ; border-radius: 6px ; background-clip: border-box ; }
 div.xmenu.disabled { opacity: 0.5 ; }
 div.xmenu.disabled:hover { cursor: default !important ; }
@@ -17,7 +17,7 @@ div.xmenu .button_content {
     width: 120px ; height: 20px ; line-height: 21px ; color: #202020 ;
     /*background: transparent url('images/select_arrow_down.png') right center no-repeat ;*/ }
 div.xmenu:hover { cursor: pointer ; }
-div.xmenu ul { display: none ; /* min-width: 100% ; */ max-height: 275px ; overflow-x: hidden ; overflow-y: auto ; margin: 0 ; padding: 0 ; position: absolute ; list-style: none ; background-color: #fff ; /* border-bottom: 1px solid #e0e0e0 ; border-radius: 0 0 9px 9px ; */ background-clip: border-box ; box-shadow: 0 10px 20px rgba(0,0,0,0.5) ; }
+div.xmenu ul { display: none ; min-width: 100% ; max-height: 275px ; overflow-x: hidden ; overflow-y: auto ; margin: 0 ; padding: 0 ; position: absolute ; list-style: none ; background-color: #fff ; /* border-bottom: 1px solid #e0e0e0 ; border-radius: 0 0 9px 9px ; */ background-clip: border-box ; box-shadow: 0 10px 20px rgba(0,0,0,0.5) ; }
 .ltie9 div.xmenu ul { border: 1px solid #c0c0c0 ; }
 div.xmenu ul li { display: block ; margin: 0 ; padding: 0 ; border: 1px solid #e0e0e0 ; border-top: none ; }
 div.xmenu ul li:first-child { border-top: 1px solid #e0e0e0 ; }

@@ -258,11 +258,15 @@ public final class PrearcDatabase {
                 PreparedStatement statement = this.pdb.getPreparedStatement(null, PrearcDatabase.insertSql());
                 for (final SessionData s : ss) {
                     SessionDataTriple sdt = s.getSessionDataTriple(); // only insert if the session is not already present
-                    if (!exists(sdt.getFolderName(), sdt.getTimestamp(), sdt.getProject())) {
+                    SessionData session = getSessionIfExists(sdt.getFolderName(), sdt.getTimestamp(), sdt.getProject());
+
+                    if (session == null) {
                         for (int i = 0; i < DatabaseSession.values().length; i++) {
                             DatabaseSession.values()[i].setInsertStatement(statement, s);
                         }
                         statement.executeUpdate();
+                    } else if (!s.getStatus().equals(session.getStatus())) { // newly generated status may need to override existing status
+                        setStatus(sdt.getFolderName(), sdt.getTimestamp(), sdt.getProject(), s.getStatus());
                     }
                 }
                 return null;

@@ -511,6 +511,26 @@ public class PrearcUtils {
 			logger.error("",e);
 		}
 	}
+
+    /**
+     * Logs a message for a particular prearchive session.  The log entry will be placed in a log file named with the current timestamp in a logs subdirectory.
+     *
+     * @param path
+     * @param message
+     */
+    public static void log(final File path, final Throwable message) {
+        try {
+            File logs=new File(path, "logs");
+            if(!logs.exists()){
+                logs.mkdirs();
+            }
+            FileUtils.writeStringToFile(new File(logs,Calendar.getInstance().getTimeInMillis()+".log"), message.getMessage());
+        } catch (IOException e) {
+            logger.error("",e);
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+    }
 	
 	/**
 	 * Get all of the log IDs for this prearchived session.  Returns an empty list when none are present.

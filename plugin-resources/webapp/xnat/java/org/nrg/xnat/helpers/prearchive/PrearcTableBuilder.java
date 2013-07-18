@@ -169,7 +169,7 @@ public class PrearcTableBuilder implements PrearcTableBuilderI {
 						}
 						data.setStatus(PrearcStatus.ERROR);
 
-		            	PrearcUtils.log(data, e);
+		            	PrearcUtils.log(sessdir, e);
 					}
 				}
 			}

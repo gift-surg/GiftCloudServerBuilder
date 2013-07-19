@@ -134,6 +134,7 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
 				             	   closeModalPanel("share");
 								   document.getElementById("s_projects").add(new Option(oRecord.getData("id"), oRecord.getData("name")));
 				             	   XNAT.app.subject.cfDT.deleteRow(o.argument.oArgs.target);
+                                   window.location.reload();
 								   refreshSharing();
 								             },
 				             failure:function(o){

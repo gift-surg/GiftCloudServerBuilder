@@ -516,26 +516,26 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles,EventMetaI c){
     	BaseXnatExperimentdata expt=this;
     	if(this.getItem().getUser()!=null){
-    		expt=new XnatExperimentdata(this.getCurrentDBVersion(true));
+    		expt= (BaseXnatExperimentdata)BaseElement.GetGeneratedItem(expt.getItem());
     	}
-    	
+
     	String msg=expt.canDelete(proj,user);
-    	
+
     	if(msg!=null){
     		logger.error(msg);
     		return msg;
     	}
-    	
+
     	if(expt.getProject() != null && !expt.getProject().equals(proj.getId())){
 			try {
 				SecurityValues values = new SecurityValues();
 				values.put(this.getXSIType() + "/project", proj.getId());
-				
+
 				if (!user.canDelete(expt) && !user.canDeleteByXMLPath(this.getSchemaElement(),values))
 				{
 					return "User cannot delete experiments for project " + proj.getId();
 				}
-				
+
 
 				//unshare children before unsharing parent
 				if(expt instanceof XnatImagesessiondata){
@@ -544,7 +544,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			        	final XnatImageassessordata assess = (XnatImageassessordata)exptI;
 			        	if(assess.getProject().equals(proj.getId())){
 			        		return "This operation would delete an experiment (rather than un-share).  Please move experiment ("+expt.getId()+") to another project or manually delete.";
-			        		
+
 			        	}
 			            msg= assess.delete(proj,user,false,c);
 			            if(msg!=null){

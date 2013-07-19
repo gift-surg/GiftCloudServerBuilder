@@ -112,6 +112,7 @@ $om.getAssessmentCount($pp.getProperty("project"))
             success:function(o){
                closeModalPanel("share");
                window.cfDT.deleteRow(o.argument.oArgs.target);
+               window.location.reload();
             },
             failure:function(o){
                closeModalPanel("share");

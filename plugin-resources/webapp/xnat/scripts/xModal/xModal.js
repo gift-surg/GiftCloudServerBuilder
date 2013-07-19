@@ -546,7 +546,7 @@ function xModalOpenNew(xx){
     }
 
     $('div.xmask').not($this_mask).removeClass('top');
-    $this_mask.css('z-index',parseInt(1000000000+xmodal_count)).show().addClass('open top');
+    $this_mask.css('z-index',parseInt(10000+xmodal_count)).show().addClass('open top');
 
     $this_modal.fadeIn(100).addClass('open');
     $this_modal.addClass(this.kind);

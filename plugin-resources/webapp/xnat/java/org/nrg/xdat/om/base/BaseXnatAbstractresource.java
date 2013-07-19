@@ -17,13 +17,13 @@ import org.nrg.xft.ItemI;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
+import org.nrg.xnat.utils.CatalogUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 /**
  * @author XDAT
@@ -75,20 +75,30 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
         return size.longValue();
     }
     
+    public String getReadableFileStats() {
+        return CatalogUtils.formatFileStats(getLabel(), getFileCount(), getFileSize());
+    }
+
+    public String getReadableFileSize() {
+        Object fileSize = getFileSize();
+        if (fileSize == null) {
+            return "Empty";
+        }
+        return CatalogUtils.formatSize((Long) fileSize);
+    }
+
     public void calculate(String rootPath){
     	long sizeI = 0;
         int countI = 0;
-        Iterator files = this.getCorrespondingFiles(rootPath).iterator();
-        while (files.hasNext()){
-            File f = (File)files.next();
+        for (File f : this.getCorrespondingFiles(rootPath)) {
             if (f.exists()){
                 countI++;
                 sizeI+=f.length();
             }
         }
 
-        size = new Long(sizeI);
-        count = new Integer(countI);
+        size = sizeI;
+        count = countI;
     }
 
     Integer count = null;

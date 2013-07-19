@@ -10,10 +10,7 @@
  */
 package org.nrg.xdat.om.base;
 
-import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatQcscandataI;
+import org.nrg.xdat.model.*;
 import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.om.base.auto.AutoXnatImagescandata;
@@ -26,6 +23,7 @@ import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.scanType.ImageScanTypeMapping;
 import org.nrg.xnat.helpers.scanType.ScanTypeMappingI;
+import org.nrg.xnat.utils.CatalogUtils;
 
 import java.io.File;
 import java.util.*;
@@ -62,7 +60,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
             String temp = this.getId();
             if (temp != null)
             {
-                if (temp.indexOf("-")!=-1)
+                if (temp.contains("-"))
                 {
                     return temp.substring(0,temp.indexOf("-"));
                 }else{
@@ -82,7 +80,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
             String temp = this.getId();
             if (temp != null)
             {
-                if (temp.indexOf("-")!=-1)
+                if (temp.contains("-"))
                 {
                     return temp.substring(temp.indexOf("-")+1);
                 }else{
@@ -100,14 +98,14 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
     {
         String s = getPreCount();
         try{
-            if (s == "")
+            if (s.equals(""))
             {
-                return new Integer(0);
+                return 0;
             }else{
                 return new Integer(s);
             }
         } catch (NumberFormatException e) {
-            return new Integer(0);
+            return 0;
         }
     }
 
@@ -115,24 +113,22 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
     {
         String s = getPostCount();
         try {
-            if (s == "")
+            if (s.equals(""))
             {
-                return new Integer(0);
+                return 0;
             }else{
                 return new Integer(s);
             }
         } catch (NumberFormatException e) {
-            return new Integer(0);
+            return 0;
         }
     }
 
     public boolean isInRAWDirectory(){
         boolean hasRAW=false;
-        Iterator files = getFile().iterator();
-        while (files.hasNext()){
-            XnatAbstractresource file = (XnatAbstractresource)files.next();
-            if (file.isInRAWDirectory())
-            {
+        for (XnatAbstractresourceI xnatAbstractresourceI : getFile()) {
+            XnatAbstractresource file = (XnatAbstractresource) xnatAbstractresourceI;
+            if (file.isInRAWDirectory()) {
                 hasRAW=true;
                 break;
             }
@@ -156,10 +152,8 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
         List scanFiles= this.getFile();
         if (scanFiles.size()>0)
         {
-            Iterator files = scanFiles.iterator();
-            while (files.hasNext())
-            {
-                XnatAbstractresource xnatFile = (XnatAbstractresource) files.next();
+            for (Object scanFile : scanFiles) {
+                XnatAbstractresource xnatFile = (XnatAbstractresource) scanFile;
                 jFiles.addAll(xnatFile.getCorrespondingFiles(rootPath));
             }
         }
@@ -177,9 +171,8 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
     }
     
     public class ImageScanComparator implements Comparator{
-        public ImageScanComparator()
-        {
-        }
+        public ImageScanComparator() {}
+
         public int compare(Object o1, Object o2) {
             BaseXnatImagescandata  value1 = (BaseXnatImagescandata)(o1);
             BaseXnatImagescandata value2 = (BaseXnatImagescandata)(o2);
@@ -192,26 +185,22 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
                     return -1;
                 }
 	    }
-            if (value2== null)
-            {
+            if (value2== null) {
 		return 1;
 	    }
 
-            if (value1.getPreCountI().equals(value2.getPreCountI()))
-            {
+            if (value1.getPreCountI().equals(value2.getPreCountI())) {
                 return value1.getPostCountI().compareTo(value2.getPostCountI());
             }else{
                 Integer i1 = value1.getPreCountI();
                 Integer i2 = value2.getPreCountI();
-                int _return = i1.compareTo(i2);
-                return _return;
+                return i1.compareTo(i2);
             }
         }
     }
     private String scan_dir = null;
     public String deriveScanDir(){
-        if (scan_dir==null)
-        {
+        if (scan_dir == null) {
             String rootPath;
 			try {
 				rootPath = this.getImageSessionData().getArchiveRootPath();
@@ -219,8 +208,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 				rootPath=null;
 			}
             String last_dir = null;
-                for (XnatAbstractresourceI xnatFile:this.getFile())
-                {
+            for (XnatAbstractresourceI xnatFile : this.getFile()) {
                     if (xnatFile instanceof org.nrg.xdat.om.XnatResource){
                         XnatResource resource = (XnatResource)xnatFile;
                         String uri =resource.getFullPath(rootPath);
@@ -245,8 +233,6 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
                                     return scan_dir;
                                 }
                             }
-                        }else{
-
                         }
                     }else if(xnatFile instanceof org.nrg.xdat.om.XnatDicomseries){
                         XnatDicomseries resource = (XnatDicomseries)xnatFile;
@@ -272,8 +258,6 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
                                     return scan_dir;
                                 }
                             }
-                        }else{
-
                         }
                     }else if(xnatFile instanceof org.nrg.xdat.om.XnatResourceseries){
                         XnatResourceseries resource = (XnatResourceseries)xnatFile;
@@ -299,14 +283,11 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
                                     return scan_dir;
                                 }
                             }
-                        }else{
-
                         }
                     }
 	    }
 
-            if (scan_dir ==null)
-            {
+            if (scan_dir == null) {
                 scan_dir = this.getImageSessionData().deriveRawDir();
 	}
     }
@@ -468,9 +449,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 		final CriteriaCollection cc = new CriteriaCollection("OR");
 		CriteriaCollection subcc = new CriteriaCollection("AND");
 		subcc.addClause("xnat:imageScanData/image_session_ID", session.getId());
-		if (scanID.equals("*") || scanID.equals("ALL")) {
-
-		} else if (!scanID.contains(",")) {
+		if (!(scanID.equals("*") || scanID.equals("ALL")) && !scanID.contains(",")) {
 			subcc.addClause("xnat:imageScanData/ID", scanID);
 		} else {
 			final CriteriaCollection subsubcc = new CriteriaCollection("OR");
@@ -484,9 +463,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 
 		subcc = new CriteriaCollection("AND");
 		subcc.addClause("xnat:imageScanData/image_session_ID", session.getId());
-		if (scanID.equals("*") || scanID.equals("ALL")) {
-
-		} else if (scanID.indexOf(",") == -1) {
+        if (!(scanID.equals("*") || scanID.equals("ALL")) && !scanID.contains(",")) {
 			if (scanID.equals("NULL")) {
 				CriteriaCollection subsubcc = new CriteriaCollection("OR");
 				subsubcc.addClause("xnat:imageScanData/type", "", " IS NULL ",
@@ -519,4 +496,29 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 	public ScanTypeMappingI getScanTypeMapping(String project, String dbName){
 		return new ImageScanTypeMapping(project, dbName);
 	}
+
+    public List<String> getReadableFileStats() {
+        List<String> stats = new ArrayList<String>();
+        int totalCount = 0;
+        int totalSize = 0;
+        for (XnatAbstractresourceI resource : getFile()) {
+            String label = resource.getLabel();
+            if (label != null && label.equals("SNAPSHOTS")) {
+                continue;
+}
+            int count = resource.getFileCount();
+            int size;
+            Object rawFileSize = resource.getFileSize();
+            if (rawFileSize != null) {
+                size = (Integer) rawFileSize;
+            } else {
+                size = 0;
+            }
+            totalSize += size;
+            totalCount += count;
+            stats.add(CatalogUtils.formatFileStats(label, count, size));
+        }
+        stats.add(0, CatalogUtils.formatFileStats("TOTAL", totalCount, totalSize));
+        return stats;
+    }
 }

@@ -32,21 +32,23 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
 public class CatalogResourceList extends XNATTemplate {
-    final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanList.class);
+    private final static Logger logger = LoggerFactory.getLogger(ScanList.class);
 
     public CatalogResourceList(Context context, Request request, Response response) {
         super(context, request, response);
 
         if(recons.size()>0 || scans.size()>0 || expts.size()>0 || sub!=null || proj!=null){
-            this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-            this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-            this.getVariants().add(new Variant(MediaType.TEXT_XML));
+            getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
+            getVariants().add(new Variant(MediaType.TEXT_XML));
         }else{
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
@@ -60,13 +62,13 @@ public class CatalogResourceList extends XNATTemplate {
 
     @Override
     public void handlePost() {
-        XFTItem item = null;
+        XFTItem item;
 
         try {
-            item=this.loadItem("xnat:resourceCatalog",true);
+            item=loadItem("xnat:resourceCatalog", true);
 
             if(item==null){
-                this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
+                getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
                 return;
             }
 
@@ -76,32 +78,30 @@ public class CatalogResourceList extends XNATTemplate {
                 if(catResource.getXnatAbstractresourceId()!=null){
                     XnatAbstractresource existing=XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(catResource.getXnatAbstractresourceId(), user, false);
                     if(existing!=null){
-                        this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Specified catalog already exists.");
+                        getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Specified catalog already exists.");
                         //MATCHED
                         return;
                     }else{
-                        this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Contains erroneous generated fields (xnat_abstractresource_id).");
+                        getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Contains erroneous generated fields (xnat_abstractresource_id).");
                         //MATCHED
                         return;
                     }
                 }
 
-
-
-                if(this.getQueryVariable("description")!=null){
-                    catResource.setDescription(this.getQueryVariable("description"));
+                if(getQueryVariable("description")!=null){
+                    catResource.setDescription(getQueryVariable("description"));
                 }
 
-                if(this.getQueryVariable("format")!=null){
-                    catResource.setFormat(this.getQueryVariable("format"));
+                if(getQueryVariable("format")!=null){
+                    catResource.setFormat(getQueryVariable("format"));
                 }
 
-                if(this.getQueryVariable("content")!=null){
-                    catResource.setContent(this.getQueryVariable("content"));
+                if(getQueryVariable("content")!=null){
+                    catResource.setContent(getQueryVariable("content"));
                 }
 
-                if(this.getQueryVariables("tags")!=null){
-                    String[] tags = this.getQueryVariables("tags");
+                if(getQueryVariables("tags")!=null){
+                    String[] tags = getQueryVariables("tags");
                     for(String tag: tags){
                         tag = tag.trim();
                         if(!tag.equals("")){
@@ -109,11 +109,11 @@ public class CatalogResourceList extends XNATTemplate {
                                 s=s.trim();
                                 if(!s.equals("")){
                                     XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI)user);
-                                    if(s.indexOf("=")>-1){
+                                    if(s.contains("=")){
                                         t.setName(s.substring(0,s.indexOf("=")));
                                         t.setTag(s.substring(s.indexOf("=")+1));
                                     }else{
-                                        if(s.indexOf(":")>-1){
+                                        if(s.contains(":")){
                                             t.setName(s.substring(0,s.indexOf(":")));
                                             t.setTag(s.substring(s.indexOf(":")+1));
                                         }else{
@@ -131,9 +131,9 @@ public class CatalogResourceList extends XNATTemplate {
                 PersistentWorkflowI wrk=PersistentWorkflowUtils.getWorkflowByEventId(user,getEventId());
                 if(wrk==null && "SNAPSHOTS".equals(catResource.getLabel())){
                     if(getSecurityItem() instanceof XnatExperimentdata){
-                        Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user,((ArchivableItem)getSecurityItem()).getId());
-                        if(wrks!=null && wrks.size()==1){
-                            wrk=(WrkWorkflowdata)CollectionUtils.get(wrks, 0);
+                        Collection<? extends PersistentWorkflowI> workflows = PersistentWorkflowUtils.getOpenWorkflows(user,((ArchivableItem)getSecurityItem()).getId());
+                        if(workflows!=null && workflows.size()==1){
+                            wrk=(WrkWorkflowdata)CollectionUtils.get(workflows, 0);
                             if(!"xnat_tools/AutoRun.xml".equals(wrk.getPipelineName())){
                                 wrk=null;
                             }
@@ -150,36 +150,37 @@ public class CatalogResourceList extends XNATTemplate {
 
                 EventMetaI ci=wrk.buildEvent();
 
-                this.insertCatalag(catResource,ci);
+                insertCatalag(catResource, ci);
 
                 if(isNew){
                     WorkflowUtils.complete(wrk, ci);
                 }
 
-                this.returnSuccessfulCreateFromList(catResource.getXnatAbstractresourceId() + "");
+                returnSuccessfulCreateFromList(catResource.getXnatAbstractresourceId() + "");
             }else{
-                this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only ResourceCatalog documents can be PUT to this address.");
+                getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only ResourceCatalog documents can be PUT to this address.");
             }
         } catch (Exception e) {
-            this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
             logger.error("",e);
         }
     }
 
 
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) {
         XFTTable table = null;
 
         if(recons.size()>0 || scans.size()>0 || expts.size()>0 || sub!=null || proj!=null){
             try {
-                table=this.loadCatalogs(null,false,isQueryVariableTrue("all"));
+                table=loadCatalogs(null, false, isQueryVariableTrue("all"));
             } catch (Exception e) {
                 logger.error("",e);
             }
         }
 
-        if(this.getQueryVariable("file_stats")!=null && this.getQueryVariable("file_stats").equals("true")){
+        String fileStats = getQueryVariable("file_stats");
+        if(fileStats != null && fileStats.equals("true")) {
             try {
                 if(proj==null){
                     if(parent.getItem().instanceOf("xnat:experimentData")){
@@ -206,9 +207,10 @@ public class CatalogResourceList extends XNATTemplate {
                     }
                 }
 
-                XFTTable t = new XFTTable();
+                XFTTable newTable = new XFTTable();
                 String [] fields={"xnat_abstractresource_id","label","element_name","category","cat_id","cat_desc","file_count","file_size","tags","content","format"};
-                t.initTable(fields);
+                newTable.initTable(fields);
+                if (table != null) {
                 table.resetRowCursor();
                 while(table.hasMoreRows() ) {
                     Object[] old=table.nextRow();
@@ -224,26 +226,18 @@ public class CatalogResourceList extends XNATTemplate {
                     _new[5]=old[5];
 
                     XnatAbstractresource res= XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(old[0], user, false);
-                    // Per FogBugz 4746, prevent NPE when user doesn't have access to resource (MRH)
-                    // Just in case project is still inaccessable....
-                    // NOTE: Accessing getCount() and getSize() through shared project returns correct results, however it would not be
-                    // expected to if there were ever separate archives for each project
-                    if (proj!=null) {
-                        _new[6]=res.getCount(proj.getRootArchivePath());
-                        _new[7]=res.getSize(proj.getRootArchivePath());
-                    } else {
-                        _new[6]="UNKNOWN";
-                        _new[7]="UNKNOWN";
-                    }
+
+                        _new[6] = res.getFileCount();
+                        _new[7] = res.getFileSize();
                     _new[8]=res.getTagString();
                     _new[9]=res.getContent();
                     _new[10]=res.getFormat();
 
-                    t.rows().add(_new);
+                        newTable.rows().add(_new);
+                    }
                 }
 
-                table=null;
-                table=t;
+                table = newTable;
             } catch (ElementNotFoundException e) {
                 logger.error("",e);
             }
@@ -264,6 +258,6 @@ public class CatalogResourceList extends XNATTemplate {
             params.put("totalRecords", recordCount);
         }
 
-        return this.representTable(table, mt, params);
+        return representTable(table, mt, params);
     }
 }

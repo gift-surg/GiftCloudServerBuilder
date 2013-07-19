@@ -156,6 +156,42 @@ public class CatalogUtils {
         return al;
     }
 
+    /**
+     * Takes a size of a file or heap of memory in the form of a long and returns a formatted readable version in the
+     * form of byte units. For example, 46 would become 46B, 1,024 would become 1KB, 1,048,576 would become 1MB, etc.
+     * @param size    The size in bytes to be formatted.
+     * @return A formatted string representing the byte size.
+     */
+    public static String formatSize(long size) {
+        if (size < 1024) {
+            return size + " B";
+        }
+        int exp = (int) (Math.log(size) / Math.log(1024));
+        return String.format("%.1f %sB", size / Math.pow(1024, exp), "KMGTPE".charAt(exp - 1));
+    }
+
+    /**
+     * Formats an object's file statistics for display.
+     * @param label        The label of the object (session, scan, resource, etc.)
+     * @param fileCount    The number of files that compose the object.
+     * @param rawSize      The size of the files that compose the object.
+     * @return A formatted display of the file statistics.
+     */
+    public static String formatFileStats(final String label, final long fileCount, final Object rawSize) {
+        long size = 0;
+        if (rawSize != null) {
+            if (rawSize instanceof Integer) {
+                size = (Integer) rawSize;
+            } else if (rawSize instanceof Long) {
+                size = (Long) rawSize;
+            }
+        }
+        if (label == null || label.equals("") || label.equalsIgnoreCase("total")) {
+            return String.format("%s in %s files", formatSize(size), fileCount);
+        }
+        return String.format("%s: %s in %s files", label, formatSize(size), fileCount);
+    }
+
     public interface CatEntryFilterI {
         public boolean accept(final CatEntryI entry);
     }
@@ -957,8 +993,8 @@ public class CatalogUtils {
     }
 
     public static boolean populateStats(XnatAbstractresource abstractResource, String rootPath) {
-        Integer c = abstractResource.getCount(rootPath);
-        Long s = abstractResource.getSize(rootPath);
+        Integer c = abstractResource.getFileCount();
+        Integer s = (Integer) abstractResource.getFileSize();
 
         boolean modified = false;
 

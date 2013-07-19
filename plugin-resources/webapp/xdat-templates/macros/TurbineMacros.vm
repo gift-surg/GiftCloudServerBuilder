@@ -5,6 +5,7 @@
 ## Put your Application macros in this file.
 ##
 ## patch test
+#* @vtlvariable name="tipText" type="java.util.List" *#
 
 #macro(insertPipelineNotification)
    <br/>
@@ -1682,4 +1683,28 @@ $!turbineUtils.escapeJS($s)
 
 #macro(xdatYearRange)
         #set($years = [ $!turbineUtils.getYear()..1900 ])
+#end
+
+#*
+Takes a list of strings and displays it as a bit of text using the first string,
+then adds any subsequent strings to a block of text to use as a pop-over.
+ *#
+#macro(displayListAsTipText $tipText)
+    <span class="tip_text">
+        $tipText.get(0) ## This displays the first item in the list as the main text.
+        <span style="top:20px;white-space:nowrap;left:-10;width:auto;" class="tip shadowed">
+            #set($current = 1)
+            #set($size = $tipText.size())
+            #set($delimiter = "<br/>")
+            #foreach($text in $tipText)
+                #if($current > 1)
+                    #if($current == $size)
+                        #set($delimiter = "")
+                    #end
+                    $text$delimiter
+                #end
+                #set($current = $current + 1)
+            #end
+        </span>
+    </span>
 #end

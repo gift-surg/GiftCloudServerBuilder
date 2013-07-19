@@ -1,3 +1,8 @@
+#* @vtlvariable name="siteConfig" type="java.util.Properties" *#
+#* @vtlvariable name="turbineUtils" type="org.nrg.xdat.turbine.utils.TurbineUtils" *#
+#* @vtlvariable name="om" type="org.nrg.xdat.om.XnatImagesessiondata" *#
+#* @vtlvariable name="scan" type="org.nrg.xdat.om.XnatImagescandata" *#
+#* @vtlvariable name="resource" type="org.nrg.xdat.om.XnatAbstractresource" *#
 <!--BEGIN /screens/xnat_imageSessionData/xnat_imageSessionData_scans.vm -->
 ## content from scans.css moved to xnat.css
 ##<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
@@ -10,9 +15,9 @@
     <th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Type</th>
 	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.display-series-description","true")))
 	<th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Series Desc</th>
+        #set($fileIndex="4")
+    #else
 		#set($fileIndex="3")
-	#else
-		#set($fileIndex="4")
 	#end
 	<th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Usability</th>
 	<th class="underscore" style="border-top-style:none; border-right-style:none; border-bottom-style:solid; border-left-style:none;" align=left>Files</th>
@@ -42,10 +47,18 @@
 	<td border=0 align=left NOWRAP>
         #if($scan.getFile().size()>0)
         <div id="scans_$!scan.getId()_stats">
-          <a onclick="window.viewer.init();">Show Counts</a>
+                #set($stats = $!scan.getReadableFileStats())
+                #if($stats.size() == 0)
+                    Not found...
+                #elseif($stats.size() == 1)
+                    $stats.get(0)
+                #else
+                    #displayListAsTipText($stats)
+                #end
         </div>
 			#set ($scanWFiles = $scanWFiles+1)
-        #else (0 files, 0.00MB)
+        #else
+            (0 files, 0.00MB)
         #end
       </td>
       <td border=0 align=left NOWRAP>$!scan.getProperty("note")</td>
@@ -66,7 +79,8 @@
                </td>
                <td NOWRAP >
                        <div id="total_dicom_files" class="totals">
-						<a onclick="window.viewer.init();">Total Counts</a></div>
+                        Total: #displayListAsTipText($om.getSessionReadableScanStats())
+                    </div>
                </td>
        </tr>
     #end

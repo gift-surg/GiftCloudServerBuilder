@@ -58,6 +58,7 @@ import org.nrg.xnat.srb.XNATMetaData;
 import org.nrg.xnat.srb.XNATSrbSearch;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.CatalogSet;
+import org.nrg.xnat.utils.CatalogUtils;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -636,8 +637,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
 
     /**
-     * @param type
-     * @return ArrayList of org.nrg.xdat.om.XnatMrscandata
+     * @param id    The ID of the scan to retrieve.
+     * @return The requested image scan data object.
      */
     public XnatImagescandata getScanById(String id) {
         for(XnatImagescandataI scan : getScans_scan()){
@@ -650,8 +651,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
 
     /**
-     * @param type
-     * @return ArrayList of org.nrg.xdat.om.XnatMrscandata
+     * @param id    The ID of the assessor to retrieve.
+     * @return The requested image assessor data object.
      */
     public XnatImageassessordata getAssessorById(String id) {
         for(XnatImageassessordataI scan : getAssessors()){
@@ -2088,8 +2089,8 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
 
     /**
-     * @param type
-     * @return ArrayList of org.nrg.xdat.om.XnatMrscandata
+     * @param c    The condition.
+     * @return ArrayList of org.nrg.xdat.om.XnatImagescandataI
      */
     public List<XnatImagescandataI> getScansByCondition(String c) {
         List _return = new ArrayList();
@@ -2163,7 +2164,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
     /**
      * Appends this path to the enclosed URI or path variables.
-     * @param root
+     * @param session_path    The path to the session.
      */
     public void prependPathsWith(String session_path){
         Iterator files= getAllResources().iterator();
@@ -2583,7 +2584,57 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
     }
 
 
-    
+    public List<String> getSessionReadableScanStats() {
+        return getSessionReadableScanStats(false);
+    }
+
+    public List<String> getSessionReadableScanStats(boolean useLabel) {
+        List<String> stats = new ArrayList<String>();
+        // Use the TreeMap so that the keys are sorted
+        Map<String, List<Long>> accumulator = new TreeMap<String, List<Long>>();
+        int count = 0;
+        int size = 0;
+        for (XnatImagescandataI scan : this.getSortedScans()){
+            for (XnatAbstractresourceI resource : scan.getFile()) {
+                String fileLabel = resource.getLabel();
+                if (fileLabel != null && fileLabel.equals("SNAPSHOTS")) {
+                    continue;
+                }
+                Integer fileCount = resource.getFileCount();
+                Object fileSize = resource.getFileSize();
+
+                List<Long> data;
+                if (accumulator.containsKey(fileLabel)) {
+                    data = accumulator.get(fileLabel);
+                } else {
+                    data = new ArrayList<Long>() {{ add(0L); add(0L); }};
+                    accumulator.put(fileLabel, data);
+                }
+
+                if (fileCount != null) {
+                    count += fileCount;
+                    Long aggregate = data.get(0);
+                    data.set(0, aggregate + (Integer) fileCount);
+                }
+                if (fileSize != null) {
+                    size += (Integer) fileSize;
+                    Long aggregate = data.get(1);
+                    data.set(1, aggregate + (Integer) fileSize);
+                }
+            }
+        }
+        stats.add(CatalogUtils.formatFileStats(useLabel ? getLabel() : "TOTAL", count, size));
+        if (accumulator.containsKey("DICOM")) {
+            List<Long> values = accumulator.get("DICOM");
+            stats.add(CatalogUtils.formatFileStats("DICOM", values.get(0), values.get(1)));
+            accumulator.remove("DICOM");
+        }
+        for (String modality : accumulator.keySet()) {
+            List<Long> values = accumulator.get(modality);
+            stats.add(CatalogUtils.formatFileStats(modality, values.get(0), values.get(1)));
+        }
+        return stats;
+    }
     
     public void correctArchivePaths() throws InvalidArchiveStructure, UnknownPrimaryProjectException{
         this.correctArchivePaths(true);

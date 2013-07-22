@@ -1437,7 +1437,7 @@ function UploadFileForm(_obj){
 		if(collection_name == ''){
 			file_dest=this.selector.obj.uri+"/files";
 		}else if(upload_level == 'scans'){
-			file_dest = this.selector.obj.uri+"/scans/"+ upload_item + "/files";
+			file_dest = this.selector.obj.uri+"/scans/"+ upload_item + "/resources/" + collection_name + "/files";
 		}else{
 			file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
 		}

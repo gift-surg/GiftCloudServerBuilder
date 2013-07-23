@@ -1,44 +1,43 @@
 #set($groups=$om.getFieldDefinitionGroups($item.getXSIType()))
+#if($groups.size()>0)
+	#foreach($group in $groups)
+		#if($group.getProjectSpecific()==false && $group.getFields_field().size()>0)
+			<DIV class="edit_header1">#if($group.getDescription())$group.getDescription()#else $group.getId() Fields#end</DIV><BR>
+			<table>
+			#foreach($f in $group.getFields_field())
+				#parse("/screens/EditProjectSpecificFields_field.vm")
+				#set($fieldCounter=$fieldCounter + 1)
+			#end
+			</table>
+			<BR><BR>
+		#end
+	#end
 
-		#if($groups.size()>0)
-		   #foreach($group in $groups)
-	      #if($group.getProjectSpecific()==false && $group.getFields_field().size()>0)
-	       <DIV class="edit_header1">#if($group.getDescription())$group.getDescription()#else $group.getId() Fields#end</DIV><BR>
-	       <table>
-	           #foreach($f in $group.getFields_field())
-		             #parse("/screens/EditProjectSpecificFields_field.vm")
-		             #set($fieldCounter=$fieldCounter + 1)
-		           #end
-		       </table>
-		       <BR><BR>
-      #end
-   #end
-
-#set($fieldCounter=0)
-<TABLE>
-		  	    <TR>
+	#set($fieldCounter=0)
+	<TABLE>
+		<TR>
 		#set($groupCount=0)
-		   #foreach($group in $groups)
-		   #if(($group.getBooleanProperty("project-specific",true)) && $group.getFields_field().size()>0)
-		   #if($groupCount>2)
-		    </TR><TR>
-		   #end	
-		  	     <TD valign="top">
-		  	     	  <DIV class="container" style="min-width:180px;">
-		  	     	     <DIV class="withColor containerTitle">&nbsp;$group.getId()</DIV>
-		  	     	     <DIV class="containerBody">
-		  	     	     <table >
-		  	     	     #foreach($f in $group.getFields_field())
-		#parse("/screens/EditProjectSpecificFields_field.vm")
-		#set($fieldCounter=$fieldCounter + 1)
-		            #end
-		            </table>
-		  	     	     </DIV>
-		  	     	  </DIV>
-			       </td>
-		#set($groupCount=$groupCount+1)
+		#foreach($group in $groups)
+			#if(($group.getBooleanProperty("project-specific",true)) && $group.getFields_field().size()>0)
+				#if($groupCount>2)
+					</TR><TR>
+				#end
+				<TD valign="top">
+				<DIV class="container" style="min-width:180px;">
+				<DIV class="withColor containerTitle">&nbsp;$group.getId()</DIV>
+				<DIV class="containerBody">
+				<table >
+					#foreach($f in $group.getFields_field())
+						#parse("/screens/EditProjectSpecificFields_field.vm")
+						#set($fieldCounter=$fieldCounter + 1)
+					#end
+				</table>
+				</DIV>
+				</DIV>
+				</td>
+				#set($groupCount=$groupCount+1)
+			#end
 		#end
-		  #end
-		  	    </TR>
-		  	   </TABLE>
-		#end
+		</TR>
+	</TABLE>
+#end

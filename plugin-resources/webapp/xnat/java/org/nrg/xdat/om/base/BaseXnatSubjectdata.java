@@ -1208,8 +1208,11 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         }
     }
 
-
     public Collection<XnatFielddefinitiongroup> getFieldDefinitionGroups(String dataType){
+        return getFieldDefinitionGroups(dataType, null);
+     }
+
+     public Collection<XnatFielddefinitiongroup> getFieldDefinitionGroups(String dataType, String projectID){
         Hashtable<String,XnatFielddefinitiongroup> groups = new Hashtable<String,XnatFielddefinitiongroup>();
         Hashtable<XnatProjectdataI,String> projects = getProjectDatas();
 
@@ -1221,6 +1224,9 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 
         for(Map.Entry<XnatProjectdataI,String> entry : projects.entrySet()){
             XnatAbstractprotocol prot = ((XnatProjectdata)entry.getKey()).getProtocolByDataType(dataType);
+            if((projectID != null && !projectID.isEmpty()) && !projectID.equals(entry.getKey().getName())){
+               continue;
+            }
             if (prot!=null && prot instanceof XnatDatatypeprotocol){
                 XnatDatatypeprotocol dataProt=(XnatDatatypeprotocol)prot;
                 for(XnatFielddefinitiongroupI group : dataProt.getDefinitions_definition()){

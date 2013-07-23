@@ -1,5 +1,5 @@
 <!--BEGIN ReportProjectSpecificFields.vm -->
-#set($groups=$om.getFieldDefinitionGroups($item.getXSIType()))
+#set($groups=$om.getFieldDefinitionGroups($item.getXSIType(), $project))
 #if($groups.size()>0)
 	#foreach($group in $groups)
 		#if($group.getProjectSpecific()==false && $group.getFields_field().size()>0)

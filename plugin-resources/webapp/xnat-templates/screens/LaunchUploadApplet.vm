@@ -31,6 +31,7 @@
             <td><select id="part_id" name="part_id" style="min-width:200px;" disabled=true>
                 <option>(Select a $displayManager.getSingularDisplayNameForProject().toLowerCase())</option>
             </select></td>
+            <td><a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a></td>
         </tr>
       </table>
  <div id="hideIfProtocol" >
@@ -100,3 +101,40 @@
     <p style="width:500px;margin:20px 0;">Looking for other ways to upload images? <a href="$link.setPage("AlternateImageUpload.vm")">Click here.</a></p>
 
 </form>
+
+<script type="text/javascript">
+    function createSubjectForm(){
+        if (this.subjectForm!=undefined){
+            this.subjectForm.close();
+            this.subjectForm=null;
+        }
+        window.create_subject_link ="$link.setPage('XDATScreen_edit_xnat_subjectData.vm').addPathInfo('popup','true')";
+        var project = document.getElementById("project").value;
+        if (project == ""){
+            alert('Please Select a $displayManager.getSingularDisplayNameForProject() First');
+            return;
+        }
+        window.create_subject_link+="/project/" + project + "/destination/JS_Parent_Return.vm";
+        this.subjectForm=window.open(window.create_subject_link, '','width=600,height=850,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+        if (this.subjectForm.opener == null) this.subjectForm.opener = self;
+        return this.subjectForm;
+    }
+
+    window.success=function(subject_id){
+        //window.psm("The $displayManager.getSingularDisplayNameForSubject().toLowerCase() you entered was stored.");
+        if(this.subjectForm!=undefined){
+            this.subjectForm.close();
+            this.subjectForm=null;
+        }
+        window.projectSubjectVisitManager.defaultSubject=subject_id;
+        window.projectSubjectVisitManager.loadSubjects();
+    }
+    window.failure=function(msg){
+        //window.psm.message(msg);
+        if(this.subjectForm!=undefined){
+            this.subjectForm.close();
+            this.subjectForm=null;
+        }
+    }
+
+</script>

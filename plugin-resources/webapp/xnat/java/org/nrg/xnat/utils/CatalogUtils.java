@@ -993,8 +993,8 @@ public class CatalogUtils {
     }
 
     public static boolean populateStats(XnatAbstractresource abstractResource, String rootPath) {
-        Integer c = abstractResource.getFileCount();
-        Integer s = (Integer) abstractResource.getFileSize();
+        Integer c = abstractResource.getCount(rootPath);
+        Long s = abstractResource.getSize(rootPath);
 
         boolean modified = false;
 

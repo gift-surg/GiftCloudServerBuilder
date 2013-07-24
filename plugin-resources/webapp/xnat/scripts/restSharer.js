@@ -54,6 +54,7 @@ function toggleShareCheckboxes(element) {
     }
     var checkboxes = $('.yui-dt-checkbox', dialog);
     for(var i=0; i<checkboxes.length; i++){
+        var checkbox = $(checkboxes[i]);
         if (checkbox.is(':checked')) {
             if(!checkAll){
                 checkbox.removeAttr('checked');
@@ -68,15 +69,16 @@ function toggleShareCheckboxes(element) {
 
 RestSharer = function(_array,_config) {
 	RestSharer.superclass.constructor.call(this,"rest_share",_config);
-	this.a=_array;
+	this.a=_array.slice(0).reverse(); //copy array and reverse the copy.
 	_config.title="Sharing Manager";
 	this.trArray=new Array();
 	this.oncomplete=new YAHOO.util.CustomEvent("complete",this);
 	
 	this.drawContents=function(_div){
 		var header=_div.appendChild(document.createElement("div"));
-		header.innerHTML='<span style="float:left;">Share the following resources into ' + this.config.project.label+'</span>'+
-            '<input id="checkAll" type="button" style="float:right;" onclick="toggleShareCheckboxes(this);" value="Uncheck All"/>';
+		header.innerHTML='<span style="float:left; height:35px;">Share the following resources into ' + this.config.project.label+'</span>'+
+            '<input id="checkAll" type="button" style="float:right;" onclick="toggleShareCheckboxes(this);" value="Uncheck All"/>+' +
+            '<style>div.yui-dt table{ width:100%; }</style>';
 		header.style.width = 100+'%';
 		var t=_div.appendChild(document.createElement("div"));
 		var dataSource = new YAHOO.util.DataSource(this.a);

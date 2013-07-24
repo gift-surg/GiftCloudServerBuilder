@@ -94,12 +94,12 @@ shared_projects.push({id:"$pp.getProperty("project")",
    	   		    var oRecord = this.getRecord(oArgs.target);
    	   		    
    	   		    if(oRecord.getData("id")==window.primary_project){
-   	   		       alert("Unable to remove $displayManager.getSingularDisplayNameForProject().toLowerCase() owner.  Contact a system administrator.");
+                   xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForProject().toLowerCase() owner.  Contact a system administrator.");
    	   		       return;
    	   		    }
    	   		    
    	   		    if(oRecord.getData("expts")>0){
-   	   		       alert("This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or seperately delete the created experiments.");
+                   xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or seperately delete the created experiments.");
    	   		       return;
    	   		    }
    	   		    
@@ -108,11 +108,11 @@ shared_projects.push({id:"$pp.getProperty("project")",
 								             success:function(o){
 				             	   closeModalPanel("share");
 				             	   window.cfDT.deleteRow(o.argument.oArgs.target);
-                                   window.location.reload();
+                                   window.location.replace(window.location.href+"#tab2");
 								             },
 				             failure:function(o){
 				             	   closeModalPanel("share");
-								             	   alert("Unable to remove experiment from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
+                                 xModalMessage("Error", "Unable to remove experiment from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
 								             },
                              cache:false, // Turn off caching for IE
 				             scope:this,
@@ -143,7 +143,7 @@ shared_projects.push({id:"$pp.getProperty("project")",
      refreshSharing();
 		   },this,this);
 				  }else{
-				    alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase().");
+                      xModalMessage("No $displayManager.getSingularDisplayNameForProject().toLowerCase() specified", "Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase().");
 				  }
 				}
 </script>

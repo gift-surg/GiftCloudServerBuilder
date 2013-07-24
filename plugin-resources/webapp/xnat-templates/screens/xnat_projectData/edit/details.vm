@@ -124,7 +124,7 @@ window.other_investigators=new Array();
 #foreach($inv in $project.getInvestigators_investigator())
 window.other_investigators.push("$!inv.getProperty('xnat_investigatordata_id')");
 #end
-
+var removeInvestigatorIcon='url($content.getURI("scripts/yui/build/assets/skins/xnat/xnat-sprite.png"))';
 window.refreshInvestigators=function (){
   var div=document.getElementById("investigatorBox");
   div.innerHTML="";
@@ -171,6 +171,7 @@ window.refreshInvestigators=function (){
     td= document.createElement("td");
     var remInvestButton = document.createElement("div");
     remInvestButton.className="icon-remove";
+    remInvestButton.style.backgroundImage=removeInvestigatorIcon;
     remInvestButton.id="remInvestBut_"+(tbody.rows.length);
     remInvestButton.title="Remove Investigator";
     remInvestButton.onclick=function(){
@@ -224,6 +225,7 @@ window.refreshInvestigators=function (){
     td= document.createElement("td");
     var remInvestButton = document.createElement("div");
     remInvestButton.className="icon-remove";
+    remInvestButton.style.backgroundImage=removeInvestigatorIcon;
     remInvestButton.id="remInvestBut_"+(tbody.rows.length);
     remInvestButton.title="Remove Investigator";
     remInvestButton.onclick=function(){
@@ -268,7 +270,7 @@ function stringCamelCaps(val)
         var temp = val;
 		var regex=/^[0-9A-Za-z_-]+$/g;
         if(!(regex.test(temp))){
-            xModalMessage('Validation Error','No special characters allowed in $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
+            xModalMessage('Validation Error','No special characters allowed in $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.');
 			return "";
 		}
         var newVal = '';

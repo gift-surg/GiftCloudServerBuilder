@@ -240,18 +240,18 @@ window.refreshInvestigators=function (){
 window.success=function(subject_id){
   if(window.investigatorForm!=undefined){
     window.investigatorForm.close();
-		    window.investigatorForm=null;
-		  }
-	alert("The investigator you entered was stored.");
-		  document.getElementById("investigatorBox").innerHTML="Loading...";
-		  window.invest_manager.init();
+	window.investigatorForm=null;
+  }
+  xModalMessage('Saved Investigator', 'The investigator you entered was stored.');
+  document.getElementById("investigatorBox").innerHTML="Loading...";
+  window.invest_manager.init();
 }
 window.failure=function(msg){
-  alert(msg);
+  xModalMessage('Save Failed', msg);
   if(window.investigatorForm!=undefined){
     window.investigatorForm.close();
-		    window.investigatorForm=null;
-		  }
+    window.investigatorForm=null;
+  }
 }
 
 window.invest_manager.investigatorsLoaded.subscribe(window.refreshInvestigators,this);

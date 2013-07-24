@@ -268,7 +268,7 @@ function stringCamelCaps(val)
         var temp = val;
 		var regex=/^[0-9A-Za-z_-]+$/g;
         if(!(regex.test(temp))){
-			alert("No special characters allowed in $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
+            xModalMessage('Validation Error','No special characters allowed in $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
 			return "";
 		}
         var newVal = '';

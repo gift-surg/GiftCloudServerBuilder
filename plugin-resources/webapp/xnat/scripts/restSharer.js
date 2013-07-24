@@ -37,6 +37,35 @@ TextDataTable=function(t,fields,dataSrc,options){
 YAHOO.extend(TextDataTable, YAHOO.widget.DataTable, {
 });
 
+function toggleShareCheckboxes(element) {
+    var dialog;
+    var checkAll = true;
+    element = $(element)[0];
+    if(element.id == 'checkAll') {
+        element = $('#checkAll');
+        dialog = element.parent().parent();
+        if(element.val() == 'Check All'){
+            checkAll = true;
+            element.val('Uncheck All');
+        } else {
+            checkAll = false;
+            element.val('Check All');
+        }
+    }
+    var checkboxes = $('.yui-dt-checkbox', dialog);
+    for(var i=0; i<checkboxes.length; i++){
+        if (checkbox.is(':checked')) {
+            if(!checkAll){
+                checkbox.removeAttr('checked');
+            }
+        } else {
+            if(checkAll){
+                checkbox.attr('checked','checked');
+            }
+        }
+    }
+}
+
 RestSharer = function(_array,_config) {
 	RestSharer.superclass.constructor.call(this,"rest_share",_config);
 	this.a=_array;
@@ -46,8 +75,9 @@ RestSharer = function(_array,_config) {
 	
 	this.drawContents=function(_div){
 		var header=_div.appendChild(document.createElement("div"));
-		header.innerHTML="Share the following resources into " + this.config.project.label+"<br/><br/>";
-		
+		header.innerHTML='<span style="float:left;">Share the following resources into ' + this.config.project.label+'</span>'+
+            '<input id="checkAll" type="button" style="float:right;" onclick="toggleShareCheckboxes(this);" value="Uncheck All"/>';
+		header.style.width = 100+'%';
 		var t=_div.appendChild(document.createElement("div"));
 		var dataSource = new YAHOO.util.DataSource(this.a);
    		dataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;

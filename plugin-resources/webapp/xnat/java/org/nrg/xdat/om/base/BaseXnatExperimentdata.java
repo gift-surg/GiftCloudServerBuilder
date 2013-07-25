@@ -73,11 +73,11 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 	{
 		super(properties,user);
 	}
-    
+
     public String getArchiveDirectoryName(){
     	if(this.getLabel()!=null)
     		return this.getLabel();
-    	else 
+    	else
     		return this.getId();
     }
 
@@ -106,7 +106,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		try{
 			Date now = Calendar.getInstance().getTime();
 			DateFormat dateFormat = new SimpleDateFormat(dateParam);
-			String dateStr = dateFormat.format(now); 
+			String dateStr = dateFormat.format(now);
 			return dateStr;
 		} catch (Exception e1) {logger.error(e1);return null;}
 	}
@@ -202,7 +202,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         if (!this.getSharing_share().isEmpty()){
         	ep = (XnatExperimentdataShare)this.getSharing_share().get(0);
         }
-        
+
         try {
             if (ep!=null){
                 return XnatProjectdata.getXnatProjectdatasById(ep.getProject(), this.getUser(), false);
@@ -218,7 +218,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
     public String getIdentifiers(){
         Hashtable ids = new Hashtable();
-        
+
         if (this.getProject()!=null){
         	if (this.getLabel()!=null){
         		ids.put(this.getLabel(), this.getProject());
@@ -226,7 +226,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         		ids.put(this.getId(), this.getProject());
         	}
         }
-        
+
         for (final XnatExperimentdataShareI pp : this.getSharing_share())
         {
 
@@ -259,8 +259,8 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
         return identifiers;
     }
-    
-    
+
+
 
 
     public String name = null;
@@ -281,11 +281,11 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
             }
         }
     }
-    
+
     public Object[] loadProjectDetails(String s){
     	try{
 	    	XFTTable table = XFTTable.Execute("SELECT name,description,secondary_ID FROM xnat_projectData WHERE ID ='" + s + "';", this.getDBName(), null);
-	
+
 	        if (table.size()>0)
 	        {
 	            return (Object[])table.rows().get(0);
@@ -295,7 +295,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         } catch (DBPoolException e) {
             logger.error("",e);
         }
-        
+
         return null;
     }
 
@@ -391,19 +391,19 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         if(StringUtils.IsEmpty(identifier)){
         	return null;
         }
-        
+
     	CriteriaCollection cc=new CriteriaCollection("OR");
-            	
+
     	CriteriaCollection subcc1 = new CriteriaCollection("AND");
         subcc1.addClause("xnat:experimentData/project", project);
         subcc1.addClause("xnat:experimentData/label", identifier);
-        
+
         cc.add(subcc1);
-            	
+
     	CriteriaCollection subcc2 = new CriteriaCollection("AND");
     	subcc2.addClause("xnat:experimentData/sharing/share/project", project);
     	subcc2.addClause("xnat:experimentData/sharing/share/label", identifier);
-        
+
         cc.add(subcc2);
 
         ArrayList al =  XnatExperimentdata.getXnatExperimentdatasByField(cc, user, preLoad);
@@ -415,7 +415,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         }
 
     }
-    
+
     public static synchronized String CreateNewID() throws Exception{
     	IDGeneratorI generator = IDGeneratorFactory.GetIDGenerator("org.nrg.xnat.turbine.utils.IDGenerator");
     	generator.setTable("xnat_experimentData");
@@ -423,44 +423,44 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	generator.setColumn("id");
     	return generator.generateIdentifier();
     }
-    
+
     /**
      * newlabel can be null defaults to this.getLabel(), if that is null this.getId()
      * @param newProject
      * @param newLabel
      * @param user
      * @throws Exception
-     */    
+     */
      public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
 
     	if(!this.getProject().equals(newProject.getId()))
     	{
-    		
+
     		if (!MoverMaker.check(this, user)) {
     			throw new InvalidPermissionException(this.getXSIType());
     		}
     		String existingRootPath=this.getProjectData().getRootArchivePath();
-    		
+
     		if(newLabel==null)newLabel = this.getLabel();
     		if(newLabel==null)newLabel = this.getId();
-    		
+
     		// newSessionDir = /ARCHIVE/proj_x/arc001
     		final File newSessionDir = new File(new File(newProject.getRootArchivePath(),newProject.getCurrentArc()),newLabel);
-    		
+
     		// Label defaults to this.getId()
     		String current_label=this.getLabel();
     		if(current_label==null)current_label=this.getId();
-    		
-    		
+
+
     		for(XnatAbstractresourceI abstRes:this.getResources_resource()){
     			MoverMaker.moveResource(abstRes, current_label, this, newSessionDir, existingRootPath, user,ci);
     		}
-    		
+
     		MoverMaker.writeDB(this, newProject, newLabel, user,ci);
     		MoverMaker.setLocal(this, newProject, newLabel);
     	}
     }
-    
+
     public ArrayList getCatalogSummary() throws Exception{
 		String query="SELECT xnat_abstractresource_id,label,element_name ";
     	query+=", 'resources'::TEXT AS category, '" + this.getId()+"'::TEXT AS cat_id";
@@ -468,12 +468,12 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id" +
 		" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id";
 		query+= " WHERE xnat_experimentdata_id='"+this.getId() + "'";
-		
+
 		XFTTable t = XFTTable.Execute(query, this.getDBName(), "system");
-		
+
 		return t.rowHashs();
     }
-    
+
     public boolean hasProject(String proj_id){
     if (this.getProject() == null) {
     	return false;
@@ -487,12 +487,12 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		}
 	    }
 	}
-	
+
 	return false;
     }
-    
 
-    
+
+
     public String canDelete(BaseXnatProjectdata proj, XDATUser user) {
     	BaseXnatExperimentdata expt=this;
     	if(this.getItem().getUser()!=null){
@@ -506,7 +506,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 				SecurityValues values = new SecurityValues();
 				values.put(this.getXSIType() + "/project", proj.getId());
 				SchemaElement se= SchemaElement.GetElement(this.getXSIType());
-				
+
 				if (!user.canDeleteByXMLPath(se,values))
 				{
 					return "User cannot delete experiments for project " + proj.getId();
@@ -514,11 +514,11 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			} catch (Exception e1) {
 				return "Unable to delete subject.";
 			}
-			
+
     	}
     	return null;
     }
-    
+
     public String delete(BaseXnatProjectdata proj, XDATUser user, boolean removeFiles,EventMetaI c){
     	BaseXnatExperimentdata expt=this;
     	if(this.getItem().getUser()!=null){
@@ -558,7 +558,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			            }
 			        }
 				}
-				
+
 				int index = 0;
 				int match = -1;
 				for(XnatExperimentdataShareI pp : expt.getSharing_share()){
@@ -569,9 +569,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 					}
 					index++;
 				}
-				
+
 				if(match==-1)return null;
-				
+
 				this.removeSharing_share(match);
 		        return null;
 			} catch (SQLException e) {
@@ -587,20 +587,20 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 	    		return "User account cannot delete experiments";
 	    	}
 			try {
-			
+
 				if(!user.canDelete(this)){
 					return "User account doesn't have permission to delete this experiment.";
 				}
-							
+
 				if(removeFiles){
 					this.deleteFiles(user,c);
 				}
-		        
-				
+
+
 				SaveItemHelper.authorizedDelete(expt.getItem().getCurrentDBVersion(), user,c);
 			    user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
-				
+
 			} catch (SQLException e) {
 				logger.error("",e);
 				return org.apache.commons.lang.StringUtils.isBlank(e.getMessage()) ? ExceptionUtils.getStackTrace(e) : e.getMessage();
@@ -611,7 +611,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		}
     	return null;
     }
-    
+
     /**
      * This method looks for an existing session directory in the archive space.s
      * @return
@@ -629,22 +629,22 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     			}
     		}
     	}
-    	
+
     	return null;
     }
 
-    
+
     public void deleteFiles(UserI u, EventMetaI ci) throws Exception{
     	for(XnatAbstractresourceI abstRes:this.getResources_resource()){
     		((XnatAbstractresource)abstRes).deleteWithBackup(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()), u,ci);
     	}
-    	
+
     	File dir=this.getSessionDir();
     	if(dir!=null){
     		FileUtils.MoveToCache(dir);
     	}
     }
-    
+
 
 
     public static String cleanValue(String v){
@@ -678,7 +678,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     	v= StringUtils.ReplaceStr(v, ".", "_");
     	v= StringUtils.ReplaceStr(v, "<", "_");
     	v= StringUtils.ReplaceStr(v, ">", "_");
-    	
+
     	return v;
     }
 
@@ -694,9 +694,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		throw new UnknownPrimaryProjectException();
     	}
     }
-    
+
     public static class UnknownPrimaryProjectException extends Exception{
-    	
+
     }
 
     /**
@@ -721,7 +721,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
     /**
      * This returns the current sub folder within the project archive folder for placing sessions (ie arc001).
-     * @return 
+     * @return
      * @throws InvalidArchiveStructure
      */
     public String getCurrentArchiveFolder() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
@@ -773,55 +773,55 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
 
     }
-    
+
     /**
      * Returns path to the current archive folder for this experiment
-     * @param absolute 
+     * @param absolute
      * @return
      * @throws InvalidArchiveStructure
      */
     public String getCurrentSessionFolder(boolean absolute) throws InvalidArchiveStructure,UnknownPrimaryProjectException{
         String session_path;
-        
+
         final String currentarc = this.getCurrentArchiveFolder();
         if (currentarc ==null){
             session_path = this.getArchiveDirectoryName() + "/";
         }else{
             session_path = currentarc.replace('\\', '/') + this.getArchiveDirectoryName() + "/";
         }
-        
+
         if (absolute){
             session_path= FileUtils.AppendRootPath(this.getArchiveRootPath(), session_path);
         }
-        
+
         return session_path;
     }
-    
+
     /**
      * This method looks for an existing session directory in the archive space.  If none is found, it returns the location where said directory would be created.
-     * @return 
+     * @return
      */
     public File getExpectedSessionDir() throws InvalidArchiveStructure,UnknownPrimaryProjectException{
     	final File sessionDIR=this.getSessionDir();
-    	
+
     	if(sessionDIR==null){
     		return new File(this.getCurrentSessionFolder(true));
     	}
-    	
+
     	return sessionDIR;
     }
-    
+
     protected void checkIsValidID(String s) throws IllegalArgumentException{
-		
+
 		if(StringUtils.IsEmpty(s)){
 			throw new IllegalArgumentException();
-		}	
-		
+		}
+
 		if(!StringUtils.IsAlphaNumericUnderscore(s)){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
     }
-    
+
     public void checkUniqueLabel() throws Exception{
 		if(!StringUtils.IsEmpty(this.getLabel())){
 			Long count=(Long)PoolDBUtils.ReturnStatisticQuery(String.format("SELECT COUNT(*) FROM (SELECT label, ID FROM xnat_experimentData WHERE label='%1$s' AND ID !='%2$s' AND project='%3$s' UNION SELECT label, sharing_share_xnat_experimentda_id AS ID FROM xnat_experimentData_share WHERE label='%1$s' AND sharing_share_xnat_experimentda_id !='%2$s' AND project='%3$s') SRCH",this.getLabel(),this.getId(),this.getProject()), "count", this.getDBName(), "system");
@@ -830,25 +830,25 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			}
 		}
     }
-    
+
 
 	@Override
 	public void preSave() throws Exception{
 		super.preSave();
-		
+
 		checkIsValidID(this.getId());
-		
+
 		checkIsValidID(this.getLabel());
-		
+
 		final XnatProjectdata proj = this.getPrimaryProject(false);
 		if(proj==null){
 			throw new Exception("Unable to identify project for:" + this.getProject());
 		}
-		
+
 		checkUniqueLabel();
-		
+
 		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
-		
+
 		for(final XnatAbstractresourceI res: this.getResources_resource()){
 			final String uri;
 			if(res instanceof XnatResource){
@@ -858,17 +858,17 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			}else{
 				continue;
 			}
-			
+
 			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
 		}
 	}
 
-	
-	
+
+
 	public File getExpectedCurrentDirectory() throws InvalidArchiveStructure,UnknownPrimaryProjectException {
 		return getExpectedSessionDir();
 	}
-	
+
 	public String getResourceCatalogRootPathByLabel( String label) {
 		String rtn = null;;
 		Iterator misc = getResources_resource().iterator();
@@ -901,7 +901,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			throw e;
 		}
 	}
-	
+
 	public static EventMetaI ChangePrimaryProject(XDATUser user, XnatExperimentdata assessor, XnatProjectdata newProject, String newLabel, final EventDetails event) throws Exception{
 		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, assessor.getXSIType(), assessor.getId(),assessor.getProject(),event);
 		EventMetaI c=wrk.buildEvent();
@@ -916,7 +916,28 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 			PersistentWorkflowUtils.fail(wrk,c);
 			throw e;
 		}
-		
+
 		return c;
 	}
+
+    List<WrkWorkflowdataI> workflows=null;
+    public List<WrkWorkflowdataI> getWorkflows() throws Exception{
+        if(workflows==null){
+            workflows = Lists.newArrayList();
+
+            //search for workflow entries with a matching ID
+            org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
+            cc.addClause("wrk:workflowData.ID",this.getId());
+            org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc,null,false);
+
+            //Sort by Launch Time
+            List<XFTItem> workitems = items.getItems("wrk:workflowData.launch_time","DESC");
+            for (XFTItem wrk:workitems)
+            {
+                workflows.add(new WrkWorkflowdata(wrk));
+            }
+        }
+
+        return workflows;
+    }
 }

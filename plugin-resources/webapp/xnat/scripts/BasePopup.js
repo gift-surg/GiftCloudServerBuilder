@@ -29,7 +29,7 @@ function BasePopup(_id,_config){
 		
 		var popupFT = document.createElement("DIV");
 		popupFT.className="ft";
-		popupFT.style.height="20px";
+		//popupFT.style.height="20px";
 		popupDIV.appendChild(popupFT);
 		
 		popupHD.innerHTML=this.config.title;

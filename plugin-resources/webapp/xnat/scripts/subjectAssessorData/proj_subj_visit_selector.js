@@ -55,7 +55,8 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
     };
 
 	this.displayError=function(errorMsg){
-		alert(errorMsg);
+		//alert(errorMsg);
+        xModalMessage(' ',errorMsg,'Close');
 	};
 	
     this.renderProjects = function () {

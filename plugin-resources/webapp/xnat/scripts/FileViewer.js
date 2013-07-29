@@ -531,7 +531,7 @@ function FileViewer(_obj){
 				var fTbody=document.createElement("tbody");
 				var fTr=document.createElement("tr");
 				fTable.appendChild(fTbody);
-				fTable.width="95%";
+				fTable.width="100%";
 				fTable.align="center";
 				fTbody.appendChild(fTr);
 				foot.appendChild(fTable);

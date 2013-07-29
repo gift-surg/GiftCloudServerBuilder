@@ -76,10 +76,10 @@ RestSharer = function(_array,_config) {
 	
 	this.drawContents=function(_div){
 		var header=_div.appendChild(document.createElement("div"));
-		header.innerHTML='<span style="float:left; height:35px;">Share the following resources into ' + this.config.project.label+'</span>'+
-            '<input id="checkAll" type="button" style="float:right;" onclick="toggleShareCheckboxes(this);" value="Uncheck All"/>+' +
+        header.innerHTML='<p style="margin-top:10px;margin-bottom:20px;font-size:14px;">Share the following resources into <b>' + this.config.project.label + '</b></p>' +
+            '<input id="checkAll" type="button" value="Uncheck All" onclick="toggleShareCheckboxes(this);" style="width:110px;margin-bottom:10px;font-size:12px;"/>' +
             '<style>div.yui-dt table{ width:100%; }</style>';
-		header.style.width = 100+'%';
+        header.style.width = 100+'%';
 		var t=_div.appendChild(document.createElement("div"));
 		var dataSource = new YAHOO.util.DataSource(this.a);
    		dataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;

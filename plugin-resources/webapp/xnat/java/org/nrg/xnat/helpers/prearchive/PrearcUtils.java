@@ -464,7 +464,7 @@ public class PrearcUtils {
 	 * 
 	 * In the future, we might want to move this to a database table.  However, the current prearchive table doesn't have a primary key column (really?).  
 	 * So, there would be no way to reliably join from the logs table to the prearchive table.  Also, this would make more sense to do as part of a image session logging framework 
-	 * which would capture a lot more then just preachive logs, but requires more requirements gathering.
+	 * which would capture a lot more than just preachive logs, but requires more requirements gathering.
 	 * 
 	 * As such, this is more of a stub implementation, that should probably change when the above problems are dealt with.  It will facilitate the current requirement, which 
 	 * is just that we can show the last exception via REST.

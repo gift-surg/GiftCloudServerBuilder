@@ -94,7 +94,7 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
         } catch (ConfigServiceException exception) {
             throw new Exception("An error occurred trying to retrieve the data.anonymize configuration setting.", exception);
         }
-		if (this.getScript() != null) {
+		if (this.getScript() != null && this.getScript().getStatus().equals(Configuration.ENABLED_STRING)) {
 			List<File> fs = this.getFilesToAnonymize();
 			for (File f : fs) {
 				this.anonymize(f);

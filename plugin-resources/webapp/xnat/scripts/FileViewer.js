@@ -599,8 +599,16 @@ function FileViewer(_obj){
 
     this.catalogRefreshOk = function () {
         var catalogRefreshCallback = {
-            failure: this.catalogRefreshFailed,
-            success: this.catalogRefreshSuccess,
+            success: function () {
+                xModalLoadingClose();
+                var refreshOptions = {} ;
+                refreshOptions.action = function() { window.location.reload(); };
+                xModalMessage(this.obj.sessionId + ' Refreshed', 'The aggregate file count and size values have been updated for your session. Click OK to reload the page.', 'OK', refreshOptions);
+            },
+            failure: function (o) {
+                xModalLoadingClose();
+                xModalMessage('Error', 'An unexpected error has occurred while processing session ' + this.obj.sessionId + '. Please contact your administrator. Status code: ' + o.status, 'OK');
+            },
             scope: this,
             cache: false
         };
@@ -612,18 +620,6 @@ function FileViewer(_obj){
     this.catalogRefreshCancel = function () {
         window.viewer.loading = 0;
         xModalCloseNew();
-    };
-
-    this.catalogRefreshSuccess = function () {
-        xModalLoadingClose();
-        var refreshOptions = {} ;
-        refreshOptions.action = function() { window.location.reload(); };
-        xModalMessage(this.obj.sessionId + ' Refreshed', 'The aggregate file count and size values have been updated for your session. Click OK to reload the page.', 'OK', refreshOptions);
-    };
-
-    this.catalogRefreshFailed = function (o) {
-        xModalLoadingClose();
-        xModalMessage('Error', 'An unexpected error has occurred while processing session ' + this.obj.sessionId + '. Please contact your administrator. Status code: ' + o.status, 'OK');
     };
 }
 

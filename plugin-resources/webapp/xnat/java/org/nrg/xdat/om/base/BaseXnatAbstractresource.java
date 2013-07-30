@@ -72,7 +72,7 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
         if (size ==null){
             calculate(rootPath);
         }
-        return size.longValue();
+        return size;
     }
     
     public String getReadableFileStats() {

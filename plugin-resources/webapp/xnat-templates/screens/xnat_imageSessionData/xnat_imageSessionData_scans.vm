@@ -48,8 +48,8 @@
         #if($scan.getFile().size()>0)
         <div id="scans_$!scan.getId()_stats">
                 #set($stats = $!scan.getReadableFileStats())
-                #if($stats.size() == 0)
-                    Not found...
+                #if("$!stats.get(0)" == "" || $stats.size() == 0 || $stats.get(0).equals("0 B in 0 files"))
+                    <a onclick="window.viewer.init(true);">Show Counts</a>
                 #elseif($stats.size() == 1)
                     $stats.get(0)
                 #else
@@ -58,7 +58,7 @@
         </div>
 			#set ($scanWFiles = $scanWFiles+1)
         #else
-            (0 files, 0.00MB)
+            #displayListAsTipText(["0 B in 0 files", "No files were found associated with this scan."])
         #end
       </td>
       <td border=0 align=left NOWRAP>$!scan.getProperty("note")</td>
@@ -72,17 +72,23 @@
       </td>
     </tr>
 	#set ($scanCounter= $scanCounter + 1)
-  #end	
-  #if($scanWFiles>0)
-       <tr>
-               <td colspan="$fileIndex" align="right">
-               </td>
-               <td NOWRAP >
-                       <div id="total_dicom_files" class="totals">
-                        Total: #displayListAsTipText($om.getSessionReadableScanStats())
-                    </div>
-               </td>
-       </tr>
+  #end
+    #if($scanWFiles>0)
+        <tr>
+            <td colspan="$fileIndex" align="right">
+            </td>
+            <td NOWRAP>
+                <div id="total_dicom_files" class="totals">
+                    <b>Total:</b>
+                    #set($sessionStats = $om.getSessionReadableScanStats())
+                    #if("$!sessionStats.get(0)" == "" || $sessionStats.size() == 0 || $sessionStats.get(0).equals("0 B in 0 files"))
+                        <a onclick="window.viewer.init(true);">Show Counts</a>
+                    #else
+                        #displayListAsTipText($sessionStats)
+                    #end
+                </div>
+            </td>
+        </tr>
     #end
 </table>
 <BR/>

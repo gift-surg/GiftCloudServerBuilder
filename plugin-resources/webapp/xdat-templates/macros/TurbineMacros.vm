@@ -1690,8 +1690,16 @@ Takes a list of strings and displays it as a bit of text using the first string,
 then adds any subsequent strings to a block of text to use as a pop-over.
  *#
 #macro(displayListAsTipText $tipText)
+    #if("$!tipText" == "" || "$!tipText.get(0)" == "")
     <span class="tip_text">
-        $tipText.get(0) ## This displays the first item in the list as the main text.
+            No items found.
+            <span style="top:20px;white-space:nowrap;left:-10;width:auto;" class="tip shadowed">
+                No items were found: Check your data to be sure you specified a valid system object.
+            </span>
+        </span>
+    #else
+        <span class="tip_text">
+            $!tipText.get(0) ## This displays the first item in the list as the main text.
         <span style="top:20px;white-space:nowrap;left:-10;width:auto;" class="tip shadowed">
             #set($current = 1)
             #set($size = $tipText.size())
@@ -1707,4 +1715,5 @@ then adds any subsequent strings to a block of text to use as a pop-over.
             #end
         </span>
     </span>
+    #end
 #end

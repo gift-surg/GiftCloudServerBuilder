@@ -24,6 +24,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.restlet.resources.ScanList;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
+import org.nrg.xnat.utils.CatalogUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -180,6 +181,7 @@ public class CatalogResourceList extends XNATTemplate {
         }
 
         String fileStats = getQueryVariable("file_stats");
+        boolean cacheFileStats = isQueryVariableTrue("cache_file_stats");
         if(fileStats != null && fileStats.equals("true")) {
             try {
                 if(proj==null){
@@ -207,45 +209,15 @@ public class CatalogResourceList extends XNATTemplate {
                     }
                 }
 
-                XFTTable newTable = new XFTTable();
-                String [] fields={"xnat_abstractresource_id","label","element_name","category","cat_id","cat_desc","file_count","file_size","tags","content","format"};
-                newTable.initTable(fields);
-                if (table != null) {
-                table.resetRowCursor();
-                while(table.hasMoreRows() ) {
-                    Object[] old=table.nextRow();
-                    Object[] _new=new Object[11];
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Found resource with ID: " + old[0] + "(" + old[1] + ")");
-                    }
-                    _new[0]=old[0];
-                    _new[1]=old[1];
-                    _new[2]=old[2];
-                    _new[3]=old[3];
-                    _new[4]=old[4];
-                    _new[5]=old[5];
-
-                    XnatAbstractresource res= XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(old[0], user, false);
-
-                        _new[6] = res.getFileCount();
-                        _new[7] = res.getFileSize();
-                    _new[8]=res.getTagString();
-                    _new[9]=res.getContent();
-                    _new[10]=res.getFormat();
-
-                        newTable.rows().add(_new);
-                    }
-                }
-
-                table = newTable;
             } catch (ElementNotFoundException e) {
                 logger.error("",e);
             }
         }
 
+        table = CatalogUtils.populateTable(table, user, proj, cacheFileStats);
+
         Hashtable<String,Object> params=new Hashtable<String,Object>();
         params.put("title", "Resources");
-        MediaType mt = overrideVariant(variant);
 
         if(table!=null) {
             // If table.rows() is null, set recordCount to 0
@@ -258,6 +230,6 @@ public class CatalogResourceList extends XNATTemplate {
             params.put("totalRecords", recordCount);
         }
 
-        return representTable(table, mt, params);
+        return representTable(table, overrideVariant(variant), params);
     }
 }

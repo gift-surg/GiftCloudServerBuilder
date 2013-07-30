@@ -22,6 +22,7 @@ import org.nrg.xdat.bean.reader.XDATXMLReader;
 import org.nrg.xdat.model.*;
 import org.nrg.xdat.om.*;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
@@ -990,6 +991,56 @@ public class CatalogUtils {
         newCat.addEntries_entry(newEntryBean);
 
         CatalogUtils.writeCatalogToFile(newCat, newCatFile);
+    }
+
+    public static XFTTable populateTable(XFTTable table, XDATUser user, XnatProjectdata proj, boolean cacheFileStats) {
+        XFTTable newTable = new XFTTable();
+        String[] fields = {"xnat_abstractresource_id", "label", "element_name", "category", "cat_id", "cat_desc", "file_count", "file_size", "tags", "content", "format"};
+        newTable.initTable(fields);
+        table.resetRowCursor();
+        while (table.hasMoreRows()) {
+            Object[] old = table.nextRow();
+            Object[] _new = new Object[11];
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found resource with ID: " + old[0] + "(" + old[1] + ")");
+            }
+            _new[0] = old[0];
+            _new[1] = old[1];
+            _new[2] = old[2];
+            _new[3] = old[3];
+            _new[4] = old[4];
+            _new[5] = old[5];
+
+            XnatAbstractresource res = XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(old[0], user, false);
+
+            if (cacheFileStats) {
+                if (res.getFileCount() == null) {
+                    res.setFileCount(res.getCount(proj.getRootArchivePath()));
+                }
+                if (res.getFileSize() == null) {
+                    res.setFileSize(res.getSize(proj.getRootArchivePath()));
+                }
+                try {
+                    res.save(user, true, false, null);
+                } catch (Exception e) {
+                    if (res instanceof XnatResourcecatalog) {
+                        logger.error("Failed to save updates to resource catalog: " + res.getLabel());
+                    } else {
+                        logger.error("Failed to save updates to abstract resource: " + res.getXnatAbstractresourceId());
+                    }
+                }
+            }
+
+            _new[6] = res.getFileCount();
+            _new[7] = res.getFileSize();
+            _new[8] = res.getTagString();
+            _new[9] = res.getContent();
+            _new[10] = res.getFormat();
+
+            newTable.rows().add(_new);
+        }
+
+        return newTable;
     }
 
     public static boolean populateStats(XnatAbstractresource abstractResource, String rootPath) {

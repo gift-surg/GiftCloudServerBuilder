@@ -501,13 +501,15 @@ function FileViewer(_obj){
 		  		    	}
 		  		    },this,true);
 
-                    var updateButton = document.createElement("input");
-                    updateButton.type = "button";
-                    updateButton.value = "<b>Update File Data</b>";
-                    fTd1.appendChild(updateButton);
+                    if (this.obj.sessionId && this.obj.sessionId.trim() != "") {
+                        var updateButton = document.createElement("input");
+                        updateButton.type = "button";
+                        updateButton.value = "<b>Update File Data</b>";
+                        fTd1.appendChild(updateButton);
 
-                    var oPushUpdateButton = new YAHOO.widget.Button(updateButton);
-                    oPushUpdateButton.subscribe("click", this.catalogRefresh, this, true);
+                        var oPushUpdateButton = new YAHOO.widget.Button(updateButton);
+                        oPushUpdateButton.subscribe("click", this.catalogRefresh, this, true);
+                    }
 				}
 							
 				var dType=document.createElement("select");

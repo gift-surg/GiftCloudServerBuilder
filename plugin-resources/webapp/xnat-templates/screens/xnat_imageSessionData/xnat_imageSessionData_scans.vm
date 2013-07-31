@@ -1,11 +1,19 @@
+#* @vtlvariable name="item" type="org.nrg.xft.XFTItem" *#
+#* @vtlvariable name="user" type="org.nrg.xdat.security.XDATUser" *#
 #* @vtlvariable name="siteConfig" type="java.util.Properties" *#
 #* @vtlvariable name="turbineUtils" type="org.nrg.xdat.turbine.utils.TurbineUtils" *#
 #* @vtlvariable name="om" type="org.nrg.xdat.om.XnatImagesessiondata" *#
 #* @vtlvariable name="scan" type="org.nrg.xdat.om.XnatImagescandata" *#
 #* @vtlvariable name="resource" type="org.nrg.xdat.om.XnatAbstractresource" *#
 <!--BEGIN /screens/xnat_imageSessionData/xnat_imageSessionData_scans.vm -->
-## content from scans.css moved to xnat.css
-##<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
+#macro(renderEmptyResourceCount)
+    #if ($user.canEdit($item))
+        <a onclick="window.viewer.init(true);">Show Counts</a>
+    #else
+        #displayListAsTipText(["0 B in 0 files", "No files were found associated with this scan. Contact a member or owner of this project to generate the file count data."])
+    #end
+#end
+
 <div class="edit_header1" style="margin-bottom:16px">Scans</div>
 #set($scanAssessors =$!om.getScanAssessors())
 
@@ -49,7 +57,7 @@
         <div id="scans_$!scan.getId()_stats">
                 #set($stats = $!scan.getReadableFileStats())
                 #if("$!stats.get(0)" == "" || $stats.size() == 0 || $stats.get(0).equals("0 B in 0 files"))
-                    <a onclick="window.viewer.init(true);">Show Counts</a>
+                        #renderEmptyResourceCount()
                 #elseif($stats.size() == 1)
                     $stats.get(0)
                 #else
@@ -58,7 +66,7 @@
         </div>
 			#set ($scanWFiles = $scanWFiles+1)
         #else
-            #displayListAsTipText(["0 B in 0 files", "No files were found associated with this scan."])
+            #renderEmptyResourceCount()
         #end
       </td>
       <td border=0 align=left NOWRAP>$!scan.getProperty("note")</td>
@@ -82,7 +90,7 @@
                     <b>Total:</b>
                     #set($sessionStats = $om.getSessionReadableScanStats())
                     #if("$!sessionStats.get(0)" == "" || $sessionStats.size() == 0 || $sessionStats.get(0).equals("0 B in 0 files"))
-                        <a onclick="window.viewer.init(true);">Show Counts</a>
+                        #renderEmptyResourceCount()
                     #else
                         #displayListAsTipText($sessionStats)
                     #end

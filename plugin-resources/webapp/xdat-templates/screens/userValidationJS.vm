@@ -1,4 +1,4 @@
-##modified to prevent values greater then 255 characters.
+##modified to prevent values greater than 255 characters.
 <script type="text/javascript" src="$content.getURI("scripts/user/validateUsername.js")"></script>
 <script type="text/javascript">
     XNAT.app.register = {

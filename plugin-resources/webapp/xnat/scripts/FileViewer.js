@@ -1,31 +1,33 @@
+// TODO: HACKITY HACK HACK HACK. Because of scope issues in the file management functions, it's difficult to tell the
+// upload form that it needs to reload the page on completion of operations. Eventually table population should come
+// completely via REST to the back-end, but we don't currently live in that world.
+
+
 function FileViewer(_obj){
 	//categories.object
 	this.loading=0;
 	this.requestRender=false;
+    this.requiresRefresh = false;
 	this.obj=_obj;
 	if(this.obj.categories==undefined){
-		this.obj.categories=new Object();
-		this.obj.categories.ids=new Array();
+        this.obj.categories = {};
+        this.obj.categories.ids = [];
 	}
 	
 	if(this.obj.categories["misc"]==undefined || this.obj.categories["misc"]==null){
-		this.obj.categories["misc"]=new Object();
-		this.obj.categories["misc"].cats=new Array();
+        this.obj.categories["misc"] = {};
+        this.obj.categories["misc"].cats = [];
 	}
 	
-	
-	this.init=function(){
+	this.init=function(refreshCatalog){
 		if(this.loading==0){
 			this.loading=1;
 			this.resetCounts();
-			var catCallback={
-				success:this.processCatalogs,
-				failure:this.handleFailure,
-                cache:false, // Turn off caching for IE
-				scope:this
+            if (refreshCatalog) {
+                this.catalogRefresh();
+            } else {
+                this.getCatalog();
 			}
-		
-			YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/resources?all=true&format=json&file_stats=true&sortBy=category,cat_id,label&timestamp=' + (new Date()).getTime(),catCallback,null,this);
 		}else if(this.loading==1){
 			//in process
 		}else{
@@ -34,48 +36,45 @@ function FileViewer(_obj){
 				this.render();
 			}
 		}
-//			var countCallback={
-//				success:this.processResults,
-//				failure:this.handleFailure,
-//              cache:false, // Turn off caching for IE
-//				scope:this
-//			}
-//			
-//			if(this.obj.msg==undefined){
-//				this.obj.msg="Loading file information.";
-//			}
-//		
-//			this.clearFiles();
-//			
-//			openModalPanel("refresh_file",this.obj.msg);
-//			YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/files?all=true&format=json&timestamp=' + (new Date()).getTime(),countCallback,null,this);
-	}
+	};
 	
-	this.handleFailure=function(o){
+    this.getCatalog = function() {
+        var catCallback={
+            success:this.processCatalogs,
+            failure:this.handleFailure,
+            cache:false, // Turn off caching for IE
+            scope:this
+        };
+
+        YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/resources?all=true&format=json&file_stats=true&sortBy=category,cat_id,label&timestamp=' + (new Date()).getTime(),catCallback,null,this);
+    };
+
+	this.handleFailure=function() {
         if (!window.leaving) {
             closeModalPanel("refresh_file");
             alert("Error loading files");
         }
-	}
+	};
 	   
 	this.removeFile=function(item){		
 		if(showReason){
 			var justification=new XNAT.app.requestJustification("file","File Deletion Dialog",this._removeFile,this);
 			justification.item=item;	
 		}else{
-			passThroughfunc = this._removeFile
-			passThroughObj = this
+			passThroughfunc = this._removeFile;
+			passThroughObj = this;
 
+            window.viewer.requiresRefresh = true;
 
 			var handleYes = function() {
 			    //user confirms the deletion of this item;
 			    //this method would perform that deletion;
 			    //when ready, hide the SimpleDialog:
 			    var passthrough= new XNAT.app.passThrough(passThroughfunc,passThroughObj);
-			passthrough.item=item;
-			passthrough.fire();
+			    passthrough.item=item;
+			    passthrough.fire();
 			    this.hide();
-			    this.destory();
+                this.destroy();
 			};
 			var handleNo = function() {
 			    //user cancels item deletion; this method
@@ -83,7 +82,7 @@ function FileViewer(_obj){
 			    //process.
 			    //when ready, hide the SimpleDialog:
 			    this.hide();
-			    this.destory();
+                this.destroy();
 			};
 			confirm_dialog =  new YAHOO.widget.SimpleDialog("file_remove_confirm",  
 		             { width: "300px", 
@@ -95,8 +94,10 @@ function FileViewer(_obj){
 		               text: "Confirm File Remove?", 
 		               icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
 		               constraintoviewport: true, 
-		               buttons: [ { text:"Yes", handler:handleYes}, 
-		                          { text:"No",  handler:handleNo, isDefault:true  } ] 
+                    buttons: [
+                        { text: "Yes", handler: handleYes},
+                        { text: "No", handler: handleNo, isDefault: true  }
+                    ]
 		             } ); 
 			confirm_dialog.setHeader("Confirm Remove!");
 			confirm_dialog.render("page_body");
@@ -104,7 +105,7 @@ function FileViewer(_obj){
 			confirm_dialog.bringToTop();
 
 		}
-	}
+	};
 
     this._removeFile = function (arg1, arg2, container) {
         var event_reason = (container == undefined || container.dialog == undefined) ? "" : container.dialog.event_reason;
@@ -118,7 +119,7 @@ function FileViewer(_obj){
             },
             cache: false, // Turn off caching for IE
             scope: this
-        }
+        };
 
         openModalPanel("file", "Deleting '" + container.item.file_name + "'");
 
@@ -138,6 +139,8 @@ function FileViewer(_obj){
 			passThroughfunc = this._removeReconstruction
 			passThroughObj = this
 
+           window.viewer.requiresRefresh = true;
+
 			var handleYes = function() {
 			    //user confirms the deletion of this item;
 			    //this method would perform that deletion;
@@ -146,7 +149,7 @@ function FileViewer(_obj){
 			passthrough.item=item;
 			passthrough.fire();
 			    this.hide();
-			    this.destory();
+                this.destroy();
 			};
 			var handleNo = function() {
 			    //user cancels item deletion; this method
@@ -154,7 +157,7 @@ function FileViewer(_obj){
 			    //process.
 			    //when ready, hide the SimpleDialog:
 			    this.hide();
-			    this.destory();
+                this.destroy();
 			};
 			confirm_dialog =  new YAHOO.widget.SimpleDialog("file_remove_confirm",  
 		             { width: "300px", 
@@ -166,15 +169,17 @@ function FileViewer(_obj){
 		               text: "Confirm Resource Removal?",
 		               icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
 		               constraintoviewport: true, 
-		               buttons: [ { text:"Yes", handler:handleYes}, 
-		                          { text:"No",  handler:handleNo, isDefault:true  } ] 
+                    buttons: [
+                        { text: "Yes", handler: handleYes},
+                        { text: "No", handler: handleNo, isDefault: true  }
+                    ]
 		             } ); 
 			confirm_dialog.setHeader("Confirm Remove!");
 			confirm_dialog.render("page_body");
 			confirm_dialog.show();
 			confirm_dialog.bringToTop();
 		}
-   }
+   };
 
     this._removeReconstruction = function (arg1, arg2, container) {
         var event_reason = (container == undefined || container.dialog == undefined) ? "" : container.dialog.event_reason;
@@ -208,6 +213,8 @@ function FileViewer(_obj){
 			passThroughfunc = this._removeCatalog
 			passThroughObj = this
 
+            window.viewer.requiresRefresh = true;
+
 			var handleYes = function() {
 			    //user confirms the deletion of this item;
 			    //this method would perform that deletion;
@@ -216,7 +223,7 @@ function FileViewer(_obj){
 			passthrough.item=item;
 			passthrough.fire();
 			    this.hide();
-			    this.destory();
+                this.destroy();
 			};
 			var handleNo = function() {
 			    //user cancels item deletion; this method
@@ -224,7 +231,7 @@ function FileViewer(_obj){
 			    //process.
 			    //when ready, hide the SimpleDialog:
 			    this.hide();
-			    this.destory();
+                this.destroy();
 			};
 			confirm_dialog =  new YAHOO.widget.SimpleDialog("file_remove_confirm",  
 		             { width: "300px", 
@@ -236,15 +243,17 @@ function FileViewer(_obj){
 		               text: "Confirm Catalog Remove?", 
 		               icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
 		               constraintoviewport: true, 
-		               buttons: [ { text:"Yes", handler:handleYes}, 
-		                          { text:"No",  handler:handleNo, isDefault:true  } ] 
+                    buttons: [
+                        { text: "Yes", handler: handleYes},
+                        { text: "No", handler: handleNo, isDefault: true  }
+                    ]
 		             } ); 
 			confirm_dialog.setHeader("Confirm Remove!");
 			confirm_dialog.render("page_body");
 			confirm_dialog.show();
 			confirm_dialog.bringToTop();
 		}
-   }
+   };
    
    this._removeCatalog=function(arg1,arg2,container){
 		var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
@@ -260,7 +269,9 @@ function FileViewer(_obj){
 			},
             cache:false, // Turn off caching for IE
 			scope:this
-		}
+		};
+
+       window.viewer.requiresRefresh = true;
 		
 		openModalPanel("file","Deleting folder '" + container.item.file_name +"'");
 		var params="";		
@@ -268,7 +279,7 @@ function FileViewer(_obj){
 		params+="&event_type=WEB_FORM";
 		params+="&event_action=Folder Deleted";
 		YAHOO.util.Connect.asyncRequest('DELETE',container.item.uri+ '?XNAT_CSRF=' + csrfToken + '&'+params,this.initCallback,null,this);
-   }
+   };
    
    this.getScan=function(sc, sid){
    		var gsScans=this.obj.categories[sc];
@@ -287,17 +298,16 @@ function FileViewer(_obj){
    this.clearCatalogs=function(o){
    		var scans;
    		//clear catalogs
-   		for(var catC=0;catC<this.obj.categories.ids.length;catC++)
-   		{
+        for (var catC = 0; catC < this.obj.categories.ids.length; catC++) {
    			scans=this.obj.categories[this.obj.categories.ids[catC]];
    			for(var sC=0;sC<scans.length;sC++){
-   				scans[sC].cats =new Array();
+   				scans[sC].cats =[];
    			}
    			
    			scans=null;
    		}
-   		this.obj.categories["misc"].cats=new Array();
-   }
+   		this.obj.categories["misc"].cats=[];
+   };
    
    this.processCatalogs=function(o){
    		closeModalPanel("catalogs");
@@ -309,111 +319,30 @@ function FileViewer(_obj){
     		var scan=this.getScan(catalogs[catC].category,catalogs[catC].cat_id);
     		if(scan!=null){
     			if(scan.cats==null || scan.cats==undefined){
-    				scan.cats=new Array();
+    				scan.cats=[];
     			}
     			scan.cats.push(catalogs[catC]);
     		}else{
     			if(this.obj.categories["misc"].cats==null || this.obj.categories["misc"].cats==undefined){
-    				this.obj.categories["misc"].cats=new Array();
+    				this.obj.categories["misc"].cats=[];
     			}
     			this.obj.categories["misc"].cats.push(catalogs[catC]);
     		}
     	}
-    	
-    	this.showCounts();
     	
     	this.loading=3;
     	
     	if(this.requestRender){
     		this.render();
     	}
-   }
+   };
    
    this.resetCounts=function(){
-   		var scans,sCount,sSize;
-   		for(var catC=0;catC<this.obj.categories.ids.length;catC++)
-   		{
-   			var catName=this.obj.categories.ids[catC];
-   			scans=this.obj.categories[this.obj.categories.ids[catC]];
-   			for(var sC=0;sC<scans.length;sC++){
-   				var dest=document.getElementById(catName + "_" + scans[sC].id + "_stats");
-   				if(dest!=null && dest !=undefined){
-	   				dest.innerHTML="Loading...";
-   				}
-   			}
-   			
+        for (var catC = 0; catC < this.obj.categories.ids.length; catC++) {
+            var scans=this.obj.categories[this.obj.categories.ids[catC]];
    			scans=null;
    		}
-   }
-   
-   this.showCounts=function(){
-   		var scans,sCount,sSize;
-   		
-   		var scan_counts=new Object();
-   		var scan_resources=new Array();
-   		
-   		//iterate over known categories
-   		for(var catC=0;catC<this.obj.categories.ids.length;catC++)
-   		{
-   			var catName=this.obj.categories.ids[catC];
-   			scans=this.obj.categories[catName];
-   			for(var sC=0;sC<scans.length;sC++){
-   				var dest=document.getElementById(catName + "_" + scans[sC].id + "_stats");
-   				if(dest!=null && dest !=undefined){
-	   				sCount=0;
-	   				sSize=0;
-	   				dest.innerHTML="";
-	   				for(var scSC=0;scSC<scans[sC].cats.length;scSC++){
-	   					dest.innerHTML+=scans[sC].cats[scSC].label
-	   					dest.innerHTML+=" (";
-	   					dest.innerHTML+=scans[sC].cats[scSC].file_count;
-	   					dest.innerHTML+=" files, "
-   						dest.innerHTML+=size_format(scans[sC].cats[scSC].file_size)
-   						dest.innerHTML+=") ";
-	   					
-	   					if(catName=="scans"){
-	   						if(scan_counts[scans[sC].cats[scSC].label]==undefined){
-	   							scan_counts[scans[sC].cats[scSC].label]=new Object();
-	   							scan_counts[scans[sC].cats[scSC].label].label=scans[sC].cats[scSC].label;
-	   							scan_counts[scans[sC].cats[scSC].label].count=0;
-	   							scan_counts[scans[sC].cats[scSC].label].size=0;
-	   							scan_resources.push(scans[sC].cats[scSC].label);
-	   						}
-   							scan_counts[scans[sC].cats[scSC].label].count+=parseInt(scans[sC].cats[scSC].file_count);
-   							scan_counts[scans[sC].cats[scSC].label].size+=parseInt(scans[sC].cats[scSC].file_size);
-	   					}
-	   				}
-   				}
-   			}
-
-			var dest=document.getElementById("total_dicom_files");
-			if(dest!=null && dest !=undefined){
-   				dest.innerHTML="Totals: ";
-				for(var sC2=0;sC2<scan_resources.length;sC2++){
-					dest.innerHTML+=scan_counts[scan_resources[sC2]].label+" (";
-					dest.innerHTML+=scan_counts[scan_resources[sC2]].count;
-					dest.innerHTML+=" files, ";
-					dest.innerHTML+=size_format(scan_counts[scan_resources[sC2]].size);
-					dest.innerHTML+=") ";
-				}
-				
-			}
-			
-			//iterate over misc catalogs
-			for(var scSC=0;scSC<this.obj.categories.misc.cats.length;scSC++){
-				var tempCat=this.obj.categories.misc.cats[scSC];
-				var dest=document.getElementById(tempCat.category + "_" + tempCat.label + "_stats");
-   				if(dest!=null && dest !=undefined){
-	   				dest.innerHTML="";
-					dest.innerHTML+=tempCat.file_count;
-					dest.innerHTML+=" files, ";
-					dest.innerHTML+=size_format(tempCat.file_size);
-   				}
-			}
-   			
-   			scans=null;
-   		}
-   }
+    };
    
    this.refreshCatalogs=function(msg_id){
 		closeModalPanel(msg_id);
@@ -423,11 +352,11 @@ function FileViewer(_obj){
 			failure:this.handleFailure,
             cache:false, // Turn off caching for IE
 			scope:this
-		}
+        };
 	
 		this.requestRender=true;
 		YAHOO.util.Connect.asyncRequest('GET',this.obj.uri + '/resources?all=true&format=json&file_stats=true&timestamp=' + (new Date()).getTime(),catCallback,null,this);
-   }
+    };
 	
 	this.render=function(){
 		if(this.loading==0){
@@ -446,7 +375,7 @@ function FileViewer(_obj){
 			   width:"780px",height:"550px",underlay:"shadow",modal:true,fixedcenter:true,visible:false,draggable:true});
 			this.panel.setHeader("File Manager");
 		
-			this.catalogClickers=new Array();
+			this.catalogClickers=[];
 					
 			var bd = document.createElement("div");
 			
@@ -571,6 +500,14 @@ function FileViewer(_obj){
 		  		    		alert(e.toString());
 		  		    	}
 		  		    },this,true);
+
+                    var updateButton = document.createElement("input");
+                    updateButton.type = "button";
+                    updateButton.value = "<b>Update File Data</b>";
+                    fTd1.appendChild(updateButton);
+
+                    var oPushUpdateButton = new YAHOO.widget.Button(updateButton);
+                    oPushUpdateButton.subscribe("click", this.catalogRefresh, this, true);
 				}
 							
 				var dType=document.createElement("select");
@@ -597,6 +534,9 @@ function FileViewer(_obj){
 				var oPushButtonD4 = new YAHOO.widget.Button(dButton4);
 	  		    oPushButtonD4.subscribe("click",function(o){
 	  		    	this.panel.hide();
+                    if (window.viewer.requiresRefresh) {
+                        window.location.reload();
+                    }
 	  		    },this,true);
 				
 				var oPushButtonD2 = new YAHOO.widget.Button(dButton2);
@@ -642,7 +582,45 @@ function FileViewer(_obj){
 			this.panel.render("page_body");
 			this.panel.show();
 		}
-   }	
+   };
+
+    this.catalogRefresh = function () {
+        try {
+            var updateOptions = {};
+            updateOptions.title = 'Update File Data';
+            updateOptions.content = 'This operation regenerates the stored metadata from file resources in the archive. This can take anywhere from a few moments to many minutes, so make certain that you want to do this update. Click <b>OK</b> to start the update operation or <b>Cancel</b> if you want to wait.';
+            updateOptions.okAction = this.catalogRefreshOk;
+            updateOptions.cancelAction = this.catalogRefreshCancel;
+            xModalOpenNew(updateOptions);
+        } catch (e) {
+            alert(e.toString());
+        }
+    };
+
+    this.catalogRefreshOk = function () {
+        var catalogRefreshCallback = {
+            success: function () {
+                xModalLoadingClose();
+                var refreshOptions = {} ;
+                refreshOptions.action = function() { window.location.reload(); };
+                xModalMessage(this.obj.sessionId + ' Refreshed', 'The aggregate file count and size values have been updated for your session. Click OK to reload the page.', 'OK', refreshOptions);
+            },
+            failure: function (o) {
+                xModalLoadingClose();
+                xModalMessage('Error', 'An unexpected error has occurred while processing session ' + this.obj.sessionId + '. Please contact your administrator. Status code: ' + o.status, 'OK');
+            },
+            scope: this,
+            cache: false
+        };
+        YAHOO.util.Connect.asyncRequest('POST', this.obj.refresh + '&timestamp=' + (new Date()).getTime(), catalogRefreshCallback, null);
+        xModalCloseNew();
+        xModalLoadingOpen({title:'Please wait...'});
+    };
+
+    this.catalogRefreshCancel = function () {
+        window.viewer.loading = 0;
+        xModalCloseNew();
+    };
 }
 
 YAHOO.widget.TaskNode = function(oData, oParent, expanded, checked) {
@@ -898,9 +876,12 @@ YAHOO.extend(YAHOO.widget.TaskNode, YAHOO.widget.TextNode, {
                  filesize = number_format(filesize / 1024, 0) + ' Kb';
              } else {
                  filesize = number_format(filesize, 0) + ' bytes';
-             };
-         };
-      };
+            }
+            ;
+        }
+        ;
+    }
+    ;
       return filesize;
    };
    
@@ -955,7 +936,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 	},
 	renderFiles:function(){
 		
-		    var folderArray = new Array();
+		    var folderArray = [];
 			for(var fC=0;fC<this.cat.files.length;fC++){
 				var file=this.cat.files[fC];
 				var size=parseInt(file.Size);
@@ -1382,10 +1363,12 @@ function UploadFileForm(_obj){
 		this.panel.setBody(div);
 		
 		this.panel.selector=this;
-		var buttons=[{text:"Upload",handler:{fn:this.uploadFile},isDefault:true},
+        var buttons = [
+            {text: "Upload", handler: {fn: this.uploadFile}, isDefault: true},
 			{text:"Close",handler:{fn:function(){
 				this.cancel();
-			}}}];
+            }}}
+        ];
 		this.panel.cfg.queueProperty("buttons",buttons);
 		
 		
@@ -1477,6 +1460,7 @@ function AddFolderForm(_obj){
 		this.panel=new YAHOO.widget.Dialog("fileUploadDialog",{close:true,
 		   width:"440px",height:"400px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
 		this.panel.setHeader("Add Folder");
+        window.viewer.requiresRefresh = true;
 				
 		var div = document.createElement("form");
 		
@@ -1689,10 +1673,12 @@ function AddFolderForm(_obj){
 		this.panel.setBody(div);
 		
 		this.panel.selector=this;
-		var buttons=[{text:"Create",handler:{fn:this.addFolder},isDefault:true},
+        var buttons = [
+            {text: "Create", handler: {fn: this.addFolder}, isDefault: true},
 			{text:"Close",handler:{fn:function(){
 				this.cancel();
-			}}}];
+            }}}
+        ];
 		this.panel.cfg.queueProperty("buttons",buttons);
 		
 		
@@ -1774,12 +1760,13 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	
 	var callback={
 		upload:function(obj1){
+            window.viewer.requiresRefresh = true;
 			window.viewer.refreshCatalogs("add_file");
 			this.cancel();
 		},
         cache:false, // Turn off caching for IE
 		scope:this
-	}
+	};
 	openModalPanel("add_file","Uploading File.")
 	
 	var method = 'POST';
@@ -1792,13 +1779,14 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	params+="&event_type=WEB_FORM";
 	params+="&event_action=File(s) uploaded";
 	YAHOO.util.Connect.asyncRequest(method,container.file_dest+params,callback);
-}
+};
 
 XNAT.app._addFolder = function (arg1, arg2, container) {
     var event_reason = (container == undefined || container.dialog == undefined) ? "" : container.dialog.event_reason;
     var callback = {
         success: function (obj1) {
             closeModalPanel("add_folder");
+            window.viewer.requiresRefresh = true;
             window.viewer.refreshCatalogs("add_folder");
             this.cancel();
         },

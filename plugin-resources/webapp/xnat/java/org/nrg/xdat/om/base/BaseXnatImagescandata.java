@@ -506,8 +506,13 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
             if (label != null && label.equals("SNAPSHOTS")) {
                 continue;
 }
-            int count = resource.getFileCount();
-            int size;
+            int count, size;
+            Integer rawCount = resource.getFileCount();
+            if (rawCount != null) {
+                count = rawCount;
+            } else {
+                count = 0;
+            }
             Object rawFileSize = resource.getFileSize();
             if (rawFileSize != null) {
                 size = (Integer) rawFileSize;

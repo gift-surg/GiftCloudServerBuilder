@@ -47,8 +47,14 @@ public class ResourceUtils {
 	 * @return true if the catalog was modified
 	 * @throws Exception Failures stem from the save operation.
 	 */
-	public static boolean refreshResourceCatalog(final XnatAbstractresource resource,final String projectPath,final boolean checksums, final boolean removeMissingFiles, final boolean addUnreferencedFiles,final UserI user,final EventMetaI now) throws Exception{
+	public static boolean refreshResourceCatalog(final XnatAbstractresource resource, final String projectPath, final boolean populateStats, final boolean checksums, final boolean removeMissingFiles, final boolean addUnreferencedFiles, final UserI user, final EventMetaI now) throws Exception {
 		if(resource instanceof XnatResourcecatalog){
+            // First try to populate the stats, this is cheap.
+            if (populateStats) {
+                CatalogUtils.populateStats(resource, projectPath);
+                resource.save(user, false, false, now);
+            }
+
 			final XnatResourcecatalog catRes=(XnatResourcecatalog)resource;
 			
 			final CatCatalogBean cat=CatalogUtils.getCatalog(projectPath, catRes);
@@ -87,7 +93,7 @@ public class ResourceUtils {
 	 * @param addUnreferencedFiles
 	 * @throws ActionException
 	 */
-	public static void refreshResourceCatalog(final ArchiveItemURI resourceURI,final XDATUser user,final EventDetails details, boolean checksums, boolean removeMissingFiles, boolean addUnreferencedFiles) throws ActionException{
+	public static void refreshResourceCatalog(final ArchiveItemURI resourceURI,final XDATUser user,final EventDetails details, final boolean populateStats, boolean checksums, boolean removeMissingFiles, boolean addUnreferencedFiles) throws ActionException{
 		try {
 			if(resourceURI instanceof ResourceURII){//if we are referencing a specific catalog, make sure it doesn't actually reference an individual file.
 				if(StringUtils.isNotEmpty(((ResourceURII)resourceURI).getResourceFilePath()) && !((ResourceURII)resourceURI).getResourceFilePath().equals("/")){
@@ -103,7 +109,8 @@ public class ResourceUtils {
 			final PersistentWorkflowI wrk = PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, resourceURI.getSecurityItem().getItem(), details);
 			
 			for(XnatAbstractresourceI res:resourceURI.getResources(true)){
-				refreshResourceCatalog((XnatAbstractresource)res, resourceURI.getSecurityItem().getArchiveRootPath(), checksums, removeMissingFiles, addUnreferencedFiles, user, wrk.buildEvent());
+                final String archiveRootPath = resourceURI.getSecurityItem().getArchiveRootPath();
+                refreshResourceCatalog((XnatAbstractresource)res, archiveRootPath, populateStats, checksums, removeMissingFiles, addUnreferencedFiles, user, wrk.buildEvent());
 			}
 			
 			WorkflowUtils.complete(wrk, wrk.buildEvent());

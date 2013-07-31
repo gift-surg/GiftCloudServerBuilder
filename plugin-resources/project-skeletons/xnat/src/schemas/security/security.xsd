@@ -151,10 +151,10 @@
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="equals"/>
-					<xs:enumeration value="greater then"/>
-					<xs:enumeration value="less then"/>
-					<xs:enumeration value="greater then or equals"/>
-					<xs:enumeration value="less then or equals"/>
+					<xs:enumeration value="greater than"/>
+					<xs:enumeration value="less than"/>
+					<xs:enumeration value="greater than or equals"/>
+					<xs:enumeration value="less than or equals"/>
 					<xs:enumeration value="like"/>
 				</xs:restriction>
 			</xs:simpleType>

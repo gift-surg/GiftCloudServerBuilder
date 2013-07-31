@@ -83,10 +83,10 @@ $page.setVlinkColor($ui.vlink)
 																								<INPUT type="hidden" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_type" value="equals"/></TD>
 												<!--<TD><select name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_type">
 													<option value="equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("equals"))SELECTED #end>=</option>
-													<option value="greater then" #if($perimissionItem.getComparison_type().equalsIgnoreCase("greater then"))SELECTED #end>></option>
-													<option value="less then" #if($perimissionItem.getComparison_type().equalsIgnoreCase("less then"))SELECTED #end><</option>
-													<option value="greater then or equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("greater then or equals"))SELECTED #end>>=</option>
-													<option value="less then or equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("less then or equals"))SELECTED #end><=</option>
+													<option value="greater than" #if($perimissionItem.getComparison_type().equalsIgnoreCase("greater than"))SELECTED #end>></option>
+													<option value="less than" #if($perimissionItem.getComparison_type().equalsIgnoreCase("less than"))SELECTED #end><</option>
+													<option value="greater than or equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("greater than or equals"))SELECTED #end>>=</option>
+													<option value="less than or equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("less than or equals"))SELECTED #end><=</option>
 													<option value="like" #if($perimissionItem.getComparison_type().equalsIgnoreCase("like"))SELECTED #end>LIKE</option>
 													</select>
 												</TD>-->

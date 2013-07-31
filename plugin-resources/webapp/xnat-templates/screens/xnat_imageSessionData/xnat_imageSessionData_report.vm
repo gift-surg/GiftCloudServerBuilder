@@ -158,10 +158,12 @@ function  toggleQuarantine(){
     #end
   }
 }
-  var obj=new Object();
+  var obj={};
     obj.uri=serverRoot + "/REST/experiments/$!om.getId()";
-    obj.categories=new Object();
-    obj.categories.ids=new Array();
+    obj.refresh = serverRoot + "/data/services/refresh/catalog?options=" + encodeURIComponent("populateStats,append,delete,checksum") + "&XNAT_CSRF=" + csrfToken + "&resource=/archive/experiments/$!om.getId()";
+    obj.sessionId = "$!om.getId()";
+    obj.categories={};
+    obj.categories.ids=[];
     
 	#if($item.isActive() || $item.isQuarantine())
     	#if ($item.canEdit($data.getSession().getAttribute("user")))

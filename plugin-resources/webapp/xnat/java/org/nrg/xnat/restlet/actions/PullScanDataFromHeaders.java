@@ -58,7 +58,7 @@ public class PullScanDataFromHeaders implements Callable<Boolean> {
 	 * This method will pull header values from DICOM (or ECAT) and update the scan xml accordingly.  It assumes the files are already in the archive and properly referenced from the session xml.  This would usually be run after you've added the files via the REST API.
 	 * WARNINGS: 
 	 *    This method will not update session level parameters
-	 *    This method will fail if the scan directory contains more then one scan or session.
+	 *    This method will fail if the scan directory contains more than one scan or session.
 	 * 
 	 * @throws IOException: Error accessing files
 	 * @throws SAXException: Error parsing generated xml

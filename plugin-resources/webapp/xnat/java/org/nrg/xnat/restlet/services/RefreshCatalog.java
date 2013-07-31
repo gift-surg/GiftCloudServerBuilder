@@ -55,20 +55,25 @@ public class RefreshCatalog extends SecureResource {
 	List<String> resources=Lists.newArrayList();
 	ListMultimap<String,Object> otherParams=ArrayListMultimap.create();
 
-	boolean checksum, delete, append=false;
+    private boolean populateStats, checksum, delete, append = false;
 	
 	public void handleParam(final String key,final Object value) throws ClientException{
 		if(value!=null){
 			if(key.equals("resource")){
 				resources.add((String)value);
+			}else if(key.equals("populateStats")){
+                populateStats=isQueryVariableTrueHelper(value);
 			}else if(key.equals("checksum")){
-				checksum=isQueryVariableTrueHelper((String)value);
+				checksum=isQueryVariableTrueHelper(value);
 			}else if(key.equals("delete")){
-				delete=isQueryVariableTrueHelper((String)value);
+				delete=isQueryVariableTrueHelper(value);
 			}else if(key.equals("append")){
-				append=isQueryVariableTrueHelper((String)value);
+				append=isQueryVariableTrueHelper(value);
 			}else if(key.equals("options")){
 				List<String> options=Arrays.asList(((String)value).split(","));
+				if(options.contains("populateStats")){
+					populateStats=true;
+				}
 				if(options.contains("checksum")){
 					checksum=true;
 				}
@@ -91,7 +96,7 @@ public class RefreshCatalog extends SecureResource {
 
 			//parse body to identify resources if its multi-part form data
 			//TODO: Handle JSON body.
-			if (RequestUtil.isMultiPartFormData(entity)) {
+			if (entity.isAvailable() && RequestUtil.isMultiPartFormData(entity)) {
 				loadParams(new Form(entity));
 			}
 			loadQueryVariables();//parse query string to identify resources
@@ -100,26 +105,23 @@ public class RefreshCatalog extends SecureResource {
 				//parse passed URI parameter
 				URIManager.DataURIA uri=UriParserUtils.parseURI(resource);
 
-				ArchiveItemURI resourceURI=null;
-				if(uri instanceof ArchiveItemURI){
-					resourceURI=(ArchiveItemURI)uri;
-				}else{
+				if(!(uri instanceof ArchiveItemURI)) {
 					throw new ClientException("Invalid Resource URI:"+ resource);
 				}
 
+                ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
+
 				//call refresh operation
-				ResourceUtils.refreshResourceCatalog(resourceURI, user,this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"),checksum,delete,append);
+				ResourceUtils.refreshResourceCatalog(resourceURI, user, this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"), populateStats, checksum, delete, append);
 			}
 
 			this.getResponse().setStatus(Status.SUCCESS_OK);
 		} catch (ActionException e) {
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
 			logger.error("",e);
-			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 			logger.error("",e);
-			return;
 		}
 	}
 

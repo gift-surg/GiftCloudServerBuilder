@@ -87,6 +87,10 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
         }
         return files;
     }
+
+    public void clearFiles() {
+        files = null;
+    }
 	
 
     /**

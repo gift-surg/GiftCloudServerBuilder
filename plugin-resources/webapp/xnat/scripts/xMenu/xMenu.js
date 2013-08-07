@@ -141,7 +141,7 @@ function xMenuSelect($this){
     $this_button.not('.static').html($this.html());
     if ($this_select.find('option[value="'+this_val+'"]').attr('data-img') > ''){
         var this_bkgd = $this_select.find('option[value="'+this_val+'"]').attr('data-img');
-        $this_menu.find('.button_content').css({
+        $this_button.not('.static').css({
             backgroundImage:"url('"+this_bkgd+"')"
         });
     }

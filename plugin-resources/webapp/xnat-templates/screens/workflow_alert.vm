@@ -1,61 +1,113 @@
 <!-- ACTIVE PROCESSES -->
 <span ID="workflow_active"  style="width:100%;position:relative;display:none;">
-#set($hasActiveProcess = false)
-<table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
-<tr><th>Active Processes</th></tr>
-<tr><td align="center"><table>
-#foreach( $workflow in $om.getWorkflows() )
-#if($workflow.isActive())
-#set($hasActiveProcess = true)
-<tr>
-  <td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
-  </td><td valign="middle">$!workflow.getStatus()</td><td valign="middle">$!workflow.getPercentagecomplete()</td>
-  <td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
-</tr>
-#end
-#end 
-</table>
-</td>
-</tr>
-</table>
+	#set($hasActiveProcess = false)
+	<table id="activeTable" align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
+	
+		<tr><th>Active Processes</th></tr>
+		<tr><td align="center">
+		<table>
+			#foreach( $workflow in $om.getWorkflows() )
+				#if($workflow.isActive())
+					#set($hasActiveProcess = true)
+					<tr id="$workflow.getWorkflowId()">
+						<td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
+						</td><td valign="middle">$!workflow.getStatus()</td><td valign="middle">$!workflow.getPercentagecomplete()</td>
+						<td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
+						#if($data.getSession().getAttribute("user").checkRole("Administrator"))
+							<td valign="middle">
+								<a onclick="dismissNotification('$workflow.getWorkflowId()', 'Failed')">[Mark as Failed]</a>
+							</td>
+						#end
+					</tr>
+				#end
+			#end
+		</table>
+		</td></tr>
+	</table>
 </span>
+
 #if($hasActiveProcess)
-<script type="text/javascript">
-document.getElementById("workflow_active").style.display = 'block';
-</script>
+	<script type="text/javascript">
+		document.getElementById("workflow_active").style.display = 'block';
+	</script>
 #end
 
 <!-- PROCESSING ERRORS -->
 <span ID="workflow_error"  style="width:100%;position:relative; display:none;">
-#set($hasErrorProcess = false)
-<table align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
-<tr><th><font color="red">Processing Exception</font></th></tr>
-<tr><td align="center"><table>
-#set ($completed = [])
+	#set($hasErrorProcess = false)
+	<table id="errorTable" align="center" width="100%" BORDER=1 STYLE="	border-collapse: collapse;">
+		<tr><th><font color="red">Processing Exception</font></th></tr>
+		<tr><td align="center">
+		<table>
+		#set ($completed = [])
 
-#foreach( $workflow in $om.getWorkflows() ) 
-#if($workflow.getStatus()=="Complete")
-#set($added = $completed.add($workflow.getOnlyPipelineName()))
-#end
-#if($workflow.getStatus()=="Error" || $workflow.getStatus()=="Failed")
-#if(!$completed.contains($workflow.getOnlyPipelineName()))
-#set($hasErrorProcess = true)
-<tr>
-  <td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
-  </td><td valign="middle">$!workflow.getStatus()</td><td valign="middle">$!workflow.getPercentagecomplete()</td>
-  <td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
-</tr>
-#end
-#end
-
-#end 
-</table>
-</td>
-</tr>
-</table>
+		#foreach( $workflow in $om.getWorkflows() ) 
+			#if($workflow.getStatus()=="Complete")
+				#set($added = $completed.add($workflow.getOnlyPipelineName()))
+			#end
+			#if($workflow.getStatus()=="Error" || $workflow.getStatus()=="Failed")
+				#if(!$completed.contains($workflow.getOnlyPipelineName()))
+					#set($hasErrorProcess = true)
+					<tr>
+						<td valign="middle"><b>$workflow.getOnlyPipelineName():</b>
+						</td><td valign="middle">$!workflow.getStatus()</td><td valign="middle">$!workflow.getPercentagecomplete()</td>
+						<td valign="middle">Start Time: $!workflow.getLaunchTime()</td>
+						#if($data.getSession().getAttribute("user").checkRole("Administrator"))
+							<td valign="middle">
+								<a onclick="dismissNotification('$workflow.getWorkflowId()', 'Failed (Dismissed)')">[Dismiss]</a>
+							</td>
+						#end
+					</tr>
+				#end
+			#end
+		#end 
+		</table>
+		</td></tr>
+	</table>
 </span>
+
 #if($hasErrorProcess)
-<script type="text/javascript">
-document.getElementById("workflow_error").style.display = 'block';
-</script>
+	<script type="text/javascript">
+		document.getElementById("workflow_error").style.display = 'block';
+	</script>
 #end
+
+<script type="text/javascript">
+	function dismissNotification(id, st){
+	
+		var msgOptions = {} ;
+		msgOptions.action = function(){ document.location.reload(true); };
+		
+		this.workflowUpdateOK = function(){ 
+			xModalLoadingClose();
+			xModalMessage('Error','Sucessfully updated workflow status to ' + st + '.','OK', msgOptions);
+		}
+		
+		this.workflowUpdateFailed = function(){
+			xModalLoadingClose();
+			xModalMessage('Error','An unexpected error has occured. Please contact your administrator.','OK', null);
+		}
+		
+		this.insertCallback = {
+			success : this.workflowUpdateOK,
+			failure : workflowUpdateFailed,
+			scope : this
+		};
+		
+		this.putRequest = function(){
+			xModalLoadingOpen({title:'Please wait...'});
+			var workflowURI = serverRoot + '/REST/workflows/' + id + '?wrk:workflowData/status='+ st +'&XNAT_CSRF=' + csrfToken;
+			YAHOO.util.Connect.asyncRequest('PUT', encodeURI(workflowURI), this.insertCallback, null, this);
+		}
+		
+		this.confirm = xModal.confirm;
+		this.confirm.okAction = function(){ this.putRequest(); }
+		this.confirm.content  = '<p>Are you sure you want to change the status of this workflow to "' + st + '"? </p>' +
+		                        '</br><p><b>Note</b>: This will not affect the actual pipeline.  If the pipeline is still running, it may change the status.</p>';
+		this.confirm.cancelAction = function(){ return; };
+		this.confirm.width = 420;
+		this.confirm.height = 220;
+			
+		xModalOpenNew(this.confirm);
+	};
+</script>

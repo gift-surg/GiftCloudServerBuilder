@@ -26,6 +26,7 @@ import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.security.UserI;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class WorkflowUtils extends PersistentWorkflowBuilderAbst {
@@ -73,6 +74,24 @@ public class WorkflowUtils extends PersistentWorkflowBuilderAbst {
 		final Collection<? extends PersistentWorkflowI> al = WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false);
 		return al;
 
+	}
+	
+	public static PersistentWorkflowI getUniqueWorkflow(final XDATUser user, final String pipeline_name, final String ID, final Date launch_time){
+		final CriteriaCollection cc = new CriteriaCollection("AND");
+		cc.addClause("wrk:workFlowData.ID", ID);
+		cc.addClause("wrk:workFlowData.pipeline_name", pipeline_name);
+		cc.addClause("wrk:workflowData.launch_time", launch_time);
+		
+		final Collection<? extends PersistentWorkflowI> al = WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false); 
+		return (al == null || al.size() == 0) ? null : al.iterator().next();
+	}
+	
+	public static PersistentWorkflowI getUniqueWorkflow(final XDATUser user, final String workflow_id){
+		final CriteriaCollection cc = new CriteriaCollection("AND");
+		cc.addClause("wrk:workFlowData.wrk_workflowdata_id", workflow_id);
+		
+		final Collection<? extends PersistentWorkflowI> al = WrkWorkflowdata.getWrkWorkflowdatasByField(cc, user, false); 
+		return (al == null || al.size() == 0) ? null : al.iterator().next();
 	}
 	
 	public static PersistentWorkflowI buildOpenWorkflow(final XDATUser user, final String xsiType,final String ID,final String project_id, final EventDetails event) throws JustificationAbsent,ActionNameAbsent,IDAbsent{

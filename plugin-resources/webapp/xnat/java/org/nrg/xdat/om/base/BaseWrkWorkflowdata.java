@@ -46,6 +46,7 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
     public static final String COMPLETE = "COMPLETE";
     public static final String ERROR = "ERROR";
     public static final String QUEUED = "QUEUED";
+    public static final String FAILED_DISMISSED = "FAILED (DISMISSED)";
 
 	public BaseWrkWorkflowdata(ItemI item)
 	{
@@ -75,6 +76,8 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
         if(this.getStatus().equalsIgnoreCase(ERROR))
             return false;
         if(this.getStatus().equalsIgnoreCase(FAILED))
+            return false;
+        if(this.getStatus().equalsIgnoreCase(FAILED_DISMISSED))
             return false;
 
         return true;

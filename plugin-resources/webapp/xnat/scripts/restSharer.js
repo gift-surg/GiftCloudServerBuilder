@@ -37,6 +37,7 @@ TextDataTable=function(t,fields,dataSrc,options){
 YAHOO.extend(TextDataTable, YAHOO.widget.DataTable, {
 });
 
+var oRecords = [];
 function toggleShareCheckboxes(element) {
     var dialog;
     var checkAll = true;
@@ -65,6 +66,13 @@ function toggleShareCheckboxes(element) {
             }
         }
     }
+    for(var i=0; i<oRecords.length; i++){
+        if(!checkAll){
+            oRecords[i].setData("checked", false);
+        } else {
+            oRecords[i].setData("checked", true);
+        }
+    }
 }
 
 RestSharer = function(_array,_config) {
@@ -89,8 +97,9 @@ RestSharer = function(_array,_config) {
    		
    this.dt=new TextDataTable(t,[
    		{key:"check",label:"Share", formatter:function(el, oRecord, oColumn, oData) {
+            oRecords.push(oRecord);
 			var canRead=oRecord.getData("canRead");
-			if(oRecord.getData("canRead")){return YAHOO.widget.DataTable.formatCheckbox(el,oRecord,oColumn,true);}
+			if(canRead){return YAHOO.widget.DataTable.formatCheckbox(el,oRecord,oColumn,true);}
 			else{el.innerHTML="N/A";}
    	    }}
    	    ,{label:"Label",key:"primary_label"}
@@ -115,7 +124,7 @@ RestSharer = function(_array,_config) {
              var elTextbox = oArgs.target;   
              var oRecord = this.getRecord(elTextbox); 
              oRecord.setData("new_label",elTextbox.value);   
-       });   
+       });
   	   this.dt.subscribe("checkboxClickEvent", function(oArgs){   
              var elCheckbox = oArgs.target;   
              var oRecord = this.getRecord(elCheckbox);   

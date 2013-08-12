@@ -141,9 +141,11 @@ function xMenuSelect($this){
     $this_button.not('.static').html($this.html());
     if ($this_select.find('option[value="'+this_val+'"]').attr('data-img') > ''){
         var this_bkgd = $this_select.find('option[value="'+this_val+'"]').attr('data-img');
-        $this_button.not('.static').css({
-            backgroundImage:"url('"+this_bkgd+"')"
-        });
+        $this_button.addClass('image');
+//        $this_button.not('.static').css({
+//            backgroundImage:"url('"+this_bkgd+"')"
+//        });
+        $this_button.prepend('<img src="' + this_bkgd + '" alt="">');
     }
     $this_select.find('option').prop('selected',false).removeAttr('selected').removeClass('selected');
     $this_select.find('option[value="'+this_val+'"]').prop('selected',true).attr('selected','selected').addClass('selected');

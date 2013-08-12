@@ -16,6 +16,8 @@ div.xmenu .button_content {
     display: block ; margin: 0 34px 0 0 ; padding: 0 0 0 10px ; white-space: nowrap ; overflow: hidden ;
     width: 120px ; height: 20px ; line-height: 21px ; color: #202020 ;
     /*background: transparent url('images/select_arrow_down.png') right center no-repeat ;*/ }
+div.xmenu .button_content.image { padding: 0 0 0 4px ; background-repeat: no-repeat !important ; }
+div.xmenu .button_content img { position: relative ; vertical-align: middle ; }
 div.xmenu:hover { cursor: pointer ; }
 div.xmenu ul { display: none ; min-width: 100% ; max-height: 275px ; overflow-x: hidden ; overflow-y: auto ; margin: 0 ; padding: 0 ; position: absolute ; list-style: none ; background-color: #fff ; /* border-bottom: 1px solid #e0e0e0 ; border-radius: 0 0 9px 9px ; */ background-clip: border-box ; box-shadow: 0 10px 20px rgba(0,0,0,0.5) ; }
 .ltie9 div.xmenu ul { border: 1px solid #c0c0c0 ; }

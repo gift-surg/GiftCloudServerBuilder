@@ -147,6 +147,9 @@ function xMenuSelect($this){
 //        });
         $this_button.prepend('<img src="' + this_bkgd + '" alt="">');
     }
+    else {
+        $this_button.removeClass('image');
+    }
     $this_select.find('option').prop('selected',false).removeAttr('selected').removeClass('selected');
     $this_select.find('option[value="'+this_val+'"]').prop('selected',true).attr('selected','selected').addClass('selected');
     $this_select.change();

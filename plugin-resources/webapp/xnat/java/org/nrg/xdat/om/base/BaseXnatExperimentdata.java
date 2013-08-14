@@ -375,7 +375,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
         for(Map.Entry<XnatProjectdataI,String> entry : projects.entrySet()){
             XnatAbstractprotocol prot = ((XnatProjectdata)entry.getKey()).getProtocolByDataType(dataType);
-            if((projectID != null && !projectID.isEmpty()) && !projectID.equals(entry.getKey().getName())){
+            if((projectID != null && !projectID.isEmpty()) && !projectID.equals(entry.getKey().getId())){
                 continue;
              }
             if (prot!=null && prot instanceof XnatDatatypeprotocol){

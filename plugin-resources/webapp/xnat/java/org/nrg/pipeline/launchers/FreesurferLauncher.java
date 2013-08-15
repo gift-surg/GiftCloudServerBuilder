@@ -78,7 +78,11 @@ public class FreesurferLauncher extends PipelineLauncher{
 
                 param = parameters.addNewParameter();
                 param.setName("useall_t1s");
-                param.addNewValues().setUnique(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("useall_t1s",data)));
+                if (TurbineUtils.HasPassedParameter("useall_t1s", data)) {
+                    param.addNewValues().setUnique("1");
+                }else {
+                    param.addNewValues().setUnique("0");
+                }
 
                 // Add MPRAGE list
                 param = parameters.addNewParameter();

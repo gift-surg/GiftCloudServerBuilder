@@ -14,6 +14,7 @@ package org.nrg.pipeline.launchers;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
@@ -21,11 +22,10 @@ import org.apache.velocity.context.Context;
 import org.nrg.pipeline.XnatPipelineLauncher;
 import org.nrg.pipeline.utils.PipelineFileUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
+import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
-
-import java.util.ArrayList;
 
 public class FreesurferLauncher extends PipelineLauncher{
     ArrayList<String> mprageScans = null;
@@ -76,15 +76,23 @@ public class FreesurferLauncher extends PipelineLauncher{
                 param.setName("isDicom");
                 param.addNewValues().setUnique(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("isDicom",data)));
 
-                // param = parameters.addNewParameter();
-                // param.setName("mprs");
-                // param.addNewValues.setUnique(mprageScans);
-
                 param = parameters.addNewParameter();
                 param.setName("useall_t1s");
                 param.addNewValues().setUnique(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedBoolean("useall_t1s",data)));
 
-                xnatPipelineLauncher.setParameter("mprs",mprageScans);
+                // Add MPRAGE list
+                param = parameters.addNewParameter();
+                param.setName("mprs");
+                Values values = param.addNewValues();
+                if (mprageScans.size() == 1) {
+                    values.setUnique(mprageScans.get(0));
+                }else {
+                    for (int i = 0; i < mprageScans.size(); i++) {
+                        values.addList(mprageScans.get(i));
+                    }
+                }
+
+                // xnatPipelineLauncher.setParameter("mprs",mprageScans);
             }
 
             String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + data.getParameters().get("emailField");

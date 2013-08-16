@@ -160,8 +160,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
         return jFiles;
     }
 
-    public static Comparator GetComparator()
-    {
+    public static Comparator GetComparator() {
         return (new BaseXnatImagescandata()).getComparator();
     }
 
@@ -500,13 +499,14 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
     public List<String> getReadableFileStats() {
         List<String> stats = new ArrayList<String>();
         int totalCount = 0;
-        int totalSize = 0;
+        long totalSize = 0;
         for (XnatAbstractresourceI resource : getFile()) {
             String label = resource.getLabel();
             if (label != null && label.equals("SNAPSHOTS")) {
                 continue;
 }
-            int count, size;
+            int count;
+            long size;
             Integer rawCount = resource.getFileCount();
             if (rawCount != null) {
                 count = rawCount;

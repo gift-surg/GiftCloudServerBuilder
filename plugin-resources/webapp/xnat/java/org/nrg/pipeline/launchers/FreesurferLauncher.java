@@ -77,7 +77,6 @@ public class FreesurferLauncher extends PipelineLauncher{
                 param.addNewValues().setUnique(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("isDicom",data)));
 
                 // Add MPRAGE list
-                Boolean multipleMPRs = false;
                 param = parameters.addNewParameter();
                 param.setName("mprs");
                 Values values = param.addNewValues();
@@ -87,13 +86,11 @@ public class FreesurferLauncher extends PipelineLauncher{
                     for (int i = 0; i < mprageScans.size(); i++) {
                         values.addList(mprageScans.get(i));
                     }
-                    multipleMPRs = true;
                 }
 
-                // If multiple scans are selected, pass a "1" for "useall_t1s"
                 param = parameters.addNewParameter();
                 param.setName("useall_t1s");
-                if (multipleMPRs) {
+                if (TurbineUtils.HasPassedParameter("useall_t1s", data)) {
                     param.addNewValues().setUnique("1");
                 }else {
                     param.addNewValues().setUnique("0");

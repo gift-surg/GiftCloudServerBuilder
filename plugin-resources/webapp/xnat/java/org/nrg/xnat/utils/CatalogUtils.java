@@ -6,7 +6,7 @@
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 8/19/13 1:47 PM
  */
 package org.nrg.xnat.utils;
 
@@ -1164,6 +1164,19 @@ public class CatalogUtils {
     public static boolean addUnreferencedFiles(final File catFile, final CatCatalogI cat, XDATUser user,Number event_id){
     	//list of all files in the catalog folder
     	final Collection<File> files=org.apache.commons.io.FileUtils.listFiles(catFile.getParentFile(), null, true);
+    	
+    	//verify that there is only one catalog xml in this directory
+    	//fail if more then one is present -- otherwise they will be merged.
+    	for(final File f: files){
+    		if(!f.equals(catFile)){
+    			if(f.getName().endsWith(".xml")){
+    				//this is a bit heavy handed.  
+    				//we could parse the xml and confirm it is a catalog
+    				//but storing xmls is really rare, so I'm not sure we need to be that specific.
+    				return false;
+    			}
+    		}
+    	}
     	
     	//URI object for the catalog folder (used to generate relative file paths)
     	final URI catFolderURI=catFile.getParentFile().toURI();

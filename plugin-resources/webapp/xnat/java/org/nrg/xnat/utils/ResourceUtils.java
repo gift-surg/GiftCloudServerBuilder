@@ -49,13 +49,7 @@ public class ResourceUtils {
 	 */
 	public static boolean refreshResourceCatalog(final XnatAbstractresource resource, final String projectPath, final boolean populateStats, final boolean checksums, final boolean removeMissingFiles, final boolean addUnreferencedFiles, final UserI user, final EventMetaI now) throws Exception {
 		if(resource instanceof XnatResourcecatalog){
-            // First try to populate the stats, this is cheap.
-            if (populateStats) {
-                CatalogUtils.populateStats(resource, projectPath);
-                resource.save(user, false, false, now);
-            }
-
-			final XnatResourcecatalog catRes=(XnatResourcecatalog)resource;
+            final XnatResourcecatalog catRes=(XnatResourcecatalog)resource;
 			
 			final CatCatalogBean cat=CatalogUtils.getCatalog(projectPath, catRes);
 			final File catFile=CatalogUtils.getCatalogFile(projectPath, catRes);
@@ -75,8 +69,17 @@ public class ResourceUtils {
 				
 				if(modified){
 					CatalogUtils.writeCatalogToFile(cat, catFile,checksums);
-					return true;
 				}
+				
+				// popuplate (or repopulate) the file stats --- THIS SHOULD BE DONE AFTER modifications to the catalog xml
+	            if (populateStats || modified) {
+	                CatalogUtils.populateStats(resource, projectPath);
+	                if(resource.save(user, false, false, now)){
+	                	modified=true;
+	                }
+	            }
+	            
+	            return modified;
 			}
 		}
 		

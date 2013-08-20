@@ -108,12 +108,10 @@ public final class PrearcDatabase {
 			if(PrearcDatabase.prearcPath!=null){
 				PrearcDatabase.sessionDelegate = delegate != null ? delegate : new FileSystemSessionData(PrearcDatabase.prearcPath);
 
-                if(!tableCorrect()) { // check to see if the table contains the correct number of columns (older versions may not)
-                    PrearcDatabase.dropTable(); // if not, drop the table entirely
-                }
-
                 if(!tableExists()) { // create the table if it does not currently exist
                     PrearcDatabase.createTable();
+                } else { // check to see if the table has the correct set of columns (older versions may not)
+                    PrearcDatabase.correctTable(); // if not, correct the table by adding the required columns
                 }
 
 				if(recreateDBMSTablesFromScratch) {
@@ -154,36 +152,7 @@ public final class PrearcDatabase {
                     String query ="SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'xdat_search' AND tablename = 'prearchive';";
 
                     ResultSet r = this.pdb.executeQuery(null, query, null);
-                    int rs = this.pdb.GetResultSetSize(r);
-
-                    return(rs == 1);
-                }
-            }.run();
-        }
-        // can't happen
-        catch (SessionException e){
-            logger.error("",e);
-        }
-        return true;
-    }
-
-    /**
-     * Checks to see if the existing prearchive table has the number of columns necessary to contain
-     * all of the attributes of a DatabaseSession object.
-     * @return true if the column numbers match, false otherwise
-     * @throws Exception
-     */
-    private static boolean tableCorrect() throws Exception {
-        try {
-            return new SessionOp<Boolean>() {
-                public Boolean op() throws Exception {
-                    String query ="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'xdat_search' AND table_name = 'prearchive';";
-                    ResultSet r = this.pdb.executeQuery(null, query, null);
-                    int rs = 0;
-                    if(r.first()) {
-                        rs = r.getInt(1);
-                    }
-                    return(rs == DatabaseSession.values().length);
+                    return PoolDBUtils.GetResultSetSize(r) == 1;
                 }
             }.run();
         }
@@ -211,30 +180,55 @@ public final class PrearcDatabase {
                     return null;
                 }
             }.run();
-        }
-        // can't happen
-        catch (SessionException e){
+        } catch (SessionException e) {
             logger.error("",e);
         }
     }
 
     /**
-     * Drops the prearchive table, if it exists. Should only be used in cases where the table is
-     * malformed or otherwise will not function correctly with the codebase.
+     * Corrects the prearchive table, checking for column existence and including new columns when required.
      * @throws Exception
      */
-    private static void dropTable() throws Exception {
+    private static void correctTable() throws Exception {
         try {
             new SessionOp<Void>() {
                 public Void op() throws Exception {
-                    String query ="DROP TABLE IF EXISTS " + PrearcDatabase.tableWithSchema + ";";
-                    PoolDBUtils.ExecuteNonSelectQuery(query, null , null);
+                    // First find out what's in the existing table. We're assuming it exists, because we should have
+                    // checked for existing prior to trying to correct the table.
+                    final List<String> existing = new ArrayList<String>();
+                    final String query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'xdat_search' AND table_name = 'prearchive';";
+                    final ResultSet results = this.pdb.executeQuery(null, query, null);
+                    while(results.next()) {
+                        existing.add(results.getString("column_name").toLowerCase());
+                    }
+
+                    // Now compare what exists to what is supposed to exist.
+                    List<DatabaseSession> missing = new ArrayList<DatabaseSession>();
+                    for (final DatabaseSession d : DatabaseSession.values()) {
+                        final String columnName = d.getColumnName().toLowerCase();
+                        if (!existing.contains(columnName)) {
+                            missing.add(d);
+                        }
+                    }
+
+                    // If there's no difference, then just return.
+                    if (missing.size() == 0) {
+                        return null;
+                    }
+
+                    // Build the ALTER query required to sync to the required definition.
+                    final StringBuilder buffer = new StringBuilder();
+                    buffer.append("ALTER TABLE ").append(PrearcDatabase.tableWithSchema).append(" ");
+                    final List<String> values = new ArrayList<String>();
+                    for (final DatabaseSession d : missing) {
+                        values.add("ADD COLUMN " + d.getColumnName() + " " + d.getColumnDefinition());
+                    }
+                    buffer.append(StringUtils.join(values.toArray(), ", "));
+                    PoolDBUtils.ExecuteNonSelectQuery(buffer.toString(), null, null);
                     return null;
                 }
             }.run();
-        }
-        // can't happen
-        catch (SessionException e){
+        } catch (SessionException e) {
             logger.error("",e);
         }
     }

@@ -15,7 +15,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.dcm.Dcm2Jpg;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xdat.bean.CatEntryBean;
 import org.nrg.xdat.bean.CatEntryMetafieldBean;
@@ -61,12 +63,21 @@ import java.util.zip.ZipFile;
  */
 public class FileList extends XNATCatalogTemplate {
     private static final Logger logger = LoggerFactory.getLogger(FileList.class);
-
-    private static final String[] zipExtensions = {".zip", ".jar", ".rar", ".ear", ".gar"};
-
     private String filepath = null;
-
     private XnatAbstractresource resource = null;
+    private static String[] zipExtensions = null;
+    
+    static {
+       final String defaultExtensions = "zip,jar,rar,ear,gar,mrb";
+       try {
+          // Try to get the files.zip_extensions configuration property.  Use default values if it isn't set.
+          zipExtensions = XDAT.getSiteConfigurationProperty("files.zip_extensions", defaultExtensions).split(",");
+       } catch (Throwable t) {
+          // Something went wrong with the above call to the config service, so set zipExtensions to the default values.
+          logger.error("Error occurred while initializing FileList service. Unable to read files.zip_extensions property.", t);
+          zipExtensions = defaultExtensions.split(",");
+       }
+    }
 
     public FileList(Context context, Request request, Response response) {
         super(context, request, response, isQueryVariableTrue("all", request));
@@ -833,6 +844,7 @@ public class FileList extends XNATCatalogTemplate {
                     String lowercase = filepath.toLowerCase();
 
                     for (String s : zipExtensions) {
+                        s = "." + s;
                         if (lowercase.contains(s + "!") || lowercase.contains(s + "/")) {
                             zipEntry = filepath.substring(lowercase.indexOf(s) + s.length());
                             filepath = filepath.substring(0, lowercase.indexOf(s) + s.length());

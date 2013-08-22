@@ -903,7 +903,7 @@ public class FileList extends XNATCatalogTemplate {
                                  return new InputRepresentation(zF.getInputStream(zE), buildMediaType(mt, fName));
                               }
                            // If the user is requesting a list of the contents within the zip file
-                           } else if (true == listContents) {
+                           } else if (true == listContents && isFileZipArchive(fName)) {
                               // Get the contents of the zip file
                               ZipFile zF = new ZipFile(f);
                               Enumeration<? extends ZipEntry> entries = zF.entries();
@@ -991,6 +991,19 @@ public class FileList extends XNATCatalogTemplate {
         cp.get("URI").put("serverRoot", getContextPath());
 
         return representTable(table, mt, params, cp, getSessionMaps());
+    }
+    
+    /**
+     * Function determines if the given file is a zip archive by
+     * checking whether the fileName contains a zip extension
+     * @param f - the file name
+     * @return - true / false is the file a zip file?
+     */
+    private boolean isFileZipArchive(String f){
+       for(String s : zipExtensions){
+          if(f.contains(s)){ return true; }
+       }
+       return false;
     }
 
     private Map<String, String> getReMaps() {

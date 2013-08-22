@@ -99,7 +99,7 @@
     #end
 
     <TR>
-        <TH align="left" valign="top">Investigators</TH>
+        <TH align="left" valign="top">Investigator(s)</TH>
         <TD>
             <div id="investigatorBox">Loading...</div>
         </TD>
@@ -138,7 +138,7 @@ window.refreshInvestigators=function (){
   div.appendChild(table);
   
   var th= document.createElement("th");
-  th.innerHTML="PI";
+//  th.innerHTML="PI";
   tr.appendChild(th);
   
   var td= document.createElement("td");
@@ -159,7 +159,7 @@ window.refreshInvestigators=function (){
     tr=document.createElement("tr");
     tr.id="Investigator_"+(tbody.rows.length);
     var th= document.createElement("th");
-    th.innerHTML="Investigator "+(tbody.rows.length);
+//    th.innerHTML="Investigator "+(tbody.rows.length);
     tr.appendChild(th);
   
     var td= document.createElement("td");

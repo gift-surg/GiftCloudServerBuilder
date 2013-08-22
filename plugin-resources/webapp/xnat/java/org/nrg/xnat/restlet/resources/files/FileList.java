@@ -15,7 +15,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
-import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.dcm.Dcm2Jpg;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.bean.CatCatalogBean;
@@ -65,6 +64,7 @@ public class FileList extends XNATCatalogTemplate {
     private static final Logger logger = LoggerFactory.getLogger(FileList.class);
     private String filepath = null;
     private XnatAbstractresource resource = null;
+    private final boolean listContents = "true".equalsIgnoreCase(this.getQueryVariable("listContents")) ? true : false;
     private static String[] zipExtensions = null;
     
     static {
@@ -129,7 +129,7 @@ public class FileList extends XNATCatalogTemplate {
             if (filepath != null && filepath.startsWith("/")) {
                 filepath = filepath.substring(1);
             }
-
+            
             getVariants().add(new Variant(MediaType.APPLICATION_JSON));
             getVariants().add(new Variant(MediaType.TEXT_HTML));
             getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -880,7 +880,7 @@ public class FileList extends XNATCatalogTemplate {
                         } else {
                             fName = zipEntry.toLowerCase();
                         }
-
+                        
                         if (mt.equals(MediaType.IMAGE_JPEG) && Dcm2Jpg.isDicom(f)) {
                             try {
                                 return new InputRepresentation(new ByteArrayInputStream(Dcm2Jpg.convert(f)), mt);
@@ -889,31 +889,53 @@ public class FileList extends XNATCatalogTemplate {
                                 return new StringRepresentation("");
                             }
                         }
-
-                        mt = buildMediaType(mt, fName);
-
-                        if (zipEntry != null) {
-                            try {
-                                ZipFile zF = new ZipFile(f);
-                                ZipEntry zE = zF.getEntry(zipEntry);
-                                if (zE == null) {
-                                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
-                                    return new StringRepresentation("");
-                                } else {
-                                    return new InputRepresentation(zF.getInputStream(zE), mt);
-                                }
-                            } catch (ZipException e) {
-                                getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, e.getMessage());
-                                return new StringRepresentation("");
-                            } catch (IOException e) {
-                                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
-                                return new StringRepresentation("");
-                            }
-                        } else {
-                            return getFileRepresentation(f, mt);
+                        
+                        try{
+                           // If the user is requesting a file within the zip archive
+                           if (zipEntry != null) {  
+                              // Get the zip entry requested
+                              ZipFile zF = new ZipFile(f);
+                              ZipEntry zE = zF.getEntry(zipEntry);
+                              if (zE == null) {
+                                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
+                                 return new StringRepresentation("");
+                              } else { // Return the requested zip entry
+                                 return new InputRepresentation(zF.getInputStream(zE), buildMediaType(mt, fName));
+                              }
+                           // If the user is requesting a list of the contents within the zip file
+                           } else if (true == listContents) {
+                              // Get the contents of the zip file
+                              ZipFile zF = new ZipFile(f);
+                              Enumeration<? extends ZipEntry> entries = zF.entries();
+                              
+                              // Create a new XFTTable with File Name and Size columns
+                              XFTTable t = new XFTTable();
+                              t.initTable(new String[]{"File Name", "Size"});
+                              
+                              // Populate table rows and add the row to the table
+                              while(entries.hasMoreElements()){
+                                 ZipEntry zE = entries.nextElement();
+                                 t.rows().add(new Object[]{zE.getName(), zE.getSize()});
+                              } 
+                              zF.close();
+                              
+                              // Set the table, if t has rows
+                              if(null != t && t.rows().size() != 0){
+                                 table = t;  // table gets passed into representTable() below
+                              }
+                           } else {
+                              // Return the requested file
+                              return getFileRepresentation(f, buildMediaType(mt, fName));
+                           }
+                        } catch (ZipException e) {
+                            getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, e.getMessage());
+                            return new StringRepresentation("");
+                        } catch (IOException e) {
+                            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
+                            return new StringRepresentation("");
                         }
-
-                    } else {
+                        
+                    } else { // If file does not exist
                         getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
                         return new StringRepresentation("");
                     }

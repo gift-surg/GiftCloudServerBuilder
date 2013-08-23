@@ -37,6 +37,9 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.utils.WorkflowUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddProject extends SecureAction {
 	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AddProject.class);
 	
@@ -86,6 +89,32 @@ public class AddProject extends SecureAction {
             if(existing!=null){
             	data.addMessage("Project '" + project.getId() + "' already exists.");
 				TurbineUtils.SetEditItem(found,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+
+            List<XnatProjectdata> conflicts = new ArrayList<XnatProjectdata>();
+
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getName(),user,false));
+
+            if(!conflicts.isEmpty()){
+                data.addMessage("A project with the title '" + project.getName() + "' already exists.");
+                TurbineUtils.SetEditItem(found,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getSecondaryId(),user,false));
+
+            if(!conflicts.isEmpty()){
+                data.addMessage("A project with the running title '" + project.getSecondaryId() + "' already exists.");
+                TurbineUtils.SetEditItem(found,data);
                 if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
                     data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));

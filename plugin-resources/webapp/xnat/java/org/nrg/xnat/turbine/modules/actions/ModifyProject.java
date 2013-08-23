@@ -32,6 +32,9 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ModifyProject extends SecureAction {
     static Logger logger = Logger.getLogger(ModifyItem.class);
     /* (non-Javadoc)
@@ -60,6 +63,39 @@ public class ModifyProject extends SecureAction {
             if(StringUtils.isEmpty(project.getId())){
             	data.addMessage("Missing required field (Abbreviation).");
 				TurbineUtils.SetEditItem(item,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+
+            List<XnatProjectdata> conflicts = new ArrayList<XnatProjectdata>();
+            List<XnatProjectdata> toRemove = new ArrayList<XnatProjectdata>();
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getName(),user,false));
+
+            for (XnatProjectdata potentialConflict : conflicts) {
+                if (potentialConflict.getId().equals(project.getId())) toRemove.add(potentialConflict);
+            }
+            conflicts.removeAll(toRemove);
+            if(!conflicts.isEmpty()){
+                data.addMessage("A project with the title '" + project.getName() + "' already exists.");
+                TurbineUtils.SetEditItem(item,data);
+                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                {
+                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                }
+                return;
+            }
+
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getSecondaryId(),user,false));
+            for (XnatProjectdata potentialConflict : conflicts) {
+                if (potentialConflict.getId().equals(project.getId())) toRemove.add(potentialConflict);
+            }
+            conflicts.removeAll(toRemove);
+            if(!conflicts.isEmpty()){
+                data.addMessage("A project with the running title '" + project.getSecondaryId() + "' already exists.");
+                TurbineUtils.SetEditItem(item,data);
                 if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
                 {
                     data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));

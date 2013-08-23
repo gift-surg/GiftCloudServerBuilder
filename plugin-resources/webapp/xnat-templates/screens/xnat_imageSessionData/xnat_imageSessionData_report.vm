@@ -161,7 +161,8 @@ function  toggleQuarantine(){
   var obj={};
     obj.uri=serverRoot + "/REST/experiments/$!om.getId()";
     obj.refresh = serverRoot + "/data/services/refresh/catalog?options=" + encodeURIComponent("populateStats,append,delete,checksum") + "&XNAT_CSRF=" + csrfToken + "&resource=/archive/experiments/$!om.getId()";
-    obj.sessionId = "$!om.getId()";
+    obj.objectId = "$!om.getId()";
+    obj.objectType = "session";
     obj.categories={};
     obj.categories.ids=[];
     

@@ -4,7 +4,6 @@
 
 
 function FileViewer(_obj){
-	//categories.object
 	this.loading=0;
 	this.requestRender=false;
     this.requiresRefresh = false;
@@ -501,15 +500,13 @@ function FileViewer(_obj){
 		  		    	}
 		  		    },this,true);
 
-                    if (this.obj.sessionId && this.obj.sessionId.trim() != "") {
-                        var updateButton = document.createElement("input");
-                        updateButton.type = "button";
-                        updateButton.value = "<b>Update File Data</b>";
-                        fTd1.appendChild(updateButton);
+                    var updateButton = document.createElement("input");
+                    updateButton.type = "button";
+                    updateButton.value = "<b>Update File Data</b>";
+                    fTd1.appendChild(updateButton);
 
-                        var oPushUpdateButton = new YAHOO.widget.Button(updateButton);
-                        oPushUpdateButton.subscribe("click", this.catalogRefresh, this, true);
-                    }
+                    var oPushUpdateButton = new YAHOO.widget.Button(updateButton);
+                    oPushUpdateButton.subscribe("click", this.catalogRefresh, this, true);
 				}
 							
 				var dType=document.createElement("select");
@@ -605,11 +602,11 @@ function FileViewer(_obj){
                 xModalLoadingClose();
                 var refreshOptions = {} ;
                 refreshOptions.action = function() { window.location.reload(); };
-                xModalMessage(this.obj.sessionId + ' Refreshed', 'The aggregate file count and size values have been updated for your session. Click OK to reload the page.', 'OK', refreshOptions);
+                xModalMessage(this.obj.objectId + ' Refreshed', 'The aggregate file count and size values have been updated for your ' + this.obj.objectType + '. Click OK to reload the page.', 'OK', refreshOptions);
             },
             failure: function (o) {
                 xModalLoadingClose();
-                xModalMessage('Error', 'An unexpected error has occurred while processing session ' + this.obj.sessionId + '. Please contact your administrator. Status code: ' + o.status, 'OK');
+                xModalMessage('Error', 'An unexpected error has occurred while processing ' + this.obj.objectType + ' ' + this.obj.objectId + '. Please contact your administrator. Status code: ' + o.status, 'OK');
             },
             scope: this,
             cache: false

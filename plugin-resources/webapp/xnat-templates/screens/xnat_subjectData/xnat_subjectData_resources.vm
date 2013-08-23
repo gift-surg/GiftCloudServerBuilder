@@ -16,7 +16,10 @@
 <script type="text/javascript">
   var obj={};
   obj.uri=serverRoot + "/REST/projects/$!om.getProject()/subjects/$!om.getId()";
-  
+  obj.refresh = serverRoot + "/data/services/refresh/catalog?options=" + encodeURIComponent("populateStats,append,delete,checksum") + "&XNAT_CSRF=" + csrfToken + "&resource=/archive/subjects/$!om.getId()";
+  obj.objectId = "$!om.getId()";
+  obj.objectType = "subject";
+
   #if ($item.canEdit($data.getSession().getAttribute("user")))
 							      obj.canEdit=true;
 						    #else

@@ -474,7 +474,7 @@
 		<dependency>
 			<groupId>xdat</groupId>
 			<artifactId>xdat</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -677,7 +677,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-mx</artifactId>
-			<version>1.6.3-SNAPSHOT</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -686,7 +686,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-sop</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -695,7 +695,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>dicom-xnat-util</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -704,7 +704,7 @@
 		<dependency>
 			<groupId>ecat</groupId>
 			<artifactId>ecat4xnat</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -713,7 +713,7 @@
 		<dependency>
 			<groupId>dcm</groupId>
 			<artifactId>PrearcImporter</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -740,7 +740,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-anonymize</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -921,7 +921,7 @@
 		<dependency>
 			<groupId>xdat</groupId>
 			<artifactId>xdat-beans</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1520,7 +1520,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-framework</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1529,7 +1529,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-transaction</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1538,7 +1538,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-mail</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1547,7 +1547,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-notify</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1556,7 +1556,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-config</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomObject;
 import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
+import org.nrg.dcm.edit.ScriptApplicator;
+import org.nrg.dcm.edit.ScriptEvaluationException;
 import org.nrg.dcm.xnat.DICOMSessionBuilder;
 import org.nrg.dcm.xnat.XnatAttrDef;
 import org.nrg.session.SessionBuilder;
@@ -27,6 +29,7 @@ import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils.PrearcStatus;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -118,12 +121,13 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 					Configuration c = AnonUtils.getService().getScript(DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, newProj), projectId);
 					if (c != null) {
 						final String anonScript = c.getContents();
+                        final ScriptApplicator scriptapplicator = new ScriptApplicator(new ByteArrayInputStream(anonScript.getBytes("UTF-8")));
 						final XnatAttrDef[] params = {new XnatAttrDef.Constant("project", newProj)};
 						final DICOMSessionBuilder db = new DICOMSessionBuilder(f, params,
 						        new Function<DicomObject,DicomObject>() {
 						    public DicomObject apply(final DicomObject o) {
 						        try {
-						            Anonymize.anonymize(o, newProj, subject, sess, anonScript);
+						            Anonymize.anonymize(o, newProj, subject, sess, scriptapplicator);
 						        } catch (RuntimeException e) {
 						            throw e;
 						        } catch (Exception e) {
@@ -141,7 +145,9 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 					}
 					//modified to also set the new prearchive path.
 					doc.setPrearchivepath(newDirPath);	
-				} catch (SAXException e) {
+				} catch (ScriptEvaluationException e) {
+                    throwSync(e);
+                } catch (SAXException e) {
 					throwSync(e);
 				} catch (IOException e) {
 					throwSync(e);

@@ -885,7 +885,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -928,7 +928,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -964,7 +964,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -1005,7 +1005,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -1049,7 +1049,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1091,7 +1091,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -1139,7 +1139,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -1193,7 +1193,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1579,7 +1579,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
@@ -1697,7 +1697,7 @@
                 <pathelement location="./lib/xdat-1.6.3.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
-                <pathelement location="./lib/commons-dbcp-1.2.1.jar"/>
+                <pathelement location="./lib/commons-dbcp-1.4.jar"/>
                 <pathelement location="./lib/commons-lang-2.5.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>

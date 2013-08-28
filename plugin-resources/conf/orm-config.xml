@@ -16,14 +16,19 @@
                 <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.cache.use_second_level_cache">true</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
             </props>
         </property>
     </bean>
 
+    <bean id="regionFactory" class="net.sf.ehcache.hibernate.EhCacheRegionFactory">
+        <constructor-arg index="0" ref="hibernateProperties" />
+    </bean>
+
     <bean id="sessionFactory" class="org.nrg.framework.orm.hibernate.AggregatedAnnotationSessionFactoryBean"
-        p:dataSource-ref="dataSource"
-        p:hibernateProperties-ref="hibernateProperties"
-        p:namingStrategy-ref="namingStrategy" />
+          p:cacheRegionFactory-ref="regionFactory" p:dataSource-ref="dataSource"
+          p:hibernateProperties-ref="hibernateProperties" p:namingStrategy-ref="namingStrategy" />
 
     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" p:sessionFactory-ref="sessionFactory" />
 

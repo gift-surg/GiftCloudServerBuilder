@@ -12,6 +12,7 @@ package org.nrg.xnat.helpers.prearchive;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
@@ -202,29 +203,74 @@ public final class PrearcDatabase {
                         existing.add(results.getString("column_name").toLowerCase());
                     }
 
-                    // Now compare what exists to what is supposed to exist.
-                    List<DatabaseSession> missing = new ArrayList<DatabaseSession>();
+                    // Now find out what's SUPPOSED to be in the table.
+                    final List<String> required = new ArrayList<String>(DatabaseSession.values().length);
                     for (final DatabaseSession d : DatabaseSession.values()) {
-                        final String columnName = d.getColumnName().toLowerCase();
-                        if (!existing.contains(columnName)) {
-                            missing.add(d);
+                        required.add(d.getColumnName().toLowerCase());
+                    }
+
+                    // Now check the ordinals. This is where undeclared column queries go to die, e.g. insert into table
+                    // values (1, 2, 3) when the columns have actually moved. Start by checking table size. If that's
+                    // off, we don't even need to check the ordering of the columns, since the column mismatch will
+                    // cause ordering errors anyways.
+                    boolean ordered = true;
+                    if (required.size() == existing.size()) {
+                        for (int index = 0; index < required.size(); index++) {
+                            if (!required.get(index).equals(existing.get(index))) {
+                                ordered = false;
+                                break;
+                            }
                         }
                     }
 
-                    // If there's no difference, then just return.
-                    if (missing.size() == 0) {
+                    // Now find out what the existing and required columns have in common. If the in-common columns list
+                    // is the same size as the required, that means we have all of the required columns.
+                    Collection inCommon = CollectionUtils.intersection(required, existing);
+                    boolean allRequiredExist = inCommon.size() == required.size();
+
+                    // If we have all required columns and the ordering is good, we're done, the table matches.
+                    if (allRequiredExist && ordered) {
                         return null;
                     }
 
-                    // Build the ALTER query required to sync to the required definition.
+                    // Build the ALTER query required to sync to the required definition. First rename prearc table to
+                    // a holding table.
                     final StringBuilder buffer = new StringBuilder();
-                    buffer.append("ALTER TABLE ").append(PrearcDatabase.tableWithSchema).append(" ");
-                    final List<String> values = new ArrayList<String>();
-                    for (final DatabaseSession d : missing) {
-                        values.add("ADD COLUMN " + d.getColumnName() + " " + d.getColumnDefinition());
-                    }
-                    buffer.append(StringUtils.join(values.toArray(), ", "));
+                    buffer.append("ALTER TABLE ").append(PrearcDatabase.tableWithSchema).append(" RENAME TO ");
+                    buffer.append(PrearcDatabase.table).append("_deprecated");
                     PoolDBUtils.ExecuteNonSelectQuery(buffer.toString(), null, null);
+
+                    // Now create the standard prearchive table.
+                    createTable();
+
+                    // Create a list of column names with the in-common columns. These are specified on both the insert
+                    // and select to match mis-ordered columns in the query results. This is what does the migration
+                    // mapping for us so that the ordinality of the table structure matches the expectations of the
+                    // later INSERT queries. So we remove required columns that aren't in-common because we can't
+                    // migrate those.
+                    if (!allRequiredExist) {
+                        for (String column : required) {
+                            if (!inCommon.contains(column)) {
+                                required.remove(column);
+                            }
+                        }
+                    }
+
+                    String columns = StringUtils.join(required.toArray(), ", ");
+
+                    // Clear the query and create an insert that will select all of the in-common columns from the
+                    // holding table and put them into the new prearchive table.
+                    buffer.setLength(0);
+                    buffer.append("INSERT INTO ").append(PrearcDatabase.tableWithSchema).append(" (").append(columns).append(")");
+                    buffer.append("SELECT ").append(columns).append(" FROM ").append(PrearcDatabase.tableWithSchema).append("_deprecated");
+                    PoolDBUtils.ExecuteNonSelectQuery(buffer.toString(), null, null);
+
+                    // OK, data's migrated! Great! Nuke the old table.
+                    buffer.setLength(0);
+                    buffer.append("DROP TABLE ").append(PrearcDatabase.tableWithSchema).append("_deprecated");
+                    PoolDBUtils.ExecuteNonSelectQuery(buffer.toString(), null, null);
+
+                    // Leave.
                     return null;
                 }
             }.run();
@@ -369,9 +415,23 @@ public final class PrearcDatabase {
      * @throws ClassNotFoundException 
      */
     public static void refresh() throws Exception {
-        PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
+        refresh(XDAT.getContextService().getBean(PrearcConfig.class).isReloadPrearcDatabaseOnApplicationStartup());
+    }
 
-        if(prearcConfig.isReloadPrearcDatabaseOnApplicationStartup()) {
+    /**
+     * Recreate the database from scratch. This is an expensive operation. The {@link #refresh()} version of this method
+     * will only recreate the database from scratch if the {@link org.nrg.xnat.helpers.prearchive.PrearcConfig#isReloadPrearcDatabaseOnApplicationStartup()}
+     * property is set to <b>true</b>. This is useful for cleaning up the table on application start-up without
+     * incurring the additional overhead of a full rebuild of the prearchive database. This version lets you specify
+     * <b>true</b> for the force parameter to force the delete and full rebuild of the table.
+     * @param force    Indicates whether the table should be dropped.
+     * @throws SQLException
+     * @throws SAXException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public static void refresh(boolean force) throws Exception {
+        if(force) {
             PrearcDatabase.deleteRows();
         }
 

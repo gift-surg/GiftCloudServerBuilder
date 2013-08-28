@@ -67,7 +67,7 @@ public final class PrearcSessionListResource extends SecureResource {
 	
 	public void handlePut () {
 		try {
-			PrearcDatabase.refresh();
+			PrearcDatabase.refresh(true);
 		} catch (Exception e) {
 			logger.error("Unable to refresh sessions", e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());

@@ -322,9 +322,9 @@ function ScanEditor(_sessionID,_scanID,_options){
             td1.innerHTML = "Notes:";
             td1.align = "left";
             if (this.scan.extension.Note != undefined && this.scan.extension.Note != null)
-                td2.innerHTML = "<textarea cols='30' rows='4' name='" + modality + "/note'>" + this.scan.extension.Note + "</textarea>";
+                td2.innerHTML = "<textarea class='nullable' cols='30' rows='4' name='" + modality + "/note'>" + this.scan.extension.Note + "</textarea>";
             else
-                td2.innerHTML = "<textarea cols='30' rows='4' name='" + modality + "/note'></textarea>";
+                td2.innerHTML = "<textarea class='nullable' cols='30' rows='4' name='" + modality + "/note'></textarea>";
 
             tr.appendChild(td1);
             tr.appendChild(td2);
@@ -1087,6 +1087,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				}
 				scan.note_input.size="40";
 			}
+			scan.note_input.className += " nullable";
 			td.appendChild(scan.note_input);
 			tr.appendChild(td);
 

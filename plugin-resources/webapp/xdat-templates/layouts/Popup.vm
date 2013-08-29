@@ -1,7 +1,15 @@
 $navigation.setTemplate("/htmlOpen.vm")
+<style type="text/css">
+    html body { background: #fff !important ; }
+    body #page_wrapper { padding: 30px ; }
+    body #xnat_power { margin: 30px ; }
+</style>
 ## insert any template-specific <head> code here
 <script type="text/javascript">
     window.isPopup=true;
+    jq(function(){
+        jq('body').addClass('popup');
+    });
 </script>
 #set($popup=true)
 

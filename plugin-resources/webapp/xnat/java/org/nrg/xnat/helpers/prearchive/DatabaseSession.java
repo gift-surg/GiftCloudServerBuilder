@@ -607,6 +607,8 @@ public enum DatabaseSession {
 		       DatabaseSession.sessionSql(sess, timestamp, proj);
 	}
 	
+	
+	
 	public String findSql (String sess, String timestamp, String proj) {
 		return "SELECT " + this.columnName + " FROM " + PrearcDatabase.tableWithSchema + " WHERE " + DatabaseSession.sessionSql(sess, timestamp, proj);
 	}
@@ -819,4 +821,32 @@ public enum DatabaseSession {
 	 * @param o
 	 */
 	public abstract void writeSession (SessionData s, Object o);
+
+	/**
+	 * Generates SQL to be used to update the prearchive status without any unnecessary SELECT statements.
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @param status
+	 * @return
+	 */
+	public static String updateSessionStatusSQL (String sess, String timestamp, String proj, PrearcUtils.PrearcStatus status) {
+		return "UPDATE " + PrearcDatabase.tableWithSchema + " SET " + 
+		       DatabaseSession.STATUS.updateSql(status) + ", " + 
+		       DatabaseSession.LASTMOD.updateSql(Calendar.getInstance().getTime()) + " WHERE " +
+		       DatabaseSession.sessionSql(sess, timestamp, proj);
+	}
+
+	/**
+	 * Generates SQL to be used to update the prearchive last modified time without any unnecessary SELECT statements.
+	 * @param sess
+	 * @param timestamp
+	 * @param proj
+	 * @return
+	 */
+	public static String updateSessionLastModSQL (String sess, String timestamp, String proj) {
+		return "UPDATE " + PrearcDatabase.tableWithSchema + " SET " + 
+		       DatabaseSession.LASTMOD.updateSql(Calendar.getInstance().getTime()) + " WHERE " +
+		       DatabaseSession.sessionSql(sess, timestamp, proj);
+	}
 }

@@ -4,6 +4,7 @@ var all_elements = new Array();
 #foreach($gwe in $all_elements)
 all_elements.push("$gwe.getFullXMLName()");
 #end
+all_elements.sort();
 
 function removeAllOptions(selectbox)
 {
@@ -45,13 +46,8 @@ function populateFullList(){
   <tr>
     <td>Root Data Type:
     </td><td>
-        <select ID="root_data_type" name="root_data_type">
-           <option value="BAD">(SELECT)</option>
-#foreach($elementName in $elements)
-								           <option value="$elementName">$elementName</option>
-							#end
-									        </select>
-									    </td>
+        <select ID="root_data_type" name="root_data_type" />
+	</td>
     <td><A ONCLICK="populateFullList();">Show All</A>
     </td>
   </tr>
@@ -75,3 +71,19 @@ function populateFullList(){
   #end
 </table>
 </form>
+
+<SCRIPT>
+    var elements = new Array();
+        #foreach($gwe in $elements)
+        elements.push("$gwe");
+        #end
+    elements.sort();
+
+    var selectBox = document.getElementById("root_data_type");
+
+    selectBox.options[0]= new Option("(SELECT)","BAD");
+
+    for(var i=0;i<elements.length;i++){
+        selectBox.options[i + 1]= new Option(elements[i],elements[i]);
+    }
+</SCRIPT>

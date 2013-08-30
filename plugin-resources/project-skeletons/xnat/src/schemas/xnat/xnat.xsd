@@ -571,6 +571,7 @@
 					<xs:element name="visit_name" type="xs:string" minOccurs="0"/> <!-- interval... -->
 				</xs:sequence>
 				<xs:attribute name="closed" type="xs:boolean" use="optional"/>
+				<xs:attribute name="terminal" type="xs:boolean" use="optional"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

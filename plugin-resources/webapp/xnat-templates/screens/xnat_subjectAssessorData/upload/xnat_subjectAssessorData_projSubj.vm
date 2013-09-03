@@ -73,7 +73,7 @@ function createSubjectForm(){
 					  	     	   this.subjectForm=null;
    	  	}
    	 	window.create_subject_link ="$link.setPage('XDATScreen_edit_xnat_subjectData.vm').addPathInfo('popup','true')";
-   	 	var project = document.getElementById("xnat:mrSessionData/project").value;
+   	 	var project = document.getElementById("$!item.getXSIType()/project").value;
    	 	if ((project == "")&&($item.user.canRead($item))&&($item.user.canEdit($item))&&($item.user.canCreate($item))&&($item.user.canActivate($item))&&($item.user.canDelete($item))){
    	 		alert('Please Add Yourself as a "Member" of the $displayManager.getSingularDisplayNameForProject()');
    	 		return;

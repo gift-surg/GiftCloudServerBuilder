@@ -127,7 +127,7 @@ $page.setVlinkColor($ui.vlink)
 <table>
   <tr>
     #formLabel("Notes")
-    <td><textarea name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
+    <td><textarea class='nullable' name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
   </tr>
 </table><br><br><hr>
 #xdatEditProps($item $edit_screen)

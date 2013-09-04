@@ -154,7 +154,7 @@ public class ModifySubjectAssessorData extends ModifyItem{
                     }
                 	
                     try {
-                        super.preSave(found,data,context);
+                        preSave(found,data,context);
                     } catch (CriticalException e) {
                         throw e;
                     } catch (RuntimeException e) {

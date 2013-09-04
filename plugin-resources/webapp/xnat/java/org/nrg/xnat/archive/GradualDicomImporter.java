@@ -17,6 +17,8 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.dcm4che2.data.*;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
@@ -28,10 +30,12 @@ import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
+import org.nrg.dcm.id.DbBackedProjectIdentifier;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xnat.DicomObjectIdentifier;
 import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
@@ -39,6 +43,7 @@ import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
+import org.nrg.xnat.helpers.prearchive.DatabaseSession;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
@@ -114,7 +119,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
     private XnatProjectdata getProject(final Object alias, final Callable<XnatProjectdata> defaultProject) {
         if (null == projectCache) {
-            setCacheManager(CacheManager.getInstance());
+            projectCache=getUserProjectCache(user);
         }
         if (null != alias) {
             logger.debug("looking for project matching alias {} from query parameters", alias);
@@ -337,7 +342,24 @@ public class GradualDicomImporter extends ImporterHandlerA {
             } else {
            	sess = getOrCreate.getRight();
            }
-             PrearcDatabase.setLastModifiedTime(sess.getName(), sess.getTimestamp(), sess.getProject());
+           try {
+               //if the status isn't RECEIVING, fix it 
+               //else if the last mod time is more then 15 seconds ago, update it.
+               //this code builds and executes the sql directly, because the APIs for doing so generate multiple SELECT statements (to confirm the row is there)
+               //we've confirmed the row is there in line 338, so that shouldn't be necessary here.
+               // this code executes for every file received, so any unnecessary sql should be eliminated.
+				if(!PrearcUtils.PrearcStatus.RECEIVING.equals(sess.getStatus())){
+				   //update the last modified time and set the status
+				   PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.updateSessionStatusSQL(sess.getName(), sess.getTimestamp(), sess.getProject(), PrearcUtils.PrearcStatus.RECEIVING), null, null);
+				}else if(Calendar.getInstance().getTime().after(DateUtils.addSeconds(sess.getLastBuiltDate(), 15))){
+				   PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.updateSessionLastModSQL(sess.getName(), sess.getTimestamp(), sess.getProject()), null, null);
+				}
+			} catch (Exception e) {
+				logger.error("",e);
+				//not exactly sure what we should do here.  should we throw an exception, and the received file won't be stored locally?  Or should we let it go and let the file be saved but unreferenced.
+				//the old code threw an exception, so we'll keep that logic.
+				throw e;
+			}
          } catch (SQLException e) {
             throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
         } catch (SessionException e) {
@@ -462,8 +484,14 @@ public class GradualDicomImporter extends ImporterHandlerA {
         return PrearchiveCode.code(project.getArcSpecification().getPrearchiveCode());
     }
 
-	public void setCacheManager(final CacheManager cacheManager) {
+	/**
+	 * Adds a cache of project objects on a per-user basis.  This is currently used by the GreadualDicomImporter and the DbBackedProjectIdentifier
+	 * @param user
+	 * @return
+	 */
+	public static Cache getUserProjectCache(XDATUser user) {
         final String cacheName = user.getLogin() + "-projects";
+        final CacheManager cacheManager = CacheManager.getInstance();
         synchronized (cacheManager) {
             if (!cacheManager.cacheExists(cacheName)) {
                 final CacheConfiguration config = new CacheConfiguration(cacheName, 0)
@@ -473,9 +501,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 .timeToLiveSeconds(PROJECT_CACHE_EXPIRY_SECONDS);
                 final Cache cache = new Cache(config);
                 cacheManager.addCache(cache);
-                projectCache = cache;
+                return cache;
             } else {
-                projectCache = cacheManager.getCache(cacheName);
+                return cacheManager.getCache(cacheName);
             }
         }
     }

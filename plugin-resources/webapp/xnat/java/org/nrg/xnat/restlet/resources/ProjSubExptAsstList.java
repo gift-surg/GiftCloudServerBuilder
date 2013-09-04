@@ -52,9 +52,8 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
 			String subID= (String)getParameter(request,"SUBJECT_ID");
-			if(subID!=null){
-				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
-						.getId(), subID, user, false);
+			if(proj != null && subID!=null){
+				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID, user, false);
 
 				if(sub==null){
 					sub = XnatSubjectdata.getXnatSubjectdatasById(subID, user,
@@ -98,7 +97,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 				}
 			}else{
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-				"Unable to find subject.");
+				"Unable to find project.");
 			}
 		}else{
 			String exptID = (String) getParameter(request,"ASSESSED_ID");

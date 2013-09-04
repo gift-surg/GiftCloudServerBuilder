@@ -121,8 +121,11 @@ window.invest_manager = new InvestigatorManager();
 window.primary_investigator="$!om.getProperty('pi_xnat_investigatordata_id')";
 #end
 window.other_investigators=new Array();
-#foreach($inv in $project.getInvestigators_investigator())
-window.other_investigators.push("$!inv.getProperty('xnat_investigatordata_id')");
+#set ($investigators = $om.getInvestigators_investigator())
+#foreach($inv in $investigators)
+    #if (!$inv.getXnatInvestigatordataId.equals($primaryInv))
+    window.other_investigators.push("$inv.getXnatInvestigatordataId()");
+    #end
 #end
 var removeInvestigatorIcon='url($content.getURI("scripts/yui/build/assets/skins/xnat/xnat-sprite.png"))';
 window.refreshInvestigators=function (){
@@ -136,9 +139,8 @@ window.refreshInvestigators=function (){
   tbody.appendChild(tr);
   table.appendChild(tbody);
   div.appendChild(table);
-  
   var th= document.createElement("th");
-//  th.innerHTML="PI";
+  th.innerHTML="PI";
   tr.appendChild(th);
   
   var td= document.createElement("td");
@@ -208,12 +210,11 @@ window.refreshInvestigators=function (){
   td.appendChild(button);
   tr.appendChild(td);
   
-  for(var otherCounter=0;otherCounter<window.other_investigators;otherCounter++){
+  for(var otherCounter=0;otherCounter<window.other_investigators.length;otherCounter++){
     tr=document.createElement("tr");
     tr.id="Investigator_" + (otherCounter+1);
     var th= document.createElement("th");
-    th.innerHTML="Investigator " + (otherCounter+1);
-    th.noWrap="true";
+//    th.innerHTML=otherCounter+1;
     tr.appendChild(th);
   
     var td= document.createElement("td");
@@ -234,6 +235,7 @@ window.refreshInvestigators=function (){
     };
     td.appendChild(remInvestButton);
     tr.appendChild(td);
+    tbody.appendChild(tr);
   }
     
   

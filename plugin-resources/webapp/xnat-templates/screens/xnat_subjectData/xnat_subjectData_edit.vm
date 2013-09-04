@@ -1,4 +1,9 @@
 <!-- BEGIN /screens/xnat_subjectData/xnat_subjectData_edit.vm -->
+<style type="text/css">
+    /* hide potential scroll bars */
+    body.xmodal-popup { overflow: hidden ; }
+    body.xmodal-popup #eventSubmit_doInsert { display: none ; }
+</style>
 <table align="left" border=0>
     <tr>
         <td>
@@ -115,7 +120,7 @@
                 <tr>
                     <td align="right">
                         <input type="hidden" name="source" value="$!source">
-                        <input type="submit" name="eventSubmit_doInsert" value="Submit"/>
+                        <input type="submit" name="eventSubmit_doInsert" id="eventSubmit_doInsert" value="Submit"/>
                     </td>
                 </tr>
             </table>

@@ -739,10 +739,12 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
     this.optionMenu.render();
   };
 
-  this.showXML=function (_searchXML){
-  	  showMessage("page_body", "Search XML", "<code id='showXmlContent'></code>", {width:750, height:500});
-      $('#showXmlContent').text(_searchXML);
-  };
+    this.showXML=function (_searchXML){
+        showMessage("page_body", "Search XML", "<code id='showXmlContent'></code>", {width:750, height:500});
+        var bracketregex = new RegExp('<', 'g');
+        var newlineregex = new RegExp('\n', 'g');
+        $('#showXmlContent').html(_searchXML.replace(bracketregex, '&lt;').replace(newlineregex, '<br />'));
+    };
 
   this.getXML=function(){
 	  return this.xml;

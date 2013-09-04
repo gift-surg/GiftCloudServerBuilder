@@ -174,7 +174,7 @@ function confirmValues(_focus){
 	  
 	  return valid;
   }catch(e){
-		alert("An exception has occured.  Please contact technical support for assistance.");
+		xModalMessage('Error',"An exception has occurred. Please contact technical support for assistance.");
   	  return false;
   }
 }

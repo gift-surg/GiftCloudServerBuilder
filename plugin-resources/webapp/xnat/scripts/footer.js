@@ -403,6 +403,7 @@ $(function(){
             XNAT_version = data ;
             $('#xnat_power').find('a').attr('title','XNAT version ' + XNAT_version).after('<small>version ' + XNAT_version + '</small>');
             $('#header_logo').attr('title','XNAT version ' + XNAT_version);
+            XNAT.app.version = XNAT_version ;
         });
     }
 });

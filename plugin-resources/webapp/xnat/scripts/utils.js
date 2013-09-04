@@ -208,3 +208,27 @@ jQuery.loadScript = function (url, arg1, arg2) {
 //});
 //
 // end draggable
+
+
+// utility for getting URL query string value
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return (results == null) ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+// utility for sorting DOM elements
+// usage: sortElements('ul#list','li');
+function sortElements(_parent,_child){
+    //console.log('sorting...');
+    var mylist = $(_parent);
+    var listitems = mylist.children(_child).get();
+    listitems.sort(function(a, b) {
+        var compA = $(a).text().toUpperCase();
+        var compB = $(b).text().toUpperCase();
+        return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
+    })
+    $.each(listitems, function(idx, itm) { mylist.append(itm); });
+}
+

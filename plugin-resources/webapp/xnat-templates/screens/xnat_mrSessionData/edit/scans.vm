@@ -19,12 +19,11 @@
  <tbody id="scan_tbody">
  </tbody>
 </TABLE>
-					<DIV id="scans" style="position: absolute;top:50;left:50;">
-</DIV>
+					<div id="scans" style="position:absolute;top:50px;left:50px;"></div>
 <script type="text/javascript" src="$content.getURI("scripts/imageScanData/scan_tools.js")"></script>
 <script type="text/javascript">
     jq(function(){
-        $('body').addClass('scans');
+        jq('body').addClass('scans');
     });
 
     function addScan(_button){

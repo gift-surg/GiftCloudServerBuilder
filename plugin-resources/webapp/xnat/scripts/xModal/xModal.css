@@ -19,7 +19,7 @@ div.xmodal.loading .title .close { display: none ; }
 div.xmodal.loading .body .inner { text-align: center ; }
 div.xmodal .body { position: relative ; overflow: hidden ; }
 div.xmodal .body.scroll { overflow-y: auto ; }
-div.xmodal .body .inner { padding: 20px ; font-size: 13px ; }
+div.xmodal .body .inner { padding: 20px ; font-size: 13px ; line-height: 17px ; }
 div.xmodal .body h1,
 div.xmodal .body h2,
 div.xmodal .body h3,

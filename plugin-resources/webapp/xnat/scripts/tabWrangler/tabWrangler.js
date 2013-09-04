@@ -135,7 +135,7 @@ function moveToTab(_$wrapper,_$tab,_n,_x){
 
     // if there's a 'selector' tab, get the width, otherwise set to 0
     //var selector_tab_width = ($the_tab.next('li').hasClass('selector')) ? parseInt(_$wrapper.find('li.selector').outerWidth()-20) : 40 ;
-    var selector_tab_width = (_$wrapper.find('.select_add_tab').length) ? 100 : 10 ;
+    var selector_tab_width = (_$wrapper.find('.select_add_tab').length) ? 100 : 20 ;
 
     // how much visible space do we have to show the tabs? (need to ensure they are viewable inside this space)
     var width_limit = parseInt(content_width - 220);

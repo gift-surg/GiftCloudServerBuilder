@@ -94,23 +94,24 @@ function xMenuCreate(selects){
             //$this_select.attr('id',menu_id);
             //$this_select.prev('label').attr('id',menu_id);
             $this_select.find('option').each(function(){
-                var value = $(this).attr('value');
-                var content = $(this).html();
+                var $option = $(this);
+                var value = $option.attr('value');
+                var content = $option.html();
                 var this_class ;
-                if ($(this).attr('class') > ''){
-                    this_class = $(this).attr('class');
+                if ($option.attr('class') > ''){
+                    this_class = $option.attr('class');
                 }
                 else {
                     this_class = '' ;
                 }
-                if ($(this).hasClass('image')){
-                    var img_src = $(this).attr('data-img');
+                if ($option.hasClass('image')){
+                    var img_src = $option.attr('data-img');
                     $this_select.next('div.xmenu').find('ul').append('' +
                         '<li class="'+this_class+'"><a href="javascript:" class="'+ this_class +'" data-value="'+ value +'" style="background-image:url('+img_src+');">'+content+'</a></li>' +
                         '');
                 }
                 else {
-                    if (!$(this).hasClass('button_default')){
+                    if (!$option.hasClass('button_default')){
                     $this_select.next('div.xmenu').find('ul').append('' +
                         '<li class="'+this_class+'"><a href="javascript:" class="'+ this_class +'" data-value="'+ value +'">' + content + '</a></li>' +
                         '');
@@ -138,17 +139,17 @@ function xMenuSelect($this){
     var select_id = $this_menu.attr('data-select-id');
     var $this_select = $('#'+select_id);
     var $this_button = $this_menu.find('.button_content');
-    $this_button.not('.static').html($this.html());
-    if ($this_select.find('option[value="'+this_val+'"]').attr('data-img') > ''){
-        var this_bkgd = $this_select.find('option[value="'+this_val+'"]').attr('data-img');
-        $this_button.addClass('image');
-//        $this_button.not('.static').css({
-//            backgroundImage:"url('"+this_bkgd+"')"
-//        });
-        $this_button.prepend('<img src="' + this_bkgd + '" alt="">');
-    }
-    else {
-        $this_button.removeClass('image');
+    //$this_button.not('.static').html($this.html());
+    if (!$this_button.hasClass('static')) {
+        $this_button.html($this.html());
+        if ($this_select.find('option[value="' + this_val + '"]').attr('data-img') > '') {
+            var this_bkgd = $this_select.find('option[value="' + this_val + '"]').attr('data-img');
+            $this_button.addClass('image');
+            $this_button.prepend('<img src="' + this_bkgd + '" alt="">');
+        }
+        else {
+            $this_button.removeClass('image');
+        }
     }
     $this_select.find('option').prop('selected',false).removeAttr('selected').removeClass('selected');
     $this_select.find('option[value="'+this_val+'"]').prop('selected',true).attr('selected','selected').addClass('selected');

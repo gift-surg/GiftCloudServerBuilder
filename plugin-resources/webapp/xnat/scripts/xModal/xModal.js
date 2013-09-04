@@ -638,8 +638,15 @@ function xModalOpen(x){
 
 function xModalCloseNew(_xmodal_id,_$this_mask) {
     // closes the topmost modal
-    var $mask = _$this_mask ? _$this_mask : $('div.xmask.top');
-    var $modal = $mask.find('div.xmodal');
+    var $modal, $mask ;
+    if (_xmodal_id && _xmodal_id > ''){
+        $modal = $('#'+_xmodal_id);
+        $mask = $modal.closest('div.xmask')
+    }
+    else {
+        $mask = _$this_mask ? _$this_mask : $('div.xmask.top');
+        $modal = $mask.find('div.xmodal');
+    }
     xmodal_count-- ;
     var prev_xmodal = xmodal_count ;
     $modal.hide().removeClass('open');
@@ -667,13 +674,18 @@ function xModalCloseNew(_xmodal_id,_$this_mask) {
         $body.removeClass('open');
     }
     // nullify functions for 'ok' and 'cancel' functions
-    if (window[_xmodal_id+'_ok'] != undefined){
-        window[_xmodal_id+'_ok'] = function(){};
-        window[_xmodal_id+'_ok']();
+    // but only if we're closing the modal
+    if ($modal.find('.ok.button').hasClass('close')){
+        if (window[_xmodal_id+'_ok'] != undefined){
+            window[_xmodal_id+'_ok'] = function(){};
+            window[_xmodal_id+'_ok']();
+        }
     }
-    if (window[_xmodal_id+'_cancel'] != undefined){
-        window[_xmodal_id+'_cancel'] = function(){};
-        window[_xmodal_id+'_cancel']();
+    if ($modal.find('.cancel.button').hasClass('close')){
+        if (window[_xmodal_id+'_cancel'] != undefined){
+            window[_xmodal_id+'_cancel'] = function(){};
+            window[_xmodal_id+'_cancel']();
+        }
     }
 }
 
@@ -775,4 +787,3 @@ $(window).resize(function(){
         });
     }
 });
-

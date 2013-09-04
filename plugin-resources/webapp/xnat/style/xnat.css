@@ -115,6 +115,7 @@ a { color: /* #2a70c6 */ #084FAB ; }
 a, a:link, a:active, a:focus,
 button, button:enabled, button:target, button:active, button:focus { outline: none !important ; }
 img { /* vertical-align: bottom ; */ border: none ; outline: none ; }
+hr { color: transparent ; border: none ; border-bottom: 1px solid #ccc ; }
 .clear { height: 0 ; clear: both ; }
 
 
@@ -245,6 +246,8 @@ select[multiple] { max-width: 200px ; }
 #xnat_power { /* width: 100% ; */ margin: 75px 0 20px 20px ; border-top: 1px solid #ccc ; text-align: right ; }
 #xnat_power a { /* float: right ; */ display: inline-block ; margin-top: 10px ; }
 #xnat_power small { display: block ; color: #888 ; font-size: 11px ; }
+/* hide in popups? */
+body.modal-popup #xnat_power { display: none ; }
 
 /* overrides to make this thing look better? */
 .yui-skin-sam .yui-panel-container { padding: 0 1px ; /* z-index: 999999991 !important; */ }
@@ -587,3 +590,6 @@ span.spacer { display: none !important ; }
 .mgmt_container #notifications_mgmt_div th,
 .mgmt_container #notifications_mgmt_div td { padding: 5px 0 ; }
 .mgmt_container #notifications_mgmt_div th { padding-right: 10px ; }
+
+/* overrides for Chosen menus (if used) */
+html .chosen-container-single .chosen-single { color: #000 ; }

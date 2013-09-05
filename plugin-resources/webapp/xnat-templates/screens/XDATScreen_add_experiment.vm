@@ -3,6 +3,45 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 ##<font face="$ui.sansSerifFonts" size="2">
 ##<span class="ui_sansSerifFonts">
 
+<script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+<script type="text/javascript">
+
+    function verifyExptId(obj){}
+
+    function newProjSubjSel(){
+        window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
+        window.ProjectSubjectManager.init();
+    }
+
+    function selected_labeler(_this) {
+        var _this_label = _this.find('option:selected').text();
+        _this.find('.selected_label').text(_this_label);
+    }
+
+    function checkForProject() {
+        var proj_check = setInterval(function(){
+            if (jq('#selected_project option:selected').length){ //check if selected option is loaded
+                selected_labeler(jq('#selected_project'));
+                clearInterval(proj_check);
+            }
+        },20);
+    }
+
+    function checkForSubject(){
+        var subj_check = setInterval(function(){
+            if (jq('#selected_subject option:selected').length){ //check if selected option is loaded
+                selected_labeler(jq('#selected_subject'));
+                clearInterval(subj_check);
+            }
+        },20);
+    }
+
+    // wait for DOM to load to make sure elements are on the page.
+    jq(function(){
+        newProjSubjSel();
+    });
+
+</script>
 <div id="add_experiment">
 
     #if ($turbineUtils.GetPassedParameter("popup",$data))
@@ -11,13 +50,9 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
         #set ($popup = "false")
     #end
 
-    <style type="text/css">
-    </style>
+##    <style type="text/css"></style>
 
-
-    <script type="text/javascript">
-    </script>
-
+##    <script type="text/javascript"></script>
 
     <form id="form1" name="form1"
     ##ONSUBMIT="return validate();"
@@ -28,39 +63,13 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
         #if($part_id && $project)
 
             <p id="selected_project" class="selected"><b class="label">$displayManager.getSingularDisplayNameForProject(): </b> <span class="selected_label" title="$project"></span> <select id="project" name="project" style="display:none;"></select></p>
-
             <p id="selected_subject" class="selected"><b class="label">$displayManager.getSingularDisplayNameForSubject(): </b> <span class="selected_label" title="$part_id"></span> <select id="part_id" name="part_id" style="display:none;"></select></p>
 
-            <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
-
             <script type="text/javascript">
-                function verifyExptId(obj){        };
-                window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-                window.ProjectSubjectManager.init();
-
-                jq(document).ready(function(){
-
-                    function selected_labeler(_this) {
-                        var _this_label = _this.find('option:selected').text();
-                        _this.find('.selected_label').text(_this_label);
-                    }
-
-                    window.proj_check = setInterval(function(){
-                        if(jq('#selected_project option:selected').length > 0){ //check if selected option is loaded
-                            selected_labeler(jq('#selected_project'));
-                            clearInterval(window.proj_check);
-                        }
-                    },100);
-
-                    window.subj_check = setInterval(function(){
-                        if(jq('#selected_subject option:selected').length > 0){ //check if selected option is loaded
-                            selected_labeler(jq('#selected_subject'));
-                            clearInterval(window.subj_check);
-                        }
-                    },100);
-
+                jq(function(){
+                    checkForProject();
+                    checkForSubject();
                 });
-
             </script>
 
         #elseif($project)
@@ -69,44 +78,16 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 
             <p><b class="label">$displayManager.getSingularDisplayNameForSubject(): </b> <select id="part_id" name="part_id"></select></p>
 
-            <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
-
             <script type="text/javascript">
-
-                function verifyExptId(obj){        };
-                window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-                window.ProjectSubjectManager.init();
-
-                jq(document).ready(function(){
-
-                    function selected_labeler(_this) {
-                        var _this_label = _this.find('option:selected').text();
-                        _this.find('.selected_label').text(_this_label);
-                    }
-
-                    window.proj_check = setInterval(function(){
-                        if(jq('#selected_project option:selected').length > 0){ //check if selected option is loaded
-                            selected_labeler(jq('#selected_project'));
-                            clearInterval(window.proj_check);
-                        }
-                    },100);
-
+                jq(function(){
+                    checkForProject();
                 });
-
             </script>
 
         #else
 
             <p><span class="label">$displayManager.getSingularDisplayNameForProject(): </span> <select disabled="disabled" id="project" name="project"></select></p>
             <p><span class="label">$displayManager.getSingularDisplayNameForSubject(): </span> <select disabled="disabled" id="part_id" name="part_id"></select></p>
-
-            <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
-
-            <script type="text/javascript">
-                function verifyExptId(obj){        };
-                window.ProjectSubjectManager = new ProjectSubjectSelector("project","part_id",null,"$!project","$!part_id");
-                window.ProjectSubjectManager.init();
-            </script>
 
         #end
 
@@ -131,7 +112,6 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
                 <div id="expt_list_filter">
                     <p><span class="label" style="display:inline;">Filter: </span>&nbsp;<input type="text" size="45" value="" /> &nbsp; <a id="filter_clear" class="btn2">clear</a> </p>
                 </div>
-
 
                 #set($dC=0)
 
@@ -168,7 +148,7 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
 
 <script type="text/javascript">
 
-jq(document).ready(function(){
+jq(function(){
 
     // //////////////////////////////////////////////// //
     // setting vars for this particular filter instance //

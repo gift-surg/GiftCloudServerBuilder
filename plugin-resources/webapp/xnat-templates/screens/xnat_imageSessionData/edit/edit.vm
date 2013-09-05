@@ -3,154 +3,201 @@
 #parse($turbineUtils.getTemplateName("validate.vm",$om.getXSIType(),$project,"edit"))
 <!-- BEGIN xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->
 <script type="text/javascript">
-var elementName="$!item.getXSIType()";
-window.currentID="$!om.getId()";
-  #if($om.getProject())
-   #if($om.getProject().equals(""))
-window.currentProject="$!project";
-   #else
-window.currentProject="$!om.getProject()";
-   #end
-  #else
-window.currentProject="$!project";
-  #end
-
-window.currentSubject="$!om.getSubjectId()";
-#if($om.getSubjectData())
-window.currentSubjectLabel="$!om.getSubjectData().getLabel()";
+    var elementName = "$!item.getXSIType()";
+    window.currentID = "$!om.getId()";
+#if($om.getProject())
+    #if($om.getProject().equals(""))
+    window.currentProject = "$!project";
+    #else
+    window.currentProject = "$!om.getProject()";
+    #end
+#else
+    window.currentProject = "$!project";
 #end
-
-window.currentLabel="$!om.getLabel()";
+    window.currentSubject = "$!om.getSubjectId()";
+#if($om.getSubjectData())
+    window.currentSubjectLabel = "$!om.getSubjectData().getLabel()";
+#end
+    window.currentLabel = "$!om.getLabel()";
 </script>
+
 <style>
-/* custom styles for inline instances */
-.yui-skin-sam .yui-ac-input { position:static;width:20em; vertical-align:middle;}
-.yui-skin-sam .yui-ac-container { width:20em;left:0;}
-/* buttons */
-.yui-ac .yui-button {vertical-align:middle;}
-.yui-ac .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-rt.png")) center center no-repeat }
-.yui-ac .open .yui-button button {background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat}
+    /* custom styles for inline instances */
+    .yui-skin-sam .yui-ac-input { position: static; width: 20em; vertical-align: middle; }
+    .yui-skin-sam .yui-ac-container { width: 20em; left: 0; }
+    /* buttons */
+    .yui-ac .yui-button { vertical-align: middle; }
+    .yui-ac .yui-button button { background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-rt.png")) center center no-repeat }
+    .yui-ac .open .yui-button button { background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat }
 </style>
+
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/autocomplete/autocomplete-min.js")"></script>
 
 $page.addAttribute("onLoad", "document.form1.month.focus();")
-  #set($datatype=$om.getXSIType())
+
+#set($datatype=$om.getXSIType())
+
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
+
 #set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 #set($days = [ 1..31 ])
 #set($years = [ $!turbineUtils.getYear()..1900])
+
+
 #if ($data.message)
-<br><br><div class="error">$data.message</div><br>
+<br><br>
+<div class="error">$data.message</div><br>
 #end
+
+
 #if ($turbineUtils.GetPassedParameter("popup",$data))
-  #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
+    #set ($popup = $turbineUtils.GetPassedParameter("popup",$data) )
 #else
-  #set ($popup = "false")
+    #set ($popup = "false")
 #end
+
+
 #if($vr)
 <div class="error">Invalid parameters:<br>$vr.toHTML()</div>
 <hr>
 #end
-<br>
-#if($target)
 
+<br>
+
+#if($target)
+## ???
 #else
-  #set($target=$link.setAction("EditImageSessionAction"))
+    #set($target=$link.setAction("EditImageSessionAction"))
 #end
+
+
 #if($allowDataDeletion)
 
 #else
-  #set($allowDataDeletion=true)
+    #set($allowDataDeletion=true)
 #end
+
+
 #set($formName="#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()")
-       <div class="edit_title">$formName</div><br>
+
+<div class="edit_title">$formName</div><br>
 <form method="post" action="$target?XNAT_CSRF=$!{XNAT_CSRF}" name="form1" id="form1" onsubmit="return validateForm();">
+
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
+
     #if($om.getId())
-                      #parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))
+        #parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))
     #else
-     <table>
-                      #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
-     </table>
-      #end
+        <table>
+            #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
+        </table>
+    #end
 
-#set($scanTypes = [])
-##parse("/screens/xnat_edit_subjectAssessorData.vm")
-<hr/>
-<table border="0" cellpadding=5>
-  <tr>
-       <th align="left">Date</th>
-      <td align="left">
-          #set ($expt_date = $!item.getDateProperty("${om.getXSIType()}.date"))
-        <select id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month">
-          <option value="bad">(SELECT)</option>
-          #foreach ($month in $months)
-                #set ($monthCount = $velocityCount - 1)
-                  <option value="$monthCount" #if ( $monthCount == $!expt_date.getMonth()) defaultSelected="true" selected="true" #end>
-              $month
-            </option>
-          #end
-        </select>
+    #set($scanTypes = [])
 
-        <select id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date">
-          <option value="bad">(SELECT)</option>
-          #foreach ($day in $days)
-                  <option value="$day" #if ( $day == $!expt_date.getDate() ) defaultSelected="true" selected="true" #end>$day</option>
-          #end
-        </select>
+## #parse("/screens/xnat_edit_subjectAssessorData.vm")
 
-#set($years = [ $!turbineUtils.getYear()..1990])
-      #set ($currentYear = $date.Year + 1900)
-      <select id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year" >
-        <option value="bad">(SELECT)</option>
-        #foreach ($year in $years)
-                <option value="$year" #if ( $year == $!expt_date.getYear() + 1900 ) defaultSelected="true" selected="true" #end>$year</option>
-        #end
-      </select>
-  </td></tr>
-  <tr><th align="left">Visit ID</th>
-    <td align="left">
-        #xdatTextBox("${datatype}.visit_id" $item "" $vr)
-    </td>
-  </tr>
-          #parse($turbineUtils.getTemplateName("_fields",$om.getXSIType(),$project,"upload"))
-</table>
+    <hr>
+
+    <table border="0" cellpadding=5>
+        <tr>
+            <th align="left">Date</th>
+            <td align="left">
+
+                #set ($expt_date = $!item.getDateProperty("${om.getXSIType()}.date"))
+
+                <select class="date month" id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month">
+                    <option value="bad">Month</option>
+                    #foreach ($month in $months)
+                        #set ($monthCount = $velocityCount - 1)
+                        <option value="$monthCount" #if ( $monthCount == $!expt_date.getMonth()) defaultSelected="true" selected="true" #end>
+                            $month
+                        </option>
+                    #end
+                </select>
+
+                <select class="date day" id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date">
+                    <option value="bad">Day</option>
+                    #foreach ($day in $days)
+                        <option value="$day" #if ( $day == $!expt_date.getDate() ) defaultSelected="true" selected="true" #end>$day</option>
+                    #end
+                </select>
+
+                #set($years = [ $!turbineUtils.getYear()..1990])
+                #set ($currentYear = $date.Year + 1900)
+
+                <select class="date year" id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year">
+                    <option value="bad">Year</option>
+                    #foreach ($year in $years)
+                        <option value="$year" #if ( $year == $!expt_date.getYear() + 1900 ) defaultSelected="true" selected="true" #end>$year</option>
+                    #end
+                </select>
+
+            </td>
+        </tr>
+        <tr>
+            <th align="left">Visit ID</th>
+            <td align="left">
+                #xdatTextBox("${datatype}.visit_id" $item "" $vr)
+            </td>
+        </tr>
+        #parse($turbineUtils.getTemplateName("_fields",$om.getXSIType(),$project,"upload"))
+    </table>
 
     #parse("/screens/EditProjectSpecificFields.vm")
-    <br>
-      <hr>
-                #parse($turbineUtils.getTemplateName("scans.vm",$om.getXSIType(),$project,"edit"))
-<br>
-      <hr>
-       <div class="edit_header1">Additional Notes</div><br>
-<table>
-  <tr>
-    #formLabel("Notes")
-    <td><textarea class='nullable' name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea></td>
-  </tr>
-</table><br><br><hr>
-#xdatEditProps($item $edit_screen)
 
-#if($isUpload)
-    #auditTable("Standard upload" "Uploaded Session")
-#else
-    #if($om.getId())
-    	#auditTable("" "Modified Session")
+    <br>
+    <hr>
+
+    #parse($turbineUtils.getTemplateName("scans.vm",$om.getXSIType(),$project,"edit"))
+
+    <br>
+    <hr>
+
+    <div class="edit_header1">Additional Notes</div>
+
+    <br>
+
+    <table>
+        <tr>
+            #formLabel("Notes")
+            <td>
+                <textarea class='nullable' name="${om.getXSIType()}.note" rows="4" cols="50" style="text-align:left;">$!notes</textarea>
+            </td>
+        </tr>
+    </table>
+
+    <br><br>
+    <hr>
+
+    #xdatEditProps($item $edit_screen)
+
+    #if($isUpload)
+        #auditTable("Standard upload" "Uploaded Session")
     #else
-    		#auditTable("Standard activity." "Created Session")
-		<script>YUIDOM.get('form_justification').style.display='none';</script>
+        #if($om.getId())
+            #auditTable("" "Modified Session")
+        #else
+            #auditTable("Standard activity." "Created Session")
+            <script>YUIDOM.get('form_justification').style.display = 'none';</script>
+        #end
     #end
-#end
-<input type="hidden" name="tag" value="$!tag"/>
-<div id="ADDIN"></div>
-	#if($src)
-	<input type="hidden" name="src" value="$!src"/>
-	<input type="hidden" name="redirect" value="true"/>
-	#end
-      <input type="button" onclick="javascript:history.go(-1)" value="Back"/>&nbsp;&nbsp;&nbsp;
-      <input type="submit" name="eventSubmit_doInsert" value="Submit"/>
-	  #addCustomScreens($om.getXSIType() "edit/preFormClose")
-  </form>
+
+    <input type="hidden" name="tag" value="$!tag"/>
+
+    <div id="ADDIN"></div>
+
+    #if($src)
+        <input type="hidden" name="src" value="$!src">
+        <input type="hidden" name="redirect" value="true">
+    #end
+
+    <input type="button" onclick="history.go(-1)" value="Back">&nbsp;&nbsp;&nbsp;
+    <input type="submit" name="eventSubmit_doInsert" value="Submit">
+
+    #addCustomScreens($om.getXSIType() "edit/preFormClose")
+
+</form>
 
 <!-- END xnat-templates/screens/xnat_imageSessionData/edit/edit.vm -->

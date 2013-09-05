@@ -14,6 +14,7 @@ import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.model.XnatInvestigatordataI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.XDATUser;
@@ -23,6 +24,7 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -32,6 +34,7 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +131,7 @@ public class ModifyProject extends SecureAction {
                 return;
 			}
             
-            
+            this.removeExcessInvestigators(project, user);
             SaveItemHelper.authorizedSave(item,user, false, false,c);
             
             XnatProjectdata postSave = new XnatProjectdata(item);
@@ -165,4 +168,35 @@ public class ModifyProject extends SecureAction {
         }
     }
 
+    /**
+     * Inelegant solution to the need to be able to remove investigators from a project.
+     * @param project
+     * @param user
+     * @throws Exception
+     */
+    private void removeExcessInvestigators(XnatProjectdata project, XDATUser user) throws Exception {
+        // get a List of investigators on the project to be saved
+        List<Integer> investigatorIds = new ArrayList<Integer>();
+        for (XnatInvestigatordataI investigator : project.getInvestigators_investigator()) {
+            if (investigator.getXnatInvestigatordataId() != null)
+                investigatorIds.add(investigator.getXnatInvestigatordataId());
+        }
+
+        // if there are investigators, we don't want to delete them, so create a statement to exclude them from the delete
+        String supplementaryClause = "";
+        if (!investigatorIds.isEmpty()) {
+            StringBuilder sb = null;
+            sb = new StringBuilder();
+            for (Integer investigatorId : investigatorIds) {
+                sb.append(investigatorId);
+                sb.append(",");
+            }
+            sb.deleteCharAt(sb.length()-1);  // remove final, unnecessary comma
+            supplementaryClause = " AND xnat_investigatordata_xnat_investigatordata_id NOT IN (" + sb.toString() + ")";
+        }
+        String query = "DELETE FROM xnat_projectdata_investigator WHERE xnat_projectdata_id = '" + project.getId() + "'" +
+                supplementaryClause + ";";
+        PoolDBUtils.ExecuteNonSelectQuery(query,user.getDBName(), user.getLogin());
+
+    }
 }

@@ -16,11 +16,19 @@
   folder of the XNAT web application. This requires a restart of the Tomcat server.
   -->
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" name="myCacheManager">
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" name="xnatCacheManager">
 
     <defaultCache maxElementsInMemory="10000"
                   eternal="false"
                   overflowToDisk="true"
+                  memoryStoreEvictionPolicy="LFU"/>
+
+    <cache        name="nrg"
+                  maxElementsInMemory="10000"
+                  maxEntriesLocalHeap="10000"
+                  eternal="false"
+                  overflowToDisk="true"
+                  maxEntriesLocalDisk="1000000"
                   memoryStoreEvictionPolicy="LFU"/>
 
 </ehcache>

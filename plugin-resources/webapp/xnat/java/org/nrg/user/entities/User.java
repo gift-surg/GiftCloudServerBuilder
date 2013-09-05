@@ -22,8 +22,10 @@ import javax.persistence.UniqueConstraint;
 @Auditable
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "xnat")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "nrg")
 public class User extends AbstractHibernateEntity {
+    private static final long serialVersionUID = -163628363303918602L;
+
     /**
      * @param name Sets the name property.
      */

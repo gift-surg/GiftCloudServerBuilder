@@ -111,7 +111,7 @@
         <property name="jobName" value="clear-expired-alias-tokens-trigger" />
         <property name="jobGroup" value="users-triggers"/>
         <property name="jobDetail" ref="clearExpiredAliasTokensJobBean" />
-        <property name="repeatInterval" value="60000" />
+        <property name="repeatInterval" value="3600000" />
     </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -124,9 +124,7 @@
                 <ref bean="resetEmailRequestsTrigger" />
             </list>
         </property>
-        <property name="applicationContextSchedulerContextKey">
-            <value>applicationContext</value>
-        </property>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
     </bean>
 
 </beans>

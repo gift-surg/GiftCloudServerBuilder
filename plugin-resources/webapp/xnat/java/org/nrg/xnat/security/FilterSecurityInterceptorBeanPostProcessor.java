@@ -27,13 +27,20 @@ import org.springframework.security.web.access.intercept.RequestKey;
 import org.springframework.security.web.util.AntUrlPathMatcher;
 import org.springframework.security.web.util.UrlMatcher;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProcessor {
     public void setOpenUrls(List<String> openUrls) {
-        _openUrls = openUrls;
+        _openUrls.clear();
+        _openUrls.addAll(openUrls);
+    }
+
+    public void setAdminUrls(List<String> adminUrls) {
+        _adminUrls.clear();
+        _adminUrls.addAll(adminUrls);
     }
 
     @Override
@@ -68,6 +75,14 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
             }
 
             map.put(new RequestKey(openUrl), SecurityConfig.createList(PERMIT_ALL));
+        }
+
+        for (String adminUrl : _adminUrls) {
+            if (_log.isDebugEnabled()) {
+                _log.debug("Setting permissions on the admin URL: " + adminUrl);
+            }
+
+            map.put(new RequestKey(adminUrl), SecurityConfig.createList(ADMIN_EXPRESSION));
         }
 
         final String nonopen = requiredLogin ? DEFAULT_EXPRESSION : PERMIT_ALL;
@@ -114,9 +129,11 @@ public class FilterSecurityInterceptorBeanPostProcessor implements BeanPostProce
     private static final Log _log = LogFactory.getLog(FilterSecurityInterceptorBeanPostProcessor.class);
     private static final String PERMIT_ALL = "permitAll";
     private static final String DEFAULT_PATTERN = "/**";
+    private static final String ADMIN_EXPRESSION = "hasRole('ROLE_ADMIN')";
     private static final String DEFAULT_EXPRESSION = "hasRole('ROLE_USER')";
 
     private static ArcArchivespecification _arcSpec;
 
-    private List<String> _openUrls;
+    private final List<String> _openUrls = new ArrayList<String>();
+    private final List<String> _adminUrls = new ArrayList<String>();
 }

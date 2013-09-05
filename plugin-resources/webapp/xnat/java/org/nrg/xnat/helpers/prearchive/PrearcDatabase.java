@@ -213,14 +213,17 @@ public final class PrearcDatabase {
                     // values (1, 2, 3) when the columns have actually moved. Start by checking table size. If that's
                     // off, we don't even need to check the ordering of the columns, since the column mismatch will
                     // cause ordering errors anyways.
-                    boolean ordered = true;
+                    boolean ordered;
                     if (required.size() == existing.size()) {
+                        ordered = true;
                         for (int index = 0; index < required.size(); index++) {
                             if (!required.get(index).equals(existing.get(index))) {
                                 ordered = false;
                                 break;
                             }
                         }
+                    } else {
+                        ordered = false;
                     }
 
                     // Now find out what the existing and required columns have in common. If the in-common columns list

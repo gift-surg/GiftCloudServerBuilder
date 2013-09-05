@@ -29,6 +29,8 @@
     .yui-ac .yui-button { vertical-align: middle; }
     .yui-ac .yui-button button { background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-rt.png")) center center no-repeat }
     .yui-ac .open .yui-button button { background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat }
+    #project_subject_form select { min-width: 150px ; }
+    #project_subject_form input[type="text"] { min-width: 145px ; }
 </style>
 
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/autocomplete/autocomplete-min.js")"></script>
@@ -82,6 +84,7 @@ $page.setVlinkColor($ui.vlink)
 #set($formName="#if($om.getId()) Modify #else Add New #end $om.getSchemaElement().getSingularDescription()")
 
 <div class="edit_title">$formName</div><br>
+
 <form method="post" action="$target?XNAT_CSRF=$!{XNAT_CSRF}" name="form1" id="form1" onsubmit="return validateForm();">
 
     <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
@@ -89,13 +92,18 @@ $page.setVlinkColor($ui.vlink)
     #if($om.getId())
         #parse($turbineUtils.getTemplateName("psl.vm",$om.getXSIType(),$project,"edit"))
     #else
-        <table>
-            #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
+
+        <table id="project_subject_form">
+
+        #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
+
         </table>
+
     #end
 
     #set($scanTypes = [])
 
+## old selector
 ## #parse("/screens/xnat_edit_subjectAssessorData.vm")
 
     <hr>

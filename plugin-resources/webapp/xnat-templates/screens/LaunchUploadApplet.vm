@@ -33,7 +33,10 @@
             </select></td>
             <td><a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a></td>
         </tr>
-      </table>
+
+            #addGlobalCustomScreens("projectSubjectForm")
+
+        </table>
  <div id="hideIfProtocol" >
  #if ($requireDate == "false")
    <input type="hidden" id="no_session_date" name="no_session_date" value="true"/>

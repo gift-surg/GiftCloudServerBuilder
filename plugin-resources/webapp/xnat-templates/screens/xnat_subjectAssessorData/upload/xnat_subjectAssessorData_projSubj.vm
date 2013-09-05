@@ -31,13 +31,10 @@
 
         <td>
             <select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id"></select>
+            #if(!$preventSubject)
+             &nbsp; <a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a>
+            #end
         </td>
-
-        #if(!$preventSubject)
-            <td>
-                <a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a>
-            </td>
-        #end
 
     #else
 
@@ -55,6 +52,11 @@
         <div style="color:red" id="subj_msg"></div>
     </td>
 </tr>
+
+
+#addGlobalCustomScreens("projectSubjectForm")
+
+
 <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
 
 #parse($turbineUtils.getTemplateName("_session.vm",$om.getXSIType(),$project,"upload"))

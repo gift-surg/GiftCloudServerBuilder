@@ -13,9 +13,12 @@ package org.nrg.xnat.restlet.services;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.status.StatusList;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.helpers.file.StoredFile;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.transactions.HTTPSessionStatusManagerQueue;
 import org.nrg.xnat.helpers.transactions.PersistentStatusQueueManagerI;
 import org.nrg.xnat.helpers.uri.URIManager;
@@ -118,7 +121,35 @@ public class Importer extends SecureResource {
 			loadQueryVariables();
 			
 			ImporterHandlerA importer;
-
+			
+			// Set the overwrite flag if we are uploading directly to the archive (prearchve_code = 1)
+			String prearchive_code = (String)params.get("prearchive_code");
+			if("1".equals(prearchive_code)){ // User has selected archive option
+				
+				// If the overwrite flag has been set by the user, make sure it is a valid option
+				if(params.containsKey("overwrite")){
+					String ow = (String)params.get("overwrite");
+					if(!PrearcUtils.DELETE.equalsIgnoreCase(ow) || !PrearcUtils.APPEND.equalsIgnoreCase(ow)){
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Overwrite flag was not set to a valid option. ('append' or 'delete')");
+						return;
+					}
+				// If the overwrite flag has not been set by the user, set the flag based on
+				// the project setting.
+				}else{
+					// Get the prearchive code for the project specified. 
+					XnatProjectdata proj = XnatProjectdata.getProjectByIDorAlias((String)params.get("project"), user, true);
+					PrearchiveCode pCode = PrearchiveCode.code(proj.getArcSpecification().getPrearchiveCode());
+				
+					// If the project is set to auto archive overwrite
+					if(pCode ==  PrearchiveCode.AutoArchiveOverwrite){
+						params.put("overwrite",PrearcUtils.DELETE);
+					}
+					else{ // If the project is set to append or prearchive-only. 
+						params.put("overwrite",PrearcUtils.APPEND);
+					}
+				}
+			}
+			
 			if(fw.size()==0 && handler != null && !handler.equals(ImporterHandlerA.BLANK_PREARCHIVE_ENTRY))
 			{
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");

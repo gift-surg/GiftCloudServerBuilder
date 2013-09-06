@@ -214,8 +214,10 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 			return true;
 		}
 		
-		if(isAutoArchive(session.getAdditionalValues())){
-			return setArchiveReason(session,true);
+		// If the user has specified auto-archive, override the project setting.
+		Boolean userArchiveSetting = isAutoArchive(session.getAdditionalValues());
+		if(null != userArchiveSetting){
+			return setArchiveReason(session,userArchiveSetting);
 		}
 						
 		final Integer code=ArcSpecManager.GetInstance().getPrearchiveCodeForProject(session.getProject());
@@ -238,19 +240,13 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
         return autoArchive;
 	}
 	
-    private static boolean isAutoArchive(final Map<String,Object> params){
+    private static Boolean isAutoArchive(final Map<String,Object> params){
         String aa = (String)params.get(RequestUtil.AA);
-
         if(aa==null){
             aa = (String)params.get(RequestUtil.AUTO_ARCHIVE);
         }
-
-
-        if(aa!=null && aa.toString().equalsIgnoreCase(RequestUtil.TRUE)){
-            return true;
-        }else{
-            return false;
-        }
+        
+        return (aa==null) ? null : Boolean.valueOf(aa.toString().equalsIgnoreCase(RequestUtil.TRUE));
     }
 
 	private static boolean isOverwriteFiles(final Map<String,Object> params){

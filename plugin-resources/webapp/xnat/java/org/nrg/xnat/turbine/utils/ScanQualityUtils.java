@@ -10,16 +10,30 @@
  */
 package org.nrg.xnat.turbine.utils;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.ConfigService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.security.UserI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public final class ScanQualityUtils {
+    private static final List<String> DEFAULT_LABELS = new ArrayList<String>();
+    static {
+        DEFAULT_LABELS.add("usable");
+        DEFAULT_LABELS.add("questionable");
+        DEFAULT_LABELS.add("unusable");
+    }
+
+    private static Logger _log = LoggerFactory.getLogger(ScanQualityUtils.class);
+
     private ScanQualityUtils() {}
 
     public static List<String> getQualityLabels(final String project, final UserI user) {
@@ -34,12 +48,17 @@ public final class ScanQualityUtils {
         final String configVal = configService.getConfigContents("scan-quality", "labels", projectId);
         if (Strings.isNullOrEmpty(configVal)) {
             if (Strings.isNullOrEmpty(project)) {
-                return Arrays.asList("usable", "questionable", "unusable");
+                try {
+                    XDAT.getConfigService().replaceConfig("admin", "Set default scan quality labels configuration", "scan-quality", "labels", true, Joiner.on(", ").join(DEFAULT_LABELS));
+                } catch (ConfigServiceException e) {
+                    _log.error("An error occurred trying to save the default scan quality labels", e);
+                }
+                return DEFAULT_LABELS;
             } else {
                 return getQualityLabels(null, user);    // try the site config
             }
         } else {
-            return Arrays.asList(configVal.trim().split(","));
+            return Arrays.asList(configVal.trim().split("\\s*,\\s*"));
         }
     }
 }

@@ -1,5 +1,4 @@
-## content from scans.css moved to xnat.css
-##<link type="text/css" rel="stylesheet" href="$content.getURI("style/scans.css")">
+<!-- BEGIN /xnat-templates/screens/xnat_mrSessionData/edit/scans.vm -->
 #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-addition","true")))
 <DIV class="edit_header1" style="margin-bottom:16px">Scans &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" value="Add Scan" onclick="addScan(this)"/>
@@ -116,3 +115,4 @@ XNAT.app.sTMod=$turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-ty
        
   window.scanSet.onLoad.fire();
 </script>
+<!-- END /xnat-templates/screens/xnat_mrSessionData/edit/scans.vm -->

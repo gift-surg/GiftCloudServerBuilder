@@ -1,9 +1,11 @@
 dynamicJSLoad("SAXDriver","xmlsax-min.js");
 dynamicJSLoad("SAXEventHandler","SAXEventHandler-min.js");
 
+window.scanQualityLabels = {};
+
 function setScanQualityOptions(sel,choices,offset,value){
     if(choices==undefined || choices.length==0){
-	choices=['usable','questionable','unusable'];
+	    choices=['usable','questionable','unusable'];
     }
     for(i=0;i<choices.length;i++){
 	var choice=choices[i];
@@ -18,29 +20,39 @@ function setScanQualityOptions(sel,choices,offset,value){
 }
 
 function populateScanQualitySelector(server,project,sel,offset,assigned) {
-    var url=server+'/REST/';
+    var choices = null;
+    if (!project && 'site' in window.scanQualityLabels) {
+        choices = window.scanQualityLabels['site'];
+    } else if (project in window.scanQualityLabels) {
+        choices = window.scanQualityLabels[project];
+    }
+    if (choices) {
+        setScanQualityOptions(sel, choices, offset, assigned);
+        return;
+    }
+
+    var url=server+'/data/services/scan-quality-labels';
     if (project){
-	url+='projects/'+project+'/config/scan-quality/labels';
-    } else {
-	url+='config/scan-quality/labels';
-    } 
+	    url+='/' + project;
+    }
     url+='?XNAT_CSRF='+window.csrfToken+'&format=json';
     YAHOO.util.Connect.asyncRequest('GET',url,
                                     {
-                                        success:function(resp){
-	                                    var rs=eval('('+resp.responseText+')');
-                                            var contents=rs['ResultSet']['Result'][0]['contents'];
-	                                    var choices=contents.replace(/^\s+|\s+$/g,'').split(',');
-	                                    setScanQualityOptions(sel,choices,offset,assigned);
+                                        success: function (resp) {
+                                            var rs = eval('(' + resp.responseText + ')');
+                                            var key = Object.keys(rs)[0];
+                                            var choices = rs[key];
+                                            window.scanQualityLabels[key] = choices;
+                                            setScanQualityOptions(sel, choices, offset, assigned);
                                         },
-                                        failure:function(resp){
+                                        failure: function () {
                                             if (project) {
-	                                        populateScanQualitySelector(server,undefined,sel,offset,assigned);
+                                                populateScanQualitySelector(server, undefined, sel, offset, assigned);
                                             } else {
-                                                setScanQualityOptions(sel,[],offset,assigned);
+                                                setScanQualityOptions(sel, [], offset, assigned);
                                             }
                                         },
-                                        cache : false
+                                        cache: false
                                     });
 }
 
@@ -253,9 +265,17 @@ function ScanEditor(_sessionID,_scanID,_options){
             td1.align = "left";
 
             var type_container = document.createElement('div');
-            if (!XNAT.app.sTMod && this.scan.extension.Type) {
+            var nominalType;
+            if (this.scan.extension.Type) {
+                nominalType = this.scan.extension.Type;
+            } else if (this.scan.extension.SeriesDescription) {
+                nominalType = this.scan.extension.SeriesDescription;
+            } else {
+                nominalType = false;
+            }
+            if (!XNAT.app.sTMod && nominalType) {
                 type_container.style.display = 'none';
-                td2.innerHTML = this.scan.extension.Type;
+                td2.innerHTML = nominalType;
             }
             td2.appendChild(type_container);
 
@@ -265,8 +285,8 @@ function ScanEditor(_sessionID,_scanID,_options){
             this.type_input.size = '20';
             this.type_input.style.width = "180px";
             this.type_input.name = modality + "/type";
-            if (this.scan.extension.Type) {
-                this.type_input.value = this.scan.extension.Type;
+            if (nominalType) {
+                this.type_input.value = nominalType;
             }
             type_container.appendChild(this.type_input);
 
@@ -839,6 +859,14 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				scanTypeTable[modality]++;
 			}
 
+            var nominalType;
+            if (scan.extension.Type) {
+                nominalType = scan.extension.Type;
+            } else if (scan.extension.SeriesDescription) {
+                nominalType = scan.extension.SeriesDescription;
+            } else {
+                nominalType = false;
+            }
 
 			tr = document.createElement("tr");
 
@@ -932,34 +960,32 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				//textbox
 				scan.type_input = document.createElement('input');
 				scan.type_input.type='text';
-				if(scan.extension.Type){
-					scan.type_input.value=scan.extension.Type;
-				}
+                scan.type_input.value = nominalType;
 			}else{
 				//select
 				scan.type_input = document.createElement('select');
 				scan.type_input.options[0]=new Option("(SELECT)","");
 
-				if(scan.extension.Type){
+                if(nominalType) {
 					var _stM=false;
-					for(var tC=0;tC<this.scanSet.options.types[modality].values.length;tC++){
-						if(this.scanSet.options.types[modality].values[tC].value==scan.extension.Type){
+                    for(var current = 0; current < this.scanSet.options.types[modality].values.length; current++) {
+                        if(this.scanSet.options.types[modality].values[current].value == nominalType) {
 							_stM=true;
 						}						
 					}
 					
 					if(!_stM){
-						var _tO=new Object();
-						_tO.value=scan.extension.Type;
-						_tO.display=scan.extension.Type;
+                        var _tO = {};
+                        _tO.value = nominalType;
+                        _tO.display = nominalType;
 						this.scanSet.options.types[modality].values.push(_tO);
 					}					
 				}
 				
 				for(var tC=0;tC<this.scanSet.options.types[modality].values.length;tC++){
 					var type=this.scanSet.options.types[modality].values[tC];
-					scan.type_input.options[scan.type_input.options.length]=new Option(type.value,type.display,(type.value==scan.extension.Type)?true:false,(type.value==scan.extension.Type)?true:false);
-					if(type.value==scan.extension.Type){
+                    scan.type_input.options[scan.type_input.options.length]=new Option(type.value,type.display, type.value == nominalType, type.value == nominalType);
+                    if (type.value==nominalType) {
 						scan.type_input.selectedIndex=(scan.type_input.options.length-1);
 					}
 				}
@@ -973,16 +999,16 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				scan.type_input.uri=this.scanSet.options.types[modality].uri;
 				scan.type_input.typeManager=this.scanSet.options.types[modality];
 
-				scan.type_input.onchange=function(obj){
+                scan.type_input.onchange = function () {
 					if(this.options[this.selectedIndex].text=="More"){
 						if(window.scan_types==undefined){
-							window.scan_types=new Object();
+                            window.scan_types={};
 						}
 						if(window.scan_types[this.modality]==undefined || window.scan_types[this.modality].values==undefined){
 							 this.initCallback={
 								success:function(obj){
-							  		if(window.scan_types==undefined)window.scan_types=new Object();
-									if(window.scan_types[this.modality]==undefined)window.scan_types[this.modality]=new Object();
+                                    if(window.scan_types==undefined)window.scan_types={};
+                                    if(window.scan_types[this.modality]==undefined)window.scan_types[this.modality]={};
 									window.scan_types[this.modality].values= eval("(" + obj.responseText +")").ResultSet.Result;
 									closeModalPanel("scan_type_loading");
 									this.populateAll();
@@ -990,7 +1016,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 								failure: function(obj){},
                                 cache:false, // Turn off caching for IE
 								scope:this
-							}
+                            };
 							openModalPanel("scan_type_loading","Loading Scan Types...");
 							YAHOO.util.Connect.asyncRequest('GET',this.uri +'&XNAT_CSRF=' + window.csrfToken + '&format=json',this.initCallback,null,this);
 						}else{
@@ -1002,9 +1028,9 @@ function scanListingEditor(_tbody,_scanSet,_options){
 						creator.modality=this.modality;
 						creator.onResponse.subscribe(function(obj1,obj2){
 							var new_type=this.new_scan_type;
-							if(window.scan_types==undefined)window.scan_types=new Object();
-							if(window.scan_types[this.modality]==undefined)window.scan_types[this.modality]=new Object();
-							if(window.scan_types[this.modality].custom==undefined)window.scan_types[this.modality].custom=new Array();
+                            if(window.scan_types==undefined)window.scan_types={};
+                            if(window.scan_types[this.modality]==undefined)window.scan_types[this.modality]={};
+                            if(window.scan_types[this.modality].custom==undefined)window.scan_types[this.modality].custom=[];
 							window.scan_types[this.modality].custom.push(new_type);
 							this.select.populateAll(null,new_type);
 						},creator,true);
@@ -1051,9 +1077,8 @@ function scanListingEditor(_tbody,_scanSet,_options){
                         scan.type_input.id=elementName + scanXPath(modality, scanTypeTable) + "/type";
                         scan.type_input.name=elementName +scanXPath(modality, scanTypeTable) + "/type";
 
-
-			if(!XNAT.app.sTMod && scan.extension.Type){ 
-				td.innerHTML=scan.extension.Type;
+            if(!XNAT.app.sTMod && nominalType){
+                td.innerHTML=nominalType;
 				var d=td.appendChild(document.createElement("div"));
 				d.appendChild(scan.type_input);
 				d.style.display='none';

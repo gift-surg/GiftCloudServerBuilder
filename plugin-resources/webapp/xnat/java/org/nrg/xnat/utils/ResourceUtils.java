@@ -37,13 +37,17 @@ public class ResourceUtils {
 	
 	/**
 	 * Refresh values in resource catalog 
-	 * @param resource
-	 * @param projectPath
-	 * @param checksums
-	 * @param removeMissingFiles
-	 * @param addUnreferencedFiles
-	 * @param user
-	 * @param now
+     * @param resource                The resource to be updated. In spite of the name, this will also work with
+     *                                {@link XnatAbstractresource} objects as well, populating the persisted file
+     *                                statistics from the actual data on disk.
+     * @param projectPath             The location of the archive path for the project to be refreshed.
+     * @param checksums               Indicates whether checksums should be calculated for catalog refresh operations.
+     * @param removeMissingFiles      Indicates whether catalog entries for files that no longer exist should be
+     *                                removed.
+     * @param addUnreferencedFiles    Indicates whether entries should be added for files that are in the archive but
+     *                                are not already in the catalog.
+     * @param user                    The user who requested the refresh operation.
+	 * @param now                     Event metadata for the operation.
 	 * @return true if the catalog was modified
 	 * @throws Exception Failures stem from the save operation.
 	 */
@@ -73,27 +77,34 @@ public class ResourceUtils {
 				
 				// popuplate (or repopulate) the file stats --- THIS SHOULD BE DONE AFTER modifications to the catalog xml
 	            if (populateStats || modified) {
-	                CatalogUtils.populateStats(resource, projectPath);
-	                if(resource.save(user, false, false, now)){
-	                	modified=true;
-	                }
+	                if (CatalogUtils.populateStats(resource, projectPath) || modified) {
+                        if(resource.save(user, false, false, now)) {
+                            modified = true;
+                        }
+                    }
 	            }
 	            
 	            return modified;
 			}
-		}
+		} else if (populateStats) {
+            if (CatalogUtils.populateStats(resource, projectPath)) {
+                return resource.save(user, false, false, now);
+            }
+        }
 		
 		return false;
 	}
 	
 	/**
 	 * Refresh all of the catalogs for a given archivable item.
-	 * @param resourceURI
-	 * @param user
-	 * @param details
-	 * @param checksums
-	 * @param removeMissingFiles
-	 * @param addUnreferencedFiles
+	 * @param resourceURI             The URI of the resource to be refreshed.
+	 * @param user                    The user who requested the refresh operation.
+	 * @param details                 Any details about the refresh to be added to the workflow.
+	 * @param checksums               Indicates whether checksums should be calculated for catalog refresh operations.
+	 * @param removeMissingFiles      Indicates whether catalog entries for files that no longer exist should be
+     *                                removed.
+	 * @param addUnreferencedFiles    Indicates whether entries should be added for files that are in the archive but
+     *                                are not already in the catalog.
 	 * @throws ActionException
 	 */
 	public static void refreshResourceCatalog(final ArchiveItemURI resourceURI,final XDATUser user,final EventDetails details, final boolean populateStats, boolean checksums, boolean removeMissingFiles, boolean addUnreferencedFiles) throws ActionException{
@@ -124,6 +135,5 @@ public class ResourceUtils {
 		} catch (Exception e) {
 			throw new ServerException(e);
 		}
-		
 	}
 }

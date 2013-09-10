@@ -572,6 +572,8 @@
 				</xs:sequence>
 				<xs:attribute name="closed" type="xs:boolean" use="optional"/>
 				<xs:attribute name="terminal" type="xs:boolean" use="optional"/>
+                <xs:attribute name="protocolVersion" type="xs:integer" use="optional"/>
+                <xs:attribute name="protocolName" type="xs:string" use="optional"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

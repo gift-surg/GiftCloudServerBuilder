@@ -56,6 +56,16 @@ function populateScanQualitySelector(server,project,sel,offset,assigned) {
                                     });
 }
 
+function getNominalType(scan) {
+    if (scan.extension.Type) {
+        return scan.extension.Type;
+    } else if (scan.extension.SeriesDescription) {
+        return scan.extension.SeriesDescription;
+    } else {
+        return "Unknown";
+    }
+}
+
 function scanInit(_options){
   	this.options=_options;
     this.onResponse=new YAHOO.util.CustomEvent("response",this);
@@ -265,14 +275,7 @@ function ScanEditor(_sessionID,_scanID,_options){
             td1.align = "left";
 
             var type_container = document.createElement('div');
-            var nominalType;
-            if (this.scan.extension.Type) {
-                nominalType = this.scan.extension.Type;
-            } else if (this.scan.extension.SeriesDescription) {
-                nominalType = this.scan.extension.SeriesDescription;
-            } else {
-                nominalType = false;
-            }
+            var nominalType = getNominalType(this.scan);
             if (!XNAT.app.sTMod && nominalType) {
                 type_container.style.display = 'none';
                 td2.innerHTML = nominalType;
@@ -859,14 +862,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				scanTypeTable[modality]++;
 			}
 
-            var nominalType;
-            if (scan.extension.Type) {
-                nominalType = scan.extension.Type;
-            } else if (scan.extension.SeriesDescription) {
-                nominalType = scan.extension.SeriesDescription;
-            } else {
-                nominalType = false;
-            }
+            var nominalType = getNominalType(scan);
 
 			tr = document.createElement("tr");
 

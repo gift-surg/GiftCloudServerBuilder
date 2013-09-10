@@ -138,7 +138,7 @@ UPDRS3
 #parse("/screens/xnat_experimentData_shareDisplay.vm")
 		</td>
 		<td valign="top">
-#elementActionsBox($element $search_field $search_value $data.getSession().getAttribute("user") $item)
+#parse($turbineUtils.getTemplateName("actions", $om.getXSIType(), $project))
 		</td>
 	</tr>
 </table>

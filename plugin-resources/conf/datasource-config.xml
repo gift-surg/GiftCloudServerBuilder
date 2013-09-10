@@ -7,6 +7,6 @@
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         p:driverClassName="${datasource.driver}" p:url="${datasource.url}"
         p:username="${datasource.username}" p:password="${datasource.password}"
-        p:initialSize="10" p:maxActive="20" p:maxIdle="10" p:validationQuery="SELECT 1 FROM arc_archivespecification"/>
+        p:initialSize="10" p:maxActive="20" p:maxIdle="10" p:validationQuery="SELECT 1"/>
         
 </beans>

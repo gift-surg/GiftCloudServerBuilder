@@ -2593,7 +2593,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         // Use the TreeMap so that the keys are sorted
         Map<String, List<Long>> accumulator = new TreeMap<String, List<Long>>();
         int count = 0;
-        long totalSize = 0;
+        long size = 0;
         for (XnatImagescandataI scan : this.getSortedScans()){
             for (XnatAbstractresourceI resource : scan.getFile()) {
                 String fileLabel = resource.getLabel();

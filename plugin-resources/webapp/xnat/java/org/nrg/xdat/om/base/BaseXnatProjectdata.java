@@ -927,21 +927,30 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	        }
     		}
 
+SchemaElement root=SchemaElement.GetElement(elementName);
+            
             if (elementName.equals("xnat:subjectData")){
                 for(String xsiType:this.getExperimentCountByXSIType().keySet()){
                     try {
                         final GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
                         if (e.instanceOf("xnat:subjectAssessorData"))
                         {
-                            XdatSearchField xsf = new XdatSearchField(user);
-                            xsf.setElementName("xnat:subjectData");
-                            xsf.setFieldId("SUB_EXPT_COUNT=" + xsiType);
-
-                            xsf.setHeader(ElementSecurity.GetPluralDescription(xsiType));
-                            xsf.setType("integer");
-                            xsf.setSequence(xss.getSearchField().size());
-                            xsf.setValue(xsiType);
-                            xss.setSearchField(xsf);
+                        	SchemaElement se=SchemaElement.GetElement(xsiType);
+                        	if(se!=null){
+                        		//generate a project specific count column
+                        		DisplayField df = root.getSQLQueryField("CNT_"+se.getSQLName().toUpperCase(), ElementSecurity.GetPluralDescription(xsiType), true, false, "integer", "sub_project_count", "SELECT COUNT(*) as sub_project_count, subject_id FROM xnat_subjectAssessorData sad LEFT JOIN xnat_experimentData ex ON sad.ID=ex.ID LEFT JOIN xnat_experimentData_meta_data inf ON ex.experimentData_info=inf.meta_data_id JOIN xdat_meta_element xme ON ex.extension=xme.xdat_meta_element_id LEFT JOIN xnat_experimentdata_share sp ON ex.id=sp.sharing_share_xnat_experimentda_id AND sp.project='@WHERE' WHERE xme.element_name='" +xsiType+"' AND (ex.project='@WHERE' OR sp.project='@WHERE') AND (inf.status = 'active' OR inf.status = 'locked' OR inf.status = 'quarantine') GROUP BY subject_id", "xnat:subjectData.ID", "subject_id");
+                            	
+                                XdatSearchField xsf = new XdatSearchField(user);
+                                xsf.setElementName("xnat:subjectData");
+                                
+                                xsf.setFieldId(df.getId() +"=" + this.getId());
+                                xsf.setHeader(ElementSecurity.GetPluralDescription(xsiType));
+                                xsf.setValue(this.getId());
+                                
+                                xsf.setType("integer");
+                                xsf.setSequence(xss.getSearchField().size());
+                                xss.setSearchField(xsf);
+                        	}
                         }
                     } catch (XFTInitException e) {
                         logger.error("",e);
@@ -953,47 +962,28 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
                 }
             }
 
-            if (elementName.equals("xnat:mrSessionData")){
+            if(root.getGenericXFTElement().instanceOf("xnat:imageSessionData")){
                 for(String xsiType:this.getExperimentCountByXSIType().keySet()){
                     try {
                         final GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
-                        if (e.instanceOf("xnat:mrAssessorData"))
+                        if (e.instanceOf("xnat:imageAssessorData"))
                         {
-                            XdatSearchField xsf = new XdatSearchField(user);
-                            xsf.setElementName("xnat:mrSessionData");
-                            xsf.setFieldId("MR_EXPT_COUNT=" + xsiType);
-
-                            xsf.setHeader(ElementSecurity.GetPluralDescription(xsiType));
-                            xsf.setType("integer");
-                            xsf.setSequence(xss.getSearchField().size());
-                            xsf.setValue(xsiType);
-                            xss.setSearchField(xsf);
-                        }
-                    } catch (XFTInitException e) {
-                        logger.error("",e);
-                    } catch (ElementNotFoundException e) {
-                        logger.error("",e);
-                    } catch (Exception e) {
-                        logger.error("",e);
-                    }
-                }
-            }
-
-            if (elementName.equals("xnat:petSessionData")){
-                for(String xsiType:this.getExperimentCountByXSIType().keySet()){
-                    try {
-                        final GenericWrapperElement e = GenericWrapperElement.GetElement(xsiType);
-                        if (e.instanceOf("xnat:petAssessorData"))
-                        {
-                            XdatSearchField xsf = new XdatSearchField(user);
-                            xsf.setElementName("xnat:petSessionData");
-                            xsf.setFieldId("PET_EXPT_COUNT=" + xsiType);
-
-                            xsf.setHeader(ElementSecurity.GetPluralDescription(xsiType));
-                            xsf.setType("integer");
-                            xsf.setSequence(xss.getSearchField().size());
-                            xsf.setValue(xsiType);
-                            xss.setSearchField(xsf);
+                        	SchemaElement se=SchemaElement.GetElement(xsiType);
+                        	if(se!=null){
+                        		//generate a project specific count column
+                        		DisplayField df = root.getSQLQueryField("CNT_"+se.getSQLName().toUpperCase(), ElementSecurity.GetPluralDescription(xsiType), true, false, "integer", "mr_project_count", "SELECT COUNT(*) as mr_project_count, imagesession_id FROM xnat_imageAssessorData iad LEFT JOIN xnat_experimentData ex ON iad.ID=ex.ID LEFT JOIN xnat_experimentData_meta_data inf ON ex.experimentData_info=inf.meta_data_id JOIN xdat_meta_element xme ON ex.extension=xme.xdat_meta_element_id LEFT JOIN xnat_experimentdata_share sp ON ex.id=sp.sharing_share_xnat_experimentda_id AND sp.project='@WHERE' WHERE xme.element_name='" +xsiType+"' AND (ex.project='@WHERE' OR sp.project='@WHERE') AND (inf.status = 'active' OR inf.status = 'locked' OR inf.status = 'quarantine') GROUP BY imagesession_id", elementName+".ID", "imagesession_id");
+                            	
+                                XdatSearchField xsf = new XdatSearchField(user);
+	                            xsf.setElementName(elementName);
+	                            
+	                            xsf.setFieldId(df.getId() +"=" + this.getId());
+	                            xsf.setHeader(ElementSecurity.GetPluralDescription(xsiType));
+	                            xsf.setValue(this.getId());
+	                            
+	                            xsf.setType("integer");
+	                            xsf.setSequence(xss.getSearchField().size());
+	                            xss.setSearchField(xsf);
+                        	}
                         }
                     } catch (XFTInitException e) {
                         logger.error("",e);

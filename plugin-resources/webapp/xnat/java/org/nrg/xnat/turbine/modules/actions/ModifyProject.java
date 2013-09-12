@@ -148,8 +148,7 @@ public class ModifyProject extends SecureAction {
                 accessibility="protected";
             }
             
-            if (!accessibility.equals("private"))
-                project.initAccessibility(accessibility, true,user,c);
+            project.initAccessibility(accessibility, true,user,c);
             
            // p.initBundles((XDATUser)user);
             

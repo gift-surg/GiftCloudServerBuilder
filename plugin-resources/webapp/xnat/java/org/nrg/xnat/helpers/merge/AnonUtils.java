@@ -46,13 +46,13 @@ public class AnonUtils {
             logger.debug("Retrieving script for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, path, project });
         }
 
-        return AnonUtils.getService()._configService.getConfig(DicomEdit.ToolName,
+        return _configService.getConfig(DicomEdit.ToolName,
 													 path,
 												     project);
 	}
 	
 	public boolean isEnabled(String path, Long project) {
-        Configuration config = AnonUtils.getService()._configService.getConfig(DicomEdit.ToolName,
+        Configuration config = _configService.getConfig(DicomEdit.ToolName,
 													 path,
 													 project);
         final boolean enabled = config.getStatus().equals(Configuration.ENABLED_STRING);
@@ -64,7 +64,7 @@ public class AnonUtils {
 	}
 	
 	public List<Configuration> getAllScripts (Long project) {
-        List<Configuration> scripts = AnonUtils.getService()._configService.getConfigsByTool(DicomEdit.ToolName, project);
+        List<Configuration> scripts = _configService.getConfigsByTool(DicomEdit.ToolName, project);
         if (logger.isDebugEnabled()) {
             if (scripts == null) {
                 logger.debug("Retrieved no scripts for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, project });
@@ -82,7 +82,7 @@ public class AnonUtils {
         if (logger.isDebugEnabled()) {
             logger.debug("Setting script for {}, {} for project: {}", new Object[] { DicomEdit.ToolName, path, project });
         }
-        AnonUtils.getService()._configService.replaceConfig(login,
+        _configService.replaceConfig(login,
 							 	  "", 	
 							 	  DicomEdit.ToolName, 
 							 	  path, 
@@ -91,27 +91,27 @@ public class AnonUtils {
 	}
 	
 	public void setSiteWideScript(String login, String path, String script) throws ConfigServiceException {
-        AnonUtils.getService()._configService.replaceConfig(login,
+        _configService.replaceConfig(login,
 			 	  				  "", 	
 			 	  				  DicomEdit.ToolName, 
 			 	  				  path, 
 			 	  				  script);
 	}
 	
-	public void enableSiteWide (String login, String path ) {
-        AnonUtils.getService()._configService.enable(login, "", DicomEdit.ToolName, path);
+	public void enableSiteWide (String login, String path ) throws ConfigServiceException {
+        _configService.enable(login, "", DicomEdit.ToolName, path);
 	}
 	
-	public void enableProjectSpecific(String login, String path, Long project) {
-        AnonUtils.getService()._configService.enable(login, "", DicomEdit.ToolName, path, project);
+	public void enableProjectSpecific(String login, String path, Long project) throws ConfigServiceException {
+        _configService.enable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
-	public void disableSiteWide(String login, String path) {
-        AnonUtils.getService()._configService.disable(login, "", DicomEdit.ToolName, path);
+	public void disableSiteWide(String login, String path) throws ConfigServiceException {
+        _configService.disable(login, "", DicomEdit.ToolName, path);
 	}
 	
-	public void disableProjectSpecific(String login, String path, Long project){
-        AnonUtils.getService()._configService.disable(login, "", DicomEdit.ToolName, path, project);
+	public void disableProjectSpecific(String login, String path, Long project) throws ConfigServiceException {
+        _configService.disable(login, "", DicomEdit.ToolName, path, project);
 	}
 	
 	public static File getDefaultScript () throws FileNotFoundException {

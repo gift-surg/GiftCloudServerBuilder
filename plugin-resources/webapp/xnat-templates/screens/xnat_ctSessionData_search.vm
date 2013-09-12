@@ -32,13 +32,14 @@
 			#xdatSearchField($schemaElement $schemaElement.getDisplayField("GEN_AGE"))
 		</TD>
 		
-  #set($ct_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
+  #set($mr_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
 					<TD>$displayManager.getSingularDisplayNameForProject()</TD>
   		<TD ROWSPAN="2">
+			<input type="hidden" name="${schemaElement.getFullXMLName()}.COMBO2_FIELDS" value="${schemaElement.getFullXMLName()}.PROJECT_equals,${schemaElement.getFullXMLName()}.sharing.share.project_equals"/>
   				#set($TYPE_value=$!search.getWebFormValue("${schemaElement.getFullXMLName()}.PROJECTS_equals"))
-  			<select name="${schemaElement.getFullXMLName()}.PROJECTS_equals" MULTIPLE SIZE="6">
-				  #foreach($ct_project in $ct_projects)
-	    		<option value="/<$ct_project>" #if($TYPE_value.indexOf("<$ct_project>")!=-1) SELECTED #end>$ct_project</option>
+  			<select name="${schemaElement.getFullXMLName()}.COMBO2" MULTIPLE SIZE="6">
+				  #foreach($mr_project in $mr_projects)
+	    		<option value="'$mr_project'" #if($TYPE_value.indexOf("'$mr_project'")!=-1) SELECTED #end>$mr_project</option>
 				  #end
 </select>
 		</TD>

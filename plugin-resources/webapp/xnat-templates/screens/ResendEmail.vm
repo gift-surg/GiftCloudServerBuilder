@@ -21,6 +21,8 @@ function requestVerificationEmail(){
       xModalLoadingClose();
       if(o.status === 503){
          xModalMessage('Error','You have exceeded the allowed number of email requests. Please try again later.','OK', msgOptions);
+      }else if(o.status === 400){
+         xModalMessage('Error','Unknown email address.','OK', msgOptions);
       }else{
          xModalMessage('Error','An unexpected error has occured. Please contact your administrator.','OK', msgOptions);
       }

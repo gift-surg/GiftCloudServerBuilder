@@ -13,8 +13,10 @@ package org.nrg.xnat.restlet.extensions;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.nrg.mail.services.EmailRequestLogService;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.om.XdatUser;
 import org.nrg.xdat.turbine.utils.AdminUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xnat.restlet.XnatRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -27,6 +29,7 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 import java.util.Date;
+import java.util.Iterator;
 
 @XnatRestlet(value = {"/services/sendEmailVerification"}, secure = false)
 public class SendEmailVerification extends Resource {
@@ -48,12 +51,22 @@ public class SendEmailVerification extends Resource {
        if((email != null) && (!email.equals(""))){ 
           try{
              if (requests.isEmailBlocked(email)){ 
-                throw new Exception("Exceeded maximum number of email requests."); 
+                // If the user has exceeded the maximum number of requests.
+                throw new ExceededRequestsException("Exceeded maximum number of email requests."); 
              }
+             
+             // Send email and log request.
              AdminUtils.sendNewUserVerificationEmail(getXDATUser(StringEscapeUtils.escapeSql(email)));
              requests.logEmailRequest(email, new Date ());
-          } catch(Exception e) { 
-            this.getResponse().setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, "Unable to send Verification Email.");
+          }
+          catch(ExceededRequestsException e){
+             this.getResponse().setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, e.getMessage());
+          }
+          catch(EmailNotFoundException e){
+             this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch(Exception e) { 
+             this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to send Verification Email.");
           }
        }
     }
@@ -63,6 +76,20 @@ public class SendEmailVerification extends Resource {
        search.setAllowMultiples(false);
        search.setElement("xdat:user");
        search.addCriteria("xdat:user.email",email);
-       return search.exec().getFirst();
+       ItemI usr = search.exec().first();
+       
+       // If no user could be found throw EmailNotFoundException
+       if(null == usr){ throw new EmailNotFoundException("No Such Email Exists."); }
+       
+       // Otherwise return the first user in the list.
+       return usr;
+    }
+    
+    public class ExceededRequestsException extends Exception{
+       public ExceededRequestsException(String msg){ super(msg); }
+    }
+    
+    public class EmailNotFoundException extends Exception {
+    	public EmailNotFoundException(String msg){ super(msg); }
     }
 }

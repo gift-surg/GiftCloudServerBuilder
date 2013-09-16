@@ -147,6 +147,18 @@ function TabManager(_id){
         this.selector.options[0] = new Option("Add Tab", "");
 
         var optionCount = 1;
+
+        // alphabetical sort function used to sort the "AddTab" dropdown list.
+        function alphabeticalsort(a,b){
+            var z = 0;
+            if (a.label < b.label){ z = -1; }
+            if (a.label > b.label){ z = 1; }
+            if (a.label == b.label){ z = 0; }
+            return (z);
+        }
+        // Sort the list
+        this.stored_searches.sort(alphabeticalsort);
+
         for (var selectCounter = 0; selectCounter < this.stored_searches.length; selectCounter++) {
             if (!this.isLoaded(this.stored_searches[selectCounter].ID)) {
                 this.selector.options[optionCount++] = new Option(this.stored_searches[selectCounter].label, this.stored_searches[selectCounter].ID);

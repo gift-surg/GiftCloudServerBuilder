@@ -87,27 +87,30 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
                         final SessionData sessionData = session.getSessionData();
                         if (sessionData != null) {
                             PrearchiveCode code = sessionData.getAutoArchive();
-                        switch (code) {
-                            case Manual:
-                                delete = false;
-                                append = false;
-                                break;
-                            case AutoArchive:
-                                delete = false;
-                                append = true;
-                                break;
-                            case AutoArchiveOverwrite:
-                                delete = false;
-                                append = true;
-                                //theoretically we could also set overwrite_files to true here.  But, that is handled by the isOverwriteFiles method which allows for other methods of specifying the value
-                                break;
+                            if(code!=null){
+		                        switch (code) {
+		                            case Manual:
+		                                delete = false;
+		                                append = false;
+		                                break;
+		                            case AutoArchive:
+		                                delete = false;
+		                                append = true;
+		                                break;
+		                            case AutoArchiveOverwrite:
+		                                delete = false;
+		                                append = true;
+		                                //theoretically we could also set overwrite_files to true here.  But, that is handled by the isOverwriteFiles method which allows for other methods of specifying the value
+		                                break;
+	                            }
                             }
                         }
 						return PrearcDatabase.archive(session, delete, append, isOverwriteFiles(session,destination), user, getListeners());
 					}else{
 						throw new ServerException("Unable to lock session for archiving.");
 					}
-				}}
+				}
+			}
 			else{
 				populateAdditionalFields(session.getSessionDir());
 				return session.getUrl();

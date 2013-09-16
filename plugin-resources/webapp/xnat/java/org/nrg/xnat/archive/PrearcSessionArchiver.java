@@ -10,19 +10,34 @@
  */
 package org.nrg.xnat.archive;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.dcm.SOPModel;
 import org.nrg.framework.utilities.Reflection;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.om.*;
+import org.nrg.xdat.om.WrkWorkflowdata;
+import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
+import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -37,8 +52,10 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.archive.PrearcSessionArchiver.PostArchiveAction;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
@@ -55,14 +72,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.Lists;
 
 public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
 
@@ -100,6 +111,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
 	private final boolean waitFor;
 	
+	private boolean needsScanIdCorrection=false;
 
 	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
 		super(src.getPrearchivePath());
@@ -225,7 +237,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 		if(!XNATUtils.hasValue(subjectID)){
 			subjectID = (String)params.get(URIManager.SUBJECT_ID);
-			}
+		}
 
 		if(!XNATUtils.hasValue(subjectID)){
 			subjectID = src.getSubjectId();
@@ -334,12 +346,13 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	 * @param prearcSessionPath path of session directory in prearchive
 	 */
 	protected void updatePrearchiveSessionXML(final String prearcSessionPath, final XnatImagesessiondata newSession) {
+		
 		final File prearcSessionDir = new File(prearcSessionPath);
 		try {
 			final FileWriter prearcXML = new FileWriter(prearcSessionDir.getPath() + ".xml");
 			try {
 				logger.debug("Preparing to update prearchive XML for {}", newSession);
-				newSession.toXML(prearcXML, false);
+				((XFTItem)newSession.getItem().clone()).toXML(prearcXML, false);
 			} catch (RuntimeException e) {
 				logger.error("unable to update prearchive session XML", e);
 				warning("updated prearchive session XML could not be written: " + e.getMessage());
@@ -349,6 +362,8 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			} finally {
 				prearcXML.close();
 			}
+			
+			
 		} catch (FileNotFoundException e) {
 			logger.error("unable to update prearchive session XML", e);
 			warning("prearchive session XML not found, cannot update");
@@ -431,7 +446,11 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same UID and number.", new Exception());
 						}
 					}else if(StringUtils.isNotEmpty(match.getUid())){
-						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID. - Operation not supported", new Exception());
+						if(!overwrite){
+							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID. - Operation not supported", new Exception());
+						}else{
+							needsScanIdCorrection=true;
+						}
 					}
 				}
 				
@@ -449,6 +468,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 	/*
 	 * (non-Javadoc)
+	 * @see java.util.concurrent.Callable#call()
+	 */
+	/* (non-Javadoc)
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public String call()  throws ClientException,ServerException {
@@ -528,6 +550,10 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 					shouldForceQuarantine=true;
 				}else{
 					shouldForceQuarantine=false;
+				}
+				
+				if(needsScanIdCorrection){
+					correctScanID(existing);
 				}
 
 				final EventMetaI savetime=workflow.buildEvent();
@@ -646,6 +672,107 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		completed("archiving operation complete");
 		return url;
 
+	}
+
+	/**
+	 * Method to compare new scans to existing scans.  Matching scan IDs (with different UIDs) will have a _1 added to them.
+	 * @param existing
+	 * @throws ServerException 
+	 */
+	private void correctScanID(XnatImagesessiondata existing) throws ServerException {
+		for(final XnatImagescandataI newScan : src.getScans_scan()){
+			//find matching scan by UID
+			final XnatImagescandataI match2=MergeUtils.getMatchingScanByUID(newScan, existing.getScans_scan());//match by UID
+			if(match2!=null){
+				if(!StringUtils.equals(match2.getId(),newScan.getId())){
+					//this UID has been mapped to a different scan ID
+					//update the prearc session to match
+					processing("Renaming scan " + newScan.getId() +" to " + match2.getId() +" due to UID match.");
+					moveScan(newScan, match2.getId());
+				}
+				//scan with matching UID is done (whether their ID's matched or not)
+				continue;
+			}
+			
+			//build modality code via parsing of the xsi:type.  modality code matches first 2 characters after the : for xnat types.  Otherwise, leave it empty.
+			//this is a bit of a hack.  It would be better to have an official mapping
+			String modalityCode=(newScan.getXSIType().startsWith("xnat:"))?newScan.getXSIType().substring(5, 7).toUpperCase():"";
+			if("PE".equals(modalityCode)){
+				modalityCode="PT";//this works for everything but PET, which gets called PE instead of PT, so we correct it.
+			}
+			
+			String scan_id=newScan.getId();
+			int count=1;
+			boolean needsMove=false;
+			//make sure there aren't any matches by ID.  if there aren't needsMove stays false.  And, it identifies a good scan_id to use in the process.
+			while(MergeUtils.getMatchingScanById(scan_id, existing.getScans_scan())!=null){
+				scan_id=newScan.getId()+"-"+ modalityCode +count++;
+				needsMove=true;
+			}
+			
+			if(needsMove){
+				//the scan id conflicted with a pre-existing one, so we have to rename this one.
+				processing("Renaming scan " + newScan.getId() +" to " + scan_id +" due to ID conflict.");
+				moveScan(newScan,scan_id);
+			}
+		}
+	}
+
+	/**
+	 * Used to move a scan to a different scan ID within the prearchive, prior to transfer
+	 * @param newScan
+	 * @param scan_id
+	 * @throws ServerException 
+	 */
+	private void moveScan(XnatImagescandataI newScan, String scan_id) throws ServerException {
+		/******
+		 * SCANS\1\scan_1_catalog.xml
+		 */
+		final String oldScanCatalogPath=((XnatResourcecatalog)newScan.getFile().get(0)).getUri();
+		final File catalog=new File(src.getPrearchivepath(),oldScanCatalogPath);
+		final String oldScanFolderPath="SCANS/" + newScan.getId();
+		final String newScanFolderPath="SCANS/" + scan_id;
+		final String newScanCatalogPath=newScanFolderPath + "/DICOM/" + catalog.getName();
+		final String prearcpath=getSrcDIR().getAbsolutePath();
+		
+		//confirm expected structure
+		if(!catalog.exists()){
+			throw new ServerException("Non-standard prearchive structure- failed scan rename.");
+		}
+		
+		
+		if(oldScanCatalogPath.startsWith(oldScanFolderPath)){
+			File oldFolder=new File(src.getPrearchivepath(),oldScanFolderPath);
+			
+			//confirm expected structure
+			if(!oldFolder.exists()){
+				throw new ServerException("Non-standard prearchive structure- failed scan rename.");
+			}
+			
+			//move the directory
+			try {
+				FileUtils.MoveDir(oldFolder, new File(src.getPrearchivepath(),newScanFolderPath), false);
+			} catch (FileNotFoundException e) {
+				new ServerException(e);
+			} catch (IOException e) {
+				new ServerException(e);
+			} 
+			
+			//fix the file path
+			XnatResourcecatalog cat=(XnatResourcecatalog)newScan.getFile().get(0);
+			cat.setUri(newScanCatalogPath);
+			
+			//fix the scan ID
+			newScan.setId(scan_id);
+		}else{
+			throw new ServerException("Non-standard prearchive structure- failed scan rename.");
+		}
+		
+		try {
+			updatePrearchiveSessionXML(prearcpath, src);
+		} catch (Throwable e) {
+			throw new ServerException(e);
+		}
 	}
 
 	public interface PostArchiveAction {

@@ -188,7 +188,7 @@ function renderProjects(selectBox, list, defaultValue) {
         selectBox.remove(0);
     }
 
-    selectBox.options[0] = new Option("SELECT", "");
+    selectBox.options[0] = new Option("Select Project", "");
 
     for (var pC = 0; pC < list.length; pC++) {
         var defaultSelected = (list[pC].id == defaultValue) ? true : false;
@@ -230,7 +230,7 @@ function renderSubjects(selectBox, list, defaultValue, projectID) {
         projectID = "";
     }
 
-    selectBox.options[0] = new Option("SELECT", "");
+    selectBox.options[0] = new Option("Select Subject", "");
 
     for (var sC = 0; sC < list.length; sC++) {
         var _label = list[sC]["label"];
@@ -337,7 +337,6 @@ function ProjectEditor(_config) {
                     			var passthrough= new XNAT.app.passThrough(this._modifyProject,this);
                     			passthrough.fire();
                     		}
-                        	;
                         } else {
                             this.cancel();
                         }

@@ -95,7 +95,10 @@ $page.setVlinkColor($ui.vlink)
 
         <table id="project_subject_form">
 
-        #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
+            <!-- screens/xnat_subjectAssessorData/upload/xnat_subjectAssessorData_projSubj.vm -->
+            ## screens/xnat_subjectAssessorData/upload/xnat_subjectAssessorData_projSubj.vm
+            #parse($turbineUtils.getTemplateName("_projSubj.vm",$om.getXSIType(),$project,"upload"))
+            <!-- end screens/xnat_subjectAssessorData/upload/xnat_subjectAssessorData_projSubj.vm -->
 
         </table>
 

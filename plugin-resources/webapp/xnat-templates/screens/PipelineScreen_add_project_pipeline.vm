@@ -1,22 +1,22 @@
 ##<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 
 <style type="text/css">
- .popup {
-  position: absolute;
-  visibility: hidden;
-  background-color: #FDD;
-  layer-background-color: #FDD;
-  width: 200;
-  border-left: 1px solid black;
-  border-top: 1px solid black;
-  border-bottom: 3px solid black;
-  border-right: 3px solid black;
-  padding: 3px;
-  z-index: 10;
- }
+    .help_popup {
+        position: absolute;
+        visibility: hidden;
+        background-color: #fec;
+        layer-background-color: #fec;
+        width: 200px;
+        border-left: 1px solid black;
+        border-top: 1px solid black;
+        border-bottom: 3px solid black;
+        border-right: 3px solid black;
+        padding: 3px;
+        z-index: 10;
+    }
 </style>
 
-    <script type="text/javascript"><!--
+<script type="text/javascript">
 
 function getStyleObject(objectId) {
     // cross-browser function to get an objects style object given its id
@@ -100,125 +100,142 @@ function hideCurrentPopup() {
 } // hideCurrentPopup
 
 
-  --></script>
+</script>
 
 $data.setLayoutTemplate("Popup.vm")
 $page.setTitle("Modify Pipeline")
 $page.setLinkColor($ui.alink)
 $page.setVlinkColor($ui.vlink)
+
 #if ($data.message)
-<font color="red" size="3">$data.message</font>
-#end
-<p>
-<form ID="form1" name="form1" method="post" action="$link.setAction("ManagePipeline")">
-#if($vr)
-	<font color="red">Invalid parameters:<BR>$vr.toHTML()</font>
-<HR>
+    <span style="color:#c00;">$data.message</span>
 #end
 
+<form id="form1" name="form1" method="post" action="$link.setAction("ManagePipeline")">
 
-#set ($schemaType = $newpipeline.getSchemaElementName())
-#set ($dblQts='"')
-#set ($sizeOfTextBox = 45)
+    #if($vr)
+        <span style="color:#c00;">Invalid parameters:<br>$vr.toHTML()</span>
+        <hr>
+    #end
 
-$newpipeline.getDescription() 
+    #set ($schemaType = $newpipeline.getSchemaElementName())
+    #set ($dblQts='"')
+    #set ($sizeOfTextBox = 45)
 
-<br/>
-<br/>
+    $newpipeline.getDescription()
 
-#set ($checked="")
-#if ($isAutoArchive)
-#set ($checked="checked")
-#end
+    <br/>
+    <br/>
 
-<TABLE width="100%">
-	<TR>
-		<TD colspan="2" align="left"><b>Pipeline setup</b></TD>
-	</TR>
-	<TR>
-		<TD colspan="2" align="left"> 
-		    <TABLE>
-			<TR>
-			  <TD><b>Launch pipeline automatically when $displayManager.getSingularDisplayNameForImageSession().toLowerCase() is archived?</b></TD><TD><input type="checkbox"  name="auto_archive" $checked/></TD>
-			</TR>
-			</TABLE>
-		</TD>
-	</TR>
+    #set ($checked="")
+    #if ($isAutoArchive)
+        #set ($checked="checked")
+    #end
 
-<input type="hidden"  id=$dblQts${schemaType}.stepId$dblQts name=$dblQts${schemaType}.stepId$dblQts value="$newpipeline.getName()"/></TD>
-<input type="hidden"   id=$dblQts${schemaType}.displayText$dblQts name=$dblQts${schemaType}.displayText$dblQts value="$newpipeline.getDisplaytext()"/>
-<input type="hidden"  id=$dblQts${schemaType}.name$dblQts name=$dblQts${schemaType}.name$dblQts value="$newpipeline.getName()"/>
-<input type="hidden"  id=$dblQts${schemaType}.location$dblQts name=$dblQts${schemaType}.location$dblQts value="$newpipeline.getLocation()"/>
-<input type="hidden"  id=$dblQts${schemaType}.customwebpage$dblQts name=$dblQts${schemaType}.customwebpage$dblQts value="$!newpipeline.getCustomwebpage()"/>
-<input type="hidden"  id=$dblQts${schemaType}.description$dblQts name=$dblQts${schemaType}.description$dblQts value='$!newpipeline.getDescription()'/>
+    <table width="100%">
+        <tr>
+            <td colspan="2" align="left"><b>Pipeline setup</b></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="left">
+                <table>
+                    <tr>
+                        <td>
+                            <b>Launch pipeline automatically when $displayManager.getSingularDisplayNameForImageSession().toLowerCase() is archived?</b>
+                        </td>
+                        <td><input type="checkbox" name="auto_archive" $checked/></td>
+                    </tr>
+                </table>
 
+                <input type="hidden" id=$dblQts${schemaType}.stepId$dblQts name=$dblQts${schemaType}.stepId$dblQts value="$newpipeline.getName()"/>
+                <input type="hidden" id=$dblQts${schemaType}.displayText$dblQts name=$dblQts${schemaType}.displayText$dblQts value="$newpipeline.getDisplaytext()"/>
+                <input type="hidden" id=$dblQts${schemaType}.name$dblQts name=$dblQts${schemaType}.name$dblQts value="$newpipeline.getName()"/>
+                <input type="hidden" id=$dblQts${schemaType}.location$dblQts name=$dblQts${schemaType}.location$dblQts value="$newpipeline.getLocation()"/>
+                <input type="hidden" id=$dblQts${schemaType}.customwebpage$dblQts name=$dblQts${schemaType}.customwebpage$dblQts value="$!newpipeline.getCustomwebpage()"/>
+                <input type="hidden" id=$dblQts${schemaType}.description$dblQts name=$dblQts${schemaType}.description$dblQts value='$!newpipeline.getDescription()'/>
 
-	#set ($parameters =$newpipeline.getParameters_parameter())
-	#if ($parameters.size() > 0)
-	<TR>
-	   <TD><b>$displayManager.getSingularDisplayNameForProject() specific pipeline parameters:</b></TD>
-	   <TD>&nbsp;</td>	
-	</TR>
-	<TR>
-	   <TD colspan="2" align="left">Note: Parameters that take multiple values should be comma-separated</TD>
-	</TR>
-	<TR>
-		<TD colspan="2" align="left"> 
-		    <TABLE>
-			<TR>
-			  <TH>Name</TH> <TH colspan="2" align="center"> Values</TH> 
-			</TR>
-			#set ($c = 0)
-			#foreach ($parameter in $parameters)
-			<TR>
-			  <TD><input type="hidden"  id=$dblQts${schemaType}.parameters.parameter[$c].name$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].name$dblQts value="$parameter.getName()"/><font size="-1">$parameter.getName()</font>
-			</TD> 
-			  <input type="hidden" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts value="$!parameter.getSchemalink()"/>
-			  #if ($!parameter.getCsvvalues())
-			  <TD><input type="text" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[$c].csvValues$dblQts value="$!parameter.getCsvvalues()"/></TD>
-			  #else 
-			  <TD>$!parameter.getSchemalink() </TD>
-			 #end	
-			 <TD> <a href="#" style="outline: none;" onclick="return !showPopup('desc$c', event);">Help</a> </TD>
-			</tr>
-		<input type="hidden" id=$dblQts${schemaType}.parameters.parameter[$c].description$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].description$dblQts value="$!parameter.getDescription()"/>
-	#set ($c = $c + 1)
-			#end
-		    </TABLE>
-		</TD>
-	</TR>
-	#set ($c = 0)
-	#foreach ($parameter in $parameters)
+            </td>
+        </tr>
 
-	<div class=popup onclick="event.cancelBubble = true;" id=desc$c>
-	  <p><b>$parameter.getName(): </b>$!parameter.getDescription() </p>
+        #set ($parameters =$newpipeline.getParameters_parameter())
+        #if ($parameters.size() > 0)
 
-	  <a href="#" onclick="hideCurrentPopup(); return false;">Close</a>
-	</div>
-	#set ($c = $c + 1)
-			#end
-	#else 
-	<TR>
-		<TD colspan="2" align="left">There are no paramaters to set for this pipeline. Click on Submit button to add this pipeline to your $displayManager.getSingularDisplayNameForProject().toLowerCase()</TD>
-	</TR>
- 
-	#end
-	<TR>
-		<TD colspan="2" align="center"><input type="button" ONCLICK="javascript:window.close();" value="Close"/>&nbsp;&nbsp;&nbsp;<input type="submit"  name="eventSubmit_doAddprojectpipeline" value="Submit"/></TD>
-	</TR>
+            <tr>
+                <td><b>$displayManager.getSingularDisplayNameForProject() specific pipeline parameters:</b></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="2" align="left">Note: Parameters that take multiple values should be comma-separated</td>
+            </tr>
+            <tr>
+                <td colspan="2" align="left">
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th colspan="2" align="center">Values</th>
+                        </tr>
+                        #set ($c = 0)
+                        #foreach ($parameter in $parameters)
+                            <tr>
+                                <td>
+                                    <input type="hidden" id=$dblQts${schemaType}.parameters.parameter[$c].name$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].name$dblQts value="$parameter.getName()"/>
+                                    <span style="font-size:12px;">$parameter.getName()</span>
+                                    <input type="hidden" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].schemaLink$dblQts value="$!parameter.getSchemalink()"/>
+                                </td>
+                                #if ($!parameter.getCsvvalues())
+                                    <td>
+                                        <input type="text" size="45" id=$dblQts${schemaType}.parameters.parameter[$c].csvValues$dblQts  name=$dblQts${schemaType}.parameters.parameter[$c].csvValues$dblQts value="$!parameter.getCsvvalues()"/>
+                                    </td>
+                                #else
+                                    <td>$!parameter.getSchemalink() </td>
+                                #end
+                                <td>
+                                    <a href="#" style="outline: none;" onclick="return !showPopup('desc$c', event);">Help</a>
+                                    <input type="hidden" id=$dblQts${schemaType}.parameters.parameter[$c].description$dblQts name=$dblQts${schemaType}.parameters.parameter[$c].description$dblQts value="$!parameter.getDescription()"/>
+                                </td>
+                            </tr>
+                            #set ($c = $c + 1)
+                        #end
+                    </table>
 
+                    #set ($c = 0)
+                    #foreach ($parameter in $parameters)
 
+                        <div class="help_popup" onclick="event.cancelBubble = true;" id=desc$c>
+                            <p><b>$parameter.getName(): </b>$!parameter.getDescription() </p>
+                            <a href="#" onclick="hideCurrentPopup(); return false;">Close</a>
+                        </div>
+                        #set ($c = $c + 1)
 
-<input type="hidden" name="search_element" value="xnat:projectData"/>
-<input type="hidden" name="search_field" value="xnat:projectData.ID"/>
-<input type="hidden" name="search_value" value="$project"/>
-<input type="hidden" name="project" value="$project"/>
-<input type="hidden" name="pipeline_path" value="$pipeline_path"/>
-<input type="hidden" name="dataType" value="$dataType"/>
-<input type="hidden" name="schemaType" value="$schemaType"/>
-<input type="hidden" name="edit" value="$edit"/>
-<input type="hidden" name="destination" value="JS_Parent_Return.vm"/>
+                    #end
+                </td>
+            </tr>
 
-</TABLE>
+        #else
+
+            <tr>
+                <td colspan="2" align="left">There are no paramaters to set for this pipeline. Click on Submit button to add this pipeline to your $displayManager.getSingularDisplayNameForProject().toLowerCase()</td>
+            </tr>
+
+        #end
+
+        <tr>
+            <td colspan="2" align="center">
+                <input type="button" onclick="window.close();" value="Close"/>&nbsp;&nbsp;&nbsp;<input type="submit" name="eventSubmit_doAddprojectpipeline" value="Submit"/>
+            </td>
+        </tr>
+
+    </table>
+
+    <input type="hidden" name="search_element" value="xnat:projectData"/>
+    <input type="hidden" name="search_field" value="xnat:projectData.ID"/>
+    <input type="hidden" name="search_value" value="$project"/>
+    <input type="hidden" name="project" value="$project"/>
+    <input type="hidden" name="pipeline_path" value="$pipeline_path"/>
+    <input type="hidden" name="dataType" value="$dataType"/>
+    <input type="hidden" name="schemaType" value="$schemaType"/>
+    <input type="hidden" name="edit" value="$edit"/>
+    <input type="hidden" name="destination" value="JS_Parent_Return.vm"/>
+
 </form>
 

@@ -364,7 +364,7 @@ jq(function(){
 
     // super basic simple easy validation
     jq('#form1 .row').click(function() {
-        data_type_val = jq(this).find('.data_type').attr('title');
+        var data_type_val = jq(this).find('.data_type').attr('title');
         jq('#data_type').val(data_type_val);
 
         if (jq('#project').val() > '') {

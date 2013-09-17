@@ -65,7 +65,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
 
         } else {
             this.projectBox = document.getElementById("project");
-            this.projectBox.options[0] = new Option("SELECT", "");
+            this.projectBox.options[0] = new Option("Select Project", "");
 
             //noinspection JSUnresolvedVariable
             for (var pC = 0; pC < this.projectResultSet.ResultSet.Result.length; pC++) {
@@ -179,7 +179,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
 
     this.renderSubjects = function () {
         this.subjectBox = document.getElementById("part_id");
-        this.subjectBox.options[0] = new Option("SELECT", "");
+        this.subjectBox.options[0] = new Option("Select Subject", "");
         this.subjectBox.options[0].style.color = "black";
 
         //noinspection JSUnresolvedVariable

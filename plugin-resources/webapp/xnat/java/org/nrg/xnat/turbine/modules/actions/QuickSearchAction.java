@@ -85,7 +85,9 @@ public class QuickSearchAction extends SecureAction {
                         data.getParameters().setString("search_value",(String)row.get("id"));
                         data.getParameters().setString("search_element","xnat:projectData");
                         data.getParameters().setString("search_field","xnat:projectData.ID");
-                        dia.doPerform(data,context);
+                        // Here we're just bouncing the user straight to the projectData page for this one result
+                        String rdirurl = data.getContextPath() + "/app/action/DisplayItemAction/search_value/"+row.get("id") + "/search_element/xnat:projectData/search_field/xnat:projectData.ID";
+                        data.getResponse().sendRedirect(rdirurl);
                         return;
             		}else{
             			DisplaySearch search = new DisplaySearch();
@@ -123,7 +125,9 @@ public class QuickSearchAction extends SecureAction {
                         data.getParameters().setString("search_value",(String)row.get("id"));
                         data.getParameters().setString("search_element",(String)row.get("element_name"));
                         data.getParameters().setString("search_field",row.get("element_name")+".ID");
-                        dia.doPerform(data,context);
+                        // Here we're just bouncing the user straight to the subjectData page for this one result
+                        String rdirurl = data.getContextPath() + "/app/action/DisplayItemAction/search_value/"+row.get("id") + "/search_element/xnat:subjectData/search_field/xnat:subjectData.ID";
+                        data.getResponse().sendRedirect(rdirurl);
                         return;
                     }
                 }else{
@@ -144,7 +148,9 @@ public class QuickSearchAction extends SecureAction {
                         data.getParameters().setString("search_value",(String)row.get("id"));
                         data.getParameters().setString("search_element",(String)row.get("element_name"));
                         data.getParameters().setString("search_field",row.get("element_name")+".ID");
-                        dia.doPerform(data,context);
+                        // Here we're just bouncing the user straight to the subjectData page for this one result
+                        String rdirurl = data.getContextPath() + "/app/action/DisplayItemAction/search_value/"+row.get("id") + "/search_element/xnat:subjectData/search_field/xnat:subjectData.ID";
+                        data.getResponse().sendRedirect(rdirurl);
                         return;
                     }else{
                         Hashtable<String,Hashtable<String,ArrayList<ItemI>>> hash = new Hashtable<String,Hashtable<String,ArrayList<ItemI>>>();

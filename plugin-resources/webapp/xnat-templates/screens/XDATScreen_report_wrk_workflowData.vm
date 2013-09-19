@@ -76,17 +76,49 @@ $page.setVlinkColor($ui.vlink)
 								<TD align="left" valign="top">
 
 									<TABLE>
-#if($om.getExecutionenvironment().getParameters_parameter().size() >0)
-<TR>
-<TH>Parameter Name</TH><TH>Parameter Value</TH>
-</TR>
-#foreach ($param in $om.getExecutionenvironment().getParameters_parameter())
-<TR>
-<TD>$!param.getName()</TD><TD>$!param.getParameter()</TD>
-</TR>
+									#set( $paramList = $om.getExecutionenvironment().getParameters_parameter() )
+									#if($paramList.size() >0)
+									<TR>
+										<TH>Parameter Name</TH><TH>Parameter Value</TH>
+									</TR>
+									#foreach ($param in $paramList)
+									<TR>
+										<TD>$!param.getName()</TD><TD>$!param.getParameter()</TD>
+									</TR>
 
+									#end
+									#end
+
+									<tr>
+										<td>Parameterfile_path</td><td>$om.Executionenvironment.Parameterfile_path</td>
+									</tr>
+#set ($paramXML = $om.Executionenvironment.Parameterfile_xml)
+#if (!$paramXML.equals(""))
+#set ($paramXMLOneline = $paramXML.replaceAll("\n","").replaceAll(" ",""))
+<!-- <tr><td>xml one line</td><td>$paramXMLOneline</td></tr> -->
+#set ($paramBlobList = $paramXMLOneline.split("</?pip:parameter>"))
+#foreach ($paramBlob in $paramBlobList)
+	#set ($name="")
+	#set ($value="")
+	#if (!$paramBlob.equals("") && !$paramBlob.startsWith("<pip:Parameters") && !$paramBlob.startsWith("</pip:Parameters"))
+	#set ($nameValBlobs = $paramBlob.split("<pip:values>"))
+	#foreach ($nameValBlob in $nameValBlobs)
+		#if ($nameValBlob.startsWith("<pip:name>"))
+		#set ($name = $nameValBlob.replaceAll("<.*?>",""))
+		#elseif ($nameValBlob.startsWith("<pip:unique>"))
+		#set ($value = $nameValBlob.replaceAll("<.*?>",""))
+		#elseif ($nameValBlob.startsWith("<pip:list>"))
+		#set ($value = $nameValBlob.replaceAll("</pip:list><pip:list>",",").replaceAll("<.*?>",""))
+		#end
+	#end
+									<tr>
+										<td>$name</td>
+										<td>$value</td>
+									</tr>
+	#end
 #end
-#end									</TABLE>
+#end
+									</TABLE>
 								</TD>
 							</TR>
 						</TABLE>

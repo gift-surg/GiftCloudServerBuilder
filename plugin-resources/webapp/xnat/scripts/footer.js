@@ -46,6 +46,18 @@ YAHOO.util.Event.onDOMReady(function(){
                     _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.AlphaNumSTextBox));
                 }
             }
+            
+            if(myforms[iFc][fFc].nodeName=="INPUT"){
+        		if($(myforms[iFc][fFc]).attr('data-regex')!=undefined){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.RegexTextBox,$(myforms[iFc][fFc]).attr('data-regex-message')));
+                }
+    		}
+            
+            if(myforms[iFc][fFc].nodeName=="INPUT"){
+        		if($(myforms[iFc][fFc]).attr('data-required-if')!=undefined){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.PrereqInput,$(myforms[iFc][fFc]).attr('data-required-if-message')));
+                }
+    		}
         }
     }
 
@@ -157,10 +169,58 @@ XNAT.app.validatorImpls.AlphaNumSTextBox={
 	}
 };
 
+XNAT.app.validatorImpls.PrereqInput={
+	isValid:function(_box){
+		this.prereq=$(_box).attr('data-required-if');
+		if(!XNAT.app.validator.HasValue(_box) && this.prereq!=undefined){
+			if($(this.prereq).length>0){
+				return false;//this box is only required if that one is set
+			}else{
+				return true;
+			}
+		}else{
+			return true;
+		}
+	}
+};
+
+if(XNAT.app.validator==undefined)XNAT.app.validator={};
+
+XNAT.app.validator.HasValue=function(_box){
+	if(_box.nodeName=="INPUT" && _box.type=="radio"){
+		var passedBoxes=document.getElementsByName(_box.name);
+	    var valid=false;
+	    for(var stoppedBoxI=0; stoppedBoxI<passedBoxes.length;stoppedBoxI++){
+	  	  var stoppedBox=passedBoxes[stoppedBoxI];
+	  	  if(stoppedBox.checked){
+	  		return true;
+	  	  }
+	    }
+	    return false;
+	}else if($(_box).val()==""){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+XNAT.app.validatorImpls.RegexTextBox={
+	isValid:function(_box){
+		this.regex=$(_box).attr('data-regex');
+		if(_box.value!="" && this.regex!=undefined){
+			return _box.value.match(this.regex);
+		}else{
+			return true;
+		}
+	}
+};
+
 //declaring the constructor
-function TextboxValidator(box,_validator) {
+function TextboxValidator(box,_validator,_message) {
 	this._validator=_validator;
-	if(this._validator.message){
+	if(_message!=undefined){
+		this.message=_message;
+	}else if(this._validator.message){
 		this.message=this._validator.message;
 	}
     this.box = box;

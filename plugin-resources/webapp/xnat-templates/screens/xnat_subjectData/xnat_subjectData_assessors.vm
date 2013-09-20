@@ -5,33 +5,20 @@
 <div id="expts_container">
 
             <div id="expts_link_legend">
-                <span id="expts_header" class="edit_header1">Experiments</span>
-                ##<span id="view_all_link" style="display:inline-block;float:right;">
+                #if($useTabs)
+                #else
+                    <span id="expts_header" class="edit_header1">Experiments</span>
+                #end
                 <a id="toggle_expts_link" style="display:none;text-decoration:underline;" onClick="XNAT.app.subject.toggleExptView();">View All Experiments</a>
-                ##</span>
                 <span id="expt_shared_legend" style="display:none;background-color:#FC9;margin-right: 2px;" class="withThinBorder">Shared</span>
                 <span id="expt_denied_legend" style="display:none;background-color:#F99;margin-right: 2px;" class="withThinBorder">Access Denied</span>
             </div>
 
-
-## <!-- keeping this around until fully tested -->
-##            <TABLE>
-##				<TR>
-##					<TD><DIV id="expts_header" class="edit_header1">Experiments&nbsp;&nbsp;</DIV></TD>
-##																														<TD><div id="view_all_link" style="display:none"><a id="toggle_expts_link" style="text-decoration:underline;" onclick="XNAT.app.subject.toggleExptView();">View All Experiments</a></div></TD>
-##															<TD><div id="expt_shared_legend" style="display:none"><div id="" style="display:inline;background-color:FFCC99;" class="withThinBorder">&nbsp;&nbsp;</div>:Shared</div>&nbsp;&nbsp;&nbsp;<div id="expt_denied_legend" style="display:none"><div style="display:inline;background-color:FF9999;" class="withThinBorder">&nbsp;&nbsp;</div>:Access Denied</div></TD>
-##
-##				</TR>
-##			</TABLE>
-
-			<BR><BR>
 				
 							 #set($hasOtherProjects=false)
 							 #if($pScope)
 					<div id="proj_expts" style="display:none">
-##          <table align="left" width="100%">
-##				  <tr>
-##			    		<td valign="top">
+
 			       	<table width="100%">
 							         <TR>
 							           <TH align="left" class="underscore">Date</TH>
@@ -47,15 +34,11 @@
 											    #end
 											    #end
 							</table>
-##			       	</td>
-##			    </tr>
-##			</table>
+
 			</div><!-- /proj_expts -->
 										   #end
 					<div id="all_expts" style="display:none">
-##<table align="left" width="100%">
-##				  <tr>
-##			    		<td valign="top">
+
     <table width="100%">
         <TR>
            <TH align="left" class="underscore">Date</TH>
@@ -67,9 +50,7 @@
 			     #parse($turbineUtils.getTemplateName("_assessor","xnat:subjectData",$project))
 								 #end
     </table>
-##			       	</td>
-##			    </tr>
-##			</table>
+
 			</div><!-- /all_expts -->
 
 </div><!-- /expts_container -->

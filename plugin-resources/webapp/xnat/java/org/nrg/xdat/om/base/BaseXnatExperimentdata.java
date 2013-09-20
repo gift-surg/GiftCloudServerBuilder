@@ -58,6 +58,8 @@ import java.util.*;
 @SuppressWarnings({"unchecked","rawtypes"})
 public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements ArchivableItem, MoveableI {
 
+    private static final long serialVersionUID = -1237275273363081417L;
+
 	public BaseXnatExperimentdata(ItemI item)
 	{
 		super(item);
@@ -83,33 +85,11 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     		return this.getId();
     }
 
-
-    public String getFormatedDate(){
-        try {
-            final Date d = this.getDateProperty("date");
-            if (d!=null)
-            {
-                java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("MM/dd/yyyy");
-                return formatter.format(d);
-            }
-        } catch (XFTInitException e) {
-            logger.error("",e);
-        } catch (ElementNotFoundException e) {
-            logger.error("",e);
-        } catch (FieldNotFoundException e) {
-            logger.error("",e);
-        } catch (ParseException e) {
-            logger.error("",e);
-        }
-        return null;
-    }
-
 	public String getFreeFormDate(String dateParam){
 		try{
 			Date now = Calendar.getInstance().getTime();
 			DateFormat dateFormat = new SimpleDateFormat(dateParam);
-			String dateStr = dateFormat.format(now);
-			return dateStr;
+            return dateFormat.format(now);
 		} catch (Exception e1) {logger.error(e1);return null;}
 	}
 
@@ -191,26 +171,29 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
     public XnatProjectdata getPrimaryProject(boolean preLoad){
         if (this.getProject()!=null){
-            return (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(getProject(), this.getUser(), preLoad);
+            return XnatProjectdata.getXnatProjectdatasById(getProject(), this.getUser(), preLoad);
         }else{
             return (XnatProjectdata)getFirstProject();
         }
     }
 
 
-    public XnatProjectdataI getFirstProject()
-    {
-        XnatExperimentdataShare ep = null;
-        if (!this.getSharing_share().isEmpty()){
-        	ep = (XnatExperimentdataShare)this.getSharing_share().get(0);
-        }
-
+    public XnatProjectdataI getFirstProject() {
+        List<XnatExperimentdataShareI> shares = getSharing_share();
+        if (!shares.isEmpty()){
+            for (XnatExperimentdataShareI ep : shares) {
+                if (ep != null) {
         try {
-            if (ep!=null){
-                return XnatProjectdata.getXnatProjectdatasById(ep.getProject(), this.getUser(), false);
+                        // We'll return the first non-null project, i.e. the first shared project this user can access.
+                        XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(ep.getProject(), this.getUser(), false);
+                        if (project != null) {
+                            return project;
             }
         } catch (RuntimeException e) {
             logger.error("",e);
+        }
+                }
+            }
         }
 
         return null;
@@ -249,12 +232,12 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
             }
         }
 
-        String identifiers = new String();
+        String identifiers = "";
 
-        Enumeration enumer = ids.keys();
+        Enumeration keys = ids.keys();
         int counter=0;
-        while (enumer.hasMoreElements()){
-            String key =(String) enumer.nextElement();
+        while (keys.hasMoreElements()){
+            String key =(String) keys.nextElement();
             if (counter++>0)identifiers=identifiers + ", ";
             identifiers=identifiers + key + " ("+ ids.get(key) + ")";
         }
@@ -290,7 +273,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
 	        if (table.size()>0)
 	        {
-	            return (Object[])table.rows().get(0);
+	            return table.rows().get(0);
 	        }
     	} catch (SQLException e) {
             logger.error("",e);
@@ -302,7 +285,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
     }
 
     public XnatProjectdata getProjectData(){
-        return (XnatProjectdata)XnatProjectdata.getXnatProjectdatasById(this.getProject(), this.getUser(), false);
+        return XnatProjectdata.getXnatProjectdatasById(this.getProject(), this.getUser(), false);
     }
 
 
@@ -417,9 +400,9 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
     /**
      * newlabel can be null defaults to this.getLabel(), if that is null this.getId()
-     * @param newProject
-     * @param newLabel
-     * @param user
+     * @param newProject    New project to move.
+     * @param newLabel      New label to set.
+     * @param user          User moving.
      * @throws Exception
      */
      public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
@@ -605,7 +588,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
     /**
      * This method looks for an existing session directory in the archive space.s
-     * @return
+     * @return The file for the session directory.
      */
     public File getSessionDir(){
     	File archive=new File(ArcSpecManager.GetInstance().getArchivePathForProject(this.getProject()));

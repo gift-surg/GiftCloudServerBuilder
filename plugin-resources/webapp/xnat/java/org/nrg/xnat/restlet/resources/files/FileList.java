@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -895,7 +896,7 @@ public class FileList extends XNATCatalogTemplate {
                            if (zipEntry != null) {  
                               // Get the zip entry requested
                               ZipFile zF = new ZipFile(f);
-                              ZipEntry zE = zF.getEntry(zipEntry);
+                              ZipEntry zE = zF.getEntry(URLDecoder.decode(zipEntry, "UTF-8"));
                               if (zE == null) {
                                  getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
                                  return new StringRepresentation("");

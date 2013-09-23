@@ -2600,6 +2600,10 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 if (fileLabel != null && fileLabel.equals("SNAPSHOTS")) {
                     continue;
                 }
+                if (fileLabel == null || fileLabel.trim().equals("")) {
+                    fileLabel = resource.getXnatAbstractresourceId().toString();
+                }
+
                 Integer fileCount = resource.getFileCount();
                 Object fileSize = resource.getFileSize();
 
@@ -2614,7 +2618,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                 if (fileCount != null) {
                     count += fileCount;
                     Long aggregate = data.get(0);
-                    data.set(0, aggregate + (Integer) fileCount);
+                    data.set(0, aggregate + fileCount);
                 }
                 if (fileSize != null) {
                     size += (Integer) fileSize;

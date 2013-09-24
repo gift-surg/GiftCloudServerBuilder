@@ -2601,11 +2601,11 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     continue;
                 }
                 if (fileLabel == null || fileLabel.trim().equals("")) {
-                    fileLabel = resource.getXnatAbstractresourceId().toString();
+                    fileLabel = "Unknown";
                 }
 
                 Integer fileCount = resource.getFileCount();
-                Object fileSize = resource.getFileSize();
+                Object rawFileSize = resource.getFileSize();
 
                 List<Long> data;
                 if (accumulator.containsKey(fileLabel)) {
@@ -2620,10 +2620,17 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
                     Long aggregate = data.get(0);
                     data.set(0, aggregate + fileCount);
                 }
-                if (fileSize != null) {
-                    size += (Integer) fileSize;
-                    Long aggregate = data.get(1);
-                    data.set(1, aggregate + (Integer) fileSize);
+                if (rawFileSize != null) {
+                    long fileSize;
+                    if (rawFileSize instanceof Integer) {
+                        fileSize = (Integer) rawFileSize;
+                    } else if (rawFileSize instanceof Long) {
+                        fileSize = (Long) rawFileSize;
+                    } else {
+                        fileSize = Long.parseLong(rawFileSize.toString());
+                    }
+                    size += fileSize;
+                    data.set(1, data.get(1) + fileSize);
                 }
             }
         }

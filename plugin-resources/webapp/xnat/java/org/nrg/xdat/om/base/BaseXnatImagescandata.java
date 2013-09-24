@@ -504,7 +504,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
             String label = resource.getLabel();
             if (label != null && label.equals("SNAPSHOTS")) {
                 continue;
-}
+            }
             int count;
             long size;
             Integer rawCount = resource.getFileCount();
@@ -515,7 +515,13 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
             }
             Object rawFileSize = resource.getFileSize();
             if (rawFileSize != null) {
-                size = (Integer) rawFileSize;
+                if (rawFileSize instanceof Integer) {
+                    size = (Integer) rawFileSize;
+                } else if (rawFileSize instanceof Long) {
+                    size = (Long) rawFileSize;
+                } else {
+                    size = Long.parseLong(rawFileSize.toString());
+                }
             } else {
                 size = 0;
             }

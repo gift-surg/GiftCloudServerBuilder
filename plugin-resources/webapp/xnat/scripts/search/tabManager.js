@@ -151,9 +151,9 @@ function TabManager(_id){
         // alphabetical sort function used to sort the "AddTab" dropdown list.
         function alphabeticalsort(a,b){
             var z = 0;
-            if (a.label < b.label){ z = -1; }
-            if (a.label > b.label){ z = 1; }
-            if (a.label == b.label){ z = 0; }
+            if (a.label.toLowerCase() < b.label.toLowerCase()){ z = -1; }
+            if (a.label.toLowerCase() > b.label.toLowerCase()){ z = 1; }
+            if (a.label.toLowerCase() == b.label.toLowerCase()){ z = 0; }
             return (z);
         }
         // Sort the list

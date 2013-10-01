@@ -80,7 +80,7 @@
 		
 		this.workflowUpdateOK = function(){ 
 			xModalLoadingClose();
-			xModalMessage('Error','Successfully updated workflow status to ' + st + '.','OK', msgOptions);
+			xModalMessage('Success','Successfully updated workflow status to ' + st + '.','OK', msgOptions);
 		}
 		
 		this.workflowUpdateFailed = function(){

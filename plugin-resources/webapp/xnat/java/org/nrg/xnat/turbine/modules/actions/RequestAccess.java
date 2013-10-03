@@ -34,11 +34,11 @@ public class RequestAccess extends SecureAction {
 
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
-        XnatProjectdata project =(XnatProjectdata) XnatProjectdata.getXnatProjectdatasById(p, null, false);
+        String p = ((String) TurbineUtils.GetPassedParameter("project",data));
+        XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
 
-        String access_level = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("access_level",data));
-        String comments = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("comments",data));
+        String access_level = ((String) TurbineUtils.GetPassedParameter("access_level",data));
+        String comments = ((String) TurbineUtils.GetPassedParameter("comments",data));
 
         XDATUser user = TurbineUtils.getUser(data);
 
@@ -75,7 +75,7 @@ public class RequestAccess extends SecureAction {
 
 		String[] to = null;
         if (ownerEmails != null && ownerEmails.size() > 0) {
-        	to = ownerEmails.toArray(new String[] {});
+        	to = ownerEmails.toArray(new String[ownerEmails.size()]);
         }
 
         String[] bcc = null;

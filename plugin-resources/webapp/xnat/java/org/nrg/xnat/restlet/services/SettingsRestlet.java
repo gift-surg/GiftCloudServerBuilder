@@ -578,7 +578,16 @@ public class SettingsRestlet extends SecureResource {
                 // Handle this as an email.
                 List<XdatUser> users = XDATUser.getXdatUsersByField("xdat:user/email", address, null, true);
                 if (users != null && users.size() > 0) {
+                    if (users.size() == 1) {
                     username = users.get(0).getLogin();
+                    } else {
+                        for (XdatUser user : users) {
+                            username = user.getLogin();
+                            if (user instanceof XDATUser && ((XDATUser) user).isSiteAdmin()) {
+                                break;
+                            }
+                        }
+                    }
                     email = address;
                 }
             } else {

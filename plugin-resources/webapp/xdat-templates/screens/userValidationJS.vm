@@ -1,3 +1,4 @@
+<!-- BEGIN xdat-templates/screens/userValidationJS.vm -->
 ##modified to prevent values greater than 255 characters.
 <script type="text/javascript" src="$content.getURI("scripts/user/validateUsername.js")"></script>
 <script type="text/javascript">
@@ -77,3 +78,4 @@
     };
 
 </script>
+<!-- END xdat-templates/screens/userValidationJS.vm -->

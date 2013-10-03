@@ -38,12 +38,15 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
         data.setScreenTemplate("Index.vm");
 
         String parID = (String) TurbineUtils.GetPassedParameter("par", data);
-
+        String hash = (String) TurbineUtils.GetPassedParameter("hash", data);
         if (StringUtils.isEmpty(parID)) {
             if (data.getSession().getAttribute("par") != null) {
                 parID = (String) data.getSession().getAttribute("par");
+                hash = (String) data.getSession().getAttribute("hash");
                 data.getParameters().add("par", parID);
+                data.getParameters().add("hash", hash);
                 data.getSession().removeAttribute("par");
+                data.getSession().removeAttribute("hash");
             } else {
                 final DefaultSavedRequest savedRequest = (DefaultSavedRequest) data.getRequest().getSession().getAttribute(WebAttributes.SAVED_REQUEST);
                 if (savedRequest != null) {
@@ -52,6 +55,9 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
                         Matcher matcher = PATTERN_ACCEPT_PAR.matcher(cachedRequest);
                         if (matcher.find()) {
                             parID = matcher.group(1);
+                            hash = matcher.group(2);
+                            data.getParameters().add("par", parID);
+                            data.getParameters().add("hash", hash);
                         }
                     }
                 }
@@ -59,6 +65,10 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
         }
 
         if (parID != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Got registration request for PAR " + parID + " with verification hash " + hash);
+            }
+
             AcceptProjectAccess action = new AcceptProjectAccess();
             context.put("user", user);
             action.doPerform(data, context);
@@ -99,7 +109,7 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 		}
 		
 		if (!StringUtils.isEmpty(parID)) {
-			ProjectAccessRequest par = ProjectAccessRequest.RequestPARById(Integer.valueOf(parID), null);
+			ProjectAccessRequest par = ProjectAccessRequest.RequestPARByGUID(parID, null);
 			if (par != null) {
 				message.append("<br>Project: ").append(par.getProjectId());
 			}
@@ -124,7 +134,7 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 		}
 		
 		if (!StringUtils.isEmpty(parID)) {
-			ProjectAccessRequest par = ProjectAccessRequest.RequestPARById(Integer.valueOf(parID), null);
+			ProjectAccessRequest par = ProjectAccessRequest.RequestPARByGUID(parID, null);
             autoApproval = !(par == null || par.getApproved() != null || par.getApprovalDate() != null);
 		}
 
@@ -136,5 +146,5 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
 	}
 
     private static final Logger logger = Logger.getLogger(XDATRegisterUser.class);
-    private static final Pattern PATTERN_ACCEPT_PAR = Pattern.compile("^.*AcceptProjectAccess/par/([0-9]+).*");
+    private static final Pattern PATTERN_ACCEPT_PAR = Pattern.compile("^.*AcceptProjectAccess/par/([A-z0-9-]{36})\\?hash=([A-z0-9]{32})");
 }

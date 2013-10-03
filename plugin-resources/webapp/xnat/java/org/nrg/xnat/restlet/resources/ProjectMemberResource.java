@@ -213,7 +213,7 @@ public class ProjectMemberResource extends SecureResource {
 							    context.put("admin_email",AdminUtils.getAdminEmailId());
 							    context.put("projectOM",proj);
 							    //SEND email to user
-							    final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, proj.SCHEMA_ELEMENT_NAME,proj.getId(),proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.INVITE_USER_TO_PROJECT + " (" + uID + ")"));
+							    final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME, proj.getId(), proj.getId(), newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, EventUtils.INVITE_USER_TO_PROJECT + " (" + uID + ")"));
 						    	try {
 									ProjectAccessRequest.InviteUser(context, uID, user, user.getFirstname() + " " + user.getLastname() + " has invited you to join the " + proj.getName() + " " + DisplayManager.GetInstance().getSingularDisplayNameForProject().toLowerCase() + ".");
 									WorkflowUtils.complete(wrk, wrk.buildEvent());

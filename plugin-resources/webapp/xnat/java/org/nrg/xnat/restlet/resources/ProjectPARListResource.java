@@ -50,7 +50,7 @@ public class ProjectPARListResource extends SecureResource {
 
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation represent(Variant variant) {
 		XFTTable table = new XFTTable();
 		Hashtable<String,Object> params=new Hashtable<String,Object>();
 		if (ProjectAccessRequest.CREATED_PAR_TABLE) {

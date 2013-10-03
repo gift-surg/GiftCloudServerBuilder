@@ -32,8 +32,7 @@ public class PARResource extends SecureResource {
 	public PARResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		String par_id = (String) getParameter(request,"PAR_ID");
-		Integer id = Integer.valueOf(par_id);
-		par = ProjectAccessRequest.RequestPARById(id, user);
+		par = ProjectAccessRequest.RequestPARByGUID(par_id, user);
 		if (par != null) {
 			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -73,7 +72,7 @@ public class PARResource extends SecureResource {
 	
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation represent(Variant variant) {
 		XFTTable table = new XFTTable();
 		table.initTable(new String[]{"id","proj_id","create_date","level"});
 		Hashtable<String,Object> params=new Hashtable<String,Object>();

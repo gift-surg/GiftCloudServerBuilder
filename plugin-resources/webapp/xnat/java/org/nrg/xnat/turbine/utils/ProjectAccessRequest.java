@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.turbine.utils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -42,57 +43,15 @@ public class ProjectAccessRequest {
     public static boolean CREATED_PAR_TABLE = false;
 
     public ProjectAccessRequest(final String query, final XDATUser user) throws SQLException, DBPoolException {
-        if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
-            CreatePARTable();
-        }
-
-        final String dbName = user != null ? user.getDBName() : PoolDBUtils.getDefaultDBName();
-        final String login = user != null ? user.getLogin() : null;
-
-        XFTTable table = XFTTable.Execute(query, dbName, login);
+        XFTTable table = runInitQuery(query, user);
         table.resetRowCursor();
         while (table.hasMoreRows()) {
-            Object[] row = table.nextRow();
-            if (row[0] != null) {
-                setRequestId((Integer) row[0]);
-            }
-
-            if (row[1] != null) {
-                setProjectId((String) row[1]);
-            }
-
-            if (row[2] != null) {
-                setLevel((String) row[2]);
-            }
-
-            if (row[3] != null) {
-                setCreateDate((Date) row[3]);
-            }
-
-            if (row[4] != null) {
-                setUserId((Integer) row[4]);
-            }
-
-            if (row[5] != null) {
-                setApprovalDate((Date) row[5]);
-            }
-
-            if (row[6] != null) {
-                setApproved((Boolean) row[6]);
-            }
-
-            if (row[7] != null) {
-                setApproverUserId((Integer) row[7]);
-            }
-
-            if (row[8] != null) {
-                setUserString((String) row[8]);
-            }
-
-            if (row[9] != null) {
-                setEmail((String) row[9]);
-            }
+            initializeFromDataRow(table.nextRow());
         }
+        }
+
+    public ProjectAccessRequest(Object[] row) throws SQLException, DBPoolException {
+        initializeFromDataRow(row);
     }
 
     /**
@@ -133,13 +92,46 @@ public class ProjectAccessRequest {
         _userId = userId;
     }
     
+    /**
+     * Gets the email associated with this request.
+     * @return A string containing the email associated with this request.
+     */
     public String getEmail() {
 		return _email;
 	}
 
+    /**
+     * Sets the email associated with this request.
+     * @param email    A string containing the email associated with this request.
+     */
 	public void setEmail(String email) {
 		PoolDBUtils.CheckSpecialSQLChars(email);
 		_email = email;
+	}
+
+	/**
+     * Gets the email associated with this request.
+     * @return A string containing the email associated with this request.
+     */
+    public String getHashedEmail() {
+        return DigestUtils.md5Hex(_email);
+    }
+
+    /**
+     * Gets the GUID for this request.
+     * @return A string containing the GUID for this request.
+     */
+    public String getGuid() {
+		return _guid;
+	}
+
+    /**
+     * Sets the GUID for this request.
+     * @param  guid    A string containing the GUID for this request.
+     */
+	public void setGuid(String guid) {
+		PoolDBUtils.CheckSpecialSQLChars(guid);
+		_guid = guid;
 	}
 
 	/**
@@ -192,19 +184,42 @@ public class ProjectAccessRequest {
 		PoolDBUtils.CheckSpecialSQLChars(projectId);
         _projectId = projectId;
     }
+
+    /**
+     * @return the _requestId
+     */
+    public Integer getRequestId() {
+        return _requestId;
+    }
+
+    /**
+     * @param requestId the _requestId to set
+     */
+    public void setRequestId(Integer requestId) {
+        _requestId = requestId;
+    }
+
     /**
      * @return the approved
      */
-    public boolean isApproved() {
-        return _approved.booleanValue();
-    }
-    
     public Boolean getApproved(){
         return _approved;
     }
     
+    /**
+     * @param approved the approved to set
+     */
+    public void setApproved(boolean approved) {
+        _approved = approved;
+    }
+
+    /**
+     * Save the project access request with the <b>user</b> as the request approver.
+     * @param user    The user to specify as the request approver.
+     * @throws Exception
+     */
     public void save(XDATUser user) throws Exception{
-        if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+        if (!CREATED_PAR_TABLE) {
             CreatePARTable();
         }
 
@@ -254,29 +269,30 @@ public class ProjectAccessRequest {
     }
     
     /**
-     * @return the _requestId
+     * Processes the project access request, setting the <b>user</b> as the accepting or declining user. Note that this
+     * will also process all other requests associated with the same email as this request. This does <i>not</i> find
+     * all requests with the same email as the specified user, just those with the same email as the initial request.
+     * However, all processed requests are set to the email of the actual user object as they're processed.
+     * @param user         The user who accepts or declines the request.
+     * @param accept       Whether the request was accepted or declined.
+     * @param eventType    A system event for tracking requests.
+     * @param reason       The reason for the operation.
+     * @param comment      Any related comments.
+     * @return A list of all of the project access requests associated with the original email and accepted or declined.
+     * @throws Exception
      */
-    public Integer getRequestId() {
-        return _requestId;
-    }
-    /**
-     * @param requestId the _requestId to set
-     */
-    public void setRequestId(Integer requestId) {
-        _requestId = requestId;
-    }
-    
-    /**
-     * @param approved the approved to set
-     */
-    public void setApproved(boolean approved) {
-        _approved = approved;
+    public List<String> process(XDATUser user, boolean accept, EventUtils.TYPE eventType, String reason, String comment) throws Exception {
+        return process(user, accept, eventType, reason, comment, true);
     }
     
     public static ProjectAccessRequest RequestPARById(Integer id, XDATUser user) {
         return RequestPAR(" par_id=" + id, user);
     }
     
+    public static ProjectAccessRequest RequestPARByGUID(String guid, XDATUser user) {
+        return RequestPAR(" guid='" + guid + "'", user);
+    }
+
     public static ProjectAccessRequest RequestPARByUserProject(Integer userId, String projectId, XDATUser user) {
         return RequestPAR(" user_id=" + userId + " AND proj_id='" + projectId + "'", user);
     }
@@ -307,8 +323,13 @@ public class ProjectAccessRequest {
         ArrayList<ProjectAccessRequest> PARs = new ArrayList<ProjectAccessRequest>();
         try {
             String query = getPARQuery(where);
+            XFTTable table = runInitQuery(query, user);
+            table.resetRowCursor();
+            while (table.hasMoreRows()) {
             ProjectAccessRequest par = new ProjectAccessRequest(query, user);    
+                par.initializeFromDataRow(table.nextRow());
             PARs.add(par);
+            }
         } catch (Exception exception) {
             _logger.error("Error occurred while requesting project access requests for user [" + user.getUsername() + "]: " + where, exception);
         }
@@ -317,7 +338,7 @@ public class ProjectAccessRequest {
     
     public static void CreatePAR(String pID, String level, XDATUser user){
         try {
-            if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+            if (!CREATED_PAR_TABLE) {
                 CreatePARTable();
             }
             
@@ -342,21 +363,33 @@ public class ProjectAccessRequest {
                     CREATED_PAR_TABLE=true;
                     
                     //check for email column (added 6/2/08)
-                    boolean containsEmail = false;
+                    boolean containsEmail = false, containsGuid = false;
                     PoolDBUtils con = new PoolDBUtils();
                     XFTTable t = con.executeSelectQuery("select LOWER(attname) as col_name,typname, attnotnull from pg_attribute, pg_class,pg_type where attrelid = pg_class.oid AND atttypid=pg_type.oid AND attnum>0 and LOWER(relname) = 'xs_par_table';", PoolDBUtils.getDefaultDBName(), null);
         			while (t.hasMoreRows()) {
         				t.nextRow();
-        				if (t.getCellValue("col_name").toString().equals("email")) {
+                        String colName = t.getCellValue("col_name").toString();
+                        if (colName.equals("email")) {
         					containsEmail =true;
+                            if (containsGuid) {
         					break;
         				}
+                        } else if (colName.equals("guid")) {
+                            containsGuid = true;
+                            if (containsEmail) {
+                                break;
+                            }
+                        }
         			}
         			
         			if (!containsEmail) {
         				query = "ALTER TABLE xs_par_table ADD COLUMN email VARCHAR(255);";
         				PoolDBUtils.ExecuteNonSelectQuery(query, PoolDBUtils.getDefaultDBName(), null);
         			}
+                    if (!containsGuid) {
+                        query = "ALTER TABLE xs_par_table ADD COLUMN guid VARCHAR(64);";
+                        PoolDBUtils.ExecuteNonSelectQuery(query, PoolDBUtils.getDefaultDBName(), null);
+                    }
                 } else {
                     query = "CREATE TABLE xs_par_table"+
                     "\n("+
@@ -369,7 +402,9 @@ public class ProjectAccessRequest {
                     "\n  approved boolean,"+
                     "\n  approver_id integer," +
                     "\n  email VARCHAR(255)," +
-                    "\n  CONSTRAINT xs_par_table_pkey PRIMARY KEY (par_id)"+
+                            "\n  guid VARCHAR(64)," +
+                            "\n  CONSTRAINT xs_par_table_pkey PRIMARY KEY (par_id),"+
+                            "\n  CONSTRAINT xs_par_table_guid_key UNIQUE (guid)"+
                     "\n) "+
                     "\nWITH OIDS;";
                     
@@ -386,18 +421,19 @@ public class ProjectAccessRequest {
     	XnatProjectdata project = (XnatProjectdata) context.get("projectOM");
     	ProjectAccessRequest request = null;
 		try {
-	         if (!ProjectAccessRequest.CREATED_PAR_TABLE) {
+            if (!CREATED_PAR_TABLE) {
 	             CreatePARTable();
 	         }
 	         
 	         invitee = StringUtils.RemoveChar(invitee, '\'');
+            String guid = UUID.randomUUID().toString();
 	         
-	         StringBuilder query = new StringBuilder("INSERT INTO xs_par_table (email,proj_id,approver_id,level) VALUES ('");
-             query.append(invitee).append("', '").append(project.getId()).append("', ").append(user.getID()).append(", '").append(context.get("access_level")).append("');");
+            StringBuilder query = new StringBuilder("INSERT INTO xs_par_table (email, guid, proj_id, approver_id, level) VALUES ('");
+            query.append(invitee).append("', '").append(guid).append("', '").append(project.getId()).append("', ").append(user.getID()).append(", '").append(context.get("access_level")).append("');");
 	         
 	         PoolDBUtils.ExecuteNonSelectQuery(query.toString(), user.getDBName(), user.getLogin());
 	         
-	         request = RequestPAR("xs_par_table.email = '" + invitee + "' AND proj_id = '" + project.getId() + "' AND approved IS NULL", user);
+            request = RequestPAR("xs_par_table.email = '" + invitee + "' AND guid = '" + guid + "' AND proj_id = '" + project.getId() + "' AND approved IS NULL", user);
 	    } catch (SQLException exception) {
 	         _logger.error("Error occurred while running SQL query", exception);
 	    } catch (Exception exception) {
@@ -425,8 +461,8 @@ public class ProjectAccessRequest {
         }
     }
     
-    public List<String> process(XDATUser user, boolean accept, EventUtils.TYPE eventType, String reason, String comment) throws Exception {
-        return process(user, accept, eventType, reason, comment, true);
+    private ProjectAccessRequest() throws SQLException, DBPoolException {
+        // Here for creation of objects from initialization functions.
     }
 
     private List<String> process(final XDATUser user, final boolean accept, final EventUtils.TYPE eventType, final String reason, final String comment, final boolean processRelated) throws Exception {
@@ -489,6 +525,63 @@ public class ProjectAccessRequest {
         return processedProjects;
     }
 
+    private static XFTTable runInitQuery(final String query, final XDATUser user) throws SQLException, DBPoolException {
+        if (!CREATED_PAR_TABLE) {
+            CreatePARTable();
+        }
+
+        final String dbName = user != null ? user.getDBName() : PoolDBUtils.getDefaultDBName();
+        final String login = user != null ? user.getLogin() : null;
+
+        return XFTTable.Execute(query, dbName, login);
+    }
+
+    private void initializeFromDataRow(final Object[] row) {
+        if (row[0] != null) {
+            setRequestId((Integer) row[0]);
+        }
+
+        if (row[1] != null) {
+            setProjectId((String) row[1]);
+        }
+
+        if (row[2] != null) {
+            setLevel((String) row[2]);
+        }
+
+        if (row[3] != null) {
+            setCreateDate((Date) row[3]);
+        }
+
+        if (row[4] != null) {
+            setUserId((Integer) row[4]);
+        }
+
+        if (row[5] != null) {
+            setApprovalDate((Date) row[5]);
+        }
+
+        if (row[6] != null) {
+            setApproved((Boolean) row[6]);
+        }
+
+        if (row[7] != null) {
+            setApproverUserId((Integer) row[7]);
+        }
+
+        if (row[8] != null) {
+            setUserString((String) row[8]);
+        }
+
+        if (row[9] != null) {
+            setEmail((String) row[9]);
+        }
+
+        if (row[10] != null) {
+            setGuid((String) row[10]);
+        }
+    }
+
     private List<String> processRelatedPARs(String parEmail, XDATUser user, boolean accept, EventUtils.TYPE eventType, String reason, String comment) {
         List<String> processedProjects = new ArrayList<String>();
         List<ProjectAccessRequest> parsForEmail = RequestPARsByUserEmail(parEmail, user);
@@ -507,12 +600,13 @@ public class ProjectAccessRequest {
     }
 
     private static final Logger _logger = Logger.getLogger(ProjectAccessRequest.class);
-    private static final String QUERY_GET_PAR = "SELECT par_id, proj_id, level, create_date, user_id, approval_date, approved, approver_id, firstname || ' ' || lastname || '(' || xdat_user.email || ')' as user_string, xs_par_table.email FROM xs_par_table LEFT JOIN xdat_user ON xs_par_table.user_id = xdat_user.xdat_user_id WHERE %s;";
+    private static final String QUERY_GET_PAR = "SELECT par_id, proj_id, level, create_date, user_id, approval_date, approved, approver_id, firstname || ' ' || lastname || '(' || xdat_user.email || ')' as user_string, xs_par_table.email, guid FROM xs_par_table LEFT JOIN xdat_user ON xs_par_table.user_id = xdat_user.xdat_user_id WHERE %s;";
 
     private Integer _requestId = null;
     private String _projectId = null;
     private String _level = null;
     private String _email = null;
+    private String _guid = null;
     private Integer _userId = null;
     private Date _createDate = null;
     private Date _approvalDate = null;

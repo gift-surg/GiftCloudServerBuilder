@@ -20,12 +20,13 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.utils.AuthUtils;
 import org.quartz.JobDataMap;
-	import org.quartz.JobExecutionContext;
-	import org.quartz.JobExecutionException;
-	import org.slf4j.Logger;
-	import org.slf4j.LoggerFactory;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 	public class DisableInactiveUsersJob implements JobInterface {
@@ -58,12 +59,15 @@ import java.util.GregorianCalendar;
 						
 						try {
 							XDATUser u=new XDATUser((String)row[0]);
-							u.setEnabled("0");
-							XDATUser.ModifyUser(u, u, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "Disabled due to inactivity"));
+							// Fixes XNAT-2407. Only disable user if they have not been recently modified (enabled). 
+							if(!hasUserBeenModified(u, secondsBeforeLockout)){
+								u.setEnabled("0");
+								XDATUser.ModifyUser(u, u, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "Disabled due to inactivity"));
 							
-							String expiration=TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));
-    	            		System.out.println("Locked out " + u.getLogin() + " user account until "+expiration);
-    	            		AdminUtils.sendAdminEmail(u.getLogin() +" account disabled due to inactivity.", "User "+ u.getLogin() +" has been automatically disabled due to inactivity.");
+								String expiration=TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));
+								System.out.println("Locked out " + u.getLogin() + " user account until "+expiration);
+								AdminUtils.sendAdminEmail(u.getLogin() +" account disabled due to inactivity.", "User "+ u.getLogin() +" has been automatically disabled due to inactivity.");
+							}
 						} catch (Exception e) {
 							logger.error("",e);
 						}
@@ -74,6 +78,23 @@ import java.util.GregorianCalendar;
 					logger.error("",e);
 				}
 			}
+		}
+	
+		/**
+		 * Function determines if the user has been modified in the past amount of seconds.
+		 * Fixes XNAT-2407. This keeps the job from disabling a user if the admin has just enabled (modified) them. 
+		 * @param u - the user we are interested in. 
+		 * @param seconds - Has the user been modified in the past amount of seconds. 
+		 * @return true if the user has been modified / otherwise false.
+		 */
+		private boolean hasUserBeenModified(XDATUser u, int seconds){
+			
+			// Subtract seconds from today's date.
+			final Calendar c = Calendar.getInstance();
+			c.add(Calendar.SECOND, -seconds);
+			
+			// If the time is before the last modified date, the user has been modified.
+			return (c.getTime().before(u.getItem().getLastModified()));
 		}
 
 		@Override

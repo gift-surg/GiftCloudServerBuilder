@@ -20,5 +20,8 @@
   			#parse($turbineUtils.getTemplateName("label.vm",$om.getXSIType(),$project,"edit"))
   </td>
  </tr>
+
+    #addCustomScreens($om.getXSIType() "edit/psl_ext")
+
 </table>
 </div>

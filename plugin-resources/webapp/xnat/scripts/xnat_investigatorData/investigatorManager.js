@@ -34,7 +34,7 @@ function InvestigatorManager(){
 	}
 	
 	this.populateSelect=function(_select,_selectedID){
-	  	_select.options[0]=new Option("SELECT","");
+	  	_select.options[0]=new Option("SELECT","NULL");
 	  	
 	  	for(var investCounter=0;investCounter<this.investigators.length;investCounter++){
 	  		var tempInvestigator=this.investigators[investCounter];

@@ -228,10 +228,10 @@ window.refreshInvestigators=function (){
     tr.appendChild(th);
   
     var td= document.createElement("td");
-    var piSelect=document.createElement("select");
-    piSelect.name="xnat:projectData/investigators/investigator["+ (otherCounter+1) + "]/xnat_investigatordata_id";
-    window.invest_manager.populateSelect(piSelect,window.other_investigators[otherCounter]);
-    td.appendChild(piSelect);
+    var pSelect=document.createElement("select");
+    pSelect.name="xnat:projectData/investigators/investigator["+ (otherCounter+1) + "]/xnat_investigatordata_id";
+    window.invest_manager.populateSelect(pSelect,window.other_investigators[otherCounter]);
+    td.appendChild(pSelect);
     tr.appendChild(td);
     td= document.createElement("td");
     var remInvestButton = document.createElement("div");

@@ -14,10 +14,17 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
+import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.Authenticator;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.AliasTokenService;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
+import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.ItemI;
+import org.nrg.xft.XFT;
+import org.nrg.xft.collections.ItemCollection;
+import org.nrg.xft.schema.design.SchemaElementI;
+import org.nrg.xft.search.ItemSearch;
 import org.nrg.xnat.restlet.representations.RESTLoginRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.BrowserDetector;
@@ -29,6 +36,8 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class XnatSecureGuard extends Filter {
@@ -105,16 +114,46 @@ public class XnatSecureGuard extends Filter {
 			return true;
 		} else {
 			try {
+                XDATUser user = null;
 				final ChallengeResponse challengeResponse = request
 						.getChallengeResponse();
 				if (challengeResponse != null) {
-					final XDATUser user = authenticateBasic(challengeResponse);
+					user = authenticateBasic(challengeResponse);
 					if (user != null) {
 						attachUser(request, user);
 						httpRequest.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
 						return true;
 					}
 				}
+                else if (!XFT.GetRequireLogin()) {
+                    try {
+                        HttpSession session = httpRequest.getSession();
+                        session.removeAttribute("loggedin");
+                        ItemSearch search = new ItemSearch();
+                        SchemaElementI e = SchemaElement.GetElement(XDATUser.USER_ELEMENT);
+                        search.setElement(e.getGenericXFTElement());
+                        search.addCriteria(XDATUser.USER_ELEMENT +"/login", "guest");
+                        ItemCollection items = search.exec(true);
+                        if (items.size() > 0) {
+                            Iterator iter = items.iterator();
+                            while (iter.hasNext()){
+                                ItemI o = (ItemI)iter.next();
+                                XDATUser temp = new XDATUser(o);
+                                if (temp.getUsername().equalsIgnoreCase("guest")) {
+                                    user = temp;
+                                }
+                            }
+                            if (user == null){
+                                ItemI o = items.getFirst();
+                                user = new XDATUser(o);
+                            }
+                            attachUser(request, user);
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        logger.error("",e);
+                    }
+                }
 			} catch (RuntimeException e) {
 				// We let this return an error to cause a 500 to return to the user.  The only other
 				// option is to throw a 401.  But this wouldn't inform the user that there was an error.

@@ -91,7 +91,7 @@ public class FileList extends XNATCatalogTemplate {
                         String label = (String) row[1];
 
                         for (String resourceID : resource_ids) {
-                            if (id.toString().equals(resourceID) || (label != null && label.equals(resourceID))) {
+                            if (!alreadyAdded.contains(id) && (id.toString().equals(resourceID) || (label != null && label.equals(resourceID)))) {
                                 XnatAbstractresource res = XnatAbstractresource.getXnatAbstractresourcesByXnatAbstractresourceId(id, user, false);
                                 if (row.length == 7) res.setBaseURI((String) row[6]);
                                 resources.add(res);

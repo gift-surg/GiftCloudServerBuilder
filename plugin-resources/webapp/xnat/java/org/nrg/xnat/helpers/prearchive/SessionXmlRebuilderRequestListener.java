@@ -28,6 +28,7 @@ public class SessionXmlRebuilderRequestListener {
         try {
             XDATUser user = sessionXmlRebuilderRequest.getUser();
             SessionData sessionData = sessionXmlRebuilderRequest.getSessionData();
+            boolean receiving = sessionData.getStatus() != null && sessionData.getStatus().equals(PrearcUtils.PrearcStatus.RECEIVING);
             File sessionDir = sessionXmlRebuilderRequest.getSessionDir();
             log.info("Received request to process prearchive session at: {}", sessionData.getExternalUrl());
             try {
@@ -39,9 +40,13 @@ public class SessionXmlRebuilderRequestListener {
                     PrearcDatabase.buildSession(sessionDir, sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), sessionData.getVisit(), sessionData.getProtocol(), sessionData.getTimeZone(), sessionData.getSource());
                     PrearcUtils.resetStatus(user, sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), true);
 
-                    log.debug("Processing queue entry for {} in project {} to archive {}", new Object[] { user.getUsername(), sessionData.getProject(), sessionData.getExternalUrl() });
+                    // we don't want to autoarchive a session that are just being rebuilt
+                    // but we still want to autoarchive sessions that just came from RECEIVING STATE
                     final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcImporterA.PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);
-                    uploader.call();
+                    if (receiving || !uploader.isAutoArchive()) {
+                        log.debug("Processing queue entry for {} in project {} to archive {}", new Object[] { user.getUsername(), sessionData.getProject(), sessionData.getExternalUrl() });
+                        uploader.call();
+                    }
                 }
             } catch (PrearcDatabase.SyncFailedException e) {
                 log.error("", e);

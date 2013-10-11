@@ -48,7 +48,7 @@ function fullConfigHandler() {
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'restrictUserListAccessToAdmins'
+            'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
             , 'error', 'issue', 'newUser', 'update'

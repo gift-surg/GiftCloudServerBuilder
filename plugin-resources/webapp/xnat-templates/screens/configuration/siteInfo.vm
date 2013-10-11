@@ -39,6 +39,10 @@
             <label for="enableCsrfToken">Enable CSRF Token?</label>
             <input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" />
             <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
+            <br />
+            <label for="enableCsrfEmail">Enable CSRF Email Alerts?</label>
+            <input type="checkbox" id="enableCsrfEmail" onchange="window.siteInfoManager.dirtyForm();" />
+            <small>Should this site send an email to the site admin whenever a CSRF attack is attempted?</small>
         </p>
 
         <p>
@@ -59,7 +63,6 @@
     </div>
 
 </div>
-
 
 <script type="text/javascript">
 function configurationSiteInfoTabChange(obj) {
@@ -107,6 +110,5 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'restrictUserListAccessToAdmins']);
-
+putConfigurationControls('siteInfo', ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
 </script>

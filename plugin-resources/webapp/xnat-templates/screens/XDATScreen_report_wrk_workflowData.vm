@@ -88,10 +88,11 @@ $page.setVlinkColor($ui.vlink)
 
 									#end
 									#end
-
+#if ($om.Executionenvironment.Parameterfile_path)
 									<tr>
-										<td>Parameterfile_path</td><td>$om.Executionenvironment.Parameterfile_path</td>
+										<td>Parameter file path</td><td>$om.Executionenvironment.Parameterfile_path</td>
 									</tr>
+#end
 #set ($paramXML = $om.Executionenvironment.Parameterfile_xml)
 #if (!$paramXML.equals(""))
 #set ($paramXMLOneline = $paramXML.replaceAll("\n","").replaceAll(" ",""))

@@ -33,8 +33,13 @@ function InvestigatorManager(){
 		YAHOO.util.Connect.asyncRequest('POST',serverRoot +'/REST/investigators/' + investigator.lastname +'?format=json&XNAT_CSRF=' + csrfToken,this.initCallback,null,this);
 	}
 	
-	this.populateSelect=function(_select,_selectedID){
-	  	_select.options[0]=new Option("SELECT","NULL");
+	this.populateSelect=function(_select,_selectedID,_primary){
+        if (_primary) {
+	  	    _select.options[0]=new Option("SELECT","NULL");
+        }
+        else {
+            _select.options[0]=new Option("SELECT","");
+        }
 	  	
 	  	for(var investCounter=0;investCounter<this.investigators.length;investCounter++){
 	  		var tempInvestigator=this.investigators[investCounter];

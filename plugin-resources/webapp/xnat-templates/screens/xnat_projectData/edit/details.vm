@@ -146,7 +146,7 @@ window.refreshInvestigators=function (){
   var td= document.createElement("td");
   var piSelect=document.createElement("select");
   piSelect.name="xnat:projectData/pi_xnat_investigatordata_id";
-  window.invest_manager.populateSelect(piSelect,window.primary_investigator);
+  window.invest_manager.populateSelect(piSelect,window.primary_investigator,true);
   td.appendChild(piSelect);
   tr.appendChild(td);
   td= document.createElement("td");
@@ -177,7 +177,7 @@ window.refreshInvestigators=function (){
     var td= document.createElement("td");
     var pSelect=document.createElement("select");
     pSelect.name="xnat:projectData/investigators/investigator["+ (tbody.rows.length) + "]/xnat_investigatordata_id";
-    window.invest_manager.populateSelect(pSelect,window.other_investigators[otherCounter]);
+    window.invest_manager.populateSelect(pSelect,window.other_investigators[otherCounter],false);
     td.appendChild(pSelect);
     tr.appendChild(td);
     td= document.createElement("td");
@@ -230,7 +230,7 @@ window.refreshInvestigators=function (){
     var td= document.createElement("td");
     var pSelect=document.createElement("select");
     pSelect.name="xnat:projectData/investigators/investigator["+ (otherCounter+1) + "]/xnat_investigatordata_id";
-    window.invest_manager.populateSelect(pSelect,window.other_investigators[otherCounter]);
+    window.invest_manager.populateSelect(pSelect,window.other_investigators[otherCounter],false);
     td.appendChild(pSelect);
     tr.appendChild(td);
     td= document.createElement("td");

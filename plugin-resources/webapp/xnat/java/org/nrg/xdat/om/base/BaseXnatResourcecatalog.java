@@ -200,6 +200,11 @@ public abstract class BaseXnatResourcecatalog extends AutoXnatResourcecatalog {
     public CatCatalogBean getCleanCatalog(String rootPath,boolean includeFullPaths,UserI user, EventMetaI c){
     	return CatalogUtils.getCleanCatalog(rootPath, this, includeFullPaths,user,c);
     }
+    
+    public void clearCountAndSize() {
+    	count = null;
+    	size = null;
+    }
 
     Integer count = null;
     public Integer getCount(String rootPath){

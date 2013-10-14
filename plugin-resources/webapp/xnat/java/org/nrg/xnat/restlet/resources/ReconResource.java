@@ -288,7 +288,7 @@ public class ReconResource extends ItemResource {
 			}
 		
 		if(recon!=null){
-			return this.representItem(recon.getItem(),MediaType.TEXT_XML);
+			return this.representItem(recon.getItem(),overrideVariant(variant));
 	
 		}else{
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,

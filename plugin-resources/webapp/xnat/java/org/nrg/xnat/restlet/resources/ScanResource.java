@@ -304,7 +304,7 @@ public class ScanResource  extends ItemResource {
     	    	searchForScan();
 		
 		if(scan!=null){
-	        	return this.representItem(scan.getItem(),MediaType.TEXT_XML);
+	        	return this.representItem(scan.getItem(),overrideVariant(variant));
 		}else{
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 					"Unable to find the specified scan.");

@@ -193,6 +193,8 @@ public class SavedSearchResource extends ItemResource {
                         ds.setPagingOn(false);
                         if (mt.equals(SecureResource.APPLICATION_XLIST)){
                             table=(XFTTable)ds.execute(new RESTHTMLPresenter(TurbineUtils.GetRelativePath(ServletCall.getRequest(this.getRequest())),this.getCurrentURI(),user,sortBy),user.getLogin());
+                        }else if(this.isQueryVariableTrue("guiStyle")){
+                            table=(XFTTable)ds.execute(new CSVPresenter(),user.getLogin());
                         }else{
                             table=(XFTTable)ds.execute(null,user.getLogin());
                         }

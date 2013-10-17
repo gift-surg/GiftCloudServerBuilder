@@ -187,23 +187,23 @@ public abstract class SecureResource extends Resource {
 
     public MediaType getRequestedMediaType() {
         if (requested_format != null) {
-            if (requested_format.equals("xml")) {
+            if (requested_format.equalsIgnoreCase("xml")) {
                 return MediaType.TEXT_XML;
-            } else if (requested_format.equals("json")) {
+            } else if (requested_format.equalsIgnoreCase("json")) {
                 return MediaType.APPLICATION_JSON;
-            } else if (requested_format.equals("csv")) {
+            } else if (requested_format.equalsIgnoreCase("csv")) {
                 return TEXT_CSV;
-            } else if (requested_format.equals("txt")) {
+            } else if (requested_format.equalsIgnoreCase("txt")) {
                 return MediaType.TEXT_PLAIN;
-            } else if (requested_format.equals("html")) {
+            } else if (requested_format.equalsIgnoreCase("html")) {
                 return MediaType.TEXT_HTML;
-            } else if (requested_format.equals("zip")) {
+            } else if (requested_format.equalsIgnoreCase("zip")) {
                 return MediaType.APPLICATION_ZIP;
-            } else if (requested_format.equals("tar.gz")) {
+            } else if (requested_format.equalsIgnoreCase("tar.gz")) {
                 return MediaType.APPLICATION_GNU_TAR;
-            } else if (requested_format.equals("tar")) {
+            } else if (requested_format.equalsIgnoreCase("tar")) {
                 return MediaType.APPLICATION_TAR;
-            } else if (requested_format.equals("xList")) {
+            } else if (requested_format.equalsIgnoreCase("xList")) {
                 return APPLICATION_XLIST;
             } else if (requested_format.equalsIgnoreCase("xcat")) {
                 return APPLICATION_XCAT;

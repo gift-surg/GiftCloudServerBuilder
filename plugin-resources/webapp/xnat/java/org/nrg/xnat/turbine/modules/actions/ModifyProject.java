@@ -16,7 +16,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.model.XnatInvestigatordataI;
 import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.security.ElementSecurity;
+import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.ModifyItem;
 import org.nrg.xdat.turbine.modules.actions.SecureAction;
@@ -25,6 +25,8 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.Event;
+import org.nrg.xft.event.EventManager;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -34,7 +36,6 @@ import org.nrg.xft.exception.InvalidValueException;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,7 +140,7 @@ public class ModifyProject extends SecureAction {
 
             postSave.initGroups();
             
-            user.initGroups();
+            user.refreshGroup(postSave.getId() + "_" + BaseXnatProjectdata.OWNER_GROUP);
             user.clearLocalCache();
             //postSave.initBundles(user);
             
@@ -160,7 +161,7 @@ public class ModifyProject extends SecureAction {
                        
             WorkflowUtils.complete(wrk, c);
             user.clearLocalCache();
-            ElementSecurity.refresh();
+            EventManager.Trigger(XnatProjectdata.SCHEMA_ELEMENT_NAME, postSave.getId(), Event.UPDATE);
         } catch (Exception e) {
             logger.error("",e);
             WorkflowUtils.fail(wrk, c);

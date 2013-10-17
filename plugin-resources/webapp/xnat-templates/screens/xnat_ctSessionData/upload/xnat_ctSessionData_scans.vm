@@ -1,5 +1,4 @@
-#* @vtlvariable name="scan" type="org.nrg.xdat.om.XnatImagescandata" *#
-#* @vtlvariable name="user" type="org.nrg.xdat.security.XDATUser" *#
+<!--BEGIN /xnat-templates/screens/xnat_ctSessionData/upload/xnat_ctSessionData_scans.vm -->
 <div class="scans">
 	<div class="edit_header1">Scan Details</div>
 	<table bgcolor="#FFFFFF" cellspacing="0">
@@ -41,11 +40,11 @@
 				$!om.getSortedScans().get($scani).getProperty("startTime")
 			</td>
 			<td>	<!-- align="left" -->
-			$scanTypes
+
 			#if($scanTypes)
 			#if($scanTypes.size()==0)
 		    <input type="text" id="${datatype}/scans/scan[$scani]/type" name="${datatype}/scans/scan[$scani]/type"
-		    			 value="$!scan.getProperty("type")"/>
+		    			 value="$!scan.getProperty("type")" onblur="confirmValues();"/>
 			#else
 				#set($matched=false)
 				<table>	<!--  cellpadding="0" cellspacing="0" align="left" -->
@@ -53,7 +52,7 @@
 						<td>	<!-- align="left" -->
 							<SELECT id="SEL_${datatype}/scans/scan[$scani]/type"
 										  name="SEL_${datatype}/scans/scan[$scani]/type"
-										  onchange="setSelectValue(this);">
+										  onchange="setSelectValue(this);confirmValues();">
 								<OPTION VALUE="">(SELECT)</OPTION>
 
 							#foreach ($pValue in $scanTypes)
@@ -85,21 +84,21 @@ Other
 							     style="display:none">
 								Enter: <input id="${datatype}/scans/scan[$scani]/type"
 														  type="text" name="${datatype}/scans/scan[$scani]/type"
-															value="$!scan.getProperty("type")"/>
+															value="$!scan.getProperty("type")" onblur="confirmValues();"/>
 							</DIV>
 						</td>
 					</tr>
 				</table>
 		  #end
 		 #else
-		    <input type="text" id="${datatype}/scans/scan[$scani]/type" name="${datatype}/scans/scan[$scani]/type"			 value="$!scan.getProperty("type")"/>
+		    <input type="text" id="${datatype}/scans/scan[$scani]/type" name="${datatype}/scans/scan[$scani]/type"			 value="$!scan.getProperty("type")" onblur="confirmValues();"/>
 		 #end
 		
 #if($!scan.getProperty("series_description"))$!scan.getProperty("series_description")#end
 			</td>
 			<td>	<!-- width="127" align="center" -->
 				<SELECT id="${datatype}/scans/scan[$scani]/quality" name="${datatype}/scans/scan[$scani]/quality">
-					<OPTION VALUE="" selected>(SELECT)</OPTION>
+					<OPTION VALUE="">(SELECT)</OPTION>
 					#foreach ($quality in $qualityLabels)
 					<OPTION VALUE="$quality">$quality</OPTION>
 					#end
@@ -108,10 +107,9 @@ Other
 			<td>	<!-- width="215" align="center" -->
 				<input type="text" name="${datatype}/scans/scan[$scani]/note"			 value="$!scan.getProperty("note")" maxlength="80" size="23"/>
 			</td>
-
 						<td>
-				$!scan.getFormattedReadableFileStats($user)
-			</td>
+    			$!scan.getFormattedReadableFileStats($user)
+                       </td>
 		#if($scan.getProperty("xnat_imagescandata_id"))
 			<input type="hidden" name="${datatype}/scans/scan[$scani]/xnat_imagescandata_id" value="$scan.getProperty("xnat_imagescandata_id")"/>
 		#end
@@ -119,3 +117,4 @@ Other
 	#end
 	</table>
 </div>
+<!--END /xnat-templates/screens/xnat_ctSessionData/upload/xnat_ctSessionData_scans.vm -->

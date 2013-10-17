@@ -1,3 +1,6 @@
+#* @vtlvariable name="scan" type="org.nrg.xdat.om.XnatImagescandata" *#
+#* @vtlvariable name="user" type="org.nrg.xdat.security.XDATUser" *#
+<!-- BEGIN /xnat-templates/screens/xnat_mrSessionData/upload/xnat_mrSessionData_scans.vm -->
 <div class="scans">
 	<div class="edit_header1">Scan Details</div>
 	<table bgcolor="#FFFFFF" cellspacing="0">
@@ -106,9 +109,7 @@ Other
 			<td>	<!-- width="215" align="center" -->
 				<input type="text" name="${datatype}/scans/scan[$scani]/note"			 value="$!scan.getProperty("note")" maxlength="80" size="23"/>
 			</td>
-						<td>
-				$!scanprops.get($scani).get("files") files, $!scanprops.get($scani).get("size") MB total
-			</td>
+			<td>$!scan.getFormattedReadableFileStats($user)</td>
 		#if($scan.getProperty("xnat_imagescandata_id"))
 			<input type="hidden" name="${datatype}/scans/scan[$scani]/xnat_imagescandata_id" value="$scan.getProperty("xnat_imagescandata_id")"/>
 		#end
@@ -116,3 +117,4 @@ Other
 	#end
 	</table>
 </div>
+<!-- END /xnat-templates/screens/xnat_mrSessionData/upload/xnat_mrSessionData_scans.vm -->

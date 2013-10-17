@@ -14,6 +14,7 @@ import org.nrg.xdat.model.*;
 import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.om.base.auto.AutoXnatImagescandata;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.search.CriteriaCollection;
@@ -532,4 +533,51 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
         stats.add(0, CatalogUtils.formatFileStats("TOTAL", totalCount, totalSize));
         return stats;
     }
+
+    /**
+     * It's annoying to do this, but in some cases it's easier to get this formatted display directly from the scan
+     * object rather than trying to manage it in the Velocity template.
+     * @return A formatted string that will display the scans in a tip text format.
+     */
+    public String getFormattedReadableFileStats(XDATUser user) throws Exception {
+        if (getFile().size() > 0) {
+            List<String> stats = getReadableFileStats();
+            if(stats == null || stats.size() == 0 || stats.get(0) == null || stats.get(0).equals("") || stats.get(0).equals("0 B in 0 files")) {
+                return getEmptyResourceCount(user);
+            } else if (stats.size() == 1) {
+                return stats.get(0);
+            } else {
+                return getListAsTipText(stats);
+}
+        } else {
+            return getEmptyResourceCount(user);
+        }
+    }
+
+    private String getEmptyResourceCount(XDATUser user) throws Exception {
+        if (user.canEdit(this)) {
+            return "<a onclick=\"window.viewer.init(true);\">Show Counts</a>";
+        }
+        return getListAsTipText(EMPTY_RESOURCE_LIST);
+    }
+
+    private String getListAsTipText(List<String> list) {
+        if (list == null || list.size() == 0 || list.get(0) == null || list.get(0).trim().equals("")) {
+            return "<span class=\"tip_text\">No items found.<span style=\"top:20px;white-space:nowrap;left:-10;width:auto;\" class=\"tip shadowed\">No items were found: Check your data to be sure you specified a valid system object.</span></span>";
+        }
+        StringBuilder buffer = new StringBuilder("<span class=\"tip_text\">").append(list.get(0)).append("<span style=\"top:20px;white-space:nowrap;left:-10;width:auto;\" class=\"tip shadowed\">");
+        for (int index = 1; index < list.size(); index++) {
+            buffer.append(list.get(index));
+            if (index < list.size() - 1) {
+                buffer.append("<br/>");
+            }
+        }
+        buffer.append("</span></span>");
+        return buffer.toString();
+    }
+
+    private static final List<String> EMPTY_RESOURCE_LIST = new ArrayList<String>() {{
+        add("0 B in 0 files");
+        add("No files were found associated with this scan. Contact a member or owner of this project to generate the file count data.");
+    }};
 }

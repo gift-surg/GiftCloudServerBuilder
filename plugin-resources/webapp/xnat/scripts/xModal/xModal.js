@@ -545,6 +545,10 @@ function xModalOpenNew(xx){
         $this_modal.find('.body').addClass('scroll');
     }
 
+    if (xx.beforeShow){
+        xx.beforeShow();
+    }
+
     $('div.xmask').not($this_mask).removeClass('top');
     $this_mask.css('z-index',parseInt(10000+xmodal_count)).show().addClass('open top');
 

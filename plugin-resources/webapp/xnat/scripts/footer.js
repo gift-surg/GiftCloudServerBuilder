@@ -534,6 +534,8 @@ jq(window).load(function(){
 //        emailValidate('input.email_format',false,false);
 //    });
 
+    $('#loading').hide();
+
 
 // end footer.js
 });

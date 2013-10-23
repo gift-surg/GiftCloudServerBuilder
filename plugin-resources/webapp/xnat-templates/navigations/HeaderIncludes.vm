@@ -11,7 +11,7 @@
     // use 'jq' instead of '$' for jQuery functions to avoid _possible_ conflicts with Velocity
     // but $() and jQuery() should still work since we're not using noConflict()
     var jq = jQuery;
-	jq.ajaxSetup({ cache: false });
+	jq.ajaxSetup({cache:false});
 </script>
 
 <script type="text/javascript">
@@ -45,8 +45,14 @@
                      images:{
                         grnChk:"$content.getURI("images/checkmarkGreen.gif")",
                         redChk:"$content.getURI("images/checkmarkRed.gif")"
-                     }
-                   };
+                    },
+                    data: {
+                        context: {
+                            project: '$om.getProject()',
+                            subjectID: '$om.getSubjectId()'
+                        }
+                    }
+               };
     }
 
     var serverRoot = "$content.getURI('')";
@@ -67,7 +73,14 @@
     #end
 
     #foreach ($typeObject in $typeObjects)
-        window.available_elements.push({singular:"$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",plural:"$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",			element_name:"$typeObject.getElementName()",actions:$typeObject.getElementSecurity().getListingActionsJSON(),"lbg":"$!typeObject.getLightColor()","dbg":"$!typeObject.getDarkColor()"});
+        window.available_elements.push({
+            singular: "$typeObject.getSchemaElement().getElementSecurity().getSingularDescription()",
+            plural: "$typeObject.getSchemaElement().getElementSecurity().getPluralDescription()",
+            element_name: "$typeObject.getElementName()",
+            actions: $typeObject.getElementSecurity().getListingActionsJSON(),
+            "lbg": "$!typeObject.getLightColor()",
+            "dbg": "$!typeObject.getDarkColor()"
+        });
     #end
 
     window.available_elements.getByName=function(name){

@@ -474,16 +474,18 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 #layout_content form * b u { font-weight: bold !important ; text-decoration: underline ; }
 
 /* #expts_header .alts { float:right;position:relative;bottom:4px; } */
-#expts_container { display: inline-block ; width: auto ; }
-#expts_link_legend { min-width: 505px ; margin-bottom: 10px ; }
-#expts_link_legend #expts_header { display: inline-block ; float: left ; min-width: 220px ; padding-left: 5px ; font-size: 13px ; font-weight: bold ; }
+#expts_container, .expts_container { display: inline-block ; width: auto ; }
+#expts_link_legend, .legend { min-width: 505px ; margin-bottom: 10px ; }
+#expts_link_legend #expts_header,
+.legend .header { display: inline-block ; float: left ; min-width: 220px ; padding-left: 5px ; font-size: 15px ; font-weight: bold ; }
 /* #expts_link_legend #view_all_link, */
 #expts_link_legend #toggle_expts_link,
 #expts_link_legend #expt_shared_legend,
 #expts_link_legend #expt_denied_legend { float: right ; padding: 0 3px ; font-size: 12px ; font-weight: normal ; }
 #expts_link_legend #expt_shared_legend {  }
 #expts_link_legend #expt_denied_legend {  }
-#proj_expts td, #all_expts td { padding: 2px 20px 2px 5px ; min-width: 80px ; }
+#proj_expts td, #all_expts td,
+.expts_container td { padding: 2px 20px 2px 5px ; min-width: 80px ; }
 
 #proj_expts td a, #all_expts td a { text-decoration: underline ; }
 

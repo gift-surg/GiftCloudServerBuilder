@@ -14,7 +14,6 @@ import com.noelios.restlet.ext.servlet.ServerServlet;
 import org.apache.commons.io.FileUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
-import org.nrg.config.services.SiteConfigurationService;
 import org.nrg.dcm.DicomSCPManager;
 import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.XDAT;
@@ -53,8 +52,9 @@ public class XNATRestletServlet extends ServerServlet {
     /**
      * Get the username of the site administrator. If there are multiple
      * site admins, just get the first one. If none are found, return null.
-     * @return
+     * @return The name of the admin user.
      */
+    @SuppressWarnings("unchecked")
     private String getAdminUser() throws Exception {
         String admin = null;
         Collection<String> logins = (Collection<String>) XDATUser.getAllLogins();
@@ -72,7 +72,6 @@ public class XNATRestletServlet extends ServerServlet {
     public void init() throws ServletException {
         super.init();
 
-        XDAT.getContextService().getBean(SiteConfigurationService.class).setConfigFilesLocationsRoot(this.getServletContext().getRealPath("/"));
         try {
             XDAT.getSiteConfiguration();	// get this cached before a user hits it
         }
@@ -95,9 +94,8 @@ public class XNATRestletServlet extends ServerServlet {
                 } else {
                     throw new Exception("Site administrator not found.");
                 }
-            } else {
-                // there is a default site-wide script, nothing to do here.
             }
+            // there is a default site-wide script, so nothing to do here for the else.
         } catch (Throwable e){
             logger.error("Unable to either find or initialize script database", e);
         }

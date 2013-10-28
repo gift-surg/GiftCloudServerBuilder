@@ -312,6 +312,7 @@ public class SettingsRestlet extends SecureResource {
         _log.debug("Setting arc spec property from body string: " + _form);
         boolean dirtied = false;
         boolean dirtiedNotifications = false;
+        Map<String, String> notifications = new HashMap<String, String>();
         for (String property : map.keySet()) {
             if (property.equals("siteId")) {
                 final String siteId = map.get("siteId");
@@ -390,8 +391,7 @@ public class SettingsRestlet extends SecureResource {
                     dirtiedNotifications = true;
                     clearArcSpecNotifications();
                 }
-                final String userIds = map.get(property);
-                configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(property)), userIds);
+                notifications.put(property, map.get(property));
             } else if (property.equals("anonScript")) {
                 final String anonScript = map.get("anonScript");
                 try {
@@ -442,7 +442,13 @@ public class SettingsRestlet extends SecureResource {
                 dirtied = true;
             }
         }
-        if (dirtied || dirtiedNotifications) {            
+        if (dirtied || dirtiedNotifications) {
+            if (notifications.size() > 0) {
+                boolean allowNonuserSubscribers = XDAT.getBoolSiteConfigurationProperty("emailAllowNonuserSubscribers", false);
+                for (Map.Entry<String, String> notification : notifications.entrySet()) {
+                    configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(notification.getKey())), notification.getValue(), allowNonuserSubscribers);
+                }
+            }
             ArcSpecManager.save(_arcSpec, user, newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specification"));
         }
     }
@@ -458,12 +464,14 @@ public class SettingsRestlet extends SecureResource {
 
     /**
      * Sets up the subscriptions for the indicated events.
-     * @param notificationType    The type of notification for which to configure subscriptions.
-     * @param userIds             The IDs of the users to be subscribed to the indicated notification.
+     * @param notificationType           The type of notification for which to configure subscriptions.
+     * @param userIds                    The IDs of the users to be subscribed to the indicated notification.
+     * @param allowNonuserSubscribers    Indicates whether email addresses that are not associated with system users
+     *                                   should be allowed for subscription addresses.
      */
-    private void configureEventSubscriptions(final NotificationType notificationType, final String userIds) throws Exception {
+    private void configureEventSubscriptions(final NotificationType notificationType, final String userIds, final boolean allowNonuserSubscribers) throws Exception {
         Definition definition = retrieveSiteEventDefinition(notificationType);
-        List<Subscriber> subscribers = getSubscribersFromAddresses(userIds);
+        List<Subscriber> subscribers = getSubscribersFromAddresses(userIds, allowNonuserSubscribers);
         Map<Subscriber, Subscription> subscriptions = getNotificationService().getSubscriptionService().getSubscriberMapOfSubscriptionsForDefinition(definition);
         Channel channel = XDAT.getHtmlMailChannel();
 
@@ -553,17 +561,20 @@ public class SettingsRestlet extends SecureResource {
      * Note that if any of the users aren't found, this method currently will have no indication other than returning fewer
      * users than are specified in the <b>emailAddresses</b> parameter.
      *
-     * @param addressList The comma-separated list of usernames, email addressList, and combined IDs.
+     *
+     * @param addressList                The comma-separated list of usernames, email addressList, and combined IDs.
+     * @param allowNonuserSubscribers    Indicates whether email addresses that are not associated with system users
+     *                                   should be allowed for subscription addresses.
      * @return A list of {@link Subscriber} objects representing those users.
      */
-    private List<Subscriber> getSubscribersFromAddresses(String addressList) throws Exception {
+    private List<Subscriber> getSubscribersFromAddresses(String addressList, final boolean allowNonuserSubscribers) throws Exception {
         final String[] addresses = addressList.split("[\\s]*,[\\s]*");
         if (addresses == null || addresses.length == 0) {
             throw new Exception("Submitted text couldn't be parsed into a list of addresses: " + addressList);
         }
 
         List<Subscriber> subscribers = new ArrayList<Subscriber>();
-        List<String> badAddresses = new ArrayList<String>();
+        List<String> nonuserAddresses = new ArrayList<String>();
         for (String address : addresses) {
             String username = null;
             String email = null;
@@ -579,7 +590,7 @@ public class SettingsRestlet extends SecureResource {
                 List<XdatUser> users = XDATUser.getXdatUsersByField("xdat:user/email", address, null, true);
                 if (users != null && users.size() > 0) {
                     if (users.size() == 1) {
-                    username = users.get(0).getLogin();
+                        username = users.get(0).getLogin();
                     } else {
                         for (XdatUser user : users) {
                             username = user.getLogin();
@@ -589,6 +600,9 @@ public class SettingsRestlet extends SecureResource {
                         }
                     }
                     email = address;
+                } else if (allowNonuserSubscribers) {
+                    // If we allow non-user subscribers, then we'll just make the username and email address be the same.
+                    username = email = address;
                 }
             } else {
                 Matcher combinedMatcher = PATTERN_COMBINED.matcher(address);
@@ -599,15 +613,16 @@ public class SettingsRestlet extends SecureResource {
                 }
             }
 
-            // If there's no username, this is a bad address, but we'll continue so we can harvest ALL the bad addresses.
+            // If there's no username, this is a non-user address on a system that doesn't allow non-user subscribers;
+            // continue so we can harvest ALL the non-user addresses, then handle them appropriately later.
             if (username == null) {
-                badAddresses.add(address);
+                nonuserAddresses.add(address);
                 continue;
             }
 
-            // If we don't have any bad addresses, get the subscriber. If we do have bad addresses, we have a valid user
-            // but we'll skip getting the subscriber to save ourselves the work.
-            if (badAddresses.size() == 0) {
+            // If we don't have any non-user addresses, get the subscriber. If we do have any non-user addresses, we
+            // have a valid user but we'll skip getting the subscriber to save ourselves the work.
+            if (nonuserAddresses.size() == 0) {
                 Subscriber subscriber = getNotificationService().getSubscriberService().getSubscriberByName(username);
                 if (subscriber == null) {
                     try {
@@ -626,8 +641,8 @@ public class SettingsRestlet extends SecureResource {
             }
         }
 
-        if (badAddresses.size() > 0) {
-            throw new Exception(getBadAddressErrorMessage(badAddresses));
+        if (nonuserAddresses.size() > 0) {
+            throw new Exception(getBadAddressErrorMessage(nonuserAddresses));
         }
 
         return subscribers;
@@ -706,22 +721,22 @@ public class SettingsRestlet extends SecureResource {
         String[] entries = text.split("&");
         for (String entry : entries) {
             String[] atoms = entry.split("=", 2);
-            if (atoms == null || atoms.length == 0) {
-                // TODO: Just ignoring for now, should we do something here?
-            } else if (atoms.length == 1) {
-                _data.put(atoms[0], "");
-            } else {
-                try {
-                    _data.put(atoms[0], URLDecoder.decode(atoms[1], "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    // This is the dumbest exception in the history of humanity: the form of this method that doesn't
-                    // specify an encoding is deprecated, so you have to specify an encoding. But the form of the method
-                    // that takes an encoding (http://bit.ly/yX56fe) has an note that emphasizes that you should only
-                    // use UTF-8 because "[n]ot doing so may introduce incompatibilities." Got it? You have to specify
-                    // it, but it should always be the same thing. Oh, and BTW? You have to catch an exception for
-                    // unsupported encodings because you may specify that one acceptable encoding or... something.
-                    //
-                    // I hate them.
+            if (atoms != null && atoms.length > 0) {
+                if (atoms.length == 1) {
+                    _data.put(atoms[0], "");
+                } else {
+                    try {
+                        _data.put(atoms[0], URLDecoder.decode(atoms[1], "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        // This is the dumbest exception in the history of humanity: the form of this method that doesn't
+                        // specify an encoding is deprecated, so you have to specify an encoding. But the form of the method
+                        // that takes an encoding (http://bit.ly/yX56fe) has an note that emphasizes that you should only
+                        // use UTF-8 because "[n]ot doing so may introduce incompatibilities." Got it? You have to specify
+                        // it, but it should always be the same thing. Oh, and BTW? You have to catch an exception for
+                        // unsupported encodings because you may specify that one acceptable encoding or... something.
+                        //
+                        // I hate them.
+                    }
                 }
             }
         }

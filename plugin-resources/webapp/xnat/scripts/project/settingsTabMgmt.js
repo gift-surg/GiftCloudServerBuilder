@@ -51,7 +51,7 @@ function fullConfigHandler() {
             'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
-            , 'error', 'issue', 'newUser', 'update'
+            , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
             , 'anonScript'
             , 'applet'
             , 'dcmPort', 'dcmAe', 'enableDicomReceiver'

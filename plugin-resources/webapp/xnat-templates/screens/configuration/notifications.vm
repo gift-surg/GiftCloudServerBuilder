@@ -28,6 +28,17 @@
             </table>
         </div>
 
+        <p>
+            <label for="emailAllowNonuserSubscribers">Allow non-user subscribers?</label>
+            <input type="checkbox" id="emailAllowNonuserSubscribers" name="emailAllowNonuserSubscribers" onchange="window.siteInfoManager.dirtyForm();" />
+            <small>
+                Indicates whether this site should restrict email addresses for site notifications to addresses that are
+                associated with valid active users of the XNAT installation? If turned on, the site is more secure from
+                exploitation as a spam relay, but restricts the addresses that can be used when alerting administrators
+                to system events.
+            </small>
+        </p>
+
     </div>
     <div class="buttons">
         <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="notifications_save_button" onclick="window.notificationsManager.saveTabSettings();"/>&nbsp;
@@ -56,5 +67,5 @@ function addNotificationsMgmtMonitor(){
 }
 
 YAHOO.util.Event.onDOMReady(addNotificationsMgmtMonitor);
-    putConfigurationControls('notifications', ['error', 'issue', 'newUser', 'update']);
+    putConfigurationControls('notifications', ['error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers']);
 </script>

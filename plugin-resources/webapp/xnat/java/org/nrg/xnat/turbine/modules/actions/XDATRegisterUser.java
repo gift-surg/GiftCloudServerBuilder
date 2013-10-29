@@ -25,10 +25,30 @@ import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATRegisterUser {
+
+    @Override
+    public void doPerform(RunData data, Context context) throws Exception {
+        Map<String, String> parameters = TurbineUtils.GetDataParameterHash(data);
+        if (parameters.containsKey("xdat:user.email")) {
+            final String email = parameters.get("xdat:user.email");
+            ArrayList<ProjectAccessRequest> pars = ProjectAccessRequest.RequestPARsByUserEmail(email, null);
+            if (pars != null && pars.size() > 0) {
+                List<String> projectIds = new ArrayList<String>();
+                for (ProjectAccessRequest par : pars) {
+                    projectIds.add(par.getProjectId());
+                }
+                context.put("pars", projectIds);
+            }
+        }
+        super.doPerform(data, context);
+    }
 
     public void directRequest(RunData data, Context context, XDATUser user) throws Exception {
 
@@ -83,39 +103,6 @@ public class XDATRegisterUser extends org.nrg.xdat.turbine.modules.actions.XDATR
                 data.setScreenTemplate(nextPage);
             }
         }
-    }
-
-    @Override
-    public String getAutoApprovalTextMsg(RunData data, XDATUser newUser) {
-    	StringBuilder message = new StringBuilder("New User Created: ");
-        message.append(newUser.getUsername());
-        message.append("<br>Firstname: ").append(newUser.getFirstname());
-        message.append("<br>Lastname: ").append(newUser.getLastname());
-        message.append("<br>Email: ").append(newUser.getEmail());
-        if (TurbineUtils.HasPassedParameter("comments", data)) {
-            message.append("<br>Comments: ").append(TurbineUtils.GetPassedParameter("comments", data));
-        }
-        if (TurbineUtils.HasPassedParameter("phone", data)) {
-            message.append("<br>Phone: ").append(TurbineUtils.GetPassedParameter("phone", data));
-        }
-        if (TurbineUtils.HasPassedParameter("lab", data)) {
-            message.append("<br>Lab: ").append(TurbineUtils.GetPassedParameter("lab", data));
-        }
-        
-        String parID = (String) TurbineUtils.GetPassedParameter("par", data);
-		
-		if (StringUtils.isEmpty(parID) && data.getSession().getAttribute("par") != null) {
-			parID = (String) data.getSession().getAttribute("par");
-		}
-		
-		if (!StringUtils.isEmpty(parID)) {
-			ProjectAccessRequest par = ProjectAccessRequest.RequestPARByGUID(parID, null);
-			if (par != null) {
-				message.append("<br>Project: ").append(par.getProjectId());
-			}
-		}
-		
-        return message.toString();
     }
 
 	@Override

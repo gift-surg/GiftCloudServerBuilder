@@ -176,13 +176,7 @@ public class XnatProviderManager extends ProviderManager {
                 lastException = exception;
             } catch(NewLdapAccountNotAutoEnabledException e) {
                 try {
-                    AdminUtils.sendNewUserRequestNotification(
-                            e.getUserDetails().getUsername(),
-                            e.getUserDetails().getFirstname(),
-                            e.getUserDetails().getLastname(),
-                            e.getUserDetails().getEmail()
-                            , "", "", "", new VelocityContext()
-                    );
+                    AdminUtils.sendNewUserNotification(e.getUserDetails(), "", "", "", new VelocityContext());
                 } catch (Exception exception) {
                     _log.error("Error occurred sending new user request email", exception);
                 }

@@ -96,32 +96,56 @@ var xModalLoaderCount = 0 ;
 
 function xModalLoadingOpen(_options){
 
-    // let's only have ONE 'generic' loading window open at a time
-    if (!$('#loader1.xmodal.loading.open').length){
+    var thisLoader, thisClass, thisTitle, thisContent ;
+    var $loading_modal = $('#loading.xmask');
 
-        xModalLoaderCount++;
-
-        var thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
-        var thisClass = (_options && _options.class_) ? _options.class_ +' loading' : 'loading';
-        var thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
-        var thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
-        var loader = {
-            id: thisLoader,
-            class_: thisClass,
-            kind: 'fixed',
-            width: 260,
-            height: 92,
-            scroll: 'no',
-            title: thisTitle,
-            content: thisContent,
-            footer: 'hide'
-        };
-        xModalOpenNew(loader);
+    if (_options && _options.id) {
+        thisLoader = _options.id ;
+        $loading_modal.attr('data-loader-id',thisLoader);
     }
+    if (_options && _options.class_) {
+        thisClass = _options.class_ ;
+        $loading_modal.addClass(thisClass);
+        $loading_modal.find('.xmodal').addClass(thisClass);
+    }
+    if (_options && _options.title) {
+        thisTitle = _options.title ;
+        $loading_modal.find('.title > .inner').html(thisTitle);
+    }
+    if (_options && _options.content) {
+        thisContent = _options.content ;
+        $loading_modal.find('.body.content > .inner').html(thisContent);
+    }
+
+    $loading_modal.fadeIn(100);
+
+//    // let's only have ONE 'generic' loading window open at a time
+//    if (!$('#loader1.xmodal.loading.open').length){
+//
+//        xModalLoaderCount++;
+//
+//        thisLoader = (_options && _options.id) ? _options.id : 'loader'+xModalLoaderCount;
+//        thisClass = (_options && _options.class_) ? _options.class_ +' loading' : 'loading';
+//        thisTitle = (_options && _options.title) ? _options.title : 'Please wait...';
+//        thisContent = (_options && _options.content) ? _options.content : '<img src="'+serverRoot+'/images/loading_bar.gif" alt="loading">';
+//        loader = {
+//            id: thisLoader,
+//            class_: thisClass,
+//            kind: 'fixed',
+//            width: 260,
+//            height: 92,
+//            scroll: 'no',
+//            title: thisTitle,
+//            content: thisContent,
+//            footer: 'hide'
+//        };
+//        xModalOpenNew(loader);
+//    }
 }
 function xModalLoadingClose(_id){
-    var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;
-    xModalCloseNew(_id,$(thisLoader).closest('div.xmask.open.top'));
+    $('#loading.xmask').fadeOut(100);
+    //var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;
+    //xModalCloseNew(_id,$(thisLoader).closest('div.xmask.open.top'));
 }
 
 // 'Preset' for generic fixed-size modal
@@ -651,11 +675,12 @@ function xModalCloseNew(_xmodal_id,_$this_mask) {
         $mask = _$this_mask ? _$this_mask : $('div.xmask.top');
         $modal = $mask.find('div.xmodal');
     }
-    xmodal_count-- ;
-    var prev_xmodal = xmodal_count ;
+    //xmodal_count-- ;
+    //var prev_xmodal = xmodal_count+0 ;
     $modal.hide().removeClass('open');
     $mask.fadeOut(100).removeClass('open top');
-    $('div.xmask[data-xmodal-x="'+prev_xmodal+'"]').addClass('top');
+    //$('div.xmask[data-xmodal-x="'+prev_xmodal+'"]').addClass('top');
+    $('div.xmask.open:last').addClass('top');
     if ($modal.hasClass('static')){
         $modal.find('.title').remove();
         $modal.find('.footer').remove();

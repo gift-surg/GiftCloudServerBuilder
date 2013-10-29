@@ -7,16 +7,16 @@
 if (typeof XNAT == 'undefined') XNAT={};
 // if the XNAT.app namespace object isn't defined yet, we've STILL got some problems
 if (typeof XNAT.app == 'undefined') XNAT.app={};
+if (typeof XNAT.app.defaults == 'undefined') XNAT.app.defaults={};
 if (typeof XNAT.app.datePicker == 'undefined') XNAT.app.datePicker={};
 // making sure there's an XNAT.data object
 if (typeof XNAT.data == 'undefined') XNAT.data={};
 
 XNAT.app.datePicker.count = 0;
 
-XNAT.app.datePicker.show = function(_$cal){
+XNAT.app.datePicker.reveal = function(_$cal){
     _$cal.find('.calendar').fadeIn(100);
 };
-
 
 // initialize todaysDate object
 // and put the stuff in there
@@ -30,38 +30,93 @@ XNAT.data.todaysDate = {} ;
     dateObj.d = dateObj.date.getDate().toString();
     dateObj.dd = (dateObj.d.length === 1) ? '0'+ dateObj.d : dateObj.d ;
     dateObj.yyyy = dateObj.date.getFullYear().toString();
-    dateObj.ISO = dateObj.yyyy + '-' +  dateObj.mm + '-' + dateObj.dd;
-    dateObj.US = dateObj.mm + '/' +  dateObj.dd + '/' + dateObj.yyyy;
+    dateObj.ISO = dateObj.iso = dateObj.yyyy + '-' +  dateObj.mm + '-' + dateObj.dd;
+    dateObj.US = dateObj.us = dateObj.mm + '/' +  dateObj.dd + '/' + dateObj.yyyy;
 })();
 
 XNAT.data.selectedDate = {};
 
-function splitDate(_date,_format){
-    var date={}, valid_format ;
-    if (_format === 'us'){
-        valid_format = /^\d{2}\/\d{2}\/\d{4}$/ ; //Basic check for format validity
-        date.arr = _date.split('/');
-        date.mm = date.arr[0];
-        date.dd = date.arr[1];
-        date.yyyy = date.arr[2];
-        date.format = '01/31/2013';
+// feed this function a date (and optionally a format) and
+// it'll spit out month number and name (full or abbreviated), day, and year
+function SplitDate(_date,_format){
+
+    var mm_pos, dd_pos, yyyy_pos, example ;
+
+    this.val = _date ; // save it to a variable before removing the spaces
+
+    _date = _date.replace(/\s+/g,''); // removing spaces?
+
+    _format = _format || '' ;
+    _format = _format.toLowerCase();
+
+    var months = {
+        '01':['January','Jan'], '02':['February','Feb'], '03':['March','Mar'], '04':['April','Apr'], '05':['May','May'], '06':['June','Jun'], '07':['July','Jul'],
+        '08':['August','Aug'], '09':['September','Sep'], '10':['October','Oct'], '11':['November','Nov'], '12':['December','Dec'], '13':['invalid','invalid']
+    };
+
+    // accepts either dashes, slashes or periods as a delimeter
+    // but there must be SOME delimeter
+    if (_date.indexOf('-') !== -1){
+        this.arr = _date.split('-');
     }
-    if (_format === 'iso'){
-        valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
-        date.arr = _date.split('-');
-        date.yyyy = date.arr[0];
-        date.mm = date.arr[1];
-        date.dd = date.arr[2];
-        date.format = '2013-01-31';
+    else if (_date.indexOf('/') !== -1){
+        this.arr = _date.split('/');
     }
-    if (valid_format) return date ;
-    else return _date ;
+    else if (_date.indexOf('.') !== -1){
+        this.arr = _date.split('.');
+    }
+
+    if (this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
+        if (_format === 'eu' || _format === 'euro'){ // it it's Euro
+            dd_pos = 0; mm_pos = 1; yyyy_pos = 2; example = '31/01/2001';
+        }
+        else {
+            mm_pos = 0; dd_pos = 1; yyyy_pos = 2; example = '01/31/2001';
+        }
+    }
+    else if (this.arr[0].length === 4 || _format === 'iso'){ // it's probably ISO format
+        yyyy_pos = 0; mm_pos = 1; dd_pos = 2; example = '2001-01-31';
+    }
+
+    this.mm = this.arr[mm_pos] ;
+    if (this.mm === '' || parseInt(this.mm) > 12) this.mm = '13';
+    this.month = months[this.mm+''][0];
+    this.mo = months[this.mm+''][1];
+    this.dd = this.arr[dd_pos];
+    if (this.dd === '' || parseInt(this.dd) > 31) this.dd = '32';
+    this.yyyy = this.year = this.arr[yyyy_pos];
+    if (this.yyyy !== '' /*|| this.year < XNAT.data.todaysDate.yyyy-120 /*|| year > XNAT.data.todaysDate.yyyy*/) this.yyyy = parseInt(this.year) ;
+    this.format = this.example = example ;
+
+    this.date_string = this.yyyy + this.mm + this.dd ;
+    this.date_num = parseInt(this.date_string);
+
 }
 
+/*
+// examples of using the SplitDate function
+var split_date = new SplitDate(XNAT.data.todaysDate.iso);
+if (console.log) console.log('The date is ' + split_date.mo + ' ' + split_date.dd + ', ' + split_date.yyyy + '.');
+//
+var split_date2 = new SplitDate(XNAT.data.todaysDate.us);
+if (console.log) console.log('The date is ' + split_date2.mo + ' ' + split_date2.dd + ', ' + split_date2.yyyy + '.');
+//
+var split_date3 = new SplitDate('22-11-2011','euro');
+if (console.log) console.log('The date is ' + split_date3.mo + ' ' + split_date3.dd + ', ' + split_date3.yyyy + '.');
+//
+var split_date4 = new SplitDate('2001.11.11');
+if (console.log) console.log('The date is ' + split_date4.mo + ' ' + split_date4.dd + ', ' + split_date4.yyyy + '.');
+//
+var split_date5 = new SplitDate('9999-44-55');
+if (console.log) console.log('The date is ' + split_date5.mo + ' ' + split_date5.dd + ', ' + split_date5.yyyy + '.');
+//
+*/
+
 function closeModal_pickDate(_this,$input){
-    xModalCloseNew('',$(_this).closest('div.xmask.top'));
+    var modal_id = $(_this).closest('.xmodal').attr('id');
+    xModalCloseNew(modal_id);
     //_$input.focus();
-    XNAT.app.datePicker.show($input.closest('.ez_cal_wrapper'));
+    XNAT.app.datePicker.reveal($input.closest('.ez_cal_wrapper'));
 }
 
 function focusInput($input){
@@ -69,7 +124,7 @@ function focusInput($input){
         $input.focus();
         $input.select();
     }
-    // if 'multi', class will be on element (div, span, etc.)
+    // if 'multi', the class will be on element (div, span, etc.)
     // CONTAINING the mm, dd, and yyyy input fields
     if ($input.is('.multi')){
         $input.find('input.date').first().focus();
@@ -97,12 +152,7 @@ XNAT.app.checkDateInput = function($input,format) {
     if ($input.hasClass('iso')){ format='iso' }
     format = format.toLowerCase();
 
-    var valid_format, kind, $focus, date={}, message_opts={} ;
-
-    var days = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
-    var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-    var year_min = 1900 ;
-    var year_max = XNAT.data.todaysDate.yyyy ;
+    var valid_format, kind, $focus, date={}, message_opts={}, future = false ;
 
     if ($input.hasClass('multi')){
         kind = 'multi' ;
@@ -113,48 +163,54 @@ XNAT.app.checkDateInput = function($input,format) {
         date.val = date.yyyy+'-'+date.mm+'-'+date.dd;
         valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
         date.format = '2013-01-31';
+        date = new SplitDate(date.val,'iso');
     }
-//    if ($input.is('input.single')){
     else {
         kind = 'single' ;
-        date.val = $input.val();
-        if (format === 'us'){
+        if (format === 'us' || format === 'euro'){
             valid_format = /^\d{2}\/\d{2}\/\d{4}$/ ; //Basic check for format validity
-            date.arr = date.val.split('/');
-            date.mm = date.arr[0];
-            date.dd = date.arr[1];
-            date.yyyy = date.arr[2];
-            date.format = '01/31/2013';
         }
         if (format === 'iso'){
             valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
-            date.arr = date.val.split('-');
-            date.yyyy = date.arr[0];
-            date.mm = date.arr[1];
-            date.dd = date.arr[2];
-            date.format = '2013-01-31';
         }
+        date = new SplitDate($input.val(),format);
         $focus = $input ;
     }
 
+    // if it has the 'future' class, allow future date selection
+    if ($input.hasClass('future')) future = true ;
+
     var return_val = false ;
-    if (date.mm === '  ' && date.dd === '  ' && date.yyyy === '    ' && $input.hasClass('onblur')){
-        // don't freak out just' because it's empty
-        // but only if it's validated onblur - go ahead and freak out if it's onsubmit
+    if ((date.mm === '  ' || date.mm === '13') && (date.dd === '  ' || date.dd === '32')&& (date.yyyy === '    ' || date.yyyy === '') && $input.hasClass('onblur')){
+        // don't freak out *just* because it's empty if it's validated onblur
+        // go ahead and freak out if it's onsubmit
         return false ;
     }
-    var selected_date = new Date(date.yyyy, date.mm - 1, date.dd);
-    var todays_date = new Date();
+    //var selected_date = new Date(date.yyyy, date.mm - 1, date.dd);
+    //var todays_date = new Date();
+
+    // concatenate today's year, month and day to represent a value for today (hacky? yes? effective? also yes.)
+    // this will be used to compare with the selected date to prevent selecting a future date
+    var max_date_string = XNAT.data.todaysDate.yyyy + XNAT.data.todaysDate.mm + XNAT.data.todaysDate.dd ;
+    // convert concatenated string to a number for comparison
+    var max_date_num = parseInt(max_date_string);
+
+    date.max_future = max_date_num+1000000 ;
+    date.min_past = max_date_num-1200000 ;
+
     //message_opts.action = function(){closeModal_pickDate(this,$input)};
     message_opts.height = 175 ;
+    message_opts.okClose = false ;
     message_opts.action = function(){
-        focusInput($focus);
+        var modal_id = $(this).closest('.xmodal').attr('id');
+        xModalCloseNew(modal_id);
+        //focusInput($focus);
     };
     if (!valid_format.test(date.val)) {
-        if (typeof xModalMessage != 'undefined'){
+        if (typeof xModalMessage != 'undefined') {
             xModalMessage(
                 'Invalid Date Format',
-                'Please enter the date in the format: '+ date.format +' or <a class="use_date_picker" href="javascript:" ' +
+                'Please enter the date in the format: ' + date.format + ' or <a class="use_date_picker" href="javascript:" ' +
                     //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
                     //'onclick="closeModal_pickDate();" ' +
                     'style="text-decoration:underline;">use the date picker to select a date</a>.',
@@ -163,36 +219,39 @@ XNAT.app.checkDateInput = function($input,format) {
             );
         }
         else {
-            alert('Invalid Date Format. Please enter the date in the format: '+ date.format +'.');
+            alert('Invalid Date Format. Please enter the date in the format: ' + date.format + '.');
         }
     }
-    //Detailed check for valid date ranges
-    else if ((selected_date.getMonth() + 1 != date.mm) || (selected_date.getDate() != date.dd) || (selected_date.getFullYear() != date.yyyy)) {
-        if (
-        // as soon as I figure out how to make sure the date is not in the future
-            selected_date > todays_date
-//            window
-//            && date.yyyy < year_min &&
-//                date.yyyy > XNAT.data.todaysDate.yyyy &&
-//                date.mm > XNAT.data.todaysDate.mm &&
-//                date.dd > XNAT.data.todaysDate.dd &&
-//                (parseInt(date.yyyy + date.mm + date.dd) > parseInt(XNAT.data.todaysDate.yyyy + XNAT.data.todaysDate.mm + XNAT.data.todaysDate.dd))
-            ) {
-            if (typeof xModalMessage != 'undefined') {
-                xModalMessage(
-                    'Invalid Date',
-                    'Invalid Day, Month, or Year range detected. Please correct or <a class="use_date_picker" href="javascript:" ' +
-                        //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
-                        'style="text-decoration:underline;">use the date picker to select a valid date</a> and continue.',
-                    'OK',
-                    message_opts
-                );
-            }
-            else {
-                alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
-            }
+    else if (future === false && date.date_num > max_date_num && date.date_num < date.max_future){
+        if (typeof xModalMessage != 'undefined') {
+            xModalMessage(
+                'Invalid Date',
+                'You may not select a date in the future. Please correct or <a class="use_date_picker" href="javascript:" ' +
+                    //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
+                    'style="text-decoration:underline;">use the date picker to select a valid date</a> and continue.',
+                'OK',
+                message_opts
+            );
         }
-        //alert(todays_date)
+        else {
+            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
+        }
+    }
+    // check for sane date ranges - between 120 years ago and 100 years from now
+    else if (date.date_num < date.min_past || date.date_num > date.max_future) {
+        if (typeof xModalMessage != 'undefined') {
+            xModalMessage(
+                'Invalid Date',
+                'Invalid Day, Month, or Year range detected. Please correct or <a class="use_date_picker" href="javascript:" ' +
+                    //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
+                    'style="text-decoration:underline;">use the date picker to select a valid date</a> and continue.',
+                'OK',
+                message_opts
+            );
+        }
+        else {
+            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
+        }
     }
     else {
         return_val = true;
@@ -398,10 +457,10 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
     // if the 'future' option is not specified, stop at today
     if (typeof _opts.future == 'undefined') cal_config.maxdate = XNAT.data.todaysDate.US;
 
-    this.ezCal = new YAHOO.widget.Calendar(this_cal+'-calendar', this_cal+'-container', cal_config);
+    var ezCal = new YAHOO.widget.Calendar(this_cal+'-calendar', this_cal+'-container', cal_config);
     //var myEzCal = this.ezCal ;
 
-    this.handleSelect = function(type,args,obj) {
+    var ezCalSelect = function(type,args,obj) {
 
         var dates = args[0];
         var date = dates[0];
@@ -443,9 +502,9 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
 
     };
 
-    this.ezCal.selectEvent.subscribe(this.handleSelect, this.ezCal, true);
+    ezCal.selectEvent.subscribe(ezCalSelect, ezCal, true);
 
-    this.ezCal.render();
+    ezCal.render();
 
     _$e.find('table.yui-calendar').css('width','180px');
 
@@ -510,7 +569,7 @@ $(function(){
     $body = $('body');
 
     $body.on('click','.insert-date',function(){
-        XNAT.app.datePicker.show($(this).closest('.ez_cal_wrapper'));
+        XNAT.app.datePicker.reveal($(this).closest('.ez_cal_wrapper'));
     });
 
     $body.on('click','.use-todays-date',function(){

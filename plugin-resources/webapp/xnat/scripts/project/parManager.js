@@ -79,7 +79,12 @@ function PARManager(_div,_obj){
 	
 	this.render=function(){
 		this.div.innerHTML="";
-		
+
+        if (this.pars.length == 0) {
+            jq('#heading').html('Sorry...');
+            jq('#pil').html('There are no outstanding project access requests for the current user.');
+            return;
+        }
 		for(var parC=0;parC<this.pars.length;parC++){
 			var p=this.pars[parC];
 		

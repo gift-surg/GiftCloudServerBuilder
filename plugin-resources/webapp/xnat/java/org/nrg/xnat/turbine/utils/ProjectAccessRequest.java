@@ -30,6 +30,9 @@ import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
+import org.nrg.xnat.exceptions.AmbiguousXFTItemException;
+import org.nrg.xnat.exceptions.XFTItemNotFoundException;
+import org.nrg.xnat.exceptions.XNATException;
 import org.nrg.xnat.utils.WorkflowUtils;
 
 import javax.mail.MessagingException;
@@ -42,13 +45,21 @@ import static org.nrg.xdat.om.XnatProjectdata.*;
 public class ProjectAccessRequest {
     public static boolean CREATED_PAR_TABLE = false;
 
-    public ProjectAccessRequest(final String query, final XDATUser user) throws SQLException, DBPoolException {
+    public ProjectAccessRequest(final String query, final XDATUser user) throws XNATException, SQLException, DBPoolException {
         XFTTable table = runInitQuery(query, user);
         table.resetRowCursor();
-        while (table.hasMoreRows()) {
-            initializeFromDataRow(table.nextRow());
+        int numRows = table.getNumRows();
+        if (numRows == 0) {
+            throw new XFTItemNotFoundException("Found no results for project access request search, should return one and only one.", user) {{
+                setQuery(query);
+            }};
+        } else if (numRows > 1) {
+            throw new AmbiguousXFTItemException("Found " + numRows + " results for project access request search, should return one and only one.", user) {{
+                setQuery(query);
+            }};
         }
-        }
+        initializeFromDataRow(table.nextRow());
+    }
 
     public ProjectAccessRequest(Object[] row) throws SQLException, DBPoolException {
         initializeFromDataRow(row);
@@ -91,7 +102,7 @@ public class ProjectAccessRequest {
     public void setUserId(Integer userId) {
         _userId = userId;
     }
-    
+
     /**
      * Gets the email associated with this request.
      * @return A string containing the email associated with this request.
@@ -205,7 +216,7 @@ public class ProjectAccessRequest {
     public Boolean getApproved(){
         return _approved;
     }
-    
+
     /**
      * @param approved the approved to set
      */
@@ -263,11 +274,11 @@ public class ProjectAccessRequest {
             }
 
             query.append(" WHERE par_id=").append(_requestId).append(";");
-            
+
             PoolDBUtils.ExecuteNonSelectQuery(query.toString(), user.getDBName(), user.getLogin());
         }
     }
-    
+
     /**
      * Processes the project access request, setting the <b>user</b> as the accepting or declining user. Note that this
      * will also process all other requests associated with the same email as this request. This does <i>not</i> find
@@ -284,11 +295,11 @@ public class ProjectAccessRequest {
     public List<String> process(XDATUser user, boolean accept, EventUtils.TYPE eventType, String reason, String comment) throws Exception {
         return process(user, accept, eventType, reason, comment, true);
     }
-    
+
     public static ProjectAccessRequest RequestPARById(Integer id, XDATUser user) {
         return RequestPAR(" par_id=" + id, user);
     }
-    
+
     public static ProjectAccessRequest RequestPARByGUID(String guid, XDATUser user) {
         return RequestPAR(" guid='" + guid + "'", user);
     }
@@ -296,7 +307,7 @@ public class ProjectAccessRequest {
     public static ProjectAccessRequest RequestPARByUserProject(Integer userId, String projectId, XDATUser user) {
         return RequestPAR(" user_id=" + userId + " AND proj_id='" + projectId + "'", user);
     }
-    
+
     public static ArrayList<ProjectAccessRequest> RequestPARsByUserEmail(String email, XDATUser user) {
         return RequestPARs(" xs_par_table.email='" + email + "' AND approval_date IS NULL", user);
     }
@@ -304,11 +315,11 @@ public class ProjectAccessRequest {
     public static ArrayList<ProjectAccessRequest> RequestPARsByProject(String p, XDATUser user) {
         return RequestPARs(" proj_id='" + p + "'", user);
     }
-    
+
     public static ArrayList<ProjectAccessRequest> RequestPARByUserApprovalDate(Integer userId, Date lastLogin, XDATUser user) {
         return RequestPARs(" user_id=" + userId + " AND (approval_date>'" + lastLogin + "' OR approval_date IS NULL)", user);
     }
-    
+
     public static ProjectAccessRequest RequestPAR(String where, XDATUser user) {
         try {
             String query = getPARQuery(where);
@@ -318,7 +329,7 @@ public class ProjectAccessRequest {
             return null;
         }
     }
-    
+
     public static ArrayList<ProjectAccessRequest> RequestPARs(String where, XDATUser user) {
         ArrayList<ProjectAccessRequest> PARs = new ArrayList<ProjectAccessRequest>();
         try {
@@ -326,7 +337,7 @@ public class ProjectAccessRequest {
             XFTTable table = runInitQuery(query, user);
             table.resetRowCursor();
             while (table.hasMoreRows()) {
-            ProjectAccessRequest par = new ProjectAccessRequest(query, user);    
+            ProjectAccessRequest par = new ProjectAccessRequest(query, user);
                 par.initializeFromDataRow(table.nextRow());
             PARs.add(par);
             }
@@ -335,13 +346,13 @@ public class ProjectAccessRequest {
         }
         return PARs;
     }
-    
+
     public static void CreatePAR(String pID, String level, XDATUser user){
         try {
             if (!CREATED_PAR_TABLE) {
                 CreatePARTable();
             }
-            
+
             String query = String.format("INSERT INTO xs_par_table (proj_id,user_id,level) VALUES ('%s', %d, '%s');", pID, user.getID(), StringUtils.RemoveChar(level, '\''));
             PoolDBUtils.ExecuteNonSelectQuery(query, user.getDBName(), user.getLogin());
         } catch (SQLException e) {
@@ -355,13 +366,13 @@ public class ProjectAccessRequest {
     public static synchronized void CreatePARTable() {
         try {
             if (!CREATED_PAR_TABLE) {
-                
+
                 String query = "SELECT relname FROM pg_catalog.pg_class WHERE relname = LOWER('xs_par_table');";
                 String exists = (String) PoolDBUtils.ReturnStatisticQuery(query, "relname", PoolDBUtils.getDefaultDBName(), null);
-               
+
                 if (exists != null) {
                     CREATED_PAR_TABLE=true;
-                    
+
                     //check for email column (added 6/2/08)
                     boolean containsEmail = false, containsGuid = false;
                     PoolDBUtils con = new PoolDBUtils();
@@ -381,7 +392,7 @@ public class ProjectAccessRequest {
                             }
                         }
         			}
-        			
+
         			if (!containsEmail) {
         				query = "ALTER TABLE xs_par_table ADD COLUMN email VARCHAR(255);";
         				PoolDBUtils.ExecuteNonSelectQuery(query, PoolDBUtils.getDefaultDBName(), null);
@@ -407,7 +418,7 @@ public class ProjectAccessRequest {
                             "\n  CONSTRAINT xs_par_table_guid_key UNIQUE (guid)"+
                     "\n) "+
                     "\nWITH OIDS;";
-                    
+
                     PoolDBUtils.ExecuteNonSelectQuery(query, PoolDBUtils.getDefaultDBName(), null);
                     CREATED_PAR_TABLE = true;
                 }
@@ -416,7 +427,7 @@ public class ProjectAccessRequest {
             _logger.error("Error occurred while creating PAR table", exception);
         }
     }
-    
+
     public static void InviteUser(Context context, String invitee, XDATUser user, String subject) throws Exception {
     	XnatProjectdata project = (XnatProjectdata) context.get("projectOM");
     	ProjectAccessRequest request = null;
@@ -424,24 +435,24 @@ public class ProjectAccessRequest {
             if (!CREATED_PAR_TABLE) {
 	             CreatePARTable();
 	         }
-	         
+
 	         invitee = StringUtils.RemoveChar(invitee, '\'');
             String guid = UUID.randomUUID().toString();
-	         
+
             StringBuilder query = new StringBuilder("INSERT INTO xs_par_table (email, guid, proj_id, approver_id, level) VALUES ('");
             query.append(invitee).append("', '").append(guid).append("', '").append(project.getId()).append("', ").append(user.getID()).append(", '").append(context.get("access_level")).append("');");
-	         
+
 	         PoolDBUtils.ExecuteNonSelectQuery(query.toString(), user.getDBName(), user.getLogin());
-	         
+
             request = RequestPAR("xs_par_table.email = '" + invitee + "' AND guid = '" + guid + "' AND proj_id = '" + project.getId() + "' AND approved IS NULL", user);
 	    } catch (SQLException exception) {
 	         _logger.error("Error occurred while running SQL query", exception);
 	    } catch (Exception exception) {
 	         _logger.error("General error occurred when inviting user " + invitee, exception);
-	    }	
-	    
+	    }
+
 	    context.put("par", request);
-	
+
         StringWriter writer = new StringWriter();
         Template template = Velocity.getTemplate("/screens/InviteProjectAccessEmail.vm");
         template.merge(context, writer);
@@ -450,7 +461,7 @@ public class ProjectAccessRequest {
         if (ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()) {
 	        bcc = AdminUtils.getAdminEmailId();
         }
-        
+
         String from = AdminUtils.getAdminEmailId();
 
         try {
@@ -460,7 +471,7 @@ public class ProjectAccessRequest {
             throw exception;
         }
     }
-    
+
     private ProjectAccessRequest() throws SQLException, DBPoolException {
         // Here for creation of objects from initialization functions.
     }
@@ -480,7 +491,7 @@ public class ProjectAccessRequest {
 		if (accept) {
 
 			XnatProjectdata project = getXnatProjectdatasById(_projectId, null, false);
-			
+
 			PersistentWorkflowI workflow = WorkflowUtils.getOrCreateWorkflowData(null, user, SCHEMA_ELEMENT_NAME, _projectId, _projectId, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, eventType, EventUtils.ADD_USER_TO_PROJECT, reason, comment));
 			EventMetaI eventInfo = workflow.buildEvent();
 
@@ -504,7 +515,7 @@ public class ProjectAccessRequest {
 				user.addGroup(project.addGroupMember(_level, user, user, eventInfo, true));
 
 				WorkflowUtils.complete(workflow, eventInfo);
-				
+
 				try {
 					ItemAccessHistory.LogAccess(user, project.getItem(), "report");
 				} catch (Throwable e) {

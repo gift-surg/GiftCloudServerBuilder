@@ -33,6 +33,9 @@ public class PARResource extends SecureResource {
 		super(context, request, response);
 		String par_id = (String) getParameter(request,"PAR_ID");
 		par = ProjectAccessRequest.RequestPARByGUID(par_id, user);
+        if (par == null) {
+            par = ProjectAccessRequest.RequestPARById(Integer.parseInt(par_id), user);
+        }
 		if (par != null) {
 			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));

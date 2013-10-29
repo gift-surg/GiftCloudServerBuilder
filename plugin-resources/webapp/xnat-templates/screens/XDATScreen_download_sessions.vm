@@ -1,4 +1,13 @@
+#* @vtlvariable name="displayManager" type="org.nrg.xdat.display.DisplayManager" *#
+#* @vtlvariable name="link" type="org.apache.turbine.util.template.TemplateLink" *#
+#* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
+#* @vtlvariable name="scan_formats" type="java.util.List" *#
+#* @vtlvariable name="scan" type="java.util.List" *#
+#* @vtlvariable name="sessionSummary" type="java.util.List" *#
+#* @vtlvariable name="sessionRow" type="java.util.List" *#
+#* @vtlvariable name="scans" type="java.util.List" *#
 #* @vtlvariable name="resources" type="java.util.List" *#
+#* @vtlvariable name="resource" type="java.util.List" *#
 #* @vtlvariable name="recons" type="java.util.List" *#
 #* @vtlvariable name="assessors" type="java.util.List" *#
 #set($showResources = $resources && $resources.size() > 0)
@@ -141,18 +150,20 @@
             <TR>
                 <TD colspan="2">
                     <TABLE>
+                        #set($counter = 0)
                         #foreach($scan in $scan_formats)
                             #if($!scan.get(0))
                                 <TR>
-                                    <TD><input type="checkbox" name="scan_format" value="$!scan.get(0)" checked="true"/></TD>
-                                    <TD>$!scan.get(0)</TD>
+                                    <TD><input type="checkbox" id="scan_format$counter" name="scan_format" value="$!scan.get(0)" checked="true"/></TD>
+                                    <TD><label for="scan_format$counter">$!scan.get(0)</label></TD>
                                 </TR>
                             #else
                                 <TR>
-                                    <TD><input type="checkbox" name="scan_format" value="NULL" checked="checked"/></TD>
-                                    <TD>Unspecified</TD>
+                                    <TD><input type="checkbox" id="scan_format$counter" name="scan_format" value="NULL" checked="checked"/></TD>
+                                    <TD><label for="scan_format$counter">Unspecified</label></TD>
                                 </TR>
                             #end
+                            #set($counter = $counter + 1)
                         #end
                     </TABLE>
                 </TD>
@@ -166,7 +177,7 @@
                 <TD><INPUT type="checkbox" value=""
                            ONCLICK="toggleAll(this,['scan_type'#if($showResources),'resources'#end #if($showRecons),'recon'#end #if($showAssessors),'assessors'#end]);"
                            ID="toggleAllScanTypes" checked="true"/></TD>
-                <TD>Toggle All</TD>
+                <TD><label for="toggleAllScanTypes">Toggle All</label></TD>
             </TR>
 
             <TR>
@@ -180,18 +191,20 @@
                 <TD></TD>
                 <TD>
                     <TABLE>
+                        #set($counter = 0)
                         #foreach($scan in $scans)
                             #if($!scan.get(0))
                                 <TR>
-                                    <TD><input type="checkbox" name="scan_type" value="$!scan.get(0)" checked="true"/></TD>
-                                    <TD>$!scan.get(0) ($!scan.get(1))</TD>
+                                    <TD><input type="checkbox" id="scan_type$counter" name="scan_type" value="$!scan.get(0)" checked="true"/></TD>
+                                    <TD><label for="scan_type$counter">$!scan.get(0) ($!scan.get(1))</label></TD>
                                 </TR>
                             #else
                                 <TR>
-                                    <TD><input type="checkbox" name="scan_type" value="NULL"/></TD>
-                                    <TD>Unassigned ($!scan.get(1))</TD>
+                                    <TD><input type="checkbox" id="scan_type$counter" name="scan_type" value="NULL"/></TD>
+                                    <TD><label for="scan_type$counter">Unassigned ($!scan.get(1))</label></TD>
                                 </TR>
                             #end
+                            #set($counter = $counter + 1)
                         #end
                     </TABLE>
                 </TD>
@@ -205,7 +218,7 @@
                 <TR>
                     <TD></TD>
                     <TD>
-                        <DIV class="edit_header3">Addl Resources</DIV>
+                        <DIV class="edit_header3">Additional Resources</DIV>
                     </TD>
                 </TR>
 
@@ -213,18 +226,20 @@
                     <TD></TD>
                     <TD>
                         <TABLE>
-                            #foreach($res in $resources)
-                                #if($!res.get(0))
+                            #set($counter = 0)
+                            #foreach($resource in $resources)
+                                #if($!resource.get(0))
                                     <TR>
-                                        <TD><input type="checkbox" name="resources" value="$!res.get(0)" checked="true"/></TD>
-                                        <TD>$!res.get(0)</TD>
+                                        <TD><input type="checkbox" id="resources$counter" name="resources" value="$!resource.get(0)" checked="true"/></TD>
+                                        <TD><label for="resources$counter">$!resource.get(0)</label></TD>
                                     </TR>
                                 #else
                                     <TR>
-                                        <TD><input type="checkbox" name="resources" value="NULL"/></TD>
-                                        <TD>Unspecified</TD>
+                                        <TD><input type="checkbox" id="resources$counter" name="resources" value="NULL"/></TD>
+                                        <TD><label for="resources$counter">Unspecified</label></TD>
                                     </TR>
                                 #end
+                                #set($counter = $counter + 1)
                             #end
                         </TABLE>
                     </TD>
@@ -247,18 +262,20 @@
                     <TD></TD>
                     <TD>
                         <TABLE ID="subTableScans">
+                            #set($counter = 0)
                             #foreach($scan in $recons)
                                 #if($!scan.get(0))
                                     <TR>
-                                        <TD><input type="checkbox" name="recon" value="$!scan.get(0)" checked="true"/></TD>
-                                        <TD>$!scan.get(0) ($!scan.get(1))</TD>
+                                        <TD><input type="checkbox" id="recon$counter" name="recon" value="$!scan.get(0)" checked="true"/></TD>
+                                        <TD><label for="recon$counter">$!scan.get(0) ($!scan.get(1))</label></TD>
                                     </TR>
                                 #else
                                     <TR>
-                                        <TD><input type="checkbox" name="recon" value="NULL"/></TD>
-                                        <TD>Unassigned ($!scan.get(1))</TD>
+                                        <TD><input type="checkbox" id="recon$counter" name="recon" value="NULL"/></TD>
+                                        <TD><label for="recon$counter">Unassigned ($!scan.get(1))</label></TD>
                                     </TR>
                                 #end
+                                #set($counter = $counter + 1)
                             #end
                         </TABLE>
                     </TD>
@@ -281,18 +298,20 @@
                     <TD></TD>
                     <TD>
                         <TABLE>
+                            #set($counter = 0)
                             #foreach($scan in $assessors)
                                 #if($!scan.get(2))
                                     <TR>
-                                        <TD><input type="checkbox" name="assessors" value="$!scan.get(0)" checked="true"/></TD>
-                                        <TD>$!scan.get(2) ($!scan.get(1))</TD>
+                                        <TD><input type="checkbox" id="assessors$counter" name="assessors" value="$!scan.get(0)" checked="true"/></TD>
+                                        <TD><label for="assessors$counter">$!scan.get(2) ($!scan.get(1))</label></TD>
                                     </TR>
                                 #else
                                     <TR>
-                                        <TD><input type="checkbox" name="assessors" value="$!scan.get(0)"/></TD>
-                                        <TD>$!scan.get(0) ($!scan.get(1))</TD>
+                                        <TD><input type="checkbox" id="assessors$counter" name="assessors" value="$!scan.get(0)"/></TD>
+                                        <TD><label for="assessors$counter">$!scan.get(0) ($!scan.get(1))</label></TD>
                                     </TR>
                                 #end
+                                #set($counter = $counter + 1)
                             #end
                         </TABLE>
                     </TD>
@@ -310,8 +329,8 @@
 <TD VALIGN="top" width="300" class="withColor">
     <TABLE>
         <TR>
-            <TD><INPUT type="radio" name="download_option" value="applet" CHECKED></TD>
-            <TD>Option 1: Direct download</TD>
+            <TD><INPUT type="radio" id="download_option" name="download_option" value="applet" CHECKED></TD>
+            <TD><label for="download_option">Option 1: Direct download</label></TD>
         </TR>
         <TR>
             <TD></TD>
@@ -324,8 +343,8 @@
             <TD>&nbsp;</TD>
         </TR>
         <TR>
-            <TD><INPUT type="radio" name="download_option" value="catalog"></TD>
-            <TD>Option 2: Catalog XML (.xcat)</TD>
+            <TD><INPUT type="radio" id="download_option" name="download_option" value="catalog"></TD>
+            <TD><label for="download_option">Option 2: Catalog XML (.xcat)</label></TD>
         </TR>
 
         <TR>
@@ -338,16 +357,16 @@
             <TD>&nbsp;</TD>
         </TR>
         <TR>
-            <TD><input type="checkbox" name="projectIncludedInPath" value="true"/>
-            <TD>Include $displayManager.getSingularDisplayNameForProject().toLowerCase() in file paths</TD>
+            <TD><input type="checkbox" id="projectIncludedInPath" name="projectIncludedInPath" value="true"/>
+            <TD><label for="projectIncludedInPath">Include $displayManager.getSingularDisplayNameForProject().toLowerCase() in file paths</label></TD>
         </TR>
         <TR>
-            <TD><input type="checkbox" name="subjectIncludedInPath" value="true"/>
-            <TD>Include $displayManager.getSingularDisplayNameForSubject().toLowerCase() in file paths</TD>
+            <TD><input type="checkbox" id="subjectIncludedInPath" name="subjectIncludedInPath" value="true"/>
+            <TD><label for="subjectIncludedInPath">Include $displayManager.getSingularDisplayNameForSubject().toLowerCase() in file paths</label></TD>
         </TR>
         <TR>
-            <TD><input type="checkbox" name="simplified" checked value="true"/>
-            <TD>Simplify downloaded archive structure</TD>
+            <TD><input type="checkbox" id="simplified" name="simplified" checked value="true"/>
+            <TD><label for="simplified">Simplify downloaded archive structure</label></TD>
         </TR>
         <TR>
             <TD colspan="2">&nbsp;</TD>

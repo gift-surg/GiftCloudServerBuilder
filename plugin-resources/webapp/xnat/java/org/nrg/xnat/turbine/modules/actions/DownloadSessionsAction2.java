@@ -25,23 +25,25 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class DownloadSessionsAction2 extends SecureAction {
 
     /* (non-Javadoc)
      * @see org.apache.turbine.modules.actions.VelocitySecureAction#doPerform(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void doPerform(RunData data, Context context) throws Exception {
-        String [] session_ids=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("sessions",data));
+        String [] session_ids=((String[])TurbineUtils.GetPassedObjects("sessions",data));
 
-        String [] requestScanTypes=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_type",data));
-        String [] scanFormats=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("scan_format",data));
-        String [] recons=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("recon",data));
-        String [] assessors=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("assessors",data));
-        String [] resources=((String[])org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedObjects("resources",data));
+        String [] requestScanTypes=((String[])TurbineUtils.GetPassedObjects("scan_type",data));
+        String [] scanFormats=((String[])TurbineUtils.GetPassedObjects("scan_format",data));
+        String [] recons=((String[])TurbineUtils.GetPassedObjects("recon",data));
+        String [] assessors=((String[])TurbineUtils.GetPassedObjects("assessors",data));
+        String [] resources=((String[])TurbineUtils.GetPassedObjects("resources",data));
 
 		//BEGIN:IOWA customization: to allow project and subject included in path
-        boolean projectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("projectIncludedInPath",data));
+        boolean projectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("projectIncludedInPath", data));
         boolean subjectIncludedInPath = "true".equalsIgnoreCase((String)TurbineUtils.GetPassedParameter("subjectIncludedInPath",data));
         boolean simplified = "true".equalsIgnoreCase((String) TurbineUtils.GetPassedParameter("simplified", data));
         
@@ -71,42 +73,35 @@ public class DownloadSessionsAction2 extends SecureAction {
 
             // narrow down the range of scan types to only the ones relevant to this session
             if (requestScanTypes != null && requestScanTypes.length > 0) {
-            String query= "SELECT DISTINCT type FROM xnat_imagescandata WHERE image_session_id = '" + session + "' AND type IN (" + sqlList(requestScanTypes) + ")";
-            XFTTable table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
-                List<String> sessionScanTypes = table.convertColumnToArrayList("type");
-                if (sessionScanTypes!=null && sessionScanTypes.size() > 0) {
-                CatCatalogBean scansCatalog = new CatCatalogBean();
-                scansCatalog.setId("RAW");
-                for(String scanType : sessionScanTypes){
-                        if(scanType.contains("/")){
-                    	scanType=scanType.replace("/","[SLASH]");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
-                    }
-                        if(scanType.contains(",")){
-                    	scanType=scanType.replace(",","[COMMA]");
-                    }
-                	
-                	if(scanFormats!=null && scanFormats.length>0){
-                		for(String scanFormat : scanFormats){
+                String query = "SELECT id FROM xnat_imagescandata WHERE image_session_id = '" + session + "' AND type IN (" + sqlList(requestScanTypes) + ")";
+                XFTTable table = XFTTable.Execute(query, TurbineUtils.getUser(data).getDBName(), TurbineUtils.getUser(data).getLogin());
+                List<String> sessionScans = table.convertColumnToArrayList("id");
+                if (sessionScans != null && sessionScans.size() > 0) {
+                    CatCatalogBean scansCatalog = new CatCatalogBean();
+                    scansCatalog.setId("RAW");
+                    for (String scan : sessionScans) {
+                        if (scanFormats != null && scanFormats.length > 0) {
+                            for (String scanFormat : scanFormats) {
+                                CatEntryBean entry = new CatEntryBean();
+                                entry.setFormat("ZIP");
+                                String uri = server + "data/experiments/" + session + "/scans/" + scan + "/resources/" + URLEncoder.encode(scanFormat, "UTF-8") + "/files?format=zip" + extraParam;
+                                entry.setUri(uri);
+                                l.add(uri);
+                                scansCatalog.addEntries_entry(entry);
+                            }
+                        } else {
                             CatEntryBean entry = new CatEntryBean();
-                            entry.setFormat("ZIP");                            
-                            String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType, "UTF-8") + "/resources/" + URLEncoder.encode(scanFormat, "UTF-8") + "/files?format=zip" + extraParam;
+                            entry.setFormat("ZIP");
+                            String uri = server + "data/experiments/" + session + "/scans/" + scan + "/files?format=zip" + extraParam;
                             entry.setUri(uri);
                             l.add(uri);
                             scansCatalog.addEntries_entry(entry);
-                		}
-                	}else{
-                        CatEntryBean entry = new CatEntryBean();
-                        entry.setFormat("ZIP");
-                        String uri=server + "data/experiments/" + session + "/scans/" + URLEncoder.encode(scanType, "UTF-8") + "/files?format=zip" + extraParam;
-                        entry.setUri(uri);
-                        l.add(uri);
-                        scansCatalog.addEntries_entry(entry);
-                	}
+                        }
+                    }
+                    sessionCatalog.addSets_entryset(scansCatalog);
                 }
-                sessionCatalog.addSets_entryset(scansCatalog);
             }
-            }
-            
+
             if (resources!=null && resources.length>0){
                 final CatCatalogBean scansCatalog = new CatCatalogBean();
                 scansCatalog.setId("RESOURCES");
@@ -163,7 +158,7 @@ public class DownloadSessionsAction2 extends SecureAction {
         fw.close();
         
         String catalogXML = server + "archive/catalogs/stored/" + id + ".xml";
-        if (((String)TurbineUtils.GetPassedParameter("download_option",data)).equals("applet")){
+        if (TurbineUtils.GetPassedParameter("download_option",data).equals("applet")){
             context.put("catalogXML", catalogXML);
             context.put("sessions", l);
             

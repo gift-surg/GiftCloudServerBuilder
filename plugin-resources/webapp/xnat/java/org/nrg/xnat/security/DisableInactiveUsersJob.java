@@ -62,6 +62,7 @@ import java.util.GregorianCalendar;
 							// Fixes XNAT-2407. Only disable user if they have not been recently modified (enabled). 
 							if(!hasUserBeenModified(u, secondsBeforeLockout)){
 								u.setEnabled("0");
+                                u.setVerified("0");
 								XDATUser.ModifyUser(u, u, EventUtils.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, EventUtils.TYPE.PROCESS, "Disabled due to inactivity"));
 							
 								String expiration=TurbineUtils.getDateTimeFormatter().format(DateUtils.addMilliseconds(GregorianCalendar.getInstance().getTime(), -(AuthUtils.LOCKOUT_DURATION)));

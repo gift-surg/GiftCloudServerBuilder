@@ -45,6 +45,10 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
     private String logoutDestination = "";
     private String loginPath = "";
     private String loginDestination = "";
+    private String inactiveAccountPath;
+    private String inactiveAccountDestination;
+    private String emailVerificationDestination;
+    private String emailVerificationPath;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -148,12 +152,16 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
         else{
             String uri = request.getRequestURI();
 
-            if(uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination) || uri.endsWith(logoutDestination) || uri.endsWith(loginPath) || uri.endsWith(loginDestination)){
-                //If you're already on the change password page, continue on without redirect.
-                chain.doFilter(req, res);
-            }
-            else if(referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination) || referer.endsWith(logoutDestination))){
-                //If you're on a request within the change password page, continue on without redirect.
+            if (user.getUsername().equals("guest") ||
+                    //If you're logging in or out, or going to the login page itself
+                    (uri.endsWith(logoutDestination) || uri.endsWith(loginPath) || uri.endsWith(loginDestination)) ||
+                    //If you're already on the change password page, continue on without redirect.
+                    (user.isEnabled() && (uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination))) ||
+                    //If you're already on the inactive account page or reactivating an account, continue on without redirect.
+                    (!user.isEnabled() && (uri.endsWith(inactiveAccountPath) || uri.endsWith(inactiveAccountDestination) ||
+                            uri.endsWith(emailVerificationPath) || uri.endsWith(emailVerificationDestination))) ||
+                    //If you're on a request within the change password page, continue on without redirect.
+                    (referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination) || referer.endsWith(logoutDestination)))){
                 chain.doFilter(req, res);
             }
             else if( 
@@ -165,37 +173,34 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                 // Shouldn't check for a localdb expired password if user is coming in through LDAP
                 chain.doFilter(req, res);
             }
-            else{
-                String username = user.getUsername();
-
-                if (username.equals("guest")) {
+            else if (user.isEnabled()) {
+                boolean isExpired=true;
+                String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
+                if(interval.equals("-1")) {
                     chain.doFilter(request, response);
                 } else {
-                    boolean isExpired=true;
-                    String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
-                    if(interval.equals("-1")) {
+                    try{
+                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
+                            public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                return rs.getBoolean(1);
+                            }
+                        });
+                        isExpired = expired.get(0);
+                    }
+                    catch(Exception e){
+                        logger.error(e);
+                    }
+                    request.getSession().setAttribute("expired", isExpired);
+                    if(isExpired){
+                        response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+                    }
+                    else{
                         chain.doFilter(request, response);
-                    } else {
-                        try{
-                            List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {username}, new RowMapper<Boolean>() {
-                                public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                    return rs.getBoolean(1);
-                                }
-                            });
-                            isExpired = expired.get(0);
-                        }
-                        catch(Exception e){
-                            logger.error(e);
-                        }
-                        request.getSession().setAttribute("expired", isExpired);
-                        if(isExpired && !username.equals("guest")){
-                            response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
-                        }
-                        else{
-                            chain.doFilter(request, response);
-                        }
                     }
                 }
+            }
+            else {
+                response.sendRedirect(TurbineUtils.GetFullServerPath() + inactiveAccountPath);
             }
         }
     }
@@ -218,5 +223,37 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 
     public void setLoginDestination(String loginDestination) {
         this.loginDestination = loginDestination;
+    }
+
+    public void setInactiveAccountPath(String inactiveAccountPath) {
+        this.inactiveAccountPath = inactiveAccountPath;
+    }
+
+    public String getInactiveAccountPath() {
+        return inactiveAccountPath;
+    }
+
+    public void setInactiveAccountDestination(String inactiveAccountDestination) {
+        this.inactiveAccountDestination = inactiveAccountDestination;
+    }
+
+    public String getInactiveAccountDestination() {
+        return inactiveAccountDestination;
+    }
+
+    public void setEmailVerificationDestination(String emailVerificationDestination) {
+        this.emailVerificationDestination = emailVerificationDestination;
+    }
+
+    public String getEmailVerificationDestination() {
+        return emailVerificationDestination;
+    }
+
+    public void setEmailVerificationPath(String emailVerificationPath) {
+        this.emailVerificationPath = emailVerificationPath;
+    }
+
+    public String getEmailVerificationPath() {
+        return emailVerificationPath;
     }
 }

@@ -100,11 +100,13 @@
                 <value>/app/action/XDATChangePassword*</value>
                 <value>/app/action/XDATForgotLogin*</value>
                 <value>/app/action/XDATRegisterUser*</value>
+                <value>/app/action/InactiveAccountEmail*</value>
                 <value>/app/template/ChangePassword.vm*</value>
                 <value>/app/template/Error.vm*</value>
                 <value>/app/template/ForgotLogin.vm*</value>
                 <value>/app/template/Login.vm*</value>
                 <value>/app/template/PostRegister.vm*</value>
+                <value>/app/template/InactiveAccount.vm*</value>
                 <value>/app/template/Register.vm*</value>
                 <value>/app/template/ResendEmail.vm*</value>
                 <value>/app/template/ResendVerification.vm*</value>
@@ -205,6 +207,10 @@
         <property name="logoutDestination" value="/app/action/LogoutUser"/>
         <property name="loginPath" value="/app/template/Login.vm"/>
         <property name="loginDestination" value="/app/action/XDATLoginUser"/>
+        <property name="inactiveAccountPath" value="/app/template/InactiveAccount.vm"/>
+        <property name="inactiveAccountDestination" value="/app/action/XnatInactiveAccount"/>
+        <property name="emailVerificationPath" value="/app/template/VerifyEmail.vm"/>
+        <property name="emailVerificationDestination" value="/data/services/sendEmailVerification"/>
     </bean>
 	
 	<bean id="arcSpecFilter" class="org.nrg.xnat.security.XnatArcSpecFilter">

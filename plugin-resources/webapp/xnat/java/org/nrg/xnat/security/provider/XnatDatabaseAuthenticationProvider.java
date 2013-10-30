@@ -10,10 +10,13 @@
  */
 package org.nrg.xnat.security.provider;
 
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xnat.security.tokens.XnatDatabaseUsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -79,7 +82,9 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
             throw new AuthenticationServiceException("User details class is not of a type I know how to handle: " + userDetails.getClass());
         }
         final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
-        xdatUserDetails.validateUserLogin();
+        if ( (XDAT.verificationOn() && !xdatUserDetails.isVerified() && xdatUserDetails.isEnabled()) || !xdatUserDetails.isAccountNonLocked()) {
+            throw new CredentialsExpiredException("Attempted login to unverified or locked account: " + xdatUserDetails.getUsername(), this);
+        }
         super.additionalAuthenticationChecks(userDetails, authentication);
     }
 
@@ -100,16 +105,11 @@ public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvide
                         "User account is locked"), user);
             }
 
-            if (!user.isEnabled()) {
-                if (disabledDueToInactivity(user)) {
-                    throw new AccountExpiredException("Attempted login to disabled account: " + user.getUsername(), this);
-                }
-                else {
-                    logger.debug("User account is disabled");
+            if (!user.isEnabled() && !disabledDueToInactivity(user)) {
+                logger.debug("User account is disabled");
 
-                    throw new DisabledException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled",
-                            "User is disabled"), user);
-                }
+                throw new DisabledException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled",
+                        "User is disabled"), user);
             }
 
             if (!user.isAccountNonExpired()) {

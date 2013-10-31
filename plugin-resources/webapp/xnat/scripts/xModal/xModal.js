@@ -68,6 +68,8 @@ function xModalMessage(_title,_message,_label,_options){
 
     xModalMessageCount++ ;
 
+    window.closeModal = true ;
+
     var msgWidth, msgHeight, msgAction ;
 
     msgWidth  = (_options && _options.width)  ? _options.width  : 420 ;
@@ -117,7 +119,8 @@ function xModalLoadingOpen(_options){
         $loading_modal.find('.body.content > .inner').html(thisContent);
     }
 
-    $loading_modal.fadeIn(100);
+    //$loading_modal.fadeIn(100);
+    $loading_modal.show();
 
 //    // let's only have ONE 'generic' loading window open at a time
 //    if (!$('#loader1.xmodal.loading.open').length){
@@ -143,7 +146,8 @@ function xModalLoadingOpen(_options){
 //    }
 }
 function xModalLoadingClose(_id){
-    $('#loading.xmask').fadeOut(100);
+    //$('#loading.xmask').fadeOut(100);
+    $('#loading.xmask').hide();
     //var thisLoader = (_id && _id > '') ? '#'+_id : 'div.xmodal.loading.open' ;
     //xModalCloseNew(_id,$(thisLoader).closest('div.xmask.open.top'));
 }
@@ -394,7 +398,7 @@ function xModalSizes($this_modal,width,height){
 }
 
 
-function xModalOpenNew(xx){
+xModal.Modal = function(xx){
 
     $html = $('html');
     $body = $('body');
@@ -408,6 +412,8 @@ function xModalOpenNew(xx){
     this.height = xx.height || 400 ;
     this.scroll = xx.scroll|| 'yes' ;
     this.title = xx.title || 'Message' ;
+    this.closeBtn = xx.closeBtn || 'show' ;
+    this.closeClass = xx.closeClass || '' ;
     this.content = xx.content || '(no content)' ;
 
     this.footer = xx.footer || 'show' ;
@@ -509,12 +515,18 @@ function xModalOpenNew(xx){
     }
 
     // the title
-    $this_modal.prepend('' +
+    var title_bar_html = '';
+    title_bar_html += '' +
         '<div class="title">' +
         '   <span class="inner">' + this.title + '</span>' +
-        '   <div class="close button"></div>' +
-        '</div>' +
-        '');
+        '';
+    if (this.closeBtn === 'show'){
+        title_bar_html += '' +
+            '   <div class="close button"></div>' +
+            '';
+    }
+    title_bar_html += '</div>';
+    $this_modal.prepend(title_bar_html);
 
     // footer stuff
     // set up classes for 'ok' and 'cancel' buttons
@@ -599,6 +611,9 @@ function xModalOpenNew(xx){
             xModalCancelAction();
         };
     }
+};
+function xModalOpenNew(xx){
+    new xModal.Modal(xx);
 }
 
 // xModalOpen() function included for backwards compatibility (used in HCP)
@@ -780,10 +795,11 @@ $(function(){
     $body.keydown(function(e) {
         var keyCode = (window.event) ? e.which : e.keyCode;
         if (keyCode === 13) {  // key 13 = 'enter'
-            if ($body.hasClass('open')){
+            if ($body.hasClass('open') && window.closeModal === true){
                 e.preventDefault();
                 var $top_modal = $('div.xmask.top');
                 $top_modal.find('.default.button').trigger('click');
+                window.closeModal = false ;
             }
         }
     });

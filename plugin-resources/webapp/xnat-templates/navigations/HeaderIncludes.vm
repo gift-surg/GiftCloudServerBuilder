@@ -49,11 +49,17 @@
                     data: {
                         context: {
                             project: '$om.getProject()',
-                            subjectID: '$om.getSubjectId()'
-                        }
+                            ## #if ($om.getSubjectId())
+                                subjectID: '$om.getSubjectId()',
+                            ## #end
+                        },
+                        timestamp: jq.now() // timestamp for the page when it loads
                     }
                };
     }
+
+    // 'page' object is same as 'context' - easier to remember?
+    XNAT.data.page = XNAT.data.context ;
 
     var serverRoot = "$content.getURI('')";
     var csrfToken = "$!XNAT_CSRF";
@@ -108,6 +114,24 @@
               XNAT.app.current_uri=serverRoot+"/REST/projects/$om.getProject()/subjects/$om.getSubjectId()/experiments/$om.getId()";
     #end
 #end
+
+    // quickly reference today's date
+    XNAT.data.todaysDate = {} ;
+    // if today was January 23, 2013...
+    // m (1), mm (01), d (23), dd (23), yyyy (2013), ISO/iso (2013-01-23), US/us (01/23/2013)
+    (function(dateObj){
+        //var dateObj = XNAT.data.todaysDate ;
+        dateObj.date = new Date();
+        dateObj.gotMonth = dateObj.date.getMonth();
+        dateObj.m = (dateObj.gotMonth + 1).toString() ;
+        dateObj.mm = (dateObj.m.length === 1) ? '0'+ dateObj.m : dateObj.m ;
+        dateObj.d = dateObj.date.getDate().toString();
+        dateObj.dd = (dateObj.d.length === 1) ? '0'+ dateObj.d : dateObj.d ;
+        dateObj.yyyy = dateObj.date.getFullYear().toString();
+        dateObj.ISO = dateObj.iso = dateObj.yyyy + '-' +  dateObj.mm + '-' + dateObj.dd;
+        dateObj.US = dateObj.us = dateObj.mm + '/' +  dateObj.dd + '/' + dateObj.yyyy;
+    })(XNAT.data.todaysDate);
+
 </script>
 <script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></script>
 <script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></script>

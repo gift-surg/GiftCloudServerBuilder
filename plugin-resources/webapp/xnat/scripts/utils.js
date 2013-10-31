@@ -218,6 +218,7 @@ function getParameterByName(name) {
     return (results == null) ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+
 // utility for sorting DOM elements
 // usage: sortElements('ul#list','li');
 function sortElements(_parent,_child){
@@ -228,7 +229,82 @@ function sortElements(_parent,_child){
         var compA = $(a).text().toUpperCase();
         var compB = $(b).text().toUpperCase();
         return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
-    })
+    });
     $.each(listitems, function(idx, itm) { mylist.append(itm); });
 }
 
+
+// feed this function a date (and optionally a format) and
+// it'll spit out month number and name (full or abbreviated), day, and year
+function SplitDate(_date,_format){
+
+    var mm_pos, dd_pos, yyyy_pos, example ;
+
+    this.val = _date ; // save it to a variable before removing the spaces
+
+    _date = _date.replace(/\s+/g,''); // removing spaces?
+
+    _format = _format || '' ;
+    _format = _format.toLowerCase();
+
+    var months = {
+        '01':['January','Jan'], '02':['February','Feb'], '03':['March','Mar'], '04':['April','Apr'], '05':['May','May'], '06':['June','Jun'], '07':['July','Jul'],
+        '08':['August','Aug'], '09':['September','Sep'], '10':['October','Oct'], '11':['November','Nov'], '12':['December','Dec'], '13':['invalid','invalid']
+    };
+
+    // accepts either dashes, slashes or periods as a delimeter
+    // but there must be SOME delimeter
+    if (_date.indexOf('-') !== -1){
+        this.arr = _date.split('-');
+    }
+    else if (_date.indexOf('/') !== -1){
+        this.arr = _date.split('/');
+    }
+    else if (_date.indexOf('.') !== -1){
+        this.arr = _date.split('.');
+    }
+
+    if (this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
+        if (_format === 'eu' || _format === 'euro'){ // it it's Euro
+            dd_pos = 0; mm_pos = 1; yyyy_pos = 2; example = '31/01/2001';
+        }
+        else {
+            mm_pos = 0; dd_pos = 1; yyyy_pos = 2; example = '01/31/2001';
+        }
+    }
+    else if (this.arr[0].length === 4 || _format === 'iso'){ // it's probably ISO format
+        yyyy_pos = 0; mm_pos = 1; dd_pos = 2; example = '2001-01-31';
+    }
+
+    this.mm = this.arr[mm_pos] ;
+    if (this.mm === '' || parseInt(this.mm) > 12) this.mm = '13';
+    this.month = months[this.mm+''][0];
+    this.mo = months[this.mm+''][1];
+    this.dd = this.arr[dd_pos];
+    if (this.dd === '' || parseInt(this.dd) > 31) this.dd = '32';
+    this.yyyy = this.year = this.arr[yyyy_pos];
+    if (this.yyyy !== '') this.yyyy = parseInt(this.year) ;
+    this.format = this.example = example ;
+
+    this.date_string = this.yyyy + this.mm + this.dd ;
+    this.date_num = parseInt(this.date_string);
+
+}
+/*
+ // examples of using the SplitDate function
+ var split_date = new SplitDate(XNAT.data.todaysDate.iso);
+ if (console.log) console.log('The date is ' + split_date.mo + ' ' + split_date.dd + ', ' + split_date.yyyy + '.');
+ //
+ var split_date2 = new SplitDate(XNAT.data.todaysDate.us);
+ if (console.log) console.log('The date is ' + split_date2.mo + ' ' + split_date2.dd + ', ' + split_date2.yyyy + '.');
+ //
+ var split_date3 = new SplitDate('22-11-2011','euro');
+ if (console.log) console.log('The date is ' + split_date3.mo + ' ' + split_date3.dd + ', ' + split_date3.yyyy + '.');
+ //
+ var split_date4 = new SplitDate('2001.11.11');
+ if (console.log) console.log('The date is ' + split_date4.mo + ' ' + split_date4.dd + ', ' + split_date4.yyyy + '.');
+ //
+ var split_date5 = new SplitDate('9999-44-55');
+ if (console.log) console.log('The date is ' + split_date5.mo + ' ' + split_date5.dd + ', ' + split_date5.yyyy + '.');
+ //
+ */

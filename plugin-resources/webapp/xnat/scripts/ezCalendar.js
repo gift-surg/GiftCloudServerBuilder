@@ -18,99 +18,99 @@ XNAT.app.datePicker.reveal = function(_$cal){
     _$cal.find('.calendar').fadeIn(100);
 };
 
-// initialize todaysDate object
-// and put the stuff in there
-XNAT.data.todaysDate = {} ;
-(function(){
-    var dateObj = XNAT.data.todaysDate ;
-    dateObj.date = new Date();
-    dateObj.gotMonth = dateObj.date.getMonth();
-    dateObj.m = (dateObj.gotMonth + 1).toString() ;
-    dateObj.mm = (dateObj.m.length === 1) ? '0'+ dateObj.m : dateObj.m ;
-    dateObj.d = dateObj.date.getDate().toString();
-    dateObj.dd = (dateObj.d.length === 1) ? '0'+ dateObj.d : dateObj.d ;
-    dateObj.yyyy = dateObj.date.getFullYear().toString();
-    dateObj.ISO = dateObj.iso = dateObj.yyyy + '-' +  dateObj.mm + '-' + dateObj.dd;
-    dateObj.US = dateObj.us = dateObj.mm + '/' +  dateObj.dd + '/' + dateObj.yyyy;
-})();
+//// initialize todaysDate object
+//// and put the stuff in there
+//XNAT.data.todaysDate = {} ;
+//(function(){
+//    var dateObj = XNAT.data.todaysDate ;
+//    dateObj.date = new Date();
+//    dateObj.gotMonth = dateObj.date.getMonth();
+//    dateObj.m = (dateObj.gotMonth + 1).toString() ;
+//    dateObj.mm = (dateObj.m.length === 1) ? '0'+ dateObj.m : dateObj.m ;
+//    dateObj.d = dateObj.date.getDate().toString();
+//    dateObj.dd = (dateObj.d.length === 1) ? '0'+ dateObj.d : dateObj.d ;
+//    dateObj.yyyy = dateObj.date.getFullYear().toString();
+//    dateObj.ISO = dateObj.iso = dateObj.yyyy + '-' +  dateObj.mm + '-' + dateObj.dd;
+//    dateObj.US = dateObj.us = dateObj.mm + '/' +  dateObj.dd + '/' + dateObj.yyyy;
+//})();
 
 XNAT.data.selectedDate = {};
 
-// feed this function a date (and optionally a format) and
-// it'll spit out month number and name (full or abbreviated), day, and year
-function SplitDate(_date,_format){
-
-    var mm_pos, dd_pos, yyyy_pos, example ;
-
-    this.val = _date ; // save it to a variable before removing the spaces
-
-    _date = _date.replace(/\s+/g,''); // removing spaces?
-
-    _format = _format || '' ;
-    _format = _format.toLowerCase();
-
-    var months = {
-        '01':['January','Jan'], '02':['February','Feb'], '03':['March','Mar'], '04':['April','Apr'], '05':['May','May'], '06':['June','Jun'], '07':['July','Jul'],
-        '08':['August','Aug'], '09':['September','Sep'], '10':['October','Oct'], '11':['November','Nov'], '12':['December','Dec'], '13':['invalid','invalid']
-    };
-
-    // accepts either dashes, slashes or periods as a delimeter
-    // but there must be SOME delimeter
-    if (_date.indexOf('-') !== -1){
-        this.arr = _date.split('-');
-    }
-    else if (_date.indexOf('/') !== -1){
-        this.arr = _date.split('/');
-    }
-    else if (_date.indexOf('.') !== -1){
-        this.arr = _date.split('.');
-    }
-
-    if (this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
-        if (_format === 'eu' || _format === 'euro'){ // it it's Euro
-            dd_pos = 0; mm_pos = 1; yyyy_pos = 2; example = '31/01/2001';
-        }
-        else {
-            mm_pos = 0; dd_pos = 1; yyyy_pos = 2; example = '01/31/2001';
-        }
-    }
-    else if (this.arr[0].length === 4 || _format === 'iso'){ // it's probably ISO format
-        yyyy_pos = 0; mm_pos = 1; dd_pos = 2; example = '2001-01-31';
-    }
-
-    this.mm = this.arr[mm_pos] ;
-    if (this.mm === '' || parseInt(this.mm) > 12) this.mm = '13';
-    this.month = months[this.mm+''][0];
-    this.mo = months[this.mm+''][1];
-    this.dd = this.arr[dd_pos];
-    if (this.dd === '' || parseInt(this.dd) > 31) this.dd = '32';
-    this.yyyy = this.year = this.arr[yyyy_pos];
-    if (this.yyyy !== '' /*|| this.year < XNAT.data.todaysDate.yyyy-120 /*|| year > XNAT.data.todaysDate.yyyy*/) this.yyyy = parseInt(this.year) ;
-    this.format = this.example = example ;
-
-    this.date_string = this.yyyy + this.mm + this.dd ;
-    this.date_num = parseInt(this.date_string);
-
-}
-
-/*
-// examples of using the SplitDate function
-var split_date = new SplitDate(XNAT.data.todaysDate.iso);
-if (console.log) console.log('The date is ' + split_date.mo + ' ' + split_date.dd + ', ' + split_date.yyyy + '.');
+//// feed this function a date (and optionally a format) and
+//// it'll spit out month number and name (full or abbreviated), day, and year
+//function SplitDate(_date,_format){
 //
-var split_date2 = new SplitDate(XNAT.data.todaysDate.us);
-if (console.log) console.log('The date is ' + split_date2.mo + ' ' + split_date2.dd + ', ' + split_date2.yyyy + '.');
+//    var mm_pos, dd_pos, yyyy_pos, example ;
 //
-var split_date3 = new SplitDate('22-11-2011','euro');
-if (console.log) console.log('The date is ' + split_date3.mo + ' ' + split_date3.dd + ', ' + split_date3.yyyy + '.');
+//    this.val = _date ; // save it to a variable before removing the spaces
 //
-var split_date4 = new SplitDate('2001.11.11');
-if (console.log) console.log('The date is ' + split_date4.mo + ' ' + split_date4.dd + ', ' + split_date4.yyyy + '.');
+//    _date = _date.replace(/\s+/g,''); // removing spaces?
 //
-var split_date5 = new SplitDate('9999-44-55');
-if (console.log) console.log('The date is ' + split_date5.mo + ' ' + split_date5.dd + ', ' + split_date5.yyyy + '.');
+//    _format = _format || '' ;
+//    _format = _format.toLowerCase();
 //
-*/
+//    var months = {
+//        '01':['January','Jan'], '02':['February','Feb'], '03':['March','Mar'], '04':['April','Apr'], '05':['May','May'], '06':['June','Jun'], '07':['July','Jul'],
+//        '08':['August','Aug'], '09':['September','Sep'], '10':['October','Oct'], '11':['November','Nov'], '12':['December','Dec'], '13':['invalid','invalid']
+//    };
+//
+//    // accepts either dashes, slashes or periods as a delimeter
+//    // but there must be SOME delimeter
+//    if (_date.indexOf('-') !== -1){
+//        this.arr = _date.split('-');
+//    }
+//    else if (_date.indexOf('/') !== -1){
+//        this.arr = _date.split('/');
+//    }
+//    else if (_date.indexOf('.') !== -1){
+//        this.arr = _date.split('.');
+//    }
+//
+//    if (this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
+//        if (_format === 'eu' || _format === 'euro'){ // it it's Euro
+//            dd_pos = 0; mm_pos = 1; yyyy_pos = 2; example = '31/01/2001';
+//        }
+//        else {
+//            mm_pos = 0; dd_pos = 1; yyyy_pos = 2; example = '01/31/2001';
+//        }
+//    }
+//    else if (this.arr[0].length === 4 || _format === 'iso'){ // it's probably ISO format
+//        yyyy_pos = 0; mm_pos = 1; dd_pos = 2; example = '2001-01-31';
+//    }
+//
+//    this.mm = this.arr[mm_pos] ;
+//    if (this.mm === '' || parseInt(this.mm) > 12) this.mm = '13';
+//    this.month = months[this.mm+''][0];
+//    this.mo = months[this.mm+''][1];
+//    this.dd = this.arr[dd_pos];
+//    if (this.dd === '' || parseInt(this.dd) > 31) this.dd = '32';
+//    this.yyyy = this.year = this.arr[yyyy_pos];
+//    if (this.yyyy !== '' /*|| this.year < XNAT.data.todaysDate.yyyy-120 /*|| year > XNAT.data.todaysDate.yyyy*/) this.yyyy = parseInt(this.year) ;
+//    this.format = this.example = example ;
+//
+//    this.date_string = this.yyyy + this.mm + this.dd ;
+//    this.date_num = parseInt(this.date_string);
+//
+//}
+//
+///*
+//// examples of using the SplitDate function
+//var split_date = new SplitDate(XNAT.data.todaysDate.iso);
+//if (console.log) console.log('The date is ' + split_date.mo + ' ' + split_date.dd + ', ' + split_date.yyyy + '.');
+////
+//var split_date2 = new SplitDate(XNAT.data.todaysDate.us);
+//if (console.log) console.log('The date is ' + split_date2.mo + ' ' + split_date2.dd + ', ' + split_date2.yyyy + '.');
+////
+//var split_date3 = new SplitDate('22-11-2011','euro');
+//if (console.log) console.log('The date is ' + split_date3.mo + ' ' + split_date3.dd + ', ' + split_date3.yyyy + '.');
+////
+//var split_date4 = new SplitDate('2001.11.11');
+//if (console.log) console.log('The date is ' + split_date4.mo + ' ' + split_date4.dd + ', ' + split_date4.yyyy + '.');
+////
+//var split_date5 = new SplitDate('9999-44-55');
+//if (console.log) console.log('The date is ' + split_date5.mo + ' ' + split_date5.dd + ', ' + split_date5.yyyy + '.');
+////
+//*/
 
 function closeModal_pickDate(_this,$input){
     var modal_id = $(_this).closest('.xmodal').attr('id');
@@ -277,7 +277,7 @@ XNAT.app.checkDateInput = function($input,format) {
         if (console.log) console.log('valid date')
     }
 
-    return return_val ;
+    return { valid: return_val, date: date } ;
 
 };
 
@@ -588,13 +588,47 @@ $(function(){
         $wrapper.find('input.day').val(XNAT.data.todaysDate.dd);
     });
 
+    $body.on('blur','input.ez_cal',function(){
+        var $wrapper = $(this).closest('.ez_cal_wrapper');
+        var $year = $wrapper.find('input:hidden.year');
+        var $month = $wrapper.find('input:hidden.month');
+        var $day = $wrapper.find('input:hidden.day');
+        var $input = $(this);
+        //var format = ($input.hasClass('iso')) ? 'iso' : 'us' ;
+        if ($input.hasClass('single')){
+            var dateCheck = XNAT.app.checkDateInput($input);
+            //var newDate = new SplitDate($input.val(),format);
+            if (dateCheck.valid === true){
+                $year.val(dateCheck.date.yyyy);
+                $month.val(dateCheck.date.mm);
+                $day.val(dateCheck.date.dd);
+            }
+            else {
+                $year.val(0);
+                $month.val(0);
+                $day.val(0);
+            }
+        }
+        else {
+            if ($input.hasClass('year')){
+                $year.val($input.val());
+            }
+            if ($input.hasClass('month')){
+                $month.val($input.val());
+            }
+            if ($input.hasClass('day')){
+                $day.val($input.val());
+            }
+        }
+    });
+
     //
     // validate date inputs
     //
     // onblur
-    $body.on('blur','input.date.single.validate.onblur',function(){
-        XNAT.app.checkDateInput($(this));
-    });
+//    $body.on('blur','input.date.single.validate.onblur',function(){
+//        XNAT.app.checkDateInput($(this));
+//    });
     //
     // onsubmit
     $body.on('click','button.validate.onsubmit, a.validate.onsubmit',function(e){

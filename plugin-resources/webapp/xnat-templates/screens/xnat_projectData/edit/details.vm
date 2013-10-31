@@ -67,7 +67,7 @@
 
     <TR>
         <TH align="left">Keywords</TH>
-        <TD><input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95" onkeydown="subOnEnter(event,this);" /></TD>
+        <TD><input id="xnat:projectData/keywords" type="text" name="xnat:projectData/keywords" value="$!item.getStringProperty("xnat:projectData/keywords")" size="95" maxlength="255" onkeydown="subOnEnter(event,this);" /></TD>
     </TR>
     #if( $parentTemplate == 'add' )
     <TR class="requirementStatement">

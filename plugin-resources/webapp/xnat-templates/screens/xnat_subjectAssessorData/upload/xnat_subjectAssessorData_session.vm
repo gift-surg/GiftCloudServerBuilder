@@ -1,6 +1,6 @@
  <tr>
   <th align="left">$displayManager.getSingularDisplayNameForImageSession()</th>
-  <td><input type="text" id="$!item.getXSIType()/label" name="$!item.getXSIType()/label" value="$!item.getProperty("label")"  onkeyup="var caret=this.selectionStart;this.value=fixSessionID(this.value);verifyExptId(this);if(this.validated==false)confirmValues(false);this.setSelectionRange(caret,caret);" onblur="confirmValues(false);"/></td>
+  <td><input type="text" id="$!item.getXSIType()/label" name="$!item.getXSIType()/label" value="$!item.getProperty("label")" onkeydown="getSessionSelection(event,this);" onkeyup="this.value=fixSessionID(this.value);verifyExptId(this);if(this.validated==false)confirmValues(false);setSessionSelection(event,this);" onblur="confirmValues(false);"/></td>
   <td id="label_opts"></td>
   <td id="label_msg" style="color:red;"></td>
  </tr>

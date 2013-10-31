@@ -261,6 +261,70 @@ function checkSubmitButton(selectedIndex, submitButton) {
     }
 }
 
+var sessionCaretStart=0;
+var sessionCaretEnd=0;
+var sessionSelecting=false;
+function getSessionSelection(e, el){
+  var left=37, right=39, key=e.keyCode, len=el.value.length;
+  sessionCaretStart=el.selectionStart;
+  sessionCaretEnd=el.selectionEnd;
+  if(e.shiftKey){
+    if(sessionCaretStart==sessionCaretEnd){
+      if(key == left){
+        sessionSelecting = true;
+        sessionCaretStart = sessionCaretStart-1;
+      }
+      if(key == right){
+        sessionCaretEnd = sessionCaretEnd+1;
+      }
+    } else if (sessionCaretStart<sessionCaretEnd){
+      if(key == left){
+        if(sessionSelecting){
+          sessionCaretStart = sessionCaretStart-1;
+        } else {
+          sessionCaretEnd = sessionCaretEnd-1;
+        }
+      }
+      if(key == right){
+        sessionCaretEnd = sessionCaretEnd+1;
+      }
+    }
+  } else {
+    sessionSelecting=false;
+    if(key == left){
+      sessionCaretStart = sessionCaretStart-1;
+      sessionCaretEnd = sessionCaretStart;
+    }
+    if(key == right){
+      sessionCaretEnd = sessionCaretEnd+1;
+      sessionCaretStart = sessionCaretEnd;
+    }
+  }
+  if(key != left && key != right){
+    sessionCaretEnd = sessionCaretEnd+1;
+    sessionCaretStart = sessionCaretEnd;
+  }
+  if(key == 36){ //home
+    sessionCaretStart=0;
+    sessionCaretEnd=0;
+  }
+  if(key == 35){ //end
+    sessionCaretStart=len;
+    sessionCaretEnd=len;
+  }
+  if(key == 46){ //del
+    sessionCaretStart = sessionCaretStart-1;
+    sessionCaretEnd = sessionCaretStart;
+  }
+  if(key == 8){ //backspace
+    sessionCaretStart = sessionCaretStart-2;
+    sessionCaretEnd = sessionCaretStart;
+  }
+//console.log('start: '+sessionCaretStart+'  end: '+sessionCaretEnd+'  sel: '+sessionSelecting+'  key: '+e.keyCode);
+};
+function setSessionSelection(e, el){
+  el.setSelectionRange(sessionCaretStart, sessionCaretEnd);
+};
 
 function fixSessionID(val) {
     var temp = val.trim();

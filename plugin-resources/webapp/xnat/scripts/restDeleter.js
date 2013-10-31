@@ -74,20 +74,38 @@ RestDeleter = function(_array,_config) {
 	
     this.handleCancel=function(){
     	if(this.manager.stopped){
-    		window.location.reload();
+    		// If the cancel action has been configured, use the callback
+    		// otherwise reload the page. Added for XNAT-2408.
+    		if(_config.cancelAction != undefined){ 
+    			_config.cancelAction(); 
+    		}else{
+    			window.location.reload();
+    		}
     	}else if(this.manager.complete){
     		if(this.manager.redirect){
     			window.location=this.manager.redirect;
     		}else if(this.manager.redirectHome){
-    			window.location=serverRoot + "";
+    			window.location=serverRoot + "/";
     		}else{
-	    		window.location.reload();
+    			// If the cancel action has been configured, use the callback
+    			// otherwise reload the page. Added for XNAT-2408.
+    			if(_config.cancelAction != undefined){ 
+    				_config.cancelAction(); 
+    			}else{
+    				window.location.reload();
+    			}
     		}
     	}else if(this.manager.processing){
     		this.manager.stopped=true;
 			alert("Please wait for current process to complete.  Futher actions are cancelled.");
     	}else{
-			window.location.reload();
+    		// If the cancel action has been configured, use the callback
+    		// otherwise reload the page. Added for XNAT-2408.
+    		if(_config.cancelAction != undefined){ 
+    			_config.cancelAction(); 
+    		}else{
+    			window.location.reload();
+    		}
 		}
     }
     
@@ -148,7 +166,7 @@ RestDeleter = function(_array,_config) {
     			if(this.redirect){
     				window.location=this.redirect;
 	    		}else if(this.redirectHome){
-	    			window.location=serverRoot + "";
+	    			window.location.href=serverRoot + "/";
 	    		}else{
 		    		window.location.reload();
 	    		}
@@ -157,7 +175,6 @@ RestDeleter = function(_array,_config) {
     		closeModalPanel("stopAction");
     	}
     }
-    
 };
 
 YAHOO.extend(RestDeleter, BasePopup, {

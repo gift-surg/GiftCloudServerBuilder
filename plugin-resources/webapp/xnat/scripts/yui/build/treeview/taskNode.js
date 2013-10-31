@@ -164,7 +164,7 @@ YAHOO.extend(YAHOO.widget.TaskNode, YAHOO.widget.TextNode, {
      * state of the node.
      */
     updateCheckHtml: function() { 
-        if (this.parent && this.parent.childrenRendered) {
+        if (this.parent && this.parent.childrenRendered && this.data.canRead === true) {
             this.getCheckEl().className = this.getCheckStyle();
         }
     },
@@ -190,6 +190,7 @@ YAHOO.extend(YAHOO.widget.TaskNode, YAHOO.widget.TextNode, {
                 c.check();
             }
         }
+
         this.updateCheckHtml();
         this.updateParent();
     },
@@ -205,18 +206,22 @@ YAHOO.extend(YAHOO.widget.TaskNode, YAHOO.widget.TextNode, {
                 c.uncheck();
             }
         }
+
         this.updateCheckHtml();
         this.updateParent();
     },
     // Overrides YAHOO.widget.TextNode
 
     getContentHtml: function() {                                                                                                                                           
-        var sb = [];                                                                                                                                                       
-        sb[sb.length] = '<td';                                                                                                                                             
-        sb[sb.length] = ' id="' + this.getCheckElId() + '"';                                                                                                               
-        sb[sb.length] = ' class="' + this.getCheckStyle() + '"';                                                                                                           
-        sb[sb.length] = '>';                                                                                                                                               
-        sb[sb.length] = '<div class="ygtvspacer"></div></td>';                                                                                                             
+        var sb = [];
+        if(this.data.canRead){
+           // Only add if the canRead flag is true. Added for XNAT-2408.
+           sb[sb.length] = '<td';                                                                                                                                             
+           sb[sb.length] = ' id="' + this.getCheckElId() + '"';                                                                                                               
+           sb[sb.length] = ' class="' + this.getCheckStyle() + '"';                                                                                                           
+           sb[sb.length] = '>';                                                                                                                                               
+           sb[sb.length] = '<div class="ygtvspacer"></div></td>';
+        }
                                                                                                                                                                            
         sb[sb.length] = '<td><span';                                                                                                                                       
         sb[sb.length] = ' id="' + this.labelElId + '"';                                                                                                                    

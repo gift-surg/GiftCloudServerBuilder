@@ -21,6 +21,11 @@
     window.currentLabel = "$!om.getLabel()";
 </script>
 
+#if($user)
+#else
+    #set($user=$data.getSession().getAttribute("user"))
+#end
+
 <style>
     /* custom styles for inline instances */
     .yui-skin-sam .yui-ac-input { position: static; width: 20em; vertical-align: middle; }

@@ -121,6 +121,7 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 
 	
 	this.getAdditionalPipelines=function() {
+        this.initLoader=prependLoader("waitPanel","Loading pipelines");
 //		window.waitPanel.show();
 		this.initLoader.render();
 		this.initCallback={

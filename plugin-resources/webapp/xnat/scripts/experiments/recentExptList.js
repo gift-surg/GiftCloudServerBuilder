@@ -114,29 +114,29 @@ function MinExptList(_div, _options){
 			if(e.action_date==""){
 				e.action_date=e.insert_date;
 			}
-			
-			switch(e.action_date){
-				case e.workflow_date:
-				  if(e.pipeline_name.indexOf('Transfer')==-1 && e.pipeline_name.indexOf('AutoRun')==-1){
-					td.innerHTML="<A title='" + e.pipeline_name + " at " + e.workflow_date + "'>PROC<a>";
-				  }else{
-					td.innerHTML="<A title='Archived at " + e.workflow_date + "'>ARC<a>";
-				  }
-				  break;
-				case e.last_modified:
-				  td.innerHTML="<A title='Modified at " + e.last_modified + "'>MOD<a>";
-				  break;
-				case e.activation_date:
-				  if(e.activation_date==e.insert_date)
-				  	td.innerHTML="<A title='Created at " + e.insert_date + "'>NEW<a>";
-				  else
-				  	td.innerHTML="<A title='Released from Quarantine at " + e.activation_date + "'>REL<a>";
-				  break;
-				default:
-				  td.innerHTML="NEW";
-				  break;
-			}
-			tr.appendChild(td);
+
+            switch(e.action_date){
+                case e.workflow_date:
+                    if(e.pipeline_name.indexOf('Transfer')==-1 && e.pipeline_name.indexOf('AutoRun')==-1){
+                        td.innerHTML="<A class='recentDataActivity' title='" + e.pipeline_name + " at " + e.workflow_date + "'>PROC<a>";
+                    }else{
+                        td.innerHTML="<A class='recentDataActivity' title='Archived at " + e.workflow_date + "'>ARC<a>";
+                    }
+                    break;
+                case e.last_modified:
+                    td.innerHTML="<A class='recentDataActivity' title='Modified at " + e.last_modified + "'>MOD<a>";
+                    break;
+                case e.activation_date:
+                    if(e.activation_date==e.insert_date)
+                        td.innerHTML="<A class='recentDataActivity' title='Created at " + e.insert_date + "'>NEW<a>";
+                    else
+                        td.innerHTML="<A class='recentDataActivity' title='Released from Quarantine at " + e.activation_date + "'>REL<a>";
+                    break;
+                default:
+                    td.innerHTML="<span class='recentDataActivity'>NEW</span>";
+                    break;
+            }
+            tr.appendChild(td);
 			tb.appendChild(tr);
 			
 //			tr.extension=eC+"_rExpt_tr";

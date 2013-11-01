@@ -15,6 +15,7 @@ form { font-size: 12px ; }
 /* .withColor { background-color: #ffc ; } */
 .withColor { background-color: #2d69b8 ; color: #fff ; }
 .withThinBorder { border: 1px solid #aaa ; }
+.recentDataActivity { cursor: default; }
 input {  }
 select {  }
 /*

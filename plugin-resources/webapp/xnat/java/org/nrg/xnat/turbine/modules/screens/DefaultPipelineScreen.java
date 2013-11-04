@@ -57,7 +57,8 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 
 	  public abstract void finalProcessing(RunData data, Context context);
 
-		protected void setHasDicomFiles(XnatMrsessiondata mr, String mprageScanType, Context context) {
+	protected void setHasDicomFiles(XnatImagesessiondata mr, String mprageScanType, Context context) {
+        if (mr instanceof XnatMrsessiondata || mr instanceof XnatPetsessiondata) {
 			boolean rtn = false;
 			String[] types = mprageScanType.split(",");
 			for (int j =0; j <types.length; j++) {
@@ -84,8 +85,8 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 
 			}
 			context.put("isDicom", rtn?"1":"0");
-
-		}
+        }
+	}
 
 		protected void setHasFreesurfer(XnatMrsessiondata mr,  Context context) {
 			String project = mr.getProject();
@@ -171,7 +172,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	            	context.put("project",project);
 
 	            	om = BaseElement.GetGeneratedItem(item);
-	     
+
 	            	context.put("om",om);
 	            	 setWorkflows(data,context);
 	            	 setParameters(pipelinePath);
@@ -262,10 +263,10 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 
     protected void setParameters(ArcPipelinedataI arcPipeline, Context context) throws Exception {
     	List<ArcPipelineparameterdataI> pipelineParameters = arcPipeline.getParameters_parameter();
-    	
+
     	Parameters parameters = Parameters.Factory.newInstance();
 		ParameterData param = null;
-		
+
     	for (int i = 0; i < pipelineParameters.size(); i++) {
     		ArcPipelineparameterdataI pipelineParam = pipelineParameters.get(i);
     		String schemaLink = pipelineParam.getSchemalink();
@@ -280,7 +281,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 	        		    	Values values = param.addNewValues();
 	        				if (matches.size() == 1) {
 		        		    	values.setUnique(""+matches.get(0));
-		        			}else { 
+		        			}else {
 			    				for (int j = 0; j < matches.size(); j++) {
 			    					values.addList(""+matches.get(j));
 			        			}
@@ -301,7 +302,7 @@ public abstract class DefaultPipelineScreen extends SecureReport{
 		    	Values values = param.addNewValues();
 		    	if (pValuesSplit.length == 1) {
 		    		values.setUnique(pValuesSplit[0]);
-		    	}else 
+		    	}else
 	    			for (int j = 0; j < pValuesSplit.length; j++) {
 	    				values.addList(pValuesSplit[j]);
 	    			}

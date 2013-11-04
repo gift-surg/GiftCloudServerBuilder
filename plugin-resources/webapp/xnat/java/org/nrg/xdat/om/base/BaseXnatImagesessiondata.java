@@ -359,7 +359,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         String stats= count
                                 + " files, "
-                                + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+                                + formatter.format(((float) ((float)size / 1048576))) + "MB";
                         arcFiles.put(scan.getId(), stats);
                     } catch (RuntimeException e) {
                         logger.error("",e);
@@ -383,7 +383,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 //
 //                    String stats= count
 //                            + " files, "
-//                            + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+//                            + formatter.format(((float) ((float)size / 1048576))) + "MB";
 //                    arcFiles.put("misc", stats);
 //                } catch (RuntimeException e) {
 //                    logger.error("",e);
@@ -420,7 +420,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         String stats= count
                                 + " files, "
-                                + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+                                + formatter.format(((float) ((float)size / 1048576))) + "MB";
                         arcFiles.put(SCAN_ABBR + scan.getId(), stats);
                     } catch (RuntimeException e) {
                         logger.error("",e);
@@ -454,7 +454,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         String stats= count
                                 + " files, "
-                                + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+                                + formatter.format(((float) ((float)size / 1048576))) + "MB";
                         arcFiles.put(RECON_ABBR + recon.getId(), stats);
                     } catch (RuntimeException e) {
                         logger.error("",e);
@@ -488,7 +488,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         String stats= count
                                 + " files, "
-                                + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+                                + formatter.format(((float) ((float)size / 1048576))) + "MB";
                         arcFiles.put(ASSESSOR_ABBR +assess.getId(), stats);
                     } catch (RuntimeException e) {
                         logger.error("",e);
@@ -522,7 +522,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         String stats= count
                                 + " files, "
-                                + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+                                + formatter.format(((float) ((float)size / 1048576))) + "MB";
                         arcFiles.put(RESOURCES_ABBR +res.getXnatAbstractresourceId(), stats);
                     } catch (RuntimeException e) {
                         logger.error("",e);
@@ -549,7 +549,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
                         String stats= count
                                 + " files, "
-                                + formatter.format(((float) ((float)size / 1048576))) + "Mb";
+                                + formatter.format(((float) ((float)size / 1048576))) + "MB";
                         arcFiles.put("misc", stats);
                     }
                 } catch (RuntimeException e) {
@@ -567,12 +567,12 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         try {
                 String s = (String)this.getArcFiles().get(scanId);
                 if (s == null) {
-                    return "0 files, 0.00Mb";
+                    return "0 files, 0.00MB";
                 } else {
                     return s;
                 }
         } catch (Exception e) {
-            return "0 files, 0.00Mb";
+            return "0 files, 0.00MB";
         }
     }
 

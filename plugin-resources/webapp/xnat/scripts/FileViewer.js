@@ -939,23 +939,25 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
             var size=parseInt(file.Size);
             var path=file.URI.substring(file.URI.indexOf("/files/")+7);
             var filename=file.URI.substring(file.URI.lastIndexOf("/")+1);
+            filename=filename.split(".").join(".&shy;");
+            filename=filename.split("_").join("_&shy;");
 
-            var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + filename + "</a>"
+            var _html="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + filename + "</a>"
             if(file.file_format!=""){
-                _lbl +="&nbsp;"+ file.file_format +"";
+                _html +=" "+ file.file_format +"";
             }
             if(file.file_content!=""){
-                _lbl +="&nbsp;"+ file.file_content +"";
+                _html +=" "+ file.file_content +"";
             }
             if(file.file_tags!=""){
-                _lbl +="&nbsp;("+ file.file_tags +")";
+                _html +=" ("+ file.file_tags +")";
             }
-            _lbl +="&nbsp;&nbsp;"+size_format(size) +"&nbsp;";
+            _html +="&nbsp; "+size_format(size) +"";
 
             if(this.cat.canDelete)
-                _lbl +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+                _html +="&nbsp; <a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 
-            var fileNode=new YAHOO.widget.TextNode({label: _lbl, expanded: false}, this);
+            var fileNode=new YAHOO.widget.HTMLNode({html: _html}, this);
             fileNode.labelStyle = "icon-f";
         }
     }

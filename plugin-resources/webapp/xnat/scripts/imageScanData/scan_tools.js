@@ -1070,6 +1070,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				}
 			}
 
+                        scan.type_input.style.width="100%";
                         scan.type_input.id=elementName + scanXPath(modality, scanTypeTable) + "/type";
                         scan.type_input.name=elementName +scanXPath(modality, scanTypeTable) + "/type";
 

@@ -813,7 +813,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 	  var cMenuItems=[{text:"Sort Up"},{text:"Sort Down"}];
 
 	  if(this.options.allowInTableMods){
-          if(this.optionMenu.en!="xnat:projectData" && this.optionMenu.en!="wrk:workflowData"){
+          if(this.optionMenu.en!="xnat:projectData"){
               cMenuItems.push({text:"Hide Column"});
               cMenuItems.push({text:"Edit Column"});
               cMenuItems.push({text:"Filter"});

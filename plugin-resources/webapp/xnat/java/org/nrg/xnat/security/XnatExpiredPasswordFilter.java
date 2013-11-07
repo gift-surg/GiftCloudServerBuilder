@@ -174,7 +174,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                 chain.doFilter(req, res);
             }
             else if (user.isEnabled()) {
-                boolean isExpired=true;
+                boolean isExpired=false;
                 String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
                 if(interval.equals("-1")) {
                     chain.doFilter(request, response);

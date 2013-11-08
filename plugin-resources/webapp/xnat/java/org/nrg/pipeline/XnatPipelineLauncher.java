@@ -71,10 +71,10 @@ public class XnatPipelineLauncher {
     }
 
     /**
-     * @set useAlias
+     * @param useAlias Indicates whether the alias should be used.
      */
-    public void useAlias(boolean u) {
-        useAlias = u;
+    public void useAlias(boolean useAlias) {
+        this.useAlias = useAlias;
     }
 
     /**
@@ -131,7 +131,7 @@ public class XnatPipelineLauncher {
         }
 
         if (needsBuildDir) {
-            parameters.put("builddir", Arrays.asList(new String[] { path }));
+            parameters.put("builddir", Arrays.asList(path));
         }
 
         setNeedsBuildDir(false);
@@ -199,7 +199,7 @@ public class XnatPipelineLauncher {
     }
 
     private boolean launchInProcessPipelineExecution() {
-        boolean success = true;
+        boolean success;
         try {
         	Integer workflowPrimaryKey = null;
             if (recordWorkflowEntries) {
@@ -314,7 +314,7 @@ public class XnatPipelineLauncher {
      * in-process and external launch mode. Use the {@link #convertArgumentListToCommandLine(List)}
      * method to convert the returned list to a command line.
      *
-     * @return
+     * @return A list of the submitted command-line arguments.
      */
     private List<String> getCommandLineArguments() {
         AliasToken token = XDAT.getContextService().getBean(AliasTokenService.class).issueTokenForUser(user);
@@ -366,9 +366,11 @@ public class XnatPipelineLauncher {
             arguments.add(parameterFile);
         }
 
-        for (int i = 0; i < notificationEmailIds.size(); i++) {
-            arguments.add("-notify");
-            arguments.add(notificationEmailIds.get(i));
+        for (String notificationEmailId : notificationEmailIds) {
+            if (!StringUtils.isBlank(notificationEmailId)) {
+                arguments.add("-notify");
+                arguments.add(notificationEmailId);
+            }
         }
 
         setBuildDir();
@@ -378,8 +380,10 @@ public class XnatPipelineLauncher {
             arguments.add("-parameter");
             List<String> values = parameters.get(param);
             StringBuilder paramArg = new StringBuilder(param).append("=");
-            for (int i = 0; i < values.size(); i++) {
-                paramArg.append(escapeSpecialShellCharacters((String) values.get(i))).append(",");
+            for (String value : values) {
+                if (!StringUtils.isBlank(value)) {
+                    paramArg.append(escapeSpecialShellCharacters(value)).append(",");
+                }
             }
             if (paramArg.toString().endsWith(",")) {
                 paramArg.deleteCharAt(paramArg.length() - 1);
@@ -430,7 +434,7 @@ public class XnatPipelineLauncher {
         String rtn = "";
         try {
             if (user.getFirstname() != null && user.getLastname() != null) rtn = user.getFirstname().substring(0, 1) + "." + user.getLastname();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return rtn;
     }
@@ -470,19 +474,19 @@ public class XnatPipelineLauncher {
         if (parameters.containsKey(name)) {
             parameters.get(name).add(value);
         } else {
-            parameters.put(name, Arrays.asList(new String[] { value }));
+            parameters.put(name, Arrays.asList(value));
         }
 
     }
 
     private void setBuildDir() {
         // TODO Set this to be the buildDir for the project
-        String tdir = ArcSpecManager.GetFreshInstance().getGlobalBuildPath() ;
-        if (tdir.endsWith(File.separator)) {
-            tdir = tdir.substring(0, tdir.length() - 1);
+        String buildPath = ArcSpecManager.GetFreshInstance().getGlobalBuildPath() ;
+        if (buildPath.endsWith(File.separator)) {
+            buildPath = buildPath.substring(0, buildPath.length() - 1);
         }
         if (needsBuildDir) {
-            parameters.put("builddir", Arrays.asList(new String[] { tdir + File.separator + "Pipeline" }));
+            parameters.put("builddir", Arrays.asList(buildPath + File.separator + "Pipeline"));
         }
     }
 
@@ -537,8 +541,8 @@ public class XnatPipelineLauncher {
         if (!System.getProperty("os.name").toUpperCase().startsWith("WINDOWS")) {
             String[] pieces = input.split("'");
             rtn = "";
-            for (int i = 0; i < pieces.length; i++) {
-                rtn += "'" + pieces[i] + "'" + "\\'";
+            for (final String piece : pieces) {
+                rtn += "'" + piece + "'" + "\\'";
             }
             if (rtn.endsWith("\\'") && !input.endsWith("'")) {
                 int indexOfLastQuote = rtn.lastIndexOf("\\'");
@@ -591,10 +595,12 @@ public class XnatPipelineLauncher {
         xnatPipelineLauncher.setParameter("project", imageSession.getProject());
         xnatPipelineLauncher.setParameter("cachepath", QCImageCreator.getQCCachePathForSession(imageSession.getProject()));
 
-        String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("emailField",data));
+        String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + TurbineUtils.GetPassedParameter("emailField",data);
         String[] emails = emailsStr.trim().split(",");
-        for (int i = 0; i < emails.length; i++) {
-            xnatPipelineLauncher.notify(emails[i]);
+        for (final String email : emails) {
+            if (!StringUtils.isBlank(email)) {
+                xnatPipelineLauncher.notify(email);
+            }
         }
         return xnatPipelineLauncher;
     }

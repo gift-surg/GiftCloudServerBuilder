@@ -93,7 +93,7 @@ function checkConfirm(){
   if (document.getElementById("checkbox").checked){
     return true;
   }else{
-    alert('Please review the Data Usage Agreement and check the box to continue.');
+    xModalMessage('Data Usage Agreement', 'Please review the Data Usage Agreement and check the box to continue.');
     document.getElementById("checkbox").focus();
     return false;
   }

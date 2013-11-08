@@ -73,89 +73,89 @@ function addPublication()
   var publicationTYPE = document.getElementById("publicationTYPE").options[typeIndex].value;
   
   if (typeIndex==0){
-     alert("Please select a type.");
+     xModalMessage('Add Publication', 'Please select a type.');
      document.getElementById("publicationTYPE").focus();
      return false;
   }
   
   if (publicationTITLE=="" && publicationDOI=="" && publicationPUBMED=="" && publicationMEDLINE=="" && publicationURI=="" && publicationOTHER==""){
-     alert("Please specify a TITLE, DOI, PUBMED, MEDLINE, URI, or OTHER.");
+     xModalMessage('Add Publication', 'Please specify a TITLE, DOI, PUBMED, MEDLINE, URI, or OTHER.');
      return false;
   }
   
   if (publicationTITLE=="")
   {
-     alert("Please specify a Title");
+     xModalMessage('Add Publication', 'Please specify a Title.");
      document.getElementById("publicationTITLE").focus();
      return false;
   }
   
   if(publicationDOI.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationDOI").focus();
      return false;     
   }
   
   if(publicationPUBMED.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationPUBMED").focus();
      return false;     
   }
   
   if(publicationMEDLINE.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationMEDLINE").focus();
      return false;     
   }
   
   if(publicationURI.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationURI").focus();
      return false;     
   }
   
   if(publicationOTHER.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationOTHER").focus();
      return false;     
   }
   
   if(publicationTYPE.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationTYPE").focus();
      return false;     
   }
   
   if(publicationTITLE.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationTITLE").focus();
      return false;     
   }
   
   if(publicationCITATION.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationCITATION").focus();
      return false;     
   }
   
   if(publicationABSTRACT.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationABSTRACT").focus();
      return false;     
   }
   
   if(publicationCOMMENTARY.indexOf("\"")!=-1)
   {
-     alert("Illegal character (\").  Please remove all occurences of \".");
+     xModalMessage('Add Publication', 'Illegal character (\").  Please remove all occurences of \".');
      document.getElementById("publicationCOMMENTARY").focus();
      return false;     
   }

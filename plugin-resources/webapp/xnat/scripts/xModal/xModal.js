@@ -832,3 +832,7 @@ $(window).resize(function(){
         });
     }
 });
+
+function xModalConfirm(config){
+    xModalOpenNew($.extend({}, xModal.confirm, {width: 400, height: 250}, config));
+};

@@ -49,7 +49,7 @@ function MinExptList(_div, _options){
 	};
 	
 	this.displayError=function(errorMsg){
-		alert(errorMsg);
+        xModalMessage('Experiment List Error', errorMsg);
 	};
 	
 	this.render=function(){

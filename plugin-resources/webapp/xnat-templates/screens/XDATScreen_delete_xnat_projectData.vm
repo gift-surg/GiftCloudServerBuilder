@@ -45,7 +45,7 @@
     function deleteEntries(){
       var _a=window.pdTree.getCheckedNodes();	
       if(_a.length==0){
-         alert("Please select at least one item to delete.");
+          xModalMessage('Delete Action','Please select at least one item to delete.');
       }else{
         var _items=new Array();
         for(var cnAC=0;cnAC<_a.length;cnAC++){

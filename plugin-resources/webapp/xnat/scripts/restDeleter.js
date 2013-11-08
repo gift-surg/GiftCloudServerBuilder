@@ -60,7 +60,7 @@ RestDeleter = function(_array,_config) {
 	
 	this.handleDelete=function(){
 		if(showReason && document.getElementById("del_event_reason").value==""){
-			alert("Please specify a justification for this operation.");
+            xModalMessage('Delete Action', 'Please specify a justification for this operation.');
 			return;
 		}
 		
@@ -97,7 +97,7 @@ RestDeleter = function(_array,_config) {
     		}
     	}else if(this.manager.processing){
     		this.manager.stopped=true;
-			alert("Please wait for current process to complete.  Futher actions are cancelled.");
+            xModalMessage('Cancel Action', 'Please wait for current process to complete.<br/><br/>Futher actions are cancelled.');
     	}else{
     		// If the cancel action has been configured, use the callback
     		// otherwise reload the page. Added for XNAT-2408.
@@ -150,7 +150,7 @@ RestDeleter = function(_array,_config) {
 							this.currentTR.pDivColor.style.backgroundColor="red";
 				  	   	  	this.currentTR.pDivColor.style.color="black";
 				  	   	  	this.currentTR.pDivColor.innerHTML="&nbsp;error&nbsp;";
-				    		alert("ERROR " + o.status+ ": Failed to delete " + this.currentTR.entry.label);
+                            xModalMessage('ERROR ' + o.status, 'Failed to delete ' + this.currentTR.entry.label + '.');
 						},
                         cache:false, // Turn off caching for IE
 						scope:this
@@ -162,7 +162,7 @@ RestDeleter = function(_array,_config) {
     		}
     		
     		if(!matched){
-    			alert("All items were successfully deleted.");
+                xModalMessage('Delete Action','All items were successfully deleted.');
     			if(this.redirect){
     				window.location=this.redirect;
 	    		}else if(this.redirectHome){

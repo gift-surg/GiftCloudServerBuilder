@@ -165,7 +165,7 @@ var checkProgressFinal = 0;
 function prog(theform)
 {
 	  if(document.getElementById("project").selectedIndex==0){
-	    alert("Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().");
+        xModalMessage('Image Upload Validation', 'Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().');
 	    return false;
 	  }
   disableForm(theform);

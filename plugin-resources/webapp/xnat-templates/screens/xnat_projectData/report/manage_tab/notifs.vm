@@ -16,7 +16,7 @@
   	XNAT.app.notifUpdate=function(){
         this.notifs=YUIDOM.get("notif_list").value;
         if(this.notifs.indexOf("'")>-1 || this.notifs.indexOf("\"")>-1){
-        	alert("Notification emails cannot contains quotes.");
+            xModalMessage('Email Notification', 'Notification emails cannot contain quotes.');
         	return false;
         }
         openModalPanel('notifs','Saving Emails');
@@ -25,11 +25,11 @@
         	success : function()
         	{
         		closeModalPanel('notifs');
-        		alert("Emails updated.");
+                xModalMessage('Email Notification', 'Emails updated.');
         	},
         	 failure: function(){
         	 	closeModalPanel('notifs');
-        	 	alert("Failed to store emails");
+                 xModalMessage('Email Error', 'Failed to store emails');
         	 },
              cache:false, // Turn off caching for IE
         	 scope: this

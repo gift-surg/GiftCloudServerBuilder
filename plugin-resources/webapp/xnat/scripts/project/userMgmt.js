@@ -210,7 +210,6 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 					knownUsers.push(email);
 				}
 			}
-
 			if(unknownUsers.length>0){
 				var confirmMsg=unknownUsers;
 				if(unknownUsers.length>1) {
@@ -218,52 +217,59 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 				} else {
 					confirmMsg+=" does not correspond to a currently registered account.  This user ";
 				}
-				confirmMsg += 'may have an account under another email address.\n\nClick Cancel if you\'d like to edit the email list and try again.\n\nClick OK to go ahead and send an email inviting ';
+				confirmMsg += 'may have an account under another email address.<br/><br/>Click Cancel if you\'d like to edit the email list and try again.<br/><br/>Click OK to go ahead and send an email inviting ';
 				if(unknownUsers.length>1) {
 					confirmMsg+="these users.";
 				} else {
 					confirmMsg+="this user.";
 				}
-
-				if (!confirm(confirmMsg)){
-					document.getElementById("invite_email").value='';
-					return false;
-				}
-			}
-
-			var that = this;
-			var sendMail = function (send) {
-				return function () {
-					if(this.hide != undefined)this.hide();
-					that.setFormDisabled(true);
-					that.insertCallback={
-							success:that.completeInvite,
-							failure:that.inviteFailure,
+                xModalConfirm({
+                    content: confirmMsg,
+                    okAction: function(){
+                        sendMail(true).call();
+                    },
+                    cancelAction: function(){
+                        document.getElementById("invite_email").value='';
+//                        return false;
+                    }
+                });
+            }
+            var that = this;
+            var sendMail = function (send) {
+                return function () {
+                    if(this.hide != undefined)this.hide();
+                    that.setFormDisabled(true);
+                    that.insertCallback={
+                        success:that.completeInvite,
+                        failure:that.inviteFailure,
                         cache:false, // Turn off caching for IE
-							scope:that
-					};
-					var params = "XNAT_CSRF=" + csrfToken + "&format=json";
-					if(send){
-						params+="&sendemail=true";
-					}
+                        scope:that
+                    };
+                    var params = "XNAT_CSRF=" + csrfToken + "&format=json";
+                    if(send){
+                        params+="&sendemail=true";
+                    }
                     var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
-					YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails + showDeactivatedUsers + "?" + params,that.insertCallback,params,that);
-				};
-			};
-
-			if(knownUsers.length>0){
-				var confirmMsg="Would you like an email to be sent to " + knownUsers;
-				if(knownUsers.length>1)
-					confirmMsg+=" to inform them of this addition?";
-				else
-					confirmMsg+=" to inform him/her of this addition?";
-				
-				Local.confirm(confirmMsg, sendMail(true), sendMail(false));
-				return true;
-			}else if(unknownUsers.length>0){
-				sendMail(true).call();
-				return true;
-			}
+                    YAHOO.util.Connect.asyncRequest('PUT',post_url + "/" + emails + showDeactivatedUsers + "?" + params,that.insertCallback,params,that);
+                };
+            };
+            if(knownUsers.length>0){
+                var confirmMsg="Would you like an email to be sent to " + knownUsers;
+                if(knownUsers.length>1)
+                    confirmMsg+=" to inform them of this addition?";
+                else
+                    confirmMsg+=" to inform him/her of this addition?";
+                xModalConfirm({
+                    content: confirmMsg,
+                    okAction: function(){
+                        sendMail(true);
+                    },
+                    cancelAction: function(){
+                        sendMail(false);
+                    }
+                });
+                return true;
+            }
 		}
 	};
 

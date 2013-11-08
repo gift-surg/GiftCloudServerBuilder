@@ -26,9 +26,7 @@
 // to ensure that a supported version of the JRE exists on the client.
 // Use an anonymous function to prevent global scope
 (function() {
-
     var SUPPORTED_JRE_VERSIONS = ["1.6", "1.7"];
-    
     function hasSupport(versions) {
         for (var i=0; i < versions.length; i++) {
             if (deployJava.versionCheck(versions[i])) {
@@ -37,11 +35,9 @@
         }
         return false;
     }
-
     if (!hasSupport(SUPPORTED_JRE_VERSIONS)) {
-        alert("Applet will not work without supported JRE version. Requires one of " + SUPPORTED_JRE_VERSIONS.join(", "));
+      xModalMessage('Unsupported Java Runtime', 'Upload applet will not work without supported JRE version. Requires one of ' + SUPPORTED_JRE_VERSIONS.join(", "));
     }
-
 })();
 
 function loadApplet() {

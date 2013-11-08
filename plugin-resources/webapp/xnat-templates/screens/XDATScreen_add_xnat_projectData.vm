@@ -134,7 +134,7 @@ function validateProjectForm(){
 
   if(document.getElementById("xnat:projectData/ID").value==""){
 
-    alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.");
+    xModalMessage('Project Validation', 'Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.');
 
     document.getElementById("xnat:projectData/ID").focus();
 
@@ -146,7 +146,7 @@ function validateProjectForm(){
 
   if(document.getElementById("xnat:projectData/name").value==""){
 
-    alert("Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() title.");
+    xModalMessage('Project Validation', 'Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() title.');
 
     document.getElementById("xnat:projectData/name").focus();
 
@@ -158,7 +158,7 @@ function validateProjectForm(){
 
   if(document.getElementById("xnat:projectData/secondary_ID").value==""){
 
-    alert("Please specify a running title.");
+    xModalMessage('Project Validation', 'Please specify a running title.');
 
     document.getElementById("xnat:projectData/secondary_ID").focus();
 

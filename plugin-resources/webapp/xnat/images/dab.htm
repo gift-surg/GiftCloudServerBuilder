@@ -200,7 +200,7 @@ return false;
 
 function frmsearchForm_Validate() {
 	if (!document.searchForm.searchOn.value) {
-		alert("Enter Participant or Session Id to search");
+        xModalMessage('Search Validation', 'Enter Participant or Session Id to search.');
 		return false;
 	}
 	return true;

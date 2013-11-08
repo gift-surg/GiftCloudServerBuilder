@@ -102,24 +102,22 @@ function prog(theform)
 {
   if (document.getElementById('image_archive').value!="")
   {
-  disableForm(theform);
-  //document.getElementById('iframe').location.href='';
-  step = "Upload";
-  started=0;
-  uploadCount=0;
-  uploadIDStep = uploadID + step;
-  progressBar=document.getElementById("uploadBar");
-  progressPercent=document.getElementById("uploadPercent");
-  
+    disableForm(theform);
+//document.getElementById('iframe').location.href='';
+    step = "Upload";
+    started=0;
+    uploadCount=0;
+    uploadIDStep = uploadID + step;
+    progressBar=document.getElementById("uploadBar");
+    progressPercent=document.getElementById("uploadPercent");
 			  allowProgressCall="true";
-  resetProgressBar();
-  resetProgress();
-  checkProgress();
-    
-  return true;
+    resetProgressBar();
+    resetProgress();
+    checkProgress();
+    return true;
   }else{
-  alert("Please select a file");
-  return false;
+    xModalMessage('Upload Action', 'Please select a file.');
+    return false;
   }
 }
 

@@ -372,30 +372,16 @@ jq(function(){
                 jq('#form1').submit();
             }
             else {
-                alert('Please select a $displayManager.getSingularDisplayNameForSubject().toLowerCase().');
+                xModalMessage('Add Experiment Validation', 'Please select a $displayManager.getSingularDisplayNameForSubject().toLowerCase().');
             }
         }
         else {
-            alert('Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().');
+            xModalMessage('Add Experiment Validation', 'Please select a $displayManager.getSingularDisplayNameForProject().toLowerCase().');
         }
 
     });
 
 });
-
-
-// don't need this validator anymore?
-/*
-function validate(){
-   if (document.getElementById("data_type").selectedIndex==0)
-   {
-     alert("Please select a Data Type.");
-     return false;
-   }
-
-   return true;
-}
-*/
 
 </script>
 

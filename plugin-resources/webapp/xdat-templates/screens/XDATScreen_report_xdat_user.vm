@@ -56,7 +56,7 @@ function clearFailedLogins() {
         },
         failure:function(response){
             closeModalPanel("resetting");
-            alert("Failed to reset user $userObject.getUsername(): " + response);
+            xModalMessage('User Validation', 'Failed to reset user $userObject.getUsername(): ' + response);
         }
     };
 

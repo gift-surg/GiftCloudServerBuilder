@@ -81,7 +81,7 @@ td._old{
             failure: function (oResponse) {
                 if (!window.leaving) {
                     closeModalPanel("load_history");
-                    alert(oResponse);
+                    xModalMessage('Error', oResponse);
                 }
             }
         };

@@ -741,92 +741,92 @@ function submitSubjectStore()
     var post_menstrual_age= document.getElementById("subject_post_menstrual_age").value;
     var birth_weight= document.getElementById("subject_birth_weight").value;
     
-  
+  var title = 'Subject Finder Validation';
   
   if (bestimate.checked)
   {
     if(byear=="bad")
     {
-     alert("Please select a birth year.");
-     return;
+      xModalMessage(title, 'Please select a birth year.');
+      return;
     }
   }else{
     if(bday=="bad")
     {
-     alert("Please select a birth day.  If you are unsure of the birth day, specify the year and check the DOB Estimated box.");
-     return;
+      xModalMessage(title, 'Please select a birth day.<br/><br/>If you are unsure of the birth day, specify the year and check the DOB Estimated box.');
+      return;
     }
     if(bmonth=="bad")
     {
-     alert("Please select a birth month.  If you are unsure of the birth day, specify the year and check the DOB Estimated box.");
-     return;
+      xModalMessage(title, 'Please select a birth month.<br/><br/>If you are unsure of the birth day, specify the year and check the DOB Estimated box.');
+      return;
     }
     if(byear=="bad")
     {
-     alert("Please select a birth year.  If you are unsure of the birth day, specify the year and check the DOB Estimated box.");
-     return;
+      xModalMessage(title, 'Please select a birth year.<br/><br/>If you are unsure of the birth day, specify the year and check the DOB Estimated box.');
+      return;
     }
   }
   
   if(gender=="bad")
     {
-     alert("Please select a gender.");
-     return;
+      xModalMessage(title, 'Please select a gender.');
+      return;
     }
   
   if(handed=="bad")
     {
-     alert("Please select a handedness.");
-     return;
+      xModalMessage(title, 'Please select a handedness.');
+      return;
     }
   
     if(education!="" && !IsNumeric(education))
     {
-     alert("Please enter a valid integer for education.");
-     return;
+      xModalMessage(title, 'Please enter a valid integer for education.');
+      return;
     }
     
     if(ses!="" && !IsNumeric(ses))
     {
-     alert("Please enter a valid integer for ses.");
-     return;
+      xModalMessage(title, 'Please enter a valid integer for ses.');
+      return;
     }
     
     if(height!="" && !IsNumeric(height))
     {
-     alert("Please enter a valid integer for height.");
-     return;
+      xModalMessage(title, 'Please enter a valid integer for height.');
+      return;
     }
     
     if(weight!="" && !IsNumeric(weight))
     {
-     alert("Please enter a valid integer for weight.");
-     return;
+      xModalMessage(title, 'Please enter a valid integer for weight.');
+      return;
     }
     
     if(gestational_age!="" && !IsNumeric(gestational_age))
     {
-     alert("Please enter a valid number for gestational age.");
-     return;
+      xModalMessage(title, 'Please enter a valid number for gestational age.');
+      return;
     }
     
     if(post_menstrual_age!="" && !IsNumeric(post_menstrual_age))
     {
-     alert("Please enter a valid number for post menstrual age.");
-     return;
+      xModalMessage(title, 'Please enter a valid number for post menstrual age.');
+      return;
     }
 
     if(birth_weight!="" && !IsNumeric(birth_weight))
-	   {
-     alert("Please enter a valid number for birth weight.");
-     return;
-	   }
+	{
+      xModalMessage(title, 'Please enter a valid number for birth weight.');
+      return;
+	}
     
     if(identifier=="")
-	   {
-     alert("Please enter a valid identifier.");
-     return;
-	   }
+	{
+      xModalMessage(title, 'Please enter a valid identifier.');
+      return;
+    }
 	   
     #if($project)
       var project = "$project";
@@ -834,10 +834,10 @@ function submitSubjectStore()
      index=document.getElementById("subject_project").selectedIndex;
      var project = document.getElementById("subject_project").options[index].value;
 	   
-     if(project=="" || project==null)
+    if(project=="" || project==null)
     {
-     alert("Please select a valid $displayManager.getSingularDisplayNameForProject().toLowerCase().");
-     return;
+      xModalMessage(title, 'Please select a valid $displayManager.getSingularDisplayNameForProject().toLowerCase().');
+      return;
     }
 	  #end
   

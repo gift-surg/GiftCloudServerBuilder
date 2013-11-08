@@ -66,7 +66,7 @@ function reconEditor(_sessionID,_reconID,_options){
 	};
 	
 	this.displayError=function(errorMsg){
-		alert(errorMsg);
+		xModalMessage('Error', errorMsg);
 	};
 	
 	this.render=function(){

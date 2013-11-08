@@ -186,20 +186,18 @@ function ScanEditor(_sessionID,_scanID,_options){
 			if (handler.root){
 				this.scan=handler.root;
 			}else{
-				alert("ERROR: Unable to retrieve scan data.");
+                xModalMessage('Scan Data Error', 'ERROR: Unable to retrieve scan data.');
 			}
-
 			if(this.options.button)this.options.button.disabled=false;
 		}catch(e){
-			this.displayError("ERROR " + o.status+ ": Failed to parse scan.");
+            xModalMessage('Scan Data Error', 'ERROR '+o.status+': Failed to parse scan.');
 		}
-
 		this.render();
 
 	};
 
 	this.displayError=function(errorMsg){
-		alert(errorMsg);
+        xModalMessage('Scan Data Error', errorMsg);
 	};
 	
 	this.render=function(){
@@ -370,7 +368,7 @@ function ScanEditor(_sessionID,_scanID,_options){
                         failure: function () {
                             if (!window.leaving) {
                                 closeModalPanel("save_scan");
-                                alert("FAILED;");
+                                xModalMessage('Scan Data', 'Save failed!');
                             }
                             this.cancel();
                         },
@@ -521,7 +519,7 @@ function scanDeleteDialog(_options){
 				this.selector.delete_files = this.form.delete_files.checked;
 				this.selector.event_reason = this.form.event_reason.value;
 				if(this.selector.event_reason==""){
-					alert("Please enter a justification!");
+                    xModalMessage('Delete Scan', 'Please enter a justification!');
 					return;
 				}
 				this.cancel();
@@ -699,7 +697,7 @@ function ScanSet(_options,_scans){
 
 	this.options=_options;
 	if(this.options.session_id==undefined){
-		alert("Missing session_id");
+        xModalMessage('Scan Data Validation', 'Missing session_id');
 	}
 
     this.onLoad=new YAHOO.util.CustomEvent("load",this);
@@ -1127,7 +1125,6 @@ function scanListingEditor(_tbody,_scanSet,_options){
 			this.tbody.appendChild(tr);
 
 			if(scan.extension.Id!=undefined){
-				//alert(scan.toXML());
 				tr = document.createElement("tr");
 				tr.style.display="none";
 				tr.id='span_scan'+scan.extension.Id;

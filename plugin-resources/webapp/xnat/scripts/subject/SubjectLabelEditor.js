@@ -60,16 +60,16 @@ XNAT.app.SubjectLabelEditor = function(project) {"use strict";
 				var label = this.form.new_label;
 				that.modifiedLabel = label.value.trim();
 				if (that.modifiedLabel === "") {
-					alert("Please specify a new ID.");
+                    xModalMessage('Subject Label Validation', 'Please specify a new ID.');
 					label.focus();
 				} else if (that.modifiedLabel === that.startingLabel) {
-					alert("No modification found.");
+                    xModalMessage('Subject Label Validation', 'No modification found.');
 					label.focus();
 				} else {
 					var validatedLabel = that.cleanLabel(that.modifiedLabel);
 					if (validatedLabel !== that.modifiedLabel) {
 						label.value = validatedLabel;
-						alert("Invalid characters in new ID.  Review modified value and resubmit.");
+                        xModalMessage('Subject Label Validation', 'Invalid characters in new ID.  Review modified value and resubmit.');
 						label.focus();
 						return;
 					}
@@ -77,7 +77,7 @@ XNAT.app.SubjectLabelEditor = function(project) {"use strict";
 					var lC;
 					for (lC = 0; lC < that.existingSubjectList.length; lC = lC + 1) {
 						if (that.modifiedLabel === that.existingSubjectList[lC].label) {
-							alert("This ID is already in use by a " + that.header + " in this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Please modify and resubmit.");
+                            xModalMessage('Subject Label Validation', 'This ID is already in use by a ' + that.header + ' in this ' + XNAT.app.displayNames.singular.project.toLowerCase() + '.<br/><br/>Please modify and resubmit.');
 							label.focus();
 							return;
 						}
@@ -133,7 +133,7 @@ XNAT.app.SubjectLabelEditor = function(project) {"use strict";
 	this.loadSubjects = function() {
 
 		function displayError(errorMsg) {
-			alert(errorMsg);
+			xModalMessage('Error', errorMsg);
 		}
 
 		function initFailure(o) {

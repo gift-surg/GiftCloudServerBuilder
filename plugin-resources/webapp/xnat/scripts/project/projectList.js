@@ -59,7 +59,7 @@ function ProjectList(_menu, _options){
 	};
 	
 	this.displayError=function(errorMsg){
-		alert(errorMsg);
+		xModalMessage('Error', errorMsg);
 	}
 	
 	this.render=function(){

@@ -360,11 +360,11 @@ this.draw=function(){
 					            var firstDate = selectedDates[0]; 
 					            YAHOO.example.calendar.cal1.cfg.setProperty("pagedate", (firstDate.getMonth()+1) + "/" + firstDate.getFullYear()); 
 					            YAHOO.example.calendar.cal1.render(); 
-					         } else { 
-					            alert("Invalid date. MM/DD/YYYY"); 
+					         } else {
+                                 xModalMessage('Date Validation', 'Invalid date. MM/DD/YYYY');
 					         } 
 					   	   	}else{
-					   	   		alert("Invalid date. MM/DD/YYYY");
+                                xModalMessage('Date Validation', 'Invalid date. MM/DD/YYYY');
 					   	   		this.value="";
 					   	   		this.focus();
 					   	   	}

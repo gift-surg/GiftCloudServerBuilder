@@ -48,7 +48,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
 
 
     this.displayError = function (errorMsg) {
-        alert(errorMsg);
+        xModalMessage('Error', errorMsg);
     };
 
 
@@ -122,7 +122,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
                     }
                 },
                 failure: function (o) {
-                    alert("Failed to load " + XNAT.app.displayNames.plural.subject.toLowerCase() + ".");
+                    xModalMessage('Error', 'Failed to load ' + XNAT.app.displayNames.plural.subject.toLowerCase() + '.');
                 },
                 cache: false, // Turn off caching for IE
                 argument: this
@@ -144,7 +144,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
                 subjCallback);
 
         } catch (e) {
-            alert('failed to load ' + XNAT.app.displayNames.plural.subject.toLowerCase());
+            xModalMessage('Error', 'Failed to load ' + XNAT.app.displayNames.plural.subject.toLowerCase() + '.');
         }
     };
 
@@ -234,7 +234,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
                     }
                 },
                 failure: function (o) {
-                    alert("Failed to load expts.")
+                    xModalMessage('Error', 'Failed to load experiments.');
                 },
                 cache: false, // Turn off caching for IE
                 argument: this
@@ -248,7 +248,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
                 subjCallback);
 
         } catch (e) {
-            alert('failed to load expts');
+            xModalMessage('Error', 'Failed to load experiments.');
         }
     }
 }
@@ -366,7 +366,7 @@ function fixSessionID(val) {
     newVal = newVal.replace(/[}]/, "_");
 
     if (newVal != temp) {
-        alert("Removing invalid characters in " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".");
+        xModalMessage('Session Validation', 'Removing invalid characters in ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + '.');
     }
     return newVal;
 }
@@ -422,7 +422,7 @@ function verifyExptId(obj) {
             }
         }
     } catch (e) {
-        alert('Failed to validate expt id:' + e.message);
+        xModalMessage('Error', 'Failed to validate expt id:' + e.message);
     }
 }
 

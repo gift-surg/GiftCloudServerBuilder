@@ -181,7 +181,7 @@ XNAT.app._label.labelLoaderP=function(){
 	};
 	
 	this.displayError=function(errorMsg){
-		alert(errorMsg);
+		xModalMessage('Error', errorMsg);
 	};
 	
 	this.onload=function(obj){

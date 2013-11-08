@@ -45,18 +45,7 @@
   		<TD>
   			#xdatSearchField($schemaElement $schemaElement.getDisplayField("DATE"))
   		</TD>
-  		
-  #set($mr_projects=$data.getSession().getAttribute("user").getAllowedValues("${schemaElement.getFullXMLName()}","${schemaElement.getFullXMLName()}/project","read"))
-					<TD>$displayManager.getSingularDisplayNameForProject()</TD>
-  		<TD ROWSPAN="2">
-			<input type="hidden" name="${schemaElement.getFullXMLName()}.COMBO2_FIELDS" value="${schemaElement.getFullXMLName()}.PROJECT_equals,${schemaElement.getFullXMLName()}.sharing.share.project_equals"/>
-  				#set($TYPE_value=$!search.getWebFormValue("${schemaElement.getFullXMLName()}.PROJECTS_equals"))
-  			<select name="${schemaElement.getFullXMLName()}.COMBO2" MULTIPLE SIZE="6">
-				  #foreach($mr_project in $mr_projects)
-	    		<option value="'$mr_project'" #if($TYPE_value.indexOf("'$mr_project'")!=-1) SELECTED #end>$mr_project</option>
-				  #end
-</select>
-		</TD>
+			#advancedSearchCreateProjectList($data $displayManager $search $schemaElement)
 	</TR>
 <TR>
 		<TD COLSPAN=6>&nbsp;</TD>

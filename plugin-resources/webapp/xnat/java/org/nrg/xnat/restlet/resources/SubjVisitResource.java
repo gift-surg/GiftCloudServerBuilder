@@ -277,7 +277,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 						this.subject.setLabel(visit.getSubjectId());
 						this.subject.setId(XnatSubjectdata.CreateNewID());
 						if(!user.canCreate(this.subject)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priveledges for subjects in this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for subjects in this project.");
 							return;
 						}
 						SaveItemHelper.authorizedSave(this.subject, user, false, true, wrk.buildEvent());
@@ -289,7 +289,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 
 			if(existing==null){
 				if(!user.canCreate(visit)){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in this project.");
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for experiments in this project.");
 					return;
 				}
 				//IS NEW
@@ -303,12 +303,12 @@ public class SubjVisitResource extends QueryOrganizerResource {
 
 				//MATCHED
 				if(!existing.getProject().equals(visit.getProject())){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through seperate URI.");
+					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through separate URI.");
 					return;
 				}
 
 				if(!user.canEdit(visit)){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for visits in this project.");
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for visits in this project.");
 					return;
 				}
 

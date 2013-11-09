@@ -291,11 +291,11 @@ function trim(s) {
 	return s.replace(/^\s+|\s+$/g, "");
 }
 function alternate(table) {
-	// Take object table and get all it's tbodies.
+	// Take object table and get all its tbodies.
 	var tableBodies = table.getElementsByTagName("tbody");
 	// Loop through these tbodies
 	for (var i = 0; i < tableBodies.length; i++) {
-		// Take the tbody, and get all it's rows
+		// Take the tbody, and get all its rows
 		var tableRows = tableBodies[i].getElementsByTagName("tr");
 		// Loop through these rows
 		// Start at 1 because we want to leave the heading row untouched

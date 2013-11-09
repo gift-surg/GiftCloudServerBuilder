@@ -535,7 +535,7 @@ public final class DicomDump extends SecureResource {
 
     /**
      * Enhance {@link CatEntryFilterI} to include a path
-     * in it's environment. 
+     * in its environment.
      * 
      * This is required because by the time we get down to 
      * iterating through the catalog entries we've lost

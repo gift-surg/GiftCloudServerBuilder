@@ -2179,7 +2179,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 
 
     /**
-     * Relatives this path from the first occurence of the indexOf string.
+     * Relatives this path from the first occurrence of the indexOf string.
      * @param indexOf
      */
     public void relativePaths(String indexOf){

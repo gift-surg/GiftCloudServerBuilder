@@ -56,7 +56,7 @@ $page.setVlinkColor($ui.vlink)
 					#end</TD></TR>
 				#end
 				#if(! $allSet.booleanValue())
-					<TR><TD align="left" class="special" style="background-color:$unDefinedColor">&nbsp;Note: Permissions have not been set for these fields. Data will not be acessible to this user.&nbsp;</TD></TR>
+					<TR><TD align="left" class="special" style="background-color:$unDefinedColor">&nbsp;Note: Permissions have not been set for these fields. Data will not be accessible to this user.&nbsp;</TD></TR>
 				#end
 				<TR><TH align="left">Permissions
 				#if ($item.canEdit($user))

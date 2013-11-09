@@ -106,7 +106,7 @@ public class SubjectResource extends ItemResource {
 				if(filepath!=null && !filepath.equals("")){
 					if(filepath.startsWith("projects/")){
 						if(!user.canRead(sub)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for subjects in this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient privileges for subjects in this project.");
 							return;
 						}
 						
@@ -149,7 +149,7 @@ public class SubjectResource extends ItemResource {
 							
 							if(this.isQueryVariableTrue(PRIMARY)){
 								if(!user.canDelete(sub)){
-									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for subjects in this project.");
+									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient privileges for subjects in this project.");
 									return;
 								}
 								
@@ -175,7 +175,7 @@ public class SubjectResource extends ItemResource {
 											pp.setSubjectId(sub.getId());
 											BaseXnatSubjectdata.SaveSharedProject(pp, sub, user, newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.CONFIGURED_PROJECT_SHARING));
 										}else{
-											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in the " + newProject.getId() + " project.");
+											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for subjects in the " + newProject.getId() + " project.");
 											return;
 										}
 								}else{
@@ -255,7 +255,7 @@ public class SubjectResource extends ItemResource {
 					
 					if(existing==null){
 						if(!user.canCreate(sub)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for subjects in this project.");
 							return;
 						}
 						//IS NEW
@@ -266,12 +266,12 @@ public class SubjectResource extends ItemResource {
 						
 					}else{
 						if(!existing.getProject().equals(sub.getProject())){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through seperate URI.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through separate URI.");
 							return;
 						}
 						
 						if(!user.canEdit(sub)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for subjects in this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for subjects in this project.");
 							return;
 						}
 						if(sub.getId()==null || sub.getId().equals("")){

@@ -25,7 +25,7 @@
 						<TD><HR color="$colorCode"></TD>
 					</TR>
 					<tr>
-						<TH align="left">Your e-mail address:</TH>
+						<TH align="left">Your email address:</TH>
 					</tr>
 					<TR>
 						<TD align="left">$!user.getEmail() ($!user.getFirstname() $!user.getLastname())</TD>
@@ -34,13 +34,13 @@
 						<TD><HR color="$colorCode"></TD>
 					</TR>
 					<tr>
-						<TH align="left">Recipient's e-mail address: </TH>
+						<TH align="left">Recipient's email address: </TH>
 					</tr>
 					<TR>
 						<TD align="left"><input type="text" name="EMAILID_1" size="30"></TD>
 					</tr>
 					<TR>
-						<TD align="left">(Separate multiple e-mail addresses with commas.)</TD>
+						<TD align="left">(Separate multiple email addresses with commas.)</TD>
 					</tr>
 					<TR>
 						<TD><HR color="$colorCode"></TD>

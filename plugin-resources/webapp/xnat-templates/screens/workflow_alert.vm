@@ -85,7 +85,7 @@
 		
 		this.workflowUpdateFailed = function(){
 			xModalLoadingClose();
-			xModalMessage('Error','An unexpected error has occured. Please contact your administrator.','OK', null);
+			xModalMessage('Error','An unexpected error has occurred. Please contact your administrator.','OK', null);
 		}
 		
 		this.insertCallback = {

@@ -67,7 +67,7 @@ public class SavedSearchResource extends ItemResource {
 	
 	
 	/**
-	 * Returns a file containing search xmls which was stored on the file system.  This provides a way to standardize search xmls outside of the database, for easy sharing accross installations.
+	 * Returns a file containing search xmls which was stored on the file system.  This provides a way to standardize search xmls outside of the database, for easy sharing across installations.
 	 * @return
 	 */
 	private synchronized static File getFileSystemSearch(String name){

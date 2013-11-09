@@ -13,7 +13,7 @@ $messages.size() successful transfer(s).
 </p>
 #if($errors.size()>0)
 <br><br><p>
-$errors.size() error(s) occured.
+$errors.size() error(s) occurred.
 #foreach($m in $errors)
 <br>$m.get(0): $m.get(1)
 #end

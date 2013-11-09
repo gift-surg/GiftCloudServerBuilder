@@ -30,7 +30,7 @@ $page.setBgColor($ui.bgcolor)
             }else if(o.status === 400){
                 xModalMessage('Error','Unknown email address.','OK', msgOptions);
             }else{
-                xModalMessage('Error','An unexpected error has occured. Please contact your administrator.','OK', msgOptions);
+                xModalMessage('Error','An unexpected error has occurred. Please contact your administrator.','OK', msgOptions);
             }
         }
 

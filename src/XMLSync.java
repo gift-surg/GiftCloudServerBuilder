@@ -60,7 +60,7 @@ public class XMLSync extends CommandPromptTool{
      * @see org.nrg.xft.commandPrompt.CommandPromptTool#getDescription()
      */
     public String getDescription() {
-        return "Function used to sync the data in two seperate XNAT installations.";
+        return "Function used to sync the data in two separate XNAT installations.";
     }
     /* (non-Javadoc)
      * @see org.nrg.xft.commandPrompt.CommandPromptTool#getName()

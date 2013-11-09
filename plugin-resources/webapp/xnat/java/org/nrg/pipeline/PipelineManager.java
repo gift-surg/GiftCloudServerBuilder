@@ -375,7 +375,7 @@ public class PipelineManager {
    /*
     * Returns if the current step can be launched by checking if the 
     * step is dependent on all previous steps or not. 
-    * If its dependent then the workflowstatus of all previous dependent steps is  checked. 
+    * If it's dependent then the workflowstatus of all previous dependent steps is  checked.
     * If any one of the previous have failed, returns false. 
     */
    
@@ -726,7 +726,7 @@ public class PipelineManager {
     /*
      * Returns if the current step can be launched by checking if the 
      * step is dependent on all previous steps or not. 
-     * If its dependent then the workflowstatus of all previous dependent steps is  checked. 
+     * If it's dependent then the workflowstatus of all previous dependent steps is  checked.
      * If any one of the previous have failed, returns false. 
      */
     

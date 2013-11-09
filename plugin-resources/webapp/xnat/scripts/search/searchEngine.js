@@ -12,7 +12,7 @@ function HTMLSearchManager(_id,_desc){
 	
 	//fired after Search XML has beens successfully loaded.
 	this.onInit=new YAHOO.util.CustomEvent("init",this);
-	//fired after Temporary database table has been created, and result summary recieved.
+	//fired after Temporary database table has been created, and result summary received.
 	this.onPreload=new YAHOO.util.CustomEvent("preload",this);
 	//fired after First page has been loaded
 	this.onLoad=new YAHOO.util.CustomEvent("load",this);

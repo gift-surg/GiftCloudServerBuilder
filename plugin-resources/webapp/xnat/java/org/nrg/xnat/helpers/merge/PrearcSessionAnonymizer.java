@@ -100,7 +100,7 @@ public class PrearcSessionAnonymizer extends AnonymizerA {
 	/**
 	 * Retrieve a list of files to anonymize, but in the prearchive 
 	 * if the files have already been anonymized by the upload applet we don't do it
-	 * again. To that end for each file we check it's last Code to ensure that it
+	 * again. To that end for each file we check its last Code to ensure that it
 	 * doesn't correspond to the project-specific script that is about to be 
 	 * applied.
 	 * 

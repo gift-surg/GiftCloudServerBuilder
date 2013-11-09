@@ -99,7 +99,7 @@ shared_projects.push({id:"$pp.getProperty("project")",
    	   		    }
    	   		    
    	   		    if(oRecord.getData("expts")>0){
-                   xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or seperately delete the created experiments.");
+                   xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or separately delete the created experiments.");
    	   		       return;
    	   		    }
    	   		    

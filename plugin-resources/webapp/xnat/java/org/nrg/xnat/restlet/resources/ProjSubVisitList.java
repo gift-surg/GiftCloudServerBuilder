@@ -232,7 +232,7 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 
 					if(existing==null){
 						if(!user.canCreate(visit)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for visits in this project.");
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for visits in this project.");
 						return;
 						}
 						//IS NEW

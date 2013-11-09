@@ -125,7 +125,7 @@ public class ProjectPipelineListResource extends SecureResource  {
 			boolean additional=this.isQueryVariableTrue("additional");
 			
 				//Check to see if the Project already has an entry in the ArcSpec.
-				//If yes, then return that entry. If not then construct a new ArcProject element and insert an attribute to say that its an already existing
+				//If yes, then return that entry. If not then construct a new ArcProject element and insert an attribute to say that it's an already existing
 				//entry or not
 				try {
 					if (arcProject == null) { // No Project pipelines set in the archive specification

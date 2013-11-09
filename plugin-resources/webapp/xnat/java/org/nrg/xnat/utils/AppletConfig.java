@@ -13,7 +13,7 @@ package org.nrg.xnat.utils;
 import java.util.Map;
 
 /*
- * This is a bean who's sole purpose is to deserialize the applet settings json.
+ * This is a bean whose sole purpose is to deserialize the applet settings json.
  */
 
 public class AppletConfig{

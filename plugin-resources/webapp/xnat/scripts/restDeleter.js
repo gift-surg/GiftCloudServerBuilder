@@ -97,7 +97,7 @@ RestDeleter = function(_array,_config) {
     		}
     	}else if(this.manager.processing){
     		this.manager.stopped=true;
-            xModalMessage('Cancel Action', 'Please wait for current process to complete.<br/><br/>Futher actions are cancelled.');
+            xModalMessage('Cancel Action', 'Please wait for current process to complete.<br/><br/>Further actions are cancelled.');
     	}else{
     		// If the cancel action has been configured, use the callback
     		// otherwise reload the page. Added for XNAT-2408.

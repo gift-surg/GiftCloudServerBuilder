@@ -399,11 +399,11 @@ public class StoreXAR extends RawScreen {
 
                 }else{
 
-                    //MULTIPLE DOCUMENT TYPEs... so files must be moved seperately
+                    //MULTIPLE DOCUMENT TYPEs... so files must be moved separately
 
                     pw.println("<UploadResponse status=\"COMPLETE\" CODE=\"0\">");
 
-                    pw.println("<message>Error multiple data types cannot share a single XAR.  Please seperate files into seperate XARs</message>");
+                    pw.println("<message>Error multiple data types cannot share a single XAR.  Please separate files into separate XARs</message>");
 
                     pw.println("</UploadResponse>");
 

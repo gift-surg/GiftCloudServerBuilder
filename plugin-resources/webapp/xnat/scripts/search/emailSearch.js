@@ -113,7 +113,7 @@ function EmailPopupForm(_search,_div){
 		th.align="left";
 		th.border="0";
 		th.colspan="2";
-		th.innerHTML="Recipient's e-mail address:";
+		th.innerHTML="Recipient's email address:";
 		tr.appendChild(th);
 		tbody.appendChild(tr);
 
@@ -148,7 +148,7 @@ function EmailPopupForm(_search,_div){
 			th.align="left";
 			th.border="0";
 			th.colspan="2";
-			th.innerHTML="Sender's e-mail address:";
+			th.innerHTML="Sender's email address:";
 			tr.appendChild(th);
 			tbody.appendChild(tr);
 
@@ -173,7 +173,7 @@ function EmailPopupForm(_search,_div){
 		td.align="left";
 		td.colspan="2";
 		td.border="0";
-		td.innerHTML="(Separate multiple e-mail addresses with commas.)";
+		td.innerHTML="(Separate multiple email addresses with commas.)";
 		tr.appendChild(td);
 		tbody.appendChild(tr);
 

@@ -993,7 +993,7 @@ function initEmailForm(_search){
 			th= document.createElement("TH");
 			th.align="left";
 			th.colspan="2";
-			th.innerHTML="Recipient's e-mail address:";
+			th.innerHTML="Recipient's email address:";
 			tr.appendChild(th);
 			tbody.appendChild(tr);
 			
@@ -1023,7 +1023,7 @@ function initEmailForm(_search){
 				th= document.createElement("TH");
 				th.align="left";
 				th.colspan="2";
-				th.innerHTML="Sender's e-mail address:";
+				th.innerHTML="Sender's email address:";
 				tr.appendChild(th);
 				tbody.appendChild(tr);
 				
@@ -1045,7 +1045,7 @@ function initEmailForm(_search){
 			td= document.createElement("TD");
 			td.align="left";
 			td.colspan="2";
-			td.innerHTML="(Separate multiple e-mail addresses with commas.)";
+			td.innerHTML="(Separate multiple email addresses with commas.)";
 			tr.appendChild(td);
 			tbody.appendChild(tr);
 		

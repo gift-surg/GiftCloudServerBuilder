@@ -116,7 +116,7 @@ public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource 
     public abstract void prependPathsWith(String root);
 
     /**
-     * Relatives this path from the first occurence of the indexOf string.
+     * Relatives this path from the first occurrence of the indexOf string.
      * @param indexOf
      */
     public abstract void relativizePaths(String indexOf, boolean caseSensitive);

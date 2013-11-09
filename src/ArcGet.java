@@ -277,7 +277,7 @@ public class ArcGet extends CommandPromptTool {
      */
     public void definePossibleVariables() {
         addPossibleVariable("session_id","MR Session ID for the desired session(s)\nFor multiple sessions, use multiple -s tags.",new String[]{"s","session_id"},false,true);
-        addPossibleVariable("f","File containing MRSession IDs seperated by line breaks.",new String[]{"f","file_name"},false);
+        addPossibleVariable("f","File containing MRSession IDs separated by line breaks.",new String[]{"f","file_name"},false);
         addPossibleVariable("dir","Directory to store files.",new String[]{"o","dir_name"});
         addPossibleVariable("z","Bundles each requested session in a zipped file.",new String[]{"z","zip"});
         addPossibleVariable("xml","Path to Partial XML document",new String[]{"xml"});

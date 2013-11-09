@@ -123,7 +123,7 @@ public class BaseXnatPublicationresource extends AutoXnatPublicationresource {
     }
 
     /**
-     * Relatives this path from the first occurence of the indexOf string.
+     * Relatives this path from the first occurrence of the indexOf string.
      * @param indexOf
      */
     public void relativizePaths(String indexOf, boolean caseSensitive){

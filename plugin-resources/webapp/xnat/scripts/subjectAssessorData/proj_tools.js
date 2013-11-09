@@ -313,7 +313,7 @@ function ProjectEditor(_config) {
                                             }
                                         }
                                         else {
-                                            // some systemic error occured
+                                            // some systemic error occurred
                                             xModalMessage('Modify Project Error', 'ERROR (' + o.status + '): Failed to modify ' + XNAT.app.displayNames.singular.project.toLowerCase() + '.');
                                             closeModalPanel("modify_project");
                                         }

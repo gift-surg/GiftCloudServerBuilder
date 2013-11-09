@@ -89,7 +89,7 @@ public class ProtocolResource extends ItemResource {
 					
 					if(existing==null){
 						if(!user.canEdit(proj)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for this project.");
 							return;
 						}
 						//IS NEW
@@ -98,7 +98,7 @@ public class ProtocolResource extends ItemResource {
 						}
 					}else{							
 						if(!user.canEdit(proj)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for this project.");
 							return;
 						}
 						if(protocol.getId()==null || protocol.getId().equals("")){

@@ -369,8 +369,8 @@ public class XarImporter extends ImporterHandlerA implements Callable<List<Strin
             
         }else{
         	
-            //MULTIPLE DOCUMENT TYPEs... so files must be moved seperately
-          	throw new ClientException("Multiple data types cannot share a single XAR.  Please seperate files into seperate XARs");
+            //MULTIPLE DOCUMENT TYPEs... so files must be moved separately
+          	throw new ClientException("Multiple data types cannot share a single XAR.  Please separate files into separate XARs");
           	
         }
 

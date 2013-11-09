@@ -216,7 +216,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							}
 							
 							if(!user.canRead(expt)){
-								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Specified user account has insufficient priviledges for experiments in this project.");
+								this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Specified user account has insufficient privileges for experiments in this project.");
 								return;
 							}
 
@@ -240,7 +240,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 
 								
 								if(!user.canDelete(expt)){
-									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient priviledges for experiments in this project.");
+									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient privileges for experiments in this project.");
 									return;
 								}
 								
@@ -273,7 +273,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 											pp.setProperty("sharing_share_xnat_experimentda_id", expt.getId());
 											BaseXnatExperimentdata.SaveSharedProject((XnatExperimentdataShare)pp, expt, user,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.CONFIGURED_PROJECT_SHARING));
 										}else{
-											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in the " + newProject.getId() + " project.");
+											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for experiments in the " + newProject.getId() + " project.");
 											return;
 										}
 								}else{
@@ -364,7 +364,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 								this.subject.setLabel(expt.getSubjectId());
 								this.subject.setId(XnatSubjectdata.CreateNewID());
 								if(!user.canCreate(this.subject)){
-									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priveledges for subjects in this project.");
+									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for subjects in this project.");
 									return;
 								}
 								BaseXnatSubjectdata.save(this.subject, false, true,user,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.AUTO_CREATE_SUBJECT));
@@ -376,7 +376,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					
 					if(existing==null){
 						if(!user.canCreate(expt)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for experiments in this project.");
 							return;
 						}
 						//IS NEW
@@ -391,12 +391,12 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						
 						//MATCHED
 						if(!existing.getProject().equals(expt.getProject())){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through seperate URI.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through separate URI.");
 							return;
 						}
 
 						if(!user.canEdit(expt)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for experiments in this project.");
+							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for experiments in this project.");
 							return;
 						}
 						
@@ -421,7 +421,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 										this.subject.setLabel(this.getQueryVariable("subject_ID"));
 										this.subject.setId(XnatSubjectdata.CreateNewID());
 										if(!user.canCreate(this.subject)){
-											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priveledges for subjects in this project.");
+											this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for subjects in this project.");
 											return;
 										}
 										BaseXnatSubjectdata.save(this.subject, false, true,user,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.AUTO_CREATE_SUBJECT));

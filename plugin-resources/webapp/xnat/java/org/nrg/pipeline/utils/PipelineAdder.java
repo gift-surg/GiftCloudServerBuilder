@@ -32,7 +32,7 @@ public class PipelineAdder {
 	    try {
 	    	if (edit) {
 				ArcProject arcProject = ArcSpecManager.GetFreshInstance().getProjectArc(projectId);
-	    		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
+	    		if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //It's a project level pipeline
 					ArcProjectPipeline newPipeline = arcProject.getPipelineEltByPath(pipelinePath);
 					templateFile = newPipeline.getCustomwebpage();
 	    		}else {
@@ -45,7 +45,7 @@ public class PipelineAdder {
 				    //Set the pipeline for the data-type and send it to the screen for the user to add parameters
 				    PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
 				    PipePipelinedetails pipeline = pipelineRepository.getPipeline(pipelinePath);
-					if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //Its a project level pipeline
+					if (dataType.equals(XnatProjectdata.SCHEMA_ELEMENT_NAME)) { //It's a project level pipeline
 						if (pipeline.getCustomwebpage() != null) {
 							templateFile = pipeline.getCustomwebpage();
 						}

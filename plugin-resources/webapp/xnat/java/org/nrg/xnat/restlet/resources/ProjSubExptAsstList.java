@@ -214,7 +214,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 					
 					if(existing==null){
 						if(!user.canCreate(assessor)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for subjects in this project.");
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for subjects in this project.");
 						return;
 						}
 						//IS NEW

@@ -104,7 +104,7 @@ public class FileList extends XNATCatalogTemplate {
                 // the catalog will not be found by the superclass
                 // (unless caller passes all=true, which seems clunky to require given that they are passing in the resource PK).
                 // So here we provide an alternate path finding the resource
-                // added check to make sure its an number.  You can also reference resource labels here (not just pks).
+                // added check to make sure it's an number.  You can also reference resource labels here (not just pks).
                 for (String resourceID : resource_ids) {
                     try {
                         Integer id = Integer.parseInt(resourceID);

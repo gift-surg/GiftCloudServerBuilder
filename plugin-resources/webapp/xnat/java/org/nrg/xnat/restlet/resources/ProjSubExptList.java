@@ -208,7 +208,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 
 					if(existing==null){
 						if(!user.canCreate(expt)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for experiments in this project.");
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for experiments in this project.");
 						return;
 						}
 						//IS NEW

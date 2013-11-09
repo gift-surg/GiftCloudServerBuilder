@@ -317,7 +317,7 @@ Image files should be zipped (.zip or .tar.gz) and uploaded using the form below
 		<TD colspan="3" align="right">&nbsp;</TD>
 	</TR>
 	<TR>
-		<TH align="left">Tags</TH><TD colspan="2"><input id="tags" type="text" name="tags" size="50"/> (Seperate multiple tags by commas)</TD>
+		<TH align="left">Tags</TH><TD colspan="2"><input id="tags" type="text" name="tags" size="50"/> (Separate multiple tags by commas)</TD>
 	</TR>
 	<TR>
 		<TH align="left">File</TH><TD colspan="2"><input id="image_archive" type="file" name="image_archive" size="75"/></TD>

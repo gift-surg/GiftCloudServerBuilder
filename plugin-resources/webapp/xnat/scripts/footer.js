@@ -426,7 +426,7 @@ YAHOO.util.Event.onDOMReady( function()
             	
                 return result;
         	}catch(e){
-        		alert("An error occured during form validation.");
+        		alert("An error occurred during form validation.");
         		YAHOO.util.Event.stopEvent(env);
                 showContent();
                 return false;

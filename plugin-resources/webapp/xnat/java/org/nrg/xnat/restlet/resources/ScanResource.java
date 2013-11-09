@@ -184,7 +184,7 @@ public class ScanResource  extends ItemResource {
 
 				if(existing==null){
 					if(!user.canEdit(this.session)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create priviledges for sessions in this project.");
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for sessions in this project.");
 						return;
 					}
 					//IS NEW
@@ -211,7 +211,7 @@ public class ScanResource  extends ItemResource {
 					
 				}else{
 					if(!user.canEdit(session)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit priviledges for sessions in this project.");
+						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for sessions in this project.");
 						return;
 					}
 					//MATCHED

@@ -1223,7 +1223,7 @@ xdat_criteria_set.prototype.isValid=function(){
 			return false;
 		}
 		if(this.newValueBox.value.indexOf(" AND ")<1){
-			alert("Please seperate values using an AND.  (i.e. 5 AND 10)");
+			alert("Please separate values using an AND.  (i.e. 5 AND 10)");
 			this.newValueBox.disabled=false;
 			this.newValueBox.focus();
 			return false;

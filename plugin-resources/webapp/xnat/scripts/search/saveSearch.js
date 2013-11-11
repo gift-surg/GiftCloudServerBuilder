@@ -71,7 +71,7 @@ function SavePopupForm(_search,_div,_config){
 			    var preventComments=false;
 			    
 			    if(_id==""){
-			    	alert("Please specify an ID for this search.");
+                    xModalMessage('Search Validation', "Please specify an ID for this search.");
 			    	return;
 			    }else{
 			    	if(this.saver.searchDOM.getId()==null || this.saver.searchDOM.getId()=="")
@@ -88,7 +88,7 @@ function SavePopupForm(_search,_div,_config){
 			    if(_briefDesc!=""){
 			    	this.saver.searchDOM.setBriefDescription(_briefDesc);
 			    }else{
-			    	alert("Please specify a brief description for this search.");
+                    xModalMessage('Search Validation', "Please specify a brief description for this search.");
 			    	return;
 			    }
 			    
@@ -242,7 +242,7 @@ function SavePopupForm(_search,_div,_config){
 	
 	this.saveFailure=function(o){
 		if(o.status==403){
-			alert("Your account does not have permission to save modifications of this search.");
+            xModalMessage('Search Validation', "Your account does not have permission to save modifications of this search.");
 			this.savePopupDialog.saveMsgTab.innerHTML="<DIV style='color:red'>Error. Invalid permissions.</DIV>";	
 		}else{
 			this.savePopupDialog.saveMsgTab.innerHTML="<DIV style='color:red'>Error " + o.status + ". Failed to save search.</DIV>";	

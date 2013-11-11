@@ -2,7 +2,7 @@
 /*******************************
  * Set of javascript functions to facilitate project-user access via AJAX
  */
-
+var sessExpMsg = 'WARNING: Your session has expired.<br/><br/>You will need to re-login and navigate to the content.';
 var removeButtonFormatter = function(elCell, oRecord, oColumn, oData) {
 	elCell.innerHTML="<input type=\"button\" ONCLICK=\"window.userManager.removeUser('" + oRecord.getData("login")  + "','" + oRecord.getData("GROUP_ID")  + "');\" value=\"Remove\"/>";
 };
@@ -91,7 +91,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
         if (!window.leaving) {
             this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " user list.");
             if(o.status==401){
-                alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+                xModalMessage('Session Expired', sessExpMsg);
                 window.location=serverRoot+"/app/template/Login.vm";
             }
         }
@@ -188,10 +188,10 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 
 	this.inviteFailure=function(o){
 		if(o.status==401){
-			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+            xModalMessage('Session Expired', sessExpMsg);
 			window.location=serverRoot+"/app/template/Login.vm";
 		}
-		alert("ERROR " + o.status +": Operation Failed.");
+        xModalMessage('User Management Error', 'ERROR ' + o.status +': Operation Failed.');
 		this.setFormDisabled(false);
 	};
 
@@ -399,7 +399,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 					this.hide();
 				}
 			}else{
-				alert("Please selected an access level.");
+                xModalMessage('User Management Validation', 'Please select an access level.');
 				this.access_level_select.focus();
 			}
 
@@ -488,11 +488,11 @@ function DefaultAccessibilityManager(_dom,_pID){
 
 	this.changeFailure=function(o){
 		if(o.status==401){
-			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+            xModalMessage('Session Expired', sessExpMsg);
 			window.location=serverRoot+"/app/template/Login.vm";
 		}else{
 			this.disableDOM(false);
-			alert("ERROR " + o.status + ": Change failed.");
+            xModalMessage('User Management Error', 'Error ' + o.status + ': Change failed.');
 		}
 	};
 

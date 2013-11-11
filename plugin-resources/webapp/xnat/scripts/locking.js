@@ -59,7 +59,7 @@ XNAT.app.locker= {
 		}
 
 		openModalPanel("lock_","Locking item.");
-		if(XNAT.app.current_uri==undefined)alert("Missing URI definition");
+		if(XNAT.app.current_uri==undefined)xModalMessage('Error', "Missing URI definition");
 
 		var params="";		
 		params+="event_reason="+event_reason;
@@ -95,7 +95,7 @@ XNAT.app.locker= {
             cache:false, // Turn off caching for IE
 				scope:this
 		}
-		if(XNAT.app.current_uri==undefined)alert("Missing URI definition");
+		if(XNAT.app.current_uri==undefined)xModalMessage('Error', "Missing URI definition");
 		openModalPanel("lock_","Unlocking item.");
 
 		var params="";		

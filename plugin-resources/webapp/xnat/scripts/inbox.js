@@ -42,7 +42,7 @@ function Inbox(div, servlet_url, project) {
 	  // We've probably lost the session.  Reload the page.
 	  window.clearInterval(this.importInterval);
 	  this.importInterval = null;
-	  alert("Unable to get listing; session may have timed out.");
+      xModalMessage('FTP Inbox', "Unable to get listing; session may have timed out.");
 	  location.reload();
 	  return;
 	}
@@ -105,7 +105,7 @@ function Inbox(div, servlet_url, project) {
 	  instance.div.appendChild(actionDiv);
 
 	  if ('true' == response.documentElement.getAttribute('locked')) {
-	    alert('FTP Inbox import in progress');
+        xModalMessage('FTP Inbox', 'FTP Inbox import in progress');
 	    actionDiv.appendChild(document.createTextNode(
 		    'Inbox contents are being imported into prearchive'));
 	  } else {
@@ -130,7 +130,7 @@ function Inbox(div, servlet_url, project) {
 	while (null != instance.div.firstChild) {
 	  instance.div.removeChild(instance.div.firstChild);
 	}
-	alert("Unable to load FTP inbox (error " + instance.listreq.status + "): " + instance.listreq.responseText);
+        xModalMessage('FTP Inbox', "Unable to load FTP inbox (error " + instance.listreq.status + "): " + instance.listreq.responseText);
       }
     }
   }
@@ -176,7 +176,7 @@ Inbox.prototype.getSelection = function() {
 Inbox.prototype.doDelete = function() {
   var selection = this.getSelection();
   if ('' == selection) {
-    alert('No files have been selected, so none will be deleted.');
+    xModalMessage('FTP Inbox', 'No files have been selected, so none will be deleted.');
   } else if (confirm('Really delete selected files from inbox?')) {
     // Clear the inbox space
     while (null != this.div.firstChild) {
@@ -239,7 +239,7 @@ Inbox.prototype.checkImport = function(req) {
 	// We've probably lost the session.  Reload the page.
 	window.clearInterval(this.importInterval);
 	this.importInterval = null;
-	alert("Unable to import; session may have timed out.");
+    xModalMessage('FTP Inbox', "Unable to import; session may have timed out.");
 	location.reload();
 	return;
       }
@@ -285,7 +285,7 @@ Inbox.prototype.checkImport = function(req) {
 	    if ('processing' == tagName) {
 	      this.importing = object;
 	    } else {
-	      alert("Received unexpected status message " + tagName);
+          xModalMessage('FTP Inbox', "Received unexpected status message " + tagName);
 	    }
 	  }
 	}
@@ -307,17 +307,15 @@ Inbox.prototype.checkImport = function(req) {
 	    break;
 	    
 	  case 'default':
-	    alert("Unexpected import status message: " + tagName);
+        xModalMessage('FTP Inbox', "Unexpected import status message: " + tagName);
 	    break;
 	  }
 	}
       } else {
-	alert("Invalid status response from server: expected one status " +
-	      "message, received " + statusa.length);
+        xModalMessage('FTP Inbox', "Invalid status response from server: expected one status message, received " + statusa.length);
       }
     } else {
-      alert("Unable to check import status (error " + req.status + "): "
-	    + req.responseText);
+        xModalMessage('FTP Inbox', "Unable to check import status (error " + req.status + "): " + req.responseText);
     }
   }
 }

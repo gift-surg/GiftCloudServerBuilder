@@ -27,7 +27,7 @@
  		o.argument[4].style.display="block";
  	},
  	handleFailure:function(o){
- 		alert("ERROR: Unable to send email to "+o.argument[0].value);
+        xModalMessage('Email Error', 'Unable to send email to '+o.argument[0].value);
  		
  		o.argument[0].value="";
  		o.argument[1].selectedIndex=0;

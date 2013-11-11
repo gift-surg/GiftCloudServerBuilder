@@ -116,7 +116,7 @@ function fixSessionID(val)
         newVal = newVal.replace(/[{]/,"_");
         newVal = newVal.replace(/[}]/,"_");
         if(newVal!=temp){
-      	  alert("Removing invalid characters in " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".");
+            xModalMessage('Image Session Validation', 'Removing invalid characters in ' + XNAT.app.displayNames.singular.imageSession.toLowerCase() + '.');
         }
         return newVal;
 }

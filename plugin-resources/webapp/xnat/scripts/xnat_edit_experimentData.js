@@ -36,7 +36,7 @@ function verifyExptId(expt_id,server){
             // handle response 
             var xmlText = req.responseText;
             if (xmlText.startsWith("<html>")){
-            	alert("A horrible exception has occurred. \r\nserver:" + server + "\r\n url:"+ verifyExptURL);
+                xModalMessage('Error', "An exception has occurred.<br/><br/>server:" + server + "<br/>url:"+ verifyExptURL);
             	return;
             }
             exptChecked=true;
@@ -59,7 +59,7 @@ function verifyExptId(expt_id,server){
 			}
             submitParentForm();
        }else{
-       	 alert("A horrible exception has occurred. \r\nserver:" + server + "\r\n url:"+ verifyExptURL);
+            xModalMessage('Error', "An exception has occurred.<br/><br/>server:" + server + "<br/>url:"+ verifyExptURL);
        }
     }   
 }
@@ -91,19 +91,19 @@ function validateExperimentForm()
 {   
    if(submitHistory==true)
    {
-      alert("Submit already in progress.  Please wait for process to complete.");
+      xModalMessage('Experiment Validation', "Submit already in progress.  Please wait for process to complete.");
       return false;
    }
    
    if (elementName==null || elementName=="")
    {
-     alert("ERROR: Unknown 'elementName'");
+     xModalMessage('Error', "ERROR: Unknown 'elementName'");
      return false;
    }
    
    if (serverRoot==null)
    {
-     alert("ERROR: Unknown 'serverRoot'");
+     xModalMessage('Error', "ERROR: Unknown 'serverRoot'");
      return false;
    }
       
@@ -117,7 +117,7 @@ function validateExperimentForm()
     
     if (rootProjectName==null){
       document.getElementById(elementName+"/project").focus();
-      alert("Please select a " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
+      xModalMessage('Experiment Validation', "Please select a " + XNAT.app.displayNames.singular.project.toLowerCase() + ".");
       return false;
     }
         
@@ -199,14 +199,14 @@ function submitParentForm(){
    {
       var matchAlert = "The specified data label is in use by multiple stored experiments.  Please use a unique label for this item.";
       matchAlert+="";
-      alert(matchAlert);
+      xModalMessage('Experiment Validation', matchAlert);
       submitHistory=false;
       return false;
    }else if(matchedExpts.length>0){
       var matchedExpt=matchedExpts[0];
       if (matchedExpt.xsiType!=elementName)
       {
-        alert("ERROR:  This ID is already in use for a different experiment.  Please use a different ID.");
+        xModalMessage('Experiment Validation', 'ERROR:  This ID is already in use for a different experiment.  Please use a different ID.');
         submitHistory=false;
         return false;
       }else{
@@ -228,7 +228,7 @@ function submitParentForm(){
        }
       }
    }else{
-         //alert("NO MATCHES FOUND");
+         // NO MATCHES FOUND
          submitHistory=true;
          //submit
          document.getElementById("form1").submit();

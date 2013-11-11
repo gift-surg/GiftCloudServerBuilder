@@ -51,7 +51,7 @@ function FileViewer(_obj){
 	this.handleFailure=function() {
         if (!window.leaving) {
             closeModalPanel("refresh_file");
-            alert("Error loading files");
+            xModalMessage('File Viewer', "Error loading files");
         }
 	};
 	   
@@ -496,7 +496,7 @@ function FileViewer(_obj){
 			  		    	var upload=new UploadFileForm(this.obj);
 			  		    	upload.render();
 		  		    	}catch(e){
-		  		    		alert(e.toString());
+                            xModalMessage('File Viewer Error', e.toString());
 		  		    	}
 		  		    },this,true);
 
@@ -549,7 +549,7 @@ function FileViewer(_obj){
 	  		    		}
 	  		    	}
 	  		    	if(resources==""){
-	  		    		alert("No files found.");
+                        xModalMessage('File Viewer', "No files found.");
 	  		    		return;
 	  		    	}
 	  		    	var destination=this.obj.uri + "/resources/"+resources + "/files?structure=improved&all=true&format="+ dType.options[dType.selectedIndex].value;
@@ -575,8 +575,8 @@ function FileViewer(_obj){
 							
 				this.loading=3;
 				this.requestRender=false;
-			}catch(o){				
-				alert(o.toString());
+			}catch(o){
+                xModalMessage('File Viewer Error', o.toString());
 			}
 			this.panel.render("page_body");
 			this.panel.show();
@@ -592,7 +592,7 @@ function FileViewer(_obj){
             updateOptions.cancelAction = this.catalogRefreshCancel;
             xModalOpenNew(updateOptions);
         } catch (e) {
-            alert(e.toString());
+            xModalMessage('File Viewer Error', e.toString());
         }
     };
 
@@ -1111,7 +1111,7 @@ function UploadFileForm(_obj){
 					}
    	  			}
 				if(coll_select.options.length==0){
-					alert("Please create a folder (using the Add Folder dialog) before attempting to add files at this level.");
+                    xModalMessage('File Viewer', "Please create a folder (using the Add Folder dialog) before attempting to add files at this level.");
 					coll_select.disabled=true;
 				}
    	  			
@@ -1325,12 +1325,12 @@ function UploadFileForm(_obj){
 	this.uploadFile=function(){
 		var coll_select=document.getElementById("upload_collection");
   	    if(coll_select.disabled==true){
-  	    	alert("Please select a folder for this file.");
+            xModalMessage('File Viewer', "Please select a folder for this file.");
   	    	return;
   	    }
   	    
   	    if(document.getElementById("local_file").value==""){
-  	    	alert("Please select a file to upload.");
+            xModalMessage('File Viewer', "Please select a file to upload.");
   	    	return;
   	    }
   	    
@@ -1635,12 +1635,12 @@ function AddFolderForm(_obj){
 	this.addFolder=function (){
 		var coll_select=document.getElementById("folder_collection");
 	    if(coll_select.disabled==true){
-	    	alert("Please select a folder for this file.");
+            xModalMessage('File Viewer', "Please select a folder for this file.");
 	    	return;
 	    }
 	    
 	    if(coll_select.value==""){
-	    	alert("Please identify a folder name.");
+            xModalMessage('File Viewer', "Please identify a folder name.");
 	    	return;
 	    }
 	    
@@ -1651,7 +1651,7 @@ function AddFolderForm(_obj){
 		var file_content=document.getElementById("folder_content").value.trim();
 		var folder_level=document.getElementById("folder_level");
 		if(folder_level!=null && folder_level.selectedIndex==0){
-			alert("Please select a level");
+            xModalMessage('File Viewer', "Please select a level");
 			return;
 		}
 		
@@ -1673,7 +1673,7 @@ function AddFolderForm(_obj){
 		}else{
 			var folder_item=document.getElementById("folder_item");
 			if(folder_item.selectedIndex==0){
-				alert("Please select an item.");
+                xModalMessage('File Viewer', "Please select an item.");
 				return;
 			}
 			file_dest =this.selector.obj.uri+"/" +
@@ -1739,9 +1739,9 @@ XNAT.app._addFolder = function (arg1, arg2, container) {
         failure: function (obj1) {
             closeModalPanel("add_folder");
             if (obj1.status == 409) {
-                alert('Specified resource already exists.');
+                xModalMessage('Add Folder Error', 'Specified resource already exists.');
             } else {
-                alert(obj1.toString());
+                xModalMessage('Add Folder', obj1.toString());
             }
             this.cancel();
         },

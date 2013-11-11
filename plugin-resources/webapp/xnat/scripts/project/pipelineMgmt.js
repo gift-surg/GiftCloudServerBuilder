@@ -82,7 +82,7 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 				      failure: function (o) {
 //					window.waitPanel.hide();      
 					initLoader.close();
-					window.xnatalert("Couldnt delete pipeline");
+                          xModalMessage('Pipeline Validation', 'Could not delete pipeline.');
 				      },
                       cache:false, // Turn off caching for IE
 				      scope:this
@@ -151,32 +151,30 @@ function PipelineManager(pipeline_mgmt_div_id, pID){
 	this.initFailure=function(o){
         if (!window.leaving) {
             this.initLoader.close();
-            alert("FAILED to load pipeline list for " + XNAT.app.displayNames.singular.project.toLowerCase() + " " + pID + ".");
+            xModalMessage('Pipeline Validation', 'Failed to load pipeline list for ' + XNAT.app.displayNames.singular.project.toLowerCase() + ' ' + pID + '.');
         }
 	};
 	
 	this.completeInit=function(oResponse){
 //		       window.waitPanel.hide();
-	   	       this.initLoader.close();
-			try{
-				this.pipelineResultSet= eval("(" + oResponse.responseText +")");
-				this.render();
-			}catch(e){
-				alert(e.toString());
-				alert("Invalid pipeline list");
-			}
+	   	this.initLoader.close();
+        try{
+            this.pipelineResultSet= eval("(" + oResponse.responseText +")");
+            this.render();
+        }catch(e){
+            xModalMessage('Pipeline Validation', 'Invalid pipeline list.<br/><br/>' + e.toString());
+        }
 	};
 	
 	this.completeAdditionalInit=function(oResponse){
 //		window.waitPanel.hide();
 		this.initLoader.close();
 		try{
-				this.pipelineResultSet= eval("(" + oResponse.responseText +")");
-				this.renderAdditional();
-			}catch(e){
-				alert(e.toString());
-				alert("Invalid pipeline list");
-			}
+            this.pipelineResultSet= eval("(" + oResponse.responseText +")");
+            this.renderAdditional();
+        }catch(e){
+            xModalMessage('Pipeline Validation', 'Invalid pipeline list.<br/><br/>' + e.toString());
+        }
 	};
 
 

@@ -83,7 +83,7 @@ XNAT.app.ConfirmWJustification=function(_yuioptions){
 		var buttons=[{text:"Confirm",handler:{fn:function(){
 				this.selector.event_reason = this.form.event_reason.value;
 				if(this.selector.event_reason==""){
-					alert("Please enter a justification!");
+                    xModalMessage('Project Validation', 'Please enter a justification.');
 					return;
 				}
 				this.cancel();

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Set of functions to facilitate settings management via AJAX
  */
-
+var sessExpMsgT = 'WARNING: Your session has expired.<br/><br/>You will need to re-login and navigate to the content.';
 function configurationIndexChanged() {
     var activeIndex = this.get("activeIndex");
     YAHOO.util.Cookie.set("configuration.tab.index", activeIndex);
@@ -185,7 +185,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     this.initFailure = function(o) {
         this.displayError("ERROR " + o.status + ": Failed to load site information.");
         if (o.status == 401) {
-            alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+            xModalMessage('Session Expired', sessExpMsgT);
             window.location = serverRoot + "/app/template/Login.vm";
         }
     };
@@ -316,7 +316,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
 
     this.saveFailure = function(o) {
         if (o.status == 401) {
-            alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+            xModalMessage('Session Expired', sessExpMsgT);
             window.location.reload();
         }
         xModalLoadingClose();

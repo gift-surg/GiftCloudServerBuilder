@@ -87,7 +87,7 @@ function summaryTabManagerInit(){
     		var parseTabLabel=tabLabel.split('<');	
     		//alert("tab #" + i + ": " + parseTabLabel[0] + ", $!topTab");
         	if(parseTabLabel[0]=="$!topTab") {
-    			//alert("we have a match!");
+    			// We have a match!
     			window.summaryTabView.set('activeIndex', i);
     			found=true;
     		}

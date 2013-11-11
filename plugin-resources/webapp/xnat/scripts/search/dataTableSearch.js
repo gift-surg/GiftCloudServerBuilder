@@ -894,7 +894,7 @@ var onContextMenuClick=function(p_sType, p_aArgs, o){
       case 2:
         //HIDE Column
         if(o.dt.config.sortedBy.key==colRow.getAttribute("name")){
-          alert("Unable to remove a sorted column. Please sort by a different column and retry.");
+          xModalMessage('Search Table', "Unable to remove a sorted column. Please sort by a different column and retry.");
         }else{
    	  o.dt.loadSearchManager();
    	  var oColumn= o.dt.getColumnByKey(colRow.getAttribute("name"));

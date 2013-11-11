@@ -195,7 +195,6 @@ function resetProgress(){
        req = new ActiveXObject("Microsoft.XMLHTTP");
    }
    req.open("GET", url, true);
-   //alert("Loading REQUEST");
    req.send(null);
    inProgress=1;
     updateCallCount();
@@ -215,7 +214,6 @@ function checkProgress(){
     }
     req.open("GET", url, true);
     req.onreadystatechange = callback;
-    //alert("Loading REQUEST");
     req.send(null);
     inProgress=1;
     updateCallCount();
@@ -265,11 +263,10 @@ function drawFiles(){
          text+="\n<tr><td>" + uploadedFilenames[x] + "</td><td>" + uploadedFileDates[x] + "</td><td>" + uploadedFileSizes[x] + "</td></tr>";
        }
        text+="</table>";
-       //alert(text);
        filesDIV.innerHTML=text;
        document.getElementById('complete_submit').disabled=false;
    }else{
-     //alert("No uploaded files.");
+     // No uploaded files.
      document.getElementById('complete_submit').disabled=true;
    }
 }

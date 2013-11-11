@@ -44,11 +44,11 @@ function RadioSettingsManager(_dom,_obj){
 	
 	this.changeFailure=function(o){
 		if(o.status==401){
-			alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+            xModalMessage('Session Expired', 'WARNING: Your session has expired.<br/><br/>You will need to re-login and navigate to the content.');
 			window.location=serverRoot+"/app/template/Login.vm";
 		}else{
 			this.disableDOM(false);
-			alert("ERROR " + o.status + ": Change failed.")
+            xModalMessage('Settings Validation', "ERROR " + o.status + ": Change failed.")
 		}
 	};
 	
@@ -133,13 +133,13 @@ function scriptGet (_dom,_obj) {
   this.current = {status : null, script : null};
   this.onFailure=function(o) {
     if(o.status==401){
-      alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+       xModalMessage('Session Expired', 'WARNING: Your session has expired.<br/><br/>You will need to re-login and navigate to the content.');
       window.location=serverRoot+"/app/template/Login.vm";
     }else if(o.status==404){
       // just means the script doesn't yet exist. This is likely ok.
     }else{
       // this.disableDOM(false);
-      alert("ERROR " + o.status + " (" + o.statusText + ") ");
+      xModalMessage('Error' + o.status, 'ERROR (' + o.statusText + ')');
     }
   };
   this.getDifferences=function() {

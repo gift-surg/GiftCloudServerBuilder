@@ -67,7 +67,7 @@ function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 	this.initFailure=function(o){
         if (!window.leaving) {
             if(o.status==401){
-                alert("WARNING: Your session has expired.  You will need to re-login and navigate to the content.");
+                xModalMessage('Session Expired', "WARNING: Your session has expired.<br/><br/>You will need to re-login and navigate to the content.");
                 window.location=serverRoot+"/app/template/Login.vm";
             }
             this.onInit.fire({});

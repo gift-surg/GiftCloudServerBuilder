@@ -20,7 +20,7 @@ function restLister(_info) {
     this.handleFailure = function (error) {
         // If we're leaving, then this is a complete red herring.
         if (!window.leaving) {
-            alert("Error loading resources: [" + error.status + "] " + error.statusText);
+            xModalMessage('Error', "Error loading resources: [" + error.status + "] " + error.statusText);
             this.loading = 0;
         }
     }
@@ -75,7 +75,7 @@ function restLister(_info) {
                 scan.files.push(allFiles[q]);
             }
         } else {
-            alert("Null " + cid);
+            xModalMessage('Error', 'Null ' + cid);
         }
     }
 }

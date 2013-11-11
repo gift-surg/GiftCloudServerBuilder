@@ -8,7 +8,7 @@ function validateSubjectAssessorForm()
    if (subject=="")
    {
      window.manager.showOption1();
-     alert("Please select a " + XNAT.app.displayNames.singular.subject.toLowerCase() + " before proceeding.");
+     xModalMessage('Subject Assessor Validation', "Please select a " + XNAT.app.displayNames.singular.subject.toLowerCase() + " before proceeding.");
      return false;
    }
    return validateExperimentForm();
@@ -19,14 +19,14 @@ function submitParentForm(){
    {
       var matchAlert = "The specified data label is in use by multiple stored experiments.  Please use a unique label for this item.";
       matchAlert+="";
-      alert(matchAlert);
+      xModalMessage('Subject Assessor Validation', matchAlert);
       submitHistory=false;
       return false;
    }else if(matchedExpts.length>0){
       var matchedExpt=matchedExpts[0];
       if (matchedExpt.xsiType!=elementName)
       {
-        alert("ERROR:  This ID is already in use for a different experiment.  Please use a different ID.");
+        xModalMessage('Subject Assessor Validation', 'ERROR:  This ID is already in use for a different experiment.  Please use a different ID.');
         submitHistory=false;
         return false;
       }else{
@@ -51,7 +51,7 @@ function submitParentForm(){
        }
       }
    }else{
-         //alert("NO MATCHES FOUND");
+         // NO MATCHES FOUND
          submitHistory=true;
          //submit
          document.getElementById("form1").submit();

@@ -250,7 +250,7 @@ function EmailPopupForm(_search,_div){
 
 		popupBD.appendChild(table);
 		}catch(e){
-			alert(e.message);
+            xModalMessage('Email Search Error', e.message);
 			throw e;
 		}
 	}

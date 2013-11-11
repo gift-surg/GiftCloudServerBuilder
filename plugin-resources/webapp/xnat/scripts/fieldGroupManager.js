@@ -70,7 +70,7 @@ this.close=function(remove){
 
 this.handleFailedPost=function(o){
 	closeModalPanel("save_fg");
-	alert("Failed to create set:" + o.status);
+    xModalMessage('Field Group Error', "Failed to create set:" + o.status);
 }
 
 this.handleSuccessPost=function(o){
@@ -163,7 +163,7 @@ this.save=function(){
 
 			if(issue!=null){
 
-				alert(issue);
+                xModalMessage('Field Group Validation', issue);
 
 				return false;
 
@@ -203,7 +203,7 @@ this.save=function(){
 
 				this.form._ID.focus();
 
-			alert("Error: " + form._ID.value + " already exists.");
+            xModalMessage('Field Group Validation', "Error: " + form._ID.value + " already exists.");
 
 			return false;
 
@@ -215,7 +215,7 @@ this.save=function(){
 
 				this.form._ID.focus();
 
-		alert("Please specify an ID, or cancel group creation.");
+        xModalMessage('Field Group Validation', "Please specify an ID, or cancel group creation.");
 
 		return false;
 

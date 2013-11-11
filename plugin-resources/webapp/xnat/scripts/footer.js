@@ -360,13 +360,13 @@ YAHOO.util.Event.onDOMReady( function()
 		                	        appendImage(validators[elementId].box,"/images/checkmarkRed.gif",this.message);
 		                		}
 		                	}catch(e){
-		                		alert("Error performing validation");
+                                xModalMessage('Email Validation Error', "Error performing validation.");
 		                		validators._ok=false;
 		                	}
 	                	}
 	                }
             	}catch(e){
-            		alert("Error performing validation");
+                    xModalMessage('Email Validation Error', "Error performing validation.");
             		validators._ok=false;
             	}
             	
@@ -426,7 +426,7 @@ YAHOO.util.Event.onDOMReady( function()
             	
                 return result;
         	}catch(e){
-        		alert("An error occurred during form validation.");
+                xModalMessage('Email Validation Error', "An error occurred during form validation.");
         		YAHOO.util.Event.stopEvent(env);
                 showContent();
                 return false;
@@ -501,17 +501,17 @@ jq(window).load(function(){
         if (email_value.length){
             if (emailFormatVerify(email_value)) {
                 if (confirm_alert == true) {
-                    alert("Email verified.");
+                    xModalMessage('Email Validation', "Email verified.");
                 }
             }
             else {
-                alert("Please enter a proper email address in the format: name@domain.com.");
+                xModalMessage('Email Validation', "Please enter a proper email address in the format: name@domain.com.");
                 setTimeout(function(){ email_input.focus(); }, 1);
             }
         }
         else {
             if (empty_alert == true) {
-                alert("Please enter an email address.");
+                xModalMessage('Email Validation', "Please enter an email address.");
                 setTimeout(function(){ email_input.focus(); }, 1);
             }
         }

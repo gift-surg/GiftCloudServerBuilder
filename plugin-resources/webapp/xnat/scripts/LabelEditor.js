@@ -58,14 +58,14 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 				var labelBox = document.getElementById("new_label");
 				  XNAT.app._label.selectedLabel=labelBox.value.trim();
 				  if(XNAT.app._label.selectedLabel==""){
-				    alert("Please specify a new " + this.selector.config.header + ".");
+                      xModalMessage('Label Validation', "Please specify a new " + this.selector.config.header + ".");
 				  }else if(XNAT.app._label.selectedLabel==XNAT.app._label.currentLabel){
-				    alert("No modification found.");
+                      xModalMessage('Label Validation', 'No modification found.');
 				  }else{
 				    var validatedLabel=cleanLabel(XNAT.app._label.selectedLabel);
 				    if(validatedLabel!=XNAT.app._label.selectedLabel){
 				       labelBox.value=validatedLabel;
-				       alert("Invalid characters in new " + this.selector.config.header + ".  Review modified value and resubmit.");
+                       xModalMessage('Label Validation', "Invalid characters in new " + this.selector.config.header + ".<br/><br/>Review modified value and resubmit.");
 				       labelBox.focus();
 				       return;
 				    }
@@ -79,7 +79,7 @@ XNAT.app._label.LabelEditorP=function(_config,uri,currentLabel){
 				    }
 				    
 				    if(matchedExisting){
-				       alert("This " + this.selector.config.header + " is already in use in this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".  Please modify and resubmit.");
+                       xModalMessage('Error', "This " + this.selector.config.header + " is already in use in this " + XNAT.app.displayNames.singular.project.toLowerCase() + ".<br/><br/>Please modify and resubmit.");
 				       labelBox.focus();
 				       return;
 				    }
@@ -132,7 +132,7 @@ XNAT.app.modifyLabel=function(arg1,arg2,container){
 	        this.cancel();
     	},
         failure:function(o){
-            alert("ERROR (" +o.status +"): Failed to modify label.");
+            xModalMessage('Error ' + o.status, "ERROR: Failed to modify label.");
             this.selector.onError.fire();
             closeModalPanel("modify_new_label");
     	},

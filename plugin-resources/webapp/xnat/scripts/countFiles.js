@@ -10,7 +10,6 @@ function countFiles(){
    }
    req.open("GET", url, true);
    req.onreadystatechange = callback;
-   //alert("Loading REQUEST");
    req.send(null);
 }
 

@@ -35,7 +35,7 @@ function LeftBarTreeView(_config){
  	},this,this);
  	
  	var opened=YAHOO.util.Cookie.get("open.nodes",{path:"/"});
- 	//alert(opened);
+ 	// Opened
  	if(opened!=null && opened!=""){
  		this.open_array=opened.split(',');
  	} else {

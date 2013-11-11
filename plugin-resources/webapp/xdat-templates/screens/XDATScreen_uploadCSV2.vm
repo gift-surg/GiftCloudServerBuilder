@@ -98,7 +98,6 @@ function populateHiddenForm(){
      var rowTag = "\r\n<INPUT TYPE='hidden' VALUE='" + rowValue + "' NAME='row" + x + "'/>";
      htmlText = htmlText + rowTag;
     }
-    //alert(htmlText);
     formTag.innerHTML=htmlText;
 }
 	</script>

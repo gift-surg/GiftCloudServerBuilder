@@ -102,7 +102,7 @@ function ProtocolManager(_id,_titleID,_bodyID,_opts){
     this.handleFailedGet=function(o){
         if (!window.leaving) {
             closeModalPanel("load_prot");
-            alert("Failed to load protocol.");
+            xModalMessage('Protocol Validation', "Failed to load protocol.");
         }
     }
 
@@ -156,7 +156,7 @@ function ProtocolManager(_id,_titleID,_bodyID,_opts){
 
     this.handleFailedSave=function(o){
         closeModalPanel("prot_save");
-        alert("Failed to save modifications.");
+        xModalMessage('Protocol Validation', "Failed to save modifications.");
     }
 
     this.save=function(){
@@ -237,7 +237,7 @@ function ProtocolManager(_id,_titleID,_bodyID,_opts){
             this.clearProtocolBox();
             this.drawProtocolBox();
         }else if (this.protocol.xsiType=='xnat:abstractProtocol'){
-            alert("WARNING: This " + XNAT.app.displayNames.singular.project.toLowerCase() + " is using a deprecated protocol.")
+            xModalMessage('Protocol Validation', "WARNING: This " + XNAT.app.displayNames.singular.project.toLowerCase() + " is using a deprecated protocol.")
         }else{
 
         }
@@ -642,7 +642,7 @@ window.addGroup=function(o){
             var errorAttributes = error.attributes;
             if (errorAttributes)
             {
-                alert("ERROR: " + errorAttributes.getNamedItem("msg").value);
+                xModalMessage('Protocol Validation', "ERROR: " + errorAttributes.getNamedItem("msg").value);
             }
         }
     }else{
@@ -661,7 +661,7 @@ window.addGroup=function(o){
             var temp = window.protocolsManagers[addGroupCount];
             if (temp.opts.dataType==newGroup.getDataType()){
                 if(temp.protocol==null){
-                    alert(temp.opts.dataType + " Protocol is null.");
+                    xModalMessage('Protocol Validation', temp.opts.dataType + " Protocol is null.");
                 }
                 var found = false;
                 for(var defAddCount=0;defAddCount<temp.protocol.Definitions_definition.length;defAddCount++){

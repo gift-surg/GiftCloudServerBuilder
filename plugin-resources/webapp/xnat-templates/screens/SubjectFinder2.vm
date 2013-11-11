@@ -259,7 +259,6 @@ function sendSubjectSearch(){
    }
    req.open("GET", url, true);
    req.onreadystatechange = processSubjectSearchResults;
-  // alert("Sending REQUEST");
    req.send(null);
    var matchesDIV = document.getElementById("matches");
    matchesDIV.innerHTML="";
@@ -273,7 +272,6 @@ function processSubjectSearchResults() {
         if (req.status == 200) {
             // handle response 
             var xmlDoc = req.responseXML;
-            //alert(xmlDoc);
             if (xmlDoc)
             {
     

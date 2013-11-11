@@ -33,7 +33,7 @@ function SearchXMLManager(_xml){
 				this.searchDOM=handler.root;
 
 			}catch(e){
-				alert("sxmlM:init:" +e.message);
+				xModalMessage('Search Validation', "sxmlM:init:" +e.message);
 			}
 		}
 	}
@@ -76,7 +76,7 @@ function SearchXMLManager(_xml){
 			si_t.appendChild(si_tb);
 		all_criteria_table.appendChild(si_t);
 	  }catch(o){
-	  	alert("sxmlM:renderCriteria:" +o.message);
+	  	xModalMessage('Search Validation', "sxmlM:renderCriteria:" +o.message);
 	  }
 	}
 
@@ -316,7 +316,7 @@ function SearchXMLManager(_xml){
 						},
 						failure: function(o) {
                             if (!window.leaving) {
-                                alert("Failed to load fields for " + o.argument.element_name);
+                                xModalMessage('Search Validation', "Failed to load fields for " + o.argument.element_name);
                             }
                         },
                         cache:false, // Turn off caching for IE
@@ -774,12 +774,12 @@ function SearchXMLManager(_xml){
 					this.pFs=resultset.ResultSet.Result;
 					this.renderPotentialFields();
 				}catch(e){
-					alert(e.toString());
+					xModalMessage('Search Validation', e.toString());
 				}
 			},
 			failure: function(o) {
                 if (!window.leaving) {
-                    alert("Failed to load available fields.");
+                    xModalMessage('Search Validation', "Failed to load available fields.");
                 }
             },
             cache:false, // Turn off caching for IE
@@ -1200,7 +1200,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 
 xdat_criteria_set.prototype.isValid=function(){
 	if(this.newComparisonBox.selectedIndex==0){
-		alert("Please select a Comparison for the additional criteria.");
+		xModalMessage('Search Validation', "Please select a Comparison for the additional criteria.");
 		this.newComparisonBox.disabled=false;
 		this.newComparisonBox.focus();
 			return false;
@@ -1210,27 +1210,27 @@ xdat_criteria_set.prototype.isValid=function(){
 	if(c=="IS NULL" || c=="IS NOT NULL"){
 	}else if(c=="="){
 		if(this.newValueSelectBox.selectedIndex==0){
-			alert("Please specify a value to match against.");
+            xModalMessage('Search Validation', "Please specify a value to match against.");
 			this.newValueSelectBox.disabled=false;
 			this.newValueSelectBox.focus();
 			return false;
 		}
 	}else if(c=="BETWEEN"){
 		if(this.newValueBox.value==""){
-			alert("Please specify a value to match against.");
+            xModalMessage('Search Validation', "Please specify a value to match against.");
 			this.newValueBox.disabled=false;
 			this.newValueBox.focus();
 			return false;
 		}
 		if(this.newValueBox.value.indexOf(" AND ")<1){
-			alert("Please separate values using an AND.  (i.e. 5 AND 10)");
+            xModalMessage('Search Validation', "Please separate values using an AND.  (i.e. 5 AND 10)");
 			this.newValueBox.disabled=false;
 			this.newValueBox.focus();
 			return false;
 		}
 	}else{
 		if(this.newValueBox.value==""){
-			alert("Please specify a value to match against.");
+            xModalMessage('Search Validation', "Please specify a value to match against.");
 			this.newValueBox.disabled=false;
 			this.newValueBox.focus();
 			return false;
@@ -1535,17 +1535,17 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 	this.newButton.sm=sm;
 	this.newButton.onclick=function(){
 		if(this.set.newElementBox.selectedIndex==0){
-			alert("Please select a data type for the additional criteria.");
+			xModalMessage('Search Validation', "Please select a data type for the additional criteria.");
 			this.set.newElementBox.focus();
 				return;
 		}
 		if(this.set.newFieldBox.selectedIndex==0){
-			alert("Please select a Field for the additional criteria.");
+			xModalMessage('Search Validation', "Please select a Field for the additional criteria.");
 			this.set.newFieldBox.focus();
 				return;
 		}
 		if(this.set.newComparisonBox.selectedIndex==0){
-			alert("Please select a Comparison for the additional criteria.");
+			xModalMessage('Search Validation', "Please select a Comparison for the additional criteria.");
 			this.set.newComparisonBox.disabled=false;
 			this.set.newComparisonBox.focus();
 				return;
@@ -1554,7 +1554,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 		var c=this.set.newComparisonBox.options[this.set.newComparisonBox.selectedIndex].value;
 		if(c!="IS NULL" && c!="IS NOT NULL"){
 			if(this.set.newValueBox.value==""){
-				alert("Please specify a value to match against.");
+				xModalMessage('Search Validation', "Please specify a value to match against.");
 				this.set.newValueBox.disabled=false;
 				this.set.newValueBox.focus();
 				return;

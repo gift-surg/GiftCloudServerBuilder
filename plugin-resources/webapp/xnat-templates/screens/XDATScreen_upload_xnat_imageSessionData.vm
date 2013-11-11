@@ -270,7 +270,6 @@ function resetProgress(){
        req = new ActiveXObject("Microsoft.XMLHTTP");
    }
    req.open("GET", url, true);
-   //alert("Loading REQUEST");
    req.send(null);
 }
 
@@ -285,7 +284,6 @@ function checkProgress(){
    }
    req.open("GET", url, true);
    req.onreadystatechange = callback;
-   //alert("Loading REQUEST");
    req.send(null);
 }
 </script>

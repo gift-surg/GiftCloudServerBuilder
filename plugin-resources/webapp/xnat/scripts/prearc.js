@@ -103,7 +103,7 @@ function Prearc(servletURL, name) {
 				}
 		
       } else {
-				alert("Error " + instance.listreq.status
+          xModalMessage('Prearchive Error', "Error " + instance.listreq.status
 	     			 + " getting " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + " list for prearchive " + instance.name);
       }
     } else {

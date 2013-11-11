@@ -40,12 +40,19 @@
     </amq:broker>
 
     <!-- ActiveMQ ConnectionFactory for JMS to use. Spring will find and use the broker we've declared above. -->
-    <amq:connectionFactory id="activeMQConnectionFactory" brokerURL="vm://localhost" redeliveryPolicy="#activeMQRedeliveryPolicy" />
+    <amq:connectionFactory id="activeMQConnectionFactory" brokerURL="vm://localhost" redeliveryPolicyMap="#activeMQRedeliveryPolicyMap" />
 
-    <!-- supposedly you can make this a property on the connection factory or queue, but this way was the only way that worked -->
-    <!-- The queue specified in "destination" just has to exist, it will be ignored and the message will go to the default system DLQ -->
-    <amq:redeliveryPolicy id="activeMQRedeliveryPolicy" useExponentialBackOff="true"
-                          initialRedeliveryDelay="300000" backOffMultiplier="3" maximumRedeliveries="4" destination="#sessionXmlRebuilderRequest" />
+    <amq:redeliveryPolicyMap id="activeMQRedeliveryPolicyMap">
+        <amq:defaultEntry>
+            <amq:redeliveryPolicy useExponentialBackOff="true" maximumRedeliveries="4" initialRedeliveryDelay="300000"
+                                  backOffMultiplier="3" destination="#defaultRequest"/>
+        </amq:defaultEntry>
+        <amq:redeliveryPolicyEntries>
+            <amq:redeliveryPolicy queue="sessionXmlRebuilderRequest" useExponentialBackOff="true" maximumRedeliveries="4"
+                                  initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#sessionXmlRebuilderRequest"/>
+            <!-- Additional redelivery policies go here; otherwise default is used. The destination attribute is not apparently used, but is required. -->
+        </amq:redeliveryPolicyEntries>
+    </amq:redeliveryPolicyMap>
 
     <!-- lets wrap in a pool to avoid creating a connection per send -->
     <bean name="springConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -58,10 +65,13 @@
     </bean>
 
     <!-- queues -->
+    <amq:queue id="defaultRequest" />
     <amq:queue id="sessionXmlRebuilderRequest" physicalName="sessionXmlRebuilderRequest" />
+    <!-- new request types go here -->
 
     <!-- message consumers -->
     <bean id="sessionXmlRebuilderRequestListener" class="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequestListener" />
+    <!-- listeners for new request types go here -->
     <bean id="dlqMessageListener" class="org.nrg.framework.messaging.DlqListener">
         <property name="messageListenerMapping">
             <description>
@@ -72,6 +82,7 @@
             </description>
             <map>
                 <entry key="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequest" value="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequestListener.onSessionXmlRebuilderRequest"/>
+                <!-- update with new request types and their listener methods -->
             </map>
         </property>
     </bean>
@@ -79,6 +90,7 @@
     <!-- Spring JMS Listener Container -->
     <jms:listener-container connection-factory="springConnectionFactory" concurrency="10" acknowledge="transacted">
         <jms:listener destination="sessionXmlRebuilderRequest" ref="sessionXmlRebuilderRequestListener" method="onSessionXmlRebuilderRequest" />
+        <!-- update with requests, their listeners, and methods  -->
         <!-- I tried referencing my own DLQ in the redelivery policy but ActiveMQ ignores it and uses the default system DLQ -->
         <!-- So we'll just listen on that queue instead -->
         <jms:listener destination="ActiveMQ.DLQ" ref="dlqMessageListener" method="onReceiveDeadLetter" />

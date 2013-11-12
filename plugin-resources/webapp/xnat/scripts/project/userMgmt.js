@@ -7,6 +7,17 @@ var removeButtonFormatter = function(elCell, oRecord, oColumn, oData) {
 	elCell.innerHTML="<input type=\"button\" ONCLICK=\"window.userManager.removeUser('" + oRecord.getData("login")  + "','" + oRecord.getData("GROUP_ID")  + "');\" value=\"Remove\"/>";
 };
 
+var groupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
+    var user_access = oRecord.getData("displayname");
+    var user_login = oRecord.getData("login");
+    var access_select = "<select onchange=\"window.userManager.inviteUser('" + user_login + "',this.value)\">";
+    access_select += "<option value=\"owner\"" + ((user_access === "Owners")? " selected" : "") + ">Owners</option>";
+    access_select += "<option value=\"member\"" + ((user_access === "Members")? " selected" : "") + ">Members</option>";
+    access_select += "<option value=\"collaborator\"" + ((user_access === "Collaborators")? " selected" : "") + ">Collaborators</option>";
+    access_select += "</select>";
+    elCell.innerHTML=access_select;
+};
+
 function prependLoader(div_id,msg){
 	if(div_id.id==undefined){
 		var div=document.getElementById(div_id);
@@ -62,7 +73,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	                     {key:"firstname",label:"Firstname",sortable:true},
 	                     {key:"lastname",label:"Lastname",sortable:true},
 	                     {key:"email",label:"Email",sortable:true},
-	                     {key:"displayname",label:"Group",sortable:true},
+	                     {key:"displayname",label:"Group",sortable:true,formatter:groupDropdownFormatter},
                          {key:"button",label:"Remove",formatter:removeButtonFormatter}];
 
 	this.allUserColumnDefs=[
@@ -261,11 +272,13 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
                     confirmMsg+=" to inform him/her of this addition?";
                 xModalConfirm({
                     content: confirmMsg,
+                    okLabel: 'Yes',
+                    cancelLabel: 'No',
                     okAction: function(){
-                        sendMail(true);
+                        sendMail(true).call();
                     },
                     cancelAction: function(){
-                        sendMail(false);
+                        sendMail(false).call();
                     }
                 });
                 return true;

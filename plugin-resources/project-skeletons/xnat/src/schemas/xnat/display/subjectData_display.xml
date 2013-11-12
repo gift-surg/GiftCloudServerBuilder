@@ -45,7 +45,7 @@
 	</DisplayField>
 	<DisplayField id="HANDEDNESS_TEXT" header="Hand" visible="true" searchable="true">
 		<DisplayFieldElement name="Field1" schema-element="xnat:demographicData.handedness"/>
-		<Content type="sql">CASE @Field1 WHEN 'left' THEN 'L' WHEN 'right' THEN 'R' WHEN 'ambidextrous' THEN 'A' ELSE 'U' END</Content>
+        <Content type="sql">CASE LOWER(@Field1) WHEN 'left' THEN 'L' WHEN 'right' THEN 'R' WHEN 'ambidextrous' THEN 'A' WHEN 'r' THEN 'R' WHEN 'l' THEN 'L' WHEN 'a' THEN 'A' END</Content>
 	</DisplayField>
 	<DisplayField id="DOB" header="YOB" visible="true" searchable="true" data-type="integer">
 		<DisplayFieldElement name="Field1" schema-element="xnat:demographicData.yob"/>

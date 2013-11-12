@@ -1172,7 +1172,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	this.newValueSelectBox.disabled=true;
 	this.newValueSelectBox.options[0]=new Option("SELECT","",false);
 	for(var occvC=0;occvC<this.oColumn.currentValues.length;occvC++){
-	    this.newValueSelectBox.options[this.newValueSelectBox.options.length]=new Option(this.oColumn.currentValues[occvC].values + " (" +this.oColumn.currentValues[occvC].count +")",this.oColumn.currentValues[occvC].values);
+	    this.newValueSelectBox.options[this.newValueSelectBox.options.length]=new Option(this.oColumn.currentValues[occvC].values.split(/<[^<>]*>/g).join('') + " (" +this.oColumn.currentValues[occvC].count +")",this.oColumn.currentValues[occvC].values);
 	}
 	this.CritDiv.appendChild(this.newValueSelectBox);
 	this.CritDiv.appendChild(document.createTextNode(" "));

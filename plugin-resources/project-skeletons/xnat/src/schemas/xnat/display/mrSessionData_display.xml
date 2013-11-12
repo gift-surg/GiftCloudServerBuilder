@@ -324,7 +324,7 @@
 		</Mapping>
 	</ViewLink>
 	<SQLView name="mr_scan_count_agg" sql="SELECT image_session_id, TRIM(', ' FROM xs_a_concat(TYPE_COUNT || ', ')) AS TYPE_COUNT FROM (SELECT image_session_id, (TYPE || '(' || COUNT(id) || ')') AS TYPE_COUNT FROM xnat_imageScanData GROUP BY image_session_id,TYPE ORDER BY image_session_id,TYPE) _TYPES GROUP BY image_session_id"/>
-	<SQLView name="MR_PROJECTS" sql="SELECT id, '&lt;' || expt.project || '&gt;' || xs_a_concat(', ' || shared.project) AS projects FROM xnat_experimentData expt LEFT JOIN xnat_experimentData_share shared ON expt.id=shared.sharing_share_xnat_experimentda_id LEFT JOIN xdat_meta_element xme ON expt.extension = xme.xdat_meta_element_id WHERE element_name='xnat:mrSessionData' GROUP BY expt.id,expt.project"/>
+	<SQLView name="MR_PROJECTS" sql="SELECT id, '&lt;' || expt.project || '&gt;' || xs_a_concat(',&lt;' || shared.project || '&gt;') AS projects FROM xnat_experimentData expt LEFT JOIN xnat_experimentData_share shared ON expt.id=shared.sharing_share_xnat_experimentda_id LEFT JOIN xdat_meta_element xme ON expt.extension = xme.xdat_meta_element_id WHERE element_name='xnat:mrSessionData' GROUP BY expt.id,expt.project"/>
 	<SQLView name="ordered_workflows" sql="SELECT wrk_workflowdata.id, status, wrk_workflowdata_id,
         CASE pipeline_name
             WHEN 'Transfer'::text THEN 'Archive'::text

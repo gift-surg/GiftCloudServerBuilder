@@ -184,5 +184,5 @@
 		</Mapping>
 	</ViewLink>
 	<SQLView name="SUBJECT_IDS" sql="SELECT sub.ID as subject_id,sub.label ||', '|| TRIM(', ' FROM xs_a_concat(pp.label || ', ')) AS ADDIDS FROM xnat_subjectData sub LEFT JOIN xnat_projectParticipant pp ON sub.id=pp.subject_id WHERE subject_id IS NOT NULL GROUP BY ID,sub.label"/>
-	<SQLView name="SUB_PROJECTS" sql="SELECT id, ',&lt;' || sub.project || '&gt;' || xs_a_concat(', ' || shared.project) AS PROJECTS FROM xnat_subjectData sub LEFT JOIN xnat_projectParticipant shared ON sub.id=shared.subject_id GROUP BY sub.id,sub.project"/>
+	<SQLView name="SUB_PROJECTS" sql="SELECT id, ',&lt;' || sub.project || '&gt;' || xs_a_concat(',&lt;' || shared.project || '&gt;') AS PROJECTS FROM xnat_subjectData sub LEFT JOIN xnat_projectParticipant shared ON sub.id=shared.subject_id GROUP BY sub.id,sub.project"/>
 </Displays>

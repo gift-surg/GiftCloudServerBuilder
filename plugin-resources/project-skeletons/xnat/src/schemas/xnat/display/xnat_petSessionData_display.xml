@@ -278,5 +278,5 @@
 			<MappingColumn rootElement="xnat:petSessionData" fieldElement="xnat:petSessionData.ID" mapsTo="id"/>
 		</Mapping>
 	</ViewLink>
-	<SQLView name="XNAT_PETSESSIONDATA_PROJECTS" sql="SELECT id, '&lt;' || expt.project || '&gt;' || xs_a_concat(', ' || shared.project) AS projects FROM xnat_experimentData expt LEFT JOIN xnat_experimentData_share shared ON expt.id=shared.sharing_share_xnat_experimentda_id LEFT JOIN xdat_meta_element xme ON expt.extension = xme.xdat_meta_element_id WHERE element_name='xnat:petSessionData' GROUP BY expt.id,expt.project"/>
+	<SQLView name="XNAT_PETSESSIONDATA_PROJECTS" sql="SELECT id, '&lt;' || expt.project || '&gt;' || xs_a_concat(',&lt;' || shared.project || '&gt;') AS projects FROM xnat_experimentData expt LEFT JOIN xnat_experimentData_share shared ON expt.id=shared.sharing_share_xnat_experimentda_id LEFT JOIN xdat_meta_element xme ON expt.extension = xme.xdat_meta_element_id WHERE element_name='xnat:petSessionData' GROUP BY expt.id,expt.project"/>
 </Displays>

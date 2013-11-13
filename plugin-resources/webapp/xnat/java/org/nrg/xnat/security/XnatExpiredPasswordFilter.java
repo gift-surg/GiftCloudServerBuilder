@@ -159,9 +159,11 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     (user.isEnabled() && (uri.endsWith(changePasswordPath) || uri.endsWith(changePasswordDestination))) ||
                     //If you're already on the inactive account page or reactivating an account, continue on without redirect.
                     (!user.isEnabled() && (uri.endsWith(inactiveAccountPath) || uri.endsWith(inactiveAccountDestination) ||
-                            uri.endsWith(emailVerificationPath) || uri.endsWith(emailVerificationDestination))) ||
+                            uri.endsWith(emailVerificationPath) || uri.endsWith(emailVerificationDestination) ||
+                            (referer!=null && (referer.endsWith(inactiveAccountPath) || referer.endsWith(inactiveAccountDestination))))) ||
                     //If you're on a request within the change password page, continue on without redirect.
-                    (referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination) || referer.endsWith(logoutDestination)))){
+                    (referer!=null && (referer.endsWith(changePasswordPath) || referer.endsWith(changePasswordDestination) ||
+                            referer.endsWith(logoutDestination)))){
                 chain.doFilter(req, res);
             }
             else if( 

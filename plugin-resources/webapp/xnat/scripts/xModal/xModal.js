@@ -68,7 +68,7 @@ function xModalMessage(_title,_message,_label,_options){
 
     xModalMessageCount++ ;
 
-    window.closeModal = true ;
+    xModal.closeModal = true ;
 
     var msgWidth, msgHeight, msgAction ;
 
@@ -437,6 +437,8 @@ xModal.Modal = function(xx){
 
     this.defaultButton = xx.defaultButton || 'ok' ;
 
+    this.isDraggable = xx.isDraggable || 'yes' ;
+
     $body.addClass('open');
 
     if (this.kind === 'loading'){
@@ -585,6 +587,12 @@ xModal.Modal = function(xx){
         xx.beforeShow();
     }
 
+    if (this.isDraggable === 'yes' || this.isDraggable === true){
+        if (typeof $.fn.drags != 'undefined'){
+            $this_modal.drags({handle:'.title'});
+        }
+    }
+
     $('div.xmask').not($this_mask).removeClass('top');
     $this_mask.css('z-index',parseInt(10000+xmodal_count)).show().addClass('open top');
 
@@ -601,13 +609,13 @@ xModal.Modal = function(xx){
     // named to match the modal they're attached to
     if (this.okAction){
         var this_ok_action = this_modal_id+'_ok';
-        window[this_ok_action] = function(){
+        xModal[this_ok_action] = function(){
             xModalOkAction();
         };
     }
     if (this.cancelAction){
         var this_cancel_action = this_modal_id+'_cancel';
-        window[this_cancel_action] = function(){
+        xModal[this_cancel_action] = function(){
             xModalCancelAction();
         };
     }
@@ -720,15 +728,15 @@ function xModalCloseNew(_xmodal_id,_$this_mask) {
     // nullify functions for 'ok' and 'cancel' functions
     // but only if we're closing the modal
     if ($modal.find('.ok.button').hasClass('close')){
-        if (window[_xmodal_id+'_ok'] != undefined){
-            window[_xmodal_id+'_ok'] = function(){};
-            window[_xmodal_id+'_ok']();
+        if (xModal[_xmodal_id+'_ok'] != undefined){
+            xModal[_xmodal_id+'_ok'] = function(){};
+            delete xModal[_xmodal_id+'_ok'];
         }
     }
     if ($modal.find('.cancel.button').hasClass('close')){
-        if (window[_xmodal_id+'_cancel'] != undefined){
-            window[_xmodal_id+'_cancel'] = function(){};
-            window[_xmodal_id+'_cancel']();
+        if (xModal[_xmodal_id+'_cancel'] != undefined){
+            xModal[_xmodal_id+'_cancel'] = function(){};
+            delete xModal[_xmodal_id+'_cancel'];
         }
     }
 }
@@ -751,16 +759,16 @@ function xModalActions(_this){
             if (!$clicked_button.hasClass('hidden')){
 
                 if ($clicked_button.hasClass('ok')){
-                    if (window[xmodal_id+'_ok'] != undefined){
-                        window[xmodal_id+'_ok']();
+                    if (xModal[xmodal_id+'_ok'] != undefined){
+                        xModal[xmodal_id+'_ok']();
                     }
                     if ($clicked_button.hasClass('close')){
                         xModalCloseNew(xmodal_id,$my_mask);
                     }
                 }
                 else if ($clicked_button.hasClass('cancel')){
-                    if (window[xmodal_id+'_cancel'] != undefined){
-                        window[xmodal_id+'_cancel']();
+                    if (xModal[xmodal_id+'_cancel'] != undefined){
+                        xModal[xmodal_id+'_cancel']();
                     }
                     if ($clicked_button.hasClass('close')){
                         xModalCloseNew(xmodal_id,$my_mask);
@@ -781,25 +789,31 @@ $(function(){
         xModalActions(this);
     });
 
-    // press 'esc' key to close
-    $body.keydown(function(esc) {
-        if (esc.keyCode === 27) {  // key 27 = 'esc'
-            if ($body.hasClass('open')){
-                var $top_modal = $('div.xmask.top');
-                $top_modal.find('.title .close.button').trigger('click');
-            }
-        }
-    });
+//    // press 'esc' key to close
+//    $body.keydown(function(esc) {
+//        if (esc.keyCode === 27) {  // key 27 = 'esc'
+//            if ($body.hasClass('open')){
+//                var $top_modal = $('div.xmask.top');
+//                $top_modal.find('.title .close.button').trigger('click');
+//            }
+//        }
+//    });
 
     // press 'enter' key to choose default
     $body.keydown(function(e) {
         var keyCode = (window.event) ? e.which : e.keyCode;
+        var $top_modal = $('div.xmask.top');
+        if (e.keyCode === 27) {  // key 27 = 'esc'
+            if ($body.hasClass('open')){
+                xModalCloseNew('',$top_modal);
+                //$top_modal.find('.title .close.button').trigger('click');
+            }
+        }
         if (keyCode === 13) {  // key 13 = 'enter'
-            if ($body.hasClass('open') && window.closeModal === true){
+            if ($body.hasClass('open') && xModal.closeModal === true){
                 e.preventDefault();
-                var $top_modal = $('div.xmask.top');
                 $top_modal.find('.default.button').trigger('click');
-                window.closeModal = false ;
+                xModal.closeModal = false ;
             }
         }
     });
@@ -835,4 +849,4 @@ $(window).resize(function(){
 
 function xModalConfirm(config){
     xModalOpenNew($.extend({}, xModal.confirm, {width: 400, height: 250}, config));
-};
+}

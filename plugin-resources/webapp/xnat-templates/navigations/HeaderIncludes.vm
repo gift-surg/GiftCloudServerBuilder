@@ -48,14 +48,28 @@
                     },
                     data: {
                         context: {
-                            project: '$om.getProject()',
-                            ## #if ($om.getSubjectId())
-                                subjectID: '$om.getSubjectId()',
-                            ## #end
+                            projectName: '$!om.getProject($project,false).getDisplayID()',
+##                            projectLabel: '$!item.getStringProperty("xnat:projectData/name")',
+                            projectID: '$!om.getProject()',
+                            project: '$!om.getProject()',
+##                            //projectID: #if ($project) #if ($project.getId()) '$!project.getId()' #else '$!project' #end #end ,
+##                            #if ($om.getSubjectId())
+##                                subjectID: '$!om.getSubjectId()',
+##                            #end
+##                            subjectLabel: '#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end',
+                            subjectLabel: '#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end',
+                            subjectID: '$!subject.getId()',
+                            label: '#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end',
+                            ID: '$!om.getId()'
+##                            subjectLabel: '$!item.getStringProperty("xnat:subjectData/name")',
                         },
                         timestamp: jq.now() // timestamp for the page when it loads
                     }
                };
+    }
+
+    if (XNAT.data.context.projectName === ''){
+        XNAT.data.context.projectName = '$!item.getStringProperty("xnat:projectData/name")';
     }
 
     // 'page' object is same as 'context' - easier to remember?
@@ -115,6 +129,8 @@
     #end
 #end
 
+</script>
+<script type="text/javascript">
     // quickly reference today's date
     XNAT.data.todaysDate = {} ;
     // if today was January 23, 2013...
@@ -131,7 +147,6 @@
         dateObj.ISO = dateObj.iso = dateObj.yyyy + '-' +  dateObj.mm + '-' + dateObj.dd;
         dateObj.US = dateObj.us = dateObj.mm + '/' +  dateObj.dd + '/' + dateObj.yyyy;
     })(XNAT.data.todaysDate);
-
 </script>
 <script type="text/javascript" src="$content.getURI('scripts/xdat.js')"></script>
 <script type="text/javascript" src="$content.getURI('scripts/DynamicJSLoad.js')"></script>

@@ -50,14 +50,14 @@
 	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>$displayManager.getSingularDisplayNameForProject().toUpperCase(): $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
     #end
     #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($mr)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:mrSessionData").addPathInfo("search_field","xnat:mrSessionData.ID").addPathInfo("search_value","$mr.getId()").addPathInfo("project","$project")'>MR:#if($!mr.getIdentifier($project,true))$!mr.getIdentifier($project,true)#elseif($mr.getLabel())$!mr.getLabel()#else$!mr.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:mrSessionData").addPathInfo("search_field","xnat:mrSessionData.ID").addPathInfo("search_value","$mr.getId()").addPathInfo("project","$project")'>MR:#if($!mr.getIdentifier($project,true))$!mr.getIdentifier($project,true)#elseif($mr.getLabel())$!mr.getLabel()#else$!mr.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($page_name)
     #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</a>&nbsp;>&nbsp;";
     #end
     bread = bread + "$pageName";
     #else
@@ -90,14 +90,14 @@
 	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>$displayManager.getSingularDisplayNameForProject().toUpperCase(): $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
 	    #end
 	    #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($pet)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:petSessionData").addPathInfo("search_field","xnat:petSessionData.ID").addPathInfo("search_value","$pet.getId()").addPathInfo("project","$project")'>PET:#if($!pet.getIdentifier($project,true))$!pet.getIdentifier($project,true)#elseif($pet.getLabel())$!pet.getLabel()#else$!pet.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:petSessionData").addPathInfo("search_field","xnat:petSessionData.ID").addPathInfo("search_value","$pet.getId()").addPathInfo("project","$project")'>PET:#if($!pet.getIdentifier($project,true))$!pet.getIdentifier($project,true)#elseif($pet.getLabel())$!pet.getLabel()#else$!pet.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($page_name)
     #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</a>&nbsp;>&nbsp;";
     #end
     bread = bread + "$pageName";
     #else
@@ -123,11 +123,11 @@
 	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>$displayManager.getSingularDisplayNameForProject().toUpperCase(): $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
 	    #end
 	    #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($page_name)
     #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</a>&nbsp;>&nbsp;";
     #end
     bread = bread + "$pageName";
     #else
@@ -158,14 +158,14 @@
 	    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$project")'>$displayManager.getSingularDisplayNameForProject().toUpperCase(): $!om.getProject($project,false).getDisplayID()</a>&nbsp;>&nbsp;";
 	    #end
 	    #if($subject)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:subjectData").addPathInfo("search_field","xnat:subjectData.ID").addPathInfo("search_value","$subject.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForSubject().toUpperCase():#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($imageSession)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$imageSession.getXSIType()").addPathInfo("search_field","${imageSession.getXSIType()}.ID").addPathInfo("search_value","$imageSession.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForImageSession().toUpperCase():#if($!imageSession.getIdentifier($project,true))$!imageSession.getIdentifier($project,true)#elseif($imageSession.getLabel())$!imageSession.getLabel()#else$!imageSession.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$imageSession.getXSIType()").addPathInfo("search_field","${imageSession.getXSIType()}.ID").addPathInfo("search_value","$imageSession.getId()").addPathInfo("project","$project")'>$displayManager.getSingularDisplayNameForImageSession().toUpperCase():#if($!imageSession.getIdentifier($project,true))$!imageSession.getIdentifier($project,true)#elseif($imageSession.getLabel())$!imageSession.getLabel()#else$!imageSession.getId()#end</a>&nbsp;>&nbsp;";
     #end
     #if($page_name)
     #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</a>&nbsp;>&nbsp;";
     #end
     bread = bread + "$pageName";
     #else
@@ -181,7 +181,7 @@
 	    #end
 	    #if($page_name)
     #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</a>&nbsp;>&nbsp;";
     #end
     bread = bread + "$pageName";
     #else
@@ -198,7 +198,7 @@
 	    #end
 	    #if($pageName)
     #if($om.Id)
-    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</A>&nbsp;>&nbsp;";
+    bread = bread + "<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","$om.getXSIType()").addPathInfo("search_field","$om.getXSIType().ID").addPathInfo("search_value","$om.getId()").addPathInfo("project","$project")'>#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end</a>&nbsp;>&nbsp;";
     #end
     bread = bread + "$pageName";
     #else

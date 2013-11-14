@@ -43,7 +43,7 @@
 	<DisplayField id="STEP_DESCRIPTION" header="step_description" visible="true" searchable="true">
 		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/step_description"/>
 	</DisplayField>
-	<DisplayField id="LAUNCH_TIME" header="launch_time" visible="true" searchable="true">
+	<DisplayField id="LAUNCH_TIME" header="launch_time" visible="true" searchable="true" data-type="date">
 		<DisplayFieldElement name="Field1" schema-element="wrk:workflowData/launch_time"/>
 	</DisplayField>
 	<DisplayField id="PERCENTAGECOMPLETE" header="percentageComplete" visible="true" searchable="true">
@@ -54,28 +54,20 @@
 		<DisplayFieldElement name="Field2" schema-element="wrk:workflowData/meta/last_modified"/>
 		<Content type="sql">COALESCE(@Field2, @Field1)</Content>
 	</DisplayField>
-	<DisplayVersion versionName="listing" default-order-by="LAST_MODIFIED" default-sort-order="DESC" brief-description="Workflow" dark-color="9999CC" light-color="CCCCFF">
-		<DisplayFieldRef id="ID"/>
-		<DisplayFieldRef id="LAUNCH_TIME"/>
-		<DisplayFieldRef id="STATUS"/>
-		<DisplayFieldRef id="LAST_MODIFIED"/>
-        <DisplayFieldRef id="SESSION"/>
-	</DisplayVersion>
-    <DisplayField id="SESSION" header="Session" visible="true" searchable="false" data-type="string" xsi:type="SubQueryField">
-        <Content type="sql">session_label</Content>
-        <HTML-Link>
-            <Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/@Field2/search_field/@Field2.ID">
-                <InsertValue id="Field1" field="ID"/>
-                <InsertValue id="Field2" field="DATA_TYPE"/>
-            </Property>
-            <Property name="ONCLICK" value="return rpt('@Field1','@Field2','@Field2.ID');">
-                <InsertValue id="Field1" field="ID"/>
-                <InsertValue id="Field2" field="DATA_TYPE"/>
-            </Property>
-        </HTML-Link>
-        <SubQuery>SELECT DISTINCT ex.label AS session_label, wf.id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_experimentData ex ON ex.id = wf.id</SubQuery>
-        <MappingColumns>
-            <MappingColumn schemaField="wrk:workflowData.ID" queryField="workflow_id"/>
-        </MappingColumns>
+    <DisplayField id="SESSION_LABEL" header="Session" searchable="true" data-type="string">
+        <DisplayFieldElement name="Field1" viewName="SESSION_LABEL_VIEW" viewColumn="session_label"/>
     </DisplayField>
+    <DisplayVersion versionName="listing" default-order-by="LAST_MODIFIED" default-sort-order="DESC" brief-description="Workflow" dark-color="9999CC" light-color="CCCCFF">
+        <DisplayFieldRef id="ID"/>
+        <DisplayFieldRef id="LAUNCH_TIME"/>
+        <DisplayFieldRef id="STATUS"/>
+        <DisplayFieldRef id="LAST_MODIFIED"/>
+        <DisplayFieldRef id="SESSION_LABEL"/>
+    </DisplayVersion>
+    <ViewLink alias="SESSION_LABEL_VIEW">
+        <Mapping TableName="SESSION_LABEL_VIEW">
+            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.ID" mapsTo="workflow_id"/>
+        </Mapping>
+    </ViewLink>
+    <SQLView name="SESSION_LABEL_VIEW" sql="SELECT DISTINCT ex.label AS session_label, wf.id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_experimentData ex ON ex.id = wf.id"/>
 </Displays>

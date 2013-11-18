@@ -13,6 +13,7 @@ $page.setBgColor($ui.bgcolor)
     function requestVerificationEmail(){
 
         var requestURL =  "$!content.getURI('/data/services/sendEmailVerification')";
+        var logoutURL = '$link.setAction("LogoutUser")';
         var email = document.getElementById("requestEmail").value;
 
         var msgOptions = {} ;
@@ -40,9 +41,12 @@ $page.setBgColor($ui.bgcolor)
             scope   : this
         };
 
+        this.logoutCallback = {/* No callback actually needed from the logout call. */};
+
         if(email && requestURL){
             xModalLoadingOpen({title:'Please wait...'});
             YAHOO.util.Connect.asyncRequest('POST', requestURL + '?email=' + encodeURIComponent(email), this.insertCallback, null, this);
+            YAHOO.util.Connect.asyncRequest('GET', logoutURL, this.logoutCallback, null, this);
         }
     }
 </script>

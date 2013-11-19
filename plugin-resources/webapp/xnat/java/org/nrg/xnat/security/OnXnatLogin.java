@@ -10,13 +10,17 @@
  */
 package org.nrg.xnat.security;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.utils.SaveItemHelper;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,4 +74,16 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
         }
         super.onAuthenticationSuccess(request, response, authentication);
 	}
+    @Override
+    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response){
+        String loginLanding = "/app/template/IndexLoginLanding.vm";
+        String url = getDefaultTargetUrl();
+        logger.debug("landing url: "+url);
+        if("/".equals(url)){
+            setDefaultTargetUrl(loginLanding);
+            return loginLanding;
+        } else {
+            return super.determineTargetUrl(request, response);
+        }
+    }
 }

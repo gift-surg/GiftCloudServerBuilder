@@ -5,12 +5,37 @@
 <div class="mgmt_container">
 
     <div id="site_info_mgmt_div">
+        <script>
+            function changeSiteDescriptionType(radioEl){
+                var text = $('#siteDescriptionText');
+                var page = $('#siteDescriptionPage');
+                window.siteInfoManager.dirtyForm();
+                if($(radioEl).val() == 'Text'){
+                    text.show();
+                    page.hide();
+                } else {
+                    page.show();
+                    text.hide();
+                }
+            };
+        </script>
 
         <p>
             <label for="siteId">Site ID</label>
             <input size="30" type="text" id="siteId" onchange="this.value=stringCamelCaps(this.value); window.siteInfoManager.dirtyForm();" />
             <small>The id used to refer to this site (also used to generate database ids). No spaces or non-alphanumeric characters. It should be a short,
                 one-word name or acronym which describes your site.</small>
+            <br/>
+            <label for="siteDescription" style="vertical-align: top;">Site Description</label>
+            <span style="display: inline-block; vertical-align: top;">
+                <input type="radio" name="siteDescriptionType" id="siteDescriptionTypeText" value="Text" onchange="changeSiteDescriptionType(this);" checked="checked">
+                <label for="siteDescriptionTypeText" style="width:50px;">&nbsp;Text</label><br/>
+                <input type="radio" name="siteDescriptionType" id="siteDescriptionTypePage" value="Page" onchange="changeSiteDescriptionType(this);">
+                <label for="siteDescriptionTypePage" style="width:50px;">&nbsp;Page</label>
+            </span>
+            <input size="30" type="text" name="siteDescriptionPage" id="siteDescriptionPage" onchange="window.siteInfoManager.dirtyForm();" style="display: none;" />
+            <textarea name="siteDescriptionText" id="siteDescriptionText" style="width: 440px; margin-bottom: -5px;" onchange="window.siteInfoManager.dirtyForm();"></textarea>
+            <small>A short description of this site to be displayed on the login page.</small>
         </p>
 
         <p>
@@ -30,6 +55,28 @@
         </p>
 
         <p>
+            <label for="siteLoginLanding">Site Login Landing Page</label>
+            <input size="30" type="text" name="siteLoginLanding" id="siteLoginLanding" onchange="window.siteInfoManager.dirtyForm();" />
+            <label for="siteLandingLayout" style="padding-left: 20px; width: 50px;">Layout</label>
+            <select name="siteLandingLayout" id="siteLandingLayout" value="menu">
+                <option value="/Index.vm">Menu</option>
+                <option value="/NoMenu.vm">No Menu</option>
+                <option value="/Noninteractive.vm">Non-Interactive</option>
+            </select>
+            <small>The page and default layout users will land on immediately after logging in.</small>
+            <br/>
+            <label for="siteHome">Site Home Page</label>
+            <input size="30" type="text" name="siteHome" id="siteHome" onchange="window.siteInfoManager.dirtyForm();" />
+            <label for="siteHomeLayout" style="padding-left: 20px; width: 50px;">Layout</label>
+            <select name="siteHomeLayout" id="siteHomeLayout" value="menu">
+                <option value="/Index.vm">Menu</option>
+                <option value="/NoMenu.vm">No Menu</option>
+                <option value="/Noninteractive.vm">Non-Interactive</option>
+            </select>
+            <small>The page and default layout users will land on by clicking the "Home" link in the menu bar.</small>
+        </p>
+
+        <p>
             <label for="showapplet">Applet Link</label>
             <input type="checkbox" id="showapplet" onchange="window.siteInfoManager.dirtyForm();" />
             <small>Should a prominent link to the applet show up on the left bar of the index page?</small>
@@ -39,14 +86,14 @@
             <label for="enableCsrfToken">Enable CSRF Token?</label>
             <input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" />
             <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
-            <br />
+            <br/>
             <label for="enableCsrfEmail">Enable CSRF Email Alerts?</label>
             <input type="checkbox" id="enableCsrfEmail" onchange="window.siteInfoManager.dirtyForm();" />
             <small>Should this site send an email to the site admin whenever a CSRF attack is attempted?</small>
         </p>
 
         <p>
-            <label for="restrictUserListAccessToAdmins">Restrict user list access to site administrators?</label>
+            <label for="restrictUserListAccessToAdmins" style="width: 290px;">Restrict user list access to site administrators?</label>
             <input type="checkbox" id="restrictUserListAccessToAdmins" onchange="window.siteInfoManager.dirtyForm();" />
             <small>
                 Should this site restrict access to the list of system users to site administrators only? If turned on,
@@ -110,5 +157,5 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
+putConfigurationControls('siteInfo', ['siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
 </script>

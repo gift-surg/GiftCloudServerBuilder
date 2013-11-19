@@ -1,4 +1,4 @@
-<!-- Splash -->
+<!-- QuickSearch -->
 <div>
     $!systemName currently contains $proj_count $displayManager.getPluralDisplayNameForProject().toLowerCase(),
     $sub_count $displayManager.getPluralDisplayNameForSubject().toLowerCase(),
@@ -78,4 +78,4 @@
         </td>
     </tr>
 </table>
-<!-- /Splash -->
+<!-- /QuickSearch -->

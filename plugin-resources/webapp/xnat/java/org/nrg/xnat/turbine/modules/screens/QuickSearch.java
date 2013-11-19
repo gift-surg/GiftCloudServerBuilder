@@ -1,5 +1,5 @@
 /*
- * org.nrg.xnat.turbine.modules.screens.Splash
+ * org.nrg.xnat.turbine.modules.screens.QuickSearch
  * XNAT http://www.xnat.org
  * Copyright (c) 2013, Washington University School of Medicine
  * All Rights Reserved
@@ -14,7 +14,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 
-public class Splash extends SecureScreen {
+public class QuickSearch extends SecureScreen {
 
 	@Override
 	protected void doBuildTemplate(RunData data, Context context)

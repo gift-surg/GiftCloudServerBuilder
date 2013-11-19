@@ -48,7 +48,7 @@ function fullConfigHandler() {
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId', 'siteUrl', 'siteAdminEmail', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
+            'siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
             , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
@@ -170,10 +170,23 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
         for (var index = 0; index < this.settings.length; index++) {
             var setting = this.settings[index];
             var control = document.getElementById(setting);
-            control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
-            this.controls.push(control);
-            if (!this.firstControl) {
-                this.firstControl = control;
+            if(!control){ //handle radio button sets
+                control = document.getElementsByName(setting);
+                this.controls.push(setting);
+                for (var j = 0; j < control.length; j++) {
+                    if(control[j].value == eval('resultSet.ResultSet.Result.' + setting)){
+                        $(control[j]).trigger("click");
+                    }
+                }
+            } else {
+                control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
+                if(control.tagName.toLowerCase()=='select'){
+                    control.value = control.defaultValue;
+                }
+                this.controls.push(control);
+                if (!this.firstControl) {
+                    this.firstControl = control;
+                }
             }
         }
         this.render();
@@ -341,6 +354,15 @@ function buildSettingsUpdateRequestBody(controls) {
         var control;
         if('string' == typeof controls[index]) {
             control = document.getElementById(controls[index]);
+            if(!control){ //handle radio button sets
+                control = document.getElementsByName(controls[index]);
+                for (var j = 0; j < control.length; j++) {
+                    if(control[j].checked){
+                        control={id: controls[index], value:control[j].value};
+                        break;
+                    }
+                }
+            }
         }
         else {
             control = controls[index];

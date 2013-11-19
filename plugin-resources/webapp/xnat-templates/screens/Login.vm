@@ -15,7 +15,11 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
                     #if($msg)
                         <div class="message">$msg</div><br><br>
                     #end
-                    #parse("/screens/site_description.vm")
+                    #if($siteConfig.getProperty("siteDescriptionType","")=="Text")
+                        $siteConfig.getProperty("siteDescriptionText","")
+                    #else
+                        #parse($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm"))
+                    #end
                 </td>
             </tr>
             <tr>
@@ -74,7 +78,11 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
             </tr>
             <tr>
                 <td valign="top" style="padding-top:50px;text-align:center;">
-                    #parse("/screens/site_description.vm")
+                    #if($siteConfig.getProperty("siteDescriptionType","")=="Text")
+                        $siteConfig.getProperty("siteDescriptionText","")
+                    #else
+                        #parse($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm"))
+                    #end
                 </td>
             </tr>
         </table>

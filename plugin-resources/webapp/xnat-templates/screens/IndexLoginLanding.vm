@@ -1,5 +1,5 @@
 #set ($template = $data.getTemplateInfo())
-$!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm"))
+$!template.setLayoutTemplate($siteConfig.getProperty("siteLandingLayout","/Index.vm"))
 #if ($data.message)
 <DIV class="warning">$data.message</DIV><br>
 #end
@@ -10,4 +10,4 @@ $!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm
 </div>
 <div style="line-height:6px">&nbsp;</div>
 #end
-#parse($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm"))
+#parse($siteConfig.getProperty("siteLoginLanding","/screens/QuickSearch.vm"))

@@ -36,6 +36,7 @@ import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.BeanRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
@@ -65,19 +66,19 @@ public class FileList extends XNATCatalogTemplate {
     private static final Logger logger = LoggerFactory.getLogger(FileList.class);
     private String filepath = null;
     private XnatAbstractresource resource = null;
-    private final boolean listContents = "true".equalsIgnoreCase(this.getQueryVariable("listContents")) ? true : false;
+    private final boolean listContents = "true".equalsIgnoreCase(this.getQueryVariable("listContents"));
     private static String[] zipExtensions = null;
-    
+
     static {
-       final String defaultExtensions = "zip,jar,rar,ear,gar,mrb";
-       try {
-          // Try to get the files.zip_extensions configuration property.  Use default values if it isn't set.
-          zipExtensions = XDAT.getSiteConfigurationProperty("files.zip_extensions", defaultExtensions).split(",");
-       } catch (Throwable t) {
-          // Something went wrong with the above call to the config service, so set zipExtensions to the default values.
-          logger.error("Error occurred while initializing FileList service. Unable to read files.zip_extensions property.", t);
-          zipExtensions = defaultExtensions.split(",");
-       }
+        final String defaultExtensions = "zip,jar,rar,ear,gar,mrb";
+        try {
+            // Try to get the files.zip_extensions configuration property.  Use default values if it isn't set.
+            zipExtensions = XDAT.getSiteConfigurationProperty("files.zip_extensions", defaultExtensions).split(",");
+        } catch (Throwable t) {
+            // Something went wrong with the above call to the config service, so set zipExtensions to the default values.
+            logger.error("Error occurred while initializing FileList service. Unable to read files.zip_extensions property.", t);
+            zipExtensions = defaultExtensions.split(",");
+        }
     }
 
     public FileList(Context context, Request request, Response response) {
@@ -130,7 +131,7 @@ public class FileList extends XNATCatalogTemplate {
             if (filepath != null && filepath.startsWith("/")) {
                 filepath = filepath.substring(1);
             }
-            
+
             getVariants().add(new Variant(MediaType.APPLICATION_JSON));
             getVariants().add(new Variant(MediaType.TEXT_HTML));
             getVariants().add(new Variant(MediaType.TEXT_XML));
@@ -162,6 +163,7 @@ public class FileList extends XNATCatalogTemplate {
      * else returns table of files
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Representation represent(Variant variant) {
         MediaType mt = overrideVariant(variant);
         try {
@@ -289,14 +291,21 @@ public class FileList extends XNATCatalogTemplate {
                     UpdateMeta um = new UpdateMeta(i, !(skipUpdateStats));
 
                     try {
-                        buildResourceModifier(overwrite, um).addFile(getFileWriters(), resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                        final List<FileWriterWrapperI> writers = getFileWriters();
+
+                        // We'll skip adding files if there are no file writers, one way or the other that's bad, m'kay?
+                        // A return status should have been set by whomever decided there were no file writers, so we
+                        // don't need to do anything further.
+                        if (writers != null) {
+                            buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                        }
                     } catch (Exception e) {
                         if (e.getMessage().startsWith("File already exists")) {
                             logger.info("The POSTed file {} already exists, overwrite set to {}", filepath, overwrite);
                         } else {
                             logger.error("Error occurred while trying to POST file", e);
-                        throw e;
-                    }
+                            throw e;
+                        }
                     }
 
                     if (isNew) {
@@ -532,7 +541,7 @@ public class FileList extends XNATCatalogTemplate {
                     if (!mt.equals(MediaType.APPLICATION_GNU_TAR) && !mt.equals(MediaType.APPLICATION_TAR) &&
                             row[5] != null && !row[5].equals("")) {
                         // session types can have special characters that interfere with filepath creation, so those should be replaced with underscores
-                        root += "_" + row[5].toString().replaceAll("[\\/\\\\:\\*\\?\"<>\\|]","_");
+                        root += "_" + row[5].toString().replaceAll("[\\/\\\\:\\*\\?\"<>\\|]", "_");
                     }
                     root += "/";
                 }
@@ -881,7 +890,7 @@ public class FileList extends XNATCatalogTemplate {
                         } else {
                             fName = zipEntry.toLowerCase();
                         }
-                        
+
                         if (mt.equals(MediaType.IMAGE_JPEG) && Dcm2Jpg.isDicom(f)) {
                             try {
                                 return new InputRepresentation(new ByteArrayInputStream(Dcm2Jpg.convert(f)), mt);
@@ -890,44 +899,44 @@ public class FileList extends XNATCatalogTemplate {
                                 return new StringRepresentation("");
                             }
                         }
-                        
-                        try{
-                           // If the user is requesting a file within the zip archive
-                           if (zipEntry != null) {  
-                              // Get the zip entry requested
-                              ZipFile zF = new ZipFile(f);
-                              ZipEntry zE = zF.getEntry(URLDecoder.decode(zipEntry, "UTF-8"));
-                              if (zE == null) {
-                                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
-                                 return new StringRepresentation("");
-                              } else { // Return the requested zip entry
-                                 return new InputRepresentation(zF.getInputStream(zE), buildMediaType(mt, fName));
-                              }
-                           // If the user is requesting a list of the contents within the zip file
-                           } else if (true == listContents && isFileZipArchive(fName)) {
-                              // Get the contents of the zip file
-                              ZipFile zF = new ZipFile(f);
-                              Enumeration<? extends ZipEntry> entries = zF.entries();
-                              
-                              // Create a new XFTTable with File Name and Size columns
-                              XFTTable t = new XFTTable();
-                              t.initTable(new String[]{"File Name", "Size"});
-                              
-                              // Populate table rows and add the row to the table
-                              while(entries.hasMoreElements()){
-                                 ZipEntry zE = entries.nextElement();
-                                 t.rows().add(new Object[]{zE.getName(), zE.getSize()});
-                              } 
-                              zF.close();
-                              
-                              // Set the table, if t has rows
-                              if(null != t && t.rows().size() != 0){
-                                 table = t;  // table gets passed into representTable() below
-                              }
-                           } else {
-                              // Return the requested file
-                              return getFileRepresentation(f, buildMediaType(mt, fName));
-                           }
+
+                        try {
+                            // If the user is requesting a file within the zip archive
+                            if (zipEntry != null) {
+                                // Get the zip entry requested
+                                ZipFile zF = new ZipFile(f);
+                                ZipEntry zE = zF.getEntry(URLDecoder.decode(zipEntry, "UTF-8"));
+                                if (zE == null) {
+                                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
+                                    return new StringRepresentation("");
+                                } else { // Return the requested zip entry
+                                    return new InputRepresentation(zF.getInputStream(zE), buildMediaType(mt, fName));
+                                }
+                                // If the user is requesting a list of the contents within the zip file
+                            } else if (listContents && isFileZipArchive(fName)) {
+                                // Get the contents of the zip file
+                                ZipFile zF = new ZipFile(f);
+                                Enumeration<? extends ZipEntry> entries = zF.entries();
+
+                                // Create a new XFTTable with File Name and Size columns
+                                XFTTable t = new XFTTable();
+                                t.initTable(new String[]{"File Name", "Size"});
+
+                                // Populate table rows and add the row to the table
+                                while (entries.hasMoreElements()) {
+                                    ZipEntry zE = entries.nextElement();
+                                    t.rows().add(new Object[]{zE.getName(), zE.getSize()});
+                                }
+                                zF.close();
+
+                                // Set the table, if t has rows
+                                if (t.rows().size() != 0) {
+                                    table = t;  // table gets passed into representTable() below
+                                }
+                            } else {
+                                // Return the requested file
+                                return getFileRepresentation(f, buildMediaType(mt, fName));
+                            }
                         } catch (ZipException e) {
                             getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, e.getMessage());
                             return new StringRepresentation("");
@@ -935,7 +944,7 @@ public class FileList extends XNATCatalogTemplate {
                             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
                             return new StringRepresentation("");
                         }
-                        
+
                     } else { // If file does not exist
                         getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
                         return new StringRepresentation("");
@@ -993,18 +1002,21 @@ public class FileList extends XNATCatalogTemplate {
 
         return representTable(table, mt, params, cp, getSessionMaps());
     }
-    
+
     /**
      * Function determines if the given file is a zip archive by
      * checking whether the fileName contains a zip extension
+     *
      * @param f - the file name
      * @return - true / false is the file a zip file?
      */
-    private boolean isFileZipArchive(String f){
-       for(String s : zipExtensions){
-          if(f.contains(s)){ return true; }
-       }
-       return false;
+    private boolean isFileZipArchive(String f) {
+        for (String s : zipExtensions) {
+            if (f.contains(s)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Map<String, String> getReMaps() {

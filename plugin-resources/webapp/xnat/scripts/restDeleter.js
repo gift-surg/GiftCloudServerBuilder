@@ -5,7 +5,6 @@ RestDeleter = function(_array,_config) {
 	_config.footer="Are you sure you want to permanently remove this data from the archive?&nbsp;&nbsp;(Data shared into this " + XNAT.app.displayNames.singular.project.toLowerCase() + " will be un-shared, rather than deleted)";
 	this.trArray=new Array();
 
-	
 	this.drawContents=function(_div){
 		var t=_div.appendChild(document.createElement("table"));
 		t.width="100%";
@@ -162,14 +161,17 @@ RestDeleter = function(_array,_config) {
     		}
     		
     		if(!matched){
-                xModalMessage('Delete Action','All items were successfully deleted.');
+    			var msg_op = {};
     			if(this.redirect){
-    				window.location=this.redirect;
+    				msg_op.action = function(){ 
+    					window.location.href = deleter.redirect;
+    				}.bind(deleter);
 	    		}else if(this.redirectHome){
-	    			window.location.href=serverRoot + "/";
+	    			msg_op.action = function(){ window.location.href=serverRoot + "/"; }
 	    		}else{
-		    		window.location.reload();
+	    			msg_op.action = function(){ window.location.reload(); }
 	    		}
+                xModalMessage('Delete Action','All items were successfully deleted.','OK',msg_op);
     		}
     	}else{
     		closeModalPanel("stopAction");

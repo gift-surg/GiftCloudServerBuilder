@@ -473,6 +473,7 @@
 		</xs:sequence>
 		<xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
 		<xs:attribute name="verified" type="xs:boolean" use="optional" default="true"/>
+        <xs:attribute name="salt" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:attributeGroup name="meta_element">
 		<xs:annotation>

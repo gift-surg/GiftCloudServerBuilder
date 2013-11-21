@@ -465,6 +465,10 @@ body #fileUploadDialog_mask { z-index: 2101 !important ; }
 body #fileUploadDialog_c { z-index: 2102 !important ; }
 body #fileUploadDialog { z-index: 2103 !important ; }
 
+body #rest_deleter_mask { z-index: 2201 !important ; }
+body #rest_deleter_c { z-index: 2202 !important ; }
+body #rest_deleter { z-index: 2203 !important ; }
+
 span.close { position: relative ; left: 2px ; top: 2px ; }
 .yui-dt-button img { position: relative ; top: 2px ; }
 .ie .yui-dt-button img { top: 1px ; }

@@ -232,7 +232,8 @@ if (typeof XNAT.app.timeout == 'undefined'){ XNAT.app.timeout={} }
         width: "300px",
         close: true,
         fixedcenter: true,
-        zIndex: 40000,
+        // z-index is manhandled in xnat.css
+        //zIndex: 40000,
         constraintoviewport: true,
         modal: true,
         icon: YAHOO.widget.SimpleDialog.ICON_WARN,

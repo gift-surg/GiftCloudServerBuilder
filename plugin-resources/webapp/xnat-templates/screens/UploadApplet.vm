@@ -17,7 +17,7 @@
 <script type="text/javascript">
     jq(document).ready(function() {
         // refresh timeout interval so applet doesn't lose its session.
-        setInterval(function(){handleOk();},60000);
+        setInterval(function(){XNAT.app.timeout.handleOk()},60000);
         // add "applet" class to body to support special handling for applets
         jq('body').addClass('applet');
     });

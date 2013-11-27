@@ -421,7 +421,9 @@ public abstract class SecureResource extends Resource {
             } else {
                 if (mt.equals(MediaType.TEXT_HTML) && hasQueryVariable("requested_screen")) {
                     try {
-                        getHttpSession().setAttribute("table", table);
+                    	String s= Calendar.getInstance().getTimeInMillis()+"";
+                        getHttpSession().setAttribute("table"+s, table);
+                        params.put("table_tag","table"+s);
                         params.put("hideTopBar", isQueryVariableTrue("hideTopBar"));
                         return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, getQueryVariable("requested_screen"), params);
                     } catch (TurbineException e) {

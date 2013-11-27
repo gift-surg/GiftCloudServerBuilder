@@ -166,7 +166,14 @@
                                               <td>Validation Notes</td>
                                               <td align="left">$!scan.getStringProperty("validation.notes")</td>
                                   </tr>
-                #end
+			#end
+			
+			#if($scan.getUid())
+				<tr>
+					<td> </td>
+					<td colspan="2"><a target="_blank" href="$content.getURI("/REST/services/dicomdump?src=/archive/projects/$om.getProject()/experiments/$om.getId()/scans/$scan.getId()&format=html&requested_screen=DicomScanTable.vm")">View DICOM Headers</a></td>
+			#end
+			
             #foreach($addP in $scan.getParameters_addparam())
                  <tr>
                               <td>    </td>

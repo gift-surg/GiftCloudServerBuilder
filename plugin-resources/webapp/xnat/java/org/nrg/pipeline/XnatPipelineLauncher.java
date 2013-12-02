@@ -49,7 +49,7 @@ public class XnatPipelineLauncher {
     private XDATUser user;
     private String dataType;
     private String host;
-    private List<String> notificationEmailIds = new ArrayList<String>();
+    private Set<String> notificationEmailIds = new HashSet<String>();
     private Map<String, List<String>> parameters = new Hashtable<String, List<String>>();
     private String startAt;
     private boolean waitFor;

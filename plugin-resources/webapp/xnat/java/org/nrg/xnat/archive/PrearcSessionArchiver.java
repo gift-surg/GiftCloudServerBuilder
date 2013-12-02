@@ -23,13 +23,17 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
-import org.nrg.dcm.SOPModel;
 import org.nrg.framework.utilities.Reflection;
 import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.base.BaseElement;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatDcmentryI;
+import org.nrg.xdat.model.CatEntryI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
@@ -37,7 +41,6 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
-import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -55,7 +58,6 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
-import org.nrg.xnat.archive.PrearcSessionArchiver.PostArchiveAction;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
@@ -66,13 +68,14 @@ import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.actions.TriggerPipelines;
 import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.CatalogUtils;
+import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 
 public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
@@ -106,7 +109,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	
 	protected final PrearcSession prearcSession;
 
-	private final boolean allowDataDeletion;//should the process delete data from an existing resource
+	private final boolean allowDataDeletion;//as of 1.6.2 this is being used to override any potential overridable exception
 	private final boolean overwrite;//should process proceed if the session already exists
 	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
 	private final boolean waitFor;
@@ -539,6 +542,40 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 				if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
 
+
+				if(!allowDataDeletion){
+					//validate files to confirm DICOM contents
+					for(final XnatImagescandataI scan: src.getScans_scan()){
+						for(final XnatAbstractresourceI resource:scan.getFile()){
+							if(resource instanceof XnatResourcecatalogI){
+								final File f=CatalogUtils.getCatalogFile(src.getPrearchivepath(), (XnatResourcecatalogI)resource);
+								if(f==null || !f.exists()){
+									throw new ClientException("Expected a catalog file, however it was missing.", new Exception());
+								}
+								
+								final List<File> unreferenced=CatalogUtils.getUnreferencedFiles(f.getParentFile());
+								if(unreferenced.size()>0){
+									throw new ClientException(String.format("Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files", scan.getId(),unreferenced.size(),resource.getLabel()), new Exception());
+								}
+								
+								if(StringUtils.equals(resource.getLabel(),"DICOM")){
+									//check for entries that aren't DICOM entries or don't have a UID stored
+									final CatCatalogI cat=CatalogUtils.getCatalog(f);
+									final Collection<CatEntryI> nonDCM=CatalogUtils.getEntriesByFilter(cat, new CatEntryFilterI(){
+										@Override
+										public boolean accept(CatEntryI entry) {
+											return ((!(entry instanceof CatDcmentryI)) || StringUtils.isEmpty(((CatDcmentryI)entry).getUid()));
+										}});
+									
+									if(nonDCM.size()>0){
+										throw new ClientException(String.format("Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files", scan.getId(),nonDCM.size()), new Exception());
+									}
+								}
+							}
+						}
+					}
+				}
+				
 				if(arcSessionDir.exists()){
 					processing("merging files data with existing session");
 				}else{

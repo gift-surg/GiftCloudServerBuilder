@@ -6,7 +6,7 @@
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 12/2/13 8:47 PM
  */
 package org.nrg.xnat.archive;
 
@@ -109,22 +109,22 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	
 	protected final PrearcSession prearcSession;
 
-	private final boolean allowDataDeletion;//as of 1.6.2 this is being used to override any potential overridable exception
-	private final boolean overwrite;//should process proceed if the session already exists
-	private final boolean overwrite_files;//should process proceed if the same file is reuploaded
+	private final boolean overrideExceptions;//as of 1.6.2 this is being used to override any potential overridable exception
+	private final boolean allowSessionMerge;//should process proceed if the session already exists
+	private final boolean overwriteFiles;//should process proceed if the same file is reuploaded
 	private final boolean waitFor;
 	
 	private boolean needsScanIdCorrection=false;
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params, final Boolean allowDataDeletion, final Boolean overwrite, final Boolean waitFor, final Boolean overwrite_files) {
+	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params, final Boolean overrideExceptions, final Boolean allowSessionMerge, final Boolean waitFor, final Boolean overwriteFiles) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
 		this.project = project;
 		this.params = params;
-		this.allowDataDeletion=(allowDataDeletion==null)?false:allowDataDeletion;
-		this.overwrite=(overwrite==null)?false:overwrite;
-		this.overwrite_files=(overwrite_files==null)?false:overwrite_files;
+		this.overrideExceptions=(overrideExceptions==null)?false:overrideExceptions;
+		this.allowSessionMerge=(allowSessionMerge==null)?false:allowSessionMerge;
+		this.overwriteFiles=(overwriteFiles==null)?false:overwriteFiles;
 		this.prearcSession=prearcSession;
 		this.waitFor=waitFor;
 	}
@@ -132,10 +132,10 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	public PrearcSessionArchiver(final PrearcSession session,	
 								 final XDATUser user, 
 								 final Map<String,Object> params, 
-								 boolean allowDataDeletion,
-								 final boolean overwrite, 
+								 boolean overrideExceptions,
+								 final boolean allowSessionMerge, 
 								 final boolean waitFor, 
-								 final Boolean overwrite_files)
+								 final Boolean overwriteFiles)
 	throws IOException,SAXException {
 		this((new XNATSessionPopulater(user, 
 									   session.getSessionDir(),  
@@ -145,10 +145,10 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			  user, 
 			  session.getProject(), 
 			  params, 
-			  allowDataDeletion,
-			  overwrite, 
+			  overrideExceptions,
+			  allowSessionMerge, 
 			  waitFor,
-			  overwrite_files);
+			  overwriteFiles);
 	}
 
 	public XnatImagesessiondata getSrc(){
@@ -334,7 +334,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	 * @throws AlreadyArchivingException
 	 */
 	protected void preventConcurrentArchiving(final String id, final XDATUser user) throws ClientException {
-		if(!allowDataDeletion){//allow overriding of this behavior via the overwrite parameter
+		if(!overrideExceptions){//allow overriding of this behavior via the overwrite parameter
 			Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user, id);
 			if(!wrks.isEmpty()){
 				this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getOnlyPipelineName());
@@ -404,7 +404,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	@SuppressWarnings("deprecation")
 	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
 		if(existing!=null){
-			if(!overwrite){
+			if(!allowSessionMerge){
 				failed(PRE_EXISTS);
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
 			}
@@ -432,7 +432,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,newError, new Exception());
 			}
 			
-			if(!allowDataDeletion){
+			if(!overrideExceptions){
 				if(StringUtils.isNotEmpty(existing.getUid()) && StringUtils.isNotEmpty(src.getUid())){
 					if(!StringUtils.equals(existing.getUid(), src.getUid())){
 						failed(UID_MOD);
@@ -445,12 +445,12 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				XnatImagescandataI match=MergeUtils.getMatchingScanById(newScan.getId(), existing.getScans_scan());//match by ID
 				if(match!=null){
 					if(StringUtils.equals(match.getUid(),newScan.getUid())){
-						if(!overwrite){
+						if(!allowSessionMerge){
 							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same UID and number.", new Exception());
 						}
 					}else if(StringUtils.isNotEmpty(match.getUid())){
-						if(!overwrite){
-							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID. - Operation not supported", new Exception());
+						if(!allowSessionMerge){
+							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID.", new Exception());
 						}else{
 							needsScanIdCorrection=true;
 						}
@@ -460,7 +460,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				XnatImagescandataI match2=MergeUtils.getMatchingScanByUID(newScan, existing.getScans_scan());//match by UID
 				if(match2!=null){
 					if(match==null || !StringUtils.equals(match.getId(),newScan.getId())){
-						if(!allowDataDeletion){
+						if(!overrideExceptions){
 							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan with the same UID, but a different number (" + match2.getId() +").", new Exception());
 						}
 					}
@@ -543,7 +543,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
 
 
-				if(!allowDataDeletion){
+				if(!overrideExceptions){
 					//validate files to confirm DICOM contents
 					for(final XnatImagescandataI scan: src.getScans_scan()){
 						for(final XnatAbstractresourceI resource:scan.getFile()){
@@ -628,8 +628,8 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 																				 arcSessionDir,
 																				 existing,
 																				 arcSessionDir.getAbsolutePath(),
-																				 overwrite, 
-																				 (allowDataDeletion)?allowDataDeletion:overwrite_files,
+																				 allowSessionMerge, 
+																				 (overrideExceptions)?overrideExceptions:overwriteFiles,
 																				 saveImpl,user,workflow.buildEvent())).call();
 
 				org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));

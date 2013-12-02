@@ -51,9 +51,9 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 
 	public static final String RESPONSE_URL = "URL";
 	
-	private final Boolean allowDataDeletion;
+	private final Boolean overrideExceptions;
 	
-	private final Boolean overwrite;
+	private final Boolean allowSessionMerge;
 	
 	private final FileWriterWrapperI fw;
 	
@@ -81,26 +81,29 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 		String overwriteV=(String)params.remove("overwrite");
 		
 		if(overwriteV==null){
-			this.allowDataDeletion=false;
-			this.overwrite=false;
+			this.overrideExceptions=false;
+			this.allowSessionMerge=false;
 		}else{
 			if(overwriteV.equalsIgnoreCase(PrearcUtils.APPEND)){
-				this.allowDataDeletion=false;
-				this.overwrite=true;
-			}else if(overwriteV.equalsIgnoreCase(PrearcUtils.DELETE)){
-				this.allowDataDeletion=true;
-				this.overwrite=true;
+				this.overrideExceptions=false;
+				this.allowSessionMerge=true;
+			}else if(overwriteV.equalsIgnoreCase(PrearcUtils.DELETE)){//leaving this for backwards compatibility... deprecated by 'override' setting
+				this.overrideExceptions=true;
+				this.allowSessionMerge=true;
+			}else if(overwriteV.equalsIgnoreCase("override")){
+				this.overrideExceptions=true;
+				this.allowSessionMerge=true;
 			} else{
-				this.allowDataDeletion=false;
-				this.overwrite=true;
+				this.overrideExceptions=false;
+				this.allowSessionMerge=true;
 			}
 		}
 	}
 		
-	public static List<PrearcSession> importToPrearc(StatusProducer parent,String format,Object listener,XDATUser user,FileWriterWrapperI fw,Map<String,Object> params,boolean overwrite, boolean allowDataDeletion) throws ActionException{
+	public static List<PrearcSession> importToPrearc(StatusProducer parent,String format,Object listener,XDATUser user,FileWriterWrapperI fw,Map<String,Object> params,boolean allowSessionMerge, boolean overwriteFiles) throws ActionException{
 		//write file
 		try {
-			return ListenerUtils.addListeners(parent, PrearcImporterA.buildImporter(format,listener, user, fw, params,overwrite,allowDataDeletion))
+			return ListenerUtils.addListeners(parent, PrearcImporterA.buildImporter(format,listener, user, fw, params,allowSessionMerge,overwriteFiles))
 				.call();
 		} catch (SecurityException e) {
 			throw new ServerException(e.getMessage(),e);
@@ -228,8 +231,8 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 				prearc_parameters.put("xnat:experimentData/label", expt.getLabel());
 			}
 			
-			//import to prearchive
-			final List<PrearcSession> sessions=importToPrearc(this,(String)params.remove(PrearcImporterA.PREARC_IMPORTER_ATTR),uID,user,fw,prearc_parameters,overwrite,allowDataDeletion);
+			//import to prearchive, code allows for merging new files into a pre-existing session directory
+			final List<PrearcSession> sessions=importToPrearc(this,(String)params.remove(PrearcImporterA.PREARC_IMPORTER_ATTR),uID,user,fw,prearc_parameters,allowSessionMerge,overrideExceptions);
 			
 			if(sessions.size()==0){
 				failed("Upload did not include parseable files for session generation.");
@@ -255,7 +258,7 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			session.getAdditionalValues().putAll(params);
 				
 			try {
-				final FinishImageUpload finisher=ListenerUtils.addListeners(this, new FinishImageUpload(this.uID, user, session,destination, allowDataDeletion,overwrite,true));
+				final FinishImageUpload finisher=ListenerUtils.addListeners(this, new FinishImageUpload(this.uID, user, session,destination, overrideExceptions,allowSessionMerge,true));
 				XnatImagesessiondata s = new XNATSessionPopulater(user, session.getSessionDir(), session.getProject(), false).populate();
 				SiteWideAnonymizer site_wide = new SiteWideAnonymizer(s, true);
 				site_wide.call();

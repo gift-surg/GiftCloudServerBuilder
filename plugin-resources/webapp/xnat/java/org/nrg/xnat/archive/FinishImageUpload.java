@@ -51,17 +51,17 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
     private final org.apache.log4j.Logger logger = Logger.getLogger(FinishImageUpload.class);
 	private final PrearcSession session;
 	private final URIManager.DataURIA destination;
-	private final boolean allowDataDeletion, overwrite,inline;
+	private final boolean overrideExceptions, allowSessionMerge,inline;
 	private final XDATUser user;
 	
 	static List<String> prearc_variables=Lists.newArrayList(RequestUtil.AA,RequestUtil.AUTO_ARCHIVE,PrearcUtils.PREARC_SESSION_FOLDER,PrearcUtils.PREARC_TIMESTAMP);
 
-	public FinishImageUpload(Object control, XDATUser user,final PrearcSession session,final URIManager.DataURIA destination, final boolean allowDataDeletion, final boolean overwrite, final boolean inline) {
+	public FinishImageUpload(Object control, XDATUser user,final PrearcSession session,final URIManager.DataURIA destination, final boolean overrideExceptions, final boolean allowSessionMerge, final boolean inline) {
 		super(control);
 		this.session=session;
 		this.destination=destination;
-		this.allowDataDeletion=allowDataDeletion;
-		this.overwrite=overwrite;
+		this.overrideExceptions=overrideExceptions;
+		this.allowSessionMerge=allowSessionMerge;
 		this.user=user;
 		this.inline=inline;
 	}
@@ -75,14 +75,14 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
 					return ListenerUtils.addListeners(this, new PrearcSessionArchiver(session, 
 							                                                            user, 
 							                                                            removePrearcVariables(session.getAdditionalValues()), 
-							                                                            allowDataDeletion,
-							                                                            overwrite,
+							                                                            overrideExceptions,
+							                                                            allowSessionMerge,
 							                                                            false,
 							                                                            isOverwriteFiles(session,destination)))
 					.call();
 				}else{
 					if (PrearcDatabase.setStatus(session.getFolderName(), session.getTimestamp(), session.getProject(), PrearcUtils.PrearcStatus.ARCHIVING)) {
-                        boolean delete = allowDataDeletion, append = overwrite;
+                        boolean override = overrideExceptions, append = allowSessionMerge;
 
                         final SessionData sessionData = session.getSessionData();
                         if (sessionData != null) {
@@ -90,22 +90,22 @@ public class FinishImageUpload extends StatusProducer implements Callable<String
                             if(code!=null){
 		                        switch (code) {
 		                            case Manual:
-		                                delete = false;
+		                                override = false;
 		                                append = false;
 		                                break;
 		                            case AutoArchive:
-		                                delete = false;
+		                                override = false;
 		                                append = true;
 		                                break;
 		                            case AutoArchiveOverwrite:
-		                                delete = false;
+		                                override = false;
 		                                append = true;
 		                                //theoretically we could also set overwrite_files to true here.  But, that is handled by the isOverwriteFiles method which allows for other methods of specifying the value
 		                                break;
 	                            }
                             }
                         }
-						return PrearcDatabase.archive(session, delete, append, isOverwriteFiles(session,destination), user, getListeners());
+						return PrearcDatabase.archive(session, override, append, isOverwriteFiles(session,destination), user, getListeners());
 					}else{
 						throw new ServerException("Unable to lock session for archiving.");
 					}

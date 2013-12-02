@@ -1,7 +1,7 @@
 #set ($template = $data.getTemplateInfo())
 $!template.setLayoutTemplate("/ScreenOnly.vm")
 
-
+<div>The DICOM header values for the first dicom file in this scan.</div>
 <table>
 	<tr>
 		<th>Tag</th>

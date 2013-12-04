@@ -234,13 +234,20 @@ function sortElements(_parent,_child){
 }
 
 
+// returns single-digit number as a string with leading zero
+function zeroPad (x) {
+    var y = parseInt(x,10) ; // make sure it's a number
+    return (y < 10) ? '0'+y : ''+y ; // make it a string again
+}
+
+
 // feed this function a date (and optionally a format) and
 // it'll spit out month number and name (full or abbreviated), day, and year
 function SplitDate(_date,_format){
 
     var mm_pos, dd_pos, yyyy_pos, example ;
 
-    this.val = _date ; // save it to a variable before removing the spaces
+    this.val = _date = (typeof _date != 'undefined' && (''+_date).length) ? _date : '0000-00-00' ; // save it to a variable before removing the spaces
 
     _date = _date.replace(/\s+/g,''); // removing spaces?
 
@@ -264,32 +271,44 @@ function SplitDate(_date,_format){
         this.arr = _date.split('.');
     }
 
-    if (this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
-        if (_format === 'eu' || _format === 'euro'){ // it it's Euro
+    // accepts either single-digit or double-digit for month or day
+    if (this.arr[0].length === 1 || this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
+        if (parseInt(this.arr[0],10) > 12) _format = 'eu' ; // if the first number is higher than 12, it MUST be Euro format
+        if (_format === 'eu' || _format === 'euro'){ // if it's Euro
             dd_pos = 0; mm_pos = 1; yyyy_pos = 2; example = '31/01/2001';
+            this.format = 'eu';
         }
         else {
             mm_pos = 0; dd_pos = 1; yyyy_pos = 2; example = '01/31/2001';
+            this.format = 'us';
         }
     }
     else if (this.arr[0].length === 4 || _format === 'iso'){ // it's probably ISO format
         yyyy_pos = 0; mm_pos = 1; dd_pos = 2; example = '2001-01-31';
+        this.format = 'iso';
     }
 
-    this.mm = this.arr[mm_pos] ;
-    if (this.mm === '' || parseInt(this.mm) > 12) this.mm = '13';
+    this.m = this.arr[mm_pos];
+    this.mm = zeroPad(this.m);
+    if (this.m === '' || parseInt(this.m,10) > 12) this.mm = '13';
     this.month = months[this.mm+''][0];
     this.mo = months[this.mm+''][1];
-    this.dd = this.arr[dd_pos];
-    if (this.dd === '' || parseInt(this.dd) > 31) this.dd = '32';
+    this.d = this.arr[dd_pos];
+    this.dd = zeroPad(this.d);
+    if (this.d === '' || parseInt(this.d,10) > 31) this.dd = '32';
     this.yyyy = this.year = this.arr[yyyy_pos];
-    if (this.yyyy !== '') this.yyyy = parseInt(this.year) ;
-    this.format = this.example = example ;
+    if (this.yyyy !== '') this.yyyy = parseInt(this.year,10) ;
+    this.example = example ;
+
+    this.ISO = this.iso = this.yyyy + '-' + this.mm + '-' + this.dd ;
+    this.US = this.us = this.mm + '/' + this.dd + '/' + this.yyyy ;
+    this.EU = this.eu = this.EURO = this.euro = this.dd + '/' + this.mm + '/' + this.yyyy ;
 
     this.date_string = this.yyyy + this.mm + this.dd ;
-    this.date_num = parseInt(this.date_string);
+    this.date_num = parseInt(this.date_string,10);
 
 }
+
 /*
  // examples of using the SplitDate function
  var split_date = new SplitDate(XNAT.data.todaysDate.iso);

@@ -219,7 +219,7 @@ XNAT.app.checkDateInput = function($input,format) {
             );
         }
         else {
-            xModalMessage('Date Validation', 'Invalid Date Format. Please enter the date in the format: ' + date.format + '.');
+            alert('Invalid Date Format. Please enter the date in the format: ' + date.format + '.');
         }
     }
     else if (future === false && date.date_num > max_date_num && date.date_num < date.max_future){
@@ -234,7 +234,7 @@ XNAT.app.checkDateInput = function($input,format) {
             );
         }
         else {
-            xModalMessage('Date Validation', "Invalid Day, Month, or Year range detected. Please correct and submit again.");
+            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
         }
     }
     // check for sane date ranges - between 120 years ago and 100 years from now
@@ -250,7 +250,7 @@ XNAT.app.checkDateInput = function($input,format) {
             );
         }
         else {
-            xModalMessage('Date Validation', "Invalid Day, Month, or Year range detected. Please correct and submit again.");
+            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
         }
     }
     else {
@@ -453,6 +453,8 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
         //maxdate: XNAT.data.todaysDate.US, // don't go past today
         navigator: true
     };
+
+    cal_config.selected = XNAT.data.todaysDate.US;
 
     // if the 'future' option is not specified, stop at today
     if (typeof _opts.future == 'undefined') cal_config.maxdate = XNAT.data.todaysDate.US;

@@ -13,7 +13,7 @@ div.xmask.open { /* display: block ; */ }
 div.xmodal { display: none ; position: absolute ; padding: 0 ; left: 50% ; top: 50% ; overflow: hidden ; background: #fff ; border: 3px solid rgba(0,0,0,0.5) ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ; /* border-radius: 9px ; */ }
 .ltie9 div.xmodal { border: 3px solid #909090 !important ; }
 div.xmodal .close:hover { cursor: pointer ; }
-div.xmodal .title { position: relative ; height: 25px ; padding-left: 10px ; overflow: hidden ; font-size: 12px ; font-weight: normal ; line-height: 28px ; vertical-align: middle ; color: #666 ; background: /* #084FAB */ /* #206bc4 */ #f0f0f0 url('images/nav_bkdg.png') center center repeat-x ; border-bottom: 1px solid #c0c0c0 ; /* border-radius: 5px 5px 0 0 ; */ }
+div.xmodal .title { position: relative ; height: 25px ; padding-left: 10px ; overflow: hidden ; font-size: 12px ; font-weight: normal ; line-height: 28px ; vertical-align: middle ; color: #333 ; background: /* #084FAB */ /* #206bc4 */ #f0f0f0 url('images/nav_bkdg.png') center center repeat-x ; border-bottom: 1px solid #c0c0c0 ; /* border-radius: 5px 5px 0 0 ; */ }
 div.xmodal .title .close { width: 36px ; height: 24px ; margin: 0 !important ; padding: 0 !important ; position: absolute ; top: 1px ; right: 1px ; background: url('images/close-yui.gif') center center no-repeat ; border: none ; }
 div.xmodal.loading .title .close { display: none ; }
 div.xmodal.loading .body .inner { text-align: center ; }

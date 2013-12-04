@@ -217,12 +217,8 @@ if (typeof XNAT.app.timeout == 'undefined'){ XNAT.app.timeout={} }
      * Used to zero pad the time displays
      */
     timeout.zeroPad = function (x) {
-        if (x < 10) {
-            return "0" + x;
-        }
-        else {
-            return "" + x;
-        }
+        var y = parseInt(x,10) ; // make sure it's a number
+        return (y < 10) ? '0'+y : ''+y ;
     };
 
     /**

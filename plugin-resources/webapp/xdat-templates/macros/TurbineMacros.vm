@@ -21,7 +21,7 @@
     #set ($text="additional")
             <p>
                 Send <i>$text</i> confirmation emails to
-                <input type="text" name="emailField" value="" size="20">  (use spaces to separate multiple addresses)
+                <input type="text" name="emailField" value="" size="20">  (use commas to separate multiple addresses)
             </p>
     <p>&nbsp;</p>
 #end
@@ -40,7 +40,7 @@
     #set ($text="additional")
             <p>
                 Send <i>$text</i> confirmation emails to
-                <input type="text" name="emailField" value="" size="20">  (use spaces to separate multiple addresses)
+                <input type="text" name="emailField" value="" size="20">  (use commas to separate multiple addresses)
             </p>
     <p>&nbsp;</p>
 #end

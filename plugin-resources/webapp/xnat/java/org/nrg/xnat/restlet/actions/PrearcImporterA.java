@@ -73,7 +73,7 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		}
 	}
 	
-	public static <A extends PrearcImporterA> A buildImporter(String format,Object uID, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params,boolean overwrite, boolean allowDataDeletion) throws ClientException, ServerException, SecurityException, NoSuchMethodException, UnknownPrearcImporterException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException{
+	public static <A extends PrearcImporterA> A buildImporter(String format,Object uID, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params,boolean allowSessionMerge, boolean overwriteFiles) throws ClientException, ServerException, SecurityException, NoSuchMethodException, UnknownPrearcImporterException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException{
 		if(StringUtils.isEmpty(format)){
 			format=DEFAULT_HANDLER;
 		}
@@ -84,7 +84,7 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		}
 		
 		final Constructor<A> con=importerImpl.getConstructor(Object.class, XDATUser.class, FileWriterWrapperI.class, Map.class, boolean.class, boolean.class);
-		return con.newInstance(uID, u, fi, params,overwrite,allowDataDeletion);
+		return con.newInstance(uID, u, fi, params,allowSessionMerge,overwriteFiles);
 		
 	}
 	

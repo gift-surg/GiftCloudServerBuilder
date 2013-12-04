@@ -1,0 +1,84 @@
+#* @vtlvariable name="displayManager" type="org.nrg.xdat.display.DisplayManager" *#
+<!-- Title: SOP Class Filter -->
+<div class="mgmt_container">
+    <div id="sopClassFilter_mgmt_div" class="row">
+        <p>
+            This is the site-wide SOP class UID filter applied to all incoming and archiving DICOM resources. This
+            filter can also be supplemented by SOP class filters specified at the project level.        </p>
+        <p>
+        <label for="sopClassFilterEnabled" style="vertical-align: top;">Enable Filter:</label>
+        <span style="display: inline-block; vertical-align: top;">
+            <input type="checkbox" name="sopClassFilterEnabled" id="sopClassFilterEnabled" />
+        </span><br/>
+        <label for="sopClassFilterMode" style="vertical-align: top;">Filter Mode:</label>
+        <span style="display: inline-block; vertical-align: top;">
+            <select name="sopClassFilterMode" id="sopClassFilterMode" disabled>
+                <option value="whitelist">Whitelist</option>
+                <option value="blacklist">Blacklist</option>
+            </select>
+        </span><br/>
+        <small>
+            Creating an SOP class UID whitelist means that <i>only</i> DICOM series with one of the specified SOP class
+            UIDs will be considered by XNAT import tools such as the upload applet. Creating a blacklist means that all
+            DICOM series will be considered <i>except</i> for series that have one of the specified SOP class UIDs.
+        </small>
+        </p>
+        <p>
+            <label for="sopClassFilterList">SOP Class UIDs to Filter:</label><br/>
+            <textarea id="sopClassFilterList" name="sopClassFilterList" rows="20" cols="80" disabled placeholder="Enter white- or blacklisted SOP Class UIDs separated by newlines, e.g. 1.2.840.10008.5.1.4.1.1.88.11 for basic text structured reports."></textarea><br/>
+        </p>
+    </div>
+    <div class="buttons">
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="sopClassFilter_save_button" onclick="window.sopClassFilterManager.saveTabSettings();"/>&nbsp;
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="sopClassFilter_reset_button" onclick="window.sopClassFilterManager.resetForm();" disabled/>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var filterList = $('#sopClassFilterList');
+    var filterMode = $('#sopClassFilterMode');
+    var filterEnabled = $('#sopClassFilterEnabled');
+
+    function toggleControlsOnEnabled() {
+        var enabled = filterEnabled.is(':checked');
+        filterList.attr('disabled', !enabled);
+        filterMode.attr('disabled', !enabled);
+    }
+
+    function dirty() {
+        // Add check for class manager, since setting the initial value of the radio button
+        // will cause the dirty() function to be called, at which point the manager is null.
+        if (window.sopClassFilterManager && !window.sopClassFilterManager.wasDirty()) {
+            window.sopClassFilterManager.dirtyForm();
+        }
+        toggleControlsOnEnabled();
+    }
+
+    filterList.bind('input propertychange', dirty);
+    filterMode.change(dirty);
+    filterEnabled.change(dirty);
+
+    function configurationSopClassFilterTabChange(obj) {
+        if(obj.newValue.get("href")=="#sopClassFilter") {
+            if(window.sopClassFilterManager==undefined) {
+                window.sopClassFilterManager = new SettingsTabManager('sopClassFilter_mgmt_div', 'sopClassFilter');
+            }
+            toggleControlsOnEnabled();
+        }
+    }
+
+    function addSopClassFilterMgmtMonitor(){
+        if(window.configurationTabView.get("activeTab").get("href")=="#sopClassFilter") {
+            if(window.sopClassFilterManager==undefined) {
+                window.sopClassFilterManager = new SettingsTabManager('sopClassFilter_mgmt_div', 'sopClassFilter');
+            }
+        } else {
+            window.configurationTabView.subscribe("activeTabChange", configurationSopClassFilterTabChange);
+        }
+    }
+
+    YAHOO.util.Event.onDOMReady(addSopClassFilterMgmtMonitor);
+    putConfigurationControls('sopClassFilter', ['sopClassFilterEnabled', 'sopClassFilterMode', 'sopClassFilterList']);
+</script>

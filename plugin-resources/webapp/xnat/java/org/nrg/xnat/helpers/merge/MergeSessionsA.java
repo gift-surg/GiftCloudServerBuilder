@@ -41,7 +41,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 	protected final File srcDIR,destDIR;
 	protected final A src,dest;
 	protected final String destRootPath,srcRootPath;        
-	protected final boolean addFilesToExisting,overwrite_files;
+	protected final boolean allowSessionMerge,overwiteFiles;
 	protected final SaveHandlerI<A> saver;
 	protected ArrayList<Callable<A>> befores = new ArrayList<Callable<A>>();
 	protected AnonymizerA anonymizer = null;
@@ -51,12 +51,12 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 
 	static org.apache.log4j.Logger logger = Logger.getLogger(MergeSessionsA.class);
 
-	public MergeSessionsA(Object control,final File srcDIR, final A src, final String srcRootPath, final File destDIR, final A existing, final String destRootPath, boolean addFilesToExisting, boolean overwrite_files,SaveHandlerI<A> saver,final UserI u, final EventMetaI c) {
+	public MergeSessionsA(Object control,final File srcDIR, final A src, final String srcRootPath, final File destDIR, final A existing, final String destRootPath, boolean allowSessionMerge, boolean overwriteFiles,SaveHandlerI<A> saver,final UserI u, final EventMetaI c) {
 		super(control);
 		this.control=control;
 		this.srcDIR=srcDIR;
-		this.addFilesToExisting=addFilesToExisting;
-		this.overwrite_files=overwrite_files;
+		this.allowSessionMerge=allowSessionMerge;
+		this.overwiteFiles=overwriteFiles;
 		this.dest=existing;
 		this.src=src;
 		this.destDIR=destDIR;
@@ -81,12 +81,12 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 	public void checkForConflict() throws ClientException,ServerException{
 		ClientException t=null;
 		if(destDIR.exists() || dest!=null){
-			if(!addFilesToExisting){
+			if(!allowSessionMerge){
 				failed(HAS_FILES);
 				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,HAS_FILES, new Exception());
 			}
 
-			if(!overwrite_files){
+			if(!overwiteFiles){
 				if((new SessionOverwriteCheck(src, dest,src.getPrearchivepath(),dest.getPrearchivepath(),user,c)).call()){
 					failed(CAT_ENTRY_MATCH);
 					t= new ClientException(Status.CLIENT_ERROR_CONFLICT,CAT_ENTRY_MATCH,new IOException());
@@ -94,7 +94,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 			}
 		}
 
-		if(destDIR.exists() && !overwrite_files){
+		if(destDIR.exists() && !overwiteFiles){
 			try {
 				if(FileUtils.FindFirstMatch(srcDIR, destDIR, new FileFilter(){
 					public boolean accept(File pathname) {
@@ -160,7 +160,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 				}
 			}
 	
-			mergeDirectories(srcDIR,destDIR,overwrite_files);
+			mergeDirectories(srcDIR,destDIR,overwiteFiles);
 
 			finalize(merged);
 
@@ -256,7 +256,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 			}
 
 			try {
-				FileUtils.MoveDir(backupDIR, destDIR2, addFilesToExisting);
+				FileUtils.MoveDir(backupDIR, destDIR2, allowSessionMerge);
 			} catch (Exception e) {
 				this.failed("Failed to restore previous version of destination directory.");
 				throw new ServerException(e.getMessage(),e);
@@ -281,7 +281,7 @@ public abstract class MergeSessionsA<A extends XnatImagesessiondataI> extends St
 			//WARNING: this command will create a catalog if it doesn't already exist
 			final CatCatalogBean cat=CatalogUtils.getCleanCatalog(destRootPath, (XnatResourcecatalogI)destRes, false,user,c);
 
-			MergeCatCatalog merge= new MergeCatCatalog(srcCat, cat, addFilesToExisting,c,CatalogUtils.getCatalogFile(destRootPath,(XnatResourcecatalogI)destRes));
+			MergeCatCatalog merge= new MergeCatCatalog(srcCat, cat, allowSessionMerge,c,CatalogUtils.getCatalogFile(destRootPath,(XnatResourcecatalogI)destRes));
 
 			MergeSessionsA.Results<Boolean> r=merge.call();
 			if(r.result!=null && r.result){

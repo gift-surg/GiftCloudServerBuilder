@@ -1216,6 +1216,55 @@ public class CatalogUtils {
     	
     	return modified;
     }
+    
+    /**
+     * Reviews the catalog directory and returns any files that aren't already referenced in the catalogs in that folder.
+     * @param catFile path to catalog xml file
+     * @param cat content of catalog xml file
+     * @return true if the cat was modified (and needs to be saved).
+     */
+    public static List<File> getUnreferencedFiles(final File catFolder){
+    	final List<File> unreferenced=Lists.newArrayList();
+    	
+    	//list of all files in the catalog folder
+    	final Collection<File> files=org.apache.commons.io.FileUtils.listFiles(catFolder, null, true);
+    	   
+    	//identify the catalog xmls in this folder
+    	final List<CatCatalogI> catalogs=Lists.newArrayList();
+    	for(final File f: files){
+			if(f.getName().endsWith(".xml")){
+				CatCatalogI cat=CatalogUtils.getCatalog(f);
+				if(cat!=null){
+					catalogs.add(cat);
+				}
+			}
+    	}
+    	
+    	//URI object for the catalog folder (used to generate relative file paths)
+    	final URI catFolderURI=catFolder.toURI();
+    	
+    	for(final File f: files){
+    		if(!f.getName().endsWith(".xml")){//ignore catalog files
+	    		//relative path is used to compare to existing catalog entries, and add it if its missing.  entry paths are relative to the location of the catalog file.
+	    		final String relative = catFolderURI.relativize(f.toURI()).getPath();
+	
+	    		boolean found = false;
+	    		for(CatCatalogI cat: catalogs){
+		            final CatEntryI e = getEntryByURI(cat, relative);
+		        	
+		            if (e != null) {
+		            	found=true;
+		            }
+	    		}
+    			
+	    		if(!found){
+	    			unreferenced.add(f);
+	    		}
+    		}
+    	}
+    	
+    	return unreferenced;
+    }
 
     private static boolean formalizeCatalog(final CatCatalogI cat, final String catPath, String header, UserI user, EventMetaI now,final boolean createChecksum, final boolean removeMissingFiles) {
         boolean modified = false;

@@ -76,7 +76,9 @@ public class ModifyProject extends SecureAction {
 
             List<XnatProjectdata> conflicts = new ArrayList<XnatProjectdata>();
             List<XnatProjectdata> toRemove = new ArrayList<XnatProjectdata>();
+
             conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getName(),user,false));
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getName(),user,false));
 
             for (XnatProjectdata potentialConflict : conflicts) {
                 if (potentialConflict.getId().equals(project.getId())) toRemove.add(potentialConflict);
@@ -93,6 +95,8 @@ public class ModifyProject extends SecureAction {
             }
 
             conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getSecondaryId(),user,false));
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getSecondaryId(),user,false));
+
             for (XnatProjectdata potentialConflict : conflicts) {
                 if (potentialConflict.getId().equals(project.getId())) toRemove.add(potentialConflict);
             }

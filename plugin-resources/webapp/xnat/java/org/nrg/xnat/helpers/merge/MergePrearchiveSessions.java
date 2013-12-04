@@ -26,8 +26,8 @@ import java.util.concurrent.Callable;
 
 public class MergePrearchiveSessions extends MergeSessionsA<XnatImagesessiondataBean>  {
 
-	public MergePrearchiveSessions(Object control,final File srcDIR, final XnatImagesessiondataBean src, final String srcRootPath, final File destDIR, final XnatImagesessiondataBean existing, final String destRootPath, boolean overwrite, boolean allowDataDeletion, SaveHandlerI<XnatImagesessiondataBean> saver, final UserI u) {
-		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, overwrite, allowDataDeletion, saver,u,null);
+	public MergePrearchiveSessions(Object control,final File srcDIR, final XnatImagesessiondataBean src, final String srcRootPath, final File destDIR, final XnatImagesessiondataBean existing, final String destRootPath, boolean allowSessionMerge, boolean overwriteFiles, SaveHandlerI<XnatImagesessiondataBean> saver, final UserI u) {
+		super(control, srcDIR, src, srcRootPath, destDIR, existing, destRootPath, allowSessionMerge, overwriteFiles, saver,u,null);
 		super.setAnonymizer(new SiteWideAnonymizer(src, true));
 	}
 

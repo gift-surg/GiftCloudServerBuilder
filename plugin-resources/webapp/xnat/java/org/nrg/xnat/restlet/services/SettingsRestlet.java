@@ -15,7 +15,9 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.PropertyNotFoundException;
+import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
@@ -155,8 +157,30 @@ public class SettingsRestlet extends SecureResource {
         settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
         settings.put("appletScript", XDAT.getConfigService().getConfigContents("applet", "settings"));
         settings.put("restMockCallMap", getFormattedRestMockCallMap());
+        settings.putAll(getSopClassFilterAsMap());
 
         return settings;
+    }
+
+    private Map<String, String> getSopClassFilterAsMap() {
+        final Map<String, String> map = new HashMap<String, String>();
+        final Configuration configuration = XDAT.getConfigService().getConfig("sopClassFilter", "config");
+        if (configuration == null) {
+            map.put("sopClassFilterEnabled", "false");
+            map.put("sopClassFilterMode", "blacklist");
+            map.put("sopClassFilterList", "");
+        } else {
+            try {
+                final String contents = configuration.getContents();
+                Map<String, String> rawValues = MAPPER.readValue(contents, MAP_TYPE_REFERENCE);
+                map.put("sopClassFilterEnabled", configuration.getStatus().equals("enabled") ? "true" : "false");
+                map.put("sopClassFilterMode", rawValues.get("mode"));
+                map.put("sopClassFilterList", rawValues.get("list"));
+            } catch (IOException exception) {
+                throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Something went wrong unmarshalling the SOP class filter configuration.", exception);
+            }
+        }
+        return map;
     }
 
     private String getFormattedRestMockCallMap() {
@@ -313,6 +337,7 @@ public class SettingsRestlet extends SecureResource {
         boolean dirtied = false;
         boolean dirtiedNotifications = false;
         Map<String, String> notifications = new HashMap<String, String>();
+        Map<String, String> sopClassFilter = null;
         for (String property : map.keySet()) {
             if (property.equals("siteId")) {
                 final String siteId = map.get("siteId");
@@ -408,7 +433,7 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the site-wide applet settings", exception);
                 }
                 dirtied = true;
-            }  else if (property.equals("restMockCallMap")) {
+            } else if (property.equals("restMockCallMap")) {
                 final String callMap = map.get("restMockCallMap");
                 try {
                     XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the REST service mock call map", "rest", "mockCallMap", getUnformattedRestMockCallMap(callMap));
@@ -432,6 +457,18 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the emailVerification site info property", exception);
                 }
                 dirtied = true;
+            } else if (property.startsWith("sopClassFilter")) {
+                if (sopClassFilter == null) {
+                    sopClassFilter = new HashMap<String, String>();
+                }
+                if (property.equals("sopClassFilterList")) {
+                    sopClassFilter.put("list", map.get(property).trim());
+                } else if (property.equals("sopClassFilterMode")) {
+                    sopClassFilter.put("mode", map.get(property));
+                } else if (property.equals("sopClassFilterEnabled")) {
+                    sopClassFilter.put("enabled", map.get(property));
+                }
+                dirtied = true;
             } else {
                 try {
 	                XDAT.setSiteConfigurationProperty(property, map.get(property));
@@ -449,7 +486,67 @@ public class SettingsRestlet extends SecureResource {
                     configureEventSubscriptions(NotificationType.valueOf(StringUtils.capitalize(notification.getKey())), notification.getValue(), allowNonuserSubscribers);
                 }
             }
+            if (sopClassFilter != null) {
+                manageSopClassFilterConfiguration(sopClassFilter);
+
+            }
             ArcSpecManager.save(_arcSpec, user, newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specification"));
+        }
+    }
+
+    private void manageSopClassFilterConfiguration(final Map<String, String> sopClassFilter) throws IOException {
+        // Remove enabled, since that's not actually stored as the config contents.
+        final boolean enabled = Boolean.parseBoolean(sopClassFilter.remove("enabled"));
+        final String filter = MAPPER.writeValueAsString(sopClassFilter);
+
+        // Get the config if it exists.
+        final Configuration existing = XDAT.getConfigService().getConfig("sopClassFilter", "config");
+
+        // If the config is null, we can't very well enable or disable it.
+        if (existing != null) {
+            if (enabled && !existing.getStatus().equals("enabled")) {
+                try {
+                    XDAT.getConfigService().enable(user.getLogin(), "", "sopClassFilter", "config");
+                } catch (ConfigServiceException exception) {
+                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error enabling the site-wide SOP class filter", exception);
+                }
+            } else if (!enabled && existing.getStatus().equals("enabled")) {
+                try {
+                    XDAT.getConfigService().disable(user.getLogin(), "", "sopClassFilter", "config");
+                } catch (ConfigServiceException exception) {
+                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error disabling the site-wide SOP class filter", exception);
+                }
+            }
+            final Map<String, String> existingContents = MAPPER.readValue(existing.getContents(), MAP_TYPE_REFERENCE);
+            final boolean isModeChanged = !existingContents.get("mode").equals(sopClassFilter.get("mode"));
+            final boolean isListChanged = !existingContents.get("list").equals(sopClassFilter.get("list"));
+            if (isModeChanged || isListChanged) {
+                StringBuilder message = new StringBuilder("Updated site-wide SOP class filter ");
+                if (isModeChanged) {
+                    message.append("mode to ").append(sopClassFilter.get("mode"));
+                }
+                if (isModeChanged && isListChanged) {
+                    message.append(" and ");
+                }
+                if (isListChanged) {
+                    message.append("list to ").append(sopClassFilter.get("list").trim().replaceAll("\n", ", "));
+                }
+                try {
+                    XDAT.getConfigService().replaceConfig(userName, message.toString(), "sopClassFilter", "config", filter);
+                } catch (ConfigServiceException exception) {
+                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error updating configuration for the SOP class UID filter", exception);
+                }
+            }
+        } else {
+            try {
+                XDAT.getConfigService().replaceConfig(userName, "Creating SOP class UID filter configuration", "sopClassFilter", "config", true, filter);
+                // In reality, this shouldn't ever really happen. You can't disable the filter and send filter values, but just in case...
+                if (!enabled) {
+                    XDAT.getConfigService().disable(userName, "Disabled on creation", "sopClassFilter", "config");
+                }
+            } catch (ConfigServiceException exception) {
+                throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error creating new configuration for the SOP class UID filter", exception);
+            }
         }
     }
 
@@ -569,7 +666,7 @@ public class SettingsRestlet extends SecureResource {
      */
     private List<Subscriber> getSubscribersFromAddresses(String addressList, final boolean allowNonuserSubscribers) throws Exception {
         final String[] addresses = addressList.split("[\\s]*,[\\s]*");
-        if (addresses == null || addresses.length == 0) {
+        if (addresses.length == 0) {
             throw new Exception("Submitted text couldn't be parsed into a list of addresses: " + addressList);
         }
 
@@ -580,7 +677,7 @@ public class SettingsRestlet extends SecureResource {
             String email = null;
             if (PATTERN_USERNAME.matcher(address).matches()) {
                 // Handle this as a username.
-                XdatUser user = XDATUser.getXdatUsersByLogin(username, null, true);
+                XdatUser user = XDATUser.getXdatUsersByLogin(address, null, true);
                 if (user != null) {
                     username = address;
                     email = user.getEmail();
@@ -721,7 +818,7 @@ public class SettingsRestlet extends SecureResource {
         String[] entries = text.split("&");
         for (String entry : entries) {
             String[] atoms = entry.split("=", 2);
-            if (atoms != null && atoms.length > 0) {
+            if (atoms.length > 0) {
                 if (atoms.length == 1) {
                     _data.put(atoms[0], "");
                 } else {
@@ -828,7 +925,8 @@ public class SettingsRestlet extends SecureResource {
     private static final Pattern PATTERN_USERNAME = Pattern.compile(EXPRESSION_USERNAME);
     private static final Pattern PATTERN_EMAIL = Pattern.compile(EXPRESSION_EMAIL);
     private static final Pattern PATTERN_COMBINED = Pattern.compile(EXPRESSION_COMBINED);
-    private final static ObjectMapper MAPPER = new ObjectMapper(new JsonFactory());
+    private static final ObjectMapper MAPPER = new ObjectMapper(new JsonFactory());
+    private static final TypeReference<HashMap<String, String>> MAP_TYPE_REFERENCE = new TypeReference<HashMap<String, String>>() {};
 
     private NotificationService _notificationService;
     private static final Logger _log = LoggerFactory.getLogger(SettingsRestlet.class);

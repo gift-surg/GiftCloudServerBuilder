@@ -10,11 +10,21 @@
  */
 package org.nrg.xnat.archive;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.xdat.model.CatCatalogI;
+import org.nrg.xdat.model.CatDcmentryI;
+import org.nrg.xdat.model.CatEntryI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
@@ -24,13 +34,39 @@ import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
 import org.nrg.xnat.helpers.merge.MergeUtils;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.CatalogUtils;
+import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
 
+/**
+ * @author Timothy R. Olsen <tim@deck5consulting.com>
+ *
+ * This is a copy of PrearcSessionArchiver to simply validates if the PrearcSessionArchiver would succeed, and records anywhere where it wouldn't.
+ *
+ * 1- Session already exists
+ * 2- Session label modification via archiving process
+ * 3- Project modification via archiving process
+ * 4- Subject modification via archiving process
+ * 5- Study Instance UID mis-match
+ * 6- Unable to identify destination project for data
+ * 7- Processing exception during metadata population
+ * 8- Unable to identify a session label for the data
+ * 9- Unable to create new session ID
+ * 10- Concurrent processing job (workflow entry)
+ * 11- Unable to identify subject label for session data
+ * 12- Operation will create a new subject entry
+ * 13- Meta-data validation exception
+ * 14- File or catalog entry conflict (overwriting data)
+ * 15- Processing exception during comparison of new files vs old files
+ * 16- Session already contains a scan with the same series UID and ID
+ * 17- Session already contains a scan with the same ID, but a different series UID
+ * 18- Session already contains a scan with the same series UID, but a different ID
+ * 19- Illegal session modality modification
+ * 20- Unexpected files or file references
+ * 21- Missing referenced files
+ */
 public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 	
 	protected PrearcSessionValidator(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params) {
@@ -193,6 +229,36 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 		}
 		
 
+		//validate files to confirm DICOM contents
+		for(final XnatImagescandataI scan: src.getScans_scan()){
+			for(final XnatAbstractresourceI resource:scan.getFile()){
+				if(resource instanceof XnatResourcecatalogI){
+					final File f=CatalogUtils.getCatalogFile(src.getPrearchivepath(), (XnatResourcecatalogI)resource);
+					if(f==null || !f.exists()){
+						warn(21,"Expected a catalog file, however it was missing.");
+					}
+					
+					final List<File> unreferenced=CatalogUtils.getUnreferencedFiles(f.getParentFile());
+					if(unreferenced.size()>0){
+						warn(20,String.format("Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files", scan.getId(),unreferenced.size(),resource.getLabel()));
+					}
+					
+					if(StringUtils.equals(resource.getLabel(),"DICOM")){
+						//check for entries that aren't DICOM entries or don't have a UID stored
+						final CatCatalogI cat=CatalogUtils.getCatalog(f);
+						final Collection<CatEntryI> nonDCM=CatalogUtils.getEntriesByFilter(cat, new CatEntryFilterI(){
+							@Override
+							public boolean accept(CatEntryI entry) {
+								return ((!(entry instanceof CatDcmentryI)) || StringUtils.isEmpty(((CatDcmentryI)entry).getUid()));
+							}});
+						
+						if(nonDCM.size()>0){
+							warn(20,String.format("Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files", scan.getId(),nonDCM.size()));
+						}
+					}
+				}
+			}
+		}
 
 		return notices;
 

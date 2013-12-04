@@ -53,7 +53,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 	private final Map<String,Object> params;
 	private final Object uID;
 	
-	private final boolean overwrite,allowDataDeletion;
+	private final boolean allowSessionMerge,overwriteFiles;
 	
 	/**
 	 * Helper class to extract a passed zip into the prearchive.
@@ -63,13 +63,13 @@ public class PrearcImporterHelper extends PrearcImporterA{
 	 * @param project_id
 	 * @param additionalValues
 	 */
-	public PrearcImporterHelper(final Object uID2, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params,boolean overwrite,boolean allowDataDeletion){
-    	super((uID2==null)?u:uID2,u,fi,params,overwrite,allowDataDeletion);
+	public PrearcImporterHelper(final Object uID2, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params,boolean allowSessionMerge,boolean overwriteFiles){
+    	super((uID2==null)?u:uID2,u,fi,params,allowSessionMerge,overwriteFiles);
     	this.user=u;
     	this.uID=(uID2==null)?u:uID2;
 		this.fi=fi;
-		this.overwrite=overwrite;
-		this.allowDataDeletion=allowDataDeletion;
+		this.allowSessionMerge=allowSessionMerge;
+		this.overwriteFiles=overwriteFiles;
 		this.params=params;
 	}
 	
@@ -265,7 +265,7 @@ public class PrearcImporterHelper extends PrearcImporterA{
 		};
 		
 		//pass in populated beans and root paths
-		ListenerUtils.addListeners(this,new MergePrearchiveSessions(uID,srcDIR,src,src.getPrearchivepath(),destDIR,dest,destDIR.getAbsolutePath(),overwrite,allowDataDeletion,saveImpl,user))
+		ListenerUtils.addListeners(this,new MergePrearchiveSessions(uID,srcDIR,src,src.getPrearchivepath(),destDIR,dest,destDIR.getAbsolutePath(),allowSessionMerge,overwriteFiles,saveImpl,user))
 			.call();
 
 		org.nrg.xft.utils.FileUtils.DeleteFile(srcXML);

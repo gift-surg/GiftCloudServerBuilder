@@ -148,8 +148,8 @@ function initializeSiteInfoMgmtTab() {
                 if(window.registrationManager==undefined) {
                     window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
                 }
-                if(window.sopClassFilterManager==undefined) {
-                    window.sopClassFilterManager = new SettingsTabManager('sopClassFilter_mgmt_div', 'sopClassFilter');
+                if(window.seriesImportFilterManager==undefined) {
+                    window.seriesImportFilterManager = new SettingsTabManager('seriesImportFilter_mgmt_div', 'seriesImportFilter');
                 }
             };
         }

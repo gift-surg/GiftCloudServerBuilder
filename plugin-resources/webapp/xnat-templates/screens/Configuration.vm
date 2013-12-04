@@ -46,7 +46,7 @@
                         <li><a href="#notifications"><em>Notifications<span class="spacer"></span></em></a></li>
                         <li><a href="#anonymization"><em>Anonymization<span class="spacer"></span></em></a></li>
                         <li><a href="#applets"><em>Applets<span class="spacer"></span></em></a></li>
-                        <li><a href="#sopClassFilter"><em>SOP Class Filter<span class="spacer"></span></em></a></li>
+                        <li><a href="#seriesImportFilter"><em>Series Import Filter<span class="spacer"></span></em></a></li>
                         <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
                         #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-mock-rest-config", "false")))
                             <li><a href="#mockRestConfig"><em>Mock REST Calls<span class="spacer"></span></em></a></li>
@@ -76,8 +76,8 @@
                         <div id="applets">
                             #parse('screens/configuration/applets.vm')
                         </div>
-                        <div id="sopClassFilter">
-                            #parse('screens/configuration/sopClassFilter.vm')
+                        <div id="seriesImportFilter">
+                            #parse('screens/configuration/seriesImportFilter.vm')
                         </div>
                         <div id="dicomReceiver">
                             #parse('screens/configuration/dicomReceiver.vm')

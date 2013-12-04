@@ -111,7 +111,7 @@
             <TABLE border="0" ID="subTableSessions" cellspacing="0">
                 <TR class="">
                     <TD><INPUT type="checkbox" value="" ONCLICK="toggleAll(this,['sessions']);" ID="toggleAllSessions" CHECKED/></TD>
-                    <TD NOWRAP colspan="2"><label for="toggleAllSessions">Toggle All ($sessionSummary.size())</label></TD>
+                    <TD NOWRAP colspan="2"><label for="toggleAllSessions">Toggle All (#if($sessionSummary) $!sessionSummary.size() #else 0 #end)</label></TD>
                 </TR>
 
                 #set($rowColor="even")

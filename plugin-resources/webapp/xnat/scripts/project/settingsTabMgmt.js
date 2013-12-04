@@ -23,6 +23,7 @@ function fullConfigHandler() {
             document.getElementById('notifications_save_button').onclick = saveSettings;
             document.getElementById('anonymization_save_button').onclick = saveSettings;
             document.getElementById('applet_save_button').onclick = saveSettings;
+            document.getElementById('sopClassFilter_save_button').onclick = saveSettings;
             document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
 
             xModalLoadingClose();
@@ -79,6 +80,7 @@ function configurationTabManagerInit() {
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
+        document.getElementById('sopClassFilter_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
     }
 }
@@ -114,6 +116,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             '#notifications_reset_button, ' +
             '#anonymization_reset_button, ' +
             '#applet_reset_button, ' +
+            '#sopClassFilter_reset_button, ' +
             '#dicomReceiver_reset_button'
         ;
 

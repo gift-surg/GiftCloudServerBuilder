@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -654,7 +655,9 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 				
 				postArchive(user,src,params);
 
-				if(!params.containsKey(TRIGGER_PIPELINES) || !params.get(TRIGGER_PIPELINES).equals("false")){
+				String triggerPipelines=(String)params.get(TRIGGER_PIPELINES);
+				//if triggerPipelines!=false
+				if((BooleanUtils.isNotFalse(BooleanUtils.toBooleanObject(triggerPipelines)))){
 					TriggerPipelines tp=new TriggerPipelines(src,false,user,waitFor);
 					tp.call();
 				}

@@ -181,24 +181,19 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                 if(interval.equals("-1")) {
                     chain.doFilter(request, response);
                 } else {
-                    try{
-                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
-                            public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                return rs.getBoolean(1);
-                            }
-                        });
-                        isExpired = expired.get(0);
-                    }
-                    catch(Exception e){
-                        logger.error(e);
-                    }
+                    List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
+                        public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            return rs.getBoolean(1);
+                        }
+                    });
+                    isExpired = expired.get(0);
+                }
+                if(isExpired || (XDAT.getBoolSiteConfigurationProperty("requireSaltedPasswords", true) && user.getSalt() == null)){
                     request.getSession().setAttribute("expired", isExpired);
-                    if(isExpired){
-                        response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
-                    }
-                    else{
-                        chain.doFilter(request, response);
-                    }
+                    response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+                }
+                else{
+                    chain.doFilter(request, response);
                 }
             }
             else {

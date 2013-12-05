@@ -102,6 +102,16 @@
             </small>
         </p>
 
+        <p>
+            <label for="requireSaltedPasswords" style="width: 290px;">Require passwords to be salted?</label>
+            <input type="checkbox" id="requireSaltedPasswords" onchange="window.siteInfoManager.dirtyForm();" />
+            <small>
+                Should this site require that all stored user passwords have been salted? If turned on, the site will
+                store passwords more securely, but some users may be prompted to change their current passwords so
+                that they can be updated.
+            </small>
+        </p>
+
     </div>
 
     <div class="buttons">
@@ -160,5 +170,5 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
+putConfigurationControls('siteInfo', ['siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords']);
 </script>

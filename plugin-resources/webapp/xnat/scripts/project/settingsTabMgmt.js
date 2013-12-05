@@ -49,7 +49,7 @@ function fullConfigHandler() {
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
+            'siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
             , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'

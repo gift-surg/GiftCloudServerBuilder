@@ -602,7 +602,7 @@
 			<xdat:firstname>Admin</xdat:firstname>
 			<xdat:lastname>Admin</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
-			<xdat:primary_password encrypt="1">cfokl</xdat:primary_password>
+			<xdat:primary_password>8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918</xdat:primary_password>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="can change user permissions" role_name="Administrator" sequence="1">
 					<xdat:allowed_actions>
@@ -635,7 +635,7 @@
 			<xdat:firstname>XNAT</xdat:firstname>
 			<xdat:lastname>Guest</xdat:lastname>
 			<xdat:email>test@test.com</xdat:email>
-			<xdat:primary_password encrypt="0">guest</xdat:primary_password>
+			<xdat:primary_password>84983c60f7daadc1cb8698621f802c0d9f9a3c3c295c810748fb048115c186ec</xdat:primary_password>
 			<xdat:assigned_roles>
 				<xdat:assigned_role description="views webpages" role_name="SiteUser" sequence="1">
 					<xdat:allowed_actions>

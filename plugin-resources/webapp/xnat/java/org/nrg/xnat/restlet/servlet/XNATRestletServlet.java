@@ -28,6 +28,7 @@ import org.nrg.xnat.helpers.merge.AnonUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.security.XnatPasswordEncrypter;
 import org.nrg.xnat.workflow.WorkflowSaveHandlerAbst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +107,9 @@ public class XNATRestletServlet extends ServerServlet {
         } catch (Throwable e) {
             logger.error("Unable to initialize prearchive database", e);
         }
+
+        XnatPasswordEncrypter.execute();
+
         addWorkflowListeners();
         
         XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();

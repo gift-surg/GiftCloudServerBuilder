@@ -1988,30 +1988,19 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	    return ((XFTItem)this.getItem()).getMetaDataId();
 	}
 
-	//map of string ids to the Long project info ID used in the configuration service
-	private static ConcurrentMap<String,Long> projectMapping=Maps.newConcurrentMap();
-	
 	/**
 	 * Return the project info ID (meta data id) for this project ID.
-	 * Caches results to prevent unnecessary database hits.  (Values should never change once created)
 	 * 
 	 * @param project
 	 * @return
 	 */
 	public static Long getProjectInfoIdFromStringId (String project) {
 		if (project != null){
-			Long l=projectMapping.get(project);
-			if(l==null){
-				XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(project, null, false);
-				if(p!=null){
-					l= Long.parseLong(p.getItem().getProps().get("projectdata_info").toString());
-					projectMapping.put(project, l);
-				}
+			XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(project, null, false);
+			if(p!=null){
+				return Long.parseLong(p.getItem().getProps().get("projectdata_info").toString());
 			}
-			return l;
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
 }

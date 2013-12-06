@@ -11,6 +11,7 @@
 package org.nrg.xnat.security;
 
 import org.apache.commons.lang.StringUtils;
+import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XDATUserDetails;
@@ -177,28 +178,40 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
             }
             else if (user.isEnabled()) {
                 boolean isExpired=false;
-                String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
-                if(interval.equals("-1")) {
-                    chain.doFilter(request, response);
-                } else {
-                    try{
-                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+"')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
+                try {
+                    String type = XDAT.getSiteConfigurationProperty("passwordExpirationType");
+                    if (type != null && type.equals("Interval")) {
+                        String interval = XDAT.getSiteConfigurationProperty("passwordExpirationInterval");
+                        if(interval==null || interval.equals("0")) {
+                            chain.doFilter(request, response);
+                        } else {
+                            List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+" days')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
+                                public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                    return rs.getBoolean(1);
+                                }
+                            });
+                            isExpired = expired.get(0);
+                        }
+                    }
+                    else if (type != null && type.equals("Date")) {
+                        String date = XDAT.getSiteConfigurationProperty("passwordExpirationDate");
+                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT (password_updated < to_date('" + date + "', 'MM/DD/YYYY')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
                             public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
                                 return rs.getBoolean(1);
                             }
                         });
                         isExpired = expired.get(0);
                     }
-                    catch(Exception e){
-                        logger.error(e);
-                    }
+                } catch (ConfigServiceException e) {
+                    e.printStackTrace();
+                }
+
+                if(isExpired || (XDAT.getBoolSiteConfigurationProperty("requireSaltedPasswords", true) && user.getSalt() == null)){
                     request.getSession().setAttribute("expired", isExpired);
-                    if(isExpired){
-                        response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
-                    }
-                    else{
-                        chain.doFilter(request, response);
-                    }
+                    response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
+                }
+                else{
+                    chain.doFilter(request, response);
                 }
             }
             else {

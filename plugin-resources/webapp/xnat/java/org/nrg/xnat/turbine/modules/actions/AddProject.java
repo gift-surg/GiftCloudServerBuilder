@@ -99,6 +99,7 @@ public class AddProject extends SecureAction {
             List<XnatProjectdata> conflicts = new ArrayList<XnatProjectdata>();
 
             conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getName(),user,false));
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getName(),user,false));
 
             if(!conflicts.isEmpty()){
                 data.addMessage("A project with the title '" + project.getName() + "' already exists.");
@@ -111,6 +112,7 @@ public class AddProject extends SecureAction {
             }
 
             conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getSecondaryId(),user,false));
+            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getSecondaryId(),user,false));
 
             if(!conflicts.isEmpty()){
                 data.addMessage("A project with the running title '" + project.getSecondaryId() + "' already exists.");

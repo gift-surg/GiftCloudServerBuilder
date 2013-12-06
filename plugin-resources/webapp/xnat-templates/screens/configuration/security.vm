@@ -1,0 +1,110 @@
+<!-- Title: Security -->
+<div class="mgmt_container">
+
+    <div id="security_mgmt_div">
+        <script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
+        <script>
+            function changePasswordExpirationType(radioEl){
+                var interval = $('#passwordExpirationIntervalSpan');
+                var date = $('#passwordExpirationDateSpan');
+                if (window.securityManager) {
+                    window.securityManager.dirtyForm();
+                }
+                if($(radioEl).val() == 'Interval'){
+                    interval.show();
+                    date.hide();
+                } else {
+                    interval.hide();
+                    date.show();
+                }
+            };
+        </script>
+
+        <p>
+            <label for="enableCsrfToken">Enable CSRF Token?</label>
+            <input type="checkbox" id="enableCsrfToken" onchange="window.securityManager.dirtyForm();" />
+            <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
+            <br/>
+            <label for="enableCsrfEmail">Enable CSRF Email Alerts?</label>
+            <input type="checkbox" id="enableCsrfEmail" onchange="window.securityManager.dirtyForm();" />
+            <small>Should this site send an email to the site admin whenever a CSRF attack is attempted?</small>
+        </p>
+
+        <p>
+            <label for="restrictUserListAccessToAdmins" style="width: 290px;">Restrict user list access to site administrators?</label>
+            <input type="checkbox" id="restrictUserListAccessToAdmins" onchange="window.securityManager.dirtyForm();" />
+            <small>
+                Should this site restrict access to the list of system users to site administrators only? If turned on,
+                the site is more secure, but this restricts project owners from being able to administer users in their
+                projects directly.
+            </small>
+        </p>
+
+        <p>
+            <label for="requireSaltedPasswords" style="width: 290px;">Require passwords to be salted?</label>
+            <input type="checkbox" id="requireSaltedPasswords" onchange="window.securityManager.dirtyForm();" />
+            <small>
+                Should this site require that all stored user passwords have been salted? If turned on, the site will
+                store passwords more securely, but some users may be prompted to change their current passwords so
+                that they can be updated.
+            </small>
+        </p>
+
+        <p>
+            <label for="passwordExpiration">Password Expiration</label>
+            <span style="display: inline-block; vertical-align: top;">
+                <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeInterval" value="Interval" onchange="changePasswordExpirationType(this);" checked="checked">
+                <label for="passwordExpirationTypeInterval" style="width:50px;">&nbsp;Interval</label><br/>
+                <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeDate" value="Date" onchange="changePasswordExpirationType(this);">
+                <label for="passwordExpirationTypeDate" style="width:50px;">&nbsp;Date</label>
+            </span>
+
+            <span id="passwordExpirationIntervalSpan">
+                <input size="30" type="text" onkeyup="this.value=this.value.replace(/[^\d]/,'')" id="passwordExpirationInterval" onchange="window.securityManager.dirtyForm();" />
+                <small>The maximum duration (in days) that a user's password will function before it is considered to have
+                    expired and must be changed. Set as 0 to disable password expiration.</small>
+            </span>
+
+            <span id="passwordExpirationDateSpan" style="display: none;">
+                <input type="text" id="passwordExpirationDate" name="passwordExpirationDate" optional="true" onchange="window.securityManager.dirtyForm();" />
+                <script type="text/javascript">insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date"); $('#cal_passwordExpirationDate').style.verticalAlign='bottom';</script>
+                <small>All passwords created or set before this date will be considered to have expired and must be changed.
+                    Useful in circumstances when mass changes in password policy are put into effect.</small>
+            </span>
+            <style>#cal_passwordExpirationDate{vertical-align: bottom}</style>
+        </p>
+
+
+    </div>
+    <div class="buttons">
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="security_save_button" onclick="window.securityManager.saveTabSettings();"/>
+        <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="security_reset_button" onclick="window.securityManager.resetForm();" disabled/>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+
+    function configurationSecurityTabChange(obj) {
+        if(obj.newValue.get("href")=="#security") {
+            if(window.securityManager==undefined) {
+                window.securityManager = new SettingsTabManager('security_mgmt_div', 'security');
+            }
+        }
+    }
+
+    function addSecurityMgmtMonitor(){
+        if(window.configurationTabView.get("activeTab").get("href")=="#security") {
+            if(window.securityManager==undefined) {
+                window.securityManager = new SettingsTabManager('security_mgmt_div', 'security');
+            }
+        } else {
+            window.configurationTabView.subscribe("activeTabChange", configurationSecurityTabChange);
+        }
+    }
+
+    YAHOO.util.Event.onDOMReady(addSecurityMgmtMonitor);
+    putConfigurationControls('security', ['enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords', 'passwordExpirationType', 'passwordExpirationInterval', 'passwordExpirationDate']);
+</script>

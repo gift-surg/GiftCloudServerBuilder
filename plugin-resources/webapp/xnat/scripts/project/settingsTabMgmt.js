@@ -18,6 +18,7 @@ function fullConfigHandler() {
             // Reset buttons to use standard save mechanism.  The system is initialized after the first attempted additional saves will fail if they use the initialize method in fullConfigHandler
             // this SHOULD be safe.  The ArcSpec.isComplete() is the method the Restlet uses to see if the arc spec is built.  All the properties that isComplete() checks are populated by default except SITE_ID.  But site_id is checked at the beginning of this method.
             document.getElementById('siteInfo_save_button').onclick = saveSettings;
+            document.getElementById('security_save_button').onclick = saveSettings;
             document.getElementById('fileSystem_save_button').onclick = saveSettings;
             document.getElementById('registration_save_button').onclick = saveSettings;
             document.getElementById('notifications_save_button').onclick = saveSettings;
@@ -49,8 +50,9 @@ function fullConfigHandler() {
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
-            , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
+            'siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet'
+            , 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords', 'passwordExpirationType', 'passwordExpirationInterval', 'passwordExpirationDate'
+			, 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
             , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
             , 'anonScript'
@@ -75,6 +77,7 @@ function configurationTabManagerInit() {
     if (window.initializing) {
         // If we're initializing, divert all of the save handlers to centralized handling.
         document.getElementById('siteInfo_save_button').onclick = fullConfigHandler;
+        document.getElementById('security_save_button').onclick = fullConfigHandler;
         document.getElementById('fileSystem_save_button').onclick = fullConfigHandler;
         document.getElementById('registration_save_button').onclick = fullConfigHandler;
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
@@ -111,6 +114,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     }
 
     var resetButtons = '#siteInfo_reset_button, ' +
+            '#security_reset_button, ' +
             '#fileSystem_reset_button, ' +
             '#registration_reset_button, ' +
             '#notifications_reset_button, ' +

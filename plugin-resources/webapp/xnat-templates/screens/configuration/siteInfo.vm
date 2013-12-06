@@ -9,7 +9,9 @@
             function changeSiteDescriptionType(radioEl){
                 var text = $('#siteDescriptionText');
                 var page = $('#siteDescriptionPage');
-                window.siteInfoManager.dirtyForm();
+                if (window.siteInfoManager) {
+                    window.siteInfoManager.dirtyForm();
+                }
                 if($(radioEl).val() == 'Text'){
                     text.show();
                     page.hide();
@@ -83,26 +85,6 @@
         </p>
 
         <p>
-            <label for="enableCsrfToken">Enable CSRF Token?</label>
-            <input type="checkbox" id="enableCsrfToken" onchange="window.siteInfoManager.dirtyForm();" />
-            <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
-            <br/>
-            <label for="enableCsrfEmail">Enable CSRF Email Alerts?</label>
-            <input type="checkbox" id="enableCsrfEmail" onchange="window.siteInfoManager.dirtyForm();" />
-            <small>Should this site send an email to the site admin whenever a CSRF attack is attempted?</small>
-        </p>
-
-        <p>
-            <label for="restrictUserListAccessToAdmins" style="width: 290px;">Restrict user list access to site administrators?</label>
-            <input type="checkbox" id="restrictUserListAccessToAdmins" onchange="window.siteInfoManager.dirtyForm();" />
-            <small>
-                Should this site restrict access to the list of system users to site administrators only? If turned on,
-                the site is more secure, but this restricts project owners from being able to administer users in their
-                projects directly.
-            </small>
-        </p>
-
-        <p>
             <label for="UI.debug-extension-points" style="width: 290px;">Show points in UI where new VM content can be added dynamically. (development only)</label>
             <input type="checkbox" id="UI.debug-extension-points" onchange="window.siteInfoManager.dirtyForm();" />
             <small>
@@ -152,6 +134,9 @@ function initializeSiteInfoMgmtTab() {
                 if(window.fileSystemManager==undefined) {
                     window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', 'fileSystem');
                 }
+                if(window.securityManager==undefined) {
+                    window.securityManager = new SettingsTabManager('security_mgmt_div', 'security');
+                }
                 if(window.notificationsManager==undefined) {
                     window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', 'notifications');
                 }
@@ -170,5 +155,5 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
+putConfigurationControls('siteInfo', ['siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet']);
 </script>

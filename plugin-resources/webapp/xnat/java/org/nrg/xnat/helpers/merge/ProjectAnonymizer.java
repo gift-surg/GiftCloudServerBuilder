@@ -15,9 +15,9 @@ import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 
 import java.io.File;
@@ -107,23 +107,17 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 	}
 	
 	static Long getDBId (String project) {
-		if (project != null){
-			XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(project, null, false);
-			return Long.parseLong(p.getItem().getProps().get("projectdata_info").toString());
-		}
-		else {
-			return null;
-		}
+		return BaseXnatProjectdata.getProjectInfoIdFromStringId(project);
 	}
 	
 	@Override
 	Configuration getScript() {
-		return AnonUtils.getService().getScript(this.path, getDBId(projectId));
+		return AnonUtils.getService().getScript(this.path, BaseXnatProjectdata.getProjectInfoIdFromStringId(projectId));
 	}
 	
 	@Override
 	boolean isEnabled() {
-		return AnonUtils.getService().isEnabled(this.path, getDBId(projectId));
+		return AnonUtils.getService().isEnabled(this.path, BaseXnatProjectdata.getProjectInfoIdFromStringId(projectId));
 	}
 	
 	public java.lang.Void call() throws Exception {

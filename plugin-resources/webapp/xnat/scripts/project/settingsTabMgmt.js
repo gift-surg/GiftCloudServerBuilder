@@ -49,7 +49,7 @@ function fullConfigHandler() {
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
+            'siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
             , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
@@ -177,12 +177,12 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                 control = document.getElementsByName(setting);
                 this.controls.push(setting);
                 for (var j = 0; j < control.length; j++) {
-                    if(control[j].value == eval('resultSet.ResultSet.Result.' + setting)){
+                    if(control[j].value == eval('resultSet.ResultSet.Result["' + setting+'"]')){
                         $(control[j]).trigger("click");
                     }
                 }
             } else {
-                control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
+                control.defaultValue = eval('resultSet.ResultSet.Result["' + setting+'"]');
                 if(control.tagName.toLowerCase()=='select'){
                     control.value = control.defaultValue;
                 }

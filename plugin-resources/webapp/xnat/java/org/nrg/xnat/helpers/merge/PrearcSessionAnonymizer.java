@@ -17,6 +17,7 @@ import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatImagesessiondataI;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class PrearcSessionAnonymizer extends AnonymizerA {
 	}
 	
 	Long getDBId (String project) {
-		return this.p.getDBId(project);
+		return BaseXnatProjectdata.getProjectInfoIdFromStringId(project);
 	}
 	
 	Configuration getScript() {

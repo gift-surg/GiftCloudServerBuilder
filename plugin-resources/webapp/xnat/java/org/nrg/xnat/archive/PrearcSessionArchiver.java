@@ -42,6 +42,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResourcecatalog;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
+import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -59,6 +60,9 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.archive.PrearcSessionValidator.Conflict;
+import org.nrg.xnat.archive.PrearcSessionValidator.Failure;
+import org.nrg.xnat.archive.PrearcSessionValidator.Warning;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
@@ -71,6 +75,7 @@ import org.nrg.xnat.turbine.utils.XNATSessionPopulater;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.nrg.xnat.utils.CatalogUtils;
 import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
+import org.nrg.xnat.utils.SeriesImportFilter;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 import org.slf4j.Logger;
@@ -470,10 +475,6 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.Callable#call()
 	 */
@@ -545,37 +546,10 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 
 				if(!overrideExceptions){
-					//validate files to confirm DICOM contents
-					for(final XnatImagescandataI scan: src.getScans_scan()){
-						for(final XnatAbstractresourceI resource:scan.getFile()){
-							if(resource instanceof XnatResourcecatalogI){
-								final File f=CatalogUtils.getCatalogFile(src.getPrearchivepath(), (XnatResourcecatalogI)resource);
-								if(f==null || !f.exists()){
-									throw new ClientException("Expected a catalog file, however it was missing.", new Exception());
-								}
-								
-								final List<File> unreferenced=CatalogUtils.getUnreferencedFiles(f.getParentFile());
-								if(unreferenced.size()>0){
-									throw new ClientException(String.format("Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files", scan.getId(),unreferenced.size(),resource.getLabel()), new Exception());
-								}
-								
-								if(StringUtils.equals(resource.getLabel(),"DICOM")){
-									//check for entries that aren't DICOM entries or don't have a UID stored
-									final CatCatalogI cat=CatalogUtils.getCatalog(f);
-									final Collection<CatEntryI> nonDCM=CatalogUtils.getEntriesByFilter(cat, new CatEntryFilterI(){
-										@Override
-										public boolean accept(CatEntryI entry) {
-											return ((!(entry instanceof CatDcmentryI)) || StringUtils.isEmpty(((CatDcmentryI)entry).getUid()));
-										}});
-									
-									if(nonDCM.size()>0){
-										throw new ClientException(String.format("Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files", scan.getId(),nonDCM.size()), new Exception());
-									}
-								}
-							}
-						}
-					}
+					validateDicomFiles();
 				}
+				
+				verifyCompliance();
 				
 				if(arcSessionDir.exists()){
 					processing("merging files data with existing session");
@@ -712,6 +686,66 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		completed("archiving operation complete");
 		return url;
 
+	}
+	
+	/**
+	 * This code is used by this class and PrearcSessionValidator to confirm that all scan data is compliant according to the SeriesImportFilters
+	 * 
+	 * @throws ClientException
+	 */
+	protected void verifyCompliance() throws ClientException{
+		final SeriesImportFilter siteWide=new SeriesImportFilter();
+		SeriesImportFilter projectSpecific=null;
+		if(StringUtils.isNotEmpty(this.project)){
+			projectSpecific=new SeriesImportFilter(BaseXnatProjectdata.getProjectInfoIdFromStringId(this.project));
+		}
+		
+		for(final XnatImagescandataI scan: src.getScans_scan()){
+			if(!siteWide.shouldIncludeDicomObject(scan)){
+				fail(22,String.format("Scan %1$s is non-compliant with this server's DICOM whitelist/blacklist.",scan.getId()));
+			}
+			if(projectSpecific!=null && !projectSpecific.shouldIncludeDicomObject(scan)){
+				fail(22,String.format("Scan %1$s is non-compliant with this project's DICOM whitelist/blacklist.",scan.getId()));
+			}
+		}
+	}
+
+	/**
+	 * This code is used by this class and PrearcSessionValidator to confirm that there are no un-referenced or unexpected files in the prearchive content
+	 * 
+	 * @throws ClientException
+	 */
+	protected void validateDicomFiles() throws ClientException{
+		//validate files to confirm DICOM contents
+		for(final XnatImagescandataI scan: src.getScans_scan()){
+			for(final XnatAbstractresourceI resource:scan.getFile()){
+				if(resource instanceof XnatResourcecatalogI){
+					final File f=CatalogUtils.getCatalogFile(src.getPrearchivepath(), (XnatResourcecatalogI)resource);
+					if(f==null || !f.exists()){
+						warn(21,"Expected a catalog file, however it was missing.");
+					}
+					
+					final List<File> unreferenced=CatalogUtils.getUnreferencedFiles(f.getParentFile());
+					if(unreferenced.size()>0){
+						warn(20,String.format("Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files", scan.getId(),unreferenced.size(),resource.getLabel()));
+					}
+					
+					if(StringUtils.equals(resource.getLabel(),"DICOM")){
+						//check for entries that aren't DICOM entries or don't have a UID stored
+						final CatCatalogI cat=CatalogUtils.getCatalog(f);
+						final Collection<CatEntryI> nonDCM=CatalogUtils.getEntriesByFilter(cat, new CatEntryFilterI(){
+							@Override
+							public boolean accept(CatEntryI entry) {
+								return ((!(entry instanceof CatDcmentryI)) || StringUtils.isEmpty(((CatDcmentryI)entry).getUid()));
+							}});
+						
+						if(nonDCM.size()>0){
+							warn(20,String.format("Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files", scan.getId(),nonDCM.size()));
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -912,5 +946,26 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	private static class LockedItemException extends Exception {
 		private static final long serialVersionUID = 1L;
 
+	}
+	
+	//the following methods are overridden in PrearcSessionValidator
+	//PrearcSessionValidator tries to validate whether the PrearcSessionArchiver would work (and if not what would break it)
+	//ideally, the PrearcSessionValidator would use the exact same code as the Archiver.  But, the Archiver code is sometimes uncompatible
+	//with the validator (validator wants to collect all failure reasons, archiver fails on first one).
+	//however, were possible, they should use the same code.  In those situations the Archiver should use these methods to trigger its exceptions.
+	//then Validator can just change the way those exceptions are handled, by changing the implementation of these methods.
+	//ideally all of the Validator would work this way, but that requires large scale refactoring of PrearcSessionArchiver (which predated the Validator by several years).
+	
+	protected void fail(int code, String msg) throws ClientException{
+		failed(msg);
+		throw new ClientException(msg);
+	}
+	protected void warn(int code, String msg) throws ClientException{
+		failed(msg);
+		throw new ClientException(msg);
+	}
+	protected void conflict(int code, String msg) throws ClientException{
+		failed(msg);
+		throw new ClientException(Status.CLIENT_ERROR_CONFLICT,msg,new Exception());
 	}
 }

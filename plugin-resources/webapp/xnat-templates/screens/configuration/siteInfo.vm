@@ -102,6 +102,16 @@
             </small>
         </p>
 
+        <p>
+            <label for="UI.debug-extension-points" style="width: 290px;">Show points in UI where new VM content can be added dynamically. (development only)</label>
+            <input type="checkbox" id="UI.debug-extension-points" onchange="window.siteInfoManager.dirtyForm();" />
+            <small>
+                Should this site display highlighted divs at every point where new VM content can be dynamically added.  If turned on, the divs will show up
+				listing the directory where new VMs can be added and will be dynamically added into the UI.  FYI, new dynamically-added VMs often requires a 
+				server restart to be included. This settings should never be enabled on a production server.
+            </small>
+        </p>
+
     </div>
 
     <div class="buttons">
@@ -160,5 +170,5 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
+putConfigurationControls('siteInfo', ['siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
 </script>

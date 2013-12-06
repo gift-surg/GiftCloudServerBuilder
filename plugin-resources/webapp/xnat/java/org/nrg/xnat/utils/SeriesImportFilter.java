@@ -10,7 +10,15 @@
  */
 package org.nrg.xnat.utils;
 
-import com.google.common.base.Joiner;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -23,11 +31,9 @@ import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.exceptions.NrgServiceError;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.model.XnatImagescandataI;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import com.google.common.base.Joiner;
 
 public class SeriesImportFilter {
 
@@ -66,12 +72,12 @@ public class SeriesImportFilter {
             _projectId = Long.parseLong(values.get("projectId"));
         }
         _mode = Mode.mode(values.get("mode"));
-        _filters = Arrays.asList(values.get("list").split("\\s+"));
+        _filters = Arrays.asList(values.get("list").split("\\n+"));
         _patterns = compileFilterList(_filters);
     }
 
     public static List<Pattern> compileFilterList(final String list) {
-        final String[] candidates = list.split("\\s+");
+        final String[] candidates = list.split("\\n+");
         return compileFilterList(candidates);
     }
 
@@ -189,10 +195,18 @@ public class SeriesImportFilter {
         return shouldIncludeDicomObject(seriesDescription);
     }
 
+    public boolean shouldIncludeDicomObject(final XnatImagescandataI scan) {
+    	if(StringUtils.isEmpty(scan.getSeriesDescription())){
+    		return true;
+    	}else{
+        	return shouldIncludeDicomObject(scan.getSeriesDescription());
+    	}
+    }
+
     public boolean shouldIncludeDicomObject(final String seriesDescription) {
         for (String filter : _filters) {
             // Finding a match is insufficient, we need to check the mode.
-            if (seriesDescription.matches(filter)) {
+            if (StringUtils.isNotEmpty(filter) && seriesDescription.matches(filter)) {
                 // So if we matched, then this should be included if this is a whitelist. If
                 // it's a blacklist, this will return false and indicate that this DicomObject
                 // should not be included.

@@ -43,7 +43,7 @@ public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenti
         providers.add(sha2DatabaseAuthProvider);
 
         XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
-        ObfuscatedPasswordEncoder encoder2 = new ObfuscatedPasswordEncoder();
+        ObfuscatedPasswordEncoder encoder2 = new ObfuscatedPasswordEncoder(256);
         sha2ObfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
         sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
         sha2ObfuscatedDatabaseAuthProvider.setName(name);

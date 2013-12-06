@@ -543,6 +543,8 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 .tip_icon { width: 14px ; height: 14px ; left: 4px ; top: 3px ; background: transparent url('images/qm.gif') center center no-repeat ; }
 .tip_icon .tip {  }
 
+.tip_icon.note { width: 16px ; height: 16px ; background-image: url('images/notes.gif') ; }
+.tip_icon.note .tip { font-size: 12px ; line-height: 15px ; color: #333 ; background-color: #f0f0f0 ; }
 
 .yui-skin-sam .yui-ac-input { width: auto !important ; }
 #labelDialog { height: auto !important ; }

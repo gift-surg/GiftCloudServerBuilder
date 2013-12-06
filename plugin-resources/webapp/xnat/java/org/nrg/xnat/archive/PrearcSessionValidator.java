@@ -66,6 +66,7 @@ import com.google.common.collect.Lists;
  * 19- Illegal session modality modification
  * 20- Unexpected files or file references
  * 21- Missing referenced files
+ * 22- Non-compliant scan based on DICOM whitelist/blacklist
  */
 public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 	
@@ -83,7 +84,7 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 	 * This method overwrites the one in archiver so that multiple exceptions can be recorded, rather than just the first one.
 	 * @return
 	 */
-	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) {
+	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
 		if(existing!=null){
 			//it already exists
 			conflict(1,PRE_EXISTS);
@@ -145,7 +146,7 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 	 * Mimics the behavior of PrearcSessionArchiver.call(), but tracks the exceptions, rather then failing on them.
 	 * @return
 	 */
-	public List<PrearcSessionValidator.Notice> validate()    {
+	public List<PrearcSessionValidator.Notice> validate() throws ClientException   {
 		if(StringUtils.isEmpty(project)){
 			fail(6,"unable to identify destination project");
 		}
@@ -230,36 +231,11 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 		
 
 		//validate files to confirm DICOM contents
-		for(final XnatImagescandataI scan: src.getScans_scan()){
-			for(final XnatAbstractresourceI resource:scan.getFile()){
-				if(resource instanceof XnatResourcecatalogI){
-					final File f=CatalogUtils.getCatalogFile(src.getPrearchivepath(), (XnatResourcecatalogI)resource);
-					if(f==null || !f.exists()){
-						warn(21,"Expected a catalog file, however it was missing.");
-					}
-					
-					final List<File> unreferenced=CatalogUtils.getUnreferencedFiles(f.getParentFile());
-					if(unreferenced.size()>0){
-						warn(20,String.format("Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files", scan.getId(),unreferenced.size(),resource.getLabel()));
-					}
-					
-					if(StringUtils.equals(resource.getLabel(),"DICOM")){
-						//check for entries that aren't DICOM entries or don't have a UID stored
-						final CatCatalogI cat=CatalogUtils.getCatalog(f);
-						final Collection<CatEntryI> nonDCM=CatalogUtils.getEntriesByFilter(cat, new CatEntryFilterI(){
-							@Override
-							public boolean accept(CatEntryI entry) {
-								return ((!(entry instanceof CatDcmentryI)) || StringUtils.isEmpty(((CatDcmentryI)entry).getUid()));
-							}});
-						
-						if(nonDCM.size()>0){
-							warn(20,String.format("Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files", scan.getId(),nonDCM.size()));
-						}
-					}
-				}
-			}
-		}
+		validateDicomFiles();
 
+		//verify compliance with DICOM whitelist/blacklist
+		verifyCompliance();
+		
 		return notices;
 
 	}
@@ -318,13 +294,17 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 	
 	private List<Notice> notices=Lists.newArrayList();
 	
-	protected void fail(int code, String msg){
+	
+	//override implementations from PrearcSessionArchiver
+	//prearcSessionArchiver will fail (throw exception) on the first issue it finds
+	//validator should collect a list of all failures
+	protected void fail(int code, String msg) throws ClientException{
 		notices.add(new Failure(code, msg));
 	}
-	protected void warn(int code, String msg){
+	protected void warn(int code, String msg) throws ClientException{
 		notices.add(new Warning(code, msg));
 	}
-	protected void conflict(int code, String msg){
+	protected void conflict(int code, String msg) throws ClientException{
 		notices.add(new Conflict(code, msg));
 	}
 }

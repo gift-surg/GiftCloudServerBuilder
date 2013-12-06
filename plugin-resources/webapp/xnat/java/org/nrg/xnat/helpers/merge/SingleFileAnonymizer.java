@@ -11,6 +11,7 @@
 package org.nrg.xnat.helpers.merge;
 
 import org.nrg.config.entities.Configuration;
+import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 
 import java.io.File;
@@ -54,12 +55,12 @@ public class SingleFileAnonymizer extends AnonymizerA {
 
 	@Override
 	Configuration getScript() {
-		return AnonUtils.getService().getScript(this.path, ProjectAnonymizer.getDBId(anonProject));
+		return AnonUtils.getService().getScript(this.path, BaseXnatProjectdata.getProjectInfoIdFromStringId(anonProject));
 	}
 
 	@Override
 	boolean isEnabled() {
-		return AnonUtils.getService().isEnabled(this.path, ProjectAnonymizer.getDBId(anonProject));
+		return AnonUtils.getService().isEnabled(this.path, BaseXnatProjectdata.getProjectInfoIdFromStringId(anonProject));
 	}
 
 	@Override

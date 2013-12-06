@@ -144,8 +144,13 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 	                    chain.doFilter(request, response);
 	                }
                 }
-            }
-            else{
+            } else {
+                try{
+                    String uri = new URI(request.getRequestURI()).getPath();
+                    if(uri.endsWith("ChangePassword.vm")){
+                        response.sendRedirect(TurbineUtils.GetFullServerPath() + "/app/template/Login.vm");
+                    }
+                } catch (URISyntaxException ignored) {}
                 //User is not authenticated through basic authentication either.
                 chain.doFilter(req, res);
             }

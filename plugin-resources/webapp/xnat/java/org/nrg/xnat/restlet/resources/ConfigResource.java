@@ -102,7 +102,7 @@ public class ConfigResource extends SecureResource {
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
                     return null;
                 }
-                projectId = (Long) p.getItem().getProps().get("projectdata_info");
+                projectId = Long.valueOf((Integer) p.getItem().getProps().get("projectdata_info"));
             }
 
             List<Configuration> configurations = new ArrayList<Configuration>();
@@ -249,7 +249,7 @@ public class ConfigResource extends SecureResource {
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User does not have privileges to access this project");
                     return;
                 }
-                projectId = (Long) p.getItem().getProps().get("projectdata_info");
+                projectId = Long.valueOf((Integer) p.getItem().getProps().get("projectdata_info"));
             }
 
             fixAnonPath();

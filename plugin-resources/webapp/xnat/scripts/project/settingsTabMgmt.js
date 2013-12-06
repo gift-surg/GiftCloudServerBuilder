@@ -23,7 +23,7 @@ function fullConfigHandler() {
             document.getElementById('notifications_save_button').onclick = saveSettings;
             document.getElementById('anonymization_save_button').onclick = saveSettings;
             document.getElementById('applet_save_button').onclick = saveSettings;
-            document.getElementById('sopClassFilter_save_button').onclick = saveSettings;
+            document.getElementById('seriesImportFilter_save_button').onclick = saveSettings;
             document.getElementById('dicomReceiver_save_button').onclick = saveSettings;
 
             xModalLoadingClose();
@@ -49,7 +49,7 @@ function fullConfigHandler() {
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords'
+            'siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins'
             , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
             , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
             , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
@@ -80,7 +80,7 @@ function configurationTabManagerInit() {
         document.getElementById('notifications_save_button').onclick = fullConfigHandler;
         document.getElementById('anonymization_save_button').onclick = fullConfigHandler;
         document.getElementById('applet_save_button').onclick = fullConfigHandler;
-        document.getElementById('sopClassFilter_save_button').onclick = fullConfigHandler;
+        document.getElementById('seriesImportFilter_save_button').onclick = fullConfigHandler;
         document.getElementById('dicomReceiver_save_button').onclick = fullConfigHandler;
     }
 }
@@ -116,7 +116,7 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             '#notifications_reset_button, ' +
             '#anonymization_reset_button, ' +
             '#applet_reset_button, ' +
-            '#sopClassFilter_reset_button, ' +
+            '#seriesImportFilter_reset_button, ' +
             '#dicomReceiver_reset_button'
         ;
 
@@ -177,12 +177,12 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                 control = document.getElementsByName(setting);
                 this.controls.push(setting);
                 for (var j = 0; j < control.length; j++) {
-                    if(control[j].value == eval('resultSet.ResultSet.Result.' + setting)){
+                    if(control[j].value == eval('resultSet.ResultSet.Result["' + setting+'"]')){
                         $(control[j]).trigger("click");
                     }
                 }
             } else {
-                control.defaultValue = eval('resultSet.ResultSet.Result.' + setting);
+                control.defaultValue = eval('resultSet.ResultSet.Result["' + setting+'"]');
                 if(control.tagName.toLowerCase()=='select'){
                     control.value = control.defaultValue;
                 }

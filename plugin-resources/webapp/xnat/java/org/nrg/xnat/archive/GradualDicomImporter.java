@@ -10,16 +10,34 @@
  */
 package org.nrg.xnat.archive;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.io.ByteStreams;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.dcm4che2.data.*;
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.TransferSyntax;
+import org.dcm4che2.data.VR;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
 import org.dcm4che2.io.StopTagInputHandler;
@@ -30,7 +48,6 @@ import org.nrg.config.entities.Configuration;
 import org.nrg.dcm.Anonymize;
 import org.nrg.dcm.Decompress;
 import org.nrg.dcm.DicomFileNamer;
-import org.nrg.dcm.id.DbBackedProjectIdentifier;
 import org.nrg.dcm.xnat.SOPHashDicomFileNamer;
 import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -41,9 +58,9 @@ import org.nrg.xnat.Files;
 import org.nrg.xnat.Labels;
 import org.nrg.xnat.helpers.editscript.DicomEdit;
 import org.nrg.xnat.helpers.merge.AnonUtils;
+import org.nrg.xnat.helpers.prearchive.DatabaseSession;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
-import org.nrg.xnat.helpers.prearchive.DatabaseSession;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
@@ -57,14 +74,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 @Service
 public class GradualDicomImporter extends ImporterHandlerA {
@@ -210,6 +223,13 @@ public class GradualDicomImporter extends ImporterHandlerA {
             return v.toString();
         }
     }
+    
+    //this is a global list of the files that are currently 'open' by the GradualDicomImporter
+    //files will be opened at the time they are initially writing out
+    //files will remain open during anonymization
+    //when the trasaction is complete, the files will be removed from this list
+    //I don't particularly like this implementation.  I'd prefer to use the FileLock api.  But, it seems like there may be threading issues there.
+    private static List<String> LOCKED_FILE_NAMES=Collections.synchronizedList(new ArrayList<String>());
 
     @Override
     public List<String> call() throws ClientException, ServerException {
@@ -388,6 +408,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
         final String source = getString(params, SENDER_ID_PARAM, user.getLogin());
 
+        String lock=null;//the name of the file that gets locked
+        boolean locked=false;//whether this file gets locked
+        
         try {
             final DicomObject fmi;
             if (o.contains(Tag.TransferSyntaxUID)) {
@@ -410,8 +433,24 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
             final File f = getSafeFile(sessdir, scan, name, o, Boolean.valueOf((String)params.get(RENAME_PARAM)));
             f.getParentFile().mkdirs();
+
+            lock=f.getName();
             
+        	synchronized(LOCKED_FILE_NAMES){
+        		if(LOCKED_FILE_NAMES.contains(lock)){
+        			//if this file is already locked, throw an exception so the user will no there is a problem.
+        			ServerException e=new ServerException("Concurrent file sends are not supported.");
+        			logger.error("",e);
+        			throw e;
+        		}else{
+        			//otherwise lock this file
+        			LOCKED_FILE_NAMES.add(lock);
+        			locked=true;
+        		}
+        	}
+        	
             try {
+            	
                 write(fmi, o, bis, f, source);
                     
             } catch (IOException e) {
@@ -470,6 +509,11 @@ public class GradualDicomImporter extends ImporterHandlerA {
             } catch (IOException e) {
                 logger.error("closing DicomInputStream failed", e);
             }
+            
+            if(null!=lock && locked){
+            	//release the file lock
+            	LOCKED_FILE_NAMES.remove(lock);
+            }
         }
 
         logger.trace("Stored object {}/{}/{} as {} for {}",
@@ -527,7 +571,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         final BufferedInputStream bis = new BufferedInputStream(in);
         IOException ioexception = null;
         try {
-            final DicomInputStream dis = new DicomInputStream(bis);
+            final DicomInputStream dis = new DicomInputStream(bis); 
             try {
                 final DicomObject o = dis.readDicomObject();
                 if (Strings.isNullOrEmpty(o.getString(Tag.SOPClassUID))) {

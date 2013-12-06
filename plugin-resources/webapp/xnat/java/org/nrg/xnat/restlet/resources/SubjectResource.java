@@ -445,8 +445,14 @@ public class SubjectResource extends ItemResource {
                 return this.representItem(sub.getItem(), mt);
             }
         } else {
-            this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Unable to find the specified subject.");
+            StringBuilder message = new StringBuilder("Unable to find the specified subject. ");
+            if (proj == null) {
+                message.append("When searching by subject ID only, you must specify the accession number and not the subject label, which is not unique across the XNAT system. ");
+                message.append(subID).append(" is not a known subject accession ID.");
+            } else {
+                message.append("The project ").append(proj.getId()).append(" does not contain a subject identifiable by the ID or label ").append(subID).append(".");
+            }
+            this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, message.toString());
             return null;
         }
 

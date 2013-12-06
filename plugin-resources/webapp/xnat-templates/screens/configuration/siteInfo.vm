@@ -103,12 +103,12 @@
         </p>
 
         <p>
-            <label for="requireSaltedPasswords" style="width: 290px;">Require passwords to be salted?</label>
-            <input type="checkbox" id="requireSaltedPasswords" onchange="window.siteInfoManager.dirtyForm();" />
+            <label for="UI.debug-extension-points" style="width: 290px;">Show points in UI where new VM content can be added dynamically. (development only)</label>
+            <input type="checkbox" id="UI.debug-extension-points" onchange="window.siteInfoManager.dirtyForm();" />
             <small>
-                Should this site require that all stored user passwords have been salted? If turned on, the site will
-                store passwords more securely, but some users may be prompted to change their current passwords so
-                that they can be updated.
+                Should this site display highlighted divs at every point where new VM content can be dynamically added.  If turned on, the divs will show up
+				listing the directory where new VMs can be added and will be dynamically added into the UI.  FYI, new dynamically-added VMs often requires a 
+				server restart to be included. This settings should never be enabled on a production server.
             </small>
         </p>
 
@@ -158,8 +158,8 @@ function initializeSiteInfoMgmtTab() {
                 if(window.registrationManager==undefined) {
                     window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
                 }
-                if(window.sopClassFilterManager==undefined) {
-                    window.sopClassFilterManager = new SettingsTabManager('sopClassFilter_mgmt_div', 'sopClassFilter');
+                if(window.seriesImportFilterManager==undefined) {
+                    window.seriesImportFilterManager = new SettingsTabManager('seriesImportFilter_mgmt_div', 'seriesImportFilter');
                 }
             };
         }
@@ -170,5 +170,5 @@ function initializeSiteInfoMgmtTab() {
 }
 
 YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords']);
+putConfigurationControls('siteInfo', ['siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet', 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins']);
 </script>

@@ -10,19 +10,64 @@
  */
 package org.nrg.xdat.om.base;
 
+import java.io.File;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.display.DisplayField;
-import org.nrg.xdat.model.*;
-import org.nrg.xdat.om.*;
+import org.nrg.xdat.model.ArcPathinfoI;
+import org.nrg.xdat.model.XnatAbstractprotocolI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupFieldI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatInvestigatordataI;
+import org.nrg.xdat.model.XnatProjectdataFieldI;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.model.XnatPublicationresourceI;
+import org.nrg.xdat.model.XnatSubjectassessordataI;
+import org.nrg.xdat.om.ArcPathinfo;
+import org.nrg.xdat.om.ArcProject;
+import org.nrg.xdat.om.XdatElementAccess;
+import org.nrg.xdat.om.XdatFieldMapping;
+import org.nrg.xdat.om.XdatFieldMappingSet;
+import org.nrg.xdat.om.XdatSearchField;
+import org.nrg.xdat.om.XdatUserGroupid;
+import org.nrg.xdat.om.XdatUsergroup;
+import org.nrg.xdat.om.XnatAbstractprotocol;
+import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.om.XnatDatatypeprotocol;
+import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatExperimentdataShare;
+import org.nrg.xdat.om.XnatInvestigatordata;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatProjectdataField;
+import org.nrg.xdat.om.XnatProjectparticipant;
+import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.XnatSubjectassessordata;
+import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatProjectdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.search.CriteriaCollection;
 import org.nrg.xdat.search.DisplaySearch;
-import org.nrg.xdat.security.*;
+import org.nrg.xdat.security.ElementSecurity;
+import org.nrg.xdat.security.UserGroup;
+import org.nrg.xdat.security.UserGroupManager;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
 import org.nrg.xdat.security.XdatStoredSearch;
 import org.nrg.xft.ItemI;
@@ -31,11 +76,21 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.event.*;
+import org.nrg.xft.event.Event;
+import org.nrg.xft.event.EventDetails;
+import org.nrg.xft.event.EventManager;
+import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.EventRequirementAbsent;
-import org.nrg.xft.exception.*;
+import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.FieldNotFoundException;
+import org.nrg.xft.exception.InvalidItemException;
+import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.security.UserI;
@@ -51,10 +106,7 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.*;
+import com.google.common.collect.Maps;
 
 /**
  * @author XDAT
@@ -1934,5 +1986,32 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	public Integer getMetaId()
 	{
 	    return ((XFTItem)this.getItem()).getMetaDataId();
+	}
+
+	//map of string ids to the Long project info ID used in the configuration service
+	private static ConcurrentMap<String,Long> projectMapping=Maps.newConcurrentMap();
+	
+	/**
+	 * Return the project info ID (meta data id) for this project ID.
+	 * Caches results to prevent unnecessary database hits.  (Values should never change once created)
+	 * 
+	 * @param project
+	 * @return
+	 */
+	public static Long getProjectInfoIdFromStringId (String project) {
+		if (project != null){
+			Long l=projectMapping.get(project);
+			if(l==null){
+				XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(project, null, false);
+				if(p!=null){
+					l= Long.parseLong(p.getItem().getProps().get("projectdata_info").toString());
+					projectMapping.put(project, l);
+				}
+			}
+			return l;
+		}
+		else {
+			return null;
+		}
 	}
 }

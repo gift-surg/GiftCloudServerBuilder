@@ -48,28 +48,36 @@
                     },
                     data: {
                         context: {
-                            projectName: '$!om.getProject($project,false).getDisplayID()',
-##                            projectLabel: '$!item.getStringProperty("xnat:projectData/name")',
-                            projectID: '$!om.getProject()',
-                            project: '$!om.getProject()',
-##                            //projectID: #if ($project) #if ($project.getId()) '$!project.getId()' #else '$!project' #end #end ,
+                            projectName: "$!om.getProject($project,false).getDisplayID()",
+##                            projectLabel: "$!item.getStringProperty("xnat:projectData/name")",
+                            projectID: "$!om.getProject()",
+                            project: "$!om.getProject()",
+                            xsiType: "$!om.getXSIType()",
+                            #if($om)
+                                isSubject: $!om.getItem().instanceOf("xnat:subjectData"),
+                                isExperiment: $!om.getItem().instanceOf("xnat:experimentData"),
+                                isSubjectAssessor: $!om.getItem().instanceOf("xnat:subjectAssessorData"),
+                                isImageSession: $!om.getItem().instanceOf("xnat:imageSessionData"),
+                                isImageAssessor: $!om.getItem().instanceOf("xnat:imageAssessorData"),
+                            #end
+##                            //projectID: #if ($project) #if ($project.getId()) "$!project.getId()" #else "$!project" #end #end ,
 ##                            #if ($om.getSubjectId())
-##                                subjectID: '$!om.getSubjectId()',
+##                                subjectID: "$!om.getSubjectId()",
 ##                            #end
-##                            subjectLabel: '#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end',
-                            subjectLabel: '#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end',
-                            subjectID: '$!subject.getId()',
-                            label: '#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end',
-                            ID: '$!om.getId()'
-##                            subjectLabel: '$!item.getStringProperty("xnat:subjectData/name")',
+##                            subjectLabel: "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end",
+                            subjectLabel: "#if($!subject.getIdentifier($project,true))$!subject.getIdentifier($project,true)#elseif($subject.getLabel())$!subject.getLabel()#else$!subject.getId()#end",
+                            subjectID: "$!subject.getId()",
+                            label: "#if($!om.getIdentifier($project,true))$!om.getIdentifier($project,true)#elseif($om.getLabel())$!om.getLabel()#else$!om.getId()#end",
+                            ID: "$!om.getId()"
+##                            subjectLabel: "$!item.getStringProperty("xnat:subjectData/name")",
                         },
                         timestamp: jq.now() // timestamp for the page when it loads
                     }
                };
     }
 
-    if (XNAT.data.context.projectName === ''){
-        XNAT.data.context.projectName = '$!item.getStringProperty("xnat:projectData/name")';
+    if (XNAT.data.context.projectName === ""){
+        XNAT.data.context.projectName = "$!item.getStringProperty("xnat:projectData/name")";
     }
 
     // 'page' object is same as 'context' - easier to remember?

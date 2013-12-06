@@ -41,6 +41,7 @@
 					
                     <ul class="yui-nav">
                         <li class="selected"><a href="#siteInfo"><em>Site Information<span class="spacer"></span></em></a></li>
+                        <li><a href="#security"><em>Security<span class="spacer"></span></em></a> </li>
                         <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>
                         <li><a href="#registration"><em>Registration<span class="spacer"></span></em></a></li>
                         <li><a href="#notifications"><em>Notifications<span class="spacer"></span></em></a></li>
@@ -60,6 +61,9 @@
                     <div class="yui-content">   
                         <div id="siteInfo">
                             #parse('screens/configuration/siteInfo.vm')
+                        </div>
+                        <div id="security">
+                            #parse('screens/configuration/security.vm')
                         </div>
                         <div id="fileSystem">
                             #parse('screens/configuration/fileSystem.vm')

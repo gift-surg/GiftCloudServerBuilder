@@ -145,12 +145,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 	                }
                 }
             } else {
-                try{
-                    String uri = new URI(request.getRequestURI()).getPath();
-                    if(uri.endsWith("ChangePassword.vm")){
-                        response.sendRedirect(TurbineUtils.GetFullServerPath() + "/app/template/Login.vm");
-                    }
-                } catch (URISyntaxException ignored) {}
+                checkUserChangePassword(request, response);
                 //User is not authenticated through basic authentication either.
                 chain.doFilter(req, res);
             }
@@ -158,6 +153,10 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
         else{
             String uri = request.getRequestURI();
 
+            if (user.getUsername().equals("guest")){
+                //If you're a guest and you try to access the change password page, you get sent to the login page since there's no password on the guest account to change.
+                checkUserChangePassword(request, response);
+            }
             if (user.getUsername().equals("guest") ||
                     //If you're logging in or out, or going to the login page itself
                     (uri.endsWith(logoutDestination) || uri.endsWith(loginPath) || uri.endsWith(loginDestination)) ||
@@ -223,6 +222,15 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                 response.sendRedirect(TurbineUtils.GetFullServerPath() + inactiveAccountPath);
             }
         }
+    }
+
+    private void checkUserChangePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try{
+            String uri = new URI(request.getRequestURI()).getPath();
+            if(uri.endsWith("ChangePassword.vm")){
+                response.sendRedirect(TurbineUtils.GetFullServerPath() + "/app/template/Login.vm");
+            }
+        } catch (URISyntaxException ignored) {}
     }
 
     public void setChangePasswordPath(String path) {

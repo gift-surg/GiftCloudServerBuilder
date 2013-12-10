@@ -30,7 +30,7 @@
             function validateExpirationDate() {
                 var date = $('#passwordExpirationDate');
                 if(!date.val()) {
-                    date.val()'01/01/1970');
+                    date.val('01/01/1970');
                 }
             }
         </script>

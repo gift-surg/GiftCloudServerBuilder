@@ -199,7 +199,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     }
                     else if (type != null && type.equals("Date")) {
                         String date = XDAT.getSiteConfigurationProperty("passwordExpirationDate");
-                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT (password_updated < to_date('" + date + "', 'MM/DD/YYYY')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
+                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT (to_date('" + date + "', 'MM/DD/YYYY') BETWEEN password_updated AND now()) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
                             public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
                                 return rs.getBoolean(1);
                             }

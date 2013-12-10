@@ -186,7 +186,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     String type = XDAT.getSiteConfigurationProperty("passwordExpirationType");
                     if (type != null && type.equals("Interval")) {
                         String interval = XDAT.getSiteConfigurationProperty("passwordExpirationInterval");
-                        if(interval==null || interval.equals("0")) {
+                        if(interval==null || interval.equals("0") || interval.length() > 6) { // overly long intervals break the query; this limit allows intervals up to approximately 2700 years, which should be sufficient for most purposes
                             chain.doFilter(request, response);
                         } else {
                             List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+" days')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {

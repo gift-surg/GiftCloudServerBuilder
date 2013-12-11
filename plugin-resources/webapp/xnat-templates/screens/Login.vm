@@ -16,9 +16,13 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
                         <div class="message">$msg</div><br><br>
                     #end
                     #if($siteConfig.getProperty("siteDescriptionType","")=="Text")
-                        $siteConfig.getProperty("siteDescriptionText","")
+                        <div style="white-space: pre-wrap;">$siteConfig.getProperty("siteDescriptionText","")</div>
                     #else
-                        #parse($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm"))
+                        #if($turbineUtils.templateExists($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm")))
+                            <div style="white-space: pre-wrap;">#parse($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm"))</div>
+                        #else
+                            <div>Custom site description page not found!</div>
+                        #end
                     #end
                 </td>
             </tr>
@@ -79,9 +83,13 @@ $page.addAttribute("onLoad", "document.getElementById('username').focus();")
             <tr>
                 <td valign="top" style="padding-top:50px;text-align:center;">
                     #if($siteConfig.getProperty("siteDescriptionType","")=="Text")
-                        $siteConfig.getProperty("siteDescriptionText","")
+                        <div style="white-space: pre-wrap;">$siteConfig.getProperty("siteDescriptionText","")</div>
                     #else
-                        #parse($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm"))
+                        #if($turbineUtils.templateExists($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm")))
+                            <div style="white-space: pre-wrap;">#parse($siteConfig.getProperty("siteDescriptionPage","/screens/site_description.vm"))</div>
+                        #else
+                            <div>Custom site description page not found!</div>
+                        #end
                     #end
                 </td>
             </tr>

@@ -10,4 +10,8 @@ $!template.setLayoutTemplate($siteConfig.getProperty("siteLandingLayout","/Index
 </div>
 <div style="line-height:6px">&nbsp;</div>
 #end
-#parse($siteConfig.getProperty("siteLoginLanding","/screens/QuickSearch.vm"))
+#if($turbineUtils.templateExists($siteConfig.getProperty("siteLoginLanding","/screens/QuickSearch.vm")))
+    #parse($siteConfig.getProperty("siteLoginLanding","/screens/QuickSearch.vm"))
+#else
+    <div>Custom site login landing page cannot be found!<br/><br/>Contact the site administrator.</div>
+#end

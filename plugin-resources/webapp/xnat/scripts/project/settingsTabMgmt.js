@@ -39,25 +39,25 @@ function fullConfigHandler() {
             window.location.replace(destination);
         },
         failure : function(o) {
-                xModalMessage(
-                    'Error',
-                    'Your settings were not successfully saved: ' + o.responseText,
-                    'OK'
-                );
+            xModalMessage(
+                'Error',
+                'Your settings were not successfully saved: ' + o.responseText,
+                'OK'
+            );
         },
         cache : false, // Turn off caching for IE
         scope : this
     };
 
     var data = buildSettingsUpdateRequestBody([
-            'siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet'
-            , 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords', 'passwordExpirationType', 'passwordExpirationInterval', 'passwordExpirationDate'
-			, 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
-            , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
-            , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
-            , 'anonScript'
-            , 'applet'
-            , 'dcmPort', 'dcmAe', 'enableDicomReceiver'
+        'siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet'
+        , 'enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords', 'passwordExpirationType', 'passwordExpirationInterval', 'passwordExpirationDate'
+        , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
+        , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
+        , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
+        , 'anonScript'
+        , 'applet'
+        , 'dcmPort', 'dcmAe', 'enableDicomReceiver'
     ]);
 
     xModalLoadingOpen({title:'Please wait...'});
@@ -232,9 +232,6 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     };
 
     this.resetForm = function() {
-        this.setFormDisabled(false);
-        this.dirtyFlag = false;
-        this.disableResetButtons();
         for (var index = 0; index < this.controls.length; index++) {
             var control = this.controls[index];
             if (control.type == 'text' || control.type == 'textarea') {
@@ -244,8 +241,20 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
             } else if (control.type == 'hidden') {
                 control.value = control.defaultValue;
                 jq('#' + control.id + 'Label').html(control.defaultValue);
+            } else if (typeof control == 'string') { //handle radio buttons
+                var defaults = eval("("+window.configurationData+")");
+                var def = eval('defaults.ResultSet.Result["'+control+'"]');
+                control = $('[name="' + control + '"]');
+                for (var j = 0; j < control.length; j++) {
+                    if(control[j].value == def){
+                        $(control[j]).trigger("click");
+                    }
+                }
             }
         }
+        this.setFormDisabled(false);
+        this.dirtyFlag = false;
+        this.disableResetButtons();
         this.firstControl.focus();
     };
 

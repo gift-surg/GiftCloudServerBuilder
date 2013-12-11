@@ -10,4 +10,8 @@ $!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm
 </div>
 <div style="line-height:6px">&nbsp;</div>
 #end
-#parse($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm"))
+#if($turbineUtils.templateExists($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm")))
+    #parse($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm"))
+#else
+    <div>Custom site home page cannot be found!<br/><br/>Contact the site administrator.</div>
+#end

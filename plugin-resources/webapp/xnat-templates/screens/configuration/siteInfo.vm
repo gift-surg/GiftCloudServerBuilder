@@ -20,6 +20,13 @@
                     text.hide();
                 }
             };
+            function filterText(el) {
+                el = $(el);
+                var f = $('#filter');
+                window.siteInfoManager.dirtyForm();
+                f.html(el.val());
+                el.val(f.text());
+            }
         </script>
 
         <p>
@@ -36,8 +43,9 @@
                 <label for="siteDescriptionTypePage" style="width:50px;">&nbsp;Page</label>
             </span>
             <input size="30" type="text" name="siteDescriptionPage" id="siteDescriptionPage" onchange="window.siteInfoManager.dirtyForm();" style="display: none;" />
-            <textarea name="siteDescriptionText" id="siteDescriptionText" style="width: 440px; margin-bottom: -5px;" onchange="window.siteInfoManager.dirtyForm();"></textarea>
-            <small>A short description of this site to be displayed on the login page.</small>
+            <textarea name="siteDescriptionText" id="siteDescriptionText" style="width: 440px; margin-bottom: -5px;" onchange="filterText(this);"></textarea>
+        <div id="filter" style="display:none;"></div>
+        <small>A short description of this site to be displayed on the login page.</small>
         </p>
 
         <p>
@@ -89,8 +97,8 @@
             <input type="checkbox" id="UI.debug-extension-points" onchange="window.siteInfoManager.dirtyForm();" />
             <small>
                 Should this site display highlighted divs at every point where new VM content can be dynamically added.  If turned on, the divs will show up
-				listing the directory where new VMs can be added and will be dynamically added into the UI.  FYI, new dynamically-added VMs often requires a 
-				server restart to be included. This settings should never be enabled on a production server.
+                listing the directory where new VMs can be added and will be dynamically added into the UI.  FYI, new dynamically-added VMs often requires a
+                server restart to be included. This settings should never be enabled on a production server.
             </small>
         </p>
 
@@ -104,56 +112,56 @@
 </div>
 
 <script type="text/javascript">
-function configurationSiteInfoTabChange(obj) {
-    if(obj.newValue.get("href")=="#siteInfo") {
-        initializeSiteInfoMgmtTab();
-    }
-}
-
-function addSiteInfoMgmtMonitor(){
-    if(window.configurationTabView.get("activeTab").get("href")=="#siteInfo") {
-        initializeSiteInfoMgmtTab();
-    } else {
-        window.configurationTabView.subscribe("activeTabChange", configurationSiteInfoTabChange);
-    }
-}
-
-function initializeSiteInfoMgmtTab() {
-    if(window.siteInfoManager==undefined) {
-        if (window.initializing) {
-            var postLoad = function() {
-                if(window.anonymizationManager==undefined) {
-                    window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
-                }
-                if(window.appletManager==undefined) {
-                    window.appletManager = new SettingsTabManager('applet_mgmt_div', 'applet');
-                }
-                if(window.dicomReceiverManager==undefined) {
-                    window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', 'dicomReceiver');
-                }
-                if(window.fileSystemManager==undefined) {
-                    window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', 'fileSystem');
-                }
-                if(window.securityManager==undefined) {
-                    window.securityManager = new SettingsTabManager('security_mgmt_div', 'security');
-                }
-                if(window.notificationsManager==undefined) {
-                    window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', 'notifications');
-                }
-                if(window.registrationManager==undefined) {
-                    window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
-                }
-                if(window.seriesImportFilterManager==undefined) {
-                    window.seriesImportFilterManager = new SettingsTabManager('seriesImportFilter_mgmt_div', 'seriesImportFilter');
-                }
-            };
+    function configurationSiteInfoTabChange(obj) {
+        if(obj.newValue.get("href")=="#siteInfo") {
+            initializeSiteInfoMgmtTab();
         }
-        window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo', postLoad);
-    } else {
-        window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo');
     }
-}
 
-YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
-putConfigurationControls('siteInfo', ['siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet']);
+    function addSiteInfoMgmtMonitor(){
+        if(window.configurationTabView.get("activeTab").get("href")=="#siteInfo") {
+            initializeSiteInfoMgmtTab();
+        } else {
+            window.configurationTabView.subscribe("activeTabChange", configurationSiteInfoTabChange);
+        }
+    }
+
+    function initializeSiteInfoMgmtTab() {
+        if(window.siteInfoManager==undefined) {
+            if (window.initializing) {
+                var postLoad = function() {
+                    if(window.anonymizationManager==undefined) {
+                        window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
+                    }
+                    if(window.appletManager==undefined) {
+                        window.appletManager = new SettingsTabManager('applet_mgmt_div', 'applet');
+                    }
+                    if(window.dicomReceiverManager==undefined) {
+                        window.dicomReceiverManager = new SettingsTabManager('dicom_receiver_mgmt_div', 'dicomReceiver');
+                    }
+                    if(window.fileSystemManager==undefined) {
+                        window.fileSystemManager = new SettingsTabManager('file_system_mgmt_div', 'fileSystem');
+                    }
+                    if(window.securityManager==undefined) {
+                        window.securityManager = new SettingsTabManager('security_mgmt_div', 'security');
+                    }
+                    if(window.notificationsManager==undefined) {
+                        window.notificationsManager = new SettingsTabManager('notifications_mgmt_div', 'notifications');
+                    }
+                    if(window.registrationManager==undefined) {
+                        window.registrationManager = new SettingsTabManager('registration_mgmt_div', 'registration');
+                    }
+                    if(window.seriesImportFilterManager==undefined) {
+                        window.seriesImportFilterManager = new SettingsTabManager('seriesImportFilter_mgmt_div', 'seriesImportFilter');
+                    }
+                };
+            }
+            window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo', postLoad);
+        } else {
+            window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo');
+        }
+    }
+
+    YAHOO.util.Event.onDOMReady(addSiteInfoMgmtMonitor);
+    putConfigurationControls('siteInfo', ['siteId','UI.debug-extension-points', 'siteDescriptionType', 'siteDescriptionText', 'siteDescriptionPage', 'siteUrl', 'siteAdminEmail', 'siteLoginLanding', 'siteLandingLayout', 'siteHome', 'siteHomeLayout', 'showapplet']);
 </script>

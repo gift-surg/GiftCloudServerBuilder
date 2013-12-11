@@ -11,7 +11,6 @@
 package org.nrg.xnat.security;
 
 import org.apache.commons.lang.StringUtils;
-import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
 import org.nrg.xdat.entities.XDATUserDetails;
@@ -186,9 +185,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     String type = XDAT.getSiteConfigurationProperty("passwordExpirationType");
                     if (type != null && type.equals("Interval")) {
                         String interval = XDAT.getSiteConfigurationProperty("passwordExpirationInterval");
-                        if(interval==null || interval.equals("0") || interval.length() > 6 || !interval.matches("\\d+")) { // overly long intervals break the query; this limit allows intervals up to approximately 2700 years, which should be sufficient for most purposes
-                            chain.doFilter(request, response);
-                        } else {
+                        if(interval!=null && !interval.equals("0") && interval.length() <= 6 && interval.matches("\\d+")) { // overly long intervals break the query; this limit allows intervals up to approximately 2700 years, which should be sufficient for most purposes
                             List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+" days')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
                                 public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
                                     return rs.getBoolean(1);
@@ -199,18 +196,17 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     }
                     else if (type != null && type.equals("Date")) {
                         String date = XDAT.getSiteConfigurationProperty("passwordExpirationDate");
-                        if(date==null || !date.matches("\\d\\d/\\d\\d/\\d\\d\\d\\d")) {
-                            chain.doFilter(request, response);
+                        if(date!=null && date.matches("\\d\\d/\\d\\d/\\d\\d\\d\\d")) {
+                            List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT (to_date('" + date + "', 'MM/DD/YYYY') BETWEEN password_updated AND now()) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
+                                public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                    return rs.getBoolean(1);
+                                }
+                            });
+                            isExpired = expired.get(0);
                         }
-                        List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT (to_date('" + date + "', 'MM/DD/YYYY') BETWEEN password_updated AND now()) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
-                            public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                return rs.getBoolean(1);
-                            }
-                        });
-                        isExpired = expired.get(0);
                     }
-                } catch (ConfigServiceException e) {
-                    e.printStackTrace();
+                } catch (Throwable e) { // ldap authentication can throw an exception during these queries
+                    logger.error(e.getMessage(), e);
                 }
 
                 if(isExpired || (XDAT.getBoolSiteConfigurationProperty("requireSaltedPasswords", true) && user.getSalt() == null)){

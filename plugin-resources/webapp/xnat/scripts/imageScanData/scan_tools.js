@@ -1088,9 +1088,9 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				td= document.createElement("td");
 				if(scan.qual_input==undefined){
 				    scan.qual_input=document.createElement("select");
-				    scan.qual_input.name=elementName + scanXPath(modality,scanTypeTable) + "/quality";
-				    scan.qual_input.options[0]=new Option("(SELECT)","");
-	                            populateScanQualitySelector(serverRoot,projectScope,scan.qual_input,1,scan.extension.Quality);
+				    scan.qual_input.name=elementName + scanXPath(modality, scanTypeTable) + "/quality";
+				    scan.qual_input.options[0]=new Option("(SELECT)", "");
+                    populateScanQualitySelector(serverRoot, null, scan.qual_input, 1, scan.extension.Quality);
 				}
 				td.appendChild(scan.qual_input);
 				tr.appendChild(td);

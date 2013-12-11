@@ -172,6 +172,7 @@
 				<tr>
 					<td> </td>
 					<td colspan="2"><a target="_blank" href="$content.getURI("/REST/services/dicomdump?src=/archive/projects/$om.getProject()/experiments/$om.getId()/scans/$scan.getId()&format=html&requested_screen=DicomScanTable.vm")">View DICOM Headers</a></td>
+				</tr>
 			#end
 			
             #foreach($addP in $scan.getParameters_addparam())

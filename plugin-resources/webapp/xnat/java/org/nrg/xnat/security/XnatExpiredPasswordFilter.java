@@ -186,7 +186,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     String type = XDAT.getSiteConfigurationProperty("passwordExpirationType");
                     if (type != null && type.equals("Interval")) {
                         String interval = XDAT.getSiteConfigurationProperty("passwordExpirationInterval");
-                        if(interval==null || interval.equals("0") || interval.length() > 6) { // overly long intervals break the query; this limit allows intervals up to approximately 2700 years, which should be sufficient for most purposes
+                        if(interval==null || interval.equals("0") || interval.length() > 6 || !interval.matches("\\d+")) { // overly long intervals break the query; this limit allows intervals up to approximately 2700 years, which should be sufficient for most purposes
                             chain.doFilter(request, response);
                         } else {
                             List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT ((now()-password_updated)> (Interval '"+interval+" days')) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
@@ -199,6 +199,9 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     }
                     else if (type != null && type.equals("Date")) {
                         String date = XDAT.getSiteConfigurationProperty("passwordExpirationDate");
+                        if(date==null || !date.matches("\\d\\d/\\d\\d/\\d\\d\\d\\d")) {
+                            chain.doFilter(request, response);
+                        }
                         List<Boolean> expired = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT (to_date('" + date + "', 'MM/DD/YYYY') BETWEEN password_updated AND now()) AS expired FROM xhbm_xdat_user_auth WHERE auth_user = ? AND auth_method = 'localdb'", new String[] {user.getUsername()}, new RowMapper<Boolean>() {
                             public Boolean mapRow(ResultSet rs, int rowNum) throws SQLException {
                                 return rs.getBoolean(1);

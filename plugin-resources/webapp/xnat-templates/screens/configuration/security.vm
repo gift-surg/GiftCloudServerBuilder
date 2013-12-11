@@ -29,21 +29,23 @@
                 }
             }
 
-            function validateExpirationInterval() {
-                var interval = jq('#passwordExpirationInterval');
+            function validatePasswordExpiration() {
+                var interval = $('#passwordExpirationInterval');
                 if(!interval.val()) {
                     interval.val('0');
                 }
-
-            }
-
-            function validateExpirationDate() {
-                var date = jq('#passwordExpirationDate');
+                var date = $('#passwordExpirationDate');
                 if(!date.val()) {
                     date.val('01/01/1970');
                 }
-            }
 
+                if (!interval.val().match(/^\d+$/)) {
+                    xModalMessage('Note','The password expiration interval must consist only of digits.','OK');
+                }
+                else {
+                    window.securityManager.saveTabSettings();
+                }
+            }
         </script>
 
         <p>
@@ -92,7 +94,7 @@
                     </td>
                     <td style="vertical-align:top;">
                         <span id="passwordExpirationIntervalSpan">
-                            <input size="30" type="text" onkeyup="this.value=this.value.replace(/[^\d]/,'')" id="passwordExpirationInterval" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationInterval()"/>
+                <input size="30" type="text" id="passwordExpirationInterval" onchange="window.securityManager.dirtyForm();"/>
                             <small>The maximum duration (in days) that a user's password will function before it is considered to have expired and must be changed. Set as 0 to disable password expiration.</small>
                         </span>
                         <span id="passwordExpirationDateSpan" style="display: none;">
@@ -103,14 +105,16 @@
                                     XNAT.app.datePicker.init(__datepicker);
                                     ##insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date");
                                     ##jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';
-                                    jq('body').on('change','[name="passwordExpirationDate"]',function(){
+                                    jq('body').on('change','#passwordExpirationDate',function(){
                                         window.securityManager.dirtyForm();
                                     });
                                 });
                             </script>
                             ##<input type="text" id="passwordExpirationDate" name="passwordExpirationDate" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationDate()"/>
                             ##<script type="text/javascript">insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date"); jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';</script>
-                            <small>All passwords created or set before this date will be considered to have expired and must be changed. Useful in circumstances when mass changes in password policy are put into effect.</small>
+                <small>All passwords created or set before this date will be considered to have expired and must be changed.
+                    Useful in circumstances when mass changes in password policy are put into effect.
+                    Dates should be formatted MM/DD/YYYY.</small>
                         </span>
                         <style>#cal_passwordExpirationDate, #passwordExpirationDate { vertical-align: bottom }</style>
                     </td>
@@ -122,7 +126,7 @@
 
     </div>
     <div class="buttons">
-        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="security_save_button" onclick="window.securityManager.saveTabSettings();"/>
+        <input type="button" class="submit" value="Save" name="eventSubmit_doPerform" id="security_save_button" onclick="validatePasswordExpiration();"/>
         <input type="button" class="reset" value="Reset" name="eventSubmit_doReset" id="security_reset_button" onclick="window.securityManager.resetForm();" disabled/>
     </div>
 </div>

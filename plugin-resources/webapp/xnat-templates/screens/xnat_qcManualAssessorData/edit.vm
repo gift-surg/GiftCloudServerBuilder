@@ -134,7 +134,8 @@ $page.setVlinkColor($ui.vlink)
 		#auditBoxes("3" "" "" "Modified Manual QC")
 	#else
 		#auditBoxes("3" "" "Standard QC" "Created Manual QC")
-		<script>YUIDOM.get('form_justification').style.display='none';</script>
+		#hideFormJustification()
+
 	#end
 	<tr>
 		<td>

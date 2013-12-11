@@ -115,7 +115,7 @@
     #auditBoxes("2" "" "" "Modified Subject")
 #else
     #auditBoxes("2" "" "Standard creation." "Created Subject")
-                <script>YUIDOM.get('form_justification').style.display = 'none';</script>
+    #hideFormJustification()
 #end
                 <tr>
                     <td align="right">

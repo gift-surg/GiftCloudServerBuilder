@@ -1579,6 +1579,17 @@ $!turbineUtils.escapeJS($s)
 	#end
 #end
 
+#macro(hideFormJustification)
+    #if($showReason)
+    <script>
+        var justification = YUIDOM.get('form_justification');
+        if (justification && justification.style) {
+            justification.style.display = 'none';
+        }
+    </script>
+    #end
+#end
+
 ##Used to load globally scoped VM files and inject them into parent VMs.
 #macro(addGlobalCustomScreenJS $subFolder)
 	#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.debug-extension-points","false")))document.write("<div class='extension_js'>/templates/screens/$subFolder</div>")#end

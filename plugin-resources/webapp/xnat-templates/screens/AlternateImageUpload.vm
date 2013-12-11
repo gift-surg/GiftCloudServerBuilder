@@ -435,7 +435,7 @@ function makeTheFormGo() {
                                    accept="application/zip, application/x-gzip, application/x-tgz"/></td>
                     </tr>
                     #auditBoxes("3" "" "Standard Upload" "Upload Images")
-					<script>YUIDOM.get('form_justification').style.display='none';</script>
+					#hideFormJustification()
                     <tr>
                         <td>&nbsp;</td>
                         <td><input id="directButton" type="button" name="eventSubmit_doPerform" value="Begin Upload" onclick="makeTheFormGo();"/>

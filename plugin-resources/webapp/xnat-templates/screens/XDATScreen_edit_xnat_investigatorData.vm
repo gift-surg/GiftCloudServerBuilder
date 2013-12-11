@@ -64,6 +64,7 @@ $page.setVlinkColor($ui.vlink)
 </table>
 
 			#auditBoxes("2" "" "Standard creation." "Created Investigator")
-			<script>YUIDOM.get('form_justification').style.display='none';</script>
+			#hideFormJustification()
+
 </form>
 </p>

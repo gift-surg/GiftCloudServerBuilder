@@ -297,7 +297,8 @@ Once the image data have been uploaded, it may take several hours for the databa
 <TD colspan="3"><input type="file" id="image_archive" name="image_archive" size="60"/></TD>
 	</TR>
 	#auditBoxes("3" "" "" "Upload Images")
-		<script>YUIDOM.get('form_justification').style.display='none';</script>
+		#hideFormJustification()
+
 	<TR>
 		<TD colspan="3" align="right"><input type="submit" name="eventSubmit_doPerform" value="Upload"/></TD>
 	</TR>

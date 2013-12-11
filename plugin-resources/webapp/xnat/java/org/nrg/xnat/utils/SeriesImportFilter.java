@@ -39,6 +39,7 @@ public class SeriesImportFilter {
 
     public static final String SERIES_IMPORT_TOOL = "seriesImportFilter";
     public static final String SERIES_IMPORT_PATH = "config";
+    public static final int LAST_TAG = Tag.SeriesDescription;
 
     private boolean _isDirty = false;
     private boolean _enabled;

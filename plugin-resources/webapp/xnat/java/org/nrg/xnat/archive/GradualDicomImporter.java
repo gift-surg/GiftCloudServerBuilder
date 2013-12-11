@@ -69,6 +69,7 @@ import org.nrg.xnat.restlet.actions.importer.ImporterHandlerA;
 import org.nrg.xnat.restlet.services.Importer;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xnat.utils.SeriesImportFilter;
 import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,14 +238,24 @@ public class GradualDicomImporter extends ImporterHandlerA {
         final DicomInputStream dis;
         final String name = fw.getName();
         final DicomObject o;
+        final SeriesImportFilter seriesImportFilter = new SeriesImportFilter();
         try {
             bis = new BufferedInputStream(fw.getInputStream());
             try {
                 dis = null == ts ? new DicomInputStream(bis) : new DicomInputStream(bis, ts);
-                final int lastTag = dicomObjectIdentifier.getTags().last() + 1;
+                final int lastTag = Math.max(dicomObjectIdentifier.getTags().last(), seriesImportFilter.LAST_TAG) + 1;
                 logger.trace("reading object into memory up to {}", TagUtils.toString(lastTag));
                 dis.setHandler(new StopTagInputHandler(lastTag));
                 o = dis.readDicomObject();
+                if(!seriesImportFilter.shouldIncludeDicomObject(o)) {
+                    return new ArrayList<String>();
+                    /** TODO: Return information to user on rejected files. Unfortunately throwing an
+                     *  exception causes DicomBrowser to display a panicked error message. Some way of
+                     *  returning the information that a particular file type was not accepted would be
+                     *  nice, though. Possibly record the information and display on an admin page.
+                     *  Work to be done for 1.7
+                     */
+                }
                 try {
                     bis.reset();
                 } catch (IOException e) {

@@ -2,25 +2,35 @@
 <div class="mgmt_container">
 
     <div id="security_mgmt_div">
+
+        <!-- YUI calendar stuff -->
+        <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
+        <script type="text/javascript" src="$content.getURI('scripts/yui/build/yahoo-dom-event/yahoo-dom-event.js')"></script>
+##        <script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar.js')"></script>
         <script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
+
+        <script type="text/javascript" src="$content.getURI('scripts/jquery.maskedinput.js')"></script>
+        <script type="text/javascript" src="$content.getURI('scripts/ezCalendar.js')"></script>
+
         <script>
+
             function changePasswordExpirationType(radioEl){
-                var interval = $('#passwordExpirationIntervalSpan');
-                var date = $('#passwordExpirationDateSpan');
+                var interval = jq('#passwordExpirationIntervalSpan');
+                var date = jq('#passwordExpirationDateSpan');
                 if (window.securityManager) {
                     window.securityManager.dirtyForm();
                 }
-                if($(radioEl).val() == 'Interval'){
+                if(jq(radioEl).val() == 'Interval'){
                     interval.show();
                     date.hide();
                 } else {
                     interval.hide();
                     date.show();
                 }
-            };
+            }
 
             function validateExpirationInterval() {
-                var interval = $('#passwordExpirationInterval');
+                var interval = jq('#passwordExpirationInterval');
                 if(!interval.val()) {
                     interval.val('0');
                 }
@@ -28,11 +38,12 @@
             }
 
             function validateExpirationDate() {
-                var date = $('#passwordExpirationDate');
+                var date = jq('#passwordExpirationDate');
                 if(!date.val()) {
                     date.val('01/01/1970');
                 }
             }
+
         </script>
 
         <p>
@@ -65,29 +76,48 @@
             </small>
         </p>
 
-        <p>
-            <label for="passwordExpiration">Password Expiration</label>
-            <span style="display: inline-block; vertical-align: top;">
-                <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeInterval" value="Interval" onchange="changePasswordExpirationType(this);" checked="checked">
-                <label for="passwordExpirationTypeInterval" style="width:50px;">&nbsp;Interval</label><br/>
-                <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeDate" value="Date" onchange="changePasswordExpirationType(this);">
-                <label for="passwordExpirationTypeDate" style="width:50px;">&nbsp;Date</label>
-            </span>
+        <div class="row">
+            ## yeah, it's a table. so sue me.
+            <table style="display:inline-block;" cellspacing=0 cellpadding=0>
+                <tr>
+                    <td style="white-space:nowrap;vertical-align:top;padding-right:20px;">
+                        <label for="passwordExpiration" style="width:auto;white-space:nowrap;">Password Expiration</label>
+                    </td>
+                    <td style="white-space:nowrap;vertical-align:top;padding-right:10px;">
+                        <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeInterval" value="Interval" onchange="changePasswordExpirationType(this);" checked="checked">
+                        <label for="passwordExpirationTypeInterval" style="width:50px;">&nbsp;Interval</label>
+                        <br/>
+                        <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeDate" value="Date" onchange="changePasswordExpirationType(this);">
+                        <label for="passwordExpirationTypeDate" style="width:50px;">&nbsp;Date</label>
+                    </td>
+                    <td style="vertical-align:top;">
+                        <span id="passwordExpirationIntervalSpan">
+                            <input size="30" type="text" onkeyup="this.value=this.value.replace(/[^\d]/,'')" id="passwordExpirationInterval" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationInterval()"/>
+                            <small>The maximum duration (in days) that a user's password will function before it is considered to have expired and must be changed. Set as 0 to disable password expiration.</small>
+                        </span>
+                        <span id="passwordExpirationDateSpan" style="display: none;">
+                            <span class="datepicker single us today" data-validate="onblur" data-input-id="passwordExpirationDate" data-input-name="passwordExpirationDate"></span>
+                            <script type="text/javascript">
+                                jq(function(){
+                                    var __datepicker = jq('#passwordExpirationDateSpan').find('.datepicker');
+                                    XNAT.app.datePicker.init(__datepicker);
+                                    ##insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date");
+                                    ##jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';
+                                    jq('body').on('change','[name="passwordExpirationDate"]',function(){
+                                        window.securityManager.dirtyForm();
+                                    });
+                                });
+                            </script>
+                            ##<input type="text" id="passwordExpirationDate" name="passwordExpirationDate" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationDate()"/>
+                            ##<script type="text/javascript">insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date"); jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';</script>
+                            <small>All passwords created or set before this date will be considered to have expired and must be changed. Useful in circumstances when mass changes in password policy are put into effect.</small>
+                        </span>
+                        <style>#cal_passwordExpirationDate, #passwordExpirationDate { vertical-align: bottom }</style>
+                    </td>
+                </tr>
+            </table>
 
-            <span id="passwordExpirationIntervalSpan">
-                <input size="30" type="text" onkeyup="this.value=this.value.replace(/[^\d]/,'')" id="passwordExpirationInterval" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationInterval()"/>
-                <small>The maximum duration (in days) that a user's password will function before it is considered to have
-                    expired and must be changed. Set as 0 to disable password expiration.</small>
-            </span>
-
-            <span id="passwordExpirationDateSpan" style="display: none;">
-                <input type="text" id="passwordExpirationDate" name="passwordExpirationDate" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationDate()"/>
-                <script type="text/javascript">insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date"); $('#cal_passwordExpirationDate').style.verticalAlign='bottom';</script>
-                <small>All passwords created or set before this date will be considered to have expired and must be changed.
-                    Useful in circumstances when mass changes in password policy are put into effect.</small>
-            </span>
-            <style>#cal_passwordExpirationDate{vertical-align: bottom}</style>
-        </p>
+        </div>
 
 
     </div>
@@ -99,8 +129,6 @@
 
 
 <script type="text/javascript">
-
-
 
     function configurationSecurityTabChange(obj) {
         if(obj.newValue.get("href")=="#security") {
@@ -122,4 +150,5 @@
 
     YAHOO.util.Event.onDOMReady(addSecurityMgmtMonitor);
     putConfigurationControls('security', ['enableCsrfToken', 'enableCsrfEmail', 'restrictUserListAccessToAdmins', 'requireSaltedPasswords', 'passwordExpirationType', 'passwordExpirationInterval', 'passwordExpirationDate']);
+
 </script>

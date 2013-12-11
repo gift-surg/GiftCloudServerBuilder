@@ -589,7 +589,7 @@ span.spacer { display: none !important ; }
 .mgmt_container .row { margin-bottom: 15px ; padding-bottom: 15px ; border-bottom: 1px solid #ccc ; }
 .mgmt_container label { display: inline-block ; width: 160px; font-weight: bold ; }
 .mgmt_container small { display: block ; margin-top: 5px ; font-size: 12px !important ; }
-.mgmt_container input[type="text"] { vertical-align: bottom ; }
+.mgmt_container input[type="text"] { padding: 2px 6px 1px 5px ; vertical-align: bottom ; }
 .mgmt_container textarea { width: 100% ; }
 .mgmt_container .buttons { margin-top: -5px ; text-align: right ; }
 /* per-tab customizations */

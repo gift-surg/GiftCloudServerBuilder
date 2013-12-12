@@ -6,6 +6,15 @@
             This is the site-wide anonymization script applied to all incoming and archiving DICOM resources. This script
             can also be supplemented by anonymization operations specified at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.
         </p>
+        <p>
+            Note that if the site-wide anonymization is enabled, even with an empty script, it will add a deidentification
+            method status entry to DICOM headers. To allow DICOM files to be imported without any changes, disable site-wide
+            anonymization.
+        </p>
+        <p>
+            <label for="data.anonymize" style="width: 290px;">Site-wide Anonymization Enabled</label>
+            <input type="checkbox" id="data.anonymize" onchange="window.anonymizationManager.dirtyForm();" />
+        </p>
         <p><label for="anonScript">Script:</label></p>
         <textarea id="anonScript" name="anonScript" rows="20" cols="80" disabled></textarea>
     </div>
@@ -43,5 +52,5 @@
     }
 
     YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
-    putConfigurationControls('anonymization', ['anonScript']);
+    putConfigurationControls('anonymization', ['anonScript', 'data.anonymize']);
 </script>

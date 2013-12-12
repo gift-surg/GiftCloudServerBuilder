@@ -60,7 +60,7 @@ public class AnonUtils {
             logger.debug("Retrieved status {} for {}, {} for project: {}", new Object[] { enabled, DicomEdit.ToolName, path, project });
         }
 
-        return enabled;
+        return enabled && XDAT.getBoolSiteConfigurationProperty("data.anonymize", true);
 	}
 	
 	public List<Configuration> getAllScripts (Long project) {

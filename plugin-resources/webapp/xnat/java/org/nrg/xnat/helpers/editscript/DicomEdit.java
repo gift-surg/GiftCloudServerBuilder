@@ -357,8 +357,11 @@ public final class DicomEdit extends SecureResource {
     private String getFile() throws Exception {
         Request rq = DicomEdit.this.getRequest();
         Response rp = DicomEdit.this.getResponse();
-
-        List<FileWriterWrapperI> fws = DicomEdit.this.getFileWritersAndLoadParams(rq.getEntity());
+        Representation entity = rq.getEntity();
+        if(entity == null || entity.getSize() == 0) {
+            return "";
+        }
+        List<FileWriterWrapperI> fws = DicomEdit.this.getFileWritersAndLoadParams(entity);
 
         if (fws.isEmpty()) {
             logger.warn("Unable to unpack script from request {}", rq);

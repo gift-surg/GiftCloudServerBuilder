@@ -1,5 +1,9 @@
 #set ($template = $data.getTemplateInfo())
-$!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm"))
+#if($data.getParameters().getString("login").equals("true"))
+    $!template.setLayoutTemplate($siteConfig.getProperty("siteLandingLayout","/Index.vm"))
+#else
+    $!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm"))
+#end
 #if ($data.message)
 <DIV class="warning">$data.message</DIV><br>
 #end
@@ -10,8 +14,16 @@ $!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm
 </div>
 <div style="line-height:6px">&nbsp;</div>
 #end
-#if($turbineUtils.templateExists($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm")))
-    #parse($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm"))
+#if($data.getParameters().getString("login").equals("true"))
+    #if($turbineUtils.templateExists($siteConfig.getProperty("siteLoginLanding","/screens/QuickSearch.vm")))
+        #parse($siteConfig.getProperty("siteLoginLanding","/screens/QuickSearch.vm"))
+    #else
+        <div>Custom site login landing page cannot be found!<br/><br/>Contact the site administrator.</div>
+    #end
 #else
-    <div>Custom site home page cannot be found!<br/><br/>Contact the site administrator.</div>
+    #if($turbineUtils.templateExists($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm")))
+        #parse($siteConfig.getProperty("siteHome","/screens/QuickSearch.vm"))
+    #else
+        <div>Custom site home page cannot be found!<br/><br/>Contact the site administrator.</div>
+    #end
 #end

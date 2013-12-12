@@ -76,9 +76,8 @@ public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 	}
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response){
-        String loginLanding = "/app/template/IndexLoginLanding.vm";
+        String loginLanding = "/app/template/Index.vm?login=true";
         String url = getDefaultTargetUrl();
-        logger.debug("landing url: "+url);
         if("/".equals(url)){
             setDefaultTargetUrl(loginLanding);
             return loginLanding;

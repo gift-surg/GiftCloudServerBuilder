@@ -74,8 +74,8 @@ public class SessionXMLRebuilderJob implements JobInterface {
                     long then = sessionData.getLastBuiltDate().getTime();
                     double interval = (double) _map.getIntValue("interval");
                     double diff = diffInMinutes(then, now);
-                    if (diff >= interval) {
-                            updated++;
+                    if (diff >= interval && !PrearcUtils.isSessionReceiving(sessionData.getSessionDataTriple())) {
+                        updated++;
                         try {
                             if (PrearcDatabase.setStatus(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject(), PrearcUtils.PrearcStatus.QUEUED_BUILDING)) {
                                 logger.debug("Creating JMS queue entry for {} to archive {}", user.getUsername(), sessionData.getExternalUrl());
@@ -85,6 +85,8 @@ public class SessionXMLRebuilderJob implements JobInterface {
                         } catch (Exception exception) {
                             logger.error("Error when setting prearchive session status to QUEUED", exception);
                         }
+                    }else if(diff>=(interval*10)){
+                    	logger.error(String.format("Prearchive session locked for an abnormally large time within CACHE_DIR/prearc_locks/%1$s/%2$s/%3$s",sessionData.getProject(), sessionData.getTimestamp(),sessionData.getName()));
                     }
                 }
             }

@@ -62,6 +62,7 @@ import org.nrg.xnat.helpers.prearchive.DatabaseSession;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.Either;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcUtils.SessionFileLockException;
 import org.nrg.xnat.helpers.prearchive.SessionData;
 import org.nrg.xnat.helpers.prearchive.SessionException;
 import org.nrg.xnat.helpers.uri.URIManager;
@@ -225,13 +226,6 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
     }
     
-    //this is a global list of the files that are currently 'open' by the GradualDicomImporter
-    //files will be opened at the time they are initially writing out
-    //files will remain open during anonymization
-    //when the trasaction is complete, the files will be removed from this list
-    //I don't particularly like this implementation.  I'd prefer to use the FileLock api.  But, it seems like there may be threading issues there.
-    private static List<String> LOCKED_FILE_NAMES=Collections.synchronizedList(new ArrayList<String>());
-
     @Override
     public List<String> call() throws ClientException, ServerException {
         final BufferedInputStream bis;
@@ -419,8 +413,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
         final String source = getString(params, SENDER_ID_PARAM, user.getLogin());
 
-        String lock=null;//the name of the file that gets locked
-        boolean locked=false;//whether this file gets locked
+        PrearcUtils.PrearcFileLock lock=null;
         
         try {
             final DicomObject fmi;
@@ -444,29 +437,17 @@ public class GradualDicomImporter extends ImporterHandlerA {
 
             final File f = getSafeFile(sessdir, scan, name, o, Boolean.valueOf((String)params.get(RENAME_PARAM)));
             f.getParentFile().mkdirs();
-
-            lock=f.getName();
-            
-        	synchronized(LOCKED_FILE_NAMES){
-        		if(LOCKED_FILE_NAMES.contains(lock)){
-        			//if this file is already locked, throw an exception so the user will no there is a problem.
-        			ServerException e=new ServerException("Concurrent file sends are not supported.");
-        			logger.error("",e);
-        			throw e;
-        		}else{
-        			//otherwise lock this file
-        			LOCKED_FILE_NAMES.add(lock);
-        			locked=true;
-        		}
-        	}
-        	
+                    	
             try {
+            	lock=PrearcUtils.lockFile(sess.getSessionDataTriple(), f.getName());
             	
                 write(fmi, o, bis, f, source);
                     
             } catch (IOException e) {
                 throw new ServerException(Status.SERVER_ERROR_INSUFFICIENT_STORAGE, e);
-            }
+            } catch (SessionFileLockException e) {
+				throw new ClientException("Concurrent file sends of the same data is not supported.");
+			}
             try {
             	// check to see of this session came in through the upload applet
             	Boolean uploadedViaApplet = Importer.getUploadFlag(this.params);
@@ -501,7 +482,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
         			// if we created a row in the database table for this session
         			// delete it.
         			if (getOrCreate.isRight()) {
-        					PrearcDatabase.deleteSession(sess.getFolderName(), sess.getTimestamp(), sess.getProject());
+        				PrearcDatabase.deleteSession(sess.getFolderName(), sess.getTimestamp(), sess.getProject());
         			}
         			else {
         				f.delete();
@@ -521,9 +502,9 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 logger.error("closing DicomInputStream failed", e);
             }
             
-            if(null!=lock && locked){
+            if(null!=lock){
             	//release the file lock
-            	LOCKED_FILE_NAMES.remove(lock);
+            	lock.release();
             }
         }
 

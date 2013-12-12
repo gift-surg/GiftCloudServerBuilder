@@ -131,5 +131,18 @@ public class FileUtils {
 		}
 	}
 
+
+	public static <T extends String> File buildCacheSubDir(T... directories) {
+		File last = new File(XFT.GetCachePath());
+		
+		for(final String dir:directories){
+			if(!StringUtils.isEmpty(dir)){
+				last=new File(last,dir);
+			}
+		}
+
+		return last;
+	}
+
 	private static final Log logger = LogFactory.getLog(FileUtils.class);
 }

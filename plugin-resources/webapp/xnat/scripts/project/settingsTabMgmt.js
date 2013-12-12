@@ -238,6 +238,8 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
                 control.value = control.defaultValue;
             } else if (control.type == 'checkbox') {
                 control.checked = control.defaultValue.toLowerCase() === 'true';
+            } else if (control.type == 'select-one') {
+                $(control).val(control.defaultValue);
             } else if (control.type == 'hidden') {
                 control.value = control.defaultValue;
                 jq('#' + control.id + 'Label').html(control.defaultValue);

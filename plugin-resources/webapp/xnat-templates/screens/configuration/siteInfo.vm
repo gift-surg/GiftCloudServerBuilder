@@ -68,7 +68,7 @@
             <label for="siteLoginLanding">Site Login Landing Page</label>
             <input size="30" type="text" name="siteLoginLanding" id="siteLoginLanding" onchange="window.siteInfoManager.dirtyForm();" />
             <label for="siteLandingLayout" style="padding-left: 20px; width: 50px;">Layout</label>
-            <select name="siteLandingLayout" id="siteLandingLayout" value="menu">
+            <select name="siteLandingLayout" id="siteLandingLayout" value="menu" onchange="window.siteInfoManager.dirtyForm();">
                 <option value="/Index.vm">Menu</option>
                 <option value="/NoMenu.vm">No Menu</option>
                 <option value="/Noninteractive.vm">Non-Interactive</option>
@@ -78,7 +78,7 @@
             <label for="siteHome">Site Home Page</label>
             <input size="30" type="text" name="siteHome" id="siteHome" onchange="window.siteInfoManager.dirtyForm();" />
             <label for="siteHomeLayout" style="padding-left: 20px; width: 50px;">Layout</label>
-            <select name="siteHomeLayout" id="siteHomeLayout" value="menu">
+            <select name="siteHomeLayout" id="siteHomeLayout" value="menu" onchange="window.siteInfoManager.dirtyForm();">
                 <option value="/Index.vm">Menu</option>
                 <option value="/NoMenu.vm">No Menu</option>
                 <option value="/Noninteractive.vm">Non-Interactive</option>

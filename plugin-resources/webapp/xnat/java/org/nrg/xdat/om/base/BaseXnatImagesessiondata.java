@@ -2582,59 +2582,92 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         
         return false;
     }
-
-
+    
     public List<String> getSessionReadableScanStats() {
         return getSessionReadableScanStats(false);
     }
+    
+    public String getFormattedSessionReadableScanStats(){
+        List<String> stats = this.getSessionReadableScanStats();
+        if (stats.size() == 1) {
+            return stats.get(0);
+        } else {
+            return BaseXnatImagescandata.getListAsTipText(stats);
+        }
+    }
+    
+    public List<String> getPrearchiveSessionReadableScanStats(Collection <XnatImagescandataI> scans){
+        List<String> stats = new ArrayList<String>();
+        int count = 0;
+        long size = 0;
+        for (XnatImagescandataI scan : scans){
+           if(scan instanceof BaseXnatImagescandata){
+               Map<String,Number> prearcStats = ((BaseXnatImagescandata)scan).getPrearchiveFileStats();
+               count += prearcStats.get("count").intValue();
+               size += prearcStats.get("size").longValue();
+           }else{
+              logger.error("Unable to retrieve file counts.", new Exception("Prearchive scan is not an instance of BaseXnatImagescandata. Skipping..."));
+           }
+        }
+        stats.add(CatalogUtils.formatFileStats("TOTAL", count, size));
+        return stats;
+    }
+    
 
     public List<String> getSessionReadableScanStats(boolean useLabel) {
         List<String> stats = new ArrayList<String>();
         // Use the TreeMap so that the keys are sorted
         Map<String, List<Long>> accumulator = new TreeMap<String, List<Long>>();
-        int count = 0;
-        long size = 0;
-        for (XnatImagescandataI scan : this.getSortedScans()){
-            for (XnatAbstractresourceI resource : scan.getFile()) {
-                String fileLabel = resource.getLabel();
-                if (fileLabel != null && fileLabel.equals("SNAPSHOTS")) {
-                    continue;
-                }
-                if (fileLabel == null || fileLabel.trim().equals("")) {
-                    fileLabel = "Unknown";
-                }
 
-                Integer fileCount = resource.getFileCount();
-                Object rawFileSize = resource.getFileSize();
+        if(this.getId() == null){
+            // If the session is in the prearchive
+            stats = this.getPrearchiveSessionReadableScanStats(this.getSortedScans());
+         }else{
+             // The session is in the archive
+             int count = 0;
+             long size = 0;
+             for (XnatImagescandataI scan : this.getSortedScans()){
+                 for (XnatAbstractresourceI resource : scan.getFile()) {
+                     String fileLabel = resource.getLabel();
+                     if (fileLabel != null && fileLabel.equals("SNAPSHOTS")) {
+                         continue;
+                     }
+                     if (fileLabel == null || fileLabel.trim().equals("")) {
+                         fileLabel = "Unknown";
+                     }
+                     
+                     Integer fileCount = resource.getFileCount();
+                     Object rawFileSize = resource.getFileSize();
 
-                List<Long> data;
-                if (accumulator.containsKey(fileLabel)) {
-                    data = accumulator.get(fileLabel);
-                } else {
-                    data = new ArrayList<Long>() {{ add(0L); add(0L); }};
-                    accumulator.put(fileLabel, data);
-                }
+                     List<Long> data;
+                     if (accumulator.containsKey(fileLabel)) {
+                         data = accumulator.get(fileLabel);
+                     } else {
+                         data = new ArrayList<Long>() {{ add(0L); add(0L); }};
+                         accumulator.put(fileLabel, data);
+                     }
 
-                if (fileCount != null) {
-                    count += fileCount;
-                    Long aggregate = data.get(0);
-                    data.set(0, aggregate + fileCount);
-                }
-                if (rawFileSize != null) {
-                    long fileSize;
-                    if (rawFileSize instanceof Integer) {
-                        fileSize = (Integer) rawFileSize;
-                    } else if (rawFileSize instanceof Long) {
-                        fileSize = (Long) rawFileSize;
-                    } else {
-                        fileSize = Long.parseLong(rawFileSize.toString());
-                    }
-                    size += fileSize;
-                    data.set(1, data.get(1) + fileSize);
-                }
-            }
-        }
-        stats.add(CatalogUtils.formatFileStats(useLabel ? getLabel() : "TOTAL", count, size));
+                     if (fileCount != null) {
+                         count += fileCount;
+                         Long aggregate = data.get(0);
+                         data.set(0, aggregate + fileCount);
+                     }
+                     if (rawFileSize != null) {
+                         long fileSize;
+                         if (rawFileSize instanceof Integer) {
+                             fileSize = (Integer) rawFileSize;
+                         } else if (rawFileSize instanceof Long) {
+                             fileSize = (Long) rawFileSize;
+                         } else {
+                             fileSize = Long.parseLong(rawFileSize.toString());
+                         }
+                         size += fileSize;
+                         data.set(1, data.get(1) + fileSize);
+                     }
+                 }
+             }
+             stats.add(CatalogUtils.formatFileStats(useLabel ? getLabel() : "TOTAL", count, size));
+         }
         if (accumulator.containsKey("DICOM")) {
             List<Long> values = accumulator.get("DICOM");
             stats.add(CatalogUtils.formatFileStats("DICOM", values.get(0), values.get(1)));

@@ -497,48 +497,53 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
 		return new ImageScanTypeMapping(project, dbName);
 	}
 	
+	public Map<String, Number> getPrearchiveFileStats(){
+		Map<String, Number> stats = new HashMap<String, Number>();
+		int totalCount = 0;
+		long totalSize = 0;
+        for (XnatAbstractresourceI resource : this.getFile()) {
+            String prearcPath = null;
+            try{
+               // Try to retrieve the scan path within the prearchive.
+               prearcPath =  this.getParent().getStringProperty("prearchivepath");
+               if(null == prearcPath || prearcPath.equals("")){
+                  throw new Exception("Unable to determine the prearchive path for scan");
+               }
+            }catch(Exception e){
+               // If the prearchive path is null or empty, count and size should be 0
+               logger.error("Unable to retrieve file counts.", e);
+               continue;
+            }
+               
+            if(resource instanceof XnatResourcecatalogI){
+               // Get the rootPath and FileStats
+               final String rootPath=CatalogUtils.getCatalogFile(prearcPath, ((XnatResourcecatalogI)resource)).getParentFile().getAbsolutePath();
+               CatalogUtils.Stats c_stats=CatalogUtils.getFileStats(CatalogUtils.getCleanCatalog(prearcPath, (XnatResourcecatalogI)resource, false), rootPath);
+               if(null != c_stats){
+                  totalSize += c_stats.size;
+                  totalCount += c_stats.count;
+               }else{
+                  logger.error("Unable to retrieve file counts.", new Exception("Unable to retrieve CatalogUtils.Stats for the given resource."));
+               }
+            }else{
+               logger.error("Unable to retrieve file counts.", new Exception("Prearchive resource is not an instance of XnatResourcecatalogI. Skipping..."));
+            }
+         }
+        stats.put("size", Long.valueOf(totalSize));
+        stats.put("count", Integer.valueOf(totalCount));
+        return stats;
+	}
+	
     public List<String> getReadableFileStats() {
         List<String> stats = new ArrayList<String>();
-        int totalCount = 0;
-        long totalSize = 0;
-        String prearcPath = null;
         
         // If the scan is in the prearchive, retrieve the count & file sizes from CatalogUtils.getFileStats()
         if(this.getImageSessionId() == null){
-           for (XnatAbstractresourceI resource : getFile()) {
-              // Get the label, if it is null or a snapshot skip it.
-              String label = resource.getLabel();
-              if (label != null && label.equals("SNAPSHOTS")) {
-                 continue;
-              }
-            
-              try{
-                 // Try to retrieve the scan path within the prearchive.
-                 prearcPath =  this.getParent().getStringProperty("prearchivepath");
-                 if(null == prearcPath || prearcPath.equals("")){
-                    throw new Exception("Unable to determine the prearchive path for scan");
-                 }
-              }catch(Exception e){
-                 // If the prearchive path is null or empty, count and size should be 0
-                 logger.error("Unable to retrieve file counts.", e);
-                 stats.add(CatalogUtils.formatFileStats(label, 0, 0));
-                 continue;
-              }
-                 
-              if(resource instanceof XnatResourcecatalogI){
-                 // Get the rootPath and FileStats
-                 final String rootPath=CatalogUtils.getCatalogFile(prearcPath, ((XnatResourcecatalogI)resource)).getParentFile().getAbsolutePath();
-                 CatalogUtils.Stats c_stats=CatalogUtils.getFileStats(CatalogUtils.getCleanCatalog(prearcPath, (XnatResourcecatalogI)resource, false), rootPath);
-                 
-                 // Add the count and size to the stats list as well as increment the totalSize and totalCount.
-                 stats.add(CatalogUtils.formatFileStats(label, c_stats.count, c_stats.size));
-                 totalSize += c_stats.size;
-                 totalCount += c_stats.count;
-              }else{
-                 logger.error("Unable to retrieve file counts.", new Exception("Prearchive resource is not an instance of XnatResourcecatalogI"));
-              }
-           }
+           Map<String,Number> prearcStats = this.getPrearchiveFileStats();
+           stats.add(CatalogUtils.formatFileStats("TOTAL", prearcStats.get("count").intValue(), prearcStats.get("size").longValue()));
         }else{ // If this scan is already archived, retrieve the count & file sizes from the resource
+           int totalCount = 0;
+           long totalSize = 0;
            for (XnatAbstractresourceI resource : getFile()) {
               // Get the label, if it is null or a snapshot skip it.
               String label = resource.getLabel();
@@ -571,10 +576,10 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
               totalCount += count;
               stats.add(CatalogUtils.formatFileStats(label, count, size));
            }
+           // Add totalCount and totalSize to the stats list
+           stats.add(0, CatalogUtils.formatFileStats("TOTAL", totalCount, totalSize));
         }
-        
-        // Add totalCount and totalSize to the stats list
-        stats.add(0, CatalogUtils.formatFileStats("TOTAL", totalCount, totalSize));
+
         return stats;
     }
 
@@ -592,7 +597,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
                 return stats.get(0);
             } else {
                 return getListAsTipText(stats);
-}
+           }
         } else {
             return getEmptyResourceCount(user);
         }
@@ -605,7 +610,7 @@ public class BaseXnatImagescandata extends AutoXnatImagescandata {
         return getListAsTipText(EMPTY_RESOURCE_LIST);
     }
 
-    private String getListAsTipText(List<String> list) {
+    static public String getListAsTipText(List<String> list) {
         if (list == null || list.size() == 0 || list.get(0) == null || list.get(0).trim().equals("")) {
             return "<span class=\"tip_text\">No items found.<span style=\"top:20px;white-space:nowrap;left:-10;width:auto;\" class=\"tip shadowed\">No items were found: Check your data to be sure you specified a valid system object.</span></span>";
         }

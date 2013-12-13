@@ -19,8 +19,15 @@
 #set ($scanCounter = 0)
  <tbody id="scan_tbody">
  </tbody>
+ <tr>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td><b>Total:</b> $!om.getFormattedSessionReadableScanStats()</td></tr>
 </TABLE>
-					<div id="scans" style="position:absolute;top:50px;left:50px;"></div>
+<div id="scans" style="position:absolute;top:50px;left:50px;"></div>
 <script type="text/javascript" src="$content.getURI("scripts/imageScanData/scan_tools.js")"></script>
 <script type="text/javascript">
     jq(function(){

@@ -45,7 +45,7 @@ public class ConfigResource extends SecureResource {
 
     private static final Logger _log = LoggerFactory.getLogger(ConfigResource.class);
 
-    private static final String[] configColumns = {"tool", "path", "project", "user", "create_date", "reason", "contents", "version", "status"};
+    private static final String[] configColumns = {"tool", "path", "project", "user", "create_date", "reason", "contents", "unversioned", "version", "status"};
     private static final String[] listColumns = {"tool"};
 
     private final String projectName;
@@ -183,7 +183,7 @@ public class ConfigResource extends SecureResource {
 
             } else if (configurations.size() > 0 && configurations.get(0) != null) {
                 //we generated a list of configurations, so represent those.
-                table.initTable(configColumns);  //"tool","path","project","user","create_date","reason","contents", "version", "status"};
+                table.initTable(configColumns);  //"tool","path","project","user","create_date","reason","contents", "unversioned", "version", "status"};
                 for (Configuration c : configurations) {
                     if (c != null) {
 
@@ -207,6 +207,7 @@ public class ConfigResource extends SecureResource {
                                 c.getCreated().toString(),
                                 c.getReason(),
                                 c.getContents(),
+                                Boolean.toString(c.isUnversioned()),
                                 Integer.toString(c.getVersion()),
                                 c.getStatus()
                         };
@@ -254,24 +255,28 @@ public class ConfigResource extends SecureResource {
 
             fixAnonPath();
 
+
+            boolean handledStatus = false;
             //if this is a status update, do it and return
             if (getQueryVariable("status") != null) {
-                //   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}&status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}&status={enabled, disabled}
+                //   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}
                 final boolean enable = "enabled".equals(getQueryVariable("status")) || "true".equals(getQueryVariable("status"));
                 if (enable) {
                     configService.enable(user.getUsername(), reason, toolName, path, projectId);
+                    handledStatus = true;
                 } else {
                     configService.disable(user.getUsername(), reason, toolName, path, projectId);
+                    getResponse().setStatus(Status.SUCCESS_OK);
+                    return;
                 }
+            }
+
+            Representation entity = getRequest().getEntity();
+            if (handledStatus && entity.getAvailableSize() == 0) {
                 getResponse().setStatus(Status.SUCCESS_OK);
                 return;
             }
 
-            //if we got to here, we're adding a new configuration. do it:
-            Representation entity;
-            FileWriterWrapperI fw;
-
-            entity = getRequest().getEntity();
             List<FileWriterWrapperI> fws = getFileWritersAndLoadParams(entity);
             if (fws.size() == 0) {
                 _log.error("Unknown upload format", new Object[]{user.getUsername(), projectName});
@@ -284,7 +289,8 @@ public class ConfigResource extends SecureResource {
                 getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Importer is limited to one uploaded resource at a time.");
                 return;
             }
-            fw = fws.get(0);
+
+            FileWriterWrapperI fw = fws.get(0);
 
             //read the input stream into a string buffer.
             final InputStream is = fw.getInputStream();

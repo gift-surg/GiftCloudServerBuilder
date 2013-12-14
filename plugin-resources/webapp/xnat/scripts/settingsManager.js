@@ -123,6 +123,7 @@ function scriptGet (_dom,_obj) {
    *   project : "",
    *   enable_radio : "",
    *   disable_radio : "",
+   *   mode_list : "",
    *   script_text_area : "",
    *   save_button : ""
    * }
@@ -258,4 +259,117 @@ function scriptGet (_dom,_obj) {
     YAHOO.util.Connect.asyncRequest('GET', this.obj.getScript, {success : scriptGet, failure : this.onFailure, cache : false, scope : this});
   };
   this.addListeners();
+}
+
+function seriesImportFiltersGet(settings) {
+    /*
+     'container': document.getElementById('series_import_filter_container'),
+     'project': '$project.getId()',
+     'enable_checkbox': 'enable_series_import_filter',
+     'mode_list': 'series_import_filter_mode_list',
+     'filters_text_area': 'series_import_filter_text_area',
+     'save_button': 'series_import_filter_save'
+     */
+    this.project = settings.project;
+    this.enable = document.getElementById(settings.enable_checkbox);
+    this.mode = document.getElementById(settings.mode_list);
+    this.filters = document.getElementById(settings.filters_text_area);
+    this.save = document.getElementById(settings.save_button);
+    this.initial = {status: false, mode: null, filters: null};
+    this.onFailure = function (o) {
+        if (o.status == 401) {
+            xModalMessage('Session Expired', 'WARNING: Your session has expired.<br/><br/>You will need to re-login and navigate to the content.');
+            window.location = serverRoot + "/app/template/Login.vm";
+        } else if (o.status == 404) {
+            // just means the script doesn't yet exist. This is likely ok.
+        } else {
+            // this.disableDOM(false);
+            xModalMessage('Error' + o.status, 'ERROR (' + o.statusText + ')');
+        }
+    };
+    this.isDirty = function () {
+        if (this.initial.status != this.enable.checked) {
+            return true;
+        }
+        // If the current enabled state isn't different and the enabled state is disabled,
+        // then nothing has effectively changed.
+        if (!this.initial.status) {
+            return false;
+        }
+        if (this.initial.mode != this.mode.value) {
+            return true;
+        }
+        return this.initial.filters != this.filters.value;
+    };
+    this.determineDifference = function () {
+        this.save.disabled = !this.isDirty();
+    };
+    this.addListeners = function() {
+        var that = this;
+        this.enable.onclick = function () {
+            that.mode.disabled = that.filters.disabled = !this.checked;
+            that.determineDifference();
+        };
+        this.mode.onchange = function() {
+            that.determineDifference();
+        };
+        this.filters.onchange = this.filters.onkeyup = function() {
+            that.determineDifference();
+        };
+        this.save.onclick = function() {
+            var callbacks = {
+                success: function() {
+                    xModalMessage('Saved', 'Your changes to the series import filters for the project ' + that.project + ' have been saved');
+                },
+                failure: that.onFailure,
+                cache: false,
+                scope: this };
+            if (!that.enable.checked) {
+                YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=disabled&XNAT_CSRF=' + csrfToken, callbacks);
+            } else {
+                var mode = that.mode.value;
+                var filters = that.filters.value;
+                // If the mode and filters haven't changed, then we just need to enable the filter.
+                if (that.initial.mode == mode && that.initial.filters == filters) {
+                    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=enabled&XNAT_CSRF=' + csrfToken, callbacks);
+                } else {
+                    var status = !that.initial.status ? '&status=enabled' : '';
+                    var data = YAHOO.lang.JSON.stringify({ mode: mode, filters: filters });
+                    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?inbody=true&XNAT_CSRF=' + csrfToken + status, callbacks, data);
+                }
+            }
+        };
+    };
+    this.get = function() {
+        this.populateAttributes = function (config) {
+            this.mode.disabled = this.filters.disabled = false;
+            var contents = YAHOO.lang.JSON.parse(config.contents);
+            if (contents) {
+                if (contents.mode) {
+                    this.mode.value = this.initial.mode = contents.mode;
+                }
+                if (contents.filters) {
+                    this.filters.value = this.initial.filters = contents.filters;
+                }
+            }
+        };
+
+        this.populate = function(response) {
+            var results = YAHOO.lang.JSON.parse(response.responseText);
+            var config = results.ResultSet.Result[0]; // TODO: This is way too trusting. There should be validation here.
+            var enabled = config.status && (config.status == 'enabled' || config.status == 'true');
+            this.initial.status = enabled;
+
+            // Only enable the controls if enabled is true, since they'll already be disabled by default.
+            this.populateAttributes.call(this, config);
+            if (enabled) {
+                this.enable.checked = true;
+            } else {
+                this.mode.disabled = this.filters.disabled = true;
+            }
+        };
+        var callbacks = { success: this.populate, failure: this.onFailure, cache: false, scope: this };
+        YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/data/projects/' + this.project + '/config/seriesImportFilter/config?XNAT_CSRF=' + csrfToken, callbacks);
+    };
+    this.addListeners();
 }

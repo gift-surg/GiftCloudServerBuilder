@@ -567,8 +567,8 @@ public final class PrearcDatabase {
     /**
      * Move a session from the prearchive to the archive.
      * @param sessions
-     * @param allowDataDeletion
-     * @param overwrite
+     * @param overrideExceptions
+     * @param allowSessionMerge
      * @param overwriteFiles
      * @param user
      * @param listeners
@@ -579,7 +579,7 @@ public final class PrearcDatabase {
      * @throws SyncFailedException
      * @throws IllegalStateException
      */
-    public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final boolean allowDataDeletion, final boolean overwrite, final boolean overwriteFiles, final XDATUser user, final Set<StatusListenerI> listeners) throws Exception, SQLException, SessionException, SyncFailedException, IllegalStateException {
+    public static Map<SessionDataTriple, Boolean> archive(final List<PrearcSession> sessions, final Boolean overrideExceptions,final Boolean allowSessionMerge,final Boolean overwriteFiles, final XDATUser user, final Set<StatusListenerI> listeners) throws Exception, SQLException, SessionException, SyncFailedException, IllegalStateException {
         List<SessionDataTriple> ss= new ArrayList<SessionDataTriple>();
 
         for(PrearcSession map:sessions){
@@ -593,7 +593,7 @@ public final class PrearcDatabase {
                 while(i.hasNext()){
                     PrearcSession _s = i.next();
                     try {
-                        PrearcDatabase._archive(_s,allowDataDeletion,overwrite,overwriteFiles,user,listeners,true);
+                        PrearcDatabase._archive(_s,overrideExceptions,allowSessionMerge,overwriteFiles,user,listeners,true);
                     } catch (SyncFailedException e) {
                         logger.error("",e);
                     }
@@ -603,18 +603,18 @@ public final class PrearcDatabase {
         return ret;
     }
 
-    public static String archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, boolean overwrite_files, XDATUser user, Set<StatusListenerI> listeners) throws SyncFailedException {
-    	return PrearcDatabase._archive(session, allowDataDeletion, overwrite,overwrite_files, user, listeners,false);
+    public static String archive (PrearcSession session, final Boolean overrideExceptions,final Boolean allowSessionMerge,final Boolean overwriteFiles, XDATUser user, Set<StatusListenerI> listeners) throws SyncFailedException {
+    	return PrearcDatabase._archive(session, overrideExceptions, allowSessionMerge,overwriteFiles, user, listeners,false);
     }
 
-    private static String _archive (PrearcSession session, boolean allowDataDeletion, boolean overwrite, boolean overwrite_files, XDATUser user, Set<StatusListenerI> listeners, boolean waitFor) throws SyncFailedException {
+    private static String _archive (PrearcSession session, final Boolean overrideExceptions,final Boolean allowSessionMerge,final Boolean overwriteFiles, XDATUser user, Set<StatusListenerI> listeners, boolean waitFor) throws SyncFailedException {
     	final String prearcDIR=session.getFolderName();
         final String timestamp=session.getTimestamp();
         final String project=session.getProject();
         
     	final PrearcSessionArchiver archiver;
         try {
-            archiver = Archiver.buildArchiver(session, allowDataDeletion, overwrite,overwrite_files, user, waitFor);
+            archiver = Archiver.buildArchiver(session, overrideExceptions, allowSessionMerge,overwriteFiles, user, waitFor);
         }catch (Exception e1) {
             PrearcUtils.log(project,timestamp,prearcDIR, e1);
             throw new IllegalStateException(e1);

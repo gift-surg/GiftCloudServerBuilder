@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nrg.mail.services.EmailRequestLogService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.XdatUserAuth;
 import org.nrg.xdat.om.XdatUser;
@@ -98,7 +99,7 @@ public class UserSettingsRestlet extends SecureResource {
                 _auths = null;
             }
 
-            _action = UserAction.action(PARAM_ACTION);
+            _action = UserAction.action((String)getRequest().getAttributes().get(PARAM_ACTION));
 
             final Method method = request.getMethod();
             try {
@@ -130,15 +131,15 @@ public class UserSettingsRestlet extends SecureResource {
     @Override
     public void handlePut() {
         if (_action != null) {
-        handleAction();
-    }
+           handleAction();
+        }
     }
 
     @Override
     public void handlePost() {
         if (_action != null) {
-        handleAction();
-    }
+           handleAction();
+        }
 
         try {
             Map<UserProperty, String> attributes = translateBody();
@@ -220,6 +221,14 @@ public class UserSettingsRestlet extends SecureResource {
                 auth.setFailedLoginAttempts(0);
                 XDAT.getXdatUserAuthService().update(auth);
             }
+        } else if(_action == UserAction.ResetEmailRequests){
+           try{
+              final XDATUser u = new XDATUser(_userId);
+              final EmailRequestLogService requests = XDAT.getContextService().getBean(EmailRequestLogService.class);
+              requests.unblockEmail(u.getEmail());
+           }catch(Exception e){ 
+              getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "Error reseting email requests for " + _userId);
+           } 
         } else {
             throw new RuntimeException("Unknown action: " + _action);
         }
@@ -406,7 +415,8 @@ public class UserSettingsRestlet extends SecureResource {
     }
 
     enum UserAction {
-        Reset;
+        Reset,
+        ResetEmailRequests;
 
         public static UserAction action(String action) {
             if (StringUtils.isBlank(action)) {

@@ -64,6 +64,23 @@ function clearFailedLogins() {
     YAHOO.util.Connect.asyncRequest('PUT', serverRoot +'/data/user/actions/$userObject.getUsername()/reset?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp='+ (new Date()).getTime(), callback, null);
 }
 
+function clearEmailRequests() {
+    var callback = {
+        cache:false, // Turn off caching for IE
+        success:function(response) {
+            document.getElementById("reset_user").style.display='none';
+            closeModalPanel("resetting");
+        },
+        failure:function(response){
+            closeModalPanel("resetting");
+            xModalMessage('User Validation', 'Failed to reset user $userObject.getUsername(): ' + response);
+        }
+    };
+
+    openModalPanel("resetting", "Resetting email requests for user $userObject.getUsername()...");
+    YAHOO.util.Connect.asyncRequest('PUT', serverRoot +'/data/user/actions/$userObject.getUsername()/resetEmailRequests?XNAT_CSRF=' + window.csrfToken + '&format=json&stamp='+ (new Date()).getTime(), callback, null);
+}
+
 function summaryIndexChanged(){
    var activeIndex=this.get("activeIndex");
    YAHOO.util.Cookie.set("${project.getId()}.summary.index",activeIndex);
@@ -104,6 +121,13 @@ function summaryTabManagerInit(){
                             <tr id="reset_user">
                                 <td>
                                     <a href="#" onclick="clearFailedLogins()">Clear Failed Logins</a>
+                                </td>
+                            </tr>
+						#end
+                        #if ($item.getBooleanProperty("enabled") && $emailRequestsBlocked)
+                            <tr id="reset_user">
+                                <td>
+                                    <a href="#" onclick="clearEmailRequests()">Clear Email Requests</a>
                                 </td>
                             </tr>
                         #end

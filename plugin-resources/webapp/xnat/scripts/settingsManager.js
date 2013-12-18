@@ -96,7 +96,7 @@ function RadioSettingsManager(_dom,_obj){
 		};
 		this.disableDOM(true);
 		
-        YAHOO.util.Connect.asyncRequest('PUT',this.obj.URI + this._level + '?XNAT_CSRF=' + csrfToken,this.settingsCallback);
+        YAHOO.util.Connect.asyncRequest('PUT',this.obj.URI + this._level + '?XNAT_CSRF=' + window.csrfToken, this.settingsCallback);
 	};
 	
 	//on init
@@ -186,7 +186,7 @@ function scriptGet (_dom,_obj) {
       YAHOO.util.Connect.asyncRequest('PUT',uri + "&XNAT_CSRF=" + window.csrfToken,{success : resetInitial, failure : that.onFailure, cache : false, scope : that});
     };
     var scriptPut = function (f) {
-      YAHOO.util.Connect.asyncRequest('PUT',that.obj.putScript + "&XNAT_CSRF=" + window.csrfToken,
+      YAHOO.util.Connect.asyncRequest('PUT', that.obj.putScript + "&XNAT_CSRF=" + window.csrfToken,
     		  									{success : f,
     	  										 failure: that.onFailure,
                                                  cache:false, // Turn off caching for IE
@@ -325,17 +325,17 @@ function seriesImportFiltersGet(settings) {
                 cache: false,
                 scope: this };
             if (!that.enable.checked) {
-                YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=disabled&XNAT_CSRF=' + csrfToken, callbacks);
+                YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=disabled&XNAT_CSRF=' + window.csrfToken, callbacks);
             } else {
                 var mode = that.mode.value;
                 var filters = that.filters.value;
                 // If the mode and filters haven't changed, then we just need to enable the filter.
                 if (that.initial.mode == mode && that.initial.filters == filters) {
-                    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=enabled&XNAT_CSRF=' + csrfToken, callbacks);
+                    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=enabled&XNAT_CSRF=' + window.csrfToken, callbacks);
                 } else {
                     var status = !that.initial.status ? '&status=enabled' : '';
                     var data = YAHOO.lang.JSON.stringify({ mode: mode, filters: filters });
-                    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?inbody=true&XNAT_CSRF=' + csrfToken + status, callbacks, data);
+                    YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?inbody=true&XNAT_CSRF=' + window.csrfToken + status, callbacks, data);
                 }
             }
         };
@@ -369,7 +369,7 @@ function seriesImportFiltersGet(settings) {
             }
         };
         var callbacks = { success: this.populate, failure: this.onFailure, cache: false, scope: this };
-        YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/data/projects/' + this.project + '/config/seriesImportFilter/config?XNAT_CSRF=' + csrfToken, callbacks);
+        YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/data/projects/' + this.project + '/config/seriesImportFilter/config?XNAT_CSRF=' + window.csrfToken + '&format=json', callbacks);
     };
     this.addListeners();
 }

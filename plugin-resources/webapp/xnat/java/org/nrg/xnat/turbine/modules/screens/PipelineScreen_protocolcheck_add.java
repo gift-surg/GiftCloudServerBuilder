@@ -16,6 +16,7 @@ import org.apache.velocity.context.Context;
 import org.nrg.xdat.security.ElementSecurity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PipelineScreen_protocolcheck_add extends PipelineScreen_add_project_pipeline{
 
@@ -25,8 +26,8 @@ public class PipelineScreen_protocolcheck_add extends PipelineScreen_add_project
 	
 	 public void finalProcessing(RunData data, Context context){
 		 try {
-			 ArrayList elementsAll = ElementSecurity.GetElementNames();
-			 ArrayList elements = new ArrayList();
+			 List<String> elementsAll = ElementSecurity.GetElementNames();
+			 List<String> elements = new ArrayList<String>();
 			 for (int i=0; i< elementsAll.size(); i++) {
 				 if (!((String)elementsAll.get(i)).startsWith("xdat:") && !((String)elementsAll.get(i)).startsWith("prov:") && !((String)elementsAll.get(i)).startsWith("wrk:") && !((String)elementsAll.get(i)).startsWith("val:")) {
 					elements.add(elementsAll.get(i)); 

@@ -71,6 +71,8 @@ public class PrearcUtils {
 	public enum PrearcStatus {
 		RECEIVING,
         QUEUED_BUILDING,
+        QUEUED_MOVING,
+        QUEUED_DELETING,
 		BUILDING,
 		READY, 
         QUEUED_ARCHIVING,
@@ -79,7 +81,7 @@ public class PrearcUtils {
 		ERROR, 
 		DELETING,
 		MOVING,
-		_RECEIVING,_QUEUED_BUILDING,_BUILDING,_QUEUED_ARCHIVING,_ARCHIVING,_DELETING,_MOVING,_CONFLICT;
+		_RECEIVING,_QUEUED_BUILDING,_BUILDING,_QUEUED_ARCHIVING,_ARCHIVING,_DELETING,_MOVING,_CONFLICT,_QUEUED_MOVING,_QUEUED_DELETING;
 
 		public static boolean potentiallyReady(PrearcStatus status) {
 			return (status==null || status.equals(READY));			    

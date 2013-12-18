@@ -67,10 +67,14 @@
     <!-- queues -->
     <amq:queue id="defaultRequest" />
     <amq:queue id="sessionXmlRebuilderRequest" physicalName="sessionXmlRebuilderRequest" />
+    <amq:queue id="deleteSessionRequest" physicalName="deleteSessionRequest" />
+    <amq:queue id="moveSessionRequest" physicalName="moveSessionRequest" />
     <!-- new request types go here -->
 
     <!-- message consumers -->
     <bean id="sessionXmlRebuilderRequestListener" class="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequestListener" />
+    <bean id="deleteSessionRequestListener" class="org.nrg.xnat.helpers.prearchive.DeleteSessionRequestListener" />
+    <bean id="moveSessionRequestListener" class="org.nrg.xnat.helpers.prearchive.MoveSessionRequestListener" />
     <!-- listeners for new request types go here -->
     <bean id="dlqMessageListener" class="org.nrg.framework.messaging.DlqListener">
         <property name="messageListenerMapping">
@@ -82,6 +86,8 @@
             </description>
             <map>
                 <entry key="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequest" value="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequestListener.onSessionXmlRebuilderRequest"/>
+                <entry key="org.nrg.xnat.helpers.prearchive.DeleteSessionRequest" value="org.nrg.xnat.helpers.prearchive.DeleteSessionRequestListener.onDeleteSessionRequest"/>
+                <entry key="org.nrg.xnat.helpers.prearchive.MoveSessionRequest" value="org.nrg.xnat.helpers.prearchive.MoveSessionRequestListener.onMoveSessionRequest"/>
                 <!-- update with new request types and their listener methods -->
             </map>
         </property>
@@ -90,6 +96,8 @@
     <!-- Spring JMS Listener Container -->
     <jms:listener-container connection-factory="springConnectionFactory" concurrency="10" acknowledge="transacted">
         <jms:listener destination="sessionXmlRebuilderRequest" ref="sessionXmlRebuilderRequestListener" method="onSessionXmlRebuilderRequest" />
+        <jms:listener destination="deleteSessionRequest" ref="deleteSessionRequestListener" method="onDeleteSessionRequest" />
+        <jms:listener destination="moveSessionRequest" ref="moveSessionRequestListener" method="onMoveSessionRequest" />
         <!-- update with requests, their listeners, and methods  -->
         <!-- I tried referencing my own DLQ in the redelivery policy but ActiveMQ ignores it and uses the default system DLQ -->
         <!-- So we'll just listen on that queue instead -->

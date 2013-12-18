@@ -16,14 +16,14 @@ package org.nrg.xnat.restlet.services.prearchive;
 
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
-import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
+import org.nrg.xdat.XDAT;
+import org.nrg.xnat.helpers.prearchive.*;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -90,6 +90,7 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 		final List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
 		
 		for(final String src:srcs){
+            File sessionDir;
 			try {
 				SessionDataTriple s=buildSessionDataTriple(src);
 				if (!PrearcUtils.canModify(user, s.getProject())) {
@@ -97,27 +98,22 @@ public class PrearchiveBatchMove extends BatchPrearchiveActionsA {
 					return;
 				}
 				ss.add(s);
+                sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
+
+                if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.QUEUED_MOVING)) {
+                    SessionData session = new SessionData();
+                    session.setTimestamp(s.getTimestamp());
+                    session.setProject(s.getProject());
+                    session.setFolderName(s.getFolderName());
+
+                    MoveSessionRequest request = new MoveSessionRequest(user, session, sessionDir, newProject);
+                    XDAT.sendJmsRequest(request);
+                }
 			} catch (Exception e) {
 				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 				return;
 			}
-		}
-			
-		try {
-			if (async) {
-				PrearcDatabase.moveToProject(ss, newProject);
-			}
-			else {
-				Iterator<SessionDataTriple> i = ss.iterator();
-				while (i.hasNext()) {
-					SessionDataTriple s = i.next();
-					PrearcDatabase.moveToProject(s.getFolderName(), s.getTimestamp(), s.getProject(), newProject);
-				}
-			}
-		} catch (Exception e) {
-			logger.error("",e);
-			//ignore failure and return current status's
 		}
 			
 		final Response response = getResponse();

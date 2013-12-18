@@ -16,14 +16,14 @@ package org.nrg.xnat.restlet.services.prearchive;
 
 import org.apache.log4j.Logger;
 import org.nrg.action.ClientException;
-import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
-import org.nrg.xnat.helpers.prearchive.SessionDataTriple;
+import org.nrg.xdat.XDAT;
+import org.nrg.xnat.helpers.prearchive.*;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +55,7 @@ public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
 		List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
 		
 		for(final String src:srcs){
+            File sessionDir;
 			try {
 				SessionDataTriple s=buildSessionDataTriple(src);
 				if (!PrearcUtils.canModify(user, s.getProject())) {
@@ -62,35 +63,22 @@ public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
 					return;
 				}
 				ss.add(s);
+                sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
+
+                if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.QUEUED_DELETING)) {
+                    SessionData session = new SessionData();
+                    session.setTimestamp(s.getTimestamp());
+                    session.setProject(s.getProject());
+                    session.setFolderName(s.getFolderName());
+
+                    DeleteSessionRequest request = new DeleteSessionRequest(user, session, sessionDir);
+                    XDAT.sendJmsRequest(request);
+                }
 			} catch (Exception e) {
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
 				return;
 			}
 		}
-			
-			
-		try {
-			if (async) {
-				PrearcDatabase.deleteSession(ss);
-			}
-			else {
-				Iterator<SessionDataTriple> i = ss.iterator();
-				while (i.hasNext()) {
-					SessionDataTriple s = i.next();
-					PrearcDatabase.deleteSession(s.getFolderName(), s.getTimestamp(), s.getProject());
-				}
-			}
-			
-		} catch (Exception e) {
-			logger.error("",e);
-			//ignore failure and return current status's
-		}
-			
-//		} catch (Exception e) {
-//			logger.error("",e);
-//			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
-//			return;
-//		}
 		
 		final Response response = getResponse();
 		try {

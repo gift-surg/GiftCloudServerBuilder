@@ -584,11 +584,11 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 						//find mapping object to delete
 						for (XdatUserGroupid map : newUser.getGroups_groupid()) {
 							if (map.getGroupid().equals(entry.getValue().getId())) {
-								if(!map.getGroupid().endsWith("_owner")){
-									SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
-								}else{
-									throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
-								}
+//								if(!map.getGroupid().endsWith("_owner")){
+								SaveItemHelper.authorizedDelete(map.getItem(), newUser,ci);
+//								}else{
+//									throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"User is already an owner of this project.",new Exception());
+//								}
 							}
 						}
 					}

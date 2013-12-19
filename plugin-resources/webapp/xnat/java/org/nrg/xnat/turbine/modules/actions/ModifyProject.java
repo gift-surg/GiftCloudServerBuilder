@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.model.XnatInvestigatordataI;
+import org.nrg.xdat.model.XnatProjectdataAliasI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
@@ -137,6 +138,7 @@ public class ModifyProject extends SecureAction {
 			}
             
             this.removeExcessInvestigators(project, user);
+            this.removeExcessAliases(project, user);
             SaveItemHelper.authorizedSave(item,user, false, false,c);
             
             XnatProjectdata postSave = new XnatProjectdata(item);
@@ -199,6 +201,39 @@ public class ModifyProject extends SecureAction {
             supplementaryClause = " AND xnat_investigatordata_xnat_investigatordata_id NOT IN (" + sb.toString() + ")";
         }
         String query = "DELETE FROM xnat_projectdata_investigator WHERE xnat_projectdata_id = '" + project.getId() + "'" +
+                supplementaryClause + ";";
+        PoolDBUtils.ExecuteNonSelectQuery(query,user.getDBName(), user.getLogin());
+
+    }
+
+    /**
+     * Inelegant solution to the need to be able to remove aliases from a project.
+     * @param project
+     * @param user
+     * @throws Exception
+     */
+    private void removeExcessAliases(XnatProjectdata project, XDATUser user) throws Exception {
+        // get a List of aliases on the project to be saved
+        List<String> aliases = new ArrayList<String>();
+        for (XnatProjectdataAliasI alias : project.getAliases_alias()) {
+            if (alias.getAlias() != null)
+                aliases.add(alias.getAlias());
+        }
+
+        // if there are aliases, we don't want to delete them, so create a statement to exclude them from the delete
+        String supplementaryClause = "";
+        if (!aliases.isEmpty()) {
+            StringBuilder sb = null;
+            sb = new StringBuilder();
+            for (String alias : aliases) {
+                sb.append("'");
+                sb.append(alias);
+                sb.append("',");
+            }
+            sb.deleteCharAt(sb.length()-1);  // remove final, unnecessary comma
+            supplementaryClause = " AND alias NOT IN (" + sb.toString() + ")";
+        }
+        String query = "DELETE FROM xnat_projectdata_alias WHERE aliases_alias_xnat_projectdata_id = '" + project.getId() + "'" +
                 supplementaryClause + ";";
         PoolDBUtils.ExecuteNonSelectQuery(query,user.getDBName(), user.getLogin());
 

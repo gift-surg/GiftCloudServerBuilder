@@ -7,7 +7,7 @@
 #* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
 #* @vtlvariable name="arc" type="org.nrg.xdat.om.ArcArchivespecification" *#
 <!-- UploadApplet.vm -->
-<script type="text/javascript" src="$content.getURI("scripts/java/deployJava.js")"></script>
+<script type="text/javascript" src="https://java.com/js/deployJava.js"></script>
 <p style="width:760px;margin-bottom:20px;font-size:12px;">This tool supports uploading DICOM and ECAT formatted medical imaging data. If you are unsure of the format of your data, please contact
     the help desk for assistance. The tool takes a few moments to load, during which time you may see a blank screen below. Please be patient while the tool loads.
     The tool requires Java 1.6 or newer to operate. If your browser does not have this version of Java installed, please contact your IT support for assistance.</p>

@@ -397,7 +397,7 @@ public class FileList extends XNATCatalogTemplate {
                             }
                         }
                     } else {
-                        getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "File missing");
+                        getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "File is not an instance of XnatResourcecatalog. Delete operation not supported.");
                     }
                 } else {
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User account doesn't have permission to modify this session.");

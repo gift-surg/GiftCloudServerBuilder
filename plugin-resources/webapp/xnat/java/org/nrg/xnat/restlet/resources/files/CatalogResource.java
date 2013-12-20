@@ -239,42 +239,33 @@ public class CatalogResource extends XNATCatalogTemplate {
 				try {
 					if(user.canDelete(this.security)){
 						String securityId=null;
-						if(proj==null){
-							if(parent.getItem().instanceOf("xnat:experimentData")){
-								securityId=((XnatExperimentdata)parent).getId();
-								proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
-							}else if(security.getItem().instanceOf("xnat:experimentData")){
-								securityId=((XnatExperimentdata)security).getId();
-								proj = ((XnatExperimentdata)security).getPrimaryProject(false);
-							}else if(parent.getItem().instanceOf("xnat:subjectData")){
-								securityId=((XnatSubjectdata)parent).getId();
-								proj = ((XnatSubjectdata)parent).getPrimaryProject(false);
-							}else if(security.getItem().instanceOf("xnat:subjectData")){
-								securityId=((XnatSubjectdata)security).getId();
-								proj = ((XnatSubjectdata)security).getPrimaryProject(false);
-							}else if(parent.getItem().instanceOf("xnat:projectData")){
-								securityId=((XnatProjectdata)parent).getId();
-								proj = ((XnatProjectdata)security);
-							}else if(security.getItem().instanceOf("xnat:projectData")){
-								securityId=((XnatProjectdata)security).getId();
-								proj = ((XnatProjectdata)security);
-							}
-						}else{
-							if(parent.getItem().instanceOf("xnat:experimentData")){
-								securityId=((XnatExperimentdata)parent).getId();
-							}else if(security.getItem().instanceOf("xnat:experimentData")){
-								securityId=((XnatExperimentdata)security).getId();
-							}else if(parent.getItem().instanceOf("xnat:subjectData")){
-								securityId=((XnatSubjectdata)parent).getId();
-							}else if(security.getItem().instanceOf("xnat:subjectData")){
-								securityId=((XnatSubjectdata)security).getId();
-							}else if(parent.getItem().instanceOf("xnat:projectData")){
-								securityId=((XnatProjectdata)parent).getId();
-							}else if(security.getItem().instanceOf("xnat:projectData")){
-								securityId=((XnatProjectdata)security).getId();
-							}
-						}
-						
+                        String xsiType=null;
+                        if(parent.getItem().instanceOf("xnat:experimentData")){
+                            securityId=((XnatExperimentdata)parent).getId();
+                            xsiType=parent.getXSIType();
+                            if(proj==null) proj = ((XnatExperimentdata)parent).getPrimaryProject(false);
+                        }else if(security.getItem().instanceOf("xnat:experimentData")){
+                            securityId=((XnatExperimentdata)security).getId();
+                            xsiType=security.getXSIType();
+                            if(proj==null) proj = ((XnatExperimentdata)security).getPrimaryProject(false);
+                        }else if(parent.getItem().instanceOf("xnat:subjectData")){
+                            securityId=((XnatSubjectdata)parent).getId();
+                            xsiType=parent.getXSIType();
+                            if(proj==null) proj = ((XnatSubjectdata)parent).getPrimaryProject(false);
+                        }else if(security.getItem().instanceOf("xnat:subjectData")){
+                            securityId=((XnatSubjectdata)security).getId();
+                            xsiType=security.getXSIType();
+                            if(proj==null) proj = ((XnatSubjectdata)security).getPrimaryProject(false);
+                        }else if(parent.getItem().instanceOf("xnat:projectData")){
+                            securityId=((XnatProjectdata)parent).getId();
+                            xsiType=parent.getXSIType();
+                            if(proj==null) proj = ((XnatProjectdata)security);
+                        }else if(security.getItem().instanceOf("xnat:projectData")){
+                            securityId=((XnatProjectdata)security).getId();
+                            xsiType=security.getXSIType();
+                            if(proj==null) proj = ((XnatProjectdata)security);
+                        }
+
 						final String rootPath=proj.getRootArchivePath();
 
 						if(!((security).getItem().isActive() || (security).getItem().isQuarantine() )){ 
@@ -282,7 +273,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 							throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,new Exception());
 						}
 						
-						final PersistentWorkflowI workflow=PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, security.getXSIType(), securityId, (proj==null)?null:proj.getId(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.REMOVE_CATALOG));
+						final PersistentWorkflowI workflow=PersistentWorkflowUtils.getOrCreateWorkflowData(getEventId(), user, xsiType, securityId, (proj==null)?null:proj.getId(),newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.REMOVE_CATALOG));
 				    	EventMetaI ci=workflow.buildEvent();
 						
 						try {

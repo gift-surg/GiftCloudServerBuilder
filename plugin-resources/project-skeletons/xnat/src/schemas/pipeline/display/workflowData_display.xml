@@ -97,7 +97,7 @@
     <DisplayField id="SUBJECT_LABEL" header="Subject" searchable="true" data-type="string">
         <DisplayFieldElement name="Field1" viewName="SUBJECT_LABEL_VIEW" viewColumn="subject_label"/>
         <HTML-Link>
-            <Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/xnat:subjectData/search_field/@Field2.ID">
+            <Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/xnat:subjectData/search_field/xnat:subjectData.ID">
                 <InsertValue id="Field1" field="ID"/>
             </Property>
             <Property name="ONCLICK" value="return rpt('@Field1','xnat:subjectData','xnat:subjectData.ID');">

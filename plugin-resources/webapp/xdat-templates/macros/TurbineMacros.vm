@@ -967,12 +967,12 @@
     <table>
       <tr>
         <td>From</td>
-        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate")" ONCHANGE="return isDate(this.value);"/>
+        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate")" ONCHANGE="return validateDateBox(this);"/>
         </td>
       </tr>
       <tr>
         <td>To</td>
-        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate")" ONCHANGE="return isDate(this.value);"/>
+        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate")" ONCHANGE="return validateDateBox(this);"/>
 
         </td>
       </tr>

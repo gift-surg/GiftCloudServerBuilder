@@ -112,6 +112,22 @@ public class ModifyProject extends SecureAction {
                 return;
             }
             
+            // XNAT-2551 Make sure the alias haven't already been used on any other projects
+            for(XnatProjectdataAliasI alias : project.getAliases_alias()){
+                String aliasStr = alias.getAlias();
+                conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectdata_alias/alias",aliasStr,user,false));
+                if(!conflicts.isEmpty()){
+                    data.addMessage("A project with the alias '" + aliasStr + "' already exists.");
+                    TurbineUtils.SetEditItem(item,data);
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                    {
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                    }
+                    return;
+                }
+             }
+            
+            
             if (error!=null)
             {
                 data.addMessage(error.getMessage());

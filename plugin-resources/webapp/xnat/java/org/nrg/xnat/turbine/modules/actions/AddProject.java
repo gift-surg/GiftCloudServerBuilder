@@ -15,6 +15,7 @@ import org.apache.axis.utils.StringUtils;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xdat.model.XnatProjectdataAliasI;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -123,6 +124,21 @@ public class AddProject extends SecureAction {
                 }
                 return;
             }
+            
+            // XNAT-2551 Make sure the alias haven't already been used on any other projects
+            for(XnatProjectdataAliasI alias : project.getAliases_alias()){
+                String aliasStr = alias.getAlias();
+                conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectdata_alias/alias",aliasStr,user,false));
+                if(!conflicts.isEmpty()){
+                    data.addMessage("A project with the alias '" + aliasStr + "' already exists.");
+                    TurbineUtils.SetEditItem(found,data);
+                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
+                    {
+                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
+                    }
+                    return;
+                }
+             }
             
             {
         		String query = "SELECT count(*) as prevDeletedProjectWithThisID from xnat_projectdata_history WHERE id = '" + project.getId() + "';";

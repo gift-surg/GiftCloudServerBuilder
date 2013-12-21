@@ -1,4 +1,4 @@
-<script type="text/javascript" src="$content.getURI("scripts/project/accessibility.js")"></script> 
+<script type="text/javascript" src="$content.getURI("scripts/project/accessibility.js")"></script>
 
 $page.setTitle("XDAT")
 $page.setLinkColor($ui.alink)
@@ -7,170 +7,167 @@ $page.setVlinkColor($ui.vlink)
 #set($days = [ 1..31 ])
 #set($years = [ $!turbineUtils.getYear()..1900])
 #if ($data.message)
-<font color="red" size="3">$data.message</font>
-#end
-<form name="form1" method="post" action="$link.setAction("AddProject")" ONSUBMIT="return validateProjectForm();">
-#if($vr)
-	<font color="red">Invalid parameters:<BR>$vr.toHTML()</font>
-<HR>
+<span style="color:#c00;">$data.message</span>
 #end
 
-<TABLE width="100%">
-	<TR>
-		<TD>
-			<table width="100%">
-				<TR>
-					<TD align="left" valign="middle">
-<DIV class="edit_title">$page_title</DIV>
-					</TD>
-				</TR>
-			</TABLE>
-		</TD>
-	</TR>
-	
-	<TR><TD>
-							      <DIV class="container" style="width:750px;float:left;margin:5px;">
-						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 1: Enter $displayManager.getSingularDisplayNameForProject().toLowerCase() details</DIV>
-						       <DIV class="containerBody">
-                                <DIV class="containerItem">
-                                 #set( $parentTemplate = 'add' )
+<form name="form1" method="post" action="$link.setAction("AddProject")" ONSUBMIT="return validateProjectForm(this);">
+
+    #if($vr)
+        <span style="color:#c00;">Invalid parameters:<BR>$vr.toHTML()</span>
+        <HR>
+    #end
+
+    <TABLE width="100%">
+        <TR>
+            <TD>
+                <table width="100%">
+                    <TR>
+                        <TD align="left" valign="middle">
+                            <DIV class="edit_title">$page_title</DIV>
+                        </TD>
+                    </TR>
+                </TABLE>
+            </TD>
+        </TR>
+
+        <TR>
+            <TD>
+                <DIV class="container" style="width:750px;float:left;margin:5px;">
+                    <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 1: Enter $displayManager.getSingularDisplayNameForProject().toLowerCase() details</DIV>
+                    <DIV class="containerBody">
+                        <DIV class="containerItem">
+                            #set( $parentTemplate = 'add' )
                                  #parse("/screens/xnat_projectData/edit/details.vm")
-                                </DIV>
-						       </DIV>
-						      </DIV>
+                        </DIV>
+                    </DIV>
+                </DIV>
 
-							</TD></TR><TR><TD> 
+            </TD>
+        </TR>
+        <TR>
+            <TD>
 
-						      							<DIV class="container" style="width:750px;float:left;margin:5px;">
+                <div class="container" style="width:750px;float:left;margin:5px;">
+                    <div class="withColor containerTitle">&nbsp;Step 2: Define $displayManager.getSingularDisplayNameForProject() Accessibility</div>
+                    <div class="containerBody">
+                        <div class="containerItem">Select the accessibility of your $displayManager.getSingularDisplayNameForProject().toLowerCase().
+                            <br>
+                            <hr>
+                        </div>
+                        <div class="containerItem">
+                            <table width="100%">
+                                <tr>
+                                    <td class="highlighted" valign="top">
+                                        <table cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top" style="padding:10px 20px 10px 10px;border-right:1px solid #ccc;">
+                                                    <label id="private_access_div" title="Only you and study members will be able to access study data." style="display:block;white-space:nowrap;padding-bottom:5px;" onclick="checkAccessibilityRadioButton(this, 'private_access');">
+                                                        <input type="radio" id="private_access" name="accessibility" value="private" checked/> Private
+                                                    </label>
 
-						       <DIV class="withColor containerTitle" style="font-weight:700;">&nbsp;Step 2: Define $displayManager.getSingularDisplayNameForProject() Accessibility</DIV>
+                                                    <label id="protected_access_div" title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="display:block;white-space:nowrap;padding-bottom:5px;" onclick="checkAccessibilityRadioButton(this, 'protected_access');">
+                                                        <input type="radio" id="protected_access" name="accessibility" value="protected"/> Protected
+                                                    </label>
 
-						       <DIV class="containerBody">
+                                                    <label id="public_access_div" title="All users will be able to access study data for analysis and download." style="display:block;white-space:nowrap;" onclick="checkAccessibilityRadioButton(this, 'public_access');">
+                                                        <input type="radio" id="public_access" name="accessibility" value="public"/> Public
+                                                    </label>
+                                                </td>
+                                                <td valign="top" style="padding:10px 160px 10px 20px;">
+                                                    <div id="balloon" style="border:none;">Only you and study members will be able to access study data.</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+            </TD>
+        </TR>
 
-						        <DIV class="containerItem">Select the accessibility of your $displayManager.getSingularDisplayNameForProject().toLowerCase().<br><hr></DIV> 
+        #xdatEditProps($item $edit_screen)
 
-						        <DIV class="containerItem">
-
-						      <TABLE width="420">
-
-  	  <TR>
-
-  	   <TD class="highlighted"><TABLE><TR><TD valign="top">
-
-              <TABLE cellpadding="5" cellspacing="0">
-
-                <TR><TD NOWRAP><DIV ID="private_access_div" title="Only you and study members will be able to access study data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'private_access');"><input type="radio" ID="private_access" name="accessibility" value="private" onkeydown="subOnEnter(event,this);" CHECKED/> Private</DIV></TD><TD></TD></TR>
-
-                <TR><TD NOWRAP><DIV ID="protected_access_div" title="All users will be able to see your study title and description, but only collaborators you approve will be able to analyze and download data." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'protected_access');"><input id="protected_access" type="radio" name="accessibility" value="protected" onkeydown="subOnEnter(event,this);" /> Protected</DIV></TD><TD></TD></TR>
-
-                <TR><TD NOWRAP><DIV ID="public_access_div" title="All users will be able to access study data for analysis and download." style="cursor:pointer" ONCLICK="checkAccessibilityRadioButton(this, 'public_access');"><input id="public_access" type="radio" name="accessibility" value="public" onkeydown="subOnEnter(event,this);" /> Public</DIV></TD><TD></TD></TR>
-
-              </TABLE>
-
-              </TD><TD valign="top" >
-
-              <table width="100%" valign="top" BORDER=1 STYLE="	border-collapse: collapse;"><TR><TD valign="top">
-
-              <DIV ID="balloon" border="1">Only you and study members will be able to access study data.</DIV>
-
-              </TD></TR>
-
-              </TABLE>
-
-          </TD></TR>
-
-          </TABLE>
-
-  	   </TD>
-
-  	  </TR>
-
-  	 </TABLE>
-     <br/>
-						        </DIV> 
-
-						       </DIV>
-
-						      </DIV>
-
-	</TD></TR>
-
-		#xdatEditProps($item $edit_screen)
-
-				<TR><TH align="left">&nbsp;</TH></TR>
-
-						<TR>
-
-		<TR><TD COLSPAN=2 ALIGN=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/></TD></TR>
-
-		</TD>
-
-	</TR>
-
-</TABLE>
+        <TR>
+            <TH align="left">&nbsp;</TH>
+        </TR>
+        <TR>
+        <TR>
+            <td align="right" style="padding-right:10px;"><input type="submit" name="eventSubmit_doPerform" value="Submit"/></td>
+        </TR>
+    </TABLE>
 
 </form>
 
 <SCRIPT type="text/javascript">
 
-function subOnEnter(e,inp) {
-      // get the event
-      var evt = e||window.event;
-      // pressed enter?
-      if(evt.keyCode == 13) {
-        // in your case, you want to validate, so:
-        if(validate_form()) {
-          // submit the form (will not fire onsubmit, validation above)
-          inp.form.submit();
-          // note we re using the passed inputs .form instead of a literal
+    // rendering this useless - 'validate_form()' seems to be a phantom function
+    function subOnEnter(e, inp) {
+        // get the event
+        var evt = e || window.event;
+        // pressed enter?
+        if (evt.keyCode == 13) {
+            // in your case, you want to validate, so:
+            //if(validate_form()) {
+            // submit the form (will not fire onsubmit, validation above)
+            //inp.form.submit();
+            // note we re using the passed inputs .form instead of a literal
+            //}
         }
-      }
-} 
+    }
 
+    function validateProjectForm(_form) {
 
+        var __form = jq(_form);
+        __form.find('.invalid').removeClass('invalid');
 
-    
-function validateProjectForm(){
+        var Project = XNAT.app.displayNames.singular.project;
+        var __projID = jq(document.getElementById("xnat:projectData/ID"));
+        var __projTitle = jq(document.getElementById("xnat:projectData/name"));
+        var __projRunningTitle = jq(document.getElementById("xnat:projectData/secondary_ID"));
 
-  if(document.getElementById("xnat:projectData/ID").value==""){
+        var projIDVal = jQuery.trim(__projID.val());
+        var projTitleVal = jQuery.trim(__projTitle.val());
+        var projRunningTitleVal = jQuery.trim(__projRunningTitle.val());
 
-    xModalMessage('Project Validation', 'Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() abbreviation.');
-
-    document.getElementById("xnat:projectData/ID").focus();
-
-    return false;
-
-  }
-
-  
-
-  if(document.getElementById("xnat:projectData/name").value==""){
-
-    xModalMessage('Project Validation', 'Please specify a $displayManager.getSingularDisplayNameForProject().toLowerCase() title.');
-
-    document.getElementById("xnat:projectData/name").focus();
-
-    return false;
-
-  }
-
-  
-
-  if(document.getElementById("xnat:projectData/secondary_ID").value==""){
-
-    xModalMessage('Project Validation', 'Please specify a running title.');
-
-    document.getElementById("xnat:projectData/secondary_ID").focus();
-
-    return false;
-
-  }
-
-  
-  return true;
-
-}
-
-
+        var invalid_count = 0;
+        if (projIDVal == '') {
+            xModalMessage('Validation', 'Please enter a ' + Project.toLowerCase() + ' abbreviation (ID).');
+            __projID.addClass('invalid');
+            invalid_count++;
+        }
+        if (projRunningTitleVal == '') {
+            xModalMessage('Validation', 'Please enter a running title.');
+            __projRunningTitle.addClass('invalid');
+            invalid_count++;
+        }
+        if (projRunningTitleVal.length > 24) {
+            xModalMessage('Validation', 'Please enter a running title of 24 characters or less.');
+            __projRunningTitle.addClass('invalid');
+            invalid_count++;
+        }
+        if (projTitleVal == '') {
+            xModalMessage('Validation', 'Please enter a ' + Project.toLowerCase() + ' title.');
+            __projTitle.addClass('invalid');
+            invalid_count++;
+        }
+        if (projTitleVal.length > 199) {
+            xModalMessage('Validation', 'Please enter a ' + Project.toLowerCase() + ' title of 199 characters or less.');
+            __projTitle.addClass('invalid');
+            invalid_count++;
+        }
+        if (invalid_count > 0) {
+            __form.find('.invalid').first().focus();
+            return false;
+        }
+        else {
+            __projID.val(projIDVal);
+            __projTitle.val(projTitleVal);
+            __projRunningTitle.val(projRunningTitleVal);
+            return true;
+        }
+    }
 
 </SCRIPT>

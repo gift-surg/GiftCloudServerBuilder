@@ -310,7 +310,7 @@ td.highlighted { background-color: #f0f0f0 ; border: 1px solid #d8d8d8 ; }
 #layout_content .yui-nav { width: 714px ; }
 */
 
-div.containerTitle.withColor { background: #084FAB ; }
+div.containerTitle.withColor { font-weight: bold ; background: #084FAB ; }
 
 .leftBar a.ygtvlabel { text-decoration: underline ; }
 
@@ -366,17 +366,20 @@ div.containerTitle.withColor { background: #084FAB ; }
 .formLabelRequired,
 .formSublabel { text-align: left; /* vertical-align: text-top; */ white-space: nowrap ; }
 
-.formLabelRequired b { color: red ; /* font-size: 1.2em ; */ }
+.formLabelRequired b { color: #cc0000 ; /* font-size: 1.2em ; */ }
 .formLabelRequiredStatement { color: #555555 ; font-style: italic ; }
 tr.requirementStatement { font-size: 0.875em ; }
 td.requirementStatement { padding-left: 3px ; }
 td.newProjectSpacer { height: 10px ; }
-span.noteRequired { font-weight: bold ; color : #BB0000 ; }
+span.noteRequired { font-weight: bold ; color : #cc0000 ; }
 span.noteOptional { font-weight: bold ; color : #000055 ; }
-input.requiredField { border: 1px solid #BB0000 ; }
-input.title { width: 100% ; }
-input.abbreviation { width: 250px ; }
+input.requiredField { padding: 3px 5px 2px 4px ; border: 1px solid #cc0000 ; }
+input.title,
+input.project_title { width: auto ; }
+input.abbreviation { width: auto ; padding-right: 4px ; }
 div.icon-remove { width: 16px ; height: 16px ; background-position: 0 -1099px ; }
+
+input.invalid { background: #ffc ; }
 
 .summary h3 { line-height: 15px ; margin: 0 !important ; padding: 3px 0 !important ; }
 
@@ -562,6 +565,7 @@ div.extension_js { background-color: #FF9 ; }
 
 .totals { position:relative; padding-top: 10px; }
 
+input::-ms-clear { width: 0 ; height: 0 ; } /* gets rid of the 'clear' button in IE 10+ */
 
 .cornflower_border { border: /* 1px solid #6D99B6 */ none ; }
 .cornflower_border_bottom { border-bottom: 1px solid #6D99B6 ; }

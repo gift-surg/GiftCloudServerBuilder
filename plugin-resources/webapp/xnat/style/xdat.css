@@ -16,7 +16,10 @@ form { font-size: 12px ; }
 .withColor { background-color: #2d69b8 ; color: #fff ; }
 .withThinBorder { border: 1px solid #aaa ; }
 .recentDataActivity { cursor: default; }
-input {  }
+input[type="text"],
+input[type="password"],
+input[type="number"] { padding: 2px 4px 1px 3px ; }
+textarea { padding: 4px ; font-family: Arial, Helvetica, sans-serif ; font-size: 12px; }
 select {  }
 /*
 div.error { width: 500px ; background-color: #f9c ; border-width: 1px ; border-style: solid ; font-size: 14px ; line-height: 16px ; font-weight: 500 ; overflow: auto ; padding-top: 5px ; padding-bottom: 5px ; padding-left: 5px ; padding-right: 5px ; text-align: left ; clear: left ; }

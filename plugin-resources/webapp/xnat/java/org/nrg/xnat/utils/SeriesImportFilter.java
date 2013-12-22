@@ -197,17 +197,13 @@ public class SeriesImportFilter {
     }
 
     public boolean shouldIncludeDicomObject(final XnatImagescandataI scan) {
-    	if(StringUtils.isEmpty(scan.getSeriesDescription())){
-    		return true;
-    	}else{
-        	return shouldIncludeDicomObject(scan.getSeriesDescription());
-    	}
+        return StringUtils.isEmpty(scan.getSeriesDescription()) || shouldIncludeDicomObject(scan.getSeriesDescription());
     }
 
     public boolean shouldIncludeDicomObject(final String seriesDescription) {
         for (String filter : _filters) {
             // Finding a match is insufficient, we need to check the mode.
-            if (StringUtils.isNotEmpty(filter) && seriesDescription.matches(filter)) {
+            if (StringUtils.isNotEmpty(filter) && StringUtils.isNotBlank(seriesDescription) && seriesDescription.matches(filter)) {
                 // So if we matched, then this should be included if this is a whitelist. If
                 // it's a blacklist, this will return false and indicate that this DicomObject
                 // should not be included.

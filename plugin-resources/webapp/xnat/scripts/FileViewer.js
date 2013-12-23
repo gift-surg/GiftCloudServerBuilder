@@ -7,6 +7,7 @@ function FileViewer(_obj){
 	this.loading=0;
 	this.requestRender=false;
     this.requiresRefresh = false;
+    this.maintainLogin = false;
 	this.obj=_obj;
 	if(this.obj.categories==undefined){
         this.obj.categories = {};
@@ -1706,14 +1707,20 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	
 	var callback={
 		upload:function(obj1){
+            XNAT.app.maintainLogin = false;
             window.viewer.requiresRefresh = true;
 			window.viewer.refreshCatalogs("add_file");
 			this.cancel();
 		},
+        failure: function (obj1) {
+            XNAT.app.maintainLogin = false;
+            xModalMessage('Upload File', obj1.toString());
+            this.cancel();
+        },
         cache:false, // Turn off caching for IE
 		scope:this
 	};
-	openModalPanel("add_file","Uploading File.")
+	openModalPanel("add_file", "Uploading File.");
 	
 	var method = 'POST';
 	if(container.file_name > ''){
@@ -1724,6 +1731,7 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	var params="&event_reason="+event_reason;
 	params+="&event_type=WEB_FORM";
 	params+="&event_action=File(s) uploaded";
+    XNAT.app.maintainLogin = true;
 	YAHOO.util.Connect.asyncRequest(method,container.file_dest+params,callback);
 };
 
@@ -1753,6 +1761,14 @@ XNAT.app._addFolder = function (arg1, arg2, container) {
     var params = "&event_reason=" + event_reason;
     params += "&event_type=WEB_FORM";
     params += "&event_action=Folder Created";
-
     YAHOO.util.Connect.asyncRequest('PUT', container.file_dest + params, callback);
+};
+
+jq(document).ready(function() {
+    // refresh timeout interval so applet doesn't lose its session.
+    setInterval(function(){XNAT.app.renewLogin()},60000);
+});
+
+XNAT.app.renewLogin = function ()  {
+    if (XNAT.app.maintainLogin) {XNAT.app.timeout.handleOk();}
 };

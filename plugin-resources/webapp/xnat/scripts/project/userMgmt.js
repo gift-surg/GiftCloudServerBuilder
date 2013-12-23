@@ -18,6 +18,18 @@ var groupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
     elCell.innerHTML=access_select;
 };
 
+var allUsersGroupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
+    var user_access = oRecord.getData("displayname");
+    var user_login = oRecord.getData("login");
+    var access_select = "<select onchange=\"window.userManager.adjustInviteLists('" + user_login + "',this.value)\">";
+    access_select += "<option value=\"\"" + ((!user_access)? " selected" : "") + "></option>";
+    access_select += "<option value=\"owner\"" + ((user_access === "Owners")? " selected" : "") + ">Owners</option>";
+    access_select += "<option value=\"member\"" + ((user_access === "Members")? " selected" : "") + ">Members</option>";
+    access_select += "<option value=\"collaborator\"" + ((user_access === "Collaborators")? " selected" : "") + ">Collaborators</option>";
+    access_select += "</select>";
+    elCell.innerHTML=access_select;
+};
+
 function prependLoader(div_id,msg){
 	if(div_id.id==undefined){
 		var div=document.getElementById(div_id);
@@ -75,13 +87,6 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	                     {key:"email",label:"Email",sortable:true},
 	                     {key:"displayname",label:"Group",sortable:true,formatter:groupDropdownFormatter},
                          {key:"button",label:"Remove",formatter:removeButtonFormatter}];
-
-	this.allUserColumnDefs=[
-	                        {key:"button",label:"Add",formatter:"checkbox"},
-	                        {key:"login",label:"Username",sortable:true},
-	                        {key:"firstname",label:"Firstname",sortable:true},
-	                        {key:"lastname",label:"Lastname",sortable:true},
-	                        {key:"email",label:"Email",sortable:true}];
 
 	this.init=function(){
 		this.initLoader=prependLoader(this.project_table_div,"Loading " + XNAT.app.displayNames.singular.project.toLowerCase() + " users");
@@ -335,6 +340,41 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		data_table.innerHTML=errorMsg;
 	};
 
+    var selected_owners=new Array();
+    var selected_members=new Array();
+    var selected_collaborators=new Array();
+
+    this.adjustInviteLists=function(user_name,access_level){
+        if (user_name!=undefined && access_level!=undefined){
+            // remove the user_name from any array it's currently part of
+            if (selected_owners.contains(user_name)) {
+                var index = selected_owners.indexOf(user_name);
+                selected_owners.splice(index, 1);
+            }
+            if (selected_members.contains(user_name)) {
+                var index = selected_members.indexOf(user_name);
+                selected_members.splice(index, 1);
+            }
+            if (selected_collaborators.contains(user_name)) {
+                var index = selected_collaborators.indexOf(user_name);
+                selected_collaborators.splice(index, 1);
+            }
+
+            // add it to the array it should be in
+            switch (access_level) {
+                case "owner":
+                    selected_owners.push(user_name);
+                    break;
+                case "member":
+                    selected_members.push(user_name);
+                    break;
+                case "collaborator":
+                    selected_collaborators.push(user_name);
+                    break;
+            }
+        }
+    };
+
 	this.createPopup=function(){
 		this.popupLoader=prependLoader("user_list_header","Preparing user list");
 		this.popupLoader.render();
@@ -349,21 +389,6 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 
 		popupHD.innerHTML="Select User(s) and the desired level of access";
 
-		var access_level_select=document.createElement("select");
-		access_level_select.id="popupSelect";
-		access_level_select.style.marginLeft="5pt";
-		access_level_select.options[0]= new Option("SELECT","");
-		access_level_select.options[1]= new Option("owner","owner");
-		access_level_select.options[2]= new Option("member","member");
-		access_level_select.options[3]= new Option("collaborator","collaborator");
-
-		var access_label =document.createElement("label");
-		access_label.innerHTML="Access Level:";
-		access_label.appendChild(access_level_select);
-		popupBD.appendChild(access_label);
-
-		popupBD.appendChild(document.createElement("br"));
-
 		var all_users_table = document.createElement("div");
 		all_users_table.id="all_users_table";
 		all_users_table.style.marginTop="5pt";
@@ -374,72 +399,41 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		tp_fm.appendChild(popupDIV);
 
 		this.allUsersPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,visible:false,width:"520px",fixedcenter:true});
-		this.allUsersPopup.access_level_select=access_level_select;
 
 		var handleCancel = function() {
 			this.hide();
 		};
 
-		var handleSubmit = function() {
-			if(this.access_level_select.selectedIndex>0){
-				var selected_users=this.allUsersDataTable.selected_users;
-				if(selected_users.length>0){
-					var usernames=new Array();
-					for(var user_count=0;user_count<selected_users.length;user_count++){
-						if(selected_users[user_count].checkbox.checked){
-							if(!usernames.contains(selected_users[user_count].login))
-								usernames.push(selected_users[user_count].login);
-						}
-					}
-
-					if(usernames.length==0){
-						this.allUsersDataTable.selected_users=new Array();
-						this.hide();
-						return;
-					}
-
-					if(window.userManager.inviteUser(usernames.toString(),this.access_level_select.options[this.access_level_select.selectedIndex].value)){
-						for(var user_count=0;user_count<selected_users.length;user_count++){
-							if(selected_users[user_count].checkbox.checked){
-								selected_users[user_count].checkbox.click();
-							}
-						}
-
-						this.allUsersDataTable.selected_users=new Array();
-						this.hide();
-					}
-				}else{
-					this.hide();
-				}
-			}else{
-                xModalMessage('User Management Validation', 'Please select an access level.');
-				this.access_level_select.focus();
-			}
-
+        var handleSubmit = function() {
+            if (selected_owners.length > 0 && window.userManager.inviteUser(selected_owners.toString(),"owner")) {
+                selected_owners=new Array();
+            }
+            if (selected_members.length > 0 && window.userManager.inviteUser(selected_members.toString(),"member")) {
+                selected_members=new Array();
+            }
+            if (selected_collaborators.length > 0 && window.userManager.inviteUser(selected_collaborators.toString(),"collaborator")) {
+                selected_collaborators=new Array();
+            }
+            this.hide();
 		};
 		var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
 		                  { text:"Cancel", handler:handleCancel } ];
 		this.allUsersPopup.cfg.queueProperty("buttons", myButtons);
 
+        var allUserColumnDefs=[
+            {key:"displayname",label:"Group",formatter:allUsersGroupDropdownFormatter},
+            {key:"login",label:"Username",sortable:true},
+            {key:"firstname",label:"Firstname",sortable:true},
+            {key:"lastname",label:"Lastname",sortable:true},
+            {key:"email",label:"Email",sortable:true}];
 
-		//build all users datatable
+        //build all users datatable
 		this.allUsersPopup.alluserDataSource = new YAHOO.util.DataSource(this.allUserResultSet.ResultSet.Result);
 		this.allUsersPopup.alluserDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
 		this.allUsersPopup.alluserDataSource.responseSchema = {
 				fields: ["login","firstname","lastname","email","displayname"]
 		};
-		this.allUsersPopup.allUsersDataTable = new YAHOO.widget.DataTable("all_users_table", this.allUserColumnDefs,this.allUsersPopup.alluserDataSource,{scrollable:true,height:"300px",width:"500px"});
-
-		this.allUsersPopup.allUsersDataTable.subscribe("checkboxClickEvent", function(oArgs){
-			var elCheckbox = oArgs.target;
-			var oRecord = this.getRecord(elCheckbox);
-			if(elCheckbox.checked){
-				this.selected_users.push({login:oRecord.getData("login"),checkbox:elCheckbox});
-			}
-		});
-		this.allUsersPopup.allUsersDataTable.selected_users=new Array();
-
-		//this.allUsersPopup.allUsersDataTable.render();
+		this.allUsersPopup.allUsersDataTable = new YAHOO.widget.DataTable("all_users_table", allUserColumnDefs,this.allUsersPopup.alluserDataSource,{scrollable:true,height:"300px",width:"500px"});
 
 		this.allUsersPopup.render();
 

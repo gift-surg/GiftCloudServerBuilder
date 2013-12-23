@@ -218,7 +218,9 @@
             tr.appendChild(th);
             var td = document.createElement("td");
             var pSelect = document.createElement("select");
+            pSelect.id = "otherInvestigator_"+(tbody.rows.length);
             pSelect.name = "xnat:projectData/investigators/investigator[" + (tbody.rows.length) + "]/xnat_investigatordata_id";
+            pSelect.onchange=changeOtherInvestigator;
             window.invest_manager.populateSelect(pSelect, window.other_investigators[otherCounter], false);
             td.appendChild(pSelect);
             tr.appendChild(td);
@@ -263,32 +265,59 @@
         tr.appendChild(td);
 
         for (var otherCounter = 0; otherCounter < window.other_investigators.length; otherCounter++) {
-            tr = document.createElement("tr");
-            tr.id = "Investigator_" + (otherCounter + 1);
-            var th = document.createElement("th");
-//          th.innerHTML=otherCounter+1;
-            tr.appendChild(th);
-            var td = document.createElement("td");
-            var pSelect = document.createElement("select");
-            pSelect.name = "xnat:projectData/investigators/investigator[" + (otherCounter + 1) + "]/xnat_investigatordata_id";
-            window.invest_manager.populateSelect(pSelect, window.other_investigators[otherCounter], false);
-            td.appendChild(pSelect);
-            tr.appendChild(td);
-            td = document.createElement("td");
-            var remInvestButton = document.createElement("div");
-            remInvestButton.className = "icon-remove";
-            remInvestButton.style.backgroundImage = removeInvestigatorIcon;
-            remInvestButton.id = "remInvestBut_" + (tbody.rows.length);
-            remInvestButton.title = "Remove Investigator";
-            remInvestButton.onclick = function () {
-                var idx = this.id.substr(this.id.indexOf('_') + 1);
-                removeInvestigator(idx);
-            };
-            td.appendChild(remInvestButton);
-            tr.appendChild(td);
-            tbody.appendChild(tr);
+          createOtherInvestigator(otherCounter, tbody, tr);
         }
-    }
+        if(window.unsavedInvestigators){
+          for(var unsavedCounter=0;unsavedCounter<window.unsavedInvestigators.length;unsavedCounter++){
+            if(typeof window.unsavedInvestigators[unsavedCounter] === 'string'){
+              $(window.unsavedInvestigators[unsavedCounter]).remove();
+            } else if(window.unsavedInvestigators[unsavedCounter]){
+              if(unsavedCounter > otherCounter){
+                createOtherInvestigator(unsavedCounter-1, tbody, tr);
+              }
+              $('#otherInvestigator_'+unsavedCounter).val(window.unsavedInvestigators[unsavedCounter]);
+            }
+          }
+        }
+    };
+
+    function createOtherInvestigator(index, tbody, tr){
+      tr=document.createElement("tr");
+      tr.id="Investigator_" + (index+1);
+      var th= document.createElement("th");
+      tr.appendChild(th);
+      var td= document.createElement("td");
+      var pSelect=document.createElement("select");
+      pSelect.id = "otherInvestigator_"+(index+1);
+      pSelect.name="xnat:projectData/investigators/investigator["+ (index+1) + "]/xnat_investigatordata_id";
+      pSelect.onchange=changeOtherInvestigator;
+      window.invest_manager.populateSelect(pSelect,window.other_investigators[index],false);
+      td.appendChild(pSelect);
+      tr.appendChild(td);
+      td= document.createElement("td");
+      var remInvestButton = document.createElement("div");
+      remInvestButton.className="icon-remove";
+      remInvestButton.style.backgroundImage=removeInvestigatorIcon;
+      remInvestButton.id="remInvestBut_"+(tbody.rows.length);
+      remInvestButton.title="Remove Investigator";
+      remInvestButton.onclick=function(){
+        var idx = this.id.substr(this.id.indexOf('_')+1);
+        removeInvestigator(idx);
+      };
+      td.appendChild(remInvestButton);
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    };
+
+    var changeOtherInvestigator = function(event){
+      if(!window.unsavedInvestigators){
+        window.unsavedInvestigators = [];
+      }
+      var invNum = parseInt($(event.target).val())
+      var selId= $(event.target)[0].id;
+      var idx = selId.substring((selId.indexOf('_')+1));
+      window.unsavedInvestigators[idx] = invNum;
+    };
 
     window.success = function (subject_id) {
         if (window.investigatorForm != undefined) {
@@ -311,7 +340,12 @@
     window.invest_manager.init();
 
     function removeInvestigator(index) {
-        $('#Investigator_' + index).remove();
+      var id = '#Investigator_'+index;
+      $(id).remove();
+      if(!window.unsavedInvestigators){
+        window.unsavedInvestigators = [];
+      }
+      window.unsavedInvestigators[index] = id;
     }
 
     function stringCamelCaps(val) {

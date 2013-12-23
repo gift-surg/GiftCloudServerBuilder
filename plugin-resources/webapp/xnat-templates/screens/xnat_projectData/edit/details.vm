@@ -187,7 +187,9 @@
 
         var td = document.createElement("td");
         var piSelect = document.createElement("select");
+        piSelect.id='primaryInvestigator_0';
         piSelect.name = "xnat:projectData/pi_xnat_investigatordata_id";
+        piSelect.onchange=changeOtherInvestigator;
         window.invest_manager.populateSelect(piSelect, window.primary_investigator, true);
         td.appendChild(piSelect);
         tr.appendChild(td);
@@ -271,6 +273,8 @@
           for(var unsavedCounter=0;unsavedCounter<window.unsavedInvestigators.length;unsavedCounter++){
             if(typeof window.unsavedInvestigators[unsavedCounter] === 'string'){
               $(window.unsavedInvestigators[unsavedCounter]).remove();
+            } else if(unsavedCounter == 0 && window.unsavedInvestigators[unsavedCounter]){
+              $('#primaryInvestigator_0').val(window.unsavedInvestigators[unsavedCounter]);
             } else if(window.unsavedInvestigators[unsavedCounter]){
               if(unsavedCounter > otherCounter){
                 createOtherInvestigator(unsavedCounter-1, tbody, tr);

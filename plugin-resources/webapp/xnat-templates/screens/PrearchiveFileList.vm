@@ -1,0 +1,39 @@
+#if($popup=="true")
+	#set ($template = $data.getTemplateInfo())
+	$!template.setLayoutTemplate("ScreenOnly.vm")
+#end
+<table>
+	<tr>
+		<td>
+            <table>
+            	<tr>
+            		<th>File</th>
+            		<th>Size</th>
+            		<th> </th>
+            	</tr>
+			#set($lastURL="0")
+            #foreach($row in $table.toArrayListOfLists())
+				#set($lastURL=$content.getURI("$!row.get(2)"))
+            	<tr>
+            		<td><a style="text-decoration:underline" href="$lastURL">$!row.get(0)</a></td>
+            		<td>$!row.get(1)</td>
+            		<td>
+            		#if($!row.get(2).contains("/DICOM/"))
+						#set($hasDICOM="1")
+            			&nbsp;&nbsp;<button onclick="XNAT.app.headerDialog.load('$content.getURI("/REST/services/dicomdump?src=$!row.get(2).substring(5)&format=html&requested_screen=DicomFileTable.vm")','File $!row.get(0) DICOM');">Review DICOM Tags</button>
+            			
+						##&nbsp;&nbsp;<a onclick="document.getElementById('viewer').src='$lastURL'">JPEG</a>
+						&nbsp;&nbsp;<button onclick="window.open('$lastURL?format=image/jpeg')">View Image</button>
+            		#end
+            		</td>
+            	</tr>
+            #end
+            </table>
+		</td>
+        #if($lastURL!="0")
+		<!--<td>
+			<img id="viewer" src="$lastURL" border="0"/>
+		</td>-->
+		#end
+	</tr>
+</table>

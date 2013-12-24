@@ -232,8 +232,10 @@ public class XNATApplication extends Application {
         router.attach("/prearchive/experiments", org.nrg.xnat.restlet.resources.prearchive.RecentPrearchiveSessions.class);
         router.attach(PREARC_PROJECT_URI,org.nrg.xnat.restlet.resources.prearchive.PrearcSessionListResource.class);
         router.attach(PREARC_SESSION_URI, org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResource.class);
+        router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/resources", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourcesList.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans", org.nrg.xnat.restlet.resources.prearchive.PrearcScansListResource.class);
-        router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourcesList.class);
+        router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}", org.nrg.xnat.restlet.resources.prearchive.PrearcScanResource.class);
+        router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources", org.nrg.xnat.restlet.resources.prearchive.PrearcScanResourceList.class);
         router.attach("/prearchive/projects/{PROJECT_ID}/{SESSION_TIMESTAMP}/{SESSION_LABEL}/scans/{SCAN_ID}/resources/{RESOURCE_ID}/files", org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourceFiles.class);
 
         attachArchiveURI(router,"/experiments/{EXPT_ID}/DIR",DIRResource.class);

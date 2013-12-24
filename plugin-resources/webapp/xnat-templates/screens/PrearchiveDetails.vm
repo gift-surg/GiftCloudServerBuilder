@@ -1,0 +1,138 @@
+#if($popup=="true")
+	#set ($template = $data.getTemplateInfo())
+	$!template.setLayoutTemplate("Popup.vm")
+#end
+
+<style>
+	#scans_div{
+		margin-top:10px;
+	}
+</style>
+
+<table clsss="">
+#if($session.getProject())
+	<tr><th align="left">$displayManager.getSingularDisplayNameForProject():</th><td>$!session.getProject()</td></tr>
+#end
+#if($session.getLabel())
+	<tr><th align="left">Session:</th><td>$!session.getLabel()</td></tr>
+#end
+#if($session.getSubjectId())
+	<tr><th align="left">$displayManager.getSingularDisplayNameForSubject():</th><td>$!session.getSubjectId()</td></tr>
+#end
+
+    <tr><th align="left">Study Date:</th><td>$turbineUtils.formatDate($!session.getDate())</td></tr>
+	
+#if($session.getDcmpatientid())
+    <tr><th align="left">Patient ID:</th><td>$!session.getDcmpatientid()</td></tr>
+#end
+#if($session.getDcmpatientname())
+    <tr><th align="left">Patient Name:</th><td>$!session.getDcmpatientname()</td></tr>
+#end
+#if($session.getUid())
+    <tr><th align="left">UID:</th><td>$!session.getUid()</td></tr>
+#end
+#if($uploadDate)
+    <tr><th align="left">Upload Date:</th><td>$!turbineUtils.formatDateTime($uploadDate)</td></tr>
+#end
+</table>
+<div class="spacer"></div>
+<div id="scans_div">
+	<h3>Scans</h3>
+	<table>
+		<tr><th>ID</th><th>Description</th><th>Files</th><th>Actions</th></tr>
+	#foreach($scan in $session.getScans_scan())
+		<tr id="scanTR$!scan.getId()">
+			<td>$!scan.getId()</td>
+			<td>$!scan.getSeriesDescription()</td>
+			<td NOWRAP><div id="scan${scan.getId()}Files"><a onclick="XNAT.app.fileCounter.load()" style="text-decoration:underline">Show Counts</a></div></td>
+			<td nowrap>
+				&nbsp;&nbsp;<button id="scanB1$$scan.getId()" onclick="window.location='$content.getURI("/REST$url/scans/$scan.getId()?format=zip")'">Download Files</button>
+				#foreach($res in $scan.getFile())
+					&nbsp;&nbsp;<button id="scanB3$$scan.getId()" onclick="XNAT.app.fileDialog.loadScan('$content.getURI("/REST$url/scans/$scan.getId()/resources/$res.getLabel()/files?format=html&requested_screen=PrearchiveFileList.vm&popup=true&prettyPrint=true")','Scan $scan.getId() files');">Review File Details</button>
+					#if($res.getLabel()=="DICOM")
+						&nbsp;&nbsp;<button id="scanB4$$scan.getId()" onclick="XNAT.app.headerDialog.load('$content.getURI("/REST/services/dicomdump?src=$url/scans/$scan.getId()&format=html&requested_screen=DicomScanTable.vm&popup=true")','Scan $scan.getId() DICOM');">Review DICOM Tags</button>
+					#end
+				#end
+				&nbsp;&nbsp;<button id="scanB2$$scan.getId()" onclick="XNAT.app.scanDeleter.requestDelete('$!scan.getId()');">Delete Series</button>
+			</td>
+		</tr>
+	#end
+	<tr>
+		<td colspan="3">&nbsp;</td>
+		<td>&nbsp;&nbsp;<button id="dAscans" onclick="window.location='$content.getURI("/REST$url?format=zip")'">Download All Files</button></td>
+	</tr>
+	</table>
+</div>
+
+<br>
+<h3>History</h3>
+<div id="prearcLogs">
+	
+</div>
+
+<script>
+    var logsCallback={
+        success:function(o){
+			$('#prearcLogs').html(o.responseText);
+		},
+        failure:function(o){},
+        cache:false // Turn off caching for IE
+    };
+	YAHOO.util.Connect.asyncRequest('GET',"/REST$url/logs?template=details&format=html&requested_screen=PrearchiveDetailsLogs.vm&popup=true",logsCallback,null,this);
+</script>
+
+<!-- BEGIN CONTENT FOR POPUP DIALOGS -->
+<script type="text/javascript" src="$content.getURI('scripts/prearchive/PrearchiveDetails_delete.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/prearchive/PrearchiveDetails_files.js')"></script>
+<script>
+//add variables for PrearchiveDetails_files.js
+ XNAT.app.fileCounter.url="$url";
+ #foreach($scan in $session.getScans_scan())
+ 	XNAT.app.fileCounter.scans.push("$scan.getId()");
+	
+##	new YAHOO.widget.Button("scanB1$$scan.getId()");
+##	new YAHOO.widget.Button("scanB2$$scan.getId()");
+##	#foreach($res in $scan.getFile())
+##    	new YAHOO.widget.Button("scanB3$$scan.getId()");
+##    	#if($res.getLabel()=="DICOM")
+##    		new YAHOO.widget.Button("scanB4$$scan.getId()");
+##    	#end
+##	#end
+##	new YAHOO.widget.Button("dAscans");
+ #end
+
+ XNAT.app.scanDeleter.url="$url";
+</script>
+
+
+<!-- begin file list dialog -->
+<div id="files_dialog" style="visibility:hidden"> 
+    <div class="hd" id="filesDialog_header">Prearchived files</div> 
+    <div class="bd" style="overflow:auto">
+		<div id="filesDialog_content">
+			
+		</div>
+	</div> 
+</div> 
+
+<script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_fileDialog.js")"></script>
+<script>
+    XNAT.app.fileDialog.url='$url';
+</script>
+
+
+
+<!-- begin header dialog -->
+<div id="header_dialog" style="visibility:hidden"> 
+    <div class="hd" id="headerDialog_header">DICOM Headers</div> 
+    <div class="bd" style="overflow:auto">
+		<div id="headerDialog_content">
+			
+		</div>
+	</div> 
+</div> 
+
+<script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_headerDialog.js")"></script>
+<script>
+    XNAT.app.headerDialog.url='$url';
+</script>

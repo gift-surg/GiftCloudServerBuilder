@@ -10,11 +10,24 @@
  */
 package org.nrg.xnat.restlet.rundata;
 
+import java.io.PrintWriter;
+import java.util.Map;
+
 import org.apache.turbine.services.rundata.DefaultTurbineRunData;
 
-import java.io.PrintWriter;
+import com.google.common.collect.Maps;
 
 public class RestletRunData extends DefaultTurbineRunData {
+	Map<String,Object> passedObjects=Maps.newHashMap();
+	
+	public void passObject(String key, Object o){
+		passedObjects.put(key,o);
+	}
+	
+	public Object retrieveObject(String key){
+		return passedObjects.remove(key);
+	}
+	
 	public void hijackOutput(PrintWriter os){
 		this.setOut(os);
 	}

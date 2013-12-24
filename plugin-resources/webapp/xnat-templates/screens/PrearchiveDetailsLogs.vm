@@ -1,0 +1,12 @@
+#set ($template = $data.getTemplateInfo())
+$!template.setLayoutTemplate("/ScreenOnly.vm")
+
+<table>
+#foreach($row in $table.toArrayListOfLists())
+	<tr>
+		<td>$turbineUtils.formatDateTime($!row.get(1))</td>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+		<td>$!row.get(2)</td>
+	</tr>
+#end
+</table>

@@ -17,6 +17,7 @@ package org.nrg.xnat.restlet.resources.prearchive;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ActionException;
+import org.nrg.dcm.Dcm2Jpg;
 import org.nrg.xdat.model.CatCatalogI;
 import org.nrg.xdat.model.CatEntryI;
 import org.nrg.xdat.model.XnatImagescandataI;
@@ -30,10 +31,14 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -42,7 +47,7 @@ import java.util.List;
  * @author tolsen01
  *
  */
-public class PrearcSessionResourceFiles extends PrearcSessionResourcesList {
+public class PrearcSessionResourceFiles extends PrearcScanResourceList {
 	private static final String RESOURCE_ID = "RESOURCE_ID";
 	private final String resource_id;
 	
@@ -90,13 +95,25 @@ public class PrearcSessionResourceFiles extends PrearcSessionResourcesList {
 		if(StringUtils.isNotEmpty(filepath)){
 			final CatEntryI entry=CatalogUtils.getEntryByURI(catalog, filepath);
 			File f= CatalogUtils.getFile(entry, rootPath);
+			
+            if (mt.equals(MediaType.IMAGE_JPEG) && StringUtils.equals(resource_id, "DICOM") && Dcm2Jpg.isDicom(f)) {
+                try {
+                    return new InputRepresentation(new ByteArrayInputStream(Dcm2Jpg.convert(f)), mt);
+                } catch (IOException e) {
+                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to convert this file to jpeg : " + e.getMessage());
+                    return new StringRepresentation("");
+                }
+            }
+            
 			return representFile(f,mt);
 		}else{
+			boolean prettyPrint=this.isQueryVariableTrue("prettyPrint");
+			
 			final XFTTable table=new XFTTable();
 	        table.initTable(columns);
 	        for (final CatEntryI entry: CatalogUtils.getEntriesByFilter(catalog,null)) {
 	        	File f=CatalogUtils.getFile(entry, rootPath);
-	        	Object[] oarray = new Object[] { f.getName(), f.length(), constructURI(entry.getUri())};
+	        	Object[] oarray = new Object[] { f.getName(), (prettyPrint)?CatalogUtils.formatSize(f.length()):f.length(), constructURI(entry.getUri())};
 	        	table.insertRow(oarray);
 	        }
 	        

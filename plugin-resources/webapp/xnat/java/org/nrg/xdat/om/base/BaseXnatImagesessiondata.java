@@ -2596,7 +2596,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         }
     }
     
-    public List<String> getPrearchiveSessionReadableScanStats(Collection <XnatImagescandataI> scans){
+    public static List<String> getPrearchiveSessionReadableScanStats(Collection <XnatImagescandataI> scans){
         List<String> stats = new ArrayList<String>();
         int count = 0;
         long size = 0;

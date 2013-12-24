@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -42,6 +43,7 @@ import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xft.utils.DateUtils;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
@@ -548,23 +550,21 @@ public class PrearcUtils {
     }
 	
 	/**
-	 * Get all of the log IDs for this prearchived session.  Returns an empty list when none are present.
+	 * Get all of the log files for this prearchived session.  Returns an empty list when none are present.
 	 * 
 	 * @param project
 	 * @param timestamp
 	 * @param session
 	 * @return
 	 */
-	public static Collection<String> getLogs(final String project, final String timestamp, final String session) {
-		final Collection<String> logs=Lists.newArrayList();
+	public static Collection<File> getLogs(final String project, final String timestamp, final String session) {
+		final Collection<File> logs=Lists.newArrayList();
 		try {
 			final File logDir=getLogDir(project,timestamp,session);
 			if(logDir.exists()){
-				final String[] files=logDir.list();
+				final File[] files=logDir.listFiles();
 				if(files!=null){
-					for(String f:files){
-						logs.add(f.substring(0,f.indexOf(".log")));//strip off the .log so it would be seamless to not use physical log files here.
-					}
+					logs.addAll(Arrays.asList(files));
 				}
 			}
 		} catch (IOException e) {
@@ -573,6 +573,28 @@ public class PrearcUtils {
 		} catch (InvalidPermissionException e) {
 			logger.error("",e);
 			return null;
+		} catch (Exception e) {
+			logger.error("",e);
+			return null;
+		}
+		return logs;
+	}
+	
+	
+	/**
+	 * Get all of the log IDs for this prearchived session.  Returns an empty list when none are present.
+	 * 
+	 * @param project
+	 * @param timestamp
+	 * @param session
+	 * @return
+	 */
+	public static Collection<String> getLogIds(final String project, final String timestamp, final String session) {
+		final Collection<String> logs=Lists.newArrayList();
+		try {
+			for(File f:PrearcUtils.getLogs(project, timestamp, session)){
+				logs.add(f.getName().substring(0,f.getName().indexOf(".log")));//strip off the .log so it would be seamless to not use physical log files here.
+			}
 		} catch (Exception e) {
 			logger.error("",e);
 			return null;
@@ -595,7 +617,7 @@ public class PrearcUtils {
 			if(logDir.exists()){
 				final File log=new File(logDir,logId+".log");//the .log is hidden from log users to conceal implementation details 
 				if(log.exists()){
-					return FileUtils.readFileToString(log);
+					return DateUtils.format(new Date(log.lastModified()), "MM/dd/yyyy HH:mm:ss") + ":" + FileUtils.readFileToString(log);
 				}
 			}
 		} catch (IOException e) {

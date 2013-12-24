@@ -12,6 +12,8 @@ package org.nrg.xnat.restlet.resources.prearchive;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.TurbineException;
 import org.nrg.action.ActionException;
@@ -20,6 +22,7 @@ import org.nrg.framework.constants.PrearchiveCode;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xft.utils.DateUtils;
 import org.nrg.xnat.archive.FinishImageUpload;
 import org.nrg.xnat.helpers.prearchive.*;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase.SyncFailedException;
@@ -332,11 +335,28 @@ public final class PrearcSessionResource extends SecureResource {
         		return new StringRepresentation(contents, mt);
         	}else if(filepath.equals("logs")){
         		final XFTTable tb=new XFTTable();
-        		tb.initTable(new String[]{"id"});
-        		
-        		for(String id:PrearcUtils.getLogs(project,timestamp,session)){
-        			tb.rows().add(new Object[]{id});
+        		if(this.getQueryVariable("template")==null || this.getQueryVariable("template").equals("details")){
+            		tb.initTable(new String[]{"id","date","entry"});
+            		
+            		try {
+						for(File log:PrearcUtils.getLogs(project,timestamp,session)){
+							Date timestamp=new Date(log.lastModified());
+							String id=log.getName().substring(0,log.getName().indexOf(".log"));
+							tb.insertRow(new Object[]{id,timestamp,FileUtils.readFileToString(log)});
+						}
+						tb.resetRowCursor();
+					} catch (IOException e) {
+						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+		                return null;
+					}
+        		}else{
+        			tb.initTable(new String[]{"id"});
+            		
+            		for(String id:PrearcUtils.getLogIds(project,timestamp,session)){
+            			tb.rows().add(new Object[]{id});
+            		}
         		}
+        		
         		
         		return representTable(tb,mt,new Hashtable<String,Object>());
         	}
@@ -358,11 +378,14 @@ public final class PrearcSessionResource extends SecureResource {
             }
 
             try {
-                return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, screen, new HashMap<String,Object>(){{
-                    put("project",project);
-                    put("timestamp",timestamp);
-                    put("folder",session);
-                }});
+            	Map<String,Object> params=Maps.newHashMap();
+            	for(String key: this.getQueryVariableKeys()){
+            		params.put(key, this.getQueryVariable(key));
+            	}
+            	params.put("project",project);
+            	params.put("timestamp",timestamp);
+            	params.put("folder",session);
+                return new StandardTurbineScreen(MediaType.TEXT_HTML, getRequest(), user, screen, params);
             } catch (TurbineException e) {
                 this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
                 return null;

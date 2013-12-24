@@ -1,8 +1,6 @@
 #set ($template = $data.getTemplateInfo())
 $!template.setLayoutTemplate("/ScreenOnly.vm")
 
-<div>The DICOM tags for the first dicom file in this scan.</div>
-<br>
 <table>
 	<tr>
 		<th>Tag</th>

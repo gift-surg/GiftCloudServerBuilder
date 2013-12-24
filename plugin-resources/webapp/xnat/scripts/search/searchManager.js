@@ -1164,6 +1164,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	this.newValueBox.type="text";
 	this.newValueBox.disabled=true;
 	this.newValueBox.style.display="none";
+    this.newValueBox.maxLength="100";
 	this.CritDiv.appendChild(this.newValueBox);
 
 
@@ -1525,6 +1526,7 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 	this.newValueBox=document.createElement("input");
 	this.newValueBox.type="text";
 	this.newValueBox.disabled=true;
+    this.newValueBox.maxLength="100";
 	this.tempCSTD1.appendChild(this.newValueBox);
 
 

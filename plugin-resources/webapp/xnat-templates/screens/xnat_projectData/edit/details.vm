@@ -3,9 +3,9 @@
         <TH align="left">$displayManager.getSingularDisplayNameForProject() Title</TH>
         <TD>
             #if( $parentTemplate != 'add' )
-                <input class="project_title" id="xnat:projectData/name" type="text" name="xnat:projectData/name" value="$!item.getStringProperty("xnat:projectData/name")" size="95" maxlength="255"/>
+                <input class="project_title" id="xnat:projectData/name" type="text" name="xnat:projectData/name" value="$!item.getStringProperty("xnat:projectData/name")" size="95" maxlength="100"/>
             #else
-                <input class="requiredField project_title title" id="xnat:projectData/name" type="text" name="xnat:projectData/name" value="$!item.getStringProperty("xnat:projectData/name")" size="95" maxlength="255"/>
+                <input class="requiredField project_title title" id="xnat:projectData/name" type="text" name="xnat:projectData/name" value="$!item.getStringProperty("xnat:projectData/name")" size="95" maxlength="100"/>
             #end
         </TD>
     </TR>

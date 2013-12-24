@@ -175,7 +175,7 @@ function SavePopupForm(_search,_div,_config){
 			}
 			input.name="save_brief";
 			input.size="42";
-            input.maxLength="255";
+            input.maxLength="100";
 			this.applyInputStyle(input);
 			td.appendChild(input);
 			tr.appendChild(td);

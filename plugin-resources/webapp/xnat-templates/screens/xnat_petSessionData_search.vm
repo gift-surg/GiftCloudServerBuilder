@@ -10,7 +10,7 @@
   		<TD>$displayManager.getSingularDisplayNameForSubject()</TD>
   		<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData.SUBJECTID_equals,xnat:subjectData.ADD_IDS_equals"/>
 		<TD>
-  			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")"/>
+  			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")" maxlength="255"/>
 		</TD>
 		
 		<TD>Cohort</TD>
@@ -33,7 +33,7 @@
 	<TR>
 		<TD>Age</TD>
 		<TD>
-  			<INPUT size="3" type="text" name="xnat:petSessionData.GEN_AGE_equals" value="$!search.getWebFormValue("xnat:petSessionData.GEN_AGE_equals")"/>
+  			<INPUT size="3" type="text" name="xnat:petSessionData.GEN_AGE_equals" value="$!search.getWebFormValue("xnat:petSessionData.GEN_AGE_equals")" maxlength="3"/>
 		</TD>
 	</TR>
 	<TR>
@@ -42,7 +42,7 @@
 	<TR>
   		<TD>PET ID</TD>
 		<TD>
-  			<INPUT size="10" type="text" name="xnat:petSessionData.EXPT_ID_equals" value="$!search.getWebFormValue("xnat:petSessionData.EXPT_ID_equals")"/>
+  			<INPUT size="10" type="text" name="xnat:petSessionData.EXPT_ID_equals" value="$!search.getWebFormValue("xnat:petSessionData.EXPT_ID_equals")" maxlength="255"/>
 		</TD>
 		
 		<TD>Date</TD>

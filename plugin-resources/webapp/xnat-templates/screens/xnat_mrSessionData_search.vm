@@ -11,7 +11,7 @@
   		<TD>$displayManager.getSingularDisplayNameForSubject()<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData.SUBJECTID_equals,xnat:subjectData.ADD_IDS_equals"/></TD>
   		
   		<TD>
-  			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")"/>
+  			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")" maxlength="255"/>
   		</TD>
 
   		<TD>Gender</TD>
@@ -27,7 +27,7 @@
   		</TD>
 		<TD>Age</TD>
   		<TD>
-  			<INPUT size="3" type="text" name="xnat:mrSessionData.AGE_equals" value="$!search.getWebFormValue("xnat:mrSessionData.AGE_equals")"/>
+  			<INPUT size="3" type="text" name="xnat:mrSessionData.AGE_equals" value="$!search.getWebFormValue("xnat:mrSessionData.AGE_equals")" maxlength="3"/>
   		</TD>
   	</TR>
   	<TR>
@@ -38,7 +38,7 @@
   		<TD>$displayManager.getSingularDisplayNameForImageSession() ID</TD>
   		<TD>
   			<INPUT type="hidden" name="xnat:mrSessionData.COMBO1_FIELDS" value="xnat:mrSessionData/ID_equals,xnat:mrSessionData/label_equals,xnat:mrSessionData/sharing/share/label_equals"/>
-			<INPUT size="10" type="text" name="xnat:mrSessionData.COMBO1" value="$!search.getWebFormValue("xnat:mrSessionData.COMBO1")"/>
+			<INPUT size="10" type="text" name="xnat:mrSessionData.COMBO1" value="$!search.getWebFormValue("xnat:mrSessionData.COMBO1")" maxlength="255"/>
 		</TD>
   		
 		<TD>Date</TD>

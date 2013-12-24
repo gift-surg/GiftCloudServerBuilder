@@ -112,7 +112,11 @@
     <TR>
         <TH align="left">Alias(es)</TH>
         <TD>
-            #foreach($aliasCounter in [0..3])
+            #set($numAliases = $om.getAliases_alias().size())
+            #if(!$numAliases || $numAliases < 3)
+                #set($numAliases = 3)
+            #end
+            #foreach($aliasCounter in [0..$numAliases])
                 <input type="text" size="17" maxlength="99" class="project_alias" id="xnat:projectData/aliases/alias[$aliasCounter]/alias" name="xnat:projectData/aliases/alias[$aliasCounter]/alias" value="$!item.getStringProperty("xnat:projectData/aliases/alias[$aliasCounter]/alias")"/>
                 &nbsp;
             #end

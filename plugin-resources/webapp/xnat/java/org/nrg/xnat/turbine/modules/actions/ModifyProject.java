@@ -25,6 +25,7 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
@@ -38,6 +39,7 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 public class ModifyProject extends SecureAction {
@@ -111,12 +113,14 @@ public class ModifyProject extends SecureAction {
                 }
                 return;
             }
-            
+
             // XNAT-2551 Make sure the alias haven't already been used on any other projects
             for(XnatProjectdataAliasI alias : project.getAliases_alias()){
                 String aliasStr = alias.getAlias();
-                conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectdata_alias/alias",aliasStr,user,false));
-                if(!conflicts.isEmpty()){
+                String q = "SELECT alias FROM xnat_projectdata_alias WHERE aliases_alias_xnat_projectdata_id != '" + project.getId() + "' AND alias = '" + aliasStr + "' ;";
+                XFTTable table = new PoolDBUtils().executeSelectQuery(q, user.getDBName(), user.getLogin());
+                table.resetRowCursor();
+                if(table.hasMoreRows()){
                     data.addMessage("A project with the alias '" + aliasStr + "' already exists.");
                     TurbineUtils.SetEditItem(item,data);
                     if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
@@ -125,9 +129,8 @@ public class ModifyProject extends SecureAction {
                     }
                     return;
                 }
-             }
-            
-            
+            }
+
             if (error!=null)
             {
                 data.addMessage(error.getMessage());

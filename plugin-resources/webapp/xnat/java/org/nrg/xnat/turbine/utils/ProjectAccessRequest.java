@@ -39,11 +39,25 @@ import javax.mail.MessagingException;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.nrg.xdat.om.XnatProjectdata.*;
 
 public class ProjectAccessRequest {
     public static boolean CREATED_PAR_TABLE = false;
+
+    public static final String PAR_BY_ID = " par_id=%s";
+    public static final String PAR_BY_GUID = " guid='%s'";
+    public static final String PAR_BY_USER_AND_PROJ_ID = " user_id=%s AND proj_id='%s'";
+    public static final String PAR_BY_EMAIL = " xs_par_table.email='%s' AND approval_date IS NULL";
+
+    public static final Map<String, Pattern> PAR_PATTERNS = new HashMap<String, Pattern>() {{
+        put("ID %s", Pattern.compile(String.format(PAR_BY_ID, "(.*?)")));
+        put("GUID %s", Pattern.compile(String.format(PAR_BY_GUID, "(.*?)")));
+        put("ID %s for project %s", Pattern.compile(String.format(PAR_BY_USER_AND_PROJ_ID, "(.*?)", "(.*?)")));
+        put("Email %s", Pattern.compile(String.format(PAR_BY_EMAIL, "(.*?)")));
+    }};
 
     public ProjectAccessRequest(final String query, final XDATUser user) throws XNATException, SQLException, DBPoolException {
         XFTTable table = runInitQuery(query, user);
@@ -54,9 +68,9 @@ public class ProjectAccessRequest {
                 setQuery(query);
             }};
         } else if (numRows > 1) {
-            throw new AmbiguousXFTItemException("Found " + numRows + " results for project access request search, should return one and only one.", user) {{
-                setQuery(query);
-            }};
+            if (logger.isInfoEnabled()) {
+                logger.info("Found " + numRows + " results for project access request search, should return one and only one for: " + getIdentifierFromQuery(query) + "\n" + query);
+            }
         }
         initializeFromDataRow(table.nextRow());
     }
@@ -297,27 +311,19 @@ public class ProjectAccessRequest {
     }
 
     public static ProjectAccessRequest RequestPARById(Integer id, XDATUser user) {
-        return RequestPAR(" par_id=" + id, user);
+        return RequestPAR(String.format(PAR_BY_ID, id.toString()), user);
     }
 
     public static ProjectAccessRequest RequestPARByGUID(String guid, XDATUser user) {
-        return RequestPAR(" guid='" + guid + "'", user);
+        return RequestPAR(String.format(PAR_BY_GUID, guid), user);
     }
 
     public static ProjectAccessRequest RequestPARByUserProject(Integer userId, String projectId, XDATUser user) {
-        return RequestPAR(" user_id=" + userId + " AND proj_id='" + projectId + "'", user);
+        return RequestPAR(String.format(PAR_BY_USER_AND_PROJ_ID, userId.toString(), projectId), user);
     }
 
     public static ArrayList<ProjectAccessRequest> RequestPARsByUserEmail(String email, XDATUser user) {
-        return RequestPARs(" xs_par_table.email='" + email + "' AND approval_date IS NULL", user);
-    }
-
-    public static ArrayList<ProjectAccessRequest> RequestPARsByProject(String p, XDATUser user) {
-        return RequestPARs(" proj_id='" + p + "'", user);
-    }
-
-    public static ArrayList<ProjectAccessRequest> RequestPARByUserApprovalDate(Integer userId, Date lastLogin, XDATUser user) {
-        return RequestPARs(" user_id=" + userId + " AND (approval_date>'" + lastLogin + "' OR approval_date IS NULL)", user);
+        return RequestPARs(String.format(PAR_BY_EMAIL, email), user);
     }
 
     public static ProjectAccessRequest RequestPAR(String where, XDATUser user) {
@@ -337,14 +343,37 @@ public class ProjectAccessRequest {
             XFTTable table = runInitQuery(query, user);
             table.resetRowCursor();
             while (table.hasMoreRows()) {
-            ProjectAccessRequest par = new ProjectAccessRequest(query, user);
+                ProjectAccessRequest par = new ProjectAccessRequest(query, user);
                 par.initializeFromDataRow(table.nextRow());
-            PARs.add(par);
+                PARs.add(par);
             }
         } catch (Exception exception) {
-            _logger.error("Error occurred while requesting project access requests for user [" + user.getUsername() + "]: " + where, exception);
+            final String identifier = user != null ? user.getUsername() : getIdentifierFromWhere(where);
+            _logger.error("Error occurred while requesting project access requests for user [" + identifier + "]: " + where, exception);
         }
         return PARs;
+    }
+
+    private static String getIdentifierFromQuery(final String query) {
+        if (query.contains("where ")) {
+            return query.substring(query.indexOf("where ") + "where ".length());
+        }
+        return query;
+    }
+
+    private static String getIdentifierFromWhere(final String where) {
+        for (final Map.Entry<String, Pattern> entry: PAR_PATTERNS.entrySet()) {
+            Pattern pattern = entry.getValue();
+            Matcher matcher = pattern.matcher(where);
+            if (matcher.matches()) {
+                if (matcher.groupCount() == 2) {
+                    return String.format(entry.getKey(), matcher.group(1), matcher.group(2));
+                } else {
+                    return String.format(entry.getKey(), matcher.group(1));
+                }
+            }
+        }
+        return null;
     }
 
     public static void CreatePAR(String pID, String level, XDATUser user){

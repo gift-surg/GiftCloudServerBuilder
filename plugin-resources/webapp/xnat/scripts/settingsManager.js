@@ -348,8 +348,8 @@ function seriesImportFiltersGet(settings) {
                 if (contents.mode) {
                     this.mode.value = this.initial.mode = contents.mode;
                 }
-                if (contents.filters) {
-                    this.filters.value = this.initial.filters = contents.filters;
+                if (contents.list) {
+                    this.filters.value = this.initial.filters = contents.list;
                 }
             }
         };

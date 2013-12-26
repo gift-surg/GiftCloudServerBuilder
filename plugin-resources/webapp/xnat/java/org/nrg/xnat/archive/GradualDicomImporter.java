@@ -241,7 +241,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 logger.trace("reading object into memory up to {}", TagUtils.toString(lastTag));
                 dis.setHandler(new StopTagInputHandler(lastTag));
                 o = dis.readDicomObject();
-                if(!seriesImportFilter.shouldIncludeDicomObject(o)) {
+                if(seriesImportFilter.isEnabled() && !seriesImportFilter.shouldIncludeDicomObject(o)) {
                     return new ArrayList<String>();
                     /** TODO: Return information to user on rejected files. Unfortunately throwing an
                      *  exception causes DicomBrowser to display a panicked error message. Some way of

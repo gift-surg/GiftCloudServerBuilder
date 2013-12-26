@@ -701,10 +701,10 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		}
 		
 		for(final XnatImagescandataI scan: src.getScans_scan()){
-			if(!siteWide.shouldIncludeDicomObject(scan)){
+			if(siteWide.isEnabled() && !siteWide.shouldIncludeDicomObject(scan)){
 				fail(22,String.format("Scan %1$s is non-compliant with this server's DICOM whitelist/blacklist.",scan.getId()));
 			}
-			if(projectSpecific!=null && !projectSpecific.shouldIncludeDicomObject(scan)){
+			if(projectSpecific!=null && projectSpecific.isEnabled() && !projectSpecific.shouldIncludeDicomObject(scan)){
 				fail(22,String.format("Scan %1$s is non-compliant with this project's DICOM whitelist/blacklist.",scan.getId()));
 			}
 		}

@@ -334,7 +334,7 @@ function seriesImportFiltersGet(settings) {
                     YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?status=enabled&XNAT_CSRF=' + window.csrfToken, callbacks);
                 } else {
                     var status = !that.initial.status ? '&status=enabled' : '';
-                    var data = YAHOO.lang.JSON.stringify({ mode: mode, filters: filters });
+                    var data = YAHOO.lang.JSON.stringify({ mode: mode, list: filters });
                     YAHOO.util.Connect.asyncRequest('PUT', serverRoot + '/data/projects/' + that.project + '/config/seriesImportFilter/config?inbody=true&XNAT_CSRF=' + window.csrfToken + status, callbacks, data);
                 }
             }

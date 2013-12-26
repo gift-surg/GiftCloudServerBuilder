@@ -777,7 +777,7 @@
         <ant:replace file="${xdat.deployment.logger.file}" token="\" value="/"/>
         <!-- Web Application log4j.properties -->
         <taskdef name="mergeProperty" classname="MergePropertiesTask" classpath="classes"/>
-        <ant:mergeProperty baseFile="${basedir}/plugin-resources/originals/log4j.properties" overrideFile="${basedir}/projects/${xdat.project.name}/src/web-conf/log4j.merge.properties" destFile="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties"/>
+        <ant:mergeProperty baseFile="${basedir}/plugin-resources/originals/log4j.properties" overrideFolder="${basedir}/projects/${xdat.project.name}/src/web-conf" overrideSpec="log4j.*.properties" destFile="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties"/>
         <ant:replace file="${basedir}/deployments/${xdat.project.name}/conf/log4j.properties" token="@TURBINE_APP_PACKAGE@" value="org.apache.turbine.app.${xdat.project.name}"/>
     </goal>
     <!-- ================================================================ -->

@@ -64,7 +64,7 @@
   		</TD>		
   		<TD>Operator</TD>
   		<TD>
-  			<INPUT size="8" type="text" name="xnat:mrSessionData.OPERATOR_equals" value="$!search.getWebFormValue("xnat:mrSessionData.OPERATOR_equals")"/>
+  			<INPUT size="8" type="text" name="xnat:mrSessionData.OPERATOR_equals" value="$!search.getWebFormValue("xnat:mrSessionData.OPERATOR_equals")" maxlength="100"/>
   		</TD>
 	</TR>
 </TABLE>

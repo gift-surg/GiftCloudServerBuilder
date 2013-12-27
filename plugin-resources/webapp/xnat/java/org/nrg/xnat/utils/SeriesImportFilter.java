@@ -239,28 +239,6 @@ public class SeriesImportFilter {
 
         // If the config is null, we can't very well enable or disable it.
         if (existing != null) {
-            if (_enabled && !existing.getStatus().equals("enabled")) {
-                try {
-                    if (_projectId == null) {
-                        XDAT.getConfigService().enable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH);
-                    } else {
-                        XDAT.getConfigService().enable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH, _projectId);
-                    }
-                } catch (ConfigServiceException exception) {
-                    final String message = _projectId == null ? "Error enabling the site-wide series import filter" : "Error enabling the series import filter for project " + _projectId;
-                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, message, exception);
-                }
-            } else if (!_enabled && existing.getStatus().equals("enabled")) {
-                try {
-                    if (_projectId == null) {
-                        XDAT.getConfigService().disable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH);
-                    } else {
-                        XDAT.getConfigService().disable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH, _projectId);
-                    }
-                } catch (ConfigServiceException exception) {
-                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error disabling the site-wide series import filter", exception);
-                }
-            }
             final Map<String, String> existingContents = getSeriesFilterAsMap(existing);
             final boolean isModeChanged = !existingContents.get("mode").equals(map.get("mode"));
             final boolean isListChanged = !existingContents.get("list").equals(map.get("list"));
@@ -288,6 +266,29 @@ public class SeriesImportFilter {
                     }
                 } catch (ConfigServiceException exception) {
                     throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error updating configuration for the series import filter", exception);
+                }
+            }
+            if (_enabled && !existing.getStatus().equals("enabled") && !isModeChanged && !isListChanged) { // if mode or list changed, the updated version is already enabled
+                try {
+                    if (_projectId == null) {
+                        XDAT.getConfigService().enable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH);
+                    } else {
+                        XDAT.getConfigService().enable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH, _projectId);
+                    }
+                } catch (ConfigServiceException exception) {
+                    final String message = _projectId == null ? "Error enabling the site-wide series import filter" : "Error enabling the series import filter for project " + _projectId;
+                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, message, exception);
+                }
+            } else if (!_enabled && (existing.getStatus().equals("enabled") || isModeChanged || isListChanged)) { // if we are disabling a filter, or need to disable a newly updated filter
+                try {
+                    if (_projectId == null) {
+                        XDAT.getConfigService().disable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH);
+                    } else {
+                        XDAT.getConfigService().disable(username, reason, SERIES_IMPORT_TOOL, SERIES_IMPORT_PATH, _projectId);
+                    }
+                    return;
+                } catch (ConfigServiceException exception) {
+                    throw new NrgServiceRuntimeException(NrgServiceError.Unknown, "Error disabling the site-wide series import filter", exception);
                 }
             }
         } else {

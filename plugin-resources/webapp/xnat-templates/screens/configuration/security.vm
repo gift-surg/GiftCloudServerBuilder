@@ -20,7 +20,7 @@
                 if (window.securityManager) {
                     window.securityManager.dirtyForm();
                 }
-                if(jq(radioEl).val() == 'Interval'){
+                if (jq(radioEl).val() == 'Interval'){
                     interval.show();
                     date.hide();
                 } else {
@@ -30,22 +30,31 @@
             }
 
             function validatePasswordExpiration() {
-                var interval = $('#passwordExpirationInterval');
-                if(!interval.val()) {
+                if (window.securityManager) {
+                    window.securityManager.dirtyForm();
+                }
+                var interval = jq('#passwordExpirationInterval');
+                if (!interval.val()) {
                     interval.val('0');
                 }
-                var date = $('#passwordExpirationDate');
-                if(!date.val()) {
-                    date.val('01/01/1970');
+                var date = jq('#passwordExpirationDate');
+                if (!date.val() || date.val() == '__/__/____') {
+                    // is it better to put in zeros or 01/01/1970?
+                    date.val('00/00/0000');
+                    // putting in zeros will prompt the user to enter a date
                 }
-
+                var check_date = XNAT.app.checkDateInput(date,'us');
                 if (!interval.val().match(/^\d+$/)) {
                     xModalMessage('Note','The password expiration interval must consist only of digits.','OK');
+                }
+                else if (!check_date.valid){
+                    return false ;    
                 }
                 else {
                     window.securityManager.saveTabSettings();
                 }
             }
+
         </script>
 
         <p>
@@ -105,16 +114,23 @@
                                     XNAT.app.datePicker.init(__datepicker);
                                     ##insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date");
                                     ##jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';
-                                    jq('body').on('change','#passwordExpirationDate',function(){
-                                        window.securityManager.dirtyForm();
+                                    jq('#passwordExpirationDateSpan').on('change focus','#passwordExpirationDate',function(){
+                                        if (window.securityManager) {
+                                            window.securityManager.dirtyForm();
+                                        }
+                                    });
+                                    jq('#passwordExpirationDateSpan').on('click','a.selector, a.today', function(){
+                                        if (window.securityManager) {
+                                            window.securityManager.dirtyForm();
+                                        }
                                     });
                                 });
                             </script>
                             ##<input type="text" id="passwordExpirationDate" name="passwordExpirationDate" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationDate()"/>
                             ##<script type="text/javascript">insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date"); jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';</script>
-                <small>All passwords created or set before this date will be considered to have expired and must be changed.
-                    Useful in circumstances when mass changes in password policy are put into effect.
-                    Dates should be formatted MM/DD/YYYY.</small>
+                            <small>All passwords created or set before this date will be considered to have expired and must be changed.
+                                Useful in circumstances when mass changes in password policy are put into effect.
+                                Dates should be formatted MM/DD/YYYY.</small>
                         </span>
                         <style>#cal_passwordExpirationDate, #passwordExpirationDate { vertical-align: bottom }</style>
                     </td>

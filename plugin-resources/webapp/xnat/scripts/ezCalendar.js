@@ -106,6 +106,7 @@ XNAT.app.checkDateInput = function($input,format) {
     date.min_past = max_date_num-1200000 ;
 
     //message_opts.action = function(){closeModal_pickDate(this,$input)};
+    //message_opts.id = 'invalid_date' ;
     message_opts.height = 175 ;
     message_opts.okClose = false ;
     message_opts.action = function(){
@@ -176,13 +177,12 @@ XNAT.app.checkDateInput = function($input,format) {
 //        $input.removeClass('invalid');
 //    }
 
-
-    if (return_val === false){
-        if (console.log) console.log('invalid date');
-    }
-    else {
-        if (console.log) console.log('valid date')
-    }
+//    if (return_val === false){
+//        if (console.log) console.log('invalid date');
+//    }
+//    else {
+//        if (console.log) console.log('valid date')
+//    }
 
     return { valid: return_val, date: date } ;
 
@@ -506,12 +506,14 @@ $(function(){
         $wrapper.find('input.day').val(XNAT.data.todaysDate.dd);
     });
 
-    $body.on('blur','input.ez_cal',function(){
-        var $wrapper = $(this).closest('.ez_cal_wrapper');
+    var checkDateOnBlur = function(input){
+        if ($('div.xmask.open.top').data('xmodal-x') === xModalMessageCount) return ;
+        //if (!$('#invalid_date')) return ;
+        var $wrapper = $(input).closest('.ez_cal_wrapper');
         var $year = $wrapper.find('input:hidden.year');
         var $month = $wrapper.find('input:hidden.month');
         var $day = $wrapper.find('input:hidden.day');
-        var $input = $(this);
+        var $input = $(input);
         //var format = ($input.hasClass('iso')) ? 'iso' : 'us' ;
         if ($input.hasClass('single')){
             var dateCheck = XNAT.app.checkDateInput($input);
@@ -538,6 +540,18 @@ $(function(){
                 $day.val($input.val());
             }
         }
+    };
+
+    // maybe this is redundant with the xmodal check in checkDateOnBlur()?
+    $body.on('focus','input.ez_cal.validate.onblur',function(){
+        $(this).on('blur',function(){
+            checkDateOnBlur(this);
+        });
+    });
+
+    $body.on('blur','input.ez_cal.validate.onblur',function(){
+        checkDateOnBlur(this);
+        $(this).off('blur');
     });
 
     //

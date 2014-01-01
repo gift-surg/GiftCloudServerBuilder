@@ -67,31 +67,27 @@ var xModalMessageCount = 0 ;
 function xModalMessage(_title,_message,_label,_options){
 
     xModalMessageCount++ ;
+    xModal.closeModal = true ; // setting this to true allows selection of 'ok' button with return/enter key
 
-    xModal.closeModal = true ;
-
-    var msgWidth, msgHeight, msgAction ;
-
-    msgWidth  = (_options && _options.width)  ? _options.width  : 420 ;
-    msgHeight = (_options && _options.height) ? _options.height : 220 ;
-    msgAction = (_options && _options.action) ? _options.action : function(){} ;
+    if (!$.isPlainObject(_options)) _options = {};
 
     var message = {
-        //id: 'xmodal'+(xmodal_count++),  // REQUIRED - id to give to new xModal 'window'
+        //id: 'xmodal'+(xmodal_count++),
         id: 'message'+xModalMessageCount,
-        kind: 'fixed',  // REQUIRED - options: 'dialog','fixed','large','med','small','xsmall','custom'
-        width: msgWidth, // width in px - used for 'fixed','custom','static'
-        height: msgHeight, // height in px - used for 'fixed','custom','static'
-        scroll: 'yes', // true/false - does content need to scroll?
-        title: _title || 'Message', // text for title bar
+        kind: 'fixed',
+        width: 420,
+        height: 220,
+        scroll: 'yes',
+        title: _title || 'Message',
         content: _message || ' ',
         // footer not specified, will use default footer
-        ok: 'show',  // show the 'ok' button
+        ok: 'show',
         okLabel: _label || 'OK',
-        okAction: msgAction ,
-        cancel: 'hide' // do NOT show the 'Cancel' button
+        okAction: _options.action || function(){} ,
+        cancel: 'hide'
     };
-    xModalOpenNew(message);
+
+    new xModal.Modal($.extend({}, message, _options));
 }
 
 var xModalLoaderCount = 0 ;
@@ -406,6 +402,7 @@ xModal.Modal = function(xx){
     xmodal_count++ ;
 
     this.id =  xx.id || 'xmodal'+xmodal_count ;
+    this.className = xx.className || '';
     //this.kind = xx.size || 'fixed' ; // should change 'kind' to 'size' but will need to check if 'kind' is used first
     this.kind = xx.kind || 'fixed' ;
     this.width = xx.width || 600 ;
@@ -595,9 +592,11 @@ xModal.Modal = function(xx){
 
     $('div.xmask').not($this_mask).removeClass('top');
     $this_mask.css('z-index',parseInt(10000+xmodal_count)).show().addClass('open top');
+    $this_mask.addClass(this.className);
 
     $this_modal.fadeIn(100).addClass('open');
     $this_modal.addClass(this.kind);
+    $this_modal.addClass(this.className);
 
     xModalSizes($this_modal, this.width, this.height);
 

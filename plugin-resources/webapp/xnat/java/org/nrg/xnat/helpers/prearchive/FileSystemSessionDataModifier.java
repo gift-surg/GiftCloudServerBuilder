@@ -290,14 +290,15 @@ public class FileSystemSessionDataModifier implements SessionDataModifierI {
 	
 	public void delete(SessionData sd) {
 		File f = new File(sd.getUrl());
+        final File tsdir = f.getParentFile();
 		try {
-			FileUtils.MoveToCache(new File(f.getPath() + ".xml"));
-		} catch (Exception e) {
-			logger.error("",e);
-		}
-		final File tsdir = f.getParentFile();
-		try {
-			FileUtils.MoveToCache(f);
+            if (f.exists()) {
+                FileUtils.MoveToCache(new File(f.getPath() + ".xml"));
+                FileUtils.MoveToCache(f);
+            }
+            else {
+                FileUtils.DeleteFile(new File(f.getPath() + ".xml"));
+            }
 		} catch (Exception e) {
 			logger.error("",e);
 		}

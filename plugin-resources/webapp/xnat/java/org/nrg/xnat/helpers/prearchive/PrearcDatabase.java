@@ -455,7 +455,7 @@ public final class PrearcDatabase {
      * @throws SQLException 
      * @throws Exception 
      */
-    private static synchronized boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception {
+    private static boolean _moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception {
         if (null == newProj || newProj.isEmpty()) {
             throw new SessionException("New project argument is null or empty");
         }

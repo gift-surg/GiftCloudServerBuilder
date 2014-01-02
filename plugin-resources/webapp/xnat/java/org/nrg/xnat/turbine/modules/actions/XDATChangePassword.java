@@ -39,7 +39,7 @@ public class XDATChangePassword extends VelocitySecureAction {
   public void doPerform(RunData data, Context context) throws Exception {
 	  
   	String username = TurbineUtils.getUser(data).getUsername();
-	String password = (String)TurbineUtils.GetPassedParameter(CGI_PASSWORD, data);
+	String password = data.getParameters().getString("xdat:user.primary_password");
 	if((username!=null) &&!StringUtils.isEmpty(username)){
 		if(!username.equals("guest")){
 			if (StringUtils.isEmpty(username))

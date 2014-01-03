@@ -319,6 +319,12 @@ function seriesImportFiltersGet(settings) {
         this.save.onclick = function() {
             var callbacks = {
                 success: function() {
+                    that.save.disabled = true;
+                    that.initial = {  // reset these values so the enabled state of the save button reflects the current saved state.
+                        status: that.enable.checked,
+                        mode: that.mode.value,
+                        filters: that.filters.value
+                    };
                     xModalMessage('Saved', 'Your changes to the series import filters for the project ' + that.project + ' have been saved');
                 },
                 failure: that.onFailure,

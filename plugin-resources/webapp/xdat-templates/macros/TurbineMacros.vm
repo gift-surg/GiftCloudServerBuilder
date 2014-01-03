@@ -952,7 +952,8 @@
 #end
 
 #macro (xdatSearchField $schemaElement $displayField)
-  #if ($displayField.getDataType().equalsIgnoreCase("string"))
+
+    #if ($displayField.getDataType().equalsIgnoreCase("string"))
       #if ($displayField.hasEnumeration())
         <select name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals">
         <option value="" #if($!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")=="")SELECTED#end>(SELECT)</option>
@@ -964,16 +965,18 @@
         <input size="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_equals" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_equals")"/>
     #end
   #elseif ($displayField.getDataType().equalsIgnoreCase("date"))
-    <table>
+
+  <table>
       <tr>
         <td>From</td>
-        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate")" ONCHANGE="return validateDateBox(this);"/>
+        <td>
+            <input class="date_mask check_date us" size="10" maxlength="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate" placeholder="MM/DD/YYYY" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_to_fulldate")" #*ONCHANGE="return validateDateBox(this);"*#/>
         </td>
       </tr>
       <tr>
         <td>To</td>
-        <td><input size="8" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate")" ONCHANGE="return validateDateBox(this);"/>
-
+        <td>
+            <input class="date_mask check_date us" size="10" maxlength="10" type="text" name="${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate" placeholder="MM/DD/YYYY" value="$!search.getWebFormValue("${schemaElement.getFullXMLName()}.${displayField.Id}_from_fulldate")" #*ONCHANGE="return validateDateBox(this);"*#/>
         </td>
       </tr>
     </table>

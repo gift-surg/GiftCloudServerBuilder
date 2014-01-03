@@ -45,8 +45,37 @@ function focusInput($input){
 }
 
 
+XNAT.app.maskDateInput = function( _$input , _filler , _format ){
+
+    if ( !$.mask.dataName || !_$input) return ;
+
+    var $input, filler, format ;
+
+    $input = (_$input.jquery) ? _$input : $(_$input); // we prefer a jQuery object, but we'll transmogrify a regular selector if necessary
+
+    if ($input.hasClass('us')){ format='us' }
+    if ($input.hasClass('iso')){ format='iso' }
+
+    format = _format || format || 'us';
+    format = format.toLowerCase() ;
+
+    if (format === 'us' || format === 'eu' || format === 'euro'){
+        filler = _filler || '_';
+        $input.mask('99/99/9999',{ placeholder: filler }); // requires the jquery.maskedinput plugin
+    }
+    else if (format === 'iso'){
+        filler = _filler || ' ';
+        $input.mask('9999-99-99',{ placeholder: filler }); // requires the jquery.maskedinput plugin
+    }
+    else {
+        // nothing?
+    }
+};
+
+
 XNAT.app.checkDateInput = function($input,format) {
     // $input parameter REQUIRED - jQuery object
+    if (!$input.jquery) $input = $($input); // we prefer a jQuery object, but we'll convert a regular selector if necessary
 
     // if format parameter isn't specified
     // and input doesn't have 'us' or 'iso' class,
@@ -114,14 +143,23 @@ XNAT.app.checkDateInput = function($input,format) {
         xModalCloseNew(modal_id);
         //focusInput($focus);
     };
+
+    var useDatePicker = function(){
+        if ($input.closest('.ez_cal_wrapper').find('.calendar').length){
+            return '' +
+                ' or <a class="use_date_picker" href="javascript:" ' +
+                //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
+                //'onclick="closeModal_pickDate();" ' +
+                'style="text-decoration:underline;">use the date picker to select a date</a>'
+        }
+        else { return '' }
+    };
+
     if (hasNumber(date.arr) && !valid_format.test(date.val)) {
         if (typeof xModalMessage != 'undefined') {
             xModalMessage(
                 'Invalid Date Format',
-                'Please enter the date in the format: ' + example + ' or <a class="use_date_picker" href="javascript:" ' +
-                    //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
-                    //'onclick="closeModal_pickDate();" ' +
-                    'style="text-decoration:underline;">use the date picker to select a date</a>.',
+                'Please enter the date in the format: ' + example + useDatePicker() + '.',
                 'OK',
                 message_opts
             );
@@ -134,15 +172,13 @@ XNAT.app.checkDateInput = function($input,format) {
         if (typeof xModalMessage != 'undefined') {
             xModalMessage(
                 'Invalid Date',
-                'You may not select a date in the future. Please correct or <a class="use_date_picker" href="javascript:" ' +
-                    //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
-                    'style="text-decoration:underline;">use the date picker to select a valid date</a> and continue.',
+                'You may not select a date in the future. Please correct' + useDatePicker() + ' and continue.',
                 'OK',
                 message_opts
             );
         }
         else {
-            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
+            alert("You may not select a date in the future. Please enter a valid date and continue.");
         }
     }
     // check for sane date ranges - between 120 years ago and 100 years from now
@@ -150,15 +186,13 @@ XNAT.app.checkDateInput = function($input,format) {
         if (typeof xModalMessage != 'undefined') {
             xModalMessage(
                 'Invalid Date',
-                'Invalid Day, Month, or Year range detected. Please correct or <a class="use_date_picker" href="javascript:" ' +
-                    //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
-                    'style="text-decoration:underline;">use the date picker to select a valid date</a> and continue.',
+                'Invalid Day, Month, or Year range detected. Please correct'  + useDatePicker() +  ' and continue.',
                 'OK',
                 message_opts
             );
         }
         else {
-            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
+            alert("Invalid Day, Month, or Year range detected. Please enter a valid date and continue.");
         }
     }
     else {
@@ -365,7 +399,7 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
     }
 
     if (_format === 'iso'){
-        $new_cal.mask("9999-99-99",{placeholder:"_"});
+        $new_cal.mask("9999-99-99",{placeholder:" "});
     }
     else {
         $new_cal.mask("99/99/9999",{placeholder:"_"});
@@ -435,6 +469,8 @@ XNAT.app.datePicker.init = function($container,_config){
     // I guess we can make this work without any parameters
     // on any element with 'xnat-date' class?
     $container = $container || $('.xnat-date') ;
+
+    $container = ($container.jquery) ? $container : $($container); // don't freak out if it's a selector instead of a jQuery object
 
     $container.each(function(){
 
@@ -541,6 +577,16 @@ $(function(){
             }
         }
     };
+
+    // mask existing input elements
+    $body.on('focus','input.date_mask',function(){
+        XNAT.app.maskDateInput($(this));
+    });
+
+    // validate existing input elements
+    $body.on('blur','input.check_date',function(){
+        XNAT.app.checkDateInput($(this));
+    });
 
     // maybe this is redundant with the xmodal check in checkDateOnBlur()?
     $body.on('focus','input.ez_cal.validate.onblur',function(){

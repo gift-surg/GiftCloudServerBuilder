@@ -40,7 +40,7 @@
 	<TR>
 		<TD>YOB</TD>
   		<TD>
-  			<INPUT size="6" type="text" name="xnat:subjectData.DOB_equals" value="$!search.getWebFormValue("xnat:subjectData.DOB_equals")"/>
+  			<INPUT size="4" maxlength="4" type="text" name="xnat:subjectData.DOB_equals" value="$!search.getWebFormValue("xnat:subjectData.DOB_equals")"/>
   		</TD> 
 		#advancedSearchCreateProjectList($data $displayManager $search $schemaElement)
 	</TR>

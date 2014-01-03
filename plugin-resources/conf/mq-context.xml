@@ -50,6 +50,10 @@
         <amq:redeliveryPolicyEntries>
             <amq:redeliveryPolicy queue="sessionXmlRebuilderRequest" useExponentialBackOff="true" maximumRedeliveries="4"
                                   initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#sessionXmlRebuilderRequest"/>
+            <amq:redeliveryPolicy queue="deleteSessionRequest" useExponentialBackOff="true" maximumRedeliveries="4"
+                                  initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#deleteSessionRequest"/>
+            <amq:redeliveryPolicy queue="moveSessionRequest" useExponentialBackOff="true" maximumRedeliveries="4"
+                                  initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#moveSessionRequest"/>
             <!-- Additional redelivery policies go here; otherwise default is used. The destination attribute is not apparently used, but is required. -->
         </amq:redeliveryPolicyEntries>
     </amq:redeliveryPolicyMap>
@@ -94,7 +98,7 @@
     </bean>
 
     <!-- Spring JMS Listener Container -->
-    <jms:listener-container connection-factory="springConnectionFactory" concurrency="10" acknowledge="transacted">
+    <jms:listener-container connection-factory="springConnectionFactory" concurrency="5" acknowledge="transacted">
         <jms:listener destination="sessionXmlRebuilderRequest" ref="sessionXmlRebuilderRequestListener" method="onSessionXmlRebuilderRequest" />
         <jms:listener destination="deleteSessionRequest" ref="deleteSessionRequestListener" method="onDeleteSessionRequest" />
         <jms:listener destination="moveSessionRequest" ref="moveSessionRequestListener" method="onMoveSessionRequest" />

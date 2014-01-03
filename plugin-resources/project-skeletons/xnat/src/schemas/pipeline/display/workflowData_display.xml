@@ -73,12 +73,12 @@
     </DisplayField>
     <ViewLink alias="SESSION_LABEL_VIEW">
         <Mapping TableName="SESSION_LABEL_VIEW">
-            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.ID" mapsTo="workflow_id"/>
+            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.wrk_workflowdata_id" mapsTo="workflow_id"/>
         </Mapping>
     </ViewLink>
-    <SQLView name="SESSION_LABEL_VIEW" sql="SELECT DISTINCT ex.label AS session_label, wf.id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_experimentData ex ON ex.id = wf.id"/>
+    <SQLView name="SESSION_LABEL_VIEW" sql="SELECT DISTINCT ex.label AS session_label, ex.project AS project, wf.wrk_workflowdata_id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_experimentData ex ON ex.id = wf.id"/>
     <DisplayField id="PROJECT" header="Project" searchable="true" data-type="string">
-        <DisplayFieldElement name="Field1" viewName="PROJECT_VIEW" viewColumn="project"/>
+        <DisplayFieldElement name="Field1" viewName="SESSION_LABEL_VIEW" viewColumn="project"/>
         <HTML-Link>
             <Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/xnat:projectData/search_field/xnat:projectData.ID">
                 <InsertValue id="Field1" field="PROJECT"/>
@@ -88,12 +88,6 @@
             </Property>
         </HTML-Link>
     </DisplayField>
-    <ViewLink alias="PROJECT_VIEW">
-        <Mapping TableName="PROJECT_VIEW">
-            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.ID" mapsTo="workflow_id"/>
-        </Mapping>
-    </ViewLink>
-    <SQLView name="PROJECT_VIEW" sql="SELECT DISTINCT ex.project AS project, wf.id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_experimentData ex ON ex.id = wf.id"/>
     <DisplayField id="SUBJECT_LABEL" header="Subject" searchable="true" data-type="string">
         <DisplayFieldElement name="Field1" viewName="SUBJECT_LABEL_VIEW" viewColumn="subject_label"/>
         <HTML-Link>
@@ -107,19 +101,25 @@
     </DisplayField>
     <ViewLink alias="SUBJECT_LABEL_VIEW">
         <Mapping TableName="SUBJECT_LABEL_VIEW">
-            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.ID" mapsTo="workflow_id"/>
+            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.wrk_workflowdata_id" mapsTo="workflow_id"/>
         </Mapping>
     </ViewLink>
-    <SQLView name="SUBJECT_LABEL_VIEW" sql="SELECT DISTINCT sub.label AS subject_label, wf.id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_subjectData sub ON sub.id = wf.id"/>
+    <SQLView name="SUBJECT_LABEL_VIEW" sql="SELECT DISTINCT sub.label AS subject_label, wf.wrk_workflowdata_id AS workflow_id FROM wrk_workflowData wf LEFT JOIN xnat_subjectData sub ON sub.id = wf.id"/>
     <DisplayField id="USERFULLNAME" header="Userfullname" searchable="true" data-type="string">
         <DisplayFieldElement name="Field1" viewName="USERFULLNAME_VIEW" viewColumn="userfullname"/>
     </DisplayField>
+    <DisplayField id="USERLOGIN" header="Userlogin" searchable="true" data-type="string">
+        <DisplayFieldElement name="Field1" viewName="USERFULLNAME_VIEW" viewColumn="login"/>
+    </DisplayField>
+    <DisplayField id="USEREMAIL" header="Useremail" searchable="true" data-type="string">
+        <DisplayFieldElement name="Field1" viewName="USERFULLNAME_VIEW" viewColumn="email"/>
+    </DisplayField>
     <ViewLink alias="USERFULLNAME_VIEW">
         <Mapping TableName="USERFULLNAME_VIEW">
-            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.ID" mapsTo="workflow_id"/>
+            <MappingColumn rootElement="wrk:workflowData" fieldElement="wrk:workflowData.wrk_workflowdata_id" mapsTo="workflow_id"/>
         </Mapping>
     </ViewLink>
-    <SQLView name="USERFULLNAME_VIEW" sql="SELECT p.parameter AS userfullname, w.id AS workflow_id FROM wrk_workflowdata w LEFT JOIN wrk_xnatexecutionenvironment e ON w.id = e.id LEFT JOIN wrk_xnatexecutionenvironment_parameter p ON e.wrk_abstractexecutionenvironment_id = p.parameters_parameter_wrk_xnatex_wrk_abstractexecutionenvironmen WHERE p.name='userfullname'"/>
+    <SQLView name="USERFULLNAME_VIEW" sql="SELECT wrk.wrk_workflowdata_id AS workflow_id, u.login, u.firstname, u.lastname, u.firstname || ' ' ||  u.lastname AS userfullname, u.email FROM wrk_workflowData wrk LEFT JOIN wrk_workflowdata_meta_data meta ON wrk.workflowData_info=meta.meta_data_id LEFT JOIN xdat_user u ON meta.insert_user_xdat_user_id=u.xdat_user_id"/>
     <DisplayVersion versionName="listing" default-order-by="LAST_MODIFIED" default-sort-order="DESC" brief-description="Workflow" dark-color="9999CC" light-color="CCCCFF">
         <DisplayFieldRef id="WORKFLOW_ID"/>
         <DisplayFieldRef id="PIPELINE_NAME"/>

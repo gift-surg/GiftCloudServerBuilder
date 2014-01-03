@@ -1223,6 +1223,11 @@
         </javac>
         <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" basedir="${basedir}/classes">
             <include name="org/**"/>
+            <manifest file="MANIFEST.MF">
+                <attribute name="Application-Name" value="XNAT"/>
+                <attribute name="Permissions" value="all-permissions"/>
+                <attribute name="Codebase" value="*"/>
+            </manifest>
         </jar>
         <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}-source.jar" basedir="${basedir}/src">
             <include name="org/**"/>

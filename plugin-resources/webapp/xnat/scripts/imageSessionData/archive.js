@@ -10,7 +10,7 @@ XNAT.app.warnings_dialog.cfg.queueProperty("buttons", [
 
 //archiveValidator should encapsulate all of the relevant logic used in this feature, besides what is native to the form validation process
 XNAT.app.archiveValidator={
-	validate:function(url){	//issues the REST call to see if this would be archivable
+	validate:function(){	//issues the REST call to see if this would be archivable
 		var callback={
 			success:function(o){ 
 				closeModalPanel("validation");
@@ -102,6 +102,7 @@ XNAT.app.archiveValidator={
 		}
 	},
 	approve:function(val){
+		
 		//register the desired behavior for form submit to the actual archive process
 		var overrideEle=document.getElementById('session_overwrite');
 		if(overrideEle==null || overrideEle==undefined){

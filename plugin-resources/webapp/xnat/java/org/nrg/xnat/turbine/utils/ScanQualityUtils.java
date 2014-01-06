@@ -10,8 +10,11 @@
  */
 package org.nrg.xnat.turbine.utils;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.ConfigService;
 import org.nrg.xdat.XDAT;
@@ -20,9 +23,8 @@ import org.nrg.xft.security.UserI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 public final class ScanQualityUtils {
     private static final List<String> DEFAULT_LABELS = new ArrayList<String>();
@@ -39,7 +41,7 @@ public final class ScanQualityUtils {
     public static List<String> getQualityLabels(final String project, final UserI user) {
         final ConfigService configService = XDAT.getConfigService();
         final Long projectId;
-        if (Strings.isNullOrEmpty(project)) {
+        if (Strings.isNullOrEmpty(project) || StringUtils.equals("Unassigned",project)) {
             projectId = null;
         } else {
             final XnatProjectdata projectData = XnatProjectdata.getXnatProjectdatasById(project, user, false);

@@ -188,8 +188,7 @@ public final class PrearcSessionResource extends SecureResource {
                     return;
                 }
                 if(PrearcDatabase.setStatus(session, timestamp, project, PrearcStatus.MOVING)){
-                    PrearcDatabase.moveToProject(session, timestamp, project, newProj);
-                    PrearcUtils.buildURI(project,timestamp,session);
+                    PrearcDatabase.moveToProject(session, timestamp, (project==null)?"Unassigned":project, newProj);
                     returnString(wrapPartialDataURI(PrearcUtils.buildURI(newProj,timestamp,session)), MediaType.TEXT_URI_LIST,Status.REDIRECTION_PERMANENT);
                 }				
             } catch (SyncFailedException e) {

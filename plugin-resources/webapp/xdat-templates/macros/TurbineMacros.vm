@@ -1408,7 +1408,7 @@ div.ic_spacer{
     #if ($elementSecurity)
         #set ($actions = $elementSecurity.getElementActionsByGroupings())
         #if ($actions.size() > 0)
-<script type="text/javascript">
+			<script type="text/javascript">
 YAHOO.util.Event.onContentReady("actionsMenu", function () {
     var actionsMenu = new YAHOO.widget.Menu("actionsMenu", { autosubmenudisplay: true,scrollincrement:5,position:"static"});
     // Render the MenuBar instance
@@ -1426,9 +1426,30 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
            </li>
       </ul>
       <ul>
-        #elementActions($element $search_field $search_value $user $item $actions)
+			#elementActions($element $search_field $search_value $user $item $actions)
         #end
     #end
+#end
+
+#macro (startElementActionBox)
+	<script type="text/javascript">
+YAHOO.util.Event.onContentReady("actionsMenu", function () {
+    var actionsMenu = new YAHOO.widget.Menu("actionsMenu", { autosubmenudisplay: true,scrollincrement:5,position:"static"});
+    // Render the MenuBar instance
+    actionsMenu.getItem(0).cfg.setProperty("disabled",true);
+    actionsMenu.render();
+    actionsMenu.show();
+});
+</script>
+      <!-- actions menu -->
+    <div id="actionsMenu" class="yuimenu" style="display:none">
+     <div class="bd">
+      <ul class="first-of-type">
+             <li class="yuimenuitem">
+            <a class="yuimenuitemlabel">Actions</a>
+           </li>
+      </ul>
+      <ul>
 #end
 
 ## EndElementActionsBox
@@ -1451,7 +1472,7 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
     #if ($elementSecurity)
         #set ($actions = $elementSecurity.getElementActionsByGroupings())
         #if ($actions.size() > 0)
-<script type="text/javascript">
+			<script type="text/javascript">
 YAHOO.util.Event.onContentReady("actionsMenu", function () {
     var actionsMenu = new YAHOO.widget.Menu("actionsMenu", { autosubmenudisplay: true,scrollincrement:5,position:"static"});
     // Render the MenuBar instance
@@ -1469,8 +1490,8 @@ YAHOO.util.Event.onContentReady("actionsMenu", function () {
            </li>
       </ul>
       <ul>
-        #elementActions($element $search_field $search_value $user $item $actions)
-              </ul>
+			#elementActions($element $search_field $search_value $user $item $actions)
+			  </ul>
      </div>
     </div>
         #end

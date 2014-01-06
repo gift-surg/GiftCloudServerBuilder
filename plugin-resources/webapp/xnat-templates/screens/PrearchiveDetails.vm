@@ -3,40 +3,85 @@
 	$!template.setLayoutTemplate("Popup.vm")
 #end
 
+#if($project)
+	#set($allowArchive=true)
+#else
+	#set($allowArchive=false)
+	<div class="alert">This session is in the Unassigned folder.  Move the session to a project to enable archiving.</div>
+#end
+
+## used to create Change Project modal dialog
+<div id='move_project_dialog' style='visibility:hidden'>
+	<div class='hd'>Change project</div>
+	<div class='bd' style=''>
+		<div id='move_projec_desc'>Select the project to move this session to.</div>
+		<div id='move_projec_div'>
+			<select id="proj_move_select"></select>
+		</div>
+	</div>
+</div>
+
 <style>
 	#scans_div{
 		margin-top:10px;
 	}
 </style>
+<div style="float:left">
+    <table clsss="">
+    #if($session.getProject())
+    	<tr><th align="left">$displayManager.getSingularDisplayNameForProject():</th><td>$!session.getProject()</td></tr>
+    #end
+    #if($session.getLabel())
+    	<tr><th align="left">Session:</th><td>$!session.getLabel()</td></tr>
+    #end
+    #if($session.getSubjectId())
+    	<tr><th align="left">$displayManager.getSingularDisplayNameForSubject():</th><td>$!session.getSubjectId()</td></tr>
+    #end
+    
+    #if($session.getDate())
+        <tr><th align="left">Study Date:</th><td>$turbineUtils.formatDate($!session.getDate())</td></tr>
+    #end 
+    
+    #if($session.getDcmpatientid())
+        <tr><th align="left">Patient ID:</th><td>$!session.getDcmpatientid()</td></tr>
+    #end
+    #if($session.getDcmpatientname())
+        <tr><th align="left">Patient Name:</th><td>$!session.getDcmpatientname()</td></tr>
+    #end
+    #if($session.getUid())
+        <tr><th align="left">UID:</th><td>$!session.getUid()</td></tr>
+    #end
+    #if($uploadDate)
+        <tr><th align="left">Upload Date:</th><td>$!turbineUtils.formatDateTime($uploadDate)</td></tr>
+    #end
+    </table>
+</div>
+<div style="float:right">
+    <script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_actions.js")"></script>
+    <form method="post" action="$content.getURI("/REST/services/archive")?XNAT_CSRF=$!{XNAT_CSRF}" name="form1" id="form1">
+    	<input type="hidden" name="src" value="$url"/>
+    	<input type="hidden" name="redirect" value="true"/>
+    </form>
+#startElementActionBox()
+	#if($allowArchive)
+	<li class="yuimenuitem">
+			<A id="archiveLink" href="" ONCLICK="XNAT.app.archiveValidator.validate();return false;"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Archive</A>
+	 </li>
+	<li class="yuimenuitem">
+			<A href="$content.getURI("/data${url}?format=html&screen=XDATScreen_uploaded_xnat_imageSessionData.vm")"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Modify and Archive</A>
+	 </li>
+	 #end
+	<li class="yuimenuitem">
+			<A href="" ONCLICK="XNAT.app.prearhiveActions.requestMoveDialog();return false;"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Change Project</A>
+	 </li>
+	<li class="yuimenuitem">
+			<A href="" ONCLICK="XNAT.app.prearhiveActions.requestDelete();return false;"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Delete</A>
+	 </li>
 
-<table clsss="">
-#if($session.getProject())
-	<tr><th align="left">$displayManager.getSingularDisplayNameForProject():</th><td>$!session.getProject()</td></tr>
-#end
-#if($session.getLabel())
-	<tr><th align="left">Session:</th><td>$!session.getLabel()</td></tr>
-#end
-#if($session.getSubjectId())
-	<tr><th align="left">$displayManager.getSingularDisplayNameForSubject():</th><td>$!session.getSubjectId()</td></tr>
-#end
-
-    <tr><th align="left">Study Date:</th><td>$turbineUtils.formatDate($!session.getDate())</td></tr>
-	
-#if($session.getDcmpatientid())
-    <tr><th align="left">Patient ID:</th><td>$!session.getDcmpatientid()</td></tr>
-#end
-#if($session.getDcmpatientname())
-    <tr><th align="left">Patient Name:</th><td>$!session.getDcmpatientname()</td></tr>
-#end
-#if($session.getUid())
-    <tr><th align="left">UID:</th><td>$!session.getUid()</td></tr>
-#end
-#if($uploadDate)
-    <tr><th align="left">Upload Date:</th><td>$!turbineUtils.formatDateTime($uploadDate)</td></tr>
-#end
-</table>
-<div class="spacer"></div>
-<div id="scans_div">
+#endElementActionsBox()
+</div>
+<div class="spacer" style="clear:both;">&nbsp;</div>
+<div id="scans_div" style="clear:both;">
 	<h3>Scans</h3>
 	<table>
 		<tr><th>ID</th><th>Description</th><th>Files</th><th>Actions</th></tr>
@@ -64,22 +109,14 @@
 	</table>
 </div>
 
+<div id="validationAlerts" style="">
+	
+</div>
 <br>
-<h3>History</h3>
 <div id="prearcLogs">
 	
 </div>
 
-<script>
-    var logsCallback={
-        success:function(o){
-			$('#prearcLogs').html(o.responseText);
-		},
-        failure:function(o){},
-        cache:false // Turn off caching for IE
-    };
-	YAHOO.util.Connect.asyncRequest('GET',"/REST$url/logs?template=details&format=html&requested_screen=PrearchiveDetailsLogs.vm&popup=true",logsCallback,null,this);
-</script>
 
 <!-- BEGIN CONTENT FOR POPUP DIALOGS -->
 <script type="text/javascript" src="$content.getURI('scripts/prearchive/PrearchiveDetails_delete.js')"></script>
@@ -89,16 +126,6 @@
  XNAT.app.fileCounter.url="$url";
  #foreach($scan in $session.getScans_scan())
  	XNAT.app.fileCounter.scans.push("$scan.getId()");
-	
-##	new YAHOO.widget.Button("scanB1$$scan.getId()");
-##	new YAHOO.widget.Button("scanB2$$scan.getId()");
-##	#foreach($res in $scan.getFile())
-##    	new YAHOO.widget.Button("scanB3$$scan.getId()");
-##    	#if($res.getLabel()=="DICOM")
-##    		new YAHOO.widget.Button("scanB4$$scan.getId()");
-##    	#end
-##	#end
-##	new YAHOO.widget.Button("dAscans");
  #end
 
  XNAT.app.scanDeleter.url="$url";
@@ -132,7 +159,83 @@
 	</div> 
 </div> 
 
+
+<!-- begin validation warnings dialog -->
+<style type="text/css">
+#val_warning_div{
+	margin-top:12px;
+    overflow:auto;
+}
+#val_warning_div .valWARN,#val_warning_div .valCONFLICT,#val_warning_div .valFAIL, #val_warning_div .header {
+  border-bottom:1px solid #888;
+  font:11px Arial, Helvetica, sans-serif;
+  margin-top:0;
+  margin-bottom:0;
+  padding: 4px;
+  overflow:auto;
+}
+#val_warning_div .header {
+	background-color: #ccc;
+	font-weight: bold;
+}
+dl.valWARN, item.valWARN {
+	display:block;
+}
+dl.valFAIL, item.valFAIL {
+	display:block;
+}
+dl.valCONFLICT, item.valCONFLICT {
+	display:block;
+}
+#val_warning_div dl dl 	{ margin:1px 0;	}
+#val_warning_div dl dt, #val_warning_div dl dd {
+	display:block;
+	float:left;
+	padding:4px 0;
+}
+#val_warning_div dd 	{ 	margin-left:20px; }
+dd.valCode 	{	width:80px; font-weight:bold; position:relative;	}
+dd.valMessage 	{	width:630px;	}
+</style>
+<div id="uploads_warnings">
+	<div id='val_warning_dialog' style='visibility:hidden'>
+		<div class='hd'>Upload warnings</div>
+		<div class='bd' style=''>
+			<div id='val_warning_desc'>Merging the uploaded data into the pre-existing session will override the following warnings:</div>
+			<div id='val_warning_div'>
+			</div>
+			<div style="text-align:right; width:100%; margin-top:3px;" id='val_warning_quest'>Are you sure you want to proceed?</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript" src="$content.getURI("scripts/imageSessionData/archive.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_headerDialog.js")"></script>
 <script>
     XNAT.app.headerDialog.url='$url';
+</script>
+
+<script>
+	//automatically show file counts
+	XNAT.app.fileCounter.load();
+	
+	XNAT.app.prearhiveActions.url="$url";
+	XNAT.app.prearhiveActions.timestamp="$timestamp";
+	XNAT.app.prearhiveActions.folder="$folder";
+    XNAT.app.prearhiveActions.loadLogs();
+	
+#if($allowArchive)
+	//validation CODES that are not allowed to be overidden
+	XNAT.app.validator.fail_merge_on=$siteConfig.getProperty("security.fail_merge_on","[]");
+	XNAT.app.validator.xsiType="$session.getXSIType()";
+	
+	XNAT.app.archiveValidator.fail_merge_on=$siteConfig.getProperty("security.fail_merge_on","[]");
+	XNAT.app.archiveValidator.xsiType="$session.getXSIType()";
+	#if($url)
+		XNAT.app.archiveValidator.url="$!url";
+	#end
+	
+    XNAT.app.validator.validate();
+#end
 </script>

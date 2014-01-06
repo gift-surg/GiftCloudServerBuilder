@@ -137,10 +137,12 @@ public abstract class TurbineScreenRepresentation extends OutputRepresentation {
 		
 		if(params!=null){
 			for(Map.Entry<String,Object> entry:params.entrySet()){
-				if(isPrimitiveWrapper(entry.getValue())){
-					data.getParameters().add(entry.getKey(), entry.getValue().toString());
-				}else{
-					data.passObject(entry.getKey(), entry.getValue());
+				if(entry.getValue()!=null){
+					if(isPrimitiveWrapper(entry.getValue())){
+						data.getParameters().add(entry.getKey(), entry.getValue().toString());
+					}else{
+						data.passObject(entry.getKey(), entry.getValue());
+					}
 				}
 			}
 		}

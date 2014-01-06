@@ -9,6 +9,7 @@ import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcTableBuilder;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 
@@ -22,7 +23,7 @@ public abstract class PrearchiveSessionScreen extends SecureScreen {
 	protected void doBuildTemplate(RunData data, Context context) throws Exception {
 		final String folder = (String)TurbineUtils.GetPassedParameter("folder",data);
 	    final String timestamp = (String)TurbineUtils.GetPassedParameter("timestamp",data);
-	    final String project = (String)TurbineUtils.GetPassedParameter("project",data);	// can we final this?
+	    final String project = (String)TurbineUtils.GetPassedParameter("project",data);	
 	    final XDATUser user = TurbineUtils.getUser(data);
 	    
 	    final File sessionDir=PrearcUtils.getPrearcSessionDir(user, project, timestamp, folder,false);
@@ -39,8 +40,11 @@ public abstract class PrearchiveSessionScreen extends SecureScreen {
 		Date upload=PrearcUtils.parseTimestampDirectory(timestamp);
 
 		context.put("uploadDate",upload);
+		context.put("timestamp",timestamp);
+		context.put("folder",folder);
+		context.put("status", PrearcDatabase.getSession(folder, timestamp, project).getStatus().toString());
 		context.put("session",sessionBean);
-		context.put("url", String.format("/prearchive/projects/%s/%s/%s",project,timestamp,folder));
+		context.put("url", String.format("/prearchive/projects/%s/%s/%s",(project==null)?"Unassigned":project,timestamp,folder));
 		
 		finalProcessing(sessionBean, data,context);
 	}

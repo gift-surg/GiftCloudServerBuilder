@@ -18,14 +18,18 @@ XNAT.app.scanDeleter={
             cache:false, // Turn off caching for IE
             scope:this
         };
-		openModalPanel("delete_scan","Deleting scan " + this.lastScan);
-		
-		this.tempURL=serverRoot+"/REST" + this.url +"/scans/" + this.lastScan;
-        YAHOO.util.Connect.asyncRequest('DELETE',this.tempURL+"?XNAT_CSRF=" + csrfToken,this.delCallback,null,this);
+		if(this.lastScan!=undefined && this.lastScan!=null){
+			openModalPanel("delete_scan","Deleting scan " + this.lastScan);
+			
+			this.tempURL=serverRoot+"/REST" + this.url +"/scans/" + this.lastScan;
+	        YAHOO.util.Connect.asyncRequest('DELETE',this.tempURL+"?XNAT_CSRF=" + csrfToken,this.delCallback,null,this);
+		}
 	},
 	handleSuccess:function(o){
 		closeModalPanel("delete_scan");
 		$('#scanTR'+this.lastScan).remove();
+		XNAT.app.validator.validate();
+		XNAT.app.prearhiveActions.loadLogs();
 	},
 	handleFailure:function(o){
 		closeModalPanel("delete_scan");

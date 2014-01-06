@@ -944,6 +944,12 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
             filename=filename.split("_").join("_&shy;");
 
             var _html="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + filename + "</a>"
+
+            if(this.cat.label=="DICOM"){
+            	_html +="&nbsp; <a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "'?format=image/jpeg;\">Image</a>";
+            	_html +="&nbsp; <a target='_blank' onclick=\""+ serverRoot +"/REST/services/dicomdump?src="+ file.URI + "&format=html&requested_screen=DicomFileTable.vm\">Tags</a>";
+            }
+            
             if(file.file_format!=""){
                 _html +=" "+ file.file_format +"";
             }
@@ -954,7 +960,7 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
                 _html +=" ("+ file.file_tags +")";
             }
             _html +="&nbsp; "+size_format(size) +"";
-
+            
             if(this.cat.canDelete)
                 _html +="&nbsp; <a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 

@@ -480,6 +480,8 @@ public final class PrearcDatabase {
                             sd.setUrl(session.getAbsolutePath());
 
                             PrearcDatabase.addSession(sd);
+                            
+                            PrearcUtils.log(sd, new Exception(String.format("Moved from %1s to %2s",proj, newProj)));
                         } catch (SyncFailedException e) {
                             logger.error(e);
                             throw new IllegalStateException(e.getMessage());
@@ -547,7 +549,7 @@ public final class PrearcDatabase {
 
     public static boolean moveToProject (final String sess, final String timestamp, final String proj, final String newProj) throws Exception {
         final SessionData sd = PrearcDatabase.getSession(sess,timestamp,proj);
-        if (!sd.getStatus().equals(PrearcStatus.MOVING) && markSession(sd.getSessionDataTriple(), PrearcStatus.MOVING)) {
+        if (!sd.getStatus().equals(PrearcStatus._MOVING) && markSession(sd.getSessionDataTriple(), PrearcStatus.MOVING)) {
         	if (!proj.equals(newProj)) {
         		PrearcDatabase._moveToProject(sd.getFolderName(),sd.getTimestamp(),sd.getProject(),newProj);
         		return true;

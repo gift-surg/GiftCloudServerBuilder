@@ -486,7 +486,7 @@ span.close { position: relative ; left: 2px ; top: 2px ; }
 #expts_container, .expts_container { display: inline-block ; width: auto ; }
 #expts_link_legend, .legend { min-width: 505px ; margin-bottom: 10px ; }
 #expts_link_legend #expts_header,
-.legend .header { display: inline-block ; float: left ; min-width: 220px ; padding-left: 5px ; font-size: 15px ; font-weight: bold ; }
+.legend .header { display: inline-block ; /* float: left ; */ min-width: 220px ; padding-left: 5px ; font-size: 15px ; font-weight: bold ; }
 /* #expts_link_legend #view_all_link, */
 #expts_link_legend #toggle_expts_link,
 #expts_link_legend #expt_shared_legend,

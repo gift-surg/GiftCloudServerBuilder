@@ -47,7 +47,7 @@ function focusInput($input){
 
 XNAT.app.maskDateInput = function( _$input , _filler , _format ){
 
-    if ( !$.mask.dataName || !_$input) return ;
+    if ( !$.mask.dataName || !_$input) return ; // exit if the jquery.maskedinput plugin is not loaded
 
     var $input, filler, format ;
 
@@ -73,57 +73,78 @@ XNAT.app.maskDateInput = function( _$input , _filler , _format ){
 };
 
 
-XNAT.app.checkDateInput = function($input,format) {
-    // $input parameter REQUIRED - jQuery object
-    if (!$input.jquery) $input = $($input); // we prefer a jQuery object, but we'll convert a regular selector if necessary
+XNAT.app.checkDateInput = function(_$input,_format,_value) {
 
-    // if format parameter isn't specified
-    // and input doesn't have 'us' or 'iso' class,
-    // 'iso' will be default:
-    format = format || 'iso';
-    // 'us' or 'iso' class will override format parameter
-    if ($input.hasClass('us')){ format='us' }
-    if ($input.hasClass('iso')){ format='iso' }
-    format = format.toLowerCase();
+    if (!_$input && !_format && !_value) return false ; // don't be dumb - pass the args
 
-    var valid_format, kind, example, $focus, date={}, message_opts={}, future = false ;
+    var $input, format, value ;
+    var valid_format, kind, example, $focus, date={}, message_opts={}, future=false ;
 
-    if ($input.hasClass('multi')){
-        kind = 'multi' ;
-        date.yyyy = $input.find('input.year').val();
-        date.mm = $input.find('input.month').val();
-        date.dd = $input.find('input.day').val();
-        $focus = $input.find('input:first');
-        date.val = date.yyyy+'-'+date.mm+'-'+date.dd;
-        valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
-        example = '2013-01-31';
-        date = new SplitDate(date.val,'iso');
+    format = (_format && _format !== '') ? _format.toLowerCase() : '';
+
+    // pass null or '' for first argument if checking with _value
+    if (_$input && _$input !== ''){
+
+        $input = (_$input.jquery) ? _$input : $(_$input); // we prefer a jQuery object, but we'll transmogrify a regular selector if necessary
+
+        if (format === '') { // there's no 'format'? use the class
+            if ($input.hasClass('us')){ format='us' }
+            if ($input.hasClass('iso')){ format='iso' }
+        }
+
+        if ($input.hasClass('multi')){
+            kind = 'multi' ;
+            var YYYY = $input.find('input.year').val();
+            var MM = $input.find('input.month').val();
+            var DD = $input.find('input.day').val();
+            var DATE_IN = YYYY + '-' + MM + '-' + DD; // put in 'iso' format
+            valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
+            example = '(use multiple input fields)';
+            date = new SplitDate(DATE_IN,'iso');
+            $focus = $input.find('input:first');
+        }
+        else {
+            kind = 'single' ;
+            date = new SplitDate($input.val(),format);
+            $focus = $input ;
+        }
+
+        // if it has the 'future' class, allow future date selection
+        if ($input.hasClass('future')) future = true ;
+
+    }
+    // if there's a value passed, use that instead of the value from the input
+    else if (_value && _value !== ''){
+        // add '-future' string to date value to allow future dates
+        if (_value.indexOf('-future') !== -1) {
+            future = true ;
+            _value = _value.replace(/-future/gi,'');
+        }
+        date = new SplitDate(_value);
+        format = date.format ;
     }
     else {
-        kind = 'single' ;
-        if (format === 'us' || format === 'euro'){
-            valid_format = /^\d{2}\/\d{2}\/\d{4}$/ ; //Basic check for format validity
-            example = (format === 'euro') ? 'DD/MM/YYYY' : 'MM/DD/YYYY' ;
-        }
-        if (format === 'iso'){
-            valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
-            example = 'YYYY-MM-DD';
-        }
-        date = new SplitDate($input.val(),format);
-        $focus = $input ;
+        return false ;
     }
 
-    // if it has the 'future' class, allow future date selection
-    if ($input.hasClass('future')) future = true ;
+    // if still no format, use 'iso'
+    format = (format !== '') ? format : ((date) ? date.format : 'iso') ;
+
+    if (format === 'us' || format === 'euro'){
+        valid_format = /^\d{2}\/\d{2}\/\d{4}$/ ; //Basic check for format validity
+        example = (format === 'euro') ? 'DD/MM/YYYY' : 'MM/DD/YYYY' ;
+    }
+    if (format === 'iso'){
+        valid_format = /^\d{4}\-\d{2}\-\d{2}$/ ; //Basic check for format validity
+        example = 'YYYY-MM-DD';
+    }
 
     var return_val = false ;
-    if ((date.mm === '  ' || date.mm === '' || date.mm === '13') && (date.dd === '  ' || date.dd === '' || date.dd === '32')&& (date.yyyy === '    ' || date.yyyy === '') && $input.hasClass('onblur')){
+    if ((date.mm === '  ' || date.mm === '' || date.mm === '13') && (date.dd === '  ' || date.dd === '' || date.dd === '32') && (date.yyyy === '    ' || date.yyyy === '') && $input.hasClass('onblur')){
         // don't freak out *just* because it's empty if it's validated onblur
         // go ahead and freak out if it's onsubmit
         return false ;
     }
-    //var selected_date = new Date(date.yyyy, date.mm - 1, date.dd);
-    //var todays_date = new Date();
 
     // concatenate today's year, month and day to represent a value for today (hacky? yes? effective? also yes.)
     // this will be used to compare with the selected date to prevent selecting a future date
@@ -145,7 +166,7 @@ XNAT.app.checkDateInput = function($input,format) {
     };
 
     var useDatePicker = function(){
-        if ($input.closest('.ez_cal_wrapper').find('.calendar').length){
+        if ($input && $input.closest('.ez_cal_wrapper').find('.calendar').length){
             return '' +
                 ' or <a class="use_date_picker" href="javascript:" ' +
                 //'onclick="$(this).closest(\'.xmodal\').find(\'.ok.button\').click()" ' +
@@ -433,11 +454,12 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
         _$e.find('input:hidden.date.year').val(year);
 
         if (kind === 'single'){
+            var $single = _$e.find('.ez_cal.single.date');
             if (format === 'iso'){
-                _$e.find('.ez_cal.single.date').val(year + '-' + month + '-' + day);
+                $single.val(year + '-' + month + '-' + day);
             }
             if (format === 'us'){
-                _$e.find('.ez_cal.single.date').val(month +'/'+ day +'/'+ year);
+                $single.val(month +'/'+ day +'/'+ year);
             }
         }
 
@@ -458,7 +480,7 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
 
     ezCal.render();
 
-    _$e.find('table.yui-calendar').css('width','180px');
+    //_$e.find('table.yui-calendar').css('width','180px'); // not using this because the width will change when changing months
 
 };
 
@@ -511,7 +533,6 @@ XNAT.app.datePicker.init = function($container,_config){
         opts.future = (_config && _config.future) ? _config.future : _future ; // if future==true, show future dates
 
         XNAT.app.datePicker.createInputs($this_container, opts.kind, opts.layout, opts.format, opts);
-        //XNAT.app.datePicker.init.createInputs($(this));
 
     });
 
@@ -585,7 +606,10 @@ $(function(){
 
     // validate existing input elements
     $body.on('blur','input.check_date',function(){
-        XNAT.app.checkDateInput($(this));
+        var format='' ;
+        if ($(this).hasClass('us')) format = 'us';
+        if ($(this).hasClass('iso')) format = 'iso';
+        XNAT.app.checkDateInput('',format,$(this).val());
     });
 
     // maybe this is redundant with the xmodal check in checkDateOnBlur()?

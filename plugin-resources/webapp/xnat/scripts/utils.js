@@ -274,32 +274,32 @@ function hasNumber(_array){
 
 // feed this function a date (and optionally a format) and
 // it'll spit out month number and name (full or abbreviated), day, and year
-function SplitDate(_date,_format){
+function SplitDate(_date, _format) {
 
-    var mm_pos, dd_pos, yyyy_pos, example ;
+    var mm_pos, dd_pos, yyyy_pos, example;
 
-    this.val = _date = (typeof _date != 'undefined' && (''+_date).length) ? _date : '0000-00-00' ; // save it to a variable before removing the spaces
+    this.val = _date = (typeof _date != 'undefined' && ('' + _date).length) ? _date : '0000-00-00'; // save it to a variable before removing the spaces
 
-    _date = _date.replace(/\s+/g,''); // removing spaces?
-    _date = _date.replace(/_/g,''); // removing underscores?
+    _date = _date.replace(/\s+/g, ''); // removing spaces?
+    _date = _date.replace(/_/g, ''); // removing underscores?
 
-    _format = _format || '' ;
+    _format = _format || '';
     _format = _format.toLowerCase();
 
     var months = {
-        '01':['January','Jan'], '02':['February','Feb'], '03':['March','Mar'], '04':['April','Apr'], '05':['May','May'], '06':['June','Jun'], '07':['July','Jul'],
-        '08':['August','Aug'], '09':['September','Sep'], '10':['October','Oct'], '11':['November','Nov'], '12':['December','Dec'], '13':['invalid','invalid']
+        '01': ['January', 'Jan'], '02': ['February', 'Feb'], '03': ['March', 'Mar'], '04': ['April', 'Apr'], '05': ['May', 'May'], '06': ['June', 'Jun'], '07': ['July', 'Jul'],
+        '08': ['August', 'Aug'], '09': ['September', 'Sep'], '10': ['October', 'Oct'], '11': ['November', 'Nov'], '12': ['December', 'Dec'], '13': ['invalid', 'invalid']
     };
 
     // accepts either dashes, slashes or periods as a delimeter
     // but there must be SOME delimeter
-    if (_date.indexOf('-') !== -1){
+    if (_date.indexOf('-') !== -1) {
         this.arr = _date.split('-');
     }
-    else if (_date.indexOf('/') !== -1){
+    else if (_date.indexOf('/') !== -1) {
         this.arr = _date.split('/');
     }
-    else if (_date.indexOf('.') !== -1){
+    else if (_date.indexOf('.') !== -1) {
         this.arr = _date.split('.');
     }
     else {
@@ -308,44 +308,66 @@ function SplitDate(_date,_format){
 
     // we can't do anything if we don't have the date elements saved in an array
     // or if we're passed a bogus value for _date
-    if (this.arr !== null && allNumbers(this.arr)){
-        // accepts either single-digit or double-digit for month or day
-        if (this.arr[0].length === 1 || this.arr[0].length === 2){ // it's probably US format, but could MAYBE be Euro format
-            if (parseInt(this.arr[0],10) > 12) _format = 'eu' ; // if the first number is higher than 12, it MUST be Euro format
-            if (_format === 'eu' || _format === 'euro'){ // if it's Euro
-                dd_pos = 0; mm_pos = 1; yyyy_pos = 2; example = '31/01/2001';
-                this.format = 'eu';
+    if (this.arr !== null && allNumbers(this.arr)) {
+        try {
+            // accepts either single-digit or double-digit for month or day
+            if (this.arr[0].length === 1 || this.arr[0].length === 2) { // it's probably US format, but could MAYBE be Euro format
+                var first_num = parseInt(this.arr[0], 10);
+                var second_num = parseInt(this.arr[1], 10);
+                if (first_num > 12 && first_num < 32 && second_num < 13) _format = 'eu'; // if the first number is higher than 12 but less than 32, it's *probably* Euro format?
+                if (_format === 'eu' || _format === 'euro') { // if it's Euro
+                    dd_pos = 0;
+                    mm_pos = 1;
+                    yyyy_pos = 2;
+                    example = '31/01/2001';
+                    this.format = 'eu';
+                }
+                else {
+                    mm_pos = 0;
+                    dd_pos = 1;
+                    yyyy_pos = 2;
+                    example = '01/31/2001';
+                    this.format = 'us';
+                }
             }
-            else {
-                mm_pos = 0; dd_pos = 1; yyyy_pos = 2; example = '01/31/2001';
-                this.format = 'us';
+            else if (this.arr[0].length === 4 || _format === 'iso') { // it's probably ISO format
+                yyyy_pos = 0;
+                mm_pos = 1;
+                dd_pos = 2;
+                example = '2001-01-31';
+                this.format = 'iso';
             }
+
+            this.m = this.arr[mm_pos];
+            this.mm = zeroPad(this.m);
+            if (this.m === '' || parseInt(this.m, 10) < 1 || parseInt(this.m, 10) > 12) this.mm = '13';
+            //if (this.mm+'' !== '00'){
+            this.month = months[this.mm + ''][0]; // set the full month name
+            this.mo = months[this.mm + ''][1]; // set the month abbreviation
+            //}
+            this.d = this.arr[dd_pos];
+            this.dd = zeroPad(this.d);
+            if (this.d === '' || parseInt(this.d, 10) > 31) this.dd = '32';
+            this.yyyy = this.year = this.arr[yyyy_pos];
+            if (this.yyyy !== '') this.yyyy = parseInt(this.year, 10);
+            this.example = example;
+
+            this.ISO = this.iso = this.yyyy + '-' + this.mm + '-' + this.dd;
+            this.US = this.us = this.mm + '/' + this.dd + '/' + this.yyyy;
+            this.EU = this.eu = this.EURO = this.euro = this.dd + '/' + this.mm + '/' + this.yyyy;
+
+            this.date_string = this.yyyy + this.mm + this.dd;
+            this.date_num = parseInt(this.date_string, 10);
         }
-        else if (this.arr[0].length === 4 || _format === 'iso'){ // it's probably ISO format
-            yyyy_pos = 0; mm_pos = 1; dd_pos = 2; example = '2001-01-31';
-            this.format = 'iso';
+        catch (e) {
+            if (console.log) console.log('Error: ' + e);
+            this.val = _date;
+            this.format = _format;
         }
-
-        this.m = this.arr[mm_pos];
-        this.mm = zeroPad(this.m);
-        if (this.m === '' || parseInt(this.m,10) < 1 || parseInt(this.m,10) > 12) this.mm = '13';
-        //if (this.mm+'' !== '00'){
-        this.month = months[this.mm+''][0]; // set the full month name
-        this.mo = months[this.mm+''][1]; // set the month abbreviation
-        //}
-        this.d = this.arr[dd_pos];
-        this.dd = zeroPad(this.d);
-        if (this.d === '' || parseInt(this.d,10) > 31) this.dd = '32';
-        this.yyyy = this.year = this.arr[yyyy_pos];
-        if (this.yyyy !== '') this.yyyy = parseInt(this.year,10) ;
-        this.example = example ;
-
-        this.ISO = this.iso = this.yyyy + '-' + this.mm + '-' + this.dd ;
-        this.US = this.us = this.mm + '/' + this.dd + '/' + this.yyyy ;
-        this.EU = this.eu = this.EURO = this.euro = this.dd + '/' + this.mm + '/' + this.yyyy ;
-
-        this.date_string = this.yyyy + this.mm + this.dd ;
-        this.date_num = parseInt(this.date_string,10);
+    }
+    else {
+        this.val = _date;
+        this.format = _format;
     }
 }
 

@@ -6,7 +6,7 @@
 #end
 		<script type="text/javascript" src="$content.getURI("scripts/FileViewer.js")"></script>
 <script type="text/javascript">
-document.title = "$displayManager.getSingularDisplayNameForImageSession(): $!item.getProperty('label')";
+    document.title = "$om.getSchemaElement().getSingularDescription(): $!item.getProperty('label')";
 </script>
 #set($subject = $om.getSubjectData())
 			#if($item.needsActivation())

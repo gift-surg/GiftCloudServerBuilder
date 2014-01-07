@@ -77,7 +77,14 @@
     }
 
     if (XNAT.data.context.projectName === ""){
-        XNAT.data.context.projectName = "$!item.getStringProperty("xnat:projectData/name")";
+        #if ($!project.getName())
+            #set ($projectName = $project.getName())
+        #elseif ($!om.getProject($project,false).getName())
+            #set ($projectName = $om.getProject($project,false).getName())
+        #else
+            #set ($projectName = "")
+        #end
+        XNAT.data.context.projectName = "$projectName";
     }
 
     // 'page' object is same as 'context' - easier to remember?

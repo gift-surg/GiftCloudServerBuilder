@@ -11,6 +11,10 @@
 		<property name="userProvider" ref="receivedFileUserProvider" />
 	</bean>
 
+	<bean name="dicomFileNamer" class="org.nrg.dcm.id.TemplatizedDicomFileNamer">
+		<constructor-arg name="naming" value="${StudyInstanceUID}-${SeriesNumber}-${InstanceNumber}-${HashSOPClassUIDWithInstanceNumber}" />
+	</bean>
+
     <bean name="dicomSCPExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
 
 	<bean name="dicomSCP" class="org.nrg.dcm.DicomSCP" factory-method="create">
@@ -19,6 +23,7 @@
 		<constructor-arg ref="receivedFileUserProvider" />
         <constructor-arg value="${services.dicom.scp.aetitle}"/>
 		<constructor-arg ref="dicomObjectIdentifier" />
+		<constructor-arg ref="dicomFileNamer" />
 	</bean>
 
 	<bean name="dicomSCPManager" class="org.nrg.dcm.DicomSCPManager">

@@ -258,7 +258,7 @@ body.modal-popup #xnat_power { display: none ; }
 .yui-content { font-size: 12px ; }
 .yui-skin-sam .yui-dialog .ft span.default button,
 .yui-skin-sam .yui-calcontainer .yui-cal-nav .yui-cal-nav-btn.yui-default button { background: #07428d url('images/btn1_30px.png') repeat-x center center ; color: #fff ; outline: none !important ; }
-.yui-skin-sam .yui-dialog .ft { height: auto !important ; padding: 14px ; }
+/*.yui-skin-sam .yui-dialog .ft { height: auto !important ; padding: 14px ; }*/
 /*
 .yui-skin-sam .yui-dialog .ft span.default button { color: #FFFFFF ; border: none ; outline: none ; }
 .yui-skin-sam .yui-dialog .ft span.default button:active { border: none ; outline: none ; }

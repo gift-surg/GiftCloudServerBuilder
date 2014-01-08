@@ -12,7 +12,11 @@
     obj.categories={};
     obj.categories.ids=[];
     obj.canEdit=true;
-    obj.canDelete=true;
+    #if ($item.canDelete($data.getSession().getAttribute("user")))
+    obj.canDelete = true;
+    #else
+    obj.canDelete = false;
+    #end
     obj.isImageSession=true;
     window.viewer=new FileViewer(obj);
 </script>

@@ -37,7 +37,7 @@ div.titleBarText { text-decoration: none ; font-size: 11px ; color: black ; disp
 div.titleBarGrey { text-decoration: none ; font-weight: 500 ; font-size: 11px ; color: black ; display: inline ; height: 16px ; border-left: 1px solid #aaa ; border-right: 1px solid #aaa ; border-bottom: 1px solid #aaa ; padding-left: 5px ; padding-right: 5px ; margin-left: 0 ; margin-right: 0 ; background-color: #fff ; }
 font.titleBarComment { text-decoration: none ; font-weight: 500 ; font-size: 11px ; color: black ; }
 .odd { background-color: #fff ; }
-.even { background-color: #f3f3f3 ; border-top: 1px solid #ececec ; border-bottom: 1px solid #ececec ; }
+.even { background-color: #f7f7f7 ; border-top: 1px solid #ececec ; border-bottom: 1px solid #ececec ; }
 div.projectPrimary { /* font-weight: 700 ; */ }
 td.highlighted { background-color: #ffc ; border: 1px solid #aaa ; }
 td.results { white-space: nowrap ; }

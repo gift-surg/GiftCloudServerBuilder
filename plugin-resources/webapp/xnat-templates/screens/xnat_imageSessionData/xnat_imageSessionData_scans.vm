@@ -10,7 +10,7 @@
     #if ($user.canEdit($item))
         <a onclick="window.viewer.init(true);">Show Counts</a>
     #else
-        #displayListAsTipText(["0 B in 0 files", "No files were found associated with this scan. Contact a member or owner of this project to generate the file count data."])
+        #displayListAsTipText(["File Count Unknown", "No files were found associated with this scan. Contact a member or owner of this project to generate the file count data."])
     #end
 #end
 

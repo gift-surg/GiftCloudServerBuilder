@@ -1516,6 +1516,17 @@
 			<type>jar</type>
 		</dependency>
 		<!-- End JavaMelody additions -->
+		<!-- Begin Groovy embeddable support additions -->
+		<dependency>
+			<groupId>groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.2.1</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<!-- End Groovy embeddable support additions -->
 		<!-- Begin NRG framework and service additions -->
 		<dependency>
 			<groupId>nrg</groupId>

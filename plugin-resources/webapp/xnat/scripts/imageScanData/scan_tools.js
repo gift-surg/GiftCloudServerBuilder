@@ -463,8 +463,14 @@ function scanDeleteDialog(_options){
   this.onResponse=new YAHOO.util.CustomEvent("response",this);
 
 	this.render=function(){
+        if (showReason) {
+            var height = "200px";
+        }
+        else {
+            var height = "100px";
+        }
 		this.panel=new YAHOO.widget.Dialog("scanDeletionDialog",{close:true,
-		   width:"400px",height:"200px",underlay:"shadow",modal:true,fixedcenter:true,visible:false});
+		   width:"400px",height:height,underlay:"shadow",modal:true,fixedcenter:true,visible:false});
 		this.panel.setHeader("Scan Deletion Dialog");
 
 		var bd = document.createElement("form");
@@ -494,22 +500,23 @@ function scanDeleteDialog(_options){
 		
 
 		//modality
-		tr=document.createElement("tr");
-		td1=document.createElement("th");
-		td2=document.createElement("td");
+        if (showReason) {
+            tr=document.createElement("tr");
+            td1=document.createElement("th");
+            td2=document.createElement("td");
 
-		td1.innerHTML="Justification:";
-		td1.align="left";
-		var sel = document.createElement("textarea");
-		sel.cols="24";
-		sel.rows="4";
-		sel.id="event_reason";
-		sel.name="event_reason";
-		td2.appendChild(sel);
-		tr.appendChild(td1);
-		tr.appendChild(td2);
-		tb.appendChild(tr);
-
+            td1.innerHTML="Justification:";
+            td1.align="left";
+            var sel = document.createElement("textarea");
+            sel.cols="24";
+            sel.rows="4";
+            sel.id="event_reason";
+            sel.name="event_reason";
+            td2.appendChild(sel);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tb.appendChild(tr);
+        }
 		this.panel.setBody(bd);
 
 		this.panel.form=bd;
@@ -517,11 +524,13 @@ function scanDeleteDialog(_options){
 		this.panel.selector=this;
 		var buttons=[{text:"Delete",handler:{fn:function(){
 				this.selector.delete_files = this.form.delete_files.checked;
-				this.selector.event_reason = this.form.event_reason.value;
-				if(this.selector.event_reason==""){
+				if(showReason && this.selector.event_reason==""){
                     xModalMessage('Delete Scan', 'Please enter a justification!');
 					return;
 				}
+                else if (showReason) {
+                    this.selector.event_reason = this.form.event_reason.value;
+                }
 				this.cancel();
 				this.selector.onResponse.fire();
 			}},isDefault:true},
@@ -551,6 +560,7 @@ function scanDeletor(_options){
 				success:function(obj1){
 					closeModalPanel("delete_scan");
 					this.onCompletion.fire();
+                    window.location.reload();
 					setTimeout(function(){window.location.reload()},2000);
 					
 				},

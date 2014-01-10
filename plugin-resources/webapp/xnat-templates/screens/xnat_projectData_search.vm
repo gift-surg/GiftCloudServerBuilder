@@ -29,7 +29,7 @@
 			<select name="${schemaElement.getFullXMLName()}.PROJECT_INVS_equals">
   			<option value="">(SELECT)</option>
 			#foreach($inv in $queryResults)
-	    			<option value="$inv.get(0)">$inv.get(1)</option>
+	    			<option value="$inv.get(1)">$inv.get(1)</option>
 			#end
 			</select>
 		</TD>

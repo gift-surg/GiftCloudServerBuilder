@@ -453,10 +453,10 @@ input.invalid { background: #ffc ; }
 
 
 /* POP-UP ELEMENTS */
-body #timeout_dialog_wrapper { z-index: 999999990 !important ; }
-body #session_timeout_dialog_mask { z-index: 999999991 !important ; }
-body #session_timeout_dialog_c { z-index: 999999992 !important ; }
-body #session_timeout_dialog { width: 320px !important ; z-index: 999999999 !important ; }
+body #timeout_dialog_wrapper { z-index: 999990 !important ; }
+body #session_timeout_dialog_mask { z-index: 999991 !important ; }
+body #session_timeout_dialog_c { z-index: 999992 !important ; }
+body #session_timeout_dialog { width: 396px !important ; line-height: 1.5 ; z-index: 999999 !important ; }
 
 body #fileListing_mask { z-index: 2001 !important ; }
 body #fileListing_c { z-index: 2002 !important ; }

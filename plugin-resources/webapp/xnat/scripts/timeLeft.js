@@ -229,7 +229,8 @@ if (typeof XNAT.app.timeout == 'undefined'){ XNAT.app.timeout={} }
         close: true,
         fixedcenter: true,
         // z-index is manhandled in xnat.css
-        //zIndex: 40000,
+        // but we need to set it here as a base z-index for the other YUI dialogs
+        zIndex: 5001,
         constraintoviewport: true,
         modal: true,
         icon: YAHOO.widget.SimpleDialog.ICON_WARN,
@@ -320,8 +321,9 @@ if (typeof XNAT.app.timeout == 'undefined'){ XNAT.app.timeout={} }
     timeout.updateMessageOrHide = function(dialog) {
         if (timeout.synchronizingCookies.dialogDisplay.get() === "true" && timeout.settings.warningDisplayedOnce) {
             var timeLeft = timeout.settings.expirationTime.timeLeft;
-            dialog.setBody("Your XNAT session will expire in " + timeLeft.hoursPart + "hours "
-                + timeout.zeroPad(timeLeft.minutesPart) + " minutes " + +timeout.zeroPad(timeLeft.secondsPart) + ' seconds .</br> Click "Renew" to reset session timer.');
+            dialog.setBody("Your XNAT session will expire in " + timeLeft.hoursPart + " hours "
+                + timeout.zeroPad(timeLeft.minutesPart) + " minutes " + +timeout.zeroPad(timeLeft.secondsPart) + ' seconds.' +
+                '</br> Click "Renew" to reset session timer.');
         }
         else if (timeout.synchronizingCookies.dialogDisplay.get() === "true" && !timeout.settings.warningDisplayedOnce) {
             timeout.settings.warningDisplayedOnce = true;

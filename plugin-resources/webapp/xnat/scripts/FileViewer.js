@@ -1385,7 +1385,7 @@ function UploadFileForm(_obj){
 		if(document.getElementById("local_file").value.endsWith(".zip")
 		  || document.getElementById("local_file").value.endsWith(".gz")
 		  || document.getElementById("local_file").value.endsWith(".xar")){
-			if(confirm("Would you like the contents of this archive file to be extracted on the server?")){
+			if(confirm("Would you like the contents of this archive file to be extracted on the server? Press 'OK' to extract or 'Cancel' to proceed with upload without extracting.")){
 				file_params+="&extract=true";
 			}
 		}

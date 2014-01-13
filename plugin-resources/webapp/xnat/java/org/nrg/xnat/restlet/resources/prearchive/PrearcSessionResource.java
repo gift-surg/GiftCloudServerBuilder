@@ -343,6 +343,7 @@ public final class PrearcSessionResource extends SecureResource {
 							String id=log.getName().substring(0,log.getName().indexOf(".log"));
 							tb.insertRow(new Object[]{id,timestamp,FileUtils.readFileToString(log)});
 						}
+                        tb.sort("date","ASC");
 						tb.resetRowCursor();
 					} catch (IOException e) {
 						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());

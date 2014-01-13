@@ -12,7 +12,7 @@
     obj.categories={};
     obj.categories.ids=[];
     obj.canEdit=true;
-    #if ($item.canDelete($data.getSession().getAttribute("user")))
+    #if (!$!item.hasPK() || $item.canDelete($data.getSession().getAttribute("user")))
     obj.canDelete = true;
     #else
     obj.canDelete = false;

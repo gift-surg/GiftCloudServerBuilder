@@ -941,7 +941,6 @@ function scanListingEditor(_tbody,_scanSet,_options){
 			td= document.createElement("td");
 			if(scan.id_input==undefined){
 			  scan.id_input=document.createElement("input");
-			  scan.id_input.name=elementName + scanXPath(modality, scanTypeTable) + "/ID";
 
 			  scan.id_input.manager=this;
 			  scan.id_input.size='5';
@@ -953,6 +952,8 @@ function scanListingEditor(_tbody,_scanSet,_options){
 					//scan.id_input.onchange=this.scanSet.validate(false);
 				}
 			}
+            scan.id_input.id=elementName + scanXPath(modality, scanTypeTable) + "/ID";
+            scan.id_input.name=elementName + scanXPath(modality, scanTypeTable) + "/ID";
 			if(scan.extension.XnatImagescandataId!=undefined)
 				td.appendChild(document.createTextNode(scan.extension.Id))
 			td.appendChild(scan.id_input);
@@ -965,7 +966,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				scan.type_input = document.createElement('input');
 				scan.type_input.type='text';
                 scan.type_input.value = nominalType;
-			}else{
+			}else if(scan.type_input==undefined){
 				//select
 				scan.type_input = document.createElement('select');
 				scan.type_input.options[0]=new Option("(SELECT)","");
@@ -1078,9 +1079,9 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				}
 			}
 
-                        scan.type_input.style.width="100%";
-                        scan.type_input.id=elementName + scanXPath(modality, scanTypeTable) + "/type";
-                        scan.type_input.name=elementName +scanXPath(modality, scanTypeTable) + "/type";
+            scan.type_input.style.width="100%";
+            scan.type_input.id=elementName + scanXPath(modality, scanTypeTable) + "/type";
+            scan.type_input.name=elementName +scanXPath(modality, scanTypeTable) + "/type";
 
             if(!XNAT.app.sTMod && nominalType){
                 td.innerHTML=nominalType;
@@ -1098,25 +1099,27 @@ function scanListingEditor(_tbody,_scanSet,_options){
 				td= document.createElement("td");
 				if(scan.qual_input==undefined){
 				    scan.qual_input=document.createElement("select");
-				    scan.qual_input.name=elementName + scanXPath(modality, scanTypeTable) + "/quality";
 				    scan.qual_input.options[0]=new Option("(SELECT)", "");
                     populateScanQualitySelector(serverRoot, null, scan.qual_input, 1, scan.extension.Quality);
 				}
 				td.appendChild(scan.qual_input);
 				tr.appendChild(td);
 			}
+            scan.qual_input.id=elementName + scanXPath(modality, scanTypeTable) + "/quality";
+            scan.qual_input.name=elementName + scanXPath(modality, scanTypeTable) + "/quality";
 
 			//nte
 			td= document.createElement("td");
 			if(scan.note_input==undefined){
 				scan.note_input=document.createElement("input");
 				scan.note_input.type="text";
-				scan.note_input.name=elementName + scanXPath(modality,scanTypeTable) + "/note";
 			        if(scan.extension.Note!=undefined){
 					scan.note_input.value=scan.extension.Note;
 				}
 				scan.note_input.size="40";
 			}
+            scan.note_input.id=elementName + scanXPath(modality,scanTypeTable) + "/note";
+            scan.note_input.name=elementName + scanXPath(modality,scanTypeTable) + "/note";
 			scan.note_input.className += " nullable";
 			td.appendChild(scan.note_input);
 			tr.appendChild(td);

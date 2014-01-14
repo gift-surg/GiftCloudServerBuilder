@@ -1312,6 +1312,10 @@ public class CatalogUtils {
                 	}
                 }
             }
+
+            if (entry.getClass().equals(CatDcmentryBean.class)) { // CatDcmentryBeans fail to set format correctly because it's not in their xml
+                entry.setFormat("DICOM");
+            }
         }
         
         if(toRemove.size()>0){

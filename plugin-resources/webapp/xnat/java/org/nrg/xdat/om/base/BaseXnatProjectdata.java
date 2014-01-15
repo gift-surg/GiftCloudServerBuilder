@@ -28,6 +28,7 @@ import org.nrg.action.ServerException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.display.DisplayField;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.model.ArcPathinfoI;
 import org.nrg.xdat.model.XnatAbstractprotocolI;
 import org.nrg.xdat.model.XnatAbstractresourceI;
@@ -861,7 +862,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
     	boolean matched=false;
     	for(XdatStoredSearch xss:searches){
-    		if(xss.getRootElementName().equalsIgnoreCase("xnat:subjectData")){
+    		if(xss.getRootElementName().equalsIgnoreCase("xnat:subjectData") &&
+                    xss.getBriefDescription().equalsIgnoreCase(DisplayManager.GetInstance().getPluralDisplayNameForSubject())){
     			matched=true;
     			break;
     		}
@@ -882,7 +884,8 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
     	for(String key:counts.keySet()){
     		matched=false;
         	for(XdatStoredSearch xss:searches){
-        		if(xss.getRootElementName().equalsIgnoreCase(key)){
+        		if(xss.getRootElementName().equalsIgnoreCase(key) &&
+                        xss.getBriefDescription().equalsIgnoreCase(DisplayManager.GetInstance().getPluralDisplayNameForElement(key))){
         			matched=true;
         			break;
         		}

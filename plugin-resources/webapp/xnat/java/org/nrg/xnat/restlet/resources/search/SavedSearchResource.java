@@ -11,19 +11,23 @@
 package org.nrg.xnat.restlet.resources.search;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
+import org.nrg.xdat.display.DisplayManager;
 import org.nrg.xdat.om.*;
 import org.nrg.xdat.presentation.CSVPresenter;
+import org.nrg.xdat.search.CriteriaCollection;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityManager;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
+import org.nrg.xft.collections.ItemCollection;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.presentation.RESTHTMLPresenter;
@@ -46,6 +50,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SavedSearchResource extends ItemResource {
@@ -271,8 +276,18 @@ public class SavedSearchResource extends ItemResource {
 					isNew=true;
 				}
 			}
-			
-			final boolean isPrimary=(search.getTag()!=null && (search.getId().equals(search.getTag() + "_" + search.getRootElementName())));
+            if (isNew && search.getTag() != null) {
+                CriteriaCollection cc = new CriteriaCollection("AND");
+                cc.addClause("xdat:stored_search/tag", search.getTag());
+                cc.addClause("xdat:stored_search/brief-description", search.getBriefDescription());
+                ItemCollection result = ItemSearch.GetItems(cc, user, false);
+                if (result.size() > 0) {
+                    isNew = false;
+                    search.setId(result.getFirst().getStringProperty("ID"));
+                }
+            }
+			final boolean isPrimary=(search.getTag()!=null && (search.getId().equals(search.getTag() + "_" + search.getRootElementName()))) ||
+                    search.getBriefDescription().equals(DisplayManager.GetInstance().getPluralDisplayNameForElement(search.getRootElementName()));
 			
 			if(isNew && isPrimary){
 				if(!user.canAction("xnat:projectData/ID", search.getTag(), SecurityManager.DELETE)){

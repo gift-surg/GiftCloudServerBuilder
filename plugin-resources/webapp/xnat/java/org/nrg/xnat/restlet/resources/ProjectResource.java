@@ -10,11 +10,14 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import java.util.List;
+
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -228,9 +231,16 @@ public class ProjectResource extends ItemResource {
 								this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
 								return;
 							}
-						}
-
+						}else{
+			                Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+project.getId()+"';", "COUNT", null, null);
+			                if(count>0){
+			                   this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Project '"+project.getId() + "' was used in a previously deleted project and cannot be reused.");
+			                   return;
+			                }
+			            }
+						
 						if(XFT.getBooleanProperty("UI.allow-non-admin-project-creation", true) || user.isSiteAdmin()){
+							project.preSave();
 							BaseXnatProjectdata.createProject(project, user, allowDataDeletion,true,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility"));
 						}else{
 							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
@@ -242,7 +252,10 @@ public class ProjectResource extends ItemResource {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
 				return;
 			}
-		} catch (Exception e) {
+		} catch(IllegalArgumentException e){
+			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,e.getMessage());
+			return;
+		}catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			e.printStackTrace();
 		}

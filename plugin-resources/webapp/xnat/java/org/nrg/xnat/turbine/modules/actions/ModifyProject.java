@@ -10,7 +10,6 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -25,7 +24,6 @@ import org.nrg.xdat.turbine.utils.PopulateItem;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.Event;
 import org.nrg.xft.event.EventManager;
@@ -39,7 +37,6 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 public class ModifyProject extends SecureAction {
@@ -54,83 +51,31 @@ public class ModifyProject extends SecureAction {
             XDATUser user = TurbineUtils.getUser(data);
             
             InvalidValueException error=null;
-            if (populater.hasError())
-            {
+            if (populater.hasError()){
                 error = populater.getError();
             }
 
             XFTItem item = populater.getItem();
             XnatProjectdata  project = new XnatProjectdata(item);
-                       
+            
+            // Remove trailing and leading whitespace from all project fields.
+            BaseXnatProjectdata.trimProjectFields(project);
 
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
-	    	EventMetaI c=wrk.buildEvent();
+            EventMetaI c=wrk.buildEvent();
+
+            List<String> conflicts = BaseXnatProjectdata.validateProjectFields(project, user);
+            if(!conflicts.isEmpty()){
+               StringBuilder conflictStr = new StringBuilder();
+               for(String conflict : conflicts){
+                     conflictStr.append(conflict).append("<br/>");
+               }
+               BaseXnatProjectdata.displayProjectEditErrorMsg(conflictStr.toString(), data, item);
+               return;
+            }
 
         try {
-            if(StringUtils.isEmpty(project.getId())){
-            	data.addMessage("Missing required field (Abbreviation).");
-				TurbineUtils.SetEditItem(item,data);
-                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-                {
-                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-                }
-                return;
-            }
-
-            List<XnatProjectdata> conflicts = new ArrayList<XnatProjectdata>();
-            List<XnatProjectdata> toRemove = new ArrayList<XnatProjectdata>();
-
-            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getName(),user,false));
-            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getName(),user,false));
-
-            for (XnatProjectdata potentialConflict : conflicts) {
-                if (potentialConflict.getId().equals(project.getId())) toRemove.add(potentialConflict);
-            }
-            conflicts.removeAll(toRemove);
-            if(!conflicts.isEmpty()){
-                data.addMessage("A project with the title '" + project.getName() + "' already exists.");
-                TurbineUtils.SetEditItem(item,data);
-                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-                {
-                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-                }
-                return;
-            }
-
-            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/secondary_id",project.getSecondaryId(),user,false));
-            conflicts.addAll(XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/name",project.getSecondaryId(),user,false));
-
-            for (XnatProjectdata potentialConflict : conflicts) {
-                if (potentialConflict.getId().equals(project.getId())) toRemove.add(potentialConflict);
-            }
-            conflicts.removeAll(toRemove);
-            if(!conflicts.isEmpty()){
-                data.addMessage("A project with the running title '" + project.getSecondaryId() + "' already exists.");
-                TurbineUtils.SetEditItem(item,data);
-                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-                {
-                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-                }
-                return;
-            }
-
-            // XNAT-2551 Make sure the alias haven't already been used on any other projects
-            for(XnatProjectdataAliasI alias : project.getAliases_alias()){
-                String aliasStr = alias.getAlias();
-                String q = "SELECT alias FROM xnat_projectdata_alias WHERE aliases_alias_xnat_projectdata_id != '" + project.getId() + "' AND alias = '" + aliasStr + "' ;";
-                XFTTable table = new PoolDBUtils().executeSelectQuery(q, user.getDBName(), user.getLogin());
-                table.resetRowCursor();
-                if(table.hasMoreRows()){
-                    data.addMessage("A project with the alias '" + aliasStr + "' already exists.");
-                    TurbineUtils.SetEditItem(item,data);
-                    if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-                    {
-                        data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-                    }
-                    return;
-                }
-            }
-
+        
             if (error!=null)
             {
                 data.addMessage(error.getMessage());
@@ -148,11 +93,7 @@ public class ModifyProject extends SecureAction {
 				project.initNewProject(user,false,true,c);
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(item,data);
-                data.addMessage(e2.getMessage());
-                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-                {
-                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-                }
+				BaseXnatProjectdata.displayProjectEditErrorMsg(e2.getMessage(), data, item);
                 return;
 			}
             

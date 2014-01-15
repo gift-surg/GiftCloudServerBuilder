@@ -36,7 +36,7 @@ public class IpWhitelist extends SecureResource {
         super(context, request, response);
         if (!user.isSiteAdmin()) {
             getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        } else if (request.getMethod() == Method.POST && !request.isEntityAvailable()) {
+        } else if (request.getMethod() == Method.PUT && !request.isEntityAvailable()) {
             getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED, "You must provide a configuration for whitelisted IP addresses.");
         } else {
         this.getVariants().add(new Variant(MediaType.ALL));
@@ -57,12 +57,12 @@ public class IpWhitelist extends SecureResource {
     }
 
     @Override
-    public boolean allowPost() {
+    public boolean allowPut() {
         return true;
     }
 
     @Override
-    public void handlePost() {
+    public void handlePut() {
         try {
             String whitelist = getRequest().getEntity().getText();
             List<String> addresses = new ArrayList<String>(Arrays.asList(whitelist.split("[\\s,]+")));

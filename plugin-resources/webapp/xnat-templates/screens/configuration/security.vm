@@ -29,10 +29,10 @@
                     interval.val('0');
                 }
                 var date = jq('#passwordExpirationDate');
-                if (!date.val() || date.val() == '__/__/____') {
+                if (!date.val() || date.val() == '__/__/____' || date.val() == '  /  /    ') {
                     // is it better to put in zeros or 01/01/1970?
-                    date.val('00/00/0000');
-                    // putting in zeros will prompt the user to enter a date
+                    // answer: 01/01/1970 - then it won't freak out if using the interval
+                    date.val('01/01/1970');
                 }
                 var check_date = XNAT.app.checkDateInput(date,'us');
                 if (!interval.val().match(/^\d+$/)) {

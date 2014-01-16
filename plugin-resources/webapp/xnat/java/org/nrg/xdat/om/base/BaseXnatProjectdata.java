@@ -2028,6 +2028,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * @param XnatProjectdata project - The project we are operating on
 	 */
 	public static void trimProjectFields(BaseXnatProjectdata project) throws Exception{
+		String trim; //Temporary variable to store trimmed variables.
 		
 		// Sanity check. 
 		if(null == project){
@@ -2036,23 +2037,29 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		
 		//Trim excess white space from the project id
 		String id = project.getId();
-		String trim = id.trim();
-		if(!trim.equals(id)){
+		if(id != null){
+			trim = id.trim();
+			if(!trim.equals(id)){
 			project.setId(trim);
+			}
 		}
 		
 		// Trim excess white space from the secondary id
 		String secondaryId = project.getSecondaryId();
-		trim = secondaryId.trim();
-		if(!trim.equals(secondaryId)){
-			project.setSecondaryId(trim);
+		if(secondaryId != null){
+			trim = secondaryId.trim();
+			if(!trim.equals(secondaryId)){
+				project.setSecondaryId(trim);
+			}
 		}
 		
 		// Trim excess white space from the project name
 		String name = project.getName();
-		trim = name.trim();
-		if(!trim.equals(name)){
+		if(null != name){
+			trim = name.trim();
+			if(!trim.equals(name)){
 			project.setName(trim);
+			}
 		}
 		
 		// Trim excess white space from each alias
@@ -2101,9 +2108,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		
 		// Validate the Running Title (secondary Id).
 		String secondaryId = project.getSecondaryId();
-		if(null == secondaryId || StringUtils.IsEmpty(secondaryId)){
-			conflicts.add("Missing required field: Running Title.");
-		}else{
+		if(null != secondaryId){
 			// Validate the Running Title
 			if(!validateElement(secondaryId, id, u)){
 				conflicts.add("Invalid Running Title: '" + secondaryId + "' is already being used by another project.");
@@ -2117,9 +2122,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		
 		// Validate the project title (name).
 		String name = project.getName();
-		if(null == name || StringUtils.IsEmpty(name)){
-			conflicts.add("Missing required field: Title.");
-		}else {
+		if(null != name){
 			// Validate the Title
 			if(!validateElement(name, id, u)){
 				conflicts.add("Invalid Title: '" + name + "' is already being used by another project.");

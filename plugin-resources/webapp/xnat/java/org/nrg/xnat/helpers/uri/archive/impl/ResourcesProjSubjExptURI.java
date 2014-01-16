@@ -10,6 +10,8 @@
  */
 package org.nrg.xnat.helpers.uri.archive.impl;
 
+import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xnat.helpers.uri.URIManager;
@@ -56,5 +58,18 @@ public class ResourcesProjSubjExptURI extends ResourcesProjSubjURI implements Re
 	@Override
 	public ArchivableItem getSecurityItem() {
 		return getExperiment();
+	}
+
+	@Override
+	public XnatAbstractresourceI getXnatResource() {
+		if(this.getExperiment()!=null){
+			for(XnatAbstractresourceI res:this.getExperiment().getResources_resource()){
+				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+					return res;
+				}
+			}
+		}
+		
+		return null;
 	}
 }

@@ -264,6 +264,11 @@ public final class PrearcSessionResource extends SecureResource {
 
     @Override
     public void handleDelete() {
+    	if(StringUtils.isNotEmpty(filepath)){
+    		this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "");
+    		return;
+    	}
+    	
         try {
             //checks if the user can access this session
             PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);

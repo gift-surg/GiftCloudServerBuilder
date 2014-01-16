@@ -21,8 +21,47 @@ $page.setVlinkColor($ui.vlink)
 #end
 
 <p>
+	
+<script>
+function verifySecurity(){
+	var elemName=$(YUIDOM.get("xdat:stored_search/root_element_name")).val();
+	
+	if(elemName==""){
+		xModalMessage('Selection Error', 'Please select a Pivot data type.');
+	}
+	
+	if(elemName!=XNAT.app.lastElement){
+		XNAT.app.needsCheck=true;//we may need to verify this
+	}
+	
+	XNAT.app.lastElement=elemName;
+	
+	var registration=window.available_elements.getByName(elemName);
+	if( (XNAT.app.needsCheck) && (registration==null || registration==undefined)){
+		xModalConfirm({
+          content: "The selected root data type ("+XNAT.app.lastElement + ") is not a <b>secured</b> data type.  Creating this search may give users access to data which you do not intend, potentially all data of this type in the system (independent of project membership).  Avoid creating queries on un-secured types.  If it is required, create proper criteria clauses to limit access and limit 'allowed users' strictly.",
+          okAction: function(){
+                var form1=YUIDOM.get("form1");
+				XNAT.app.needsCheck=false;
+            	try{
+        	    	if(form1.managedSubmit()){
+        	        	form1.submit();
+        	    	}
+            	}catch(e){
+                    xModalMessage('Validation Error', 'Error performing validation.');
+            	}
+          },
+          cancelAction: function(){
+          }
+        });
+		return false;
+	}else{
+		return true;
+	}
+}
+</script>
 
-<form name="form1" method="post" action="$link.setAction("ModifyStoredSearch")">
+<form id="form1" name="form1" method="post" action="$link.setAction("ModifyStoredSearch")" onsubmit="return verifySecurity();">
 
 #if($vr)
 

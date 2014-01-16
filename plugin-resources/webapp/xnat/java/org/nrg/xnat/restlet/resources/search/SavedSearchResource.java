@@ -103,12 +103,21 @@ public class SavedSearchResource extends ItemResource {
 					xss=ds.convertToStoredSearch(sID);
 					xss.setId(sID);
 				} catch (XFTInitException e) {
-					e.printStackTrace();
+					logger.error("",e);
 				} catch (ElementNotFoundException e) {
-					e.printStackTrace();
+					logger.error("",e);
 				}
 			}else{
 				xss= XdatStoredSearch.getXdatStoredSearchsById(sID, user, true);
+			}
+		}
+		
+		if(xss!=null){
+			if(!user.canQuery(xss.getRootElementName())){
+				if(!xss.hasAllowedUser(user.getLogin())){
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+					return null;
+				}
 			}
 		}
 		
@@ -211,7 +220,7 @@ public class SavedSearchResource extends ItemResource {
 					
 					return this.representTable(table, mt, tableParams,cp);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("",e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
 			}else{
@@ -224,11 +233,6 @@ public class SavedSearchResource extends ItemResource {
 					return rep;
 				}
 			}
-//	        else if (mt.equals(MediaType.APPLICATION_JSON)){
-//				return new JSONTableRepresentation(item,params,MediaType.APPLICATION_JSON);
-//			}else{
-//				return new HTMLTableRepresentation(item,params,MediaType.TEXT_HTML);
-//			}
 		}
 
 		return null;
@@ -247,22 +251,22 @@ public class SavedSearchResource extends ItemResource {
 
 	@Override
 	public void handlePut() {
-			try {
-				Reader sax=this.getRequest().getEntity().getReader();
-				
-				SAXReader reader = new SAXReader(user);
-				XFTItem item = reader.parse(sax);
-				
-				if(!item.instanceOf("xdat:stored_search")){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-					return;
-				}
-				XdatStoredSearch search = new XdatStoredSearch(item);
+		try {
+			Reader sax=this.getRequest().getEntity().getReader();
+			
+			SAXReader reader = new SAXReader(user);
+			XFTItem item = reader.parse(sax);
+			
+			if(!item.instanceOf("xdat:stored_search")){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+				return;
+			}
+			XdatStoredSearch search = new XdatStoredSearch(item);
 				
 			boolean isNew=false;
 			
-				if(search.getId()==null || !search.getId().equals(sID)){
-					search.setId(sID);
+			if(search.getId()==null || !search.getId().equals(sID)){
+				search.setId(sID);
 				isNew=true;
 			}else{
 				XFTItem xss= search.getCurrentDBVersion(false);
@@ -286,6 +290,13 @@ public class SavedSearchResource extends ItemResource {
                     search.setId(result.getFirst().getStringProperty("ID"));
                 }
             }
+			if(search!=null){
+				if(!user.canQuery(search.getRootElementName())){
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+					return;
+				}
+			}
+
 			final boolean isPrimary=(search.getTag()!=null && (search.getId().equals(search.getTag() + "_" + search.getRootElementName()))) ||
                     search.getBriefDescription().equals(DisplayManager.GetInstance().getPluralDisplayNameForElement(search.getRootElementName()));
 			
@@ -345,22 +356,17 @@ public class SavedSearchResource extends ItemResource {
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
 					
-//				try {
-//					MaterializedView.DeleteBySearchID(search.getId(), user);
-//				} catch (Throwable e) {
-//					e.printStackTrace();
-//				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (SAXException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 			} catch (ElementNotFoundException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} 
 		}
@@ -411,16 +417,16 @@ public class SavedSearchResource extends ItemResource {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (SAXException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 			} catch (ElementNotFoundException e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} 
 		}

@@ -19,6 +19,7 @@ import org.nrg.xdat.display.HTMLLink;
 import org.nrg.xdat.display.HTMLLinkProperty;
 import org.nrg.xdat.display.SQLQueryField;
 import org.nrg.xdat.exceptions.IllegalAccessException;
+import org.nrg.xdat.om.XdatCriteriaSet;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XdatStoredSearch;
@@ -125,14 +126,14 @@ public class SearchResource extends SecureResource {
 									completeDocument=true;
 								}
 							} catch (SAXParseException e) {
-								e.printStackTrace();
+								logger.error("",e);
 								this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
 								throw e;
 							} catch (IOException e) {
-								e.printStackTrace();
+								logger.error("",e);
 								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error("",e);
 								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 							}
 					    }
@@ -165,14 +166,14 @@ public class SearchResource extends SecureResource {
 			            }
 			            
 					} catch (SAXParseException e) {
-						e.printStackTrace();
+						logger.error("",e);
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
 						throw e;
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("",e);
 						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("",e);
 						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 					}
 				}
@@ -183,8 +184,31 @@ public class SearchResource extends SecureResource {
 					return;
 				}
 				XdatStoredSearch search = new XdatStoredSearch(item);
+				
+				if(StringUtils.IsEmpty(search.getRootElementName()) || !user.canQuery(search.getRootElementName())){
+					//if a user has been manually added to a secret search, it is allowed (but the criteria cannot be modified)
+					boolean allowed=false;
+					if(!StringUtils.IsEmpty(search.getId()))
+					{
+						//need to check against unmodified stored search
+						final org.nrg.xdat.om.XdatStoredSearch stored = XdatStoredSearch.getXdatStoredSearchsById(search.getId(), user, true);
+						
+						//if the user was added to the search
+						if(stored.hasAllowedUser(user.getUsername())){
+							//confirm it has a WHERE clause and hasn't been modified
+							if(XdatCriteriaSet.compareCriteriaSets(stored.getSearchWhere(), search.getSearchWhere())){
+								allowed=true;
+							}
+						}
+					}
 					
-			rootElementName=search.getRootElementName();
+					if(!allowed){
+						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+						return;
+					}
+				}
+					
+				rootElementName=search.getRootElementName();
 			
 				DisplaySearch ds=search.getDisplaySearch(user);
 				
@@ -354,7 +378,7 @@ public class SearchResource extends SecureResource {
 							temp_id+="="+dfr.getValue();
 						cp.get(id).put("id", temp_id);
 					} catch (DisplayFieldNotFoundException e2) {
-						e2.printStackTrace();
+						logger.error("",e2);
 					}
 					cp.get(id).put("xPATH", dfr.getElementName() + "." + dfr.getSortBy());
 					
@@ -372,7 +396,7 @@ public class SearchResource extends SecureResource {
 								t=dfr.getDisplayField().getDataType();
 							}
 						} catch (DisplayFieldNotFoundException e) {
-							e.printStackTrace();
+							logger.error("",e);
 						}
 					}
 					if(t!=null){
@@ -384,7 +408,7 @@ public class SearchResource extends SecureResource {
 							cp.get(id).put("visible","false");
 						}
 					} catch (DisplayFieldNotFoundException e1) {
-						e1.printStackTrace();
+						logger.error("",e1);
 					}
 
 					boolean hasLink = false;
@@ -443,7 +467,7 @@ public class SearchResource extends SecureResource {
 		    									linkProps.append("@"+insertValue);
 											}
 										} catch (DisplayFieldNotFoundException e) {
-											e.printStackTrace();
+											logger.error("",e);
 										}
                                     }else{
                                          if (! dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName()))

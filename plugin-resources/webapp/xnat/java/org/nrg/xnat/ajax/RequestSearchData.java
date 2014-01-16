@@ -31,6 +31,7 @@ import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
+import org.restlet.data.Status;
 import org.xml.sax.InputSource;
 
 import javax.servlet.ServletConfig;
@@ -72,6 +73,10 @@ public class RequestSearchData {
                 SAXReader reader = new SAXReader(user);
                 XFTItem item = reader.parse(is);
                 XdatStoredSearch search = new XdatStoredSearch(item);
+                
+                if(!user.canQuery(search.getRootElementName())){
+                    return;
+    			}
                 
                 DisplaySearch ds=null;
                 if (isNew!=null)

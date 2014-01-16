@@ -891,6 +891,10 @@ YAHOO.extend(YAHOO.widget.TaskNode, YAHOO.widget.TextNode, {
 	this.renderCatalog(catalog);
 };
 
+XNAT.app.showTags=function(scanID, file){
+	window.open(serverRoot +"/REST/services/dicomdump?src=/archive/projects/"+ XNAT.data.context.projectID + "/subjects/"+ XNAT.data.context.subjectID + "/experiments/"+ XNAT.data.context.ID + "/scans/"+ scanID + "/resources/DICOM/files/"+ file + "&format=html&requested_screen=DicomFileTable.vm");
+}
+
 YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 	renderCatalog:function(cat){
 		this.xnat_abstractresource_id=cat.xnat_abstractresource_id;
@@ -946,8 +950,13 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
             var _html="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + filename + "</a>"
 
             if(this.cat.label=="DICOM"){
-            	_html +="&nbsp; <a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "'?format=image/jpeg;\">Image</a>";
-            	_html +="&nbsp; <a target='_blank' onclick=\""+ serverRoot +"/REST/services/dicomdump?src="+ file.URI + "&format=html&requested_screen=DicomFileTable.vm\">Tags</a>";
+            	_html +="&nbsp; <a  onclick=\"window.open('" +serverRoot + file.URI + "?format=image/jpeg');return false;\">Image</a>";
+            	
+            	if(XNAT.data.context.isImageSession && XNAT.data.context.projectID!=undefined &&
+            		XNAT.data.context.subjectID!=undefined &&
+            		XNAT.data.context.ID!=undefined){
+	            	_html +="&nbsp; <a href='#' onclick=\"XNAT.app.showTags('" + this.cat.cat_id + "','" + path +"');return false;\">Tags</a>";
+	            }
             }
             
             if(file.file_format!=""){

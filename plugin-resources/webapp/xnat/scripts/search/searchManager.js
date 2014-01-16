@@ -160,16 +160,18 @@ function SearchXMLManager(_xml){
 		popupBD.appendChild(filterDIV);
 
 		var title= document.createElement("div");
-			title.innerHTML=window.available_elements.getByName(element_name).singular + " " + oColumn.header;
-			title.style.fontWeight="700";
-			filterDIV.appendChild(title);
-
-		filterDIV.appendChild(document.createElement("br"));
-
+        var obj = window.available_elements.getByName(element_name)
+        if(obj){
+          obj = obj.singular;
+        } else{
+          obj = 'Filter';
+        }
+		title.innerHTML=obj + " " + oColumn.header;
+		title.style.fontWeight="700";
+		filterDIV.appendChild(title);
+        filterDIV.appendChild(document.createElement("br"));
 		filterDIV.appendChild(filter.xcsContainer);
-
 		filter.renderFilters();
-
 
 		var popupFT = document.createElement("DIV");
 		popupFT.className="ft";
@@ -867,16 +869,29 @@ var handleACSubmit = function() {
 
 var handleSubmit = function() {
 	for(var xswC=0;xswC<this.sm.searchDOM.SearchWhere.length;xswC++){
-		if(this.sm.searchDOM.SearchWhere[xswC].needsSubmit(true)){
+    var sm = this.sm;
+		if(sm.searchDOM.SearchWhere[xswC].needsSubmit(true)){
+      xModalConfirm({
+        content: 'You have new filters which have not been added.<br/><br/>Are you sure you want to continue without adding them (they will be lost)?',
+        okAction: function(){
+          sm.searchDOM.cleanEmpty();
+          sm.onsubmit.fire(sm.searchDOM);
+        },
+        cancelAction: function(){}
+      });
+      return false;
+/*    // Leaving this here as an example to reference for future confirm dialog conversions...
 			if(!confirm("You have new filters which have not been added.  Are you sure you want to continue without adding them (they will be lost)?")){
-				return;
+				return; // Cancel
 			}else{
-				break;
+				break; // Ok
 			}
-		}
+*/
+		} else {
+      sm.searchDOM.cleanEmpty();
+      sm.onsubmit.fire(sm.searchDOM);
+    }
 	}
-	this.sm.searchDOM.cleanEmpty();
-	this.sm.onsubmit.fire(this.sm.searchDOM);
 }
 
 //modifications to stored-search
@@ -1070,40 +1085,38 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	this.CritDiv=document.createElement("div");
 	td1.appendChild(this.CritDiv);
 
-
+  var column = this.oColumn;
 	this.newComparisonBox=document.createElement("select");
 	this.newComparisonBox.options[0]=new Option("SELECT","",true,true);
 	this.newComparisonBox.options[1]=new Option("=","=");
-	if(this.oColumn.type=="string"){
+	if(column.type=="string"){
 		this.newComparisonBox.options[2]=new Option("LIKE","LIKE");
-	}else if(this.oColumn.type=="float" || this.oColumn.type=="integer")
+	}else if(column.type=="float" || column.type=="integer")
 	{
 		this.newComparisonBox.options[2]=new Option(">",">");
 		this.newComparisonBox.options[3]=new Option(">=",">=");
 		this.newComparisonBox.options[4]=new Option("<","<");
 		this.newComparisonBox.options[5]=new Option("<=","<=");
-	}else{
+    this.newComparisonBox.options[6]=new Option("!=","!=");
+    this.newComparisonBox.options[7]=new Option("IN","IN");
+	}else if(column.type=="date"){
+    this.newComparisonBox.options[1]=new Option(">",">");
+		this.newComparisonBox.options[2]=new Option(">=",">=");
+		this.newComparisonBox.options[3]=new Option("<","<");
+		this.newComparisonBox.options[4]=new Option("<=","<=");
+  }else{
 		this.newComparisonBox.options[2]=new Option(">",">");
 		this.newComparisonBox.options[3]=new Option(">=",">=");
 		this.newComparisonBox.options[4]=new Option("<","<");
 		this.newComparisonBox.options[5]=new Option("<=","<=");
 		this.newComparisonBox.options[6]=new Option("LIKE","LIKE");
+    this.newComparisonBox.options[7]=new Option("!=","!=");
+    this.newComparisonBox.options[8]=new Option("IN","IN");
 	}
-	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("!=","!=");
-	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IN","IN");
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("BETWEEN","BETWEEN");
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IS NULL","IS NULL");
 	this.newComparisonBox.options[this.newComparisonBox.options.length]=new Option("IS NOT NULL","IS NOT NULL");
 
-/*				POPULATE after field select with proper options
- 				this.newComparisonBox.options[1]=new Option(">",">");
-				this.newComparisonBox.options[2]=new Option(">=",">=");
-				this.newComparisonBox.options[3]=new Option("<","<");
-				this.newComparisonBox.options[4]=new Option("<=","<=");
-				this.newComparisonBox.options[5]=new Option("LIKE","LIKE");
-				this.newComparisonBox.options[6]=new Option("IS NULL","IS NULL");
-				this.newComparisonBox.options[7]=new Option("IS NOT NULL","IS NOT NULL");
-*/
 	this.newComparisonBox.set=this;
 	this.newComparisonBox.onchange=function(){
 		this.set.newTip.innerHTML="";
@@ -1113,26 +1126,48 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 				this.set.newValueBox.style.display="none";
 				this.set.newValueBox.disabled=true;
 				this.set.newValueBox.value="";
-
+        this.set.newValueBoxEndSpan.style.display="none";
+        this.set.newValueBoxEnd.disabled=true;
+        this.set.newValueBoxEnd.value="";
 				this.set.newValueSelectBox.style.display="none";
 				this.set.newValueSelectBox.disabled=true;
 			}else if(this.selected_value=="="){
 				this.set.newValueBox.style.display="none";
 				this.set.newValueBox.disabled=true;
 				this.set.newValueBox.value="";
-
+        this.set.newValueBoxEndSpan.style.display="none";
+        this.set.newValueBoxEnd.disabled=true;
+        this.set.newValueBoxEnd.value="";
 				this.set.newValueSelectBox.style.display="inline";
 				this.set.newValueSelectBox.disabled=false;
-			}else{
+			}else if(column.type=="date"){
 				this.set.newValueBox.style.display="inline";
 				this.set.newValueBox.disabled=false;
-
+				this.set.newValueBox.type="datetime-local";
+        this.set.newValueBox.placeholder="MM/DD/YYYY";
+        this.set.newValueBoxEndSpan.style.display="none";
+        this.set.newValueBoxEnd.disabled=true;
+        this.set.newValueBoxEnd.value="";
+				this.set.newValueSelectBox.style.display="none";
+				this.set.newValueSelectBox.disabled=true;
+      }else{
+				this.set.newValueBox.style.display="inline";
+				this.set.newValueBox.disabled=false;
+        this.set.newValueBoxEndSpan.style.display="none";
+        this.set.newValueBoxEnd.disabled=true;
+        this.set.newValueBoxEnd.value="";
 				this.set.newValueSelectBox.style.display="none";
 				this.set.newValueSelectBox.disabled=true;
 			}
-			
 			if(this.selected_value=="BETWEEN"){
-				this.set.newTip.innerHTML="Separate values with an AND (i.e. 5 AND 7).";
+        if(column.type=="date"){
+          this.set.newValueBoxEndSpan.style.display="inline";
+          this.set.newValueBoxEnd.disabled=false;
+          this.set.newValueBoxEnd.type="datetime-local";
+          this.set.newValueBoxEnd.placeholder="MM/DD/YYYY";
+        }else{
+          this.set.newTip.innerHTML="Separate values with an AND (i.e. 5 AND 7).";
+        }
 			}else if(this.selected_value=="IN"){
 				this.set.newTip.innerHTML="Provide a comma separated list of values (i.e. John,Jane).";
 			}
@@ -1140,7 +1175,9 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 			this.set.newValueBox.style.display="none";
 			this.set.newValueBox.disabled=true;
 			this.set.newValueBox.value="";
-
+      this.set.newValueBoxEndSpan.style.display="none";
+      this.set.newValueBoxEnd.disabled=true;
+      this.set.newValueBoxEnd.value="";
 			this.set.newValueSelectBox.style.display="none";
 			this.set.newValueSelectBox.disabled=true;
 		}
@@ -1153,6 +1190,9 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 		this.set.newValueBox.value="";
 		this.set.newValueBox.disabled=true;
 		this.set.newValueBox.style.display="none";
+    this.set.newValueBoxEndSpan.style.display="none";
+    this.set.newValueBoxEnd.disabled=true;
+    this.set.newValueBoxEnd.value="";
 		this.set.newValueSelectBox.disabled=true;
 		this.set.newValueSelectBox.style.display="none";
 		this.set.newTip.innerHTML="";
@@ -1167,14 +1207,25 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
     this.newValueBox.maxLength="100";
 	this.CritDiv.appendChild(this.newValueBox);
 
+  this.newValueBoxEndSpan=document.createElement("span");
+	this.newValueBoxEndSpan.style.display="none";
+  this.newValueBoxEndSpan.innerHTML=" AND ";
+	this.newValueBoxEnd=document.createElement("input");
+	this.newValueBoxEnd.type="datetime-local";
+	this.newValueBoxEnd.disabled=true;
+  this.newValueBoxEnd.maxLength="100";
+  this.newValueBoxEndSpan.appendChild(this.newValueBoxEnd);
+	this.CritDiv.appendChild(this.newValueBoxEndSpan);
 
 	this.newValueSelectBox=document.createElement("select");
 	this.newValueSelectBox.style.display="none";
 	this.newValueSelectBox.disabled=true;
-	this.newValueSelectBox.options[0]=new Option("SELECT","",false);
-	for(var occvC=0;occvC<this.oColumn.currentValues.length;occvC++){
-	    this.newValueSelectBox.options[this.newValueSelectBox.options.length]=new Option(this.oColumn.currentValues[occvC].values.split(/<[^<>]*>/g).join('') + " (" +this.oColumn.currentValues[occvC].count +")",this.oColumn.currentValues[occvC].values);
-	}
+  if(column.type!="date"){ // don't populate this select for dates/timestamps because there are too many values and it will crash the browser.
+    this.newValueSelectBox.options[0]=new Option("SELECT","",false);
+    for(var occvC=0;occvC<column.currentValues.length;occvC++){
+        this.newValueSelectBox.options[this.newValueSelectBox.options.length]=new Option(column.currentValues[occvC].values.split(/<[^<>]*>/g).join('') + " (" +column.currentValues[occvC].count +")",column.currentValues[occvC].values);
+    }
+  }
 	this.CritDiv.appendChild(this.newValueSelectBox);
 	this.CritDiv.appendChild(document.createTextNode(" "));
 
@@ -1187,10 +1238,9 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 			this.set.save();
 			this.set.renderFilters();
 		}
-		//alert(this.sm.searchDOM.toXML());
 	}
 	this.CritDiv.appendChild(this.newButton);
-	
+
 	this.newTip=document.createElement("display");
 	this.newTip.style.display="inline";
 	this.newTip.className="filter_tip"
@@ -1223,7 +1273,14 @@ xdat_criteria_set.prototype.isValid=function(){
 			this.newValueBox.focus();
 			return false;
 		}
-		if(this.newValueBox.value.indexOf(" AND ")<1){
+    if(this.oColumn.type=="date"){
+      if(this.newValueBoxEnd.value==""){
+              xModalMessage('Search Validation', "Please specify an end value to match against.");
+        this.newValueBoxEnd.disabled=false;
+        this.newValueBoxEnd.focus();
+        return false;
+      }
+    } else if(this.newValueBox.value.indexOf(" AND ")<1){
             xModalMessage('Search Validation', "Please separate values using an AND.  (i.e. 5 AND 10)");
 			this.newValueBox.disabled=false;
 			this.newValueBox.focus();
@@ -1249,7 +1306,14 @@ xdat_criteria_set.prototype.save=function(){
 	if(this.newValueBox.disabled && !this.newValueSelectBox.disabled){
 		v=this.newValueSelectBox.options[this.newValueSelectBox.selectedIndex].value;
 	}
-
+    if(fTYPE=="date"){
+      v = v.replace(/T/g, ' ');
+      if(c=="BETWEEN"){
+        var ve = this.newValueBoxEnd.value;
+        ve = ve.replace(/T/g, ' ');
+        v += " AND "+ve;
+      }
+    }
 	var newC=new xdat_criteria();
 	newC.setSchemaField(e + "." + f);
 	if(c=="IS NULL"){
@@ -1486,15 +1550,6 @@ xdat_criteria_set.prototype.getInput=function(sm,cC){
 
 	this.newComparisonBox=document.createElement("select");
 	this.newComparisonBox.options[0]=new Option("SELECT","");
-/*				POPULATE after field select with proper options
- 				this.newComparisonBox.options[1]=new Option(">",">");
-				this.newComparisonBox.options[2]=new Option(">=",">=");
-				this.newComparisonBox.options[3]=new Option("<","<");
-				this.newComparisonBox.options[4]=new Option("<=","<=");
-				this.newComparisonBox.options[5]=new Option("LIKE","LIKE");
-				this.newComparisonBox.options[6]=new Option("IS NULL","IS NULL");
-				this.newComparisonBox.options[7]=new Option("IS NOT NULL","IS NOT NULL");
-*/
 	this.newComparisonBox.disabled=true;
 	this.newComparisonBox.sm=sm;
 	this.newComparisonBox.set=this;

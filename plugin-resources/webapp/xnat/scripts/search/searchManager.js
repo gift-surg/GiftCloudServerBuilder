@@ -1038,6 +1038,7 @@ xdat_criteria_set.prototype.cleanEmpty=function(sm,cC){
 }
 
 xdat_criteria_set.prototype.renderFilters=function(containerDIV){
+    var datetime_local = "datetime-local";
 	emptyChildNodes(this.xcsContainer);
 
 	var t=document.createElement("table");
@@ -1143,7 +1144,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 			}else if(column.type=="date"){
 				this.set.newValueBox.style.display="inline";
 				this.set.newValueBox.disabled=false;
-				this.set.newValueBox.type="datetime-local";
+				this.set.newValueBox.type=datetime_local;
         this.set.newValueBox.placeholder="MM/DD/YYYY";
         this.set.newValueBoxEndSpan.style.display="none";
         this.set.newValueBoxEnd.disabled=true;
@@ -1163,7 +1164,7 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
         if(column.type=="date"){
           this.set.newValueBoxEndSpan.style.display="inline";
           this.set.newValueBoxEnd.disabled=false;
-          this.set.newValueBoxEnd.type="datetime-local";
+          this.set.newValueBoxEnd.type=datetime_local;
           this.set.newValueBoxEnd.placeholder="MM/DD/YYYY";
         }else{
           this.set.newTip.innerHTML="Separate values with an AND (i.e. 5 AND 7).";
@@ -1211,7 +1212,12 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 	this.newValueBoxEndSpan.style.display="none";
   this.newValueBoxEndSpan.innerHTML=" AND ";
 	this.newValueBoxEnd=document.createElement("input");
-	this.newValueBoxEnd.type="datetime-local";
+    try{
+        this.set.newValueBox.type=datetime_local;
+    } catch(e){
+        datetime_local = "text";
+    }
+	this.newValueBoxEnd.type=datetime_local;
 	this.newValueBoxEnd.disabled=true;
   this.newValueBoxEnd.maxLength="100";
   this.newValueBoxEndSpan.appendChild(this.newValueBoxEnd);

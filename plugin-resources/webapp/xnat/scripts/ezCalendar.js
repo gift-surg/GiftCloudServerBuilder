@@ -307,30 +307,31 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
                 '';
     }
 
-    var month_input = '' +
-        '<input class="ez_cal month validate" type="text" size="2" maxlength="2"' +
-        //' placeholder="'+ XNAT.data.todaysDate.mm +'"' +
-        ' placeholder="'+ 'MM' +'"' +
-        //' value="'+ XNAT.data.todaysDate.mm + '"' +
-        ' style="width:auto;font-family:Courier,monospace;">' +
-        '';
-    var day_input   = '' +
-        '<input class="ez_cal day validate" type="text" size="2" maxlength="2"' +
-        //' placeholder="'+ XNAT.data.todaysDate.dd +'"' +
-        ' placeholder="'+ 'DD' +'"' +
-        //' value="'+ XNAT.data.todaysDate.dd + '"' +
-        ' style="width:auto;font-family:Courier,monospace;">' +
-        '';
-    var year_input  = '' +
-        '<input class="ez_cal year validate" type="text" size="4" maxlength="4"' +
-        //' placeholder="'+ XNAT.data.todaysDate.yyyy +'"' +
-        ' placeholder="'+ 'YYYY' +'"' +
-        //' value="'+ XNAT.data.todaysDate.yyyy + '"' +
-        ' style="width:auto;font-family:Courier,monospace;">' +
-        '';
-
     var multi_labels='', multi_inputs='' ;
     if (kind === 'multi'){
+
+        var month_input = '' +
+            '<input class="ez_cal month validate" type="text" size="2" maxlength="2"' +
+            //' placeholder="'+ XNAT.data.todaysDate.mm +'"' +
+            ' placeholder="'+ 'MM' +'"' +
+            //' value="'+ XNAT.data.todaysDate.mm + '"' +
+            ' style="width:auto;font-family:Courier,monospace;">' +
+            '';
+        var day_input   = '' +
+            '<input class="ez_cal day validate" type="text" size="2" maxlength="2"' +
+            //' placeholder="'+ XNAT.data.todaysDate.dd +'"' +
+            ' placeholder="'+ 'DD' +'"' +
+            //' value="'+ XNAT.data.todaysDate.dd + '"' +
+            ' style="width:auto;font-family:Courier,monospace;">' +
+            '';
+        var year_input  = '' +
+            '<input class="ez_cal year validate" type="text" size="4" maxlength="4"' +
+            //' placeholder="'+ XNAT.data.todaysDate.yyyy +'"' +
+            ' placeholder="'+ 'YYYY' +'"' +
+            //' value="'+ XNAT.data.todaysDate.yyyy + '"' +
+            ' style="width:auto;font-family:Courier,monospace;">' +
+            '';
+
         if (layout === 'stacked'){
             if (format === 'iso'){
                 multi_labels = '\n' +
@@ -419,16 +420,36 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
         $new_cal.addClass('required');
     }
 
-    if (_format === 'iso'){
-        $new_cal.mask("9999-99-99",{placeholder:" "});
+    var default_value='', default_date={} ;
+    if (_opts && _opts.defaultValue) default_value = _opts.defaultValue ;
+    else if (_$e.data('default') && _$e.data('default') > '') default_value = _$e.data('default');
+
+    if (default_value > ''){
+        default_date = new SplitDate(default_value);
     }
-    else {
-        $new_cal.mask("99/99/9999",{placeholder:"_"});
+
+    if (kind === 'single'){
+        if (format === 'iso'){
+            $new_cal.mask("9999-99-99",{placeholder:" "});
+        }
+        else {
+            $new_cal.mask("99/99/9999",{placeholder:"_"});
+        }
+    }
+
+    if (typeof default_date[format] != 'undefined'){
+        if (kind === 'single'){
+            $new_cal.val(default_date[format]);
+        }
+        if (kind === 'multi'){
+            _$e.find('input.ez_cal.year').val(default_date.yyyy);
+            _$e.find('input.ez_cal.month').val(default_date.mm);
+            _$e.find('input.ez_cal.day').val(default_date.dd);
+        }
     }
 
     var cal_config = {
         close: true,
-        //maxdate: XNAT.data.todaysDate.US, // don't go past today
         navigator: true
     };
 
@@ -524,15 +545,17 @@ XNAT.app.datePicker.init = function($container,_config){
         if ($this_container.data('validate') === 'onblur'){ _validate = 'onblur' }
         if ($this_container.data('validate') === 'onsubmit'){ _validate = 'onsubmit' }
 
-        var opts = _config || {} ;
-        opts.kind = (_config && _config.kind) ? _config.kind : _kind ; // 'single' or 'multi'
-        opts.layout = (_config && _config.layout) ? _config.layout : _layout ; // 'inline' or 'stacked' - for 'multi' only
-        opts.format = (_config && _config.format) ? _config.format : _format ; // 'iso' or 'us'
-        opts.validate = (_config && _config.validate) ? _config.validate : _validate ; // validate onblur or onsubmit - false if neither
-        opts.todayButton = (_config && _config.todayButton) ? _config.todayButton : _today ; // show 'today' link/button - true or false
-        opts.future = (_config && _config.future) ? _config.future : _future ; // if future==true, show future dates
+        var opts = {} ;
+        opts.kind = _kind ; // 'single' or 'multi'
+        opts.layout = _layout ; // 'inline' or 'stacked' - for 'multi' only
+        opts.format = _format ; // 'iso' or 'us'
+        opts.validate = _validate ; // validate onblur or onsubmit - false if neither
+        opts.todayButton = _today ; // show 'today' link/button - true or false
+        opts.future = _future ; // if future==true, show future dates
 
-        XNAT.app.datePicker.createInputs($this_container, opts.kind, opts.layout, opts.format, opts);
+        var _opts = $.extend( true, {}, opts, _config ); // values passed via the _config parameter overrides all
+
+        XNAT.app.datePicker.createInputs($this_container, _opts.kind, _opts.layout, _opts.format, _opts);
 
     });
 

@@ -5,44 +5,62 @@
 
         <script>
 
-            function changePasswordExpirationType(radioEl){
-                var interval = jq('#passwordExpirationIntervalSpan');
-                var date = jq('#passwordExpirationDateSpan');
+            function makeDirty(){
                 if (window.securityManager) {
                     window.securityManager.dirtyForm();
                 }
-                if (jq(radioEl).val() == 'Interval'){
-                    interval.show();
-                    date.hide();
+            }
+
+            function changePasswordExpirationType(){
+                makeDirty();
+                // using double underscores for jQuery object vars
+                var __interval_span = jq('#passwordExpirationIntervalSpan');
+                var __date_span = jq('#passwordExpirationDateSpan');
+                if (jq('input[name="passwordExpirationType"]:checked').val() == 'Interval'){
+                    __interval_span.show();
+                    __date_span.hide();
                 } else {
-                    interval.hide();
-                    date.show();
+                    __interval_span.hide();
+                    __date_span.show();
                 }
             }
 
             function validatePasswordExpiration() {
-                if (window.securityManager) {
-                    window.securityManager.dirtyForm();
+                makeDirty();
+                // using double underscores for jQuery object vars
+                var __interval = jq('#passwordExpirationInterval');
+                var __date = jq('#passwordExpirationDate');
+                var use_interval = true;
+                var valid_date = true ;
+                var check_date ;
+                if (jq('input[name="passwordExpirationType"]:checked').val() === 'Interval'){
+                    if (!__interval.val()) {
+                        __interval.val('0');
+                    }
                 }
-                var interval = jq('#passwordExpirationInterval');
-                if (!interval.val()) {
-                    interval.val('0');
+                else {
+                    // check the value of the Expiration Date input using US format
+                    check_date = XNAT.app.checkDateInput(__date,'us');
+                    valid_date = check_date.valid ;
+                    use_interval = false ;
                 }
-                var date = jq('#passwordExpirationDate');
-                if (!date.val() || date.val() == '__/__/____' || date.val() == '  /  /    ') {
-                    // is it better to put in zeros or 01/01/1970?
-                    // answer: 01/01/1970 - then it won't freak out if using the interval
-                    date.val('01/01/1970');
+                if (use_interval && !__interval.val().match(/^\d+$/)) {
+                    xModalMessage('Note','The password expiration interval must consist only of digits.','OK',{action:function(){__interval.val('').focus()}});
+                    return false ;
                 }
-                var check_date = XNAT.app.checkDateInput(date,'us');
-                if (!interval.val().match(/^\d+$/)) {
-                    xModalMessage('Note','The password expiration interval must consist only of digits.','OK');
-                }
-                else if (!check_date.valid){
+                else if (!valid_date){
                     return false ;    
                 }
                 else {
-                    window.securityManager.saveTabSettings();
+                    if (!__date.val() || __date.val() == '__/__/____' || __date.val() == '  /  /    ') {
+                        // is it better to put in zeros or 01/01/1970?
+                        // answer: 01/01/1970 - then it won't freak out if using the interval
+                        __date.val('01/01/1970');
+                        window.securityManager.saveTabSettings();
+                    }
+                    else {
+                        window.securityManager.saveTabSettings();
+                    }
                 }
             }
 
@@ -50,17 +68,17 @@
 
         <p>
             <label for="enableCsrfToken">Enable CSRF Token?</label>
-            <input type="checkbox" id="enableCsrfToken" onchange="window.securityManager.dirtyForm();" />
+            <input type="checkbox" id="enableCsrfToken" onchange="makeDirty();" />
             <small>Should this site require the use of a token to prevent CSRF attacks on POST, PUT, and DELETEs?</small>
             <br/>
             <label for="enableCsrfEmail">Enable CSRF Email Alerts?</label>
-            <input type="checkbox" id="enableCsrfEmail" onchange="window.securityManager.dirtyForm();" />
+            <input type="checkbox" id="enableCsrfEmail" onchange="makeDirty();" />
             <small>Should this site send an email to the site admin whenever a CSRF attack is attempted?</small>
         </p>
 
         <p>
             <label for="restrictUserListAccessToAdmins" style="width: 290px;">Restrict user list access to site administrators?</label>
-            <input type="checkbox" id="restrictUserListAccessToAdmins" onchange="window.securityManager.dirtyForm();" />
+            <input type="checkbox" id="restrictUserListAccessToAdmins" onchange="makeDirty();" />
             <small>
                 Should this site restrict access to the list of system users to site administrators only? If turned on,
                 the site is more secure, but this restricts project owners from being able to administer users in their
@@ -70,7 +88,7 @@
 
         <p>
             <label for="requireSaltedPasswords" style="width: 290px;">Require passwords to be salted?</label>
-            <input type="checkbox" id="requireSaltedPasswords" onchange="window.securityManager.dirtyForm();" />
+            <input type="checkbox" id="requireSaltedPasswords" onchange="makeDirty();" />
             <small>
                 Should this site require that all stored user passwords have been salted? If turned on, the site will
                 store passwords more securely, but some users may be prompted to change their current passwords so
@@ -86,35 +104,27 @@
                         <label for="passwordExpiration" style="width:auto;white-space:nowrap;">Password Expiration</label>
                     </td>
                     <td style="white-space:nowrap;vertical-align:top;padding-right:10px;">
-                        <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeInterval" value="Interval" onchange="changePasswordExpirationType(this);" checked="checked">
+                        <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeInterval" value="Interval" onchange="changePasswordExpirationType();" checked="checked">
                         <label for="passwordExpirationTypeInterval" style="width:50px;">&nbsp;Interval</label>
                         <br/>
-                        <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeDate" value="Date" onchange="changePasswordExpirationType(this);">
+                        <input type="radio" name="passwordExpirationType" id="passwordExpirationTypeDate" value="Date" onchange="changePasswordExpirationType();">
                         <label for="passwordExpirationTypeDate" style="width:50px;">&nbsp;Date</label>
                     </td>
                     <td style="vertical-align:top;">
                         <span id="passwordExpirationIntervalSpan">
-                <input size="30" type="text" id="passwordExpirationInterval" onchange="window.securityManager.dirtyForm();"/>
+                        <input size="30" type="text" id="passwordExpirationInterval" onchange="makeDirty();"/>
                             <small>The maximum duration (in days) that a user's password will function before it is considered to have expired and must be changed. Set as 0 to disable password expiration.</small>
                         </span>
                         <span id="passwordExpirationDateSpan" style="display: none;">
-                            <span class="datepicker single us today" data-validate="onblur" data-input-id="passwordExpirationDate" data-input-name="passwordExpirationDate"></span>
+                            <span class="datepicker single us today" #*data-validate="onblur"*# data-input-id="passwordExpirationDate" data-input-name="passwordExpirationDate"></span>
                             <script type="text/javascript">
                                 jq(function(){
                                     var __datepicker = jq('#passwordExpirationDateSpan').find('.datepicker');
                                     XNAT.app.datePicker.init(__datepicker);
                                     ##insertCalendar(document.getElementById("passwordExpirationDate"), "Password Expiration Date");
                                     ##jq('#cal_passwordExpirationDate').style.verticalAlign='bottom';
-                                    jq('#passwordExpirationDateSpan').on('change focus','#passwordExpirationDate',function(){
-                                        if (window.securityManager) {
-                                            window.securityManager.dirtyForm();
-                                        }
-                                    });
-                                    jq('#passwordExpirationDateSpan').on('click','a.selector, a.today', function(){
-                                        if (window.securityManager) {
-                                            window.securityManager.dirtyForm();
-                                        }
-                                    });
+                                    jq('#passwordExpirationDateSpan').on('change focus','#passwordExpirationDate',function(){makeDirty()});
+                                    jq('#passwordExpirationDateSpan').on('click','a.selector, a.today',function(){makeDirty()});
                                 });
                             </script>
                             ##<input type="text" id="passwordExpirationDate" name="passwordExpirationDate" onchange="window.securityManager.dirtyForm();" onblur="validateExpirationDate()"/>

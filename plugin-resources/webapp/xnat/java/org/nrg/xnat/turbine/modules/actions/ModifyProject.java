@@ -59,18 +59,18 @@ public class ModifyProject extends SecureAction {
             XnatProjectdata  project = new XnatProjectdata(item);
             
             // Remove trailing and leading whitespace from all project fields.
-            BaseXnatProjectdata.trimProjectFields(project);
+            project.trimProjectFields();
 
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
             EventMetaI c=wrk.buildEvent();
 
-            List<String> conflicts = BaseXnatProjectdata.validateProjectFields(project, user);
+            List<String> conflicts = project.validateProjectFields();
             if(!conflicts.isEmpty()){
                StringBuilder conflictStr = new StringBuilder();
                for(String conflict : conflicts){
                      conflictStr.append(conflict).append("<br/>");
                }
-               BaseXnatProjectdata.displayProjectEditErrorMsg(conflictStr.toString(), data, item);
+               displayProjectEditError(conflictStr.toString(), data, item);
                return;
             }
 
@@ -93,7 +93,7 @@ public class ModifyProject extends SecureAction {
 				project.initNewProject(user,false,true,c);
 			} catch (Exception e2) {
 				TurbineUtils.SetEditItem(item,data);
-				BaseXnatProjectdata.displayProjectEditErrorMsg(e2.getMessage(), data, item);
+				displayProjectEditError(e2.getMessage(), data, item);
                 return;
 			}
             

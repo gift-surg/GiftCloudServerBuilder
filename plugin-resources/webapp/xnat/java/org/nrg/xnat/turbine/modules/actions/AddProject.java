@@ -49,7 +49,7 @@ public class AddProject extends SecureAction {
         }
         
         if(!XFT.getBooleanProperty("UI.allow-non-admin-project-creation", true) && !user.isSiteAdmin()){
-            BaseXnatProjectdata.displayProjectEditErrorMsg("Invalid permissions for this operation", data, found);
+            displayProjectEditError("Invalid permissions for this operation", data, found);
             return;
         }
         
@@ -65,7 +65,7 @@ public class AddProject extends SecureAction {
             
             // Make sure there are no trailing or leading whitespace 
             // in any of the project fields
-            BaseXnatProjectdata.trimProjectFields(project);
+            project.trimProjectFields();
 
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.getAddModifyAction("xnat:projectData", true)));
             EventMetaI c=wrk.buildEvent();
@@ -73,32 +73,31 @@ public class AddProject extends SecureAction {
             // Make sure the project doesn't already exist
             XFTItem existing=project.getItem().getCurrentDBVersion(false);
             if(existing!=null){
-               BaseXnatProjectdata.displayProjectEditErrorMsg("Project '" + project.getId() + "' already exists.", data, found);
+               displayProjectEditError("Project '" + project.getId() + "' already exists.", data, found);
                return;
             }else{
                 Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+project.getId()+"';", "COUNT", null, null);
                 if(count>0){
-                   BaseXnatProjectdata.displayProjectEditErrorMsg("Project '"+project.getId() + "' was used in a previously deleted project and cannot be reused.", data, found);
+                   displayProjectEditError("Project '"+project.getId() + "' was used in a previously deleted project and cannot be reused.", data, found);
                    return;
                 }
             }
             
-            // Validate project fields.  If there are conflicts, build a error message
-            // and display it to the user.
-            List<String> conflicts = BaseXnatProjectdata.validateProjectFields(project, user);
+            // Validate project fields.  If there are conflicts, build a error message and display it to the user.
+            List<String> conflicts = project.validateProjectFields();
             if(!conflicts.isEmpty()){
                StringBuilder conflictStr = new StringBuilder();
                for(String conflict : conflicts){
-                     conflictStr.append(conflict).append("<br/>");
+                  conflictStr.append(conflict).append("<br/>");
                }
-               BaseXnatProjectdata.displayProjectEditErrorMsg(conflictStr.toString(), data, found);
+               displayProjectEditError(conflictStr.toString(), data, found);
                return;
             }
 
             try {
 				project.initNewProject(user,false,false,c);
 			} catch (Exception e2) {
-				BaseXnatProjectdata.displayProjectEditErrorMsg(e2.getMessage(),data,found);
+				displayProjectEditError(e2.getMessage(), data, found);
                 return;
 			}
 			
@@ -112,12 +111,8 @@ public class AddProject extends SecureAction {
             
             if (vr != null)
             {
-                TurbineUtils.SetEditItem(project.getItem(),data);
                 context.put("vr",vr);
-                if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-                {
-                    data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-                }
+                displayProjectEditError(data, project.getItem());
             }else{
             	try {
             		SaveItemHelper.authorizedSave(project, TurbineUtils.getUser(data),false,false,c);
@@ -128,7 +123,7 @@ public class AddProject extends SecureAction {
             		}
             	} catch (Exception e) {
             		logger.error("Error Storing " + found.getXSIType(),e);
-            		BaseXnatProjectdata.displayProjectEditErrorMsg("Error Saving item.",data,found);
+            		displayProjectEditError("Error Saving item.", data, found);
                     return;
             	}
                 

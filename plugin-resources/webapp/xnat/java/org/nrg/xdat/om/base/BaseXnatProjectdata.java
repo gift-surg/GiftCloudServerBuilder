@@ -14,15 +14,14 @@ import java.io.File;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
-import org.apache.turbine.util.RunData;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -73,7 +72,6 @@ import org.nrg.xdat.security.UserGroupManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
 import org.nrg.xdat.security.XdatStoredSearch;
-import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
@@ -109,8 +107,6 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author XDAT
@@ -1807,17 +1803,16 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
 			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
-
+		
 		// Validate project fields.  If there are conflicts, throw a new exception
-		BaseXnatProjectdata.trimProjectFields(this);
-		List<String> conflicts = BaseXnatProjectdata.validateProjectFields(this, new XDATUser(this.getUser().getUsername()));
+		this.trimProjectFields();
+		List<String> conflicts = this.validateProjectFields();
 		if(!conflicts.isEmpty()){
 			StringBuilder conflictStr = new StringBuilder();
 			for(String conflict : conflicts){
 				conflictStr.append(conflict).append("\n");
 			}
 			throw new IllegalArgumentException(conflictStr.toString());
-			
 		}
 		
 		final String expectedPath=getExpectedCurrentDirectory().getAbsolutePath().replace('\\', '/');
@@ -1850,7 +1845,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
         	EventMetaI ci = wrk.buildEvent();
         	try {
         		XDATUser u=(XDATUser)this.getUser();
-
+        		
 			    XdatUsergroup group=initGroup(getId() + "_" + OWNER_GROUP, "Owners", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, getSecuredElements());
 				
 				wrk.setDataType(group.getXSIType());
@@ -2027,43 +2022,38 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * name and alias fields.
 	 * @param XnatProjectdata project - The project we are operating on
 	 */
-	public static void trimProjectFields(BaseXnatProjectdata project) throws Exception{
+	public void trimProjectFields() throws Exception{
 		String trim; //Temporary variable to store trimmed variables.
 		
-		// Sanity check. 
-		if(null == project){
-			throw new Exception("Project is null. Unable to trim project fields.");
-		}
-		
 		//Trim excess white space from the project id
-		String id = project.getId();
-		if(id != null){
+		String id = this.getId();
+		if(!StringUtils.IsEmpty(id)){
 			trim = id.trim();
 			if(!trim.equals(id)){
-			project.setId(trim);
+			this.setId(trim);
 			}
 		}
 		
 		// Trim excess white space from the secondary id
-		String secondaryId = project.getSecondaryId();
-		if(secondaryId != null){
+		String secondaryId = this.getSecondaryId();
+		if(!StringUtils.IsEmpty(secondaryId)){
 			trim = secondaryId.trim();
 			if(!trim.equals(secondaryId)){
-				project.setSecondaryId(trim);
+				this.setSecondaryId(trim);
 			}
 		}
 		
 		// Trim excess white space from the project name
-		String name = project.getName();
-		if(null != name){
+		String name = this.getName();
+		if(!StringUtils.IsEmpty(name)){
 			trim = name.trim();
 			if(!trim.equals(name)){
-			project.setName(trim);
+			this.setName(trim);
 			}
 		}
 		
 		// Trim excess white space from each alias
-		for(XnatProjectdataAliasI a : project.getAliases_alias()){
+		for(XnatProjectdataAliasI a : this.getAliases_alias()){
 			String newA = a.getAlias().trim();
 			if(!newA.equals(a)){
 				a.setAlias(newA);
@@ -2082,22 +2072,25 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * @return List<String> - A list of reasons the project failed to validate.
 	 *                        If the list is empty, the project passed validation.
 	 */
-	public static List<String> validateProjectFields(BaseXnatProjectdata project, XDATUser u){
+	public List<String> validateProjectFields() throws Exception{
 		
 		// List of reasons the project failed to validate.
 		List<String> conflicts = new ArrayList<String>();
-		List<String> aliases = getProjectAliasStrings(project);
-
+		List<String> aliases = getProjectAliasStrings();
+		
+		// Retrieve the username
+		String userName = this.getUser().getUsername();
+		
 		// Make sure the Id isn't null or empty
-		String id = project.getId();
-		if(null == id || StringUtils.IsEmpty(id)){
+		String id = this.getId();
+		if(StringUtils.IsEmpty(id)){
 			 // Return conflicts here because we can't validate the other fields without a project Id.
 			conflicts.add("Missing required field: Project Id.");
 			return conflicts;
 		}
 		
 		// Validate the Project Id.
-		if(!validateProjectId(id,u)){
+		if(!validateProjectId(id,userName)){
 			conflicts.add("Invalid Id: '" + id + "' is already being used by another project.");
 		}
 		
@@ -2107,10 +2100,10 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		}
 		
 		// Validate the Running Title (secondary Id).
-		String secondaryId = project.getSecondaryId();
-		if(null != secondaryId){
+		String secondaryId = this.getSecondaryId();
+		if(!StringUtils.IsEmpty(secondaryId)){
 			// Validate the Running Title
-			if(!validateElement(secondaryId, id, u)){
+			if(!validateElement(secondaryId, id, userName)){
 				conflicts.add("Invalid Running Title: '" + secondaryId + "' is already being used by another project.");
 			}
 			
@@ -2121,10 +2114,10 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		}
 		
 		// Validate the project title (name).
-		String name = project.getName();
-		if(null != name){
+		String name = this.getName();
+		if(!StringUtils.IsEmpty(name)){
 			// Validate the Title
-			if(!validateElement(name, id, u)){
+			if(!validateElement(name, id, userName)){
 				conflicts.add("Invalid Title: '" + name + "' is already being used by another project.");
 			}
 			
@@ -2135,58 +2128,68 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		}
 		
 		// Validate all the aliases
-		conflicts.addAll(validateAliases(aliases, id, u));
+		if(null != aliases && !aliases.isEmpty()){
+			conflicts.addAll(validateAliases(aliases, id, userName));
+		}
 		
 		return conflicts;
 	}
 	
-	// Validates a list of project aliases. 
-	private static List<String> validateAliases(List<String> aliases, String projectId, XDATUser user){
+	/**
+	 * Takes a list of aliases and makes sure they don't already exist as an alias or project Id on another project
+	 * @param aliases - List of aliases we are validating
+	 * @param projectId - exclude ids, secondary ids, and names from this project.
+	 * @param userName - the user executing the query
+	 * @return List of reasons validation failed ... returns empty list if validation passed.
+	 * @throws Exception
+	 */
+	private List<String> validateAliases(List<String> aliases, String projectId, String userName) throws Exception{
 		List<String> conflicts = new ArrayList<String>();
-		List<String> existingAliases, existingIds;
+
+		// Do any of the aliases match existing aliases in the database?
+		List<String> matches = getMatchingAliases(aliases, projectId, userName).convertColumnToArrayList("alias");
 		
-		try{
-			// Get a list of existing project Ids and existing aliases so we don't have to run the query multiple times.
-			existingIds = getExistingProjectIds(user);
-			existingAliases = getExistingAliases(projectId, user);
-		}catch(Exception e){
-			logger.error("Failed to retrieve a list of existing aliases and project Ids. ", e);
-			conflicts.add("Unable to Validate Aliases. Please contact your system administrator.");
-			return conflicts;
-		}
+		// Do any of the aliases match existing project Ids in the database?
+		matches.addAll(getMatchingIds(aliases, userName).convertColumnToArrayList("id"));
 		
-		for(String alias : aliases){
-			// Make sure the alias isn't already being used as another project's Id or alias.
-			if(existingAliases.contains(alias) || existingIds.contains(alias)){
-				conflicts.add("Invalid Alias: '" + alias + "' is already being used by another project.");
+		if(null != matches && !matches.isEmpty()){
+			for(Object match : matches){
+				conflicts.add("Invalid Alias: '" + match + "' is already being used by another project.");
 			}
 		}
 		return conflicts;
 	}
 
-	// Checks the element against existing ids, secondary Ids and project names
-	// projectId is the id of the project we are validating, we exclude this project from the database results.
-	private static boolean validateElement(String e, String projectId, XDATUser u){
-		return runValidationQuery("SELECT id, secondary_id, name FROM xnat_projectdata WHERE LOWER(id) != '"+ projectId.toLowerCase() + "' AND (LOWER(secondary_id) = '" + e.toLowerCase() + "' OR LOWER(name) = '" + e.toLowerCase() + "' OR LOWER(id) = '" + e.toLowerCase() + "');", u);
+	/**
+	 * Checks if a string already exists as a id, secondary Id or a project name.
+	 * @param e - the string we are validating.
+	 * @param projectId - exclude ids, secondary ids, and names from this project.
+	 * @param userName - the user executing the query
+	 * @return boolean - true if the element passes validation.
+	 * @throws Exception
+	 */
+	private boolean validateElement(String e, String projectId, String userName) throws Exception{
+		return !runValidationQuery("SELECT id, secondary_id, name FROM xnat_projectdata WHERE LOWER(id) != '"+ projectId.toLowerCase() + "' AND (LOWER(secondary_id) = '" + e.toLowerCase() + "' OR LOWER(name) = '" + e.toLowerCase() + "' OR LOWER(id) = '" + e.toLowerCase() + "');", userName).hasMoreRows();
 	}
 	
-	// Checks the project Id against existing Ids, secondary Ids and project names.
-	// Checks the history table for the Id to see if a project with the Id once existed but has since been deleted.
-	// Checks existing aliases to see if the project Id is already an alias on another project.
-	private static boolean validateProjectId(String id, XDATUser u){
-		List<String> aliases = null;
-		try{
-			aliases = getExistingAliases(id, u);
-		}catch(Exception e){
-			logger.error("Unable determine if project Id is already an alias on an existing project.", new Exception("Failed to retrieve a list of project aliases.",e));
-		}
-		// Return false if aliases is null because we don't know if the id is already an alias.
-		return (null == aliases) ? false : validateElement(id,id,u) && !aliases.contains(id);
+	/**
+	 * Checks the project Id string already exists as a secondary Id, project name or an alias.
+	 * This does not check the id against existing id's. This is done outside the validation method. See AddProject.java line 76.
+	 * @param id - the project Id we are validating
+	 * @param userName - the user executing the query
+	 * @return boolean - true if project id passes validation
+	 * @throws Exception
+	 */
+	private boolean validateProjectId(String id, String userName) throws Exception{
+		return (0 == getMatchingAliases(id,id,userName).size()) && validateElement(id,id,userName);
 	}
 	
-	// Returns a list of aliases in string form
-	private static List<String> getProjectAliasStrings(BaseXnatProjectdata project){
-		List<XnatProjectdataAliasI> aliases = project.getAliases_alias();
+	/**
+	 * Function gets the lower case string form of the aliases of this project.
+	 * @return - List of Alias Strings
+	 */
+	private List<String> getProjectAliasStrings(){
+		List<XnatProjectdataAliasI> aliases = this.getAliases_alias();
 		List<String> retList = new ArrayList<String>();
 		for(XnatProjectdataAliasI a : aliases){
 			retList.add(a.getAlias().toLowerCase());
@@ -2194,40 +2197,79 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		return retList;
 	}
 	
-	// Gets a list of all existing project aliases from the database except the ones from the project with project Id = 'projectId'
-	private static List<String> getExistingAliases(String projectId, XDATUser u) throws Exception{
-		XFTTable table = new PoolDBUtils().executeSelectQuery("SELECT LOWER(alias) as  alias FROM xnat_projectdata_alias WHERE LOWER(aliases_alias_xnat_projectdata_id) != '" + projectId.toLowerCase() + "';", u.getDBName(), u.getLogin());
-		table.resetRowCursor();
-		return table.convertColumnToArrayList("alias");
+	/**
+	 * Takes a single element and finds all project aliases that match it.
+	 * @param element - the element we are looking for
+	 * @param projectId - exclude aliases from the project with this Id
+	 * @param userName - the user who is executing the query
+	 * @return XFTTable containing IDs that match
+	 * @throws Exception
+	 */
+	private XFTTable getMatchingAliases(String e, String projectId, String userName) throws Exception {
+		return getMatchingAliases(Arrays.asList(e.toLowerCase()), projectId, userName);
 	}
 	
-	// Gets a list of existing project Ids from the database
-	private static List<String> getExistingProjectIds(XDATUser u) throws Exception{
-		XFTTable table = new PoolDBUtils().executeSelectQuery("SELECT LOWER(id) as id FROM xnat_projectdata;", u.getDBName(), u.getLogin());
-		table.resetRowCursor();
-		return table.convertColumnToArrayList("id");
+	/**
+	 * Takes a list of elements and finds all project aliases that match those elements.
+	 * @param elements - elements we are looking for
+	 * @param projectId - exclude aliases from the project with this Id
+	 * @param userName - the user who is executing the query
+	 * @return XFTTable containing IDs that match
+	 * @throws Exception
+	 */
+	private XFTTable getMatchingAliases(List<String> elements, String projectId, String userName) throws Exception{
+		StringBuilder q = new StringBuilder();
+		q.append("SELECT LOWER(alias) as alias FROM xnat_projectdata_alias WHERE LOWER(aliases_alias_xnat_projectdata_id) != '")
+		 .append(projectId.toLowerCase())
+		 .append("' AND alias IN (")
+		 .append(listToCommaDelimitedString(elements)).append(");");
+
+		return runValidationQuery(q.toString(), userName);
 	}
 	
-	// Executes a SQL query. 
-	// Returns true if the table contains any values.
-	private static boolean runValidationQuery(String q, XDATUser u){
-		try{
-			XFTTable table = new PoolDBUtils().executeSelectQuery(q, u.getDBName(), u.getLogin());
-			table.resetRowCursor();
-			return !table.hasMoreRows();
-		}catch(Exception e){
-			logger.error("Failed to execute query: " + q, new Exception());
-			return false;
+	/**
+	 * Takes a list of elements and finds all project id's within the database that match those elements.
+	 * @param elements - elements we are looking for
+	 * @param userName - the user who is executing the query
+	 * @return XFTTable containing IDs that match
+	 * @throws Exception
+	 */
+	private XFTTable getMatchingIds(List<String> elements, String userName) throws Exception{
+		StringBuilder q = new StringBuilder();
+		q.append("SELECT LOWER(id) as id FROM xnat_projectdata WHERE id IN (")
+		 .append(listToCommaDelimitedString(elements)).append(");");
+		
+		return runValidationQuery(q.toString(), userName);
+	}
+	
+
+	/**
+	 *  Takes a list of strings and puts them into a single string ready to be inserted into a 'WHERE IN ( )' clause of a query.
+	 *  e.g. "'element_1', 'element_2', 'element_3' ... 'element_n'"
+	 * @param elements - elements to be inserted into the string
+	 * @return a comma delimited string
+	 */
+	private String listToCommaDelimitedString(List<String> elements){
+		StringBuilder q = new StringBuilder().append("'");
+		for(String e : elements){
+			q.append(e);
+			if(elements.get(elements.size()-1) != e){
+				q.append("','");
+			}
 		}
+		return q.append("'").toString();
 	}
-	
-	// Displays an error to the user.
-	public static void displayProjectEditErrorMsg(String error, RunData data, XFTItem item){
-		data.addMessage(error);
-		TurbineUtils.SetEditItem(item,data);
-		if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)) !=null)
-		{
-			data.setScreenTemplate(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("edit_screen",data)));
-		}
+
+	/**
+	 * Function executes a SQL query. 
+	 * @param q - the query to be executed
+	 * @param username - the user executing the query
+	 * @return XFTTable - query results
+	 * @throws Exception - execution failed
+	 */
+	private XFTTable runValidationQuery(String q, String username) throws Exception{
+		XFTTable table = new PoolDBUtils().executeSelectQuery(q, null, username);
+		table.resetRowCursor();
+		return table;
 	}
 }

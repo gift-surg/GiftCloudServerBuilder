@@ -697,7 +697,7 @@ public class PrearcUtils {
 		}
 	}
 	
-	private static Object syncLock=new Object();
+	private final static Object syncLock=new Object();
 	
 	/**
 	 * This method will attempt to create a lock for the referenced file, and return a PrearcFileLock for managing the lock.
@@ -803,11 +803,21 @@ public class PrearcUtils {
 		
 		/**
 		 * releases the lock on the file by closing the associated stream, and deleting the shadow file.
+		 * amended to specifically release the file lock, in case closing the stream was inadequate.
 		 */
 		public void release(){
 			try {
-				stream.close();
-			} catch (IOException e) {
+				if(lock!=null){
+					try {
+						lock.release();
+					} catch (Exception e) {
+						// ignore
+					}
+				}
+				if(stream!=null){
+					stream.close();
+				}
+			} catch (Exception e) {
 				//ignore
 			}
 						

@@ -22,10 +22,10 @@ var allUsersGroupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
     var user_access = oRecord.getData("displayname");
     var user_login = oRecord.getData("login");
     var access_select = "<select onchange=\"window.userManager.adjustInviteLists('" + user_login + "',this.value)\">";
-    access_select += "<option value=\"\"" + ((!user_access)? " selected" : "") + "></option>";
-    access_select += "<option value=\"owner\"" + ((user_access === "Owners")? " selected" : "") + ">Owners</option>";
-    access_select += "<option value=\"member\"" + ((user_access === "Members")? " selected" : "") + ">Members</option>";
-    access_select += "<option value=\"collaborator\"" + ((user_access === "Collaborators")? " selected" : "") + ">Collaborators</option>";
+    access_select += "<option value=\"\" selected></option>";
+    access_select += "<option value=\"owner\">Owners</option>";
+    access_select += "<option value=\"member\">Members</option>";
+    access_select += "<option value=\"collaborator\">Collaborators</option>";
     access_select += "</select>";
     elCell.innerHTML=access_select;
 };
@@ -415,6 +415,8 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
                 selected_collaborators=new Array();
             }
             this.hide();
+            var popup = window.userManager.allUsersPopup;
+            popup.allUsersDataTable = new YAHOO.widget.DataTable("all_users_table", allUserColumnDefs,popup.alluserDataSource,{scrollable:true,height:"300px",width:"500px"});
 		};
 		var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
 		                  { text:"Cancel", handler:handleCancel } ];

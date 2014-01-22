@@ -55,52 +55,43 @@ public class ExptAssessmentResource extends ItemResource {
 	public ExptAssessmentResource(Context context, Request request, Response response) {
 		super(context, request, response);
 
-			String pID= (String)getParameter(request,"PROJECT_ID");
-			if(pID!=null){
-				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
-			}
+		String pID= (String)getParameter(request,"PROJECT_ID");
+		if(pID!=null){
+			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
+		}
 
-			String assessedID= (String)getParameter(request,"ASSESSED_ID");
-			if(assessedID!=null){
-				if(assesed==null&& assessedID!=null){
-				assesed = XnatExperimentdata.getXnatExperimentdatasById(
-						assessedID, user, false);
-				if (assesed != null
-						&& (proj != null && !assesed.hasProject(proj.getId()))) {
+		String assessedID= (String)getParameter(request,"ASSESSED_ID");
+		if(assessedID!=null){
+			if(assesed==null && assessedID!=null){
+				assesed = XnatExperimentdata.getXnatExperimentdatasById(assessedID, user, false);
+				if (assesed != null && (proj != null && !assesed.hasProject(proj.getId()))) {
 					assesed = null;
 				}
 
-					if(assesed==null && this.proj!=null){
-					assesed = XnatExperimentdata.GetExptByProjectIdentifier(
-							this.proj.getId(), assessedID, user, false);
-					}
+				if(assesed==null && this.proj!=null){
+					assesed = XnatExperimentdata.GetExptByProjectIdentifier(this.proj.getId(), assessedID, user, false);
 				}
+			}
 
-				exptID= (String)getParameter(request,"EXPT_ID");
-				if(exptID!=null){
-				existing = (XnatImageassessordata) XnatExperimentdata
-						.getXnatExperimentdatasById(exptID, user, false);
-				if (existing != null
-						&& (proj != null && !existing.hasProject(proj.getId()))) {
+			exptID= (String)getParameter(request,"EXPT_ID");
+			if(exptID!=null){
+				existing = (XnatImageassessordata) XnatExperimentdata.getXnatExperimentdatasById(exptID, user, false);
+				if (existing != null && (proj != null && !existing.hasProject(proj.getId()))) {
 					existing = null;
 				}
 
-				if (existing == null) {
-					existing = (XnatImageassessordata) XnatExperimentdata
-							.GetExptByProjectIdentifier(proj.getId(), exptID,
-									user, false);
+				if (existing == null && proj != null) {
+					existing = (XnatImageassessordata) XnatExperimentdata.GetExptByProjectIdentifier(proj.getId(), exptID,user, false);
 				}
 
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
 		}else{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-					"Unable to find assessed experiment '" + TurbineUtils.escapeParam(assessedID) + "'");
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find assessed experiment '" + TurbineUtils.escapeParam(assessedID) + "'");
 		}
 
-
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA,false));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.DERIVED_DATA,false));
 	}
 
 

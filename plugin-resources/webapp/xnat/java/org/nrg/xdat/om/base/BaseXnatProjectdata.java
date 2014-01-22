@@ -2147,10 +2147,10 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		List<String> conflicts = new ArrayList<String>();
 
 		// Do any of the aliases match existing aliases in the database?
-		List<String> matches = getMatchingAliases(aliases, projectId, userName).convertColumnToArrayList("alias");
+		List<String> matches = getMatchingAliases(aliases, projectId, userName);
 		
 		// Do any of the aliases match existing project Ids in the database?
-		matches.addAll(getMatchingIds(aliases, userName).convertColumnToArrayList("id"));
+		matches.addAll(getMatchingIds(aliases, userName));
 		
 		if(null != matches && !matches.isEmpty()){
 			for(Object match : matches){
@@ -2181,7 +2181,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * @throws Exception
 	 */
 	private boolean validateProjectId(String id, String userName) throws Exception{
-		return (0 == getMatchingAliases(id,id,userName).size()) && validateElement(id,id,userName);
+		return (getMatchingAliases(id,id,userName).isEmpty() && validateElement(id,id,userName));
 	}
 	
 	/**
@@ -2205,7 +2205,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * @return XFTTable containing IDs that match
 	 * @throws Exception
 	 */
-	private XFTTable getMatchingAliases(String e, String projectId, String userName) throws Exception {
+	private List<String> getMatchingAliases(String e, String projectId, String userName) throws Exception {
 		return getMatchingAliases(Arrays.asList(e.toLowerCase()), projectId, userName);
 	}
 	
@@ -2217,14 +2217,14 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * @return XFTTable containing IDs that match
 	 * @throws Exception
 	 */
-	private XFTTable getMatchingAliases(List<String> elements, String projectId, String userName) throws Exception{
+	private List<String> getMatchingAliases(List<String> elements, String projectId, String userName) throws Exception{
 		StringBuilder q = new StringBuilder();
 		q.append("SELECT LOWER(alias) as alias FROM xnat_projectdata_alias WHERE LOWER(aliases_alias_xnat_projectdata_id) != '")
 		 .append(projectId.toLowerCase())
 		 .append("' AND alias IN (")
 		 .append(listToCommaDelimitedString(elements)).append(");");
 
-		return runValidationQuery(q.toString(), userName);
+		return runValidationQuery(q.toString(), userName).convertColumnToArrayList("alias");
 	}
 	
 	/**
@@ -2234,12 +2234,12 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * @return XFTTable containing IDs that match
 	 * @throws Exception
 	 */
-	private XFTTable getMatchingIds(List<String> elements, String userName) throws Exception{
+	private List<String> getMatchingIds(List<String> elements, String userName) throws Exception{
 		StringBuilder q = new StringBuilder();
 		q.append("SELECT LOWER(id) as id FROM xnat_projectdata WHERE id IN (")
 		 .append(listToCommaDelimitedString(elements)).append(");");
 		
-		return runValidationQuery(q.toString(), userName);
+		return runValidationQuery(q.toString(), userName).convertColumnToArrayList("id");
 	}
 	
 

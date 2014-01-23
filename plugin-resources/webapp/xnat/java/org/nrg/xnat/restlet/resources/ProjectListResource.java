@@ -10,7 +10,6 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.XdatStoredSearch;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -70,7 +69,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 	@Override
 	public void handlePost() {
-		XFTItem item = null;
+		XFTItem item;
 		try {
 			item=this.loadItem("xnat:projectData",true);
 
@@ -109,8 +108,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 						this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
-						return;
-					}
+                    }
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
 				}
@@ -147,7 +145,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 	@Override
 	public Representation getRepresentation(Variant variant) {	
-		DisplaySearch ds = null;
+		DisplaySearch ds;
 		Representation rep1=super.getRepresentation(variant);
 		if(rep1!=null)return rep1;
 		
@@ -251,7 +249,6 @@ public class ProjectListResource extends QueryOrganizerResource {
 						if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
 							CriteriaCollection cc = new CriteriaCollection("OR");
 							DisplayCriteria dc = new DisplayCriteria();
-							dc = new DisplayCriteria();
 							dc.setSearchFieldByDisplayField("xnat:projectData","ID");
 							dc.setComparisonType(" IS NOT ");
 							dc.setValue(" NULL ",false);
@@ -259,9 +256,6 @@ public class ProjectListResource extends QueryOrganizerResource {
 							cc.add(dc);
 							orCC.addCriteria(cc);
 						}			
-					}
-					else {
-						
 					}
 				}
 								
@@ -362,23 +356,15 @@ public class ProjectListResource extends QueryOrganizerResource {
 				
 				
 				ds.setSortBy("SECONDARY_ID");
-				
-				if(this.requested_format!=null && requested_format.equals("search_xml"))
-				{
-					
-				}else
-				{
-					table=(XFTTable)ds.execute(user.getLogin());
-				}
-			} catch (IllegalAccessException e) {
+
+                if (this.requested_format == null || !requested_format.equals("search_xml")) {
+                    table=(XFTTable)ds.execute(user.getLogin());
+                }
+            } catch (IllegalAccessException e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;
-			}  catch (java.lang.IllegalAccessException e) {
-				logger.error("",e);
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-				return null;
-			}catch (Exception e) {
+			} catch (Exception e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
@@ -434,10 +420,6 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				table = formatHeaders(table, qo, re+"/ID","/data/projects/");
 			} catch (IllegalAccessException e) {
-				logger.error("",e);
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-				return null;
-			}  catch (java.lang.IllegalAccessException e) {
 				logger.error("",e);
 				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;

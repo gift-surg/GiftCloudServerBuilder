@@ -55,7 +55,7 @@ function fullConfigHandler() {
         , 'archivePath', 'checksums', 'prearchivePath', 'cachePath', 'ftpPath', 'buildPath', 'pipelinePath'
         , 'requireLogin', 'enableNewRegistrations', 'emailVerification'
         , 'error', 'issue', 'newUser', 'update', 'emailAllowNonuserSubscribers'
-        , 'anonScript', 'data.anonymize'
+        , 'anonScript', 'anonEnabled'
         , 'applet'
         , 'dcmPort', 'dcmAe', 'enableDicomReceiver'
     ]);

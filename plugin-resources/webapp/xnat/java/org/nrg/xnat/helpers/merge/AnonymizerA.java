@@ -87,14 +87,7 @@ public abstract class AnonymizerA implements Callable<java.lang.Void> {
 	abstract List<File> getFilesToAnonymize() throws IOException;
 	
 	public java.lang.Void call() throws Exception {
-        try {
-            if(XDAT.getSiteConfiguration().containsKey("data.anonymize") && !(BooleanUtils.toBoolean(XDAT.getSiteConfiguration().getProperty("data.anonymize")))){
-			return null;
-		}
-        } catch (ConfigServiceException exception) {
-            throw new Exception("An error occurred trying to retrieve the data.anonymize configuration setting.", exception);
-        }
-		if (this.getScript() != null && this.getScript().getStatus().equals(Configuration.ENABLED_STRING)) {
+		if (this.getScript() != null && this.isEnabled()) {
 			List<File> fs = this.getFilesToAnonymize();
 			for (File f : fs) {
 				this.anonymize(f);

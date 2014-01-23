@@ -155,7 +155,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
         settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
-        settings.put("data.anonymize", XDAT.getConfigService().getStatus("anon", "script").equals(Configuration.ENABLED_STRING));
+        settings.put("anonEnabled", XDAT.getConfigService().getStatus("anon", "script").equals(Configuration.ENABLED_STRING));
         settings.put("appletScript", XDAT.getConfigService().getConfigContents("applet", "settings"));
         settings.put("restMockCallMap", getFormattedRestMockCallMap());
         settings.putAll(getSeriesImportFilterAsMap());
@@ -478,8 +478,8 @@ public class SettingsRestlet extends SecureResource {
             }
             ArcSpecManager.save(_arcSpec, user, newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, "Modified archive specification"));
         }
-        if (map.containsKey("data.anonymize")) {
-            boolean anonymize = map.get("data.anonymize").equals("true");
+        if (map.containsKey("anonEnabled")) {
+            boolean anonymize = map.get("anonEnabled").equals("true");
             boolean anonScriptCurrentlyEnabled = XDAT.getConfigService().getConfig("anon", "script").isEnabled();
             if (anonymize && !anonScriptCurrentlyEnabled) {
                 try {

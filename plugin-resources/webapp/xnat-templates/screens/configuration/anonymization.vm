@@ -27,12 +27,12 @@
 
 <script type="text/javascript">
 
-    var anonScript = $('#anonScript');
-    var anonEnabled = $('#anonEnabled');
+    var anonScript = jq('#anonScript');
+    var anonEnabled = jq('#anonEnabled');
 
     function toggleControlsOnAnonEnabled() {
         var enabled = anonEnabled.is(':checked');
-        anonScript.attr('disabled', !enabled);
+        anonScript.prop('disabled', !enabled);
     }
 
     function dirty() {

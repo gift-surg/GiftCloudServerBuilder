@@ -43,14 +43,14 @@
 
 <script type="text/javascript">
 
-    var filterList = $('#seriesImportFilterList');
-    var filterMode = $('#seriesImportFilterMode');
-    var filterEnabled = $('#seriesImportFilterEnabled');
+    var filterList = jq('#seriesImportFilterList');
+    var filterMode = jq('#seriesImportFilterMode');
+    var filterEnabled = jq('#seriesImportFilterEnabled');
 
-    function toggleControlsOnEnabled() {
+    function toggleControlsOnFilterEnabled() {
         var enabled = filterEnabled.is(':checked');
-        filterList.attr('disabled', !enabled);
-        filterMode.attr('disabled', !enabled);
+        filterList.prop('disabled', !enabled);
+        filterMode.prop('disabled', !enabled);
     }
 
     function dirty() {
@@ -59,7 +59,7 @@
         if (window.seriesImportFilterManager && !window.seriesImportFilterManager.wasDirty()) {
             window.seriesImportFilterManager.dirtyForm();
         }
-        toggleControlsOnEnabled();
+        toggleControlsOnFilterEnabled();
     }
 
     filterList.bind('input propertychange', dirty);
@@ -71,7 +71,7 @@
             if(window.seriesImportFilterManager==undefined) {
                 window.seriesImportFilterManager = new SettingsTabManager('seriesImportFilter_mgmt_div', 'seriesImportFilter');
             }
-            toggleControlsOnEnabled();
+            toggleControlsOnFilterEnabled();
         }
     }
 

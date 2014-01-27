@@ -215,20 +215,15 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
     };
 
     this.setFormDisabled = function(value) {
-        var inputs = this.settings_tab_mgmt_div.getElementsByTagName("input");
-        for ( var inputCounter in inputs) {
-            inputs[inputCounter].disabled = value;
-        }
 
-        var selects = this.settings_tab_mgmt_div.getElementsByTagName("select");
-        for ( var selectsCounter in selects) {
-            selects[selectsCounter].disabled = value;
-        }
+        var $settings_div = $(this.settings_tab_mgmt_div);
+        $settings_div.find(':input').prop('disabled',value);
+        // the ':input' selector ^ grabs all input, textarea, select, and button elements
+        // http://api.jquery.com/input-selector/
 
-        var textareas = this.settings_tab_mgmt_div.getElementsByTagName("textarea");
-        for (var textareasCounter in textareas) {
-            textareas[textareasCounter].disabled = value;
-        }
+        window.toggleControlsOnAnonEnabled();
+        window.toggleControlsOnFilterEnabled();
+
     };
 
     this.resetForm = function() {

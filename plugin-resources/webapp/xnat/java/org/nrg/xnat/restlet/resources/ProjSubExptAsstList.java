@@ -292,7 +292,7 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 	@Override
 	public Representation getRepresentation(Variant variant) {	
 		XFTTable table = null;
-		if(proj!=null && assessed!=null){
+		if(assessed!=null){
 			Representation rep=super.getRepresentation(variant);
 			if(rep!=null)return rep;
 			

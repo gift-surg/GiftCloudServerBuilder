@@ -58,6 +58,11 @@ public class ExptAssessmentResource extends ItemResource {
 		String pID= (String)getParameter(request,"PROJECT_ID");
 		if(pID!=null){
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
+			
+			if(proj==null){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				return;
+			}
 		}
 
 		String assessedID= (String)getParameter(request,"ASSESSED_ID");
@@ -360,13 +365,18 @@ public class ExptAssessmentResource extends ItemResource {
 			return;
 		}
 
-		XnatProjectdata newProject=null;
+		//if we attempt to delete an assessment from a shared project, the assessment shouldn't be deleted (just unshared)
+		//if its the primary project, it should b deleted
+		//REST/projects/SHARED/.../experiments/ID should unshare
+		//REST/projects/PRIMARY/.../experiments/ID should delete
+		XnatProjectdata deleteFromProject=null;
 
 		if(filepath!=null && !filepath.equals("")){
 			if(filepath.startsWith("projects/")){
+				//check if a specific project is referenced
 				String newProjectS= filepath.substring(9);
-				newProject=XnatProjectdata.getXnatProjectdatasById(newProjectS, user, false);
-				if(newProject==null){
+				deleteFromProject=XnatProjectdata.getXnatProjectdatasById(newProjectS, user, false);
+				if(deleteFromProject==null){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify project: " + newProjectS);
 					return;
 				}
@@ -374,8 +384,11 @@ public class ExptAssessmentResource extends ItemResource {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 				return;
 			}
+		}else if(proj==null){
+			//if no project is referenced... assume its the default one (/REST/experiments/ID)
+			deleteFromProject=assessor.getPrimaryProject(false);
 		}else if(!assessor.getProject().equals(proj.getId())){
-			newProject=proj;
+			deleteFromProject=proj;
 		}
 
 		
@@ -385,7 +398,7 @@ public class ExptAssessmentResource extends ItemResource {
 			EventMetaI c=wrk.buildEvent();
 			
 			try {
-				String msg=assessor.delete((newProject!=null)?newProject:proj, user, this.isQueryVariableTrue("removeFiles"),c);
+				String msg=assessor.delete((deleteFromProject!=null)?deleteFromProject:proj, user, this.isQueryVariableTrue("removeFiles"),c);
 				if(msg!=null){
 					WorkflowUtils.fail(wrk, c);
 					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,msg);

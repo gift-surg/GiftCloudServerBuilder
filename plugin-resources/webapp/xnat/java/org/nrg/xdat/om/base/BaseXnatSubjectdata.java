@@ -815,11 +815,14 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 	    while (expts.hasNext())
 	    {
             XnatSubjectassessordata expt = (XnatSubjectassessordata)expts.next();
-	        if (expt.getXSIType().equalsIgnoreCase(type))
-	        {
-	            al.add(expt);
-	        }
-	    }
+			try {
+				if (expt.getItem().instanceOf(type)) {
+					al.add(expt);
+				}
+			} catch (ElementNotFoundException e) {
+				logger.error("",e);
+			}
+		}
 
 	    return al;
 	}
@@ -1588,4 +1591,9 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
 
         return path;
     }
+    
+    public void anonymizeSubject(){
+    	
+    }
+   
 }

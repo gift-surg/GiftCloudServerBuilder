@@ -10,16 +10,23 @@
  */
 package org.nrg.xdat.om.base;
 
+import org.nrg.dcm.CopyOp;
+import org.nrg.transaction.OperationI;
+import org.nrg.transaction.TransactionException;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.auto.AutoXnatSubjectassessordata;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.DateUtils;
+import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author XDAT
@@ -106,6 +113,19 @@ public class BaseXnatSubjectassessordata extends AutoXnatSubjectassessordata {
 
 		if(this.getSubjectData()==null){
 			throw new Exception("Unable to identify subject for:" + this.getSubjectId());
+		}
+	}
+
+	public void applyAnonymizationScript(final ProjectAnonymizer anonymizer) throws TransactionException{
+		if(this instanceof XnatImagesessiondata){
+			final BaseXnatSubjectassessordata expt = this;
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"), "anon_backup");
+			new CopyOp(new OperationI<Map<String,File>>() {
+				@Override
+				public void run(Map<String, File> a) throws Throwable {
+					anonymizer.call();
+				}
+			}, tmpDir,expt.getSessionDir()).run();
 		}
 	}
 }

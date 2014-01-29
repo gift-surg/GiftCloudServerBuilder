@@ -31,6 +31,8 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 	final String label;
 	final XnatImagesessiondataI s;
 	final String path;
+	final String subjectLabel;
+	
 	/**
 	 * 
 	 * @param s The session object.
@@ -43,6 +45,7 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 		this.sessionPath = sessionPath;
 		this.label = s.getLabel();
 		this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, projectId);
+		this.subjectLabel = null;
 	}
 	
 	public ProjectAnonymizer(String label, XnatImagesessiondataI s, String projectId, String sessionPath) {
@@ -51,7 +54,17 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 		this.sessionPath = sessionPath;
 		this.label = label;
 		this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, projectId);
+		this.subjectLabel = null;
 	} 
+	
+	public ProjectAnonymizer(XnatImagesessiondataI s, String subjectLabel, String projectId, String sessionPath){
+		this.s = s;
+		this.projectId= projectId;
+		this.sessionPath = sessionPath;
+		this.label = s.getLabel();
+		this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, projectId);
+		this.subjectLabel = subjectLabel;
+	}
 	
 	/**
 	 * Returns the subject string that will be passed into the 
@@ -60,6 +73,11 @@ public class ProjectAnonymizer extends AnonymizerA implements Callable<java.lang
 	 */
 	@Override
 	String getSubject() {
+		
+		if(null != this.subjectLabel){
+			return this.subjectLabel;
+		}
+		
 		String label = null;
 		if(s instanceof XnatImagesessiondata){
 			XnatSubjectdata d = ((XnatImagesessiondata)this.s).getSubjectData();

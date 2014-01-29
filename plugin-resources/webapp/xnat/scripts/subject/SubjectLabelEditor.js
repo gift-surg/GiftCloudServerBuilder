@@ -120,8 +120,12 @@ XNAT.app.SubjectLabelEditor = function(project) {"use strict";
 				correctScope : true
 			});
 
+			var warn = document.createElement("p");
+			warn.innerHTML = "<strong>Warning</strong>: If this project's anonymization script is enabled,<br>this operation could take a long time.";
+			warn.appendChild(bd);
+			
 			this.panel.setHeader("Label modification");
-			this.panel.setBody(bd);
+			this.panel.setBody(warn);
 			this.panel.form = bd;
 			this.panel.selector = this;
 			this.panel.cfg.queueProperty("keyListeners", [cancelListener, enterListener]);

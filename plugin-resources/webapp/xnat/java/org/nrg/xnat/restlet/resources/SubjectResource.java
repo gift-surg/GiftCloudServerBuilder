@@ -10,10 +10,13 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatProjectparticipant;
+import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXnatSubjectdata;
 import org.nrg.xft.XFTItem;
@@ -29,6 +32,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
+import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.restlet.representations.TurbineScreenRepresentation;
 import org.nrg.xnat.utils.WorkflowUtils;
@@ -40,7 +44,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.xml.sax.SAXParseException;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -286,28 +289,42 @@ public class SubjectResource extends ItemResource {
                         return;
                     }
 
-
                     final ValidationResults vr = sub.validate();
-
                     if (vr != null && !vr.isValid()) {
                         this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, vr.toFullString());
                         return;
                     }
+                    
                     PersistentWorkflowI wrk = PersistentWorkflowUtils.buildOpenWorkflow(user, sub.getItem(), newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(sub.getXSIType(), (existing == null))));
                     EventMetaI c = wrk.buildEvent();
 
                     try {
+                        // If the label was changed, re apply the anonymization script on all the subject's imaging sessions.
+                        boolean applyAnonScript = (null != existing && existing.getLabel().equals(sub.getLabel()));
+                        
+                        // Save the experiment.
                         if (SaveItemHelper.authorizedSave(sub, user, false, this.isQueryVariableTrue("allowDataDeletion"), c)) {
-
                             WorkflowUtils.complete(wrk, c);
                             user.clearLocalCache();
                             MaterializedView.DeleteByUser(user);
+                            
+                            if(applyAnonScript){
+                               for(final XnatSubjectassessordata expt : sub.getExperiments_experiment("xnat:imageSessionData")){
+                                    try{
+                                       // re-apply this project's edit script
+                                       expt.applyAnonymizationScript(new ProjectAnonymizer((XnatImagesessiondata) expt, sub.getLabel(), expt.getProject(), expt.getArchiveRootPath()));
+                                    }
+                                    catch (TransactionException e) {
+                                       this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+                                    }
+                               }
+                            }
                         }
                     } catch (Exception e) {
                         WorkflowUtils.fail(wrk, c);
                         throw e;
                     }
-
+                    
                     postSaveManageStatus(sub);
 
                     this.returnString(sub.getId(), (existing == null) ? Status.SUCCESS_CREATED : Status.SUCCESS_OK);

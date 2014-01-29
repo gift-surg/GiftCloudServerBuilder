@@ -10,8 +10,6 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import org.nrg.dcm.CopyOp;
-import org.nrg.transaction.OperationI;
 import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
@@ -55,8 +53,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.xml.sax.SAXException;
-
-import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -531,16 +527,9 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 							}
 						
 							if (previous != null && expt != null && expt.getSubjectId() != null && !expt.getSubjectId().equals(previous.getSubjectId())) {
-								// re-apply this project's edit script
 								try {
-									File tmpDir = new File(System.getProperty("java.io.tmpdir"), "anon_backup");
-									new CopyOp(new OperationI<Map<String,File>>() {
-										@Override
-										public void run(Map<String, File> a) throws Throwable {
-											ProjectAnonymizer p = new ProjectAnonymizer((XnatImagesessiondata) expt, expt.getProject(), expt.getArchiveRootPath());
-											p.call();
-										}
-									}, tmpDir,expt.getSessionDir()).run();
+									// re-apply this project's edit script
+									expt.applyAnonymizationScript(new ProjectAnonymizer((XnatImagesessiondata) expt, expt.getProject(), expt.getArchiveRootPath()));
 								}
 								catch (TransactionException e) {
 									this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);

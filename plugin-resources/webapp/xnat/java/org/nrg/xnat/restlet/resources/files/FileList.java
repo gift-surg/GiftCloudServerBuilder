@@ -1025,24 +1025,36 @@ public class FileList extends XNATCatalogTemplate {
 
     private Map<String, String> getSessionMaps() {
         Map<String, String> session_ids = new Hashtable<String, String>();
+        // Check if the session is an assessor to an "assessed" session
         if (assesseds.size() > 0) {
-            //IOWA customization: to include project and subject in path
-            boolean projectIncludedInPath = isQueryVariableTrue("projectIncludedInPath");
-            boolean subjectIncludedInPath = isQueryVariableTrue("subjectIncludedInPath");
-            for (XnatExperimentdata session : assesseds) {
-                String replacing = session.getArchiveDirectoryName();
-                if (subjectIncludedInPath) {
-                    if (session instanceof XnatImagesessiondata) {
-                        XnatSubjectdata subject = XnatSubjectdata.getXnatSubjectdatasById(((XnatImagesessiondata) session).getSubjectId(), user, false);
-                        replacing = subject.getLabel() + "/" + replacing;
+        	// Check if the session containing the assessor has an "ASSESSORS" directory.
+        	// This signifies that the directory structure is based on a "modern" version of XNAT.
+        	if (new File(assesseds.get(0).getSessionDir(),"ASSESSORS").isDirectory())
+        	{
+                for (XnatExperimentdata session : expts) {
+                    session_ids.put(session.getId(), session.getArchiveDirectoryName());
+                }
+        	}
+        	else
+        	{
+                //IOWA customization: to include project and subject in path
+                boolean projectIncludedInPath = isQueryVariableTrue("projectIncludedInPath");
+                boolean subjectIncludedInPath = isQueryVariableTrue("subjectIncludedInPath");
+                for (XnatExperimentdata session : assesseds) {
+                    String replacing = session.getArchiveDirectoryName();
+                    if (subjectIncludedInPath) {
+                        if (session instanceof XnatImagesessiondata) {
+                            XnatSubjectdata subject = XnatSubjectdata.getXnatSubjectdatasById(((XnatImagesessiondata) session).getSubjectId(), user, false);
+                            replacing = subject.getLabel() + "/" + replacing;
+                        }
                     }
+                    if (projectIncludedInPath) {
+                        replacing = session.getProject() + "/" + replacing;
+                    }
+                    session_ids.put(session.getId(), replacing);
+                    //session_ids.put(session.getId(),session.getArchiveDirectoryName());   		
                 }
-                if (projectIncludedInPath) {
-                    replacing = session.getProject() + "/" + replacing;
-                }
-                session_ids.put(session.getId(), replacing);
-                //session_ids.put(session.getId(),session.getArchiveDirectoryName());
-            }
+        	}
         } else if (expts.size() > 0) {
             for (XnatExperimentdata session : expts) {
                 session_ids.put(session.getId(), session.getArchiveDirectoryName());

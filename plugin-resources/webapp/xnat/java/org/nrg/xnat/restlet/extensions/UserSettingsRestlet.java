@@ -371,10 +371,10 @@ public class UserSettingsRestlet extends SecureResource {
                     } else {
                         isFirstAuth = false;
                     }
-                    output.append("{ \"authId\": ").append(auth.getAuthUser()).append("\", ");
-                    output.append("\"method\": ").append(auth.getAuthMethod()).append("\"");
+                    output.append("{ \"authId\": \"").append(auth.getAuthUser()).append("\", ");
+                    output.append("\"method\": \"").append(auth.getAuthMethod()).append("\"");
                     if (!StringUtils.isBlank(auth.getAuthMethodId())) {
-                        output.append(", \"methodId\": ").append(auth.getAuthMethodId()).append("\"");
+                        output.append(", \"methodId\": \"").append(auth.getAuthMethodId()).append("\"");
                     }
                     if (!auth.isEnabled()) {
                         output.append(", \"enabled\": \"false\"");

@@ -1403,6 +1403,12 @@
         <copy tofile="${basedir}/bin/XNATRestClient.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
         <ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%XNAT_HOME%" value="${basedir}"/>
         <ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
+        <copy tofile="${basedir}/bin/XnatDataClient" file="${basedir}/plugin-resources/misc/template3.sh"/>
+        <ant:replace file="${basedir}/bin/XnatDataClient" token="%XNAT_HOME%" value="${basedir}"/>
+        <ant:replace file="${basedir}/bin/XnatDataClient" token="%JAR_NAME%" value="xnat-data-client-1.6.3-jar-with-dependencies.jar"/>
+        <copy tofile="${basedir}/bin/XnatDataClient.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
+        <ant:replace file="${basedir}/bin/XnatDataClient.bat" token="%XNAT_HOME%" value="${basedir}"/>
+        <ant:replace file="${basedir}/bin/XnatDataClient.bat" token="%JAR_NAME%" value="xnat-data-client-1.6.3-jar-with-dependencies.jar"/>
     </goal>
     <goal name="xdat:testDB" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
         <ant:taskdef name="TestDB" classname="TestDB" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar"/>

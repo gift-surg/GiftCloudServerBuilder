@@ -462,6 +462,12 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>xdat</groupId>
+			<artifactId>xnat-data-client</artifactId>
+			<version>1.6.3-jar-with-dependencies</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
 			<version>1.6.1</version>

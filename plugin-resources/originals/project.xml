@@ -1683,15 +1683,6 @@
 			</properties>
 			<type>jar</type>
 		</dependency>
-		<dependency>
-			<groupId>slf4j</groupId>
-			<artifactId>slf4j-jcl</artifactId>
-			<version>1.5.8</version>
-			<properties>
-				<war.bundle>true</war.bundle>
-			</properties>
-			<type>jar</type>
-		</dependency>
 		<!-- End NRG framework and service additions -->
 		<dependency>
 			<groupId>gnu</groupId>

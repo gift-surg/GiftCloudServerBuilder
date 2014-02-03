@@ -50,10 +50,17 @@ public class BulkDeleteActionScreen extends SecureScreen {
           query.append("WHERE subj.id IN ('")
                .append(buildWhereClause(table.convertColumnToArrayList("subjectid")))
                .append("');");
-       }else if(search.getRootElement().getGenericXFTElement().instanceOf("xnat:subjectAssessorData")){
+       // XNAT-2829: If the search was for imaging sessions
+       }else if(search.getRootElement().getGenericXFTElement().instanceOf("xnat:imageSessionData")){
           context.put("searchType", "subject_assessor"); // Set the searchType
           query.append("WHERE session_expt.id IN ('")
                .append(buildWhereClause(table.convertColumnToArrayList("session_id")))
+               .append("');");
+       // XNAT-2829: If the search was for subject assessors (non imaging) 
+       }else if(search.getRootElement().getGenericXFTElement().instanceOf("xnat:subjectAssessorData")){
+          context.put("searchType", "subject_assessor"); // Set the searchType
+          query.append("WHERE session_expt.id IN ('")
+               .append(buildWhereClause(table.convertColumnToArrayList("expt_id")))
                .append("');");
        }else if(search.getRootElement().getGenericXFTElement().instanceOf("xnat:imageAssessorData")){
           context.put("searchType", "image_assessor"); // Set the searchType

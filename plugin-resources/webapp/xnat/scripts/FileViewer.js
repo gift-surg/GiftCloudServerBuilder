@@ -938,43 +938,92 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
 		if(this.cat.canDelete)
 			this.label +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeCatalog({file_name:'" + cat.label +"',uri:'" + this.cat.uri + "',id:'" + cat.xnat_abstractresource_id + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 	},
-	renderFiles:function(){
+    renderFiles:function(){
+
+        var folderArray = [];
         for(var fC=0;fC<this.cat.files.length;fC++){
             var file=this.cat.files[fC];
             var size=parseInt(file.Size);
             var path=file.URI.substring(file.URI.indexOf("/files/")+7);
-            var filename=file.URI.substring(file.URI.lastIndexOf("/")+1);
-            filename=filename.split(".").join(".&shy;");
-            filename=filename.split("_").join("_&shy;");
+            var root=file.URI.substring(0,file.URI.indexOf("/files/")+6)
 
-            var _html="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + filename + "</a>"
+            var splitPath =  path.split("/");
+            var fileNode = this;
 
-            if(this.cat.label=="DICOM"){
-            	_html +="&nbsp; <a  onclick=\"window.open('" +serverRoot + file.URI + "?format=image/jpeg');return false;\">Image</a>";
-            	
-            	if(XNAT.data.context.isImageSession && XNAT.data.context.projectID!=undefined &&
-            		XNAT.data.context.subjectID!=undefined &&
-            		XNAT.data.context.ID!=undefined){
-	            	_html +="&nbsp; <a href='#' onclick=\"XNAT.app.showTags('" + this.cat.cat_id + "','" + path +"');return false;\">Tags</a>";
-	            }
-            }
-            
-            if(file.file_format!=""){
-                _html +=" "+ file.file_format +"";
-            }
-            if(file.file_content!=""){
-                _html +=" "+ file.file_content +"";
-            }
-            if(file.file_tags!=""){
-                _html +=" ("+ file.file_tags +")";
-            }
-            _html +="&nbsp; "+size_format(size) +"";
-            
-            if(this.cat.canDelete)
-                _html +="&nbsp; <a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
 
-            var fileNode=new YAHOO.widget.HTMLNode({html: _html}, this);
-            fileNode.labelStyle = "icon-f";
+            for(var sp = 0; sp < splitPath.length; sp++){
+
+                if(sp == splitPath.length - 1){
+                    var filename = splitPath[sp];
+                    filename=filename.split(".").join(".&shy;");
+                    filename=filename.split("_").join("_&shy;");
+                    var _html="<a target='_blank' onclick=\"location.href='" +serverRoot + file.URI + "';\">" + filename + "</a>";
+                    if(this.cat.label=="DICOM"){
+                        _html +="&nbsp; <a  onclick=\"window.open('" +serverRoot + file.URI + "?format=image/jpeg');return false;\">Image</a>";
+
+                        if(XNAT.data.context.isImageSession && XNAT.data.context.projectID!=undefined &&
+                            XNAT.data.context.subjectID!=undefined &&
+                            XNAT.data.context.ID!=undefined){
+                            _html +="&nbsp; <a href='#' onclick=\"XNAT.app.showTags('" + this.cat.cat_id + "','" + path +"');return false;\">Tags</a>";
+                        }
+                    }
+                    if(file.file_format!=""){
+                        _html +=" "+ file.file_format +"";
+                    }
+                    if(file.file_content!=""){
+                        _html +=" "+ file.file_content +"";
+                    }
+                    if(file.file_tags!=""){
+                        _html +=" ("+ file.file_tags +")";
+                    }
+                    _html +="&nbsp; "+size_format(size) +"";
+
+                    if(this.cat.canDelete)
+                        _html +="&nbsp; <a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + file.URI + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+
+                    var fileNode=new YAHOO.widget.HTMLNode({html: _html, expanded: false}, fileNode);
+                    fileNode.labelStyle = "icon-f";
+
+                } else {
+
+                    var folderArrayKey = splitPath[sp]+'__'+sp;
+
+
+                    if(   typeof folderArray[folderArrayKey] !== 'undefined' && typeof folderArray[folderArrayKey] !== null ){
+
+                        fileNode = folderArray[folderArrayKey];
+
+                    } else {
+
+                        var newPath = root;
+                        for(var np=0;np<=sp;np++){
+                            newPath = newPath + "/" + splitPath[np];
+                        }
+                        newPath = newPath + '/*';
+                        var _lbl="<a target='_blank' onclick=\"location.href='" +serverRoot + newPath + "?format=zip';\">" + splitPath[sp] + "</a>"
+                        if(file.file_format!=""){
+                            _lbl +="&nbsp;"+ file.file_format +"";
+                        }
+                        if(file.file_content!=""){
+                            _lbl +="&nbsp;"+ file.file_content +"";
+                        }
+                        if(file.file_tags!=""){
+                            _lbl +="&nbsp;("+ file.file_tags +")";
+                        }
+
+                        if(this.cat.canDelete)
+                            _lbl +="&nbsp;&nbsp;<a onclick=\"window.viewer.removeFile({file_name:'" + path +"',uri:'" + serverRoot + newPath + "'});\"><img style='height:14px' border='0' src='" +serverRoot+"/images/delete.gif'/></a>";
+
+
+
+                        fileNode=new YAHOO.widget.TaskNode({label: _lbl, expanded: false}, fileNode);
+                        fileNode.labelStyle = "icon-f";
+
+                        folderArray[folderArrayKey] = fileNode;
+
+                    }
+                }
+            }
         }
     }
 });

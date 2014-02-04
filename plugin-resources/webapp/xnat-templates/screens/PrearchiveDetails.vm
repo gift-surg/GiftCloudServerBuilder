@@ -25,6 +25,9 @@
 	#scans_div{
 		margin-top:10px;
 	}
+	button.hide_me{
+		visibility:hidden;
+	}
 </style>
 <div style="float:left">
     <table clsss="">
@@ -94,9 +97,7 @@
 				&nbsp;&nbsp;<button id="scanB1$$scan.getId()" onclick="window.location='$content.getURI("/REST$url/scans/$scan.getId()?format=zip")'">Download Files</button>
 				#foreach($res in $scan.getFile())
 					&nbsp;&nbsp;<button id="scanB3$$scan.getId()" onclick="XNAT.app.fileDialog.loadScan('$content.getURI("/REST$url/scans/$scan.getId()/resources/$res.getLabel()/files?format=html&requested_screen=PrearchiveFileList.vm&popup=true&prettyPrint=true")','Scan $scan.getId() files');">Review File Details</button>
-					#if($res.getLabel()=="DICOM")
-						&nbsp;&nbsp;<button id="scanB4$$scan.getId()" onclick="XNAT.app.headerDialog.load('$content.getURI("/REST/services/dicomdump?src=$url/scans/$scan.getId()&format=html&requested_screen=DicomScanTable.vm&popup=true")','Scan $scan.getId() DICOM');">Review DICOM Tags</button>
-					#end
+					&nbsp;&nbsp;<button #if($res.getLabel()!="DICOM") class="hide_me" #end id="scanB4$$scan.getId()" onclick="XNAT.app.headerDialog.load('$content.getURI("/REST/services/dicomdump?src=$url/scans/$scan.getId()&format=html&requested_screen=DicomScanTable.vm&popup=true")','Scan $scan.getId() DICOM');">Review DICOM Tags</button>
 				#end
 				&nbsp;&nbsp;<button id="scanB2$$scan.getId()" onclick="XNAT.app.scanDeleter.requestDelete('$!scan.getId()');">Delete Series</button>
 			</td>

@@ -155,16 +155,13 @@ function validateExperimentForm()
 	 
 	 critset.addChildSet(subset);
    }
-	 
-	 if(critset.Criteria.length==0){
-		 if(confirm("The experiment ID is blank.  Is this correct?")){
-	            submitParentForm();
-	            return;
-		 }else{
-		 	return false;
-		 }
+	
+	// Fixes XNAT-2830: Must specify either an ID or a Label
+	if(critset.Criteria.length==0 && critset.ChildSet.length == 0){
+		xModalMessage("Error", "The Experiment ID cannot be blank.");
+		return false;
 	 }
-	 
+	
 	 //ID
 //   if(document.getElementById(elementName+"/label").value!=""){
 //   	 var subset = new xdat_criteria_set();

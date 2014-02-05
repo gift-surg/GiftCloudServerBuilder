@@ -460,7 +460,7 @@ $(function(){
     // add version to title attribute of XNAT logos
     if (typeof logged_in != 'undefined' && logged_in == true){
         $.get(serverRoot+'/data/version',function(data){
-            XNAT_version = data ;
+            XNAT_version = data.split(" ")[0];
             $('#xnat_power').find('a').attr('title','XNAT version ' + XNAT_version).after('<small>version ' + XNAT_version + '</small>');
             $('#header_logo').attr('title','XNAT version ' + XNAT_version);
             XNAT.app.version = XNAT_version ;

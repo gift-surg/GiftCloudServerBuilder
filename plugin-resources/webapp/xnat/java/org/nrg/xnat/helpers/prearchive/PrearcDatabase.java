@@ -252,10 +252,14 @@ public final class PrearcDatabase {
                     // later INSERT queries. So we remove required columns that aren't in-common because we can't
                     // migrate those.
                     if (!allRequiredExist) {
+                        List<String> removals = new ArrayList<String>();
                         for (String column : required) {
                             if (!inCommon.contains(column)) {
-                                required.remove(column);
+                                removals.add(column);
                             }
+                        }
+                        if (removals.size() > 0) {
+                            required.removeAll(removals);
                         }
                     }
 
@@ -514,13 +518,13 @@ public final class PrearcDatabase {
 
     private static void pruneDatabase() throws Exception {
         // construct list of timestamps with extant folders
-        List<String> timestamps = PrearcDatabase.getPrearchiveFolderTimestamps();
+        Set<String> timestamps = PrearcDatabase.getPrearchiveFolderTimestamps();
         // delete all prearchive entries that are not in that timestamp set
         PrearcDatabase.deleteUnusedPrearchiveEntries(timestamps);
     }
 
-    private static List<String> getPrearchiveFolderTimestamps() {
-        List<String> timestamps = new ArrayList<String>();
+    private static Set<String> getPrearchiveFolderTimestamps() {
+        Set<String> timestamps = new HashSet<String>();
         timestamps.add("0"); // there must be at least one element in the list
         File baseDir = new File(prearcPath);
         File[] dirs = baseDir.listFiles(FileSystemSessionTrawler.hiddenAndDatabaseFileFilter);
@@ -532,15 +536,14 @@ public final class PrearcDatabase {
         return timestamps;
     }
 
-    private static void deleteUnusedPrearchiveEntries(List<String> timestamps) throws Exception, SQLException {
+    private static void deleteUnusedPrearchiveEntries(Set<String> timestamps) throws Exception {
         StringBuilder sb = new StringBuilder();
         for (String timestamp : timestamps) {
-            if (sb.length() > 0) sb.append(',');
-            sb.append("'").append(timestamp).append("'");
+            sb.append("'").append(timestamp.replaceAll("'", "''")).append("'").append(',');
         }
-        final String usedSessionTimestamps = sb.toString();
+        final String usedSessionTimestamps = sb.deleteCharAt(sb.length() - 1).toString();
         new SessionOp<Void>(){
-            public Void op() throws SQLException, Exception {
+            public Void op() throws Exception {
                 PoolDBUtils.ExecuteNonSelectQuery(DatabaseSession.deleteUnusedSessionsSql(usedSessionTimestamps),null,null);
                 return null;
             }

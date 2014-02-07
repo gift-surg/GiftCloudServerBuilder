@@ -45,6 +45,12 @@ $page.setBgColor($ui.bgcolor)
                     <input class="ui_sansSerifFonts" type="submit" value="Request">
                 </td>
             </tr>
+            <tr>
+                <td colspan="3" style="text-align:center; font-weight: bold;">
+                    <br/><br/>
+                    <a href="$link.setPage("ResendEmail.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Resend email verification</a>
+                </td>
+            </tr>
         </table>
         #foreach($key in $data.getParameters().getKeys())
             #if ($key!="action" && $key!="template" &&$key!="password" &&!$key.startsWith("xdat:user") &&$key!="username" &&$key!="exception")

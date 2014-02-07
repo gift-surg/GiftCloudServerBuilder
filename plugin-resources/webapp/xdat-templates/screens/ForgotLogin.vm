@@ -43,6 +43,12 @@ $page.setBgColor($ui.bgcolor)
          <input type="submit" value="Request">
         </td>
     </tr>
+    <tr>
+      <td colspan="3" style="text-align:center; font-weight: bold;">
+        <br/><br/>
+          <a href="$link.setPage("ResendEmail.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Resend email verification</a>
+      </td>
+    </tr>
   </table>
 </form>
 </div>

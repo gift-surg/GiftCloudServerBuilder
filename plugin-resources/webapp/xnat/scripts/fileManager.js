@@ -235,13 +235,13 @@ function fileManager(_resource){
    	  div.style.border="1px solid #DEDEDE";
    	  var table,tbody,tr,td,input;
    	  
-   	  var title=document.createElement("div");
-   	  title.style.marginTop="3px";
-   	  title.style.marginLeft="1px";
-   	  title.innerHTML="<font size='+1' style='weight:700'>File Upload Form</font>";
-   	  div.appendChild(title);
+   	  //var title=document.createElement("div");
+   	  //title.style.marginTop="3px";
+   	  //title.style.marginLeft="1px";
+   	  //title.innerHTML="<font size='+1' style='weight:700'>File Upload Form</font>";
+   	  //div.appendChild(title);
    	  
-   	  div.appendChild(document.createElement("br"));
+   	  //div.appendChild(document.createElement("br"));
    	  
    	  parent_table=document.createElement("table");
    	  parent_table.width="95%";

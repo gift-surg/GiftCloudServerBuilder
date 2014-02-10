@@ -1042,27 +1042,25 @@ function UploadFileForm(_obj){
 		
 		var table,tbody,tr,td,input;
    	  
-   	  var title=document.createElement("div");
-   	  title.style.marginTop="3px";
-   	  title.style.marginLeft="1px";
-   	  title.innerHTML="File Upload Form";
-   	  div.appendChild(title);
-   	  
-   	  div.appendChild(document.createElement("br"));
-   	  
-   	  var collection_form=document.createElement("div");
-   	  div.appendChild(collection_form);
-   	  collection_form.style.border="1px solid #DEDEDE";
-   	  collection_form.appendChild(document.createElement("div"));
-   	  collection_form.childNodes[0].innerHTML="<strong>Destination</strong>";
-   	  
-   	  table=document.createElement("table");
-   	  tbody=document.createElement("tbody");
-   	  table.appendChild(tbody);
-   	  collection_form.appendChild(table);
-   	  
-   	  
-   	  if(this.obj.categories!=undefined){
+//   	  var title=document.createElement("div");
+//   	  title.style.marginTop="3px";
+//   	  title.style.marginLeft="1px";
+//   	  title.innerHTML="File Upload Form";
+//   	  div.gappendChild(title);
+//
+//   	  div.appendChild(document.createElement("br"));
+
+        var collection_form = document.createElement('fieldset');
+        collection_form.innerHTML = '<h3>Destination</h3>';
+        div.appendChild(collection_form);
+
+        table = document.createElement("table");
+        tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+        collection_form.appendChild(table);
+
+
+        if(this.obj.categories!=undefined){
 	   	  //collection
 	   	  tr=document.createElement("tr");
 			tr.style.height="20px";
@@ -1245,12 +1243,13 @@ function UploadFileForm(_obj){
    	  }
    	  
    	  div.appendChild(document.createElement("br"));
-   	  var file_form=document.createElement("div");
+   	  var file_form = document.createElement("fieldset");
    	  div.appendChild(file_form);
-   	  file_form.style.border="1px solid #DEDEDE";
-   	  file_form.appendChild(document.createElement("div"));
-   	  file_form.childNodes[0].innerHTML="<strong>File Information</strong>";
-   	  table=document.createElement("table");
+   	  //file_form.style.border="1px solid #DEDEDE";
+   	  //file_form.appendChild(document.createElement("div"));
+   	  file_form.innerHTML="<h3>File Information</h3>";
+
+      table=document.createElement("table");
    	  tbody=document.createElement("tbody");
    	  table.appendChild(tbody);
    	  file_form.appendChild(table);
@@ -1355,21 +1354,26 @@ function UploadFileForm(_obj){
    	  tbody.appendChild(tr);
    	  
    	  
-   	  div.appendChild(document.createTextNode("File To Upload:"));
+   	  //div.appendChild(document.createTextNode("File To Upload:"));
    	  
-   	  var form = document.createElement("form");
-   	  form.id="file_upload";
-   	  form.name="file_upload";
-   	  div.appendChild(form);
-   	  
-   	  input =document.createElement("input");
-   	  input.type="file";
+   	  //var form = document.createElement("form");
+
+      div.id="file_upload";
+   	  div.name="file_upload";
+   	  //div.appendChild(form);
+
+      //div.appendChild(document.createElement('br'));
+
+      input = document.createElement("input");
+   	  input.style.display = 'inline-block';
+      input.style.marginTop = '10px';
+      input.type="file";
    	  input.id="local_file";
    	  input.name="local_file";
    	  input.size=40;
    	  //input.style.fontSize = "99%";
    	  
-   	  form.appendChild(input);
+   	  div.appendChild(input);
 		
 		this.panel.setBody(div);
 		

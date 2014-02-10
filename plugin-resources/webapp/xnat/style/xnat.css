@@ -469,6 +469,8 @@ body #file_remove_confirm { z-index: 2006 !important ; }
 body #fileUploadDialog_mask { z-index: 2101 !important ; }
 body #fileUploadDialog_c { z-index: 2102 !important ; }
 body #fileUploadDialog { z-index: 2103 !important ; }
+body #fileUploadDialog fieldset { padding: 5px 8px ; border: 1px solid #dedede ; }
+body #fileUploadDialog h3 { padding-bottom: 5px ; /* margin-bottom: 8px !important ; */ /* border-bottom: 1px solid #dedede ; */ font-size: 13px ; }
 
 body #rest_deleter_mask { z-index: 2201 !important ; }
 body #rest_deleter_c { z-index: 2202 !important ; }

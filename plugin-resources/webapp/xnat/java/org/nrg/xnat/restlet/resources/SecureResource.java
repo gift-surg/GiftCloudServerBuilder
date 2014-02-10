@@ -384,6 +384,7 @@ public abstract class SecureResource extends Resource {
         return representTable(table, mt, params, null);
     }
 
+    @SuppressWarnings("unchecked")
     public Representation representTable(XFTTable table, MediaType mt, Hashtable<String, Object> params, Map<String, Map<String, String>> cp) {
         if (table != null) {
             if (getQueryVariable("sortBy") != null) {
@@ -669,13 +670,7 @@ public abstract class SecureResource extends Resource {
                 }
 
                 if (dataType != null) {
-                    PopulateItem populater = null;
-                    if (item != null) {
-                        populater = PopulateItem.Populate(params, user, dataType, true, item);
-                    } else if (dataType != null) {
-                        populater = PopulateItem.Populate(params, user, dataType, true);
-                    }
-
+                    PopulateItem populater = item != null ? PopulateItem.Populate(params, user, dataType, true, item) : PopulateItem.Populate(params, user, dataType, true);
                     item = populater.getItem();
                 }
             } catch (XFTInitException e) {
@@ -1097,6 +1092,7 @@ public abstract class SecureResource extends Resource {
         }
     }
 
+    @SuppressWarnings("unused")
     public Representation buildChangesets(XFTItem item, String key, MediaType mt) throws Exception {
         String files = getQueryVariable("includeFiles");
         String details = getQueryVariable("includeDetails");
@@ -1197,6 +1193,7 @@ public abstract class SecureResource extends Resource {
         MaterializedView.DeleteByUser(user);
     }
 
+    @SuppressWarnings("unused")
     public void create(ArchivableItem parent, ItemI sub, boolean overwriteSecurity, boolean allowDataDeletion, EventDetails event) throws Exception {
         PersistentWorkflowI wrk = WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, parent.getItem(), event);
         EventMetaI c = wrk.buildEvent();

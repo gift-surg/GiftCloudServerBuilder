@@ -37,297 +37,273 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ScanResource  extends ItemResource {
-	final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ScanResource.class);
-	XnatProjectdata proj=null;
-	XnatImagesessiondata session = null;
-	XnatImagescandata scan=null;
-	
-	String scanID=null;
-	
-	public ScanResource(Context context, Request request, Response response) {
-		super(context, request, response);
-		
-			String pID= (String)getParameter(request,"PROJECT_ID");
-			if(pID!=null){
-				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
-			}
-			
-			String assessedID= (String)getParameter(request,"ASSESSED_ID");
-			if(assessedID!=null){
-				if(session==null&& assessedID!=null){
-				session = (XnatImagesessiondata) XnatExperimentdata
-						.getXnatExperimentdatasById(assessedID, user, false);
-				if (session != null
-						&& (proj != null && !session.hasProject(proj.getId()))) {
-					session = null;
-				}
-					
-					if(session==null && this.proj!=null){
-					session = (XnatImagesessiondata) XnatExperimentdata
-							.GetExptByProjectIdentifier(this.proj.getId(),
-									assessedID, user, false);
-					}
-				}
+public class ScanResource extends ItemResource {
+    private static final Logger logger = LoggerFactory.getLogger(ScanResource.class);
 
-				scanID= (String)getParameter(request,"SCAN_ID");
-				if(scanID!=null){
-				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-					this.getVariants().add(new Variant(MediaType.TEXT_XML));
-				}
-				
-			}else{
-			response.setStatus(Status.CLIENT_ERROR_GONE,
-					"Unable to find session '" + assessedID + "'");
-		}
-		
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME,false));
-	}
+    protected XnatProjectdata proj;
+    protected XnatImagesessiondata session = null;
+    protected XnatImagescandata scan = null;
+    protected String scanID = null;
+
+    public ScanResource(Context context, Request request, Response response) {
+        super(context, request, response);
+
+        String pID = (String) getParameter(request, "PROJECT_ID");
+        if (pID != null) {
+            proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
+        }
+
+        String assessedID = (String) getParameter(request, "ASSESSED_ID");
+        if (assessedID != null) {
+            session = (XnatImagesessiondata) XnatExperimentdata.getXnatExperimentdatasById(assessedID, user, false);
+            if (session != null && (proj != null && !session.hasProject(proj.getId()))) {
+                session = null;
+            }
+
+            if (session == null && proj != null) {
+                session = (XnatImagesessiondata) XnatExperimentdata.GetExptByProjectIdentifier(proj.getId(), assessedID, user, false);
+            }
+
+            scanID = (String) getParameter(request, "SCAN_ID");
+            if (scanID != null) {
+                getVariants().add(new Variant(MediaType.TEXT_HTML));
+                getVariants().add(new Variant(MediaType.TEXT_XML));
+            }
+
+            fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XnatImagescandata.SCHEMA_ELEMENT_NAME, false));
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You must specify a session ID for this request.");
+        }
+    }
 
 
-	@Override
-	public boolean allowPut() {
-		return true;
-	}
+    @Override
+    public boolean allowPut() {
+        return true;
+    }
 
-	@Override
-	public void handlePut() {
-		XFTItem item = null;			
+    @Override
+    public void handlePut() {
+        if (user == null) {
+            getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "No authenticated user found.");
+        }
 
-		try {
-			String dataType=this.session.getXSIType();
-//			
-//			String dataType=null;
-//			if(this.session instanceof XnatMrsessiondata){
-//				dataType="xnat:mrScanData";
-//			}else if(this.session instanceof XnatPetsessiondata){
-//				dataType="xnat:petScanData";
-//			}else if(this.session instanceof XnatCtsessiondata){
-//				dataType="xnat:ctScanData";
-//			}
-			item=this.loadItem(dataType,true);
-			item=this.loadItem(dataType, true);
+        try {
+            XFTItem item = loadItem(null, true);
 
-			if(item==null){
-				String xsiType=this.getQueryVariable("xsiType");
-				if(xsiType!=null){
-					item=XFTItem.NewItem(xsiType, user);
-				}
-			}
+            if (item == null) {
+                String xsiType = getQueryVariable("xsiType");
+                if (xsiType != null) {
+                    item = XFTItem.NewItem(xsiType, user);
+                }
+            }
 
-			if(item==null){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
-				return;
-			}
+            if (item == null) {
+                getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need PUT Contents");
+                return;
+            }
 
-			if(filepath!=null && !filepath.equals("")){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-				return;
-			}
-			if(item.instanceOf("xnat:imageScanData")){
-				scan = (XnatImagescandata)BaseElement.GetGeneratedItem(item);
+            if (filepath != null && !filepath.equals("")) {
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                return;
+            }
 
-				//MATCH SESSION
-				if(this.session!=null){
-					scan.setImageSessionId(this.session.getId());
-				}else{
-					if(scan.getImageSessionId()!=null && !scan.getImageSessionId().equals("")){
-						this.session=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(scan.getImageSessionId(), user, false);
+            if (!item.instanceOf("xnat:imageScanData")) {
+                getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Only Scan documents can be PUT to this address. Expected: xnat:imageScanData Received: " + item.getXSIType());
+                return;
+            }
 
-						if(this.session==null && this.proj!=null){
-							this.session=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(this.proj.getId(), scan.getImageSessionId(),user, false);
-						}
-						if(this.session!=null){
-							scan.setImageSessionId(this.session.getId());
-						}
-					}
-				}
+            scan = (XnatImagescandata) BaseElement.GetGeneratedItem(item);
 
-				if(scan.getImageSessionId()==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Specified scan must reference a valid image session.");
-					return;
-				}
+            //MATCH SESSION
+            if (session != null) {
+                scan.setImageSessionId(session.getId());
+            } else {
+                if (scan.getImageSessionId() != null && !scan.getImageSessionId().equals("")) {
+                    session = (XnatImagesessiondata) XnatExperimentdata.getXnatExperimentdatasById(scan.getImageSessionId(), user, false);
 
-				if(this.session==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Specified image session doesn't exist.");
-					return;
-				}
+                    if (session == null && proj != null) {
+                        session = (XnatImagesessiondata) XnatExperimentdata.GetExptByProjectIdentifier(proj.getId(), scan.getImageSessionId(), user, false);
+                    }
+                    if (session != null) {
+                        scan.setImageSessionId(session.getId());
+                    }
+                }
+            }
 
-				if(scan.getId()==null){
-					scan.setId(scanID);
-				}
+            if (scan.getImageSessionId() == null) {
+                getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Specified scan must reference a valid image session.");
+                return;
+            }
 
-				if(this.getQueryVariable("type")!=null){
-					scan.setType(this.getQueryVariable("type"));
-				}
+            if (session == null) {
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Specified image session doesn't exist.");
+                return;
+            }
 
-				//FIND PRE-EXISTING
-				XnatImagescandata existing=null;
+            if (scan.getId() == null) {
+                scan.setId(scanID);
+            }
 
-				if(scan.getXnatImagescandataId()!=null){						
-					existing=(XnatImagescandata)XnatImagescandata.getXnatImagescandatasByXnatImagescandataId(scan.getXnatImagescandataId(), user, completeDocument);
-				}					
+            if (getQueryVariable("type") != null) {
+                scan.setType(getQueryVariable("type"));
+            }
 
-				if(scan.getId()!=null){
-					CriteriaCollection cc= new CriteriaCollection("AND");
-					cc.addClause("xnat:imageScanData/ID", scan.getId());
-					cc.addClause("xnat:imageScanData/image_session_ID", scan.getImageSessionId());
-					ArrayList<XnatImagescandata> scans=XnatImagescandata.getXnatImagescandatasByField(cc, user, completeDocument);
-					if(scans.size()>0){
-						existing=scans.get(0);
-					}
-				}
+            //FIND PRE-EXISTING
+            XnatImagescandata existing = null;
 
-				if(existing==null){
-					if(!user.canEdit(this.session)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for sessions in this project.");
-						return;
-					}
-					//IS NEW
-					if(scan.getId()==null || scan.getId().equals("")){
-						String query = "SELECT count(id) AS id_count FROM xnat_imageScanData WHERE image_session_id='" + this.session.getId() + "' AND id='";
+            if (scan.getXnatImagescandataId() != null) {
+                existing = XnatImagescandata.getXnatImagescandatasByXnatImagescandataId(scan.getXnatImagescandataId(), user, completeDocument);
+            }
 
-						String login = null;
-						if (user!=null){
-							login=user.getUsername();
-						}
-						try {
-							int i=1;
-							Long idCOUNT= (Long)PoolDBUtils.ReturnStatisticQuery(query + i + "';", "id_count", user.getDBName(), login);
-							while (idCOUNT > 0){
-								i++;
-								idCOUNT= (Long)PoolDBUtils.ReturnStatisticQuery(query + i + "';", "id_count", user.getDBName(), login);
-							}
+            if (scan.getId() != null) {
+                CriteriaCollection cc = new CriteriaCollection("AND");
+                cc.addClause("xnat:imageScanData/ID", scan.getId());
+                cc.addClause("xnat:imageScanData/image_session_ID", scan.getImageSessionId());
+                ArrayList<XnatImagescandata> scans = XnatImagescandata.getXnatImagescandatasByField(cc, user, completeDocument);
+                if (scans.size() > 0) {
+                    existing = scans.get(0);
+                }
+            }
 
-							scan.setId("" + i);
-						} catch (Exception e) {
-							logger.error("",e);
-						}
-					}
-					
-				}else{
-					if(!user.canEdit(session)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for sessions in this project.");
-						return;
-					}
-					//MATCHED
-				}
+            if (existing == null) {
+                if (!user.canEdit(session)) {
+                    getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Specified user account has insufficient create privileges for sessions in this project.");
+                    return;
+                }
+                //IS NEW
+                if (scan.getId() == null || scan.getId().equals("")) {
+                    String query = "SELECT count(id) AS id_count FROM xnat_imageScanData WHERE image_session_id='" + session.getId() + "' AND id='";
 
-				boolean allowDataDeletion=false;
-				if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equals("true")){
-					allowDataDeletion=true;
-				}
+                    String login = user.getUsername();
+                    try {
+                        int i = 1;
+                        Long idCOUNT = (Long) PoolDBUtils.ReturnStatisticQuery(query + i + "';", "id_count", user.getDBName(), login);
+                        while (idCOUNT > 0) {
+                            i++;
+                            idCOUNT = (Long) PoolDBUtils.ReturnStatisticQuery(query + i + "';", "id_count", user.getDBName(), login);
+                        }
+                        scan.setId("" + i);
+                    } catch (Exception e) {
+                        logger.error("", e);
+                    }
+                }
+
+            } else {
+                if (!user.canEdit(session)) {
+                    getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Specified user account has insufficient edit privileges for sessions in this project.");
+                    return;
+                }
+                //MATCHED
+            }
+
+            boolean allowDataDeletion = false;
+            if (getQueryVariable("allowDataDeletion") != null && getQueryVariable("allowDataDeletion").equals("true")) {
+                allowDataDeletion = true;
+            }
+
+            final ValidationResults vr = scan.validate();
+
+            if (vr != null && !vr.isValid()) {
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, vr.toFullString());
+                return;
+            }
+
+            Authorizer.getInstance().authorizeSave(session.getItem(), user);
+            create(session, scan, false, allowDataDeletion, newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(scan.getXSIType(), scan == null)));
+
+            if (isQueryVariableTrue(XNATRestConstants.PULL_DATA_FROM_HEADERS) || containsAction(XNATRestConstants.PULL_DATA_FROM_HEADERS)) {
+                PersistentWorkflowI wrk = PersistentWorkflowUtils.buildOpenWorkflow(user, session.getItem(), newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.DICOM_PULL));
+                EventMetaI c = wrk.buildEvent();
+                try {
+                    PullScanDataFromHeaders pull = new PullScanDataFromHeaders(scan, user, allowDataDeletion, false, c);
+                    pull.call();
+                    WorkflowUtils.complete(wrk, c);
+                } catch (Exception e) {
+                    WorkflowUtils.fail(wrk, c);
+                    throw e;
+                }
+            }
+        } catch (InvalidValueException e) {
+            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            logger.error("", e);
+        } catch (Exception e) {
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+            logger.error("", e);
+        }
+    }
+
+    @Override
+    public boolean allowDelete() {
+        return true;
+    }
+
+    @Override
+    public void handleDelete() {
+
+        searchForScan();
+
+        if (scan == null) {
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find the specified scan.");
+            return;
+        }
+
+        if (filepath != null && !filepath.equals("")) {
+            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            return;
+        }
+        try {
+
+            if (!user.canDelete(session) || XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)) {
+                getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User account doesn't have permission to modify this session.");
+                return;
+            }
+
+            delete(session, scan, newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getDeleteAction(scan.getXSIType())));
+
+        } catch (SQLException e) {
+            logger.error("There was an error running a query.", e);
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+        } catch (Exception e) {
+            logger.error("There was an error.", e);
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+        }
+    }
 
 
-				final ValidationResults vr = scan.validate();
+    @Override
+    public Representation represent(Variant variant) {
+        searchForScan();
 
-				if (vr != null && !vr.isValid())
-				{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
-					return;
-				}
+        if (scan != null) {
+            return representItem(scan.getItem(), overrideVariant(variant));
+        }
 
-	            Authorizer.getInstance().authorizeSave(session.getItem(), user);
-				this.create(session, scan, false, allowDataDeletion, newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(scan.getXSIType(), scan==null)));
+        getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find the specified scan.");
+        return null;
+    }
 
-				if(this.isQueryVariableTrue(XNATRestConstants.PULL_DATA_FROM_HEADERS) || this.containsAction(XNATRestConstants.PULL_DATA_FROM_HEADERS)){
-					PersistentWorkflowI wrk=PersistentWorkflowUtils.buildOpenWorkflow(user, session.getItem(), newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.DICOM_PULL));
-					EventMetaI c=wrk.buildEvent();
-					try {
-						PullScanDataFromHeaders pull=new PullScanDataFromHeaders(scan, user, allowDataDeletion,false,c);
-						pull.call();
-						WorkflowUtils.complete(wrk, c);
-					} catch (Exception e) {
-						WorkflowUtils.fail(wrk, c);
-						throw e;
-					}
-				}
+    protected void searchForScan() {
+        if (scan == null && scanID != null) {
+            if (session != null) {
+                CriteriaCollection cc = new CriteriaCollection("AND");
+                cc.addClause("xnat:imageScanData/ID", scanID);
+                cc.addClause("xnat:imageScanData/image_session_ID", session.getId());
+                ArrayList<XnatImagescandata> scans = XnatImagescandata.getXnatImagescandatasByField(cc, user, completeDocument);
+                if (scans.size() > 0) {
+                    scan = scans.get(0);
+                }
+            }
+        }
+    }
 
-			}else{
-				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only Scan documents can be PUT to this address. Expected: xnat:imageScanData  Received: " + dataType );
-			}
-		} catch (InvalidValueException e) {
-			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-			logger.error("",e);
-		} catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			logger.error("",e);
-		}
-	}
-
-
-	@Override
-	public boolean allowDelete() {
-		return true;
-	}
-
-	@Override
-	public void handleDelete(){
-	    		
-	    		searchForScan();
-	    		
-			if(scan==null){
-			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified scan.");
-				return;
-			}
-			
-			if(filepath!=null && !filepath.equals("")){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-				return;
-			}
-			try {
-			
-			if(!user.canDelete(session) || XDAT.getBoolSiteConfigurationProperty("security.prevent-data-deletion", false)){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to modify this session.");
-					return;
-			}
-			
-			delete(session, scan,newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getDeleteAction(scan.getXSIType())));
-            
-		} catch (SQLException e) {
-			e.printStackTrace();
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
-		}
-	}
-	
-
-	@Override
-	public Representation getRepresentation(Variant variant) {
-	    
-    	    	searchForScan();
-		
-		if(scan!=null){
-	        	return this.representItem(scan.getItem(),overrideVariant(variant));
-		}else{
-			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-					"Unable to find the specified scan.");
-			return null;
-		}
-
-	}
-	
-	protected void searchForScan() {
-		if(scan==null&& scanID!=null){
-			if(scan==null && this.session!=null){
-				CriteriaCollection cc= new CriteriaCollection("AND");
-				cc.addClause("xnat:imageScanData/ID", scanID);
-				cc.addClause("xnat:imageScanData/image_session_ID", session.getId());
-				ArrayList<XnatImagescandata> scans=XnatImagescandata.getXnatImagescandatasByField(cc, user, completeDocument);
-				if(scans.size()>0){
-					scan=scans.get(0);
-				}
-			}
-		}
-	}
-	
-	protected XnatImagescandata getScan() {
-	    return scan;
-	}
+    protected XnatImagescandata getScan() {
+        return scan;
+    }
 }

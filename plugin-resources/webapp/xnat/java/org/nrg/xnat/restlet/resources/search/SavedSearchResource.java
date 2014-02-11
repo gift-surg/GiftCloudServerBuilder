@@ -86,7 +86,7 @@ public class SavedSearchResource extends ItemResource {
 	}
 	
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation represent(Variant variant) {
 		MediaType mt = overrideVariant(variant);
 
 		if(xss==null && sID!=null){
@@ -112,13 +112,11 @@ public class SavedSearchResource extends ItemResource {
 			}
 		}
 		
-		if(xss!=null){
-			if(!user.canQuery(xss.getRootElementName())){
-				if(!xss.hasAllowedUser(user.getLogin())){
-					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-					return null;
-				}
-			}
+		if(xss!=null) {
+            if(!xss.hasAllowedUser(user.getLogin()) || !user.canQuery(xss.getRootElementName())){
+                getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                return null;
+            }
 		}
 		
 		if(xss==null){

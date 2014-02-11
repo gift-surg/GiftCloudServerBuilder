@@ -95,24 +95,11 @@ public class SearchResource extends SecureResource {
 					org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
 					org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
 
-					List items = upload.parseRequest(this.getRequest());
-					String xml_text="";
+                    List<FileItem> items = upload.parseRequest(this.getRequest());
 
-					int i = 0;
-					for (final Iterator it = items.iterator(); it.hasNext(); ) {    
-					    FileItem fi = (FileItem)it.next();
-					     
-					    String fileName=fi.getName();
-					    if(fileName.indexOf("\\")>-1){
-					    	fileName.substring(fileName.indexOf("\\")+1);
-					    }
-					    
+                    for (final FileItem fi : items) {
 					    if(fi.getName().endsWith(".xml")){
 							SAXReader reader = new SAXReader(user);
-							if(item!=null)
-							{
-								reader.setTemplate(item);
-							}
 							try {
 								item = reader.parse(fi.getInputStream());
 
@@ -139,7 +126,7 @@ public class SearchResource extends SecureResource {
 					    }
 					}
 				} catch (org.apache.commons.fileupload.FileUploadException e) {
-					e.printStackTrace();
+                    logger.error("", e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
 			}else{
@@ -148,11 +135,6 @@ public class SearchResource extends SecureResource {
 			        try {
 								
 				SAXReader reader = new SAXReader(user);
-						if(item!=null)
-						{
-							reader.setTemplate(item);
-						}
-						
 						item = reader.parse(sax);
 	
 						if(!reader.assertValid()){
@@ -179,33 +161,24 @@ public class SearchResource extends SecureResource {
 				}
 			}
 				
-				if(!item.instanceOf("xdat:stored_search")){
+				if(item == null || !item.instanceOf("xdat:stored_search")){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					return;
 				}
+
 				XdatStoredSearch search = new XdatStoredSearch(item);
-				
-				if(StringUtils.IsEmpty(search.getRootElementName()) || !user.canQuery(search.getRootElementName())){
-					//if a user has been manually added to a secret search, it is allowed (but the criteria cannot be modified)
-					boolean allowed=false;
-					if(!StringUtils.IsEmpty(search.getId()))
-					{
-						//need to check against unmodified stored search
-						final org.nrg.xdat.om.XdatStoredSearch stored = XdatStoredSearch.getXdatStoredSearchsById(search.getId(), user, true);
-						
-						//if the user was added to the search
-						if(stored.hasAllowedUser(user.getUsername())){
-							//confirm it has a WHERE clause and hasn't been modified
-							if(XdatCriteriaSet.compareCriteriaSets(stored.getSearchWhere(), search.getSearchWhere())){
-								allowed=true;
-							}
-						}
-					}
-					
-					if(!allowed){
-						getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-						return;
-					}
+
+                // If a user has been manually added to a secret search, it is allowed (the criteria cannot be modified,
+                // which is checked in the canQueryByAllowedUser() method)
+                boolean allowed = canQueryByAllowedUser(search);
+
+                // If the user is not explicitly allowed to perform a search...
+				if(!allowed) {
+                    // See if the user can *implicitly* perform the search.
+                    if (!user.canQuery(search.getRootElementName())) {
+                        getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                        return;
+                    }
 				}
 					
 				rootElementName=search.getRootElementName();
@@ -216,8 +189,7 @@ public class SearchResource extends SecureResource {
 				String sortOrder = this.getQueryVariable("sortOrder");
 				if (sortBy != null){
 				    ds.setSortBy(sortBy);
-				    if(sortOrder != null)
-				    {
+                if (sortOrder != null) {
 				        ds.setSortOrder(sortOrder);
 				    }
 				}
@@ -314,10 +286,8 @@ public class SearchResource extends SecureResource {
 			}
 		}
 
-
-
-	@Override
-	public Representation getRepresentation(Variant variant) {	
+    @Override
+	public Representation represent(Variant variant) {
 		if(tableName!=null){
 			tableParams.put("ID", tableName);
 		}
@@ -344,10 +314,8 @@ public class SearchResource extends SecureResource {
 
 			//int fieldCount = visibleFields.size() + search.getInClauses().size();
 
-			if (search.getInClauses().size()>0)
-			{
-			    for(int i=0;i<search.getInClauses().size();i++)
-			    {
+            if (search.getInClauses().size() > 0) {
+                for (int i = 0; i < search.getInClauses().size(); i++) {
 			        cp.put("search_field"+i,new Hashtable<String,String>());
 			        cp.get("search_field"+i).put("header", "");
 			    }
@@ -355,17 +323,15 @@ public class SearchResource extends SecureResource {
 
 			//POPULATE HEADERS
 
-			for (DisplayFieldReferenceI dfr:fields)
-			{
+            for (DisplayFieldReferenceI dfr : fields) {
 				try {
-					String id=null;
+                    String id;
 					if(dfr.getValue()!=null && !dfr.getValue().equals("")){
 						if(dfr.getValue().equals("{XDAT_USER_ID}")){
 							dfr.setValue(user.getXdatUserId());
 						}
 					}
-					if (dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName()))
-					{
+                    if (dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName())) {
 						id = dfr.getRowID().toLowerCase();
 					}else{
 						id = dfr.getElementSQLName().toLowerCase() + "_" + dfr.getRowID().toLowerCase();
@@ -382,8 +348,7 @@ public class SearchResource extends SecureResource {
 					}
 					cp.get(id).put("xPATH", dfr.getElementName() + "." + dfr.getSortBy());
 					
-					if (dfr.getHeader().equalsIgnoreCase(""))
-					{
+                    if (dfr.getHeader().equalsIgnoreCase("")) {
 						cp.get(id).put("header", " ");
 					}else{
 						cp.get(id).put("header", dfr.getHeader());
@@ -411,14 +376,11 @@ public class SearchResource extends SecureResource {
 						logger.error("",e1);
 					}
 
-					boolean hasLink = false;
-
-					if (dfr.getHTMLLink() != null && sr.getQueryVariable("format")!=null && sr.getQueryVariable("format").equalsIgnoreCase("json"))
-					{
+                    if (dfr.getHTMLLink() != null && sr.getQueryVariable("format") != null && sr.getQueryVariable("format").equalsIgnoreCase("json")) {
 						cp.get(id).put("clickable", "true");
 						HTMLLink link = dfr.getHTMLLink();
 						
-						StringBuffer linkProps=new StringBuffer("[");
+                        StringBuilder linkProps = new StringBuilder("[");
 						int propCounter=0;
 						for(HTMLLinkProperty prop: link.getProperties()){
 							if(propCounter++>0)linkProps.append(",");
@@ -431,12 +393,10 @@ public class SearchResource extends SecureResource {
 							
 							linkProps.append(v).append("\"");
 
-							if(prop.getInsertedValues().size()>0)
-							{
+                            if (prop.getInsertedValues().size() > 0) {
 								linkProps.append(",\"inserts\":[");
 								int valueCounter=0;
-								for(Map.Entry<String, String> entry :prop.getInsertedValues().entrySet())
-								{
+                                for (Map.Entry<String, String> entry : prop.getInsertedValues().entrySet()) {
 									if(valueCounter++>0)linkProps.append(",");
 									linkProps.append("{\"name\":\"");
 									linkProps.append(entry.getKey()).append("\"");
@@ -448,11 +408,10 @@ public class SearchResource extends SecureResource {
 											if (dfr.getDisplayField() instanceof SQLQueryField){
 											    Object insertValue = dfr.getValue();
 
-											    if (insertValue == null)
-											    {
+                                                if (insertValue == null) {
 											        insertValue = "NULL";
 											    }else{
-											        if (insertValue.toString().indexOf(",")!=-1){
+                                                    if (insertValue.toString().contains(",")) {
 											        	insert_value = insert_value.substring(6);
 											            try {
 											                Integer i = Integer.parseInt(insert_value);
@@ -464,14 +423,13 @@ public class SearchResource extends SecureResource {
 											        }
 											    }
 
-		    									linkProps.append("@"+insertValue);
+                                                linkProps.append("@").append(insertValue);
 											}
 										} catch (DisplayFieldNotFoundException e) {
 											logger.error("",e);
 										}
                                     }else{
-                                         if (! dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName()))
-                                         {
+                                        if (!dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName())) {
                                         	 insert_value = dfr.getElementSQLName().toLowerCase() + "_" + insert_value.toLowerCase();
                                          }else{
                                         	 insert_value=insert_value.toLowerCase();
@@ -479,8 +437,7 @@ public class SearchResource extends SecureResource {
                                          if(cp.get(insert_value)==null){
                           					cp.put(insert_value,new Hashtable<String,String>());
                          					
-                        					if (! dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName()))
-                                            {
+                                            if (!dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName())) {
                             					cp.get(insert_value).put("xPATH", dfr.getElementName() + "." + insert_value);
                                             }else{
                             					cp.get(insert_value).put("xPATH", insert_value);
@@ -500,8 +457,7 @@ public class SearchResource extends SecureResource {
 						cp.get(id).put("linkProps", linkProps.toString());
 					}
 					
-					if (dfr.isImage())
-					{
+                    if (dfr.isImage()) {
 						cp.get(id).put("imgRoot", TurbineUtils.GetRelativePath(ServletCall.getRequest(sr.getRequest())) + "/");
 					}
 				} catch (XFTInitException e) {
@@ -522,4 +478,22 @@ public class SearchResource extends SecureResource {
 		
 		return cp;
 	}
+
+    private boolean canQueryByAllowedUser(final XdatStoredSearch search) {
+        boolean allowed=false;
+        if(!StringUtils.IsEmpty(search.getId()))
+        {
+            //need to check against unmodified stored search
+            final org.nrg.xdat.om.XdatStoredSearch stored = XdatStoredSearch.getXdatStoredSearchsById(search.getId(), user, true);
+
+            //if the user was added to the search
+            if(stored.hasAllowedUser(user.getUsername())){
+                //confirm it has a WHERE clause and hasn't been modified
+                if(XdatCriteriaSet.compareCriteriaSets(stored.getSearchWhere(), search.getSearchWhere())){
+                    allowed=true;
+                }
+            }
+        }
+        return allowed;
+    }
 }

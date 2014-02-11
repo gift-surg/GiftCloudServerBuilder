@@ -1376,10 +1376,10 @@ function UploadFileForm(_obj){
    	  div.appendChild(input);
 		
 		this.panel.setBody(div);
-		
 		this.panel.selector=this;
+		XNAT.app.uploadFileForm = this;
         var buttons = [
-            {text: "Upload", handler: {fn: this.uploadFile}, isDefault: true},
+            {text: "Upload", handler: {fn: this.validateAndUpload}, isDefault: true},
 			{text:"Close",handler:{fn:function(){
 				this.cancel();
             }}}
@@ -1392,18 +1392,7 @@ function UploadFileForm(_obj){
 	}
 
 	this.uploadFile=function(){
-		var coll_select=document.getElementById("upload_collection");
-  	    if(coll_select.disabled==true){
-            xModalMessage('File Viewer', "Please select a folder for this file.");
-  	    	return;
-  	    }
-  	    
-  	    if(document.getElementById("local_file").value==""){
-            xModalMessage('File Viewer', "Please select a file to upload.");
-  	    	return;
-  	    }
-  	    
-		var collection_name=coll_select.options[coll_select.selectedIndex].value;
+		var collection_name=XNAT.app.uploadFileFormWidget.coll_select.options[XNAT.app.uploadFileFormWidget.coll_select.selectedIndex].value;
 		var upload_level = document.getElementById("upload_level").value.trim();
 		var upload_item = document.getElementById("upload_item").value.trim();
 		var file_tags=document.getElementById("file_tags").value.trim();
@@ -1431,13 +1420,13 @@ function UploadFileForm(_obj){
 			file_params+="&overwrite=true";
 		}
 			
-		var file_dest = this.selector.obj.uri;
+		var file_dest = XNAT.app.uploadFileFormWidget.selector.obj.uri;
 		if(collection_name == ''){
-			file_dest=this.selector.obj.uri+"/files";
+			file_dest=XNAT.app.uploadFileFormWidget.selector.obj.uri+"/files";
 		}else if(upload_level == 'scans'){
-			file_dest = this.selector.obj.uri+"/scans/"+ upload_item + "/resources/" + collection_name + "/files";
+			file_dest = XNAT.app.uploadFileFormWidget.selector.obj.uri+"/scans/"+ upload_item + "/resources/" + collection_name + "/files";
 		}else{
-			file_dest=this.selector.obj.uri+"/resources/"+ collection_name + "/files";
+			file_dest=XNAT.app.uploadFileFormWidget.selector.obj.uri+"/resources/"+ collection_name + "/files";
 		}
 		
 		if(file_name > ''){
@@ -1454,16 +1443,42 @@ function UploadFileForm(_obj){
 		
 		file_dest+=file_params;
 		if(showReason){
-			var justification=new XNAT.app.requestJustification("add_file","File Upload Dialog",XNAT.app._uploadFile,this);
+			var justification=new XNAT.app.requestJustification("add_file","File Upload Dialog",XNAT.app._uploadFile,XNAT.app.uploadFileFormWidget);
 			justification.file_dest=file_dest;
 			justification.file_name=file_name;
 		}else{
-			var passthrough= new XNAT.app.passThrough(XNAT.app._uploadFile,this);
+			var passthrough= new XNAT.app.passThrough(XNAT.app._uploadFile,XNAT.app.uploadFileFormWidget);
 			passthrough.file_dest=file_dest;
 			passthrough.file_name=file_name;
 			passthrough.fire();
 		}
 		
+	}
+	
+	this.validateAndUpload=function(){
+		XNAT.app.uploadFileFormWidget = this;
+		XNAT.app.uploadFileFormWidget.coll_select=document.getElementById("upload_collection");
+		if(XNAT.app.uploadFileFormWidget.coll_select.disabled==true){
+			xModalMessage('File Viewer', "Please select a folder for this file.");
+			return;
+		}
+		
+		if(document.getElementById("local_file").value==""){
+			xModalMessage('File Viewer', "Please select a file to upload.");
+			return;
+		}
+		
+		if(!document.getElementById("folder_overwrite").checked){
+			opt = xModal.confirm;
+			opt.okAction = XNAT.app.uploadFileForm.uploadFile;
+			opt.okLabel = 'Upload';
+			opt.cancelAction = function(){};
+			opt.width = 420;
+			opt.height = 220;
+			xModalMessage('','The "Overwrite" option has not been checked. If a file with the same name already exists on the server, the selected file will not be uploaded.', '',opt);
+		}else{
+			XNAT.app.uploadFileForm.uploadFile();
+		}
 	}
 }
    

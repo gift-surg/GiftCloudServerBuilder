@@ -487,7 +487,7 @@ public class SearchResource extends SecureResource {
             final org.nrg.xdat.om.XdatStoredSearch stored = XdatStoredSearch.getXdatStoredSearchsById(search.getId(), user, true);
 
             //if the user was added to the search
-            if(stored.hasAllowedUser(user.getUsername())){
+            if(stored != null && stored.hasAllowedUser(user.getUsername())){
                 //confirm it has a WHERE clause and hasn't been modified
                 if(XdatCriteriaSet.compareCriteriaSets(stored.getSearchWhere(), search.getSearchWhere())){
                     allowed=true;

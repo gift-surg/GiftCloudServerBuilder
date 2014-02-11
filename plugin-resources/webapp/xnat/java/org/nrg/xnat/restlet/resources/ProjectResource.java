@@ -10,8 +10,6 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import java.util.List;
-
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -23,6 +21,7 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidItemException;
+import org.nrg.xft.exception.InvalidPermissionException;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
@@ -51,11 +50,11 @@ public class ProjectResource extends ItemResource {
 
 
 			if(proj!=null){
-				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-				this.getVariants().add(new Variant(MediaType.TEXT_XML));
+				getVariants().add(new Variant(MediaType.TEXT_HTML));
+				getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
 		
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA,false));
+			fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA,false));
 		
 	}
 	
@@ -78,19 +77,19 @@ public class ProjectResource extends ItemResource {
 	@Override
 	public void handleDelete(){
 		if(filepath!=null && !filepath.equals("")){
-			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			return;
 		}
 		
 		if(proj!=null){
 		    try {
-				final boolean removeFiles=this.isQueryVariableTrue("removeFiles");
+				final boolean removeFiles = isQueryVariableTrue("removeFiles");
 				if(user.canDelete(proj)){
-					final PersistentWorkflowI workflow=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, XnatProjectdata.SCHEMA_ELEMENT_NAME, this.proj.getId(),this.proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.getDeleteAction(proj.getXSIType())));
+					final PersistentWorkflowI workflow=WorkflowUtils.getOrCreateWorkflowData(getEventId(), user, XnatProjectdata.SCHEMA_ELEMENT_NAME, proj.getId(), proj.getId(),newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.getDeleteAction(proj.getXSIType())));
 					final EventMetaI ci=workflow.buildEvent();
 			    	
 					try {
-						this.proj.delete(removeFiles, user,ci);
+						proj.delete(removeFiles, user,ci);
 						PersistentWorkflowUtils.complete(workflow, ci);
 					} catch (Exception e) {
 						logger.error("",e);
@@ -98,15 +97,14 @@ public class ProjectResource extends ItemResource {
 						throw e;
 					}
 				}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to delete this project.");
-					return;
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to delete this project.");
 				}
 			} catch (InvalidItemException e) {
 				logger.error("",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			} catch (Exception e) {
 				logger.error("",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 		}
 	}
@@ -115,14 +113,14 @@ public class ProjectResource extends ItemResource {
 
 	@Override
 	public void handlePut() {
-		XFTItem item = null;
+		XFTItem item;
 
 		try {
-			if(this.proj==null || user.canEdit(this.proj)){
-				item=this.loadItem("xnat:projectData",true);
+			if(proj==null || user.canEdit(proj)){
+				item=loadItem("xnat:projectData", true);
 
 				if(item==null){
-					String xsiType=this.getQueryVariable("xsiType");
+					String xsiType=getQueryVariable("xsiType");
 					if(xsiType!=null){
 						item=XFTItem.NewItem(xsiType, user);
 					}
@@ -135,12 +133,12 @@ public class ProjectResource extends ItemResource {
 				}
 
 				if(item==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need PUT Contents");
+					getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need PUT Contents");
 					return;
 				}
 
 				boolean allowDataDeletion =false;
-				if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equalsIgnoreCase("true")){
+				if(getQueryVariable("allowDataDeletion")!=null && getQueryVariable("allowDataDeletion").equalsIgnoreCase("true")){
 					allowDataDeletion =true;
 				}
 
@@ -154,7 +152,7 @@ public class ProjectResource extends ItemResource {
 						}
 
 						if(!user.canEdit(item)){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
+							getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
 							return;
 						}
 						if(filepath.startsWith("quarantine_code/")){
@@ -170,7 +168,7 @@ public class ProjectResource extends ItemResource {
 									}else if(qc.equals("false")){
 										ap.setQuarantineCode(new Integer(0));
 									}else{
-										this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Prearchive code must be an integer.");
+										getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Prearchive code must be an integer.");
 										return;
 									}
 								}
@@ -191,7 +189,7 @@ public class ProjectResource extends ItemResource {
 									}else if(qc.equals("false")){
 										ap.setPrearchiveCode(new Integer(0));
 									}else{
-										this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Prearchive code must be an integer.");
+										getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Prearchive code must be an integer.");
 										return;
 									}
 								}
@@ -208,33 +206,32 @@ public class ProjectResource extends ItemResource {
 								ArcSpecManager.Reset();
 							}
 						}else{
-							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-							return;
+							getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 						}
 					}else{
 						if(StringUtils.IsEmpty(project.getId())){
-							project.setId(this.pID);
+							project.setId(pID);
 						}
 
 						if(StringUtils.IsEmpty(project.getId())){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Requires XNAT ProjectData ID");
+							getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Requires XNAT ProjectData ID");
 							return;
 						}
 
-						if(!StringUtils.IsAlphaNumericUnderscore(project.getId()) && !this.isQueryVariableTrue("testHyphen") ){
-							this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Invalid character in project ID.");
+						if(!StringUtils.IsAlphaNumericUnderscore(project.getId()) && !isQueryVariableTrue("testHyphen") ){
+							getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Invalid character in project ID.");
 							return;
 						}
 
 						if(item.getCurrentDBVersion()!=null){
 							if(!user.canEdit(item)){
-								this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
+								getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
 								return;
 							}
 						}else{
 			                Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+project.getId()+"';", "COUNT", null, null);
 			                if(count>0){
-			                   this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Project '"+project.getId() + "' was used in a previously deleted project and cannot be reused.");
+			                   getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Project '"+project.getId() + "' was used in a previously deleted project and cannot be reused.");
 			                   return;
 			                }
 			            }
@@ -243,27 +240,26 @@ public class ProjectResource extends ItemResource {
 							project.preSave();
 							BaseXnatProjectdata.createProject(project, user, allowDataDeletion,true,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility"));
 						}else{
-							this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
-							return;
+							getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
 						}
 					}
 				}
 			}else{
-				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
-				return;
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
 			}
+		} catch(InvalidPermissionException e){
+			getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
 		} catch(IllegalArgumentException e){
-			this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,e.getMessage());
-			return;
+			getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
 		}catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			e.printStackTrace();
+            logger.error("Unknown exception type", e);
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation represent(Variant variant) {
 		MediaType mt = overrideVariant(variant);
 		
 		if(proj!=null){
@@ -273,7 +269,7 @@ public class ProjectResource extends ItemResource {
 						return new StringRepresentation(proj.getArcSpecification().getQuarantineCode().toString(),mt);
 					} catch (Throwable e) {
 						logger.error("",e);
-						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+						getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 					    return null;
 					}
 				}else if(filepath.startsWith("prearchive_code")){
@@ -281,7 +277,7 @@ public class ProjectResource extends ItemResource {
 						return new StringRepresentation(proj.getArcSpecification().getPrearchiveCode().toString(),mt);
 					} catch (Throwable e) {
 						logger.error("",e);
-						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+						getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 					    return null;
 					}
 				}else if(filepath.startsWith("current_arc")){
@@ -289,18 +285,18 @@ public class ProjectResource extends ItemResource {
 						return new StringRepresentation(proj.getArcSpecification().getCurrentArc(),mt);
 					} catch (Throwable e) {
 						logger.error("",e);
-						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+						getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
 					    return null;
 					}
 				}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+					getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 					return null;
 				}
 			}else{
-				return this.representItem(proj.getItem(),mt);
+				return representItem(proj.getItem(), mt);
 			}
 		}else{
-			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified experiment.");
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to find the specified experiment.");
 			return null;
 		}
 

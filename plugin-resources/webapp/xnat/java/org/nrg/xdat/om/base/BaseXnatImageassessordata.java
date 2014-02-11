@@ -151,7 +151,16 @@ public abstract class BaseXnatImageassessordata extends AutoXnatImageassessordat
     	
     	for(XnatAbstractresourceI abstRes:this.getOut_file()){
     		((XnatAbstractresource)abstRes).deleteWithBackup(rootPath, u,ci);
-        	
+    	}
+    	
+    	// XNAT-1382: Delete the root Assessor Directory if it is empty.
+    	String assessorDir = this.getArchiveDirectoryName();
+    	String sessionDir = this.getExpectedSessionDir().getAbsolutePath();
+    	if(!StringUtils.IsEmpty(sessionDir) && !StringUtils.IsEmpty(assessorDir)){
+    		File f = new File(sessionDir + "/ASSESSORS/" + assessorDir);
+    		if(f.exists() && f.isDirectory() && f.list().length == 0){
+    			FileUtils.DeleteFile(f);
+    		}
     	}
     }
 

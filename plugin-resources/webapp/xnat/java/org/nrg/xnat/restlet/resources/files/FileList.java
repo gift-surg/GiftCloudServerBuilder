@@ -42,10 +42,7 @@ import org.nrg.xnat.utils.CatalogUtils;
 import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -293,11 +290,16 @@ public class FileList extends XNATCatalogTemplate {
                     try {
                         final List<FileWriterWrapperI> writers = getFileWriters();
 
-                        // We'll skip adding files if there are no file writers, one way or the other that's bad, m'kay?
-                        // A return status should have been set by whomever decided there were no file writers, so we
-                        // don't need to do anything further.
-                        if (writers != null) {
+                        if (writers.size() > 0) {
                             buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                        } else {
+                            final String method = getRequest().getMethod().toString();
+                            final long size = getRequest().getEntity().getAvailableSize();
+                            if (size == 0) {
+                                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You tried to " + method + " to this service, but didn't provide any data (found request entity size of 0). Please check the format of your service request.");
+                            } else {
+                                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You tried to " + method + " a payload of " + CatalogUtils.formatSize(size) + " to this service, but didn't provide any data. If you think you sent data to upload, you can try to " + method + " with the query-string parameter inbody=true or use multipart/form-data encoding.");
+                            }
                         }
                     } catch (Exception e) {
                         if (e.getMessage().startsWith("File already exists")) {
@@ -631,12 +633,8 @@ public class FileList extends XNATCatalogTemplate {
 
                 if (cat != null) {
                     if (filepath == null || filepath.equals("")) {
-
-                        if (cat != null) {
-                            table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath, (catResource.getBaseURI() != null) ? catResource.getBaseURI() + "/files" : baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files", catResource, isZip || (index != null), entryFilter, proj, locator));
-                        }
+                        table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath, (catResource.getBaseURI() != null) ? catResource.getBaseURI() + "/files" : baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files", catResource, isZip || (index != null), entryFilter, proj, locator));
                     } else {
-
                         ArrayList<CatEntryI> entries = new ArrayList<CatEntryI>();
 
                         CatEntryBean e = (CatEntryBean) CatalogUtils.getEntryByURI(cat, filepath);
@@ -747,11 +745,18 @@ public class FileList extends XNATCatalogTemplate {
                 f = (File) table.rows().get(index)[8];
             }
 
+            if (f == null || !f.exists()) {
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
+                return null;
+            }
+
+            final String name = f.getName();
+
             //return file
             if (fileList.size() > 0) {
-                if ((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip"))
-                        || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".tar.gz"))
-                        || (mt.equals(MediaType.APPLICATION_TAR) && !f.getName().toLowerCase().endsWith(".tar"))) {
+                if ((mt.equals(MediaType.APPLICATION_ZIP) && !name.toLowerCase().endsWith(".zip"))
+                        || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !name.toLowerCase().endsWith(".tar.gz"))
+                        || (mt.equals(MediaType.APPLICATION_TAR) && !name.toLowerCase().endsWith(".tar"))) {
                     final ZipRepresentation rep;
                     try {
                         rep = new ZipRepresentation(mt, ((ArchivableItem) security).getArchiveDirectoryName(), identifyCompression(null));
@@ -761,19 +766,14 @@ public class FileList extends XNATCatalogTemplate {
                         return null;
                     }
                     for (String fn : fileList.keySet()) {
-
                         rep.addEntry(fn, fileList.get(fn));
                     }
                     return rep;
                 }
-
-            } else if (f == null || !f.exists()) {
-                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find file.");
-                return null;
             } else {
-                if ((mt.equals(MediaType.APPLICATION_ZIP) && !f.getName().toLowerCase().endsWith(".zip"))
-                        || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !f.getName().toLowerCase().endsWith(".tar.gz"))
-                        || (mt.equals(MediaType.APPLICATION_TAR) && !f.getName().toLowerCase().endsWith(".tar"))) {
+                if ((mt.equals(MediaType.APPLICATION_ZIP) && !name.toLowerCase().endsWith(".zip"))
+                        || (mt.equals(MediaType.APPLICATION_GNU_TAR) && !name.toLowerCase().endsWith(".tar.gz"))
+                        || (mt.equals(MediaType.APPLICATION_TAR) && !name.toLowerCase().endsWith(".tar"))) {
                     final ZipRepresentation rep;
                     try {
                         rep = new ZipRepresentation(mt, ((ArchivableItem) security).getArchiveDirectoryName(), identifyCompression(null));
@@ -782,7 +782,7 @@ public class FileList extends XNATCatalogTemplate {
                         setResponseStatus(e);
                         return null;
                     }
-                    rep.addEntry(f.getName(), f);
+                    rep.addEntry(name, f);
                     return rep;
                 } else {
                     return getFileRepresentation(f, mt);

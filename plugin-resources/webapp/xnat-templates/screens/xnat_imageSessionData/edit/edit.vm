@@ -56,6 +56,7 @@
     .yui-ac .open .yui-button button { background: url($content.getURI("scripts/yui/build/autocomplete/assets/img/ac-arrow-dn.png")) center center no-repeat }
     #project_subject_form select { min-width: 150px ; }
     #project_subject_form input[type="text"] { min-width: 145px ; }
+	p#dateMsg{color:red;}
 </style>
 
 <script type="text/javascript" src="$content.getURI("scripts/yui/build/autocomplete/autocomplete-min.js")"></script>
@@ -143,7 +144,7 @@ $page.setVlinkColor($ui.vlink)
 
                 #set ($expt_date = $!item.getDateProperty("${om.getXSIType()}.date"))
 
-                <select class="date month" id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month">
+                <select class="date month" id="${om.getXSIType()}.date.month" name="${om.getXSIType()}.date.month" onchange="validateDate()">
                     <option value="bad">Month</option>
                     #foreach ($month in $months)
                         #set ($monthCount = $velocityCount - 1)
@@ -153,7 +154,7 @@ $page.setVlinkColor($ui.vlink)
                     #end
                 </select>
 
-                <select class="date day" id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date">
+                <select class="date day" id="${om.getXSIType()}.date.date" name="${om.getXSIType()}.date.date" onchange="validateDate()">
                     <option value="bad">Day</option>
                     #foreach ($day in $days)
                         <option value="$day" #if ( $day == $!expt_date.getDate() ) defaultSelected="true" selected="true" #end>$day</option>
@@ -163,14 +164,14 @@ $page.setVlinkColor($ui.vlink)
                 #set($years = [ $!turbineUtils.getYear()..1990])
                 #set ($currentYear = $date.Year + 1900)
 
-                <select class="date year" id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year">
+                <select class="date year" id="${om.getXSIType()}.date.year" name="${om.getXSIType()}.date.year" onchange="validateDate()">
                     <option value="bad">Year</option>
                     #foreach ($year in $years)
                         <option value="$year" #if ( $year == $!expt_date.getYear() + 1900 ) defaultSelected="true" selected="true" #end>$year</option>
                     #end
                 </select>
-
             </td>
+            <td><p id='dateMsg'></p></td>
         </tr>
         <tr>
             <th align="left">Visit ID</th>

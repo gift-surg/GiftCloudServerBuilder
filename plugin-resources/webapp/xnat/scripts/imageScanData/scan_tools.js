@@ -1113,7 +1113,7 @@ function scanListingEditor(_tbody,_scanSet,_options){
 			if(scan.note_input==undefined){
 				scan.note_input=document.createElement("input");
 				scan.note_input.type="text";
-			        if(scan.extension.Note!=undefined){
+			        if(scan.extension.Note!=undefined && scan.extension.Note != "NULL"){
 					scan.note_input.value=scan.extension.Note;
 				}
 				scan.note_input.size="40";

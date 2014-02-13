@@ -57,12 +57,38 @@ function confirmValues(_focus){
 		  	  valid=false;
 		  }
 	  }
-  
-	  return valid;
+
+	if(validateDate() === false){ 
+		valid = false;
+	}
+	
+
+	return valid;
   }catch(e){
   	  xModalMessage('Error',"An exception has occurred. Please contact technical support for assistance.");
   	  return false;
   }
+}
+
+function validateDate(){
+	var month = getValueById(elementName+'.date.month');
+	var day = getValueById(elementName+'.date.date');
+	var year = getValueById(elementName+'.date.year');
+	if(null != month && null != day && null != year){
+		// If any value has been entered for month, date, or year
+		if(month.value != "bad" || day.value != "bad" || year.value != "bad"){
+			// To be valid, either all values must be present or all values must be absent.
+			if((month.value === "bad" && day.value === "bad" && year.value === "bad") || (month.value != "bad" && day.value != "bad" && year.value != "bad")) {
+				removeAppendImage(elementName+".date.year");
+				document.getElementById('dateMsg').innerHTML = "";
+			}else{
+				appendImage(elementName+".date.year","/images/checkmarkRed.gif");
+				var dmsg = document.getElementById('dateMsg').innerHTML = "* Please enter a valid date. Month, Day and Year are all required fields. ";
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 function getValueById(id){
